@@ -289,7 +289,7 @@ void Message_ResetOcarinaButtonState(PlayState* play) {
     sOcarinaButtonCEnvB = 10;
 }
 
-s32 Message_ShouldAdvance(PlayState* play) {
+bool Message_ShouldAdvance(PlayState* play) {
     MessageContext* msgCtx = &play->msgCtx;
     Input* controller = CONTROLLER1(&play->state);
 
@@ -311,7 +311,7 @@ s32 Message_ShouldAdvance(PlayState* play) {
     }
 }
 
-s32 Message_ShouldAdvanceSilent(PlayState* play) {
+bool Message_ShouldAdvanceSilent(PlayState* play) {
     MessageContext* msgCtx = &play->msgCtx;
     Input* controller = CONTROLLER1(&play->state);
 

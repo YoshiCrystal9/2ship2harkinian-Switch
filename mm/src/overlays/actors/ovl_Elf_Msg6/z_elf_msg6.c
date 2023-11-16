@@ -236,7 +236,7 @@ void ElfMsg6_Init(Actor* thisx, PlayState* play) {
 void ElfMsg6_Destroy(Actor* thisx, PlayState* play) {
 }
 
-s32 func_80BA1C00(ElfMsg6* this) {
+bool func_80BA1C00(ElfMsg6* this) {
     return GameInteractor_Should(
         VB_TATL_INTERUPT_MSG6,
         ((this->actor.xzDistToPlayer < (100.0f * this->actor.scale.x)) &&
