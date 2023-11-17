@@ -14317,7 +14317,7 @@ void Player_Action_5(Player* this, PlayState* play) {
     s32 var_v1;
     f32 var_fv1;
 
-    this->skelAnime.mode = 0;
+    this->skelAnime.mode = ANIMMODE_LOOP;
     PlayerAnimation_SetUpdateFunction(&this->skelAnime);
 
     this->skelAnime.animation = func_8082EFE4(this);
@@ -17267,7 +17267,7 @@ void Player_Action_63(Player* this, PlayState* play) {
     if ((this->unk_AA5 != PLAYER_UNKAA5_4) &&
         ((PlayerAnimation_Update(play, &this->skelAnime) &&
           (BEN_ANIM_EQUAL(this->skelAnime.animation, D_8085D17C[this->transformation]))) ||
-         ((this->skelAnime.mode == 0) && (this->av2.actionVar2 == 0)))) {
+         ((this->skelAnime.mode == ANIMMODE_LOOP) && (this->av2.actionVar2 == 0)))) {
         func_808525C4(play, this);
         if (!CVarGetInteger("gEnhancements.Playback.NoDropOcarinaInput", 0) || this->av2.actionVar2 == 1) {
             if (!(this->actor.flags & ACTOR_FLAG_20000000) || (this->unk_A90->id == ACTOR_EN_ZOT)) {
