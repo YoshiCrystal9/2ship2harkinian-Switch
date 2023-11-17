@@ -1282,10 +1282,7 @@ void Audio_RestorePrevBgm(void);
 void Audio_UpdateEnemyBgmVolume(f32 dist);
 u8 func_801A3950(u8 seqPlayerIndex, u8 resetChannelIO);
 u8 func_801A39F8(void);
-void func_801A5118(void);
 s32 func_801A46F8(void);
-void func_801A4FD8(void);
-void AudioVoice_ResetData(void);
 
 void AudioSfx_MuteBanks(u16 muteMask);
 void AudioSfx_LowerBgmVolume(u8 channelIndex);

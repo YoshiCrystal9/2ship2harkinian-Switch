@@ -1,4 +1,5 @@
 #include "global.h"
+#include "z64voice.h"
 
 #include "GameInteractor/GameInteractor.h"
 #include "2s2h/Enhancements/Audio/AudioEditor.h"
@@ -3669,7 +3670,7 @@ void Audio_Update(void) {
     if ((AudioSeq_UpdateAudioHeapReset() == 0) && !AudioSeq_ResetReverb()) {
         AudioOcarina_SetCustomSequence();
         AudioOcarina_Update();
-        func_801A5118();
+        AudioVoice_Update();
         Audio_StepFreqLerp(&sRiverFreqScaleLerp);
         Audio_StepFreqLerp(&sWaterfallFreqScaleLerp);
         Audio_UpdateRiverSoundVolumes();
@@ -6548,7 +6549,7 @@ void Audio_ResetForAudioHeapStep1(s32 specId) {
     AudioSfx_ResetSfxChannelState();
     AudioSeq_ResetActiveSequences();
     AudioSfx_Reset();
-    func_801A4FD8();
+    AudioVoice_ResetWord();
     if (gAudioSpecId == 0xB) {
         AudioSfx_MuteBanks((1 << BANK_PLAYER) | (1 << BANK_ITEM) | (1 << BANK_ENV) | (1 << BANK_ENEMY) |
                            (1 << BANK_OCARINA) | (1 << BANK_VOICE));
@@ -6561,5 +6562,5 @@ void Audio_UnusedReset(void) {
     Audio_ResetData();
     AudioSfx_ResetSfxChannelState();
     AudioSfx_Init(1);
-    func_801A4FD8();
+    AudioVoice_ResetWord();
 }

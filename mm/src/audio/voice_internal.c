@@ -3,10 +3,27 @@
 #include "libc/string.h"
 
 // internal voice functions
-u8* func_801A5A1C(s8* words);
+char* func_801A5A1C(s8* words);
+
+typedef struct {
+    /* 0x00 */ OSVoiceDictionary* dict;
+    /* 0x04 */ s8 mode;
+    /* 0x08 */ OSVoiceData* data;
+    /* 0x0C */ u16 distance;
+    /* 0x0E */ u16 answerNum;
+    /* 0x10 */ u16 warning;
+    /* 0x12 */ u16 voiceLevel;
+    /* 0x14 */ u16 voiceRelLevel;
+} OSVoiceContext; // size = 0x18
+
+typedef enum VoiceMode {
+    /* 0 */ VOICE_MODE_0,
+    /* 1 */ VOICE_MODE_1,
+    /* 2 */ VOICE_MODE_2
+} VoiceMode;
 
 // BSS
-OSVoiceUnk D_801FD5A0;
+OSVoiceContext sVoiceContext;
 OSVoiceHandle gVoiceHandle;
 OSVoiceData D_801FD5C8; // Intermediate Voice Data during processsing?
 OSVoiceData D_801FD5E8; // Best Match Voice Data?
@@ -65,12 +82,12 @@ s32 func_801A5228(OSVoiceDictionary* dict) {
     u8 numWords;
     u8 i;
 
-    D_801FD5A0.mode = 0;
-    D_801FD5A0.data = NULL;
-    D_801FD5A0.distance = 1000;
-    D_801FD5A0.answerNum = 5;
-    D_801FD5A0.warning = 0;
-    D_801FD5A0.dict = dict;
+    sVoiceContext.mode = VOICE_MODE_0;
+    sVoiceContext.data = NULL;
+    sVoiceContext.distance = 1000;
+    sVoiceContext.answerNum = 5;
+    sVoiceContext.warning = 0;
+    sVoiceContext.dict = dict;
 
     numWords = dict->numWords;
 
@@ -88,11 +105,11 @@ s32 func_801A5228(OSVoiceDictionary* dict) {
 
     for (i = 0; i < numWords; i++) {
         serialEventQueue = PadMgr_VoiceAcquireSerialEventQueue();
-        errorCode = osVoiceSetWord(&gVoiceHandle, &dict->words[i]);
+        errorCode = osVoiceSetWord(&gVoiceHandle, (u8*)&dict->words[i]);
         PadMgr_VoiceReleaseSerialEventQueue(serialEventQueue);
 
         if (func_801A51F0(errorCode) != 0) {
-            func_801A5A1C(&dict->words[i]);
+            func_801A5A1C((s8*)&dict->words[i]);
         }
     }
 
@@ -106,8 +123,8 @@ OSVoiceData* func_801A5390(void) {
     OSVoiceData* voiceData;
     OSMesgQueue* serialEventQueue;
 
-    voiceData = D_801FD5A0.data;
-    D_801FD5A0.data = NULL;
+    voiceData = sVoiceContext.data;
+    sVoiceContext.data = NULL;
 
     serialEventQueue = PadMgr_VoiceAcquireSerialEventQueue();
     osVoiceStartReadData(&gVoiceHandle);
@@ -118,16 +135,16 @@ OSVoiceData* func_801A5390(void) {
 }
 
 // Unused
-OSVoiceDictionary* func_801A53DC(void) {
-    return D_801FD5A0.dict;
+OSVoiceDictionary* AudioVoice_GetVoiceDict(void) {
+    return sVoiceContext.dict;
 }
 
 void func_801A53E8(u16 distance, u16 answerNum, u16 warning, u16 voiceLevel, u16 voiceRelLevel) {
-    D_801FD5A0.distance = distance;
-    D_801FD5A0.answerNum = answerNum;
-    D_801FD5A0.warning = warning;
-    D_801FD5A0.voiceLevel = voiceLevel;
-    D_801FD5A0.voiceRelLevel = voiceRelLevel;
+    sVoiceContext.distance = distance;
+    sVoiceContext.answerNum = answerNum;
+    sVoiceContext.warning = warning;
+    sVoiceContext.voiceLevel = voiceLevel;
+    sVoiceContext.voiceRelLevel = voiceRelLevel;
 }
 
 // Unused
@@ -137,7 +154,7 @@ s32 func_801A541C(s32 analog, s32 digital) {
     s32 errorCode;
     OSMesgQueue* serialEventQueue;
 
-    if (D_801FD5A0.dict != NULL) {
+    if (sVoiceContext.dict != NULL) {
         serialEventQueue = PadMgr_VoiceAcquireSerialEventQueue();
         errorCode = osVoiceControlGain(&gVoiceHandle, analog, digital);
         PadMgr_VoiceReleaseSerialEventQueue(serialEventQueue);
@@ -164,24 +181,24 @@ s32 func_801A5488(u8* word) {
 #endif
 }
 
-u8* func_801A54C4(void) {
+u8* AudioVoice_GetVoiceMaskPattern(void) {
     return sVoiceMaskPattern;
 }
 
-s32 func_801A54D0(u16 wordId) {
+s32 AudioVoice_InitWordImplAlt(u16 wordId) {
     return 0;
 #if 0
     s32 errorCode;
-    u8 phi_t0 = true;
+    u8 stopReadingData = true;
     u8 numWords;
     u8 i;
     OSMesgQueue* serialEventQueue;
 
-    if (D_801FD5A0.dict != NULL) {
-        numWords = D_801FD5A0.dict->numWords;
+    if (sVoiceContext.dict != NULL) {
+        numWords = sVoiceContext.dict->numWords;
     } else {
         numWords = 20;
-        phi_t0 = false;
+        stopReadingData = false;
     }
 
     if (wordId == VOICE_WORD_ID_NONE) {
@@ -190,44 +207,44 @@ s32 func_801A54D0(u16 wordId) {
         }
     } else {
         if (sVoiceMaskPattern[wordId / 8] & (1 << (wordId % 8))) {
-            phi_t0 = false;
+            stopReadingData = false;
         } else {
             sVoiceMaskPattern[wordId / 8] |= (1 << (wordId % 8));
         }
     }
 
-    if (phi_t0) {
+    if (stopReadingData) {
         serialEventQueue = PadMgr_VoiceAcquireSerialEventQueue();
         errorCode = osVoiceStopReadData(&gVoiceHandle);
         PadMgr_VoiceReleaseSerialEventQueue(serialEventQueue);
 
-        if ((errorCode == 0) || (D_801FD5A0.mode == 0)) {
+        if ((errorCode == 0) || (sVoiceContext.mode == VOICE_MODE_0)) {
             serialEventQueue = PadMgr_VoiceAcquireSerialEventQueue();
             errorCode = osVoiceMaskDictionary(&gVoiceHandle, sVoiceMaskPattern, ((numWords - 1) / 8) + 1);
             PadMgr_VoiceReleaseSerialEventQueue(serialEventQueue);
         }
 
-        D_801FD5A0.mode = 0;
+        sVoiceContext.mode = VOICE_MODE_0;
     }
 
     return errorCode;
 #endif
 }
 
-s32 func_801A5680(u16 wordId) {
+s32 AudioVoice_InitWordImpl(u16 wordId) {
     return 0;
 #if 0
     s32 errorCode;
-    u8 phi_a3 = true;
+    u8 stopReadingData = true;
     u8 numWords;
     u8 i;
     OSMesgQueue* serialEventQueue;
 
-    if (D_801FD5A0.dict != NULL) {
-        numWords = D_801FD5A0.dict->numWords;
+    if (sVoiceContext.dict != NULL) {
+        numWords = sVoiceContext.dict->numWords;
     } else {
         numWords = 20;
-        phi_a3 = false;
+        stopReadingData = false;
     }
 
     if (wordId == VOICE_WORD_ID_NONE) {
@@ -236,24 +253,24 @@ s32 func_801A5680(u16 wordId) {
         }
     } else {
         if (!(sVoiceMaskPattern[wordId / 8] & (1 << (wordId % 8)))) {
-            phi_a3 = false;
+            stopReadingData = false;
         } else {
             sVoiceMaskPattern[wordId / 8] &= (1 << (wordId % 8)) ^ 0xFF;
         }
     }
 
-    if (phi_a3) {
+    if (stopReadingData) {
         serialEventQueue = PadMgr_VoiceAcquireSerialEventQueue();
         errorCode = osVoiceStopReadData(&gVoiceHandle);
         PadMgr_VoiceReleaseSerialEventQueue(serialEventQueue);
 
-        if ((errorCode == 0) || (D_801FD5A0.mode == 0)) {
+        if ((errorCode == 0) || (sVoiceContext.mode == VOICE_MODE_0)) {
             serialEventQueue = PadMgr_VoiceAcquireSerialEventQueue();
             errorCode = osVoiceMaskDictionary(&gVoiceHandle, sVoiceMaskPattern, ((numWords - 1) / 8) + 1);
             PadMgr_VoiceReleaseSerialEventQueue(serialEventQueue);
         }
 
-        D_801FD5A0.mode = 0;
+        sVoiceContext.mode = VOICE_MODE_0;
     }
 
     return errorCode;
@@ -264,19 +281,19 @@ s32 func_801A5808(void) {
     return 0;
 #if 0
     s32 errorCode = 0;
-    s32 ret;
+    s32 pad;
     OSMesgQueue* serialEventQueue;
 
-    switch (D_801FD5A0.mode) {
-        case 0:
+    switch (sVoiceContext.mode) {
+        case VOICE_MODE_0:
             serialEventQueue = PadMgr_VoiceAcquireSerialEventQueue();
             errorCode = osVoiceStartReadData(&gVoiceHandle);
             PadMgr_VoiceReleaseSerialEventQueue(serialEventQueue);
 
-            D_801FD5A0.mode = 1;
+            sVoiceContext.mode = VOICE_MODE_1;
             break;
 
-        case 1:
+        case VOICE_MODE_1:
             serialEventQueue = PadMgr_VoiceAcquireSerialEventQueue();
             errorCode = osVoiceGetReadData(&gVoiceHandle, &D_801FD5C8);
             PadMgr_VoiceReleaseSerialEventQueue(serialEventQueue);
@@ -284,7 +301,7 @@ s32 func_801A5808(void) {
             if (func_801A51F0(errorCode) == 0) {
                 switch (gVoiceHandle.status) {
                     case VOICE_STATUS_READY:
-                        D_801FD5A0.mode = 2;
+                        sVoiceContext.mode = VOICE_MODE_2;
                         break;
 
                     case VOICE_STATUS_START:
@@ -296,7 +313,7 @@ s32 func_801A5808(void) {
                         break;
 
                     case VOICE_STATUS_END:
-                        D_801FD5A0.mode = 2;
+                        sVoiceContext.mode = VOICE_MODE_2;
                         break;
 
                     default:
@@ -305,12 +322,14 @@ s32 func_801A5808(void) {
             }
             break;
 
-        case 2:
-            if (((D_801FD5C8.warning & D_801FD5A0.warning) == 0) && (D_801FD5A0.answerNum >= D_801FD5C8.answerNum) &&
-                (D_801FD5A0.distance >= D_801FD5C8.distance[0]) && (D_801FD5C8.voiceLevel >= D_801FD5A0.voiceLevel) &&
-                (D_801FD5C8.voiceRelLevel >= D_801FD5A0.voiceRelLevel)) {
+        case VOICE_MODE_2:
+            if (((D_801FD5C8.warning & sVoiceContext.warning) == 0) &&
+                (sVoiceContext.answerNum >= D_801FD5C8.answerNum) &&
+                (sVoiceContext.distance >= D_801FD5C8.distance[0]) &&
+                (D_801FD5C8.voiceLevel >= sVoiceContext.voiceLevel) &&
+                (D_801FD5C8.voiceRelLevel >= sVoiceContext.voiceRelLevel)) {
                 D_801FD5E8 = D_801FD5C8;
-                D_801FD5A0.data = &D_801FD5E8;
+                sVoiceContext.data = &D_801FD5E8;
             }
 
             serialEventQueue = PadMgr_VoiceAcquireSerialEventQueue();
@@ -321,28 +340,26 @@ s32 func_801A5808(void) {
             errorCode = osVoiceStartReadData(&gVoiceHandle);
             PadMgr_VoiceReleaseSerialEventQueue(serialEventQueue);
 
-            D_801FD5A0.mode = 1;
+            sVoiceContext.mode = VOICE_MODE_1;
             break;
 
         default:
             break;
     }
 
-    ret = func_801A51F0(errorCode);
-
-    return ret;
+    return func_801A51F0(errorCode);
 #endif
 }
 
 // Unused
 void AudioVoice_ResetData(void) {
-    D_801FD5A0.dict = NULL;
+    sVoiceContext.dict = NULL;
 }
 
-u8* func_801A5A1C(s8* words) {
+char* func_801A5A1C(s8* words) {
     u8 i;
     u8 j;
-    u8 numSyllables = strlen(words); // technically twice the num of syllables
+    u8 numSyllables = strlen((const char*)words); // technically twice the num of syllables
     u8 syllable[2];
 
     for (j = 0, i = 0; i < numSyllables; i += 2) {

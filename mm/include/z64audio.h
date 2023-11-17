@@ -952,8 +952,6 @@ typedef u32 (*AudioCustomSeqFunction)(s8 value, SequenceChannel* channel);
 typedef void* (*AudioCustomReverbFunction)(Sample*, s32, s8, s32);
 typedef Acmd* (*AudioCustomSynthFunction)(Acmd*, s32, s32);
 
-extern OSVoiceHandle gVoiceHandle;
-
 typedef struct {
     char* seqData;
     int32_t seqDataSize;
