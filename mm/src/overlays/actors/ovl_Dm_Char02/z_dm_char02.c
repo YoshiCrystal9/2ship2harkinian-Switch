@@ -103,7 +103,7 @@ void DmChar02_Destroy(Actor* thisx, PlayState* play) {
 }
 
 void DmChar02_HandleCutscene(DmChar02* this, PlayState* play) {
-    u8 shouldChangeAnimation = true;
+    u8 changeAnim = true;
     s32 cueChannel;
 
     if (Cutscene_IsCueInChannel(play, CS_CMD_ACTOR_CUE_131)) {
@@ -112,7 +112,7 @@ void DmChar02_HandleCutscene(DmChar02* this, PlayState* play) {
             switch (play->csCtx.actorCues[cueChannel]->id) {
                 default:
                     this->animIndex = DMCHAR02_ANIM_HIT_GROUND;
-                    shouldChangeAnimation = false;
+                    changeAnim = false;
                     break;
 
                 case 1:
@@ -128,7 +128,7 @@ void DmChar02_HandleCutscene(DmChar02* this, PlayState* play) {
                     break;
             }
 
-            if (shouldChangeAnimation) {
+            if (changeAnim) {
                 DmChar02_ChangeAnim(&this->skelAnime, &sAnimationInfo[this->animIndex], 0);
             }
         }
