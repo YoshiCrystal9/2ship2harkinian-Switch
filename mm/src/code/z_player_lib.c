@@ -49,11 +49,6 @@
 #include "2s2h/Enhancements/FrameInterpolation/FrameInterpolation.h"
 #include "public/bridge/consolevariablebridge.h"
 
-void PlayerCall_Init(Actor* thisx, PlayState* play);
-void PlayerCall_Destroy(Actor* thisx, PlayState* play);
-void PlayerCall_Update(Actor* thisx, PlayState* play);
-void PlayerCall_Draw(Actor* thisx, PlayState* play);
-
 typedef struct {
     /* 0x00 */ Vec3f unk_00;
     /* 0x0C */ Vec3f unk_0C;
