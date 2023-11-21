@@ -491,7 +491,7 @@ void func_80B417B8(EnKgy* this, PlayState* play) {
     if ((Message_GetState(&play->msgCtx) == TEXT_STATE_5) && Message_ShouldAdvance(play)) {
         Message_CloseTextbox(play);
         func_80B413C8(this);
-        this->actor.flags &= ~ACTOR_FLAG_TALK_REQUESTED;
+        this->actor.flags &= ~ACTOR_FLAG_TALK;
         this->actionFunc = func_80B419B0;
         func_80B40E18(this, 7);
     }
@@ -519,7 +519,7 @@ void func_80B418C4(EnKgy* this, PlayState* play) {
         func_80B413C8(this);
         CutsceneManager_Queue(this->csIdList[5]);
         this->actionFunc = func_80B41858;
-        this->actor.flags &= ~ACTOR_FLAG_TALK_REQUESTED;
+        this->actor.flags &= ~ACTOR_FLAG_TALK;
     }
     func_80B40EE8(this, play);
 }
@@ -529,7 +529,7 @@ void func_80B419B0(EnKgy* this, PlayState* play) {
     Player* player = GET_PLAYER(play);
 
     func_80B4163C(this, play);
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state) || (&this->actor == player->talkActor)) {
+    if (Actor_TalkOfferAccepted(&this->actor, &play->state) || (&this->actor == player->talkActor)) {
         func_80B411DC(this, play, 4);
         func_80B40E18(this, this->actor.textId);
         if (this->actor.textId == 0xC37) {
@@ -606,14 +606,14 @@ void func_80B41C54(EnKgy* this, PlayState* play) {
     SkelAnime_Update(&this->skelAnime);
     if (Actor_TextboxIsClosing(&this->actor, play)) {
         this->actionFunc = func_80B41C30;
-        this->actor.flags &= ~ACTOR_FLAG_TALK_REQUESTED;
+        this->actor.flags &= ~ACTOR_FLAG_TALK;
     }
     func_80B40EE8(this, play);
 }
 
 void func_80B41CBC(EnKgy* this, PlayState* play) {
     SkelAnime_Update(&this->skelAnime);
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+    if (Actor_TalkOfferAccepted(&this->actor, &play->state)) {
         this->actor.flags &= ~ACTOR_FLAG_10000;
         func_80B40E18(this, this->actor.textId);
         this->actionFunc = func_80B41E18;
@@ -881,7 +881,7 @@ void func_80B42508(EnKgy* this, PlayState* play) {
 
     SkelAnime_Update(&this->skelAnime);
     this->actor.focus.pos = this->unk_2A8;
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state) || (&this->actor == player->talkActor)) {
+    if (Actor_TalkOfferAccepted(&this->actor, &play->state) || (&this->actor == player->talkActor)) {
         this->actionFunc = func_80B41E18;
         func_80B411DC(this, play, 4);
         func_80B40E18(this, this->actor.textId);
@@ -891,7 +891,7 @@ void func_80B42508(EnKgy* this, PlayState* play) {
 void func_80B425A0(EnKgy* this, PlayState* play) {
     SkelAnime_Update(&this->skelAnime);
     this->actor.focus.pos = this->unk_2A8;
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+    if (Actor_TalkOfferAccepted(&this->actor, &play->state)) {
         this->actionFunc = func_80B41E18;
         EnKgy_ChangeAnimLoopMorph(this, ENKGY_ANIM_1);
         func_80B411DC(this, play, 0);
@@ -907,7 +907,7 @@ void func_80B42660(EnKgy* this, PlayState* play) {
     if ((Message_GetState(&play->msgCtx) == TEXT_STATE_5) && Message_ShouldAdvance(play)) {
         Message_CloseTextbox(play);
         func_80B413C8(this);
-        this->actor.flags &= ~ACTOR_FLAG_TALK_REQUESTED;
+        this->actor.flags &= ~ACTOR_FLAG_TALK;
         this->actionFunc = func_80B42714;
         func_80B40E18(this, 7);
     }
@@ -920,7 +920,7 @@ void func_80B42714(EnKgy* this, PlayState* play) {
 
     SkelAnime_Update(&this->skelAnime);
     this->actor.focus.pos = this->unk_2A8;
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state) || (&this->actor == player->talkActor)) {
+    if (Actor_TalkOfferAccepted(&this->actor, &play->state) || (&this->actor == player->talkActor)) {
         func_80B411DC(this, play, 4);
         func_80B40E18(this, this->actor.textId);
         if (this->actor.textId == 0xC37) {
@@ -989,7 +989,7 @@ void func_80B4296C(EnKgy* this, PlayState* play) {
     }
 
     this->actor.focus.pos = this->unk_2A8;
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+    if (Actor_TalkOfferAccepted(&this->actor, &play->state)) {
         this->actionFunc = func_80B427C8;
         if (this->animIndex == ENKGY_ANIM_4) {
             EnKgy_ChangeAnimLoopMorph(this, ENKGY_ANIM_7);
@@ -1104,7 +1104,7 @@ void func_80B42D28(EnKgy* this, PlayState* play) {
     }
 
     this->actor.focus.pos = this->unk_2A8;
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+    if (Actor_TalkOfferAccepted(&this->actor, &play->state)) {
         this->actionFunc = func_80B42A8C;
         if (this->actor.textId == 0xC2D) {
             EnKgy_ChangeAnimLoopMorph(this, ENKGY_ANIM_1);

@@ -725,7 +725,7 @@ void EnOsn_Idle(EnOsn* this, PlayState* play) {
                               (gSaveContext.save.saveInfo.inventory.items[SLOT_OCARINA] != ITEM_NONE) &&
                                   !CHECK_QUEST_ITEM(QUEST_SONG_HEALING),
                               this)) {
-        if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+        if (Actor_TalkOfferAccepted(&this->actor, &play->state)) {
             if (GameInteractor_Should(VB_OSN_TEACH_SONG_OF_HEALING, true, this)) {
                 this->actionFunc = EnOsn_StartCutscene;
             }
@@ -734,7 +734,7 @@ void EnOsn_Idle(EnOsn* this, PlayState* play) {
             Actor_OfferTalkNearColChkInfoCylinder(&this->actor, play);
             this->actor.textId = 0xFFFF;
         }
-    } else if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+    } else if (Actor_TalkOfferAccepted(&this->actor, &play->state)) {
         this->textId = EnOsn_GetInitialText(this, play);
         Message_StartTextbox(play, this->textId, &this->actor);
         this->actionFunc = EnOsn_Talk;
