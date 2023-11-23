@@ -1,4 +1,13 @@
-#include "global.h"
+#include "z64lib.h"
+
+#include "main.h"
+#include "ichain.h"
+#include "sfx.h"
+#include "z64actor.h"
+#include "z64game.h"
+#include "functions.h"
+#include "macros.h"
+
 #include "BenPort.h"
 #include "2s2h/GameInteractor/GameInteractor.h"
 

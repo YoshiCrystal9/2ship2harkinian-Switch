@@ -1,4 +1,9 @@
-#include "global.h"
+#include "z64skin_matrix.h"
+
+#include "gfx.h"
+#include "macros.h"
+#include "z64math.h"
+
 #include "2s2h/Enhancements/FrameInterpolation/FrameInterpolation.h"
 
 MtxF sMtxFClear = { {

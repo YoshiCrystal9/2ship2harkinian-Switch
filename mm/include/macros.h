@@ -3,7 +3,6 @@
 
 #include "libc/stdint.h"
 #include "PR/os_convert.h"
-#include "main.h"
 
 #define SCREEN_WIDTH  320
 #define SCREEN_HEIGHT 240
@@ -20,13 +19,6 @@
 #define ARRAY_COUNTU(arr) (u32)(sizeof(arr) / sizeof(arr[0]))
 
 #define ARRAY_COUNT_2D(arr) (ARRAY_COUNT(arr) * ARRAY_COUNT(arr[0]))
-
-#define KSEG0 0x80000000 // 0x80000000 - 0x9FFFFFFF  Physical memory, cached, unmapped
-
-#define RDRAM_CACHED KSEG0
-
-#define PHYSICAL_TO_VIRTUAL(addr) (addr) // ((uintptr_t)(addr) + RDRAM_CACHED)
-#define SEGMENTED_TO_K0(addr) (addr) // (void*)((gSegments[SEGMENT_NUMBER(addr)] + K0BASE) + SEGMENT_OFFSET(addr))
 
 #define GET_ACTIVE_CAM(play) ((play)->cameraPtrs[(play)->activeCamId])
 
@@ -73,23 +65,6 @@
     0)
 
 #define CB(x) ((x) * (x) * (x))
-
-/**
- * `x` vertex x
- * `y` vertex y
- * `z` vertex z
- * `s` texture s coordinate
- * `t` texture t coordinate
- * `crnx` red component of color vertex, or x component of normal vertex
- * `cgny` green component of color vertex, or y component of normal vertex
- * `cbnz` blue component of color vertex, or z component of normal vertex
- * `a` alpha
- */
-#define VTX(x, y, z, s, t, crnx, cgny, cbnz, a) \
-    { { { x, y, z }, 0, { s, t }, { crnx, cgny, cbnz, a } }, }
-
-#define VTX_T(x, y, z, s, t, cr, cg, cb, a) \
-    { { x, y, z }, 0, { s, t }, { cr, cg, cb, a }, }
 
 #define DECR(x) ((x) == 0 ? 0 : --(x))
 

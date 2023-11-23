@@ -1,5 +1,6 @@
 #include "global.h"
 #include "loadfragment.h"
+#include "z64malloc.h"
 #include "2s2h/Enhancements/FrameInterpolation/FrameInterpolation.h"
 
 EffectSsInfo sEffectSsInfo = { 0 };

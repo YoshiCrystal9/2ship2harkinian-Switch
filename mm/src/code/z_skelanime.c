@@ -3,6 +3,7 @@
 #include <string.h>
 #include <stdio.h>
 
+#include "z64malloc.h"
 #include "2s2h/GameInteractor/GameInteractor.h"
 
 #define ANIM_INTERP 1

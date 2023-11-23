@@ -1,6 +1,7 @@
 #include "z64.h"
 #include "regs.h"
 #include "functions.h"
+#include "z64malloc.h"
 #include "z64vismono.h"
 #include "z64visfbuf.h"
 #include "public/bridge/consolevariablebridge.h"

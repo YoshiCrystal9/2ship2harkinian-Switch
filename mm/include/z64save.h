@@ -1826,6 +1826,8 @@ void Sram_UpdateWriteToFlashOwlSave(SramContext* sramCtx);
 void func_80147314(SramContext* sramCtx, s32 fileNum); // Removes Owl Saves
 // #endregion
 
+void SaveContext_Init(void);
+
 extern u32 gSramSlotOffsets[];
 extern u8 gAmmoItems[];
 extern s32 gFlashSaveStartPages[];
@@ -1833,5 +1835,7 @@ extern s32 gFlashSaveNumPages[];
 extern s32 gFlashSpecialSaveNumPages[];
 extern s32 gFlashOwlSaveStartPages[];
 extern s32 gFlashOwlSaveNumPages[];
+
+extern SaveContext gSaveContext;
 
 #endif

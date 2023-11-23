@@ -25,8 +25,13 @@
  * - higher detail draws both.
  */
 
-#include "global.h"
 #include "z64curve.h"
+
+#include "z64actor.h"
+#include "z64animation.h"
+#include "z64curve.h"
+#include "z64malloc.h"
+#include "z64.h"
 
 #include "2s2h/BenPort.h"
 
@@ -82,7 +87,7 @@ void SkelCurve_SetAnim(SkelCurve* skelCurve, CurveAnimationHeader* animation, f3
     skelCurve->animation = animation;
 }
 
-typedef enum {
+typedef enum SkelCurveVecType {
     /* 0 */ SKELCURVE_VEC_TYPE_SCALE,
     /* 1 */ SKELCURVE_VEC_TYPE_ROTATION,
     /* 2 */ SKELCURVE_VEC_TYPE_POSIITON,
