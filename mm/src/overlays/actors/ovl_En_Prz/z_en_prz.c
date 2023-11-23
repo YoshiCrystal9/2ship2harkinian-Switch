@@ -104,8 +104,6 @@ AnimationHeader* D_80A77240[] = { &object_pr_Anim_004340, &object_pr_Anim_004274
 
 u8 D_80A77248[] = { ANIMMODE_LOOP, ANIMMODE_LOOP };
 
-Vec3f D_80A7724C = { 0.0f, 0.0f, 0.0f };
-
 void EnPrz_Init(Actor* thisx, PlayState* play) {
     EnPrz* this = THIS;
 
@@ -488,7 +486,7 @@ void EnPrz_Update(Actor* thisx, PlayState* play) {
     }
 }
 
-s32 func_80A76F70(PlayState* play, s32 limbIndex, Gfx** dList, Vec3f* pos, Vec3s* rot, Actor* thisx) {
+s32 EnPrz_OverrideLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3f* pos, Vec3s* rot, Actor* thisx) {
     EnPrz* this = THIS;
 
     if (limbIndex == 2) {
@@ -497,13 +495,13 @@ s32 func_80A76F70(PlayState* play, s32 limbIndex, Gfx** dList, Vec3f* pos, Vec3s
     return false;
 }
 
-void func_80A76FCC(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* rot, Actor* thisx) {
-    Vec3f sp1C = D_80A7724C;
+void EnPrz_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* rot, Actor* thisx) {
+    Vec3f sZeroVec = { 0.0f, 0.0f, 0.0f };
     EnPrz* this = THIS;
 
     if (limbIndex == 2) {
         Matrix_Translate(0.0f, 0.0f, 0.0f, MTXMODE_APPLY);
-        Matrix_MultVec3f(&sp1C, &this->unk_1CC);
+        Matrix_MultVec3f(&sZeroVec, &this->unk_1CC);
     }
 }
 
@@ -521,7 +519,7 @@ void EnPrz_Draw(Actor* thisx, PlayState* play) {
 
         Scene_SetRenderModeXlu(play, 0, 1);
         SkelAnime_DrawFlexOpa(play, this->skelAnime.skeleton, this->skelAnime.jointTable, this->skelAnime.dListCount,
-                              func_80A76F70, func_80A76FCC, &this->actor);
+                              EnPrz_OverrideLimbDraw, EnPrz_PostLimbDraw, &this->actor);
     } else {
         gDPPipeSync(POLY_XLU_DISP++);
         gDPSetEnvColor(POLY_XLU_DISP++, 0, 0, 0, this->unk_1EC);
