@@ -82,7 +82,7 @@ void SDL_main(int argc, char** argv /* void* arg*/) {
     Check_RegionIsSupported();
     Check_ExpansionPak();
     sysHeap = gSystemHeap;
-    // fb = 0x80780000;
+    // fb = FRAMEBUFFERS_START_ADDR;
     // gSystemHeapSize = fb - sysHeap;
     SystemHeap_Init(sysHeap, SYSTEM_HEAP_SIZE);
 

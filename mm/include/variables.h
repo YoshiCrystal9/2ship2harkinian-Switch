@@ -10,10 +10,6 @@ extern "C"
 {
 #endif
 
-// pre-boot variables
-extern u16 gFramebuffer1[SCREEN_HEIGHT][SCREEN_WIDTH]; // at 0x80000500
-extern u8 D_80025D00[];
-
 // data
 extern size_t gDmaMgrDmaBuffSize;
 extern vs32 gIrqMgrResetStatus;
