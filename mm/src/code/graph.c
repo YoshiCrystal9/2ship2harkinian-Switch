@@ -20,7 +20,7 @@ OSTime sGraphPrevUpdateEndTime;
 #include "buffers.h"
 #include "idle.h"
 #include "sys_cfb.h"
-#include "system_malloc.h"
+#include "libc64/malloc.h"
 #include "z64speed_meter.h"
 #include "overlays/gamestates/ovl_daytelop/z_daytelop.h"
 #include "overlays/gamestates/ovl_file_choose/z_file_select.h"
@@ -406,7 +406,7 @@ void RunFrame() {
         size = runFrameContext.ovl->instanceSize;
         osSyncPrintf("クラスサイズ＝%dバイト\n", size); // "Class size = %d bytes"
 
-        runFrameContext.gameState = SystemArena_Malloc(size);
+        runFrameContext.gameState = malloc(size);
 
         memset(runFrameContext.gameState, 0, size); // fix
         GameState_Init(runFrameContext.gameState, runFrameContext.ovl->init, &runFrameContext.gfxCtx);
@@ -433,7 +433,7 @@ void RunFrame() {
 
         runFrameContext.nextOvl = Graph_GetNextGameState(runFrameContext.gameState);
         GameState_Destroy(runFrameContext.gameState);
-        SystemArena_Free(runFrameContext.gameState);
+        free(runFrameContext.gameState);
         Overlay_FreeGameState(runFrameContext.ovl);
     }
     Graph_Destroy(&runFrameContext.gfxCtx);

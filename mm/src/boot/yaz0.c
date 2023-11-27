@@ -2,6 +2,8 @@
 #include "fault.h"
 #include <stdio.h>
 #include <string.h>
+#include "libc64/sprintf.h"
+#include "libc64/sleep.h"
 
 // 2S2H [Port] We don't use any Yaz0 data. Applies to everything removed in this file.
 #if 0
@@ -144,7 +146,7 @@ void Yaz0_Decompress(uintptr_t romStart, void* dst, size_t size) {
 
     if (sYaz0CurDataEnd != NULL) {
         while (sYaz0CurDataEnd != NULL) {
-            Sleep_Usec(10);
+            usleep(10);
         }
     }
 
