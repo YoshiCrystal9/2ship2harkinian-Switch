@@ -1,8 +1,10 @@
 #include "z64collision_check.h"
 #include "2s2h/GameInteractor/GameInteractor.h"
 
-#include "global.h"
+#include "z64actor.h"
+#include "z64effect.h"
 #include "z64malloc.h"
+#include "global.h"
 
 typedef s32 (*ColChkResetFunc)(struct PlayState*, Collider*);
 typedef void (*ColChkBloodFunc)(struct PlayState*, Collider*, Vec3f*);
