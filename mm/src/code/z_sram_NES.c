@@ -1497,7 +1497,7 @@ void func_801457CC(GameState* gameState, SramContext* sramCtx) {
     u16 maskCount;
 
     if (gSaveContext.flashSaveAvailable) {
-        D_801F6AF0 = gSaveContext.save.time;
+        D_801F6AF0 = CURRENT_TIME;
         D_801F6AF2 = gSaveContext.flashSaveAvailable;
         sp64 = 0;
 
@@ -1591,7 +1591,7 @@ void func_801457CC(GameState* gameState, SramContext* sramCtx) {
                     fileSelect->health[sp76] = gSaveContext.save.saveInfo.playerData.health;
                     fileSelect->defenseHearts[sp76] = gSaveContext.save.saveInfo.inventory.defenseHearts;
                     fileSelect->questItems[sp76] = gSaveContext.save.saveInfo.inventory.questItems;
-                    fileSelect->time[sp76] = gSaveContext.save.time;
+                    fileSelect->time[sp76] = CURRENT_TIME;
                     fileSelect->day[sp76] = gSaveContext.save.day;
                     fileSelect->isOwlSave[sp76] = gSaveContext.save.isOwlSave;
                     fileSelect->rupees[sp76] = gSaveContext.save.saveInfo.playerData.rupees;
@@ -1708,7 +1708,7 @@ void func_801457CC(GameState* gameState, SramContext* sramCtx) {
                         fileSelect->health[sp76] = gSaveContext.save.saveInfo.playerData.health;
                         fileSelect->defenseHearts[sp76] = gSaveContext.save.saveInfo.inventory.defenseHearts;
                         fileSelect->questItems[sp76] = gSaveContext.save.saveInfo.inventory.questItems;
-                        fileSelect->time[sp76] = gSaveContext.save.time;
+                        fileSelect->time[sp76] = CURRENT_TIME;
                         fileSelect->day[sp76] = gSaveContext.save.day;
                         fileSelect->isOwlSave[sp76] = gSaveContext.save.isOwlSave;
                         fileSelect->rupees[sp76] = gSaveContext.save.saveInfo.playerData.rupees;
@@ -1832,7 +1832,7 @@ void Sram_CopySave(FileSelectState* fileSelect2, SramContext* sramCtx) {
                 gSaveContext.save.saveInfo.inventory.defenseHearts;
             fileSelect->questItems[fileSelect->copyDestFileIndex + FILE_NUM_OWL_SAVE_OFFSET] =
                 gSaveContext.save.saveInfo.inventory.questItems;
-            fileSelect->time[fileSelect->copyDestFileIndex + FILE_NUM_OWL_SAVE_OFFSET] = gSaveContext.save.time;
+            fileSelect->time[fileSelect->copyDestFileIndex + FILE_NUM_OWL_SAVE_OFFSET] = CURRENT_TIME;
             fileSelect->day[fileSelect->copyDestFileIndex + FILE_NUM_OWL_SAVE_OFFSET] = gSaveContext.save.day;
             fileSelect->isOwlSave[fileSelect->copyDestFileIndex + FILE_NUM_OWL_SAVE_OFFSET] =
                 gSaveContext.save.isOwlSave;
@@ -1883,7 +1883,7 @@ void Sram_CopySave(FileSelectState* fileSelect2, SramContext* sramCtx) {
         fileSelect->health[fileSelect->copyDestFileIndex] = gSaveContext.save.saveInfo.playerData.health;
         fileSelect->defenseHearts[fileSelect->copyDestFileIndex] = gSaveContext.save.saveInfo.inventory.defenseHearts;
         fileSelect->questItems[fileSelect->copyDestFileIndex] = gSaveContext.save.saveInfo.inventory.questItems;
-        fileSelect->time[fileSelect->copyDestFileIndex] = gSaveContext.save.time;
+        fileSelect->time[fileSelect->copyDestFileIndex] = CURRENT_TIME;
         fileSelect->day[fileSelect->copyDestFileIndex] = gSaveContext.save.day;
         fileSelect->isOwlSave[fileSelect->copyDestFileIndex] = gSaveContext.save.isOwlSave;
         fileSelect->rupees[fileSelect->copyDestFileIndex] = gSaveContext.save.saveInfo.playerData.rupees;
@@ -1951,7 +1951,7 @@ void Sram_InitSave(FileSelectState* fileSelect2, SramContext* sramCtx) {
         fileSelect->health[fileSelect->buttonIndex] = gSaveContext.save.saveInfo.playerData.health;
         fileSelect->defenseHearts[fileSelect->buttonIndex] = gSaveContext.save.saveInfo.inventory.defenseHearts;
         fileSelect->questItems[fileSelect->buttonIndex] = gSaveContext.save.saveInfo.inventory.questItems;
-        fileSelect->time[fileSelect->buttonIndex] = gSaveContext.save.time;
+        fileSelect->time[fileSelect->buttonIndex] = CURRENT_TIME;
         fileSelect->day[fileSelect->buttonIndex] = gSaveContext.save.day;
         fileSelect->isOwlSave[fileSelect->buttonIndex] = gSaveContext.save.isOwlSave;
         fileSelect->rupees[fileSelect->buttonIndex] = gSaveContext.save.saveInfo.playerData.rupees;
@@ -2025,7 +2025,7 @@ void Sram_SaveSpecialEnterClockTown(PlayState* play) {
 void Sram_SaveSpecialNewDay(PlayState* play) {
     s32 cutsceneIndex = gSaveContext.save.cutsceneIndex;
     s32 day;
-    u16 time = gSaveContext.save.time;
+    u16 time = CURRENT_TIME;
 
     day = gSaveContext.save.day;
 

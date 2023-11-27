@@ -6268,9 +6268,8 @@ void Interface_DrawClock(PlayState* play) {
             OVERLAY_DISP = Gfx_DrawTexRect4b(OVERLAY_DISP, gThreeDayClockBorderTex, 4, 64, /*50*/ 48, 96, 168, 128, 50,
                                              1, 6, 0, 1 << 10, 1 << 10);
 
-            if (((CURRENT_DAY >= 4) ||
-                 ((CURRENT_DAY == 3) && (((void)0, gSaveContext.save.time) >= (CLOCK_TIME(0, 0) + 5)) &&
-                  (((void)0, gSaveContext.save.time) < CLOCK_TIME(6, 0))))) {
+            if (((CURRENT_DAY >= 4) || ((CURRENT_DAY == 3) && (CURRENT_TIME >= (CLOCK_TIME(0, 0) + 5)) &&
+                                        (CURRENT_TIME < CLOCK_TIME(6, 0))))) {
                 Gfx_SetupDL42_Overlay(play->state.gfxCtx);
                 gSPMatrix(OVERLAY_DISP++, &gIdentityMtx, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
             } else {
@@ -6395,7 +6394,7 @@ void Interface_DrawClock(PlayState* play) {
                     D_801BF974 ^= 1;
                 }
 
-                timeInSeconds = TIME_TO_SECONDS_F(gSaveContext.save.time);
+                timeInSeconds = TIME_TO_SECONDS_F(CURRENT_TIME);
                 timeInSeconds -= ((s16)(timeInSeconds / 3600.0f)) * 3600.0f;
 
                 Gfx_SetupDL42_Overlay(play->state.gfxCtx);
@@ -6490,7 +6489,7 @@ void Interface_DrawClock(PlayState* play) {
                 // disappearing for a frame or two between 11 changing to 12.
                 // 2S2H [Port] We are opting to fix this by adding two blank textures to the end of
                 // the sThreeDayClockHourTextures array, instead of letting it read OOB
-                if (((void)0, gSaveContext.save.time) < sThreeDayClockHours[sp1C6 + 1]) {
+                if (CURRENT_TIME < sThreeDayClockHours[sp1C6 + 1]) {
                     break;
                 }
             }
@@ -6498,7 +6497,7 @@ void Interface_DrawClock(PlayState* play) {
             /**
              * Section: Draw Three-Day Clock's Sun (for the Day-Time Hours Tracker)
              */
-            time = gSaveContext.save.time;
+            time = CURRENT_TIME;
             sp1D8 = Math_SinS(time) * -40.0f;
             temp_f14 = Math_CosS(time) * -34.0f;
 
@@ -6592,7 +6591,7 @@ void Interface_DrawClock(PlayState* play) {
             /**
              * Section: Draws Three-Day Clock's Hour Digit Above the Sun
              */
-            sp1CC = gSaveContext.save.time * 0.000096131f; // (2.0f * 3.15f / 0x10000)
+            sp1CC = CURRENT_TIME * 0.000096131f; // (2.0f * 3.15f / 0x10000)
 
             // Rotates Three-Day Clock's Hour Digit To Above the Sun
             // #region 2S2H [Cosmetic] Hud Editor clock sun hour
@@ -6678,9 +6677,8 @@ void Interface_DrawClock(PlayState* play) {
 
             // Final Hours
             if ((CURRENT_DAY >= 4) ||
-                ((CURRENT_DAY == 3) && (((void)0, gSaveContext.save.time) >= (CLOCK_TIME(0, 0) + 5)) &&
-                 (((void)0, gSaveContext.save.time) < CLOCK_TIME(6, 0)))) {
-                if (((void)0, gSaveContext.save.time) >= CLOCK_TIME(5, 0)) {
+                ((CURRENT_DAY == 3) && (CURRENT_TIME >= (CLOCK_TIME(0, 0) + 5)) && (CURRENT_TIME < CLOCK_TIME(6, 0)))) {
+                if (CURRENT_TIME >= CLOCK_TIME(5, 0)) {
                     // The Final Hours clock will flash red
 
                     colorStep = ABS_ALT(sFinalHoursClockDigitsRed -
@@ -9298,7 +9296,7 @@ void Interface_Update(PlayState* play) {
         if (play->envCtx.sceneTimeSpeed != 0) {
             if (gSaveContext.sunsSongState != SUNSSONG_SPEED_TIME) {
                 sIsSunsPlayedAtDay = false;
-                if ((gSaveContext.save.time >= CLOCK_TIME(6, 0)) && (gSaveContext.save.time <= CLOCK_TIME(18, 0))) {
+                if ((CURRENT_TIME >= CLOCK_TIME(6, 0)) && (CURRENT_TIME <= CLOCK_TIME(18, 0))) {
                     sIsSunsPlayedAtDay = true;
                 }
 
@@ -9307,7 +9305,7 @@ void Interface_Update(PlayState* play) {
                 R_TIME_SPEED = 400;
             } else if (!sIsSunsPlayedAtDay) {
                 // Nighttime
-                if ((gSaveContext.save.time >= CLOCK_TIME(6, 0)) && (gSaveContext.save.time <= CLOCK_TIME(18, 0))) {
+                if ((CURRENT_TIME >= CLOCK_TIME(6, 0)) && (CURRENT_TIME <= CLOCK_TIME(18, 0))) {
                     // Daytime has been reached. End suns song effect
                     gSaveContext.sunsSongState = SUNSSONG_INACTIVE;
                     R_TIME_SPEED = sPrevTimeSpeed;
@@ -9315,7 +9313,7 @@ void Interface_Update(PlayState* play) {
                 }
             } else {
                 // Daytime
-                if (gSaveContext.save.time > CLOCK_TIME(18, 0)) {
+                if (CURRENT_TIME > CLOCK_TIME(18, 0)) {
                     // Nighttime has been reached. End suns song effect
                     gSaveContext.sunsSongState = SUNSSONG_INACTIVE;
                     R_TIME_SPEED = sPrevTimeSpeed;

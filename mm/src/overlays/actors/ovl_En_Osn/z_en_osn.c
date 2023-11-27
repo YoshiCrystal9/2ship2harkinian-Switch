@@ -435,8 +435,7 @@ s32 EnOsn_GetInitialMaskText(EnOsn* this, PlayState* play) {
             break;
     }
     this->stateFlags |= OSN_STATE_END_CONVERSATION;
-    if ((gSaveContext.save.day == 3) && (gSaveContext.save.time >= CLOCK_TIME(5, 0)) &&
-        (gSaveContext.save.time < CLOCK_TIME(6, 0))) {
+    if ((gSaveContext.save.day == 3) && (CURRENT_TIME >= CLOCK_TIME(5, 0)) && (CURRENT_TIME < CLOCK_TIME(6, 0))) {
         return 0x2006;
     }
     return 0x1FCD;
@@ -451,8 +450,8 @@ s32 EnOsn_GetInitialText(EnOsn* this, PlayState* play) {
             this->stateFlags |= OSN_STATE_END_CONVERSATION;
             if ((gSaveContext.save.saveInfo.inventory.items[SLOT_OCARINA] != ITEM_NONE) &&
                 (INV_CONTENT(ITEM_MASK_DEKU) == ITEM_MASK_DEKU)) {
-                if ((gSaveContext.save.day == 3) && (gSaveContext.save.time >= CLOCK_TIME(5, 0)) &&
-                    (gSaveContext.save.time < CLOCK_TIME(6, 0))) {
+                if ((gSaveContext.save.day == 3) && (CURRENT_TIME >= CLOCK_TIME(5, 0)) &&
+                    (CURRENT_TIME < CLOCK_TIME(6, 0))) {
                     return 0x2006;
                 }
                 return 0x1FCD;
@@ -463,8 +462,8 @@ s32 EnOsn_GetInitialText(EnOsn* this, PlayState* play) {
         if (player->transformation == PLAYER_FORM_DEKU) {
             if (this->stateFlags & OSN_STATE_MET_DEKU) {
                 this->stateFlags |= OSN_STATE_END_CONVERSATION;
-                if ((gSaveContext.save.day == 3) && (gSaveContext.save.time >= CLOCK_TIME(5, 0)) &&
-                    (gSaveContext.save.time < CLOCK_TIME(6, 0))) {
+                if ((gSaveContext.save.day == 3) && (CURRENT_TIME >= CLOCK_TIME(5, 0)) &&
+                    (CURRENT_TIME < CLOCK_TIME(6, 0))) {
                     return 0x2006;
                 }
                 return 0x1FCD;
@@ -476,8 +475,8 @@ s32 EnOsn_GetInitialText(EnOsn* this, PlayState* play) {
         if (player->transformation == PLAYER_FORM_GORON) {
             if (this->stateFlags & OSN_STATE_MET_GORON) {
                 this->stateFlags |= OSN_STATE_END_CONVERSATION;
-                if ((gSaveContext.save.day == 3) && (gSaveContext.save.time >= CLOCK_TIME(5, 0)) &&
-                    (gSaveContext.save.time < CLOCK_TIME(6, 0))) {
+                if ((gSaveContext.save.day == 3) && (CURRENT_TIME >= CLOCK_TIME(5, 0)) &&
+                    (CURRENT_TIME < CLOCK_TIME(6, 0))) {
                     return 0x2006;
                 } else {
                     return 0x1FCD;
@@ -495,8 +494,8 @@ s32 EnOsn_GetInitialText(EnOsn* this, PlayState* play) {
         if (player->transformation == PLAYER_FORM_ZORA) {
             if (this->stateFlags & OSN_STATE_MET_ZORA) {
                 this->stateFlags |= OSN_STATE_END_CONVERSATION;
-                if ((gSaveContext.save.day == 3) && (gSaveContext.save.time >= CLOCK_TIME(5, 0)) &&
-                    (gSaveContext.save.time < CLOCK_TIME(6, 0))) {
+                if ((gSaveContext.save.day == 3) && (CURRENT_TIME >= CLOCK_TIME(5, 0)) &&
+                    (CURRENT_TIME < CLOCK_TIME(6, 0))) {
                     return 0x2006;
                 }
                 return 0x1FCD;
@@ -513,8 +512,8 @@ s32 EnOsn_GetInitialText(EnOsn* this, PlayState* play) {
         if (Player_GetMask(play) == PLAYER_MASK_NONE) {
             if (this->stateFlags & OSN_STATE_MET_HUMAN) {
                 this->stateFlags |= OSN_STATE_END_CONVERSATION;
-                if ((gSaveContext.save.day == 3) && (gSaveContext.save.time >= CLOCK_TIME(5, 0)) &&
-                    (gSaveContext.save.time < CLOCK_TIME(6, 0))) {
+                if ((gSaveContext.save.day == 3) && (CURRENT_TIME >= CLOCK_TIME(5, 0)) &&
+                    (CURRENT_TIME < CLOCK_TIME(6, 0))) {
                     return 0x2006;
                 }
                 return 0x1FCD;
@@ -527,8 +526,7 @@ s32 EnOsn_GetInitialText(EnOsn* this, PlayState* play) {
     }
 
     this->stateFlags |= OSN_STATE_END_CONVERSATION;
-    if ((gSaveContext.save.day == 3) && (gSaveContext.save.time >= CLOCK_TIME(5, 0)) &&
-        (gSaveContext.save.time < CLOCK_TIME(6, 0))) {
+    if ((gSaveContext.save.day == 3) && (CURRENT_TIME >= CLOCK_TIME(5, 0)) && (CURRENT_TIME < CLOCK_TIME(6, 0))) {
         return 0x2004;
     }
 
@@ -546,8 +544,8 @@ void EnOsn_HandleConversation(EnOsn* this, PlayState* play) {
             break;
 
         case 0x1FCA:
-            if ((gSaveContext.save.day == 3) && (gSaveContext.save.time >= CLOCK_TIME(5, 0)) &&
-                (gSaveContext.save.time < CLOCK_TIME(6, 0))) {
+            if ((gSaveContext.save.day == 3) && (CURRENT_TIME >= CLOCK_TIME(5, 0)) &&
+                (CURRENT_TIME < CLOCK_TIME(6, 0))) {
                 this->textId = 0x2007;
             } else {
                 this->textId = 0x1FCB;
