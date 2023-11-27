@@ -576,7 +576,7 @@ s32 SubS_HasReachedPoint(Actor* actor, Path* path, s32 pointIndex) {
     if (index == 0) {
         diffX = points[1].x - points[0].x;
         diffZ = points[1].z - points[0].z;
-    } else if (index == count - 1) {
+    } else if (index == (count - 1)) {
         diffX = points[count - 1].x - points[count - 2].x;
         diffZ = points[count - 1].z - points[count - 2].z;
     } else {
