@@ -3810,23 +3810,23 @@ static const ALIGN_ASSET(2) char gameplay_keep_Tex_07F2E8[] = dgameplay_keep_Tex
 #define dgameplay_keep_DL_080FC0 "__OTR__objects/gameplay_keep/gameplay_keep_DL_080FC0"
 static const ALIGN_ASSET(2) char gameplay_keep_DL_080FC0[] = dgameplay_keep_DL_080FC0;
 
-#define dgameplay_keep_DL_080FC8 "__OTR__objects/gameplay_keep/gameplay_keep_DL_080FC8"
-static const ALIGN_ASSET(2) char gameplay_keep_DL_080FC8[] = dgameplay_keep_DL_080FC8;
+#define dgSoaringWarpCsWindCapsuleDL "__OTR__objects/gameplay_keep/gSoaringWarpCsWindCapsuleDL"
+static const ALIGN_ASSET(2) char gSoaringWarpCsWindCapsuleDL[] = dgSoaringWarpCsWindCapsuleDL;
 
-#define dgameplay_keep_Tex_0813A0 "__OTR__objects/gameplay_keep/gameplay_keep_Tex_0813A0"
-static const ALIGN_ASSET(2) char gameplay_keep_Tex_0813A0[] = dgameplay_keep_Tex_0813A0;
+#define dgSoaringWarpCsWindCapsuleTex "__OTR__objects/gameplay_keep/gSoaringWarpCsWindCapsuleTex"
+static const ALIGN_ASSET(2) char gSoaringWarpCsWindCapsuleTex[] = dgSoaringWarpCsWindCapsuleTex;
 
-#define dgameplay_keep_Matanimheader_0815D0 "__OTR__objects/gameplay_keep/gameplay_keep_Matanimheader_0815D0"
-static const ALIGN_ASSET(2) char gameplay_keep_Matanimheader_0815D0[] = dgameplay_keep_Matanimheader_0815D0;
+#define dgSoaringWarpCsWindCapsuleTexAnim "__OTR__objects/gameplay_keep/gSoaringWarpCsWindCapsuleTexAnim"
+static const ALIGN_ASSET(2) char gSoaringWarpCsWindCapsuleTexAnim[] = dgSoaringWarpCsWindCapsuleTexAnim;
 
-#define dgameplay_keep_DL_081620 "__OTR__objects/gameplay_keep/gameplay_keep_DL_081620"
-static const ALIGN_ASSET(2) char gameplay_keep_DL_081620[] = dgameplay_keep_DL_081620;
+#define dgSoaringWarpCsEmptyDL "__OTR__objects/gameplay_keep/gSoaringWarpCsEmptyDL"
+static const ALIGN_ASSET(2) char gSoaringWarpCsEmptyDL[] = dgSoaringWarpCsEmptyDL;
 
-#define dgameplay_keep_DL_081628 "__OTR__objects/gameplay_keep/gameplay_keep_DL_081628"
-static const ALIGN_ASSET(2) char gameplay_keep_DL_081628[] = dgameplay_keep_DL_081628;
+#define dgSoaringWarpCsFeatherDL "__OTR__objects/gameplay_keep/gSoaringWarpCsFeatherDL"
+static const ALIGN_ASSET(2) char gSoaringWarpCsFeatherDL[] = dgSoaringWarpCsFeatherDL;
 
-#define dgameplay_keep_Tex_0816C0 "__OTR__objects/gameplay_keep/gameplay_keep_Tex_0816C0"
-static const ALIGN_ASSET(2) char gameplay_keep_Tex_0816C0[] = dgameplay_keep_Tex_0816C0;
+#define dgSoaringWarpCsFeatherTex "__OTR__objects/gameplay_keep/gSoaringWarpCsFeatherTex"
+static const ALIGN_ASSET(2) char gSoaringWarpCsFeatherTex[] = dgSoaringWarpCsFeatherTex;
 
 #define dgGameplayKeepKFAnim_83534 "__OTR__objects/gameplay_keep/gGameplayKeepKFAnim_83534"
 static const ALIGN_ASSET(2) char gGameplayKeepKFAnim_83534[] = dgGameplayKeepKFAnim_83534;

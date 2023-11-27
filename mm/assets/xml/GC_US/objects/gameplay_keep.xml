@@ -1466,15 +1466,16 @@
         <DList Name="gameplay_keep_DL_07F260" Offset="0x7F2B0" />
         <Texture Name="gameplay_keep_Tex_07F2E8" OutName="tex_07F2E8" Format="ia16" Width="32" Height="64" Offset="0x7F338" />
         <DList Name="gameplay_keep_DL_080FC0" Offset="0x81010" />
-        <DList Name="gameplay_keep_DL_080FC8" Offset="0x81018" />
-        <Texture Name="gameplay_keep_Tex_0813A0" OutName="tex_0813A0" Format="i8" Width="16" Height="32" Offset="0x813F0" />
-        <TextureAnimation Name="gameplay_keep_Matanimheader_0815D0" Offset="0x81620" />
-        <DList Name="gameplay_keep_DL_081620" Offset="0x81670" />
-        <DList Name="gameplay_keep_DL_081628" Offset="0x81678" />
-        <Texture Name="gameplay_keep_Tex_0816C0" OutName="tex_0816C0" Format="rgba16" Width="16" Height="32" Offset="0x81710" />
 
+        <!-- Song of soaring warp cutscene -->
+        <DList Name="gSoaringWarpCsWindCapsuleDL" Offset="0x81018" />
+        <Texture Name="gSoaringWarpCsWindCapsuleTex" OutName="soaring_warp_cs_wind_capsule" Format="i8" Width="16" Height="32" Offset="0x813F0" />
+        <TextureAnimation Name="gSoaringWarpCsWindCapsuleTexAnim" Offset="0x81620" />
+        <DList Name="gSoaringWarpCsEmptyDL" Offset="0x81670" />
+        <DList Name="gSoaringWarpCsFeatherDL" Offset="0x81678" />
+        <Texture Name="gSoaringWarpCsFeatherTex" OutName="soaring_warp_cs_feather" Format="rgba16" Width="16" Height="32" Offset="0x81710" />
+        <Blob Name="gameplay_keep_Blob_081AC0" Size="0x1A74" Offset="0x81AC0" />
         <KeyFrameAnimation Name="gGameplayKeepKFAnim_83534" Skel="0x85690" Offset="0x83584"/>
-
         <DList Name="gameplay_keep_DL_084790" Offset="0x847E0" />
         <DList Name="gameplay_keep_DL_0847E0" Offset="0x84830" />
         <DList Name="gameplay_keep_DL_084850" Offset="0x848A0" />
