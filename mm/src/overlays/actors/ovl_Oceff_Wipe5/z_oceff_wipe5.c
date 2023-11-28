@@ -29,7 +29,7 @@ ActorInit Oceff_Wipe5_InitVars = {
     (ActorFunc)OceffWipe5_Draw,
 };
 
-UNK_TYPE4 D_80BC9260;
+static s32 sBssPad;
 static Vtx* gOceff5VtxData;
 
 void OceffWipe5_Init(Actor* thisx, PlayState* play) {

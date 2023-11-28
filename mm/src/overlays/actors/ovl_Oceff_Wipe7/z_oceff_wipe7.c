@@ -30,7 +30,7 @@ ActorInit Oceff_Wipe7_InitVars = {
 
 #include "assets/overlays/ovl_Oceff_Wipe7/ovl_Oceff_Wipe7.h"
 
-s32 D_80BCEB10;
+static s32 sBssPad;
 
 static Vtx* sSongofHealingEffectFrustrumVtxData;
 
