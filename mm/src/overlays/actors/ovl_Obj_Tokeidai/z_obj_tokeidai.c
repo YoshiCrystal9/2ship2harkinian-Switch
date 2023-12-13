@@ -38,12 +38,9 @@
 
 #define GET_CURRENT_CLOCK_HOUR(this) ((s32)TIME_TO_HOURS_F((this)->clockTime))
 #define GET_CURRENT_CLOCK_MINUTE(this) ((s32)((this)->clockTime * (360 * 2.0f / 0x10000)) % 30)
-// #region 2S2H [Port] Additional pre-cast to s32 prevents undefined behavior with casting float values larger than s16
-// This undefined behavior lead to the clock rings and face spinning violently on some compilers
-#define GET_CLOCK_FACE_ROTATION(currentClockHour) ((s16)(s32)(currentClockHour * (0x10000 / 24.0f)))
+#define GET_CLOCK_FACE_ROTATION(currentClockHour) (TRUNCF_BINANG(currentClockHour * (0x10000 / 24.0f)))
 #define GET_MINUTE_RING_OR_EXTERIOR_GEAR_ROTATION(currentClockMinute) \
-    ((s16)(s32)(currentClockMinute * (0x10000 * 12.0f / 360)))
-// #endregion
+    (TRUNCF_BINANG(currentClockMinute * (0x10000 * 12.0f / 360)))
 
 void ObjTokeidai_Init(Actor* thisx, PlayState* play);
 void ObjTokeidai_Destroy(Actor* thisx, PlayState* play);

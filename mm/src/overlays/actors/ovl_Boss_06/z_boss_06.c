@@ -537,16 +537,16 @@ void Boss06_Draw(Actor* thisx, PlayState* play2) {
         // thing is modified.
         temp_v0_2 = ResourceMgr_LoadVtxByName(object_knight_Vtx_018BD0);
         // #endregion
-        temp_v0_2[0].v.ob[1] = (s16)this->unk_1A0 + 0xE92;
-        temp_v0_2[3].v.ob[1] = (s16)this->unk_1A0 + 0xE92;
-        temp_v0_2[4].v.ob[1] = (s16)this->unk_1A0 + 0xE92;
-        temp_v0_2[7].v.ob[1] = (s16)this->unk_1A0 + 0xE92;
+        temp_v0_2[0].v.ob[1] = TRUNCF_BINANG(this->unk_1A0) + 0xE92;
+        temp_v0_2[3].v.ob[1] = TRUNCF_BINANG(this->unk_1A0) + 0xE92;
+        temp_v0_2[4].v.ob[1] = TRUNCF_BINANG(this->unk_1A0) + 0xE92;
+        temp_v0_2[7].v.ob[1] = TRUNCF_BINANG(this->unk_1A0) + 0xE92;
 
         temp_v0_2[5].v.ob[0] = temp_s0 + 0x2A3;
-        temp_v0_2[5].v.ob[2] = (temp_f10 + (s16)this->unk_1A4) - 0x708;
+        temp_v0_2[5].v.ob[2] = (temp_f10 + TRUNCF_BINANG(this->unk_1A4)) - 0x708;
 
         temp_v0_2[6].v.ob[0] = temp_s0 - 0x2A3;
-        temp_v0_2[6].v.ob[2] = (temp_f10 + (s16)this->unk_1A4) - 0x708;
+        temp_v0_2[6].v.ob[2] = (temp_f10 + TRUNCF_BINANG(this->unk_1A4)) - 0x708;
 
         temp_v0_2[9].v.ob[0] = temp_s0 + 0x2A3;
         temp_v0_2[9].v.ob[2] = temp_f10 - 0x1C2;
