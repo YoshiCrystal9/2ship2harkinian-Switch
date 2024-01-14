@@ -1208,7 +1208,7 @@ void Play_DrawMain(PlayState* this) {
     }
 
     if ((R_PAUSE_BG_PRERENDER_STATE <= PAUSE_BG_PRERENDER_SETUP) && (gTransitionTileState <= TRANS_TILE_SETUP)) {
-        if (this->skyboxCtx.skyboxShouldDraw || (this->roomCtx.curRoom.roomShape->base.type == ROOM_SHAPE_TYPE_IMAGE)) {
+        if (this->skyboxCtx.shouldDraw || (this->roomCtx.curRoom.roomShape->base.type == ROOM_SHAPE_TYPE_IMAGE)) {
             func_8012CF0C(gfxCtx, false, true, 0, 0, 0);
         } else {
             func_8012CF0C(gfxCtx, true, true, this->lightCtx.fogColor[0], this->lightCtx.fogColor[1],
@@ -1367,7 +1367,7 @@ void Play_DrawMain(PlayState* this) {
                             Environment_UpdateSkybox(this->skyboxId, &this->envCtx, &this->skyboxCtx);
                             Skybox_Draw(&this->skyboxCtx, gfxCtx, this->skyboxId, this->envCtx.skyboxBlend,
                                         this->view.eye.x, this->view.eye.y, this->view.eye.z);
-                        } else if (!this->skyboxCtx.skyboxShouldDraw) {
+                        } else if (!this->skyboxCtx.shouldDraw) {
                             Skybox_Draw(&this->skyboxCtx, gfxCtx, this->skyboxId, 0, this->view.eye.x, this->view.eye.y,
                                         this->view.eye.z);
                         }
@@ -1405,7 +1405,7 @@ void Play_DrawMain(PlayState* this) {
                     }
                 }
 
-                if (this->skyboxCtx.skyboxShouldDraw) {
+                if (this->skyboxCtx.shouldDraw) {
                     Vec3f quakeOffset;
 
                     if (1) {
