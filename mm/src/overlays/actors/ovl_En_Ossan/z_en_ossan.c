@@ -198,7 +198,8 @@ void EnOssan_SetupAction(EnOssan* this, EnOssanActionFunc action) {
 bool EnOssan_TestItemSelected(PlayState* play) {
     MessageContext* msgCtx = &play->msgCtx;
 
-    if ((msgCtx->textboxEndType == TEXTBOX_ENDTYPE_10) || (msgCtx->textboxEndType == TEXTBOX_ENDTYPE_11)) {
+    if ((msgCtx->textboxEndType == TEXTBOX_ENDTYPE_TWO_CHOICE) ||
+        (msgCtx->textboxEndType == TEXTBOX_ENDTYPE_THREE_CHOICE)) {
         return CHECK_BTN_ALL(CONTROLLER1(&play->state)->press.button, BTN_A);
     }
     return CHECK_BTN_ALL(CONTROLLER1(&play->state)->press.button, BTN_A) ||
@@ -578,7 +579,7 @@ void EnOssan_Hello(EnOssan* this, PlayState* play) {
     Player* player = GET_PLAYER(play);
 
     EnOssan_RotateHead(this, play);
-    if ((talkState == TEXT_STATE_5) && Message_ShouldAdvance(play)) {
+    if ((talkState == TEXT_STATE_EVENT) && Message_ShouldAdvance(play)) {
         if ((this->animIndex == ANI_ANIM_APOLOGY_LOOP) && (this->actor.params == ENOSSAN_PART_TIME_WORKER)) {
             this->animIndex = ANI_ANIM_STANDING_NORMAL_LOOP_2;
             SubS_ChangeAnimationByInfoS(&this->skelAnime, animationInfo, ANI_ANIM_STANDING_NORMAL_LOOP_2);
@@ -595,7 +596,7 @@ void EnOssan_Hello(EnOssan* this, PlayState* play) {
             return;
         }
     }
-    if ((talkState == TEXT_STATE_10) && (this->actor.params == ENOSSAN_PART_TIME_WORKER) &&
+    if ((talkState == TEXT_STATE_AWAITING_NEXT) && (this->actor.params == ENOSSAN_PART_TIME_WORKER) &&
         (player->transformation == PLAYER_FORM_ZORA) && Message_ShouldAdvance(play)) {
         this->animIndex = ANI_ANIM_APOLOGY_LOOP;
         SubS_ChangeAnimationByInfoS(&this->skelAnime, animationInfo, ANI_ANIM_APOLOGY_LOOP);
@@ -686,7 +687,7 @@ void EnOssan_FaceShopkeeper(EnOssan* this, PlayState* play) {
 void EnOssan_TalkToShopkeeper(EnOssan* this, PlayState* play) {
     AnimationInfoS* animationInfo = sAnimationInfoList[this->actor.params];
 
-    if ((Message_GetState(&play->msgCtx) == TEXT_STATE_5) && Message_ShouldAdvance(play)) {
+    if ((Message_GetState(&play->msgCtx) == TEXT_STATE_EVENT) && Message_ShouldAdvance(play)) {
         if ((this->animIndex == ANI_ANIM_APOLOGY_LOOP) && (this->actor.params == ENOSSAN_PART_TIME_WORKER)) {
             this->animIndex = ANI_ANIM_STANDING_NORMAL_LOOP_2;
             SubS_ChangeAnimationByInfoS(&this->skelAnime, animationInfo, ANI_ANIM_STANDING_NORMAL_LOOP_2);
@@ -873,7 +874,7 @@ void EnOssan_BrowseLeftShelf(EnOssan* this, PlayState* play) {
         this->drawCursor = 0xFF;
         this->stickRightPrompt.isEnabled = true;
         EnOssan_UpdateCursorPos(play, this);
-        if (talkState == TEXT_STATE_5) {
+        if (talkState == TEXT_STATE_EVENT) {
             Interface_SetAButtonDoAction(play, DO_ACTION_DECIDE);
             if (!EnOssan_HasPlayerSelectedItem(play, this, CONTROLLER1(&play->state))) {
                 if (this->moveHorizontal) {
@@ -931,7 +932,7 @@ void EnOssan_BrowseRightShelf(EnOssan* this, PlayState* play) {
         this->drawCursor = 0xFF;
         this->stickLeftPrompt.isEnabled = true;
         EnOssan_UpdateCursorPos(play, this);
-        if (talkState == TEXT_STATE_5) {
+        if (talkState == TEXT_STATE_EVENT) {
             Interface_SetAButtonDoAction(play, DO_ACTION_DECIDE);
             if (!EnOssan_HasPlayerSelectedItem(play, this, CONTROLLER1(&play->state))) {
                 if (this->moveHorizontal != 0) {
@@ -1103,7 +1104,7 @@ void EnOssan_SelectItem(EnOssan* this, PlayState* play) {
 }
 
 void EnOssan_CannotBuy(EnOssan* this, PlayState* play) {
-    if ((Message_GetState(&play->msgCtx) == TEXT_STATE_5) && Message_ShouldAdvance(play)) {
+    if ((Message_GetState(&play->msgCtx) == TEXT_STATE_EVENT) && Message_ShouldAdvance(play)) {
         this->actionFunc = this->prevActionFunc;
         Message_ContinueTextbox(play, this->items[this->cursorIndex]->actor.textId);
     }
@@ -1112,7 +1113,7 @@ void EnOssan_CannotBuy(EnOssan* this, PlayState* play) {
 void EnOssan_CanBuy(EnOssan* this, PlayState* play) {
     EnGirlA* item;
 
-    if ((Message_GetState(&play->msgCtx) == TEXT_STATE_5) && Message_ShouldAdvance(play)) {
+    if ((Message_GetState(&play->msgCtx) == TEXT_STATE_EVENT) && Message_ShouldAdvance(play)) {
         this->shopItemSelectedTween = 0.0f;
         EnOssan_ResetItemPosition(this);
         item = this->items[this->cursorIndex];
@@ -1177,7 +1178,7 @@ void EnOssan_ContinueShopping(EnOssan* this, PlayState* play) {
                 }
             }
         }
-    } else if ((talkState == TEXT_STATE_5) && Message_ShouldAdvance(play)) {
+    } else if ((talkState == TEXT_STATE_EVENT) && Message_ShouldAdvance(play)) {
         EnOssan_ResetItemPosition(this);
         item = this->items[this->cursorIndex];
         item->restockFunc(play, item);

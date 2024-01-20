@@ -453,7 +453,7 @@ void EnMaYto_DefaultDialogueHandler(EnMaYto* this, PlayState* play) {
             EnMaYto_DefaultHandlePlayerChoice(this, play);
             break;
 
-        case TEXT_STATE_5:
+        case TEXT_STATE_EVENT:
             EnMaYto_DefaultChooseNextDialogue(this, play);
             break;
 
@@ -465,9 +465,9 @@ void EnMaYto_DefaultDialogueHandler(EnMaYto* this, PlayState* play) {
             break;
 
         case TEXT_STATE_NONE:
-        case TEXT_STATE_1:
+        case TEXT_STATE_NEXT:
         case TEXT_STATE_CLOSING:
-        case TEXT_STATE_3:
+        case TEXT_STATE_FADING:
         default:
             break;
     }
@@ -587,7 +587,7 @@ void EnMaYto_DinnerDialogueHandler(EnMaYto* this, PlayState* play) {
             EnMaYto_DinnerHandlePlayerChoice(this, play);
             break;
 
-        case TEXT_STATE_5:
+        case TEXT_STATE_EVENT:
             EnMaYto_DinnerChooseNextDialogue(this, play);
             break;
 
@@ -598,9 +598,9 @@ void EnMaYto_DinnerDialogueHandler(EnMaYto* this, PlayState* play) {
             break;
 
         case TEXT_STATE_NONE:
-        case TEXT_STATE_1:
+        case TEXT_STATE_NEXT:
         case TEXT_STATE_CLOSING:
-        case TEXT_STATE_3:
+        case TEXT_STATE_FADING:
         default:
             break;
     }
@@ -775,7 +775,7 @@ void EnMaYto_SetupBarnDialogueHandler(EnMaYto* this) {
 
 void EnMaYto_BarnDialogueHandler(EnMaYto* this, PlayState* play) {
     switch (Message_GetState(&play->msgCtx)) {
-        case TEXT_STATE_5:
+        case TEXT_STATE_EVENT:
             EnMaYto_BarnChooseNextDialogue(this, play);
             break;
 
@@ -787,9 +787,9 @@ void EnMaYto_BarnDialogueHandler(EnMaYto* this, PlayState* play) {
             break;
 
         case TEXT_STATE_NONE:
-        case TEXT_STATE_1:
+        case TEXT_STATE_NEXT:
         case TEXT_STATE_CLOSING:
-        case TEXT_STATE_3:
+        case TEXT_STATE_FADING:
         case TEXT_STATE_CHOICE:
         default:
             break;
@@ -955,14 +955,14 @@ void EnMaYto_SetupAfterMilkRunDialogueHandler(EnMaYto* this) {
 void EnMaYto_AfterMilkRunDialogueHandler(EnMaYto* this, PlayState* play) {
     switch (Message_GetState(&play->msgCtx)) {
         case TEXT_STATE_NONE:
-        case TEXT_STATE_1:
+        case TEXT_STATE_NEXT:
         case TEXT_STATE_CLOSING:
-        case TEXT_STATE_3:
+        case TEXT_STATE_FADING:
         case TEXT_STATE_CHOICE:
         case TEXT_STATE_DONE:
             break;
 
-        case TEXT_STATE_5:
+        case TEXT_STATE_EVENT:
             EnMaYto_AfterMilkRunChooseNextDialogue(this, play);
             break;
 
@@ -1114,8 +1114,8 @@ void EnMaYto_SetupPostMilkRunWaitDialogueEnd(EnMaYto* this) {
 }
 
 void EnMaYto_PostMilkRunWaitDialogueEnd(EnMaYto* this, PlayState* play) {
-    if ((Message_GetState(&play->msgCtx) == TEXT_STATE_DONE) || (Message_GetState(&play->msgCtx) == TEXT_STATE_5)) {
-        if (Message_ShouldAdvance(play) && (Message_GetState(&play->msgCtx) == TEXT_STATE_5)) {
+    if ((Message_GetState(&play->msgCtx) == TEXT_STATE_DONE) || (Message_GetState(&play->msgCtx) == TEXT_STATE_EVENT)) {
+        if (Message_ShouldAdvance(play) && (Message_GetState(&play->msgCtx) == TEXT_STATE_EVENT)) {
             Player_SetCsActionWithHaltedActors(play, &this->actor, PLAYER_CSACTION_WAIT);
             Message_CloseTextbox(play);
         }
