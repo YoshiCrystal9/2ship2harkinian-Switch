@@ -282,7 +282,7 @@ s32 func_80BB18FC(EnGeg* this, Actor* actor) {
     return false;
 }
 
-Vec3f* func_80BB19C0(Vec3f* arg0, EnGeg* this, PlayState* play) {
+Vec3f func_80BB19C0(EnGeg* this, PlayState* play) {
     Player* player = GET_PLAYER(play);
     Vec3f sp40;
     Vec3f sp34;
@@ -303,13 +303,10 @@ Vec3f* func_80BB19C0(Vec3f* arg0, EnGeg* this, PlayState* play) {
     sp34.z = (Math_CosS(sp30) * 50.0f) + player->actor.world.pos.z;
 
     if (Math_Vec3f_DistXZ(&this->actor.world.pos, &sp34) < sp2C) {
-        // clang-format off
-        *arg0 = sp40; return arg0;
-        // clang-format on
+        return sp40;
     } else {
-        *arg0 = sp34;
+        return sp34;
     }
-    return arg0;
 }
 
 u8 func_80BB1B14(EnGeg* this, PlayState* play) {
@@ -775,7 +772,7 @@ void func_80BB2E00(EnGeg* this, PlayState* play) {
             this->unk_230 |= 1;
             this->actor.shape.yOffset = 14.0f;
             if (this->unk_496 == 0xD69) {
-                func_80BB19C0(&this->unk_4E4, this, play);
+                this->unk_4E4 = func_80BB19C0(this, play);
                 this->actionFunc = func_80BB2F7C;
             } else {
                 this->actionFunc = func_80BB3318;
@@ -1001,7 +998,7 @@ void EnGeg_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* rot,
     Vec3f sp38 = { 1.0f, 5.0f, -0.5f };
     Vec3f sp2C = { -1.0f, 5.0f, -0.5f };
 
-    if (limbIndex == 17) {
+    if (limbIndex == GORON_LIMB_HEAD) {
         if (!(this->unk_230 & 0x40)) {
             Gfx_SetupDL25_Opa(play->state.gfxCtx);
 
@@ -1035,7 +1032,7 @@ void EnGeg_TransformLimbDraw(PlayState* play, s32 limbIndex, Actor* thisx) {
     s32 phi_v1;
 
     switch (limbIndex) {
-        case 17:
+        case GORON_LIMB_HEAD:
             if (this->unk_230 & 2) {
                 phi_v1 = true;
             } else {
@@ -1060,7 +1057,7 @@ void EnGeg_TransformLimbDraw(PlayState* play, s32 limbIndex, Actor* thisx) {
             Matrix_Push();
             break;
 
-        case 10:
+        case GORON_LIMB_BODY:
             if (this->unk_230 & 2) {
                 phi_v1 = true;
             } else {
@@ -1082,6 +1079,9 @@ void EnGeg_TransformLimbDraw(PlayState* play, s32 limbIndex, Actor* thisx) {
             Matrix_RotateXS(this->unk_490.x, MTXMODE_APPLY);
             Matrix_RotateZS(this->unk_490.z, MTXMODE_APPLY);
             Matrix_Push();
+            break;
+
+        default:
             break;
     }
 }

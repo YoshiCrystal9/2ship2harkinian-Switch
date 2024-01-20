@@ -244,17 +244,32 @@ static Gfx sScreenFillSetupDL[] = {
 };
 
 s16 D_801BF9B0 = 0;
-f32 D_801BF9B4[] = { 100.0f, 109.0f };
+f32 D_801BF9B4[] = {
+    100.0f, // LANGUAGE_JPN
+    109.0f, // LANGUAGE_ENG
+    // Data missing for other languages?
+};
 s16 D_801BF9BC[] = {
     0x226, // EQUIP_SLOT_B
     0x2A8, // EQUIP_SLOT_C_LEFT
     0x2A8, // EQUIP_SLOT_C_DOWN
     0x2A8, // EQUIP_SLOT_C_RIGHT
 };
-s16 D_801BF9C4[] = { 0x9E, 0x9B };
-s16 D_801BF9C8[] = { 0x17, 0x16 };
-f32 D_801BF9CC[] = { -380.0f, -350.0f };
-
+s16 D_801BF9C4[] = {
+    0x9E, // LANGUAGE_JPN
+    0x9B, // LANGUAGE_ENG
+    // Data missing for other languages?
+};
+s16 D_801BF9C8[] = {
+    0x17, // LANGUAGE_JPN
+    0x16, // LANGUAGE_ENG
+    // Data missing for other languages?
+};
+f32 D_801BF9CC[] = {
+    -380.0f, // LANGUAGE_JPN
+    -350.0f, // LANGUAGE_ENG
+    // Data missing for other languages?
+};
 s16 D_801BF9D4[] = {
     0xA7,  // EQUIP_SLOT_B
     0xE3,  // EQUIP_SLOT_C_LEFT
@@ -5267,12 +5282,20 @@ void Interface_SetOrthoView(InterfaceContext* interfaceCtx) {
 }
 
 void Interface_DrawItemButtons(PlayState* play) {
-    static TexturePtr cUpLabelTextures[] = {
-        gTatlCUpENGTex, gTatlCUpENGTex, gTatlCUpGERTex, gTatlCUpFRATex, gTatlCUpESPTex,
+    static TexturePtr sCUpLabelTextures[LANGUAGE_MAX] = {
+        gTatlCUpENGTex, // LANGUAGE_JPN
+        gTatlCUpENGTex, // LANGUAGE_ENG
+        gTatlCUpGERTex, // LANGUAGE_GER
+        gTatlCUpFRATex, // LANGUAGE_FRE
+        gTatlCUpESPTex, // LANGUAGE_SPA
     };
-    static s16 startButtonLeftPos[] = {
+    static s16 sStartButtonLeftPos[LANGUAGE_MAX] = {
         // Remnant of OoT
-        130, 136, 136, 136, 136,
+        130, // LANGUAGE_JPN
+        136, // LANGUAGE_ENG
+        136, // LANGUAGE_GER
+        136, // LANGUAGE_FRE
+        136, // LANGUAGE_SPA
     };
     static s16 D_801BFAF4[] = {
         0x1D, // EQUIP_SLOT_B
@@ -5405,7 +5428,7 @@ void Interface_DrawItemButtons(PlayState* play) {
             gDPSetEnvColor(OVERLAY_DISP++, 0, 0, 0, 0);
             gDPSetCombineLERP(OVERLAY_DISP++, PRIMITIVE, ENVIRONMENT, TEXEL0, ENVIRONMENT, TEXEL0, 0, PRIMITIVE, 0,
                               PRIMITIVE, ENVIRONMENT, TEXEL0, ENVIRONMENT, TEXEL0, 0, PRIMITIVE, 0);
-            gDPLoadTextureBlock_4b(OVERLAY_DISP++, cUpLabelTextures[gSaveContext.options.language], G_IM_FMT_IA, 32, 12,
+            gDPLoadTextureBlock_4b(OVERLAY_DISP++, sCUpLabelTextures[gSaveContext.options.language], G_IM_FMT_IA, 32, 12,
                                    0, G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMASK, G_TX_NOMASK,
                                    G_TX_NOLOD, G_TX_NOLOD);
 
