@@ -35,7 +35,6 @@ extern void* gYaz0DecompressDstEnd;
 // extern UNK_TYPE4 sArenaLockMsg;
 
 extern DmaEntry dmadata[1568];
-// extern UNK_TYPE1 D_80186028;
 
 extern u8 sDropTable[DROP_TABLE_SIZE * DROP_TABLE_NUMBER];
 extern u8 sDropTableAmounts[DROP_TABLE_SIZE * DROP_TABLE_NUMBER];
