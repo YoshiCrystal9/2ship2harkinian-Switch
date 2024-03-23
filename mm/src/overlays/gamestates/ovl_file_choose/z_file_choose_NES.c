@@ -1687,8 +1687,6 @@ void FileSelect_DrawWindowContents(GameState* thisx) {
     s16 i;
     s16 quadVtxIndex;
 
-    if (1) {}
-
     OPEN_DISPS(this->state.gfxCtx);
 
     // draw title label

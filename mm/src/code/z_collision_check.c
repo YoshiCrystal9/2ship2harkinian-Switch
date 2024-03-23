@@ -2937,8 +2937,8 @@ s32 CollisionCheck_GetMassType(u8 mass) {
  * also performs an elastic collision where both colliders are moved apart in proportion to their masses.
  */
 void CollisionCheck_SetOCvsOC(PlayState* play, Collider* left, ColliderInfo* leftInfo, Vec3f* leftPos, Collider* right,
-                              ColliderInfo* rightInfo, Vec3f* rightPos, f32 overlapSize) {
-    f32 pad;
+                              ColliderInfo* rightInfo, Vec3f* rightPos, f32 overlap) {
+    s32 pad;
     f32 leftDispRatio;
     f32 rightDispRatio;
     f32 xzDist;
