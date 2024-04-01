@@ -6,7 +6,6 @@
 
 #include "z_en_thiefbird.h"
 #include "overlays/actors/ovl_En_Clear_Tag/z_en_clear_tag.h"
-#include "overlays/kaleido_scope/ovl_kaleido_scope/z_kaleido_scope.h"
 #include "2s2h/Enhancements/FrameInterpolation/FrameInterpolation.h"
 
 #include "2s2h/GameInteractor/GameInteractor.h"

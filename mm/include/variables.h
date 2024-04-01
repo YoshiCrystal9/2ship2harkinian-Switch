@@ -149,11 +149,6 @@ extern UNK_PTR D_801C5C50;
 // extern UNK_TYPE1 D_801C5C9C;
 extern UNK_PTR D_801C5CB0;
 
-extern KaleidoMgrOverlay gKaleidoMgrOverlayTable[2];
-// extern UNK_TYPE1 D_801D0B8C;
-extern KaleidoMgrOverlay* gKaleidoMgrCurOvl;
-// extern UNK_TYPE1 D_801D0C80;
-// extern UNK_TYPE1 D_801D0CB0;
 extern s32 gDbgCamEnabled;
 // extern UNK_TYPE1 D_801D0D54;
 // extern UNK_TYPE2 sQuakeIndex;

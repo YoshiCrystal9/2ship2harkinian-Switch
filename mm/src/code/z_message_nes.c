@@ -1,7 +1,6 @@
 #include "global.h"
 #include "message_data_fmt_nes.h"
 #include "message_data_static.h"
-#include "overlays/kaleido_scope/ovl_kaleido_scope/z_kaleido_scope.h"
 #include "assets/interface/message_texture_static/message_texture_static.h"
 #include <stdio.h>
 #include "public/bridge/consolevariablebridge.h"

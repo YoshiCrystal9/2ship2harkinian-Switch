@@ -1,5 +1,4 @@
 #include "global.h"
-#include "overlays/kaleido_scope/ovl_kaleido_scope/z_kaleido_scope.h"
 
 #include "2s2h/GameInteractor/GameInteractor.h"
 
@@ -256,7 +255,7 @@ void Map_Update(PlayState* play) {
 
     MapDisp_Update(play);
 
-    if ((play->pauseCtx.state == PAUSE_STATE_OFF) && (play->pauseCtx.debugEditor == DEBUG_EDITOR_NONE)) {
+    if (!IS_PAUSED(&play->pauseCtx)) {
         if (Map_IsInDungeonScene(play)) {
             floor = MapDisp_GetPlayerStorey(player->actor.world.pos.y);
             if (floor != -1) {
