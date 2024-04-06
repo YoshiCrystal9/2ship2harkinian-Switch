@@ -46,15 +46,15 @@ void ObjMine_Air_Draw(Actor* thisx, PlayState* play);
 void ObjMine_Water_Draw(Actor* thisx, PlayState* play);
 
 ActorInit Obj_Mine_InitVars = {
-    ACTOR_OBJ_MINE,
-    ACTORCAT_PROP,
-    FLAGS,
-    OBJECT_NY,
-    sizeof(ObjMine),
-    (ActorFunc)ObjMine_Init,
-    (ActorFunc)ObjMine_Destroy,
-    (ActorFunc)ObjMine_Path_Update,
-    (ActorFunc)ObjMine_Path_Draw,
+    /**/ ACTOR_OBJ_MINE,
+    /**/ ACTORCAT_PROP,
+    /**/ FLAGS,
+    /**/ OBJECT_NY,
+    /**/ sizeof(ObjMine),
+    /**/ ObjMine_Init,
+    /**/ ObjMine_Destroy,
+    /**/ ObjMine_Path_Update,
+    /**/ ObjMine_Path_Draw,
 };
 
 static ColliderJntSphElementInit sJntSphElementsInit[1] = {
@@ -287,7 +287,7 @@ void ObjMine_UpdateCollider(ObjMine* this) {
 }
 
 void ObjMine_Air_InitChain(ObjMine* this, s32 linkCount) {
-    f32 linkCountF = (f32)linkCount;
+    f32 linkCountF = linkCount;
     ObjMineAirChain* airChain = &this->chain.air;
     ObjMineAirLink* airLink;
     s32 i;
@@ -442,7 +442,7 @@ void ObjMine_Water_WallCheck(ObjMine* this, PlayState* play) {
     if (waterChain->wallCheckDistSq > -1e-6f) {
         //  Checks for walls if mine is sufficiently far from home. If found, sets ejection force towards home.
         if (waterChain->wallCheckDistSq <= Math3D_Dist2DSq(this->actor.home.pos.x, this->actor.home.pos.z,
-                                                           this->actor.world.pos.x, this->actor.world.pos.z)) {
+                                                                    this->actor.world.pos.x, this->actor.world.pos.z)) {
             Vec3f centerPos;
             Vec3f offsetPos;
             Vec3f result; // not used
@@ -675,7 +675,7 @@ void ObjMine_Water_UpdateChain(ObjMine* this, PlayState* play) {
 void ObjMine_Init(Actor* thisx, PlayState* play) {
     s32 pad; // Can be playstate recast. Must be gamestate recast.
     ObjMine* this = THIS;
-    s32 pathIndex = OBJMINE_GET_PATH(&this->actor);
+    s32 pathIndex = OBJMINE_GET_PATH_INDEX(&this->actor);
     Path* path;
     s32 bgId; // not used
     s32 type = OBJMINE_GET_TYPE(&this->actor);
@@ -746,7 +746,6 @@ void ObjMine_Init(Actor* thisx, PlayState* play) {
 
 void ObjMine_Destroy(Actor* thisx, PlayState* play) {
     ObjMine* this = THIS;
-    // PlayState* play = play2; // must be in this order to match with recast
 
     Collider_DestroyJntSph(play, &this->collider);
 }
@@ -764,7 +763,7 @@ void ObjMine_Path_SetupMove(ObjMine* this) {
 }
 
 void ObjMine_Path_Move(ObjMine* this, PlayState* play) {
-    Actor* thisx = &this->actor; // pos and velocity need this, though it can replace all `this->actor`s and match
+    Actor* thisx = &this->actor;
     Vec3f nextWaypoint;
     f32 distToWaypoint;
     f32 step;
@@ -784,26 +783,25 @@ void ObjMine_Path_Move(ObjMine* this, PlayState* play) {
         target = this->pathSpeed;
         step = this->pathSpeed * 0.16f;
     }
-    Math_StepToF(&this->actor.speed, target, step);
+    Math_StepToF(&thisx->speed, target, step);
 
     // Checks if mine will reach the waypoint next frame
-    if ((this->actor.speed + 0.05f) < distToWaypoint) {
+    if ((thisx->speed + 0.05f) < distToWaypoint) {
         // Rescales thisx->velocity to be equal in magnitude to speed
-        Math_Vec3f_Scale(&thisx->velocity, this->actor.speed / distToWaypoint);
-        this->actor.world.pos.x += thisx->velocity.x;
-        this->actor.world.pos.y += thisx->velocity.y;
-        this->actor.world.pos.z += thisx->velocity.z;
+        Math_Vec3f_Scale(&thisx->velocity, thisx->speed / distToWaypoint);
+        thisx->world.pos.x += thisx->velocity.x;
+        thisx->world.pos.y += thisx->velocity.y;
+        thisx->world.pos.z += thisx->velocity.z;
     } else {
-        this->actor.speed *= 0.4f;
+        thisx->speed *= 0.4f;
         this->waypointIndex++;
         if (this->waypointIndex >= this->waypointCount) {
             this->waypointIndex = 0;
         }
         ObjMine_Path_MoveToWaypoint(this, this->waypointIndex);
     }
-    this->actor.floorHeight =
-        BgCheck_EntityRaycastFloor5(&play->colCtx, &this->actor.floorPoly, &bgId, &this->actor, &thisx->world.pos);
-    if (this->actor.flags & ACTOR_FLAG_40) {
+    thisx->floorHeight = BgCheck_EntityRaycastFloor5(&play->colCtx, &thisx->floorPoly, &bgId, thisx, &thisx->world.pos);
+    if (thisx->flags & ACTOR_FLAG_40) {
         Vec3f rotAxis;
         Vec3f yhatCrossV;
         MtxF rotMtxF;
@@ -811,12 +809,12 @@ void ObjMine_Path_Move(ObjMine* this, PlayState* play) {
         // Makes mines appear to roll while traversing the path
         Math3D_Vec3f_Cross(&sStandardBasis.y, &thisx->velocity, &yhatCrossV);
         if (ObjMine_GetUnitVec3f(&yhatCrossV, &rotAxis)) {
-            Matrix_RotateAxisF(this->actor.speed / PATH_RADIUS, &rotAxis, MTXMODE_NEW);
-            Matrix_RotateYS(this->actor.shape.rot.y, MTXMODE_APPLY);
-            Matrix_RotateXS(this->actor.shape.rot.x, MTXMODE_APPLY);
-            Matrix_RotateZS(this->actor.shape.rot.z, MTXMODE_APPLY);
+            Matrix_RotateAxisF(thisx->speed / PATH_RADIUS, &rotAxis, MTXMODE_NEW);
+            Matrix_RotateYS(thisx->shape.rot.y, MTXMODE_APPLY);
+            Matrix_RotateXS(thisx->shape.rot.x, MTXMODE_APPLY);
+            Matrix_RotateZS(thisx->shape.rot.z, MTXMODE_APPLY);
             Matrix_Get(&rotMtxF);
-            Matrix_MtxFToYXZRot(&rotMtxF, &this->actor.shape.rot, false);
+            Matrix_MtxFToYXZRot(&rotMtxF, &thisx->shape.rot, false);
         }
     }
 }
@@ -833,12 +831,13 @@ void ObjMine_SetupExplode(ObjMine* this) {
 
 void ObjMine_Explode(ObjMine* this, PlayState* play) {
     this->actor.scale.x *= 1.8f;
-    if (this->actor.scale.x > 0.02f * 1.5f * 5.832f) { // 5.832 = 1.8^3
+    if (this->actor.scale.x > (0.02f * 1.5f * 5.832f)) { // 5.832 = 1.8^3
         Actor_Kill(&this->actor);
-    } else {
-        this->actor.scale.y = this->actor.scale.x;
-        this->actor.scale.z = this->actor.scale.x;
+        return;
     }
+
+    this->actor.scale.y = this->actor.scale.x;
+    this->actor.scale.z = this->actor.scale.x;
 }
 
 void ObjMine_Air_SetupChained(ObjMine* this) {
@@ -926,9 +925,9 @@ void ObjMine_Air_Chained(ObjMine* this, PlayState* play) {
     // speed. If speed is close to zero when hitting wall, weakly eject it instead.
     if (airChain->wallCheckDistSq > -1e-6f) {
         if (airChain->wallCheckDistSq <= Math3D_Dist2DSq(this->actor.world.pos.x, this->actor.world.pos.z,
-                                                         this->actor.home.pos.x, this->actor.home.pos.z)) {
+                                                                  this->actor.home.pos.x, this->actor.home.pos.z)) {
 
-            Actor_UpdateBgCheckInfo(play, &this->actor, 0.0f, AIR_RADIUS, 0.0f, 1);
+            Actor_UpdateBgCheckInfo(play, &this->actor, 0.0f, AIR_RADIUS, 0.0f, UPDBGCHECKINFO_FLAG_1);
 
             if ((this->actor.bgCheckFlags & BGCHECKFLAG_WALL) && (this->actor.wallPoly != NULL)) {
                 Vec3f xzDir;
