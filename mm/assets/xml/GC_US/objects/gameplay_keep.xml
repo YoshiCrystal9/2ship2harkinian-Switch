@@ -944,9 +944,9 @@
         <DList Name="gBoulderFragmentsDL" Offset="0x1FA90" />
         <Texture Name="gBoulderFragmentsTex" OutName="boulder_fragments" Format="rgba16" Width="32" Height="32" Offset="0x1FC30" />
 
-        <Animation Name="gameplay_keep_Anim_0204B4" Offset="0x20504" />
-        <Animation Name="gameplay_keep_Anim_0205A0" Offset="0x205F0" />
-        <Animation Name="gameplay_keep_Anim_020658" Offset="0x206A8" />
+        <Animation Name="gDoorHumanOpenLeftAnim" Offset="0x20504" />
+        <Animation Name="gDoorHumanOpenRightAnim" Offset="0x205F0" />
+        <Animation Name="gDoorFierceDeityZoraOpenLeftAnim" Offset="0x206A8" />
         <DList Name="gameplay_keep_DL_020B30" Offset="0x20B80" />
         <DList Name="gDoorLeftDL" Offset="0x20C08" />
         <DList Name="gDoorRightDL" Offset="0x20D50" />
@@ -959,13 +959,13 @@
         <Limb Name="gameplay_keep_Standardlimb_022B00" Type="Standard" EnumName="DOOR_LIMB_3" Offset="0x22B50" />
         <Limb Name="gameplay_keep_Standardlimb_022B0C" Type="Standard" EnumName="DOOR_LIMB_4" Offset="0x22B5C" />
         <Skeleton Name="gDoorSkel" Type="Normal" LimbType="Standard" LimbNone="DOOR_LIMB_NONE" LimbMax="DOOR_LIMB_MAX" EnumName="DoorLimb" Offset="0x22B78" />
-        <Animation Name="gameplay_keep_Anim_022BE8" Offset="0x22C38" />
-        <Animation Name="gameplay_keep_Anim_022CA8" Offset="0x22CF8" />
-        <Animation Name="gameplay_keep_Anim_022D90" Offset="0x22DE0" />
-        <Animation Name="gameplay_keep_Anim_022E68" Offset="0x22EB8" />
+        <Animation Name="gDoorFierceDeityZoraOpenRightAnim" Offset="0x22C38" />
+        <Animation Name="gDoorGoronOpenLeftAnim" Offset="0x22CF8" />
+        <Animation Name="gDoorGoronOpenRightAnim" Offset="0x22DE0" />
+        <Animation Name="gDoorDekuOpenLeftAnim" Offset="0x22EB8" />
         <Blob Name="gameplay_keep_zeroes_unk_00022E78" Size="0xA8" Offset="0x22EC8" />
-        <Animation Name="gameplay_keep_Anim_022FF0" Offset="0x23040" />
-        <Collision Name="gDoorCol" Offset="0x23150" />
+        <Animation Name="gDoorDekuOpenRightAnim" Offset="0x23040" />
+        <Collision Name="gFramedDoorCol" Offset="0x23150" />
         <DList Name="gEffDustDL" Offset="0x23180" />
         <DList Name="gEffFlash1DL" Offset="0x23260" />
         <DList Name="gEffFlash2DL" Offset="0x232D8" />

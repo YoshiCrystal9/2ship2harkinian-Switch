@@ -2562,14 +2562,14 @@ static const ALIGN_ASSET(2) char gBoulderFragmentsDL[] = dgBoulderFragmentsDL;
 #define dgBoulderFragmentsTex "__OTR__objects/gameplay_keep/gBoulderFragmentsTex"
 static const ALIGN_ASSET(2) char gBoulderFragmentsTex[] = dgBoulderFragmentsTex;
 
-#define dgameplay_keep_Anim_0204B4 "__OTR__objects/gameplay_keep/gameplay_keep_Anim_0204B4"
-static const ALIGN_ASSET(2) char gameplay_keep_Anim_0204B4[] = dgameplay_keep_Anim_0204B4;
+#define dgDoorHumanOpenLeftAnim "__OTR__objects/gameplay_keep/gDoorHumanOpenLeftAnim"
+static const ALIGN_ASSET(2) char gDoorHumanOpenLeftAnim[] = dgDoorHumanOpenLeftAnim;
 
-#define dgameplay_keep_Anim_0205A0 "__OTR__objects/gameplay_keep/gameplay_keep_Anim_0205A0"
-static const ALIGN_ASSET(2) char gameplay_keep_Anim_0205A0[] = dgameplay_keep_Anim_0205A0;
+#define dgDoorHumanOpenRightAnim "__OTR__objects/gameplay_keep/gDoorHumanOpenRightAnim"
+static const ALIGN_ASSET(2) char gDoorHumanOpenRightAnim[] = dgDoorHumanOpenRightAnim;
 
-#define dgameplay_keep_Anim_020658 "__OTR__objects/gameplay_keep/gameplay_keep_Anim_020658"
-static const ALIGN_ASSET(2) char gameplay_keep_Anim_020658[] = dgameplay_keep_Anim_020658;
+#define dgDoorFierceDeityZoraOpenLeftAnim "__OTR__objects/gameplay_keep/gDoorFierceDeityZoraOpenLeftAnim"
+static const ALIGN_ASSET(2) char gDoorFierceDeityZoraOpenLeftAnim[] = dgDoorFierceDeityZoraOpenLeftAnim;
 
 #define dgameplay_keep_DL_020B30 "__OTR__objects/gameplay_keep/gameplay_keep_DL_020B30"
 static const ALIGN_ASSET(2) char gameplay_keep_DL_020B30[] = dgameplay_keep_DL_020B30;
@@ -2595,26 +2595,26 @@ static const ALIGN_ASSET(2) char gameplay_keep_Tex_0226E8[] = dgameplay_keep_Tex
 #define dgDoorSkel "__OTR__objects/gameplay_keep/gDoorSkel"
 static const ALIGN_ASSET(2) char gDoorSkel[] = dgDoorSkel;
 
-#define dgameplay_keep_Anim_022BE8 "__OTR__objects/gameplay_keep/gameplay_keep_Anim_022BE8"
-static const ALIGN_ASSET(2) char gameplay_keep_Anim_022BE8[] = dgameplay_keep_Anim_022BE8;
+#define dgDoorFierceDeityZoraOpenRightAnim "__OTR__objects/gameplay_keep/gDoorFierceDeityZoraOpenRightAnim"
+static const ALIGN_ASSET(2) char gDoorFierceDeityZoraOpenRightAnim[] = dgDoorFierceDeityZoraOpenRightAnim;
 
-#define dgameplay_keep_Anim_022CA8 "__OTR__objects/gameplay_keep/gameplay_keep_Anim_022CA8"
-static const ALIGN_ASSET(2) char gameplay_keep_Anim_022CA8[] = dgameplay_keep_Anim_022CA8;
+#define dgDoorGoronOpenLeftAnim "__OTR__objects/gameplay_keep/gDoorGoronOpenLeftAnim"
+static const ALIGN_ASSET(2) char gDoorGoronOpenLeftAnim[] = dgDoorGoronOpenLeftAnim;
 
-#define dgameplay_keep_Anim_022D90 "__OTR__objects/gameplay_keep/gameplay_keep_Anim_022D90"
-static const ALIGN_ASSET(2) char gameplay_keep_Anim_022D90[] = dgameplay_keep_Anim_022D90;
+#define dgDoorGoronOpenRightAnim "__OTR__objects/gameplay_keep/gDoorGoronOpenRightAnim"
+static const ALIGN_ASSET(2) char gDoorGoronOpenRightAnim[] = dgDoorGoronOpenRightAnim;
 
-#define dgameplay_keep_Anim_022E68 "__OTR__objects/gameplay_keep/gameplay_keep_Anim_022E68"
-static const ALIGN_ASSET(2) char gameplay_keep_Anim_022E68[] = dgameplay_keep_Anim_022E68;
+#define dgDoorDekuOpenLeftAnim "__OTR__objects/gameplay_keep/gDoorDekuOpenLeftAnim"
+static const ALIGN_ASSET(2) char gDoorDekuOpenLeftAnim[] = dgDoorDekuOpenLeftAnim;
 
 #define dgameplay_keep_zeroes_unk_00022E78 "__OTR__objects/gameplay_keep/gameplay_keep_zeroes_unk_00022E78"
 static const ALIGN_ASSET(2) char gameplay_keep_zeroes_unk_00022E78[] = dgameplay_keep_zeroes_unk_00022E78;
 
-#define dgameplay_keep_Anim_022FF0 "__OTR__objects/gameplay_keep/gameplay_keep_Anim_022FF0"
-static const ALIGN_ASSET(2) char gameplay_keep_Anim_022FF0[] = dgameplay_keep_Anim_022FF0;
+#define dgDoorDekuOpenRightAnim "__OTR__objects/gameplay_keep/gDoorDekuOpenRightAnim"
+static const ALIGN_ASSET(2) char gDoorDekuOpenRightAnim[] = dgDoorDekuOpenRightAnim;
 
-#define dgDoorCol "__OTR__objects/gameplay_keep/gDoorCol"
-static const ALIGN_ASSET(2) char gDoorCol[] = dgDoorCol;
+#define dgFramedDoorCol "__OTR__objects/gameplay_keep/gFramedDoorCol"
+static const ALIGN_ASSET(2) char gFramedDoorCol[] = dgFramedDoorCol;
 
 #define dgEffDustDL "__OTR__objects/gameplay_keep/gEffDustDL"
 static const ALIGN_ASSET(2) char gEffDustDL[] = dgEffDustDL;
