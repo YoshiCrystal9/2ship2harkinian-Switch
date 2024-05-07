@@ -428,7 +428,6 @@ s32 func_80BA42BC(EnToto* this, PlayState* play) {
 
     func_80BA3FB0(this, play);
     Player_SetCsActionWithHaltedActors(play, NULL, PLAYER_CSACTION_END);
-
     if (player->actor.world.pos.z > -310.0f) {
         if ((player->actor.world.pos.x > -150.0f) || (player->actor.world.pos.z > -172.0f)) {
             numPoints = ARRAY_COUNT(sPlayerOverrideInputPosList);
@@ -438,9 +437,7 @@ s32 func_80BA42BC(EnToto* this, PlayState* play) {
             numPoints = ARRAY_COUNT(sPlayerOverrideInputPosList) - 2;
         }
     }
-
-    Player_InitOverrideInput(play, &this->overrideInputEntry, numPoints, &endPosListPtr[0 - numPoints]);
-
+    Player_InitOverrideInput(play, &this->overrideInputEntry, numPoints, endPosListPtr - numPoints);
     this->spotlights = Actor_Spawn(&play->actorCtx, play, ACTOR_DM_CHAR07, 0.0f, 0.0f, 0.0f, 0, 0, 0, 0xF02);
     return 0;
 }
