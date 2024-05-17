@@ -38,8 +38,8 @@ void EnFall2_Init(Actor* thisx, PlayState* play) {
 
     Actor_SetScale(&this->actor, 1.0f);
     this->actionFunc = EnFall2_DoNothing;
-    Keyframe_InitFlex(&this->skeletonInfo, gFall2KFSkel_8898, gFall2FKAnim_5EF4, this->unk174, this->unk228, NULL);
-    Keyframe_FlexPlayLoop(&this->skeletonInfo, (void*)gFall2FKAnim_5EF4);
+    Keyframe_InitFlex(&this->kfSkelAnime, gFall2KFSkel_8898, gFall2FKAnim_5EF4, this->unk174, this->unk228, NULL);
+    Keyframe_FlexPlayLoop(&this->kfSkelAnime, (void*)gFall2FKAnim_5EF4);
     this->unk2DC = Lib_SegmentedToVirtual((void*)object_fall2_Matanimheader_008840);
     Actor_SetScale(&this->actor, 0.02f);
     this->actionFunc = EnFall2_HandleCutscene;
@@ -50,7 +50,7 @@ void EnFall2_Init(Actor* thisx, PlayState* play) {
 void EnFall2_Destroy(Actor* thisx, PlayState* play) {
     EnFall2* this = THIS;
 
-    Keyframe_DestroyFlex(&this->skeletonInfo);
+    Keyframe_DestroyFlex(&this->kfSkelAnime);
 }
 
 static u8 sAlphaTableIndices[] = {
@@ -127,7 +127,7 @@ void func_80C1B8F0(EnFall2* this) {
 }
 
 void EnFall2_HandleCutscene(EnFall2* this, PlayState* play) {
-    Keyframe_UpdateFlex(&this->skeletonInfo);
+    Keyframe_UpdateFlex(&this->kfSkelAnime);
     if (Cutscene_IsCueInChannel(play, this->cueType)) {
         Cutscene_ActorTranslateAndYaw(&this->actor, play, Cutscene_GetCueChannel(play, this->cueType));
         if (this->cueId != play->csCtx.actorCues[Cutscene_GetCueChannel(play, this->cueType)]->id) {
@@ -153,18 +153,18 @@ void EnFall2_Update(Actor* thisx, PlayState* play) {
 void EnFall2_Draw(Actor* thisx, PlayState* play) {
     s32 pad;
     EnFall2* this = THIS;
-    Mtx* mtx;
+    Mtx* mtxStack;
 
     if (!(this->alphaLevel <= 0.0f)) {
         Gfx_SetupDL25_Xlu(play->state.gfxCtx);
         AnimatedMat_DrawXlu(play, Lib_SegmentedToVirtual(object_fall2_Matanimheader_008840));
 
-        mtx = GRAPH_ALLOC(play->state.gfxCtx, this->skeletonInfo.skeleton->dListCount * sizeof(Mtx));
+        mtxStack = GRAPH_ALLOC(play->state.gfxCtx, this->kfSkelAnime.skeleton->dListCount * sizeof(Mtx));
 
-        if (mtx != NULL) {
+        if (mtxStack != NULL) {
             Gfx_SetupDL25_Xlu(play->state.gfxCtx);
             Matrix_RotateYS((s16)(Camera_GetCamDirYaw(GET_ACTIVE_CAM(play)) + 0x8000), MTXMODE_APPLY);
-            Keyframe_DrawFlex(play, &this->skeletonInfo, mtx, NULL, NULL, &this->actor);
+            Keyframe_DrawFlex(play, &this->kfSkelAnime, mtxStack, NULL, NULL, &this->actor);
         }
     }
 }

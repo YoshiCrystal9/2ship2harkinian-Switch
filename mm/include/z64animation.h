@@ -244,10 +244,6 @@ typedef struct AnimationSpeedInfo {
     /* 0xC */ f32 morphFrames;
 } AnimationSpeedInfo; // size = 0x10
 
-struct SkeletonInfo;
-
-#include "z64keyframe.h"
-
 void SkelAnime_DrawLod(struct PlayState* play, void** skeleton, Vec3s* jointTable, OverrideLimbDrawOpa overrideLimbDraw, PostLimbDrawOpa postLimbDraw, struct Actor* actor, s32 lod);
 void SkelAnime_DrawFlexLod(struct PlayState* play, void** skeleton, Vec3s* jointTable, s32 dListCount, OverrideLimbDrawFlex overrideLimbDraw, PostLimbDrawFlex postLimbDraw, struct Actor* actor, s32 lod);
 void SkelAnime_DrawOpa(struct PlayState* play, void** skeleton, Vec3s* jointTable, OverrideLimbDrawOpa overrideLimbDraw, PostLimbDrawOpa postLimbDraw, struct Actor* actor);

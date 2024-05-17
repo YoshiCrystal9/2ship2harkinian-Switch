@@ -46,14 +46,14 @@ void DemoMoonend_Init(Actor* thisx, PlayState* play) {
         this->actionFunc = func_80C17B60;
     } else {
         Actor_SetScale(&this->actor, 0.095f);
-        Keyframe_InitFlex(&this->skeletonInfo, gMoonendKFSkel_B5A0, gMoonendKFAnim_1214, this->jointTable,
+        Keyframe_InitFlex(&this->kfSkelAnime, gMoonendKFSkel_B5A0, gMoonendKFAnim_1214, this->jointTable,
                           this->morphTable, NULL);
-        Keyframe_FlexPlayOnce(&this->skeletonInfo, gMoonendKFAnim_1214);
+        Keyframe_FlexPlayOnce(&this->kfSkelAnime, gMoonendKFAnim_1214);
         this->cueType = CS_CMD_ACTOR_CUE_560;
         this->actionFunc = func_80C17C48;
         this->actor.home.rot.z = 0;
         this->actor.draw = NULL;
-        this->skeletonInfo.frameCtrl.speed = 2.0f / 3.0f;
+        this->kfSkelAnime.frameCtrl.speed = 2.0f / 3.0f;
     }
 }
 
@@ -61,7 +61,7 @@ void DemoMoonend_Destroy(Actor* thisx, PlayState* play) {
     DemoMoonend* this = THIS;
 
     if (DEMOMOONEND_GET_PARAM_F(thisx) != 1) {
-        Keyframe_DestroyFlex(&this->skeletonInfo);
+        Keyframe_DestroyFlex(&this->kfSkelAnime);
     }
 }
 
@@ -97,7 +97,7 @@ void func_80C17B60(DemoMoonend* this, PlayState* play) {
 }
 
 void func_80C17C48(DemoMoonend* this, PlayState* play) {
-    if (Keyframe_UpdateFlex(&this->skeletonInfo)) {
+    if (Keyframe_UpdateFlex(&this->kfSkelAnime)) {
         this->actor.home.rot.z = 0;
     }
     if (Cutscene_IsCueInChannel(play, this->cueType)) {
@@ -110,14 +110,14 @@ void func_80C17C48(DemoMoonend* this, PlayState* play) {
             switch (this->cueId) {
                 case 1:
                     this->actor.draw = DemoMoonend_Draw;
-                    Keyframe_FlexPlayOnce(&this->skeletonInfo, gMoonendKFAnim_1214);
-                    this->skeletonInfo.frameCtrl.speed = 0.0f;
+                    Keyframe_FlexPlayOnce(&this->kfSkelAnime, gMoonendKFAnim_1214);
+                    this->kfSkelAnime.frameCtrl.speed = 0.0f;
                     break;
 
                 case 2:
                     this->actor.draw = DemoMoonend_Draw;
-                    Keyframe_FlexPlayOnce(&this->skeletonInfo, gMoonendKFAnim_1214);
-                    this->skeletonInfo.frameCtrl.speed = 2.0f / 3.0f;
+                    Keyframe_FlexPlayOnce(&this->kfSkelAnime, gMoonendKFAnim_1214);
+                    this->kfSkelAnime.frameCtrl.speed = 2.0f / 3.0f;
                     Actor_PlaySfx(&this->actor, NA_SE_EV_MOON_EXPLOSION);
                     this->actor.home.rot.z = 1;
                     break;
@@ -166,8 +166,8 @@ void DemoMoonend_Update(Actor* thisx, PlayState* play) {
     this->actionFunc(this, play);
 }
 
-s32 func_80C17E70(PlayState* play, KFSkelAnimeFlex* skeletonInfo, s32 limbIndex, Gfx** dList, u8* flags, void* thisx,
-                  Vec3f* scale, Vec3s* rot, Vec3f* pos) {
+s32 DemoMoonend_OverrideLimbDraw(PlayState* play, KFSkelAnimeFlex* kfSkelAnime, s32 limbIndex, Gfx** dList, u8* flags,
+                                 void* thisx, Vec3f* scale, Vec3s* rot, Vec3f* pos) {
     DemoMoonend* this = THIS;
 
     if (limbIndex == 2) {
@@ -178,8 +178,8 @@ s32 func_80C17E70(PlayState* play, KFSkelAnimeFlex* skeletonInfo, s32 limbIndex,
     return true;
 }
 
-s32 func_80C17EE0(PlayState* play, KFSkelAnimeFlex* skeleton, s32 limbIndex, Gfx** dList, u8* flags, void* thisx,
-                  Vec3f* scale, Vec3s* rot, Vec3f* pos) {
+s32 DemoMoonend_PostLimbDraw(PlayState* play, KFSkelAnimeFlex* kfSkelAnime, s32 limbIndex, Gfx** dList, u8* flags,
+                             void* thisx, Vec3f* scale, Vec3s* rot, Vec3f* pos) {
     DemoMoonend* this = THIS;
 
     if (limbIndex == 8) {
@@ -191,16 +191,17 @@ s32 func_80C17EE0(PlayState* play, KFSkelAnimeFlex* skeleton, s32 limbIndex, Gfx
 
 void DemoMoonend_Draw(Actor* thisx, PlayState* play) {
     DemoMoonend* this = THIS;
-    Mtx* mtx;
+    Mtx* mtxStack;
 
     AnimatedMat_Draw(play, (AnimatedMaterial*)Lib_SegmentedToVirtual(object_moonend_Matanimheader_00B540));
 
-    mtx = GRAPH_ALLOC(play->state.gfxCtx, this->skeletonInfo.skeleton->dListCount * sizeof(Mtx));
+    mtxStack = GRAPH_ALLOC(play->state.gfxCtx, this->kfSkelAnime.skeleton->dListCount * sizeof(Mtx));
 
-    if (mtx != NULL) {
+    if (mtxStack != NULL) {
         Gfx_SetupDL25_Xlu(play->state.gfxCtx);
         Gfx_SetupDL25_Opa(play->state.gfxCtx);
-        Keyframe_DrawFlex(play, &this->skeletonInfo, mtx, func_80C17E70, func_80C17EE0, &this->actor);
+        Keyframe_DrawFlex(play, &this->kfSkelAnime, mtxStack, DemoMoonend_OverrideLimbDraw, DemoMoonend_PostLimbDraw,
+                          &this->actor);
     }
 }
 
