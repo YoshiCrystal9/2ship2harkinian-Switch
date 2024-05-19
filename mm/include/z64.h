@@ -12,12 +12,17 @@ extern "C" {
 
 #include "ultra64.h"
 
-#include "irqmgr.h"
-#include "padmgr.h"
-#include "scheduler.h"
-
 #include "color.h"
+#include "gfx.h"
+#include "gfxprint.h"
 #include "ichain.h"
+#include "irqmgr.h"
+#include "main.h"
+#include "message_data_static.h"
+#include "padmgr.h"
+#include "padutils.h"
+#include "regs.h"
+#include "scheduler.h"
 #include "sequence.h"
 #include "seqcmd.h"
 #include "sfx.h"
@@ -32,6 +37,7 @@ extern "C" {
 #include "sys_matrix.h"
 #include "tha.h"
 #include "thga.h"
+
 #include "z64actor.h"
 #include "z64animation.h"
 #include "z64animation_legacy.h"
@@ -51,6 +57,7 @@ extern "C" {
 #include "z64game.h"
 #include "z64interface.h"
 #include "z64item.h"
+#include "z64keyframe.h"
 #include "z64lib.h"
 #include "z64light.h"
 #include "z64map.h"
@@ -73,8 +80,6 @@ extern "C" {
 #include "z64transition.h"
 #include "z64view.h"
 #include "z64msgevent.h"
-#include "z64keyframe.h"
-#include "regs.h"
 
 #define AUDIO_HEAP_SIZE 0x1380000
 #define SYSTEM_HEAP_SIZE (1024 * 1024 * 32)
