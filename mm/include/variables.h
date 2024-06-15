@@ -160,9 +160,6 @@ extern Input* D_801D0D60;
 extern u32 retryCount;
 extern u32 cfbIdx[3];
 
-extern Vec3f gZeroVec3f;
-extern Vec3s gZeroVec3s;
-
 extern s16 gLowPassFilterData[];
 extern s16 gHighPassFilterData[];
 extern s16 gBandStopFilterData[];

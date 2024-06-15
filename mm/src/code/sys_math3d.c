@@ -9,12 +9,20 @@ struct Dummy204 { int x; };
 struct Dummy205 { int x; };
 struct Dummy206 { int x; };
 struct Dummy207 { int x; };
+struct Dummy208 { int x; };
+struct Dummy209 { int x; };
+struct Dummy210 { int x; };
+struct Dummy211 { int x; };
+struct Dummy212 { int x; };
 // clang-format on
 
 #include "z64math.h"
+
 #include "libc/stdbool.h"
-#include "libc/math.h"
 #include "PR/gu.h"
+
+Vec3f gZeroVec3f = { 0.0f, 0.0f, 0.0f };
+Vec3s gZeroVec3s = { 0, 0, 0 };
 
 #define ARRAY_COUNT(arr) (s32)(sizeof(arr) / sizeof(arr[0]))
 

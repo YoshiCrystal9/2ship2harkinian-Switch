@@ -2937,8 +2937,8 @@ s32 CollisionCheck_GetMassType(u8 mass) {
  * also performs an elastic collision where both colliders are moved apart in proportion to their masses.
  */
 void CollisionCheck_SetOCvsOC(PlayState* play, Collider* left, ColliderInfo* leftInfo, Vec3f* leftPos, Collider* right,
-                              ColliderInfo* rightInfo, Vec3f* rightPos, f32 overlap) {
-    s32 pad;
+                              ColliderInfo* rightInfo, Vec3f* rightPos, f32 overlapSize) {
+    f32 pad;
     f32 leftDispRatio;
     f32 rightDispRatio;
     f32 xzDist;
@@ -3017,15 +3017,15 @@ void CollisionCheck_SetOCvsOC(PlayState* play, Collider* left, ColliderInfo* lef
     }
 
     if (!IS_ZERO(xzDist)) {
-        xDelta *= overlap / xzDist;
-        zDelta *= overlap / xzDist;
+        xDelta *= overlapSize / xzDist;
+        zDelta *= overlapSize / xzDist;
         leftActor->colChkInfo.displacement.x += -xDelta * leftDispRatio;
         leftActor->colChkInfo.displacement.z += -zDelta * leftDispRatio;
         rightActor->colChkInfo.displacement.x += xDelta * rightDispRatio;
         rightActor->colChkInfo.displacement.z += zDelta * rightDispRatio;
-    } else if (overlap != 0.0f) {
-        leftActor->colChkInfo.displacement.x += -overlap * leftDispRatio;
-        rightActor->colChkInfo.displacement.x += overlap * rightDispRatio;
+    } else if (overlapSize != 0.0f) {
+        leftActor->colChkInfo.displacement.x += -overlapSize * leftDispRatio;
+        rightActor->colChkInfo.displacement.x += overlapSize * rightDispRatio;
     } else {
         leftActor->colChkInfo.displacement.x += -leftDispRatio;
         rightActor->colChkInfo.displacement.x += rightDispRatio;
