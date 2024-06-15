@@ -20,63 +20,63 @@ void EnDns_DoNothing(EnDns* this, PlayState* play);
 void func_8092D4D8(EnDns* this, PlayState* play);
 
 static MsgScript D_8092DCB0[] = {
-    /* 0x0000 0x05 */ MSCRIPT_BRANCH_ON_WEEK_EVENT_REG(0x17, 0x20, 0x000A - 0x0005),
-    /* 0x0005 0x03 */ MSCRIPT_BEGIN_TEXT(0x082F),
-    /* 0x0008 0x01 */ MSCRIPT_AWAIT_TEXT(),
-    /* 0x0009 0x01 */ MSCRIPT_DONE(),
+    /* 0x0000 0x05 */ MSCRIPT_CMD_CHECK_WEEK_EVENT_REG(WEEKEVENTREG_23_20, 0x000A - 0x0005),
+    /* 0x0005 0x03 */ MSCRIPT_CMD_BEGIN_TEXT(0x082F),
+    /* 0x0008 0x01 */ MSCRIPT_CMD_AWAIT_TEXT(),
+    /* 0x0009 0x01 */ MSCRIPT_CMD_DONE(),
 
-    /* 0x000A 0x03 */ MSCRIPT_BEGIN_TEXT(0x0820),
-    /* 0x000D 0x01 */ MSCRIPT_AWAIT_TEXT(),
-    /* 0x000E 0x01 */ MSCRIPT_DONE(),
+    /* 0x000A 0x03 */ MSCRIPT_CMD_BEGIN_TEXT(0x0820),
+    /* 0x000D 0x01 */ MSCRIPT_CMD_AWAIT_TEXT(),
+    /* 0x000E 0x01 */ MSCRIPT_CMD_DONE(),
 };
 
 static MsgScript D_8092DCC0[] = {
-    /* 0x0000 0x05 */ MSCRIPT_BRANCH_ON_WEEK_EVENT_REG(0x17, 0x20, 0x000A - 0x0005),
-    /* 0x0005 0x03 */ MSCRIPT_BEGIN_TEXT(0x0830),
-    /* 0x0008 0x01 */ MSCRIPT_AWAIT_TEXT(),
-    /* 0x0009 0x01 */ MSCRIPT_DONE(),
+    /* 0x0000 0x05 */ MSCRIPT_CMD_CHECK_WEEK_EVENT_REG(WEEKEVENTREG_23_20, 0x000A - 0x0005),
+    /* 0x0005 0x03 */ MSCRIPT_CMD_BEGIN_TEXT(0x0830),
+    /* 0x0008 0x01 */ MSCRIPT_CMD_AWAIT_TEXT(),
+    /* 0x0009 0x01 */ MSCRIPT_CMD_DONE(),
 
-    /* 0x000A 0x03 */ MSCRIPT_BEGIN_TEXT(0x0821),
-    /* 0x000D 0x01 */ MSCRIPT_AWAIT_TEXT(),
-    /* 0x000E 0x01 */ MSCRIPT_DONE(),
+    /* 0x000A 0x03 */ MSCRIPT_CMD_BEGIN_TEXT(0x0821),
+    /* 0x000D 0x01 */ MSCRIPT_CMD_AWAIT_TEXT(),
+    /* 0x000E 0x01 */ MSCRIPT_CMD_DONE(),
 };
 
 static MsgScript D_8092DCD0[] = {
-    /* 0x0000 0x05 */ MSCRIPT_BRANCH_ON_WEEK_EVENT_REG(0x17, 0x20, 0x000A - 0x0005),
-    /* 0x0005 0x03 */ MSCRIPT_BEGIN_TEXT(0x0831),
-    /* 0x0008 0x01 */ MSCRIPT_AWAIT_TEXT(),
-    /* 0x0009 0x01 */ MSCRIPT_DONE(),
+    /* 0x0000 0x05 */ MSCRIPT_CMD_CHECK_WEEK_EVENT_REG(WEEKEVENTREG_23_20, 0x000A - 0x0005),
+    /* 0x0005 0x03 */ MSCRIPT_CMD_BEGIN_TEXT(0x0831),
+    /* 0x0008 0x01 */ MSCRIPT_CMD_AWAIT_TEXT(),
+    /* 0x0009 0x01 */ MSCRIPT_CMD_DONE(),
 
-    /* 0x000A 0x03 */ MSCRIPT_BEGIN_TEXT(0x0822),
-    /* 0x000D 0x01 */ MSCRIPT_AWAIT_TEXT(),
-    /* 0x000E 0x01 */ MSCRIPT_DONE(),
+    /* 0x000A 0x03 */ MSCRIPT_CMD_BEGIN_TEXT(0x0822),
+    /* 0x000D 0x01 */ MSCRIPT_CMD_AWAIT_TEXT(),
+    /* 0x000E 0x01 */ MSCRIPT_CMD_DONE(),
 };
 
 static MsgScript D_8092DCE0[] = {
-    /* 0x0000 0x05 */ MSCRIPT_BRANCH_ON_WEEK_EVENT_REG(0x17, 0x20, 0x000A - 0x0005),
-    /* 0x0005 0x03 */ MSCRIPT_BEGIN_TEXT(0x0832),
-    /* 0x0008 0x01 */ MSCRIPT_AWAIT_TEXT(),
-    /* 0x0009 0x01 */ MSCRIPT_DONE(),
+    /* 0x0000 0x05 */ MSCRIPT_CMD_CHECK_WEEK_EVENT_REG(WEEKEVENTREG_23_20, 0x000A - 0x0005),
+    /* 0x0005 0x03 */ MSCRIPT_CMD_BEGIN_TEXT(0x0832),
+    /* 0x0008 0x01 */ MSCRIPT_CMD_AWAIT_TEXT(),
+    /* 0x0009 0x01 */ MSCRIPT_CMD_DONE(),
 
-    /* 0x000A 0x03 */ MSCRIPT_BEGIN_TEXT(0x0823),
-    /* 0x000D 0x01 */ MSCRIPT_AWAIT_TEXT(),
-    /* 0x000E 0x01 */ MSCRIPT_DONE(),
+    /* 0x000A 0x03 */ MSCRIPT_CMD_BEGIN_TEXT(0x0823),
+    /* 0x000D 0x01 */ MSCRIPT_CMD_AWAIT_TEXT(),
+    /* 0x000E 0x01 */ MSCRIPT_CMD_DONE(),
 };
 
 static MsgScript D_8092DCF0[] = {
-    /* 0x0000 0x03 */ MSCRIPT_BEGIN_TEXT(0x0833),
-    /* 0x0003 0x01 */ MSCRIPT_AWAIT_TEXT(),
-    /* 0x0004 0x03 */ MSCRIPT_BRANCH_ON_CALLBACK_OPTIONAL(0x0),
-    /* 0x0007 0x01 */ MSCRIPT_PAUSE(),
-    /* 0x0008 0x03 */ MSCRIPT_SET_EVENT_INF(0x01, 0x40),
-    /* 0x000B 0x01 */ MSCRIPT_CMD22(),
-    /* 0x000C 0x01 */ MSCRIPT_DONE(),
+    /* 0x0000 0x03 */ MSCRIPT_CMD_BEGIN_TEXT(0x0833),
+    /* 0x0003 0x01 */ MSCRIPT_CMD_AWAIT_TEXT(),
+    /* 0x0004 0x03 */ MSCRIPT_CMD_CHECK_CALLBACK(0x0),
+    /* 0x0007 0x01 */ MSCRIPT_CMD_PAUSE(),
+    /* 0x0008 0x03 */ MSCRIPT_CMD_SET_EVENT_INF(EVENTINF_16),
+    /* 0x000B 0x01 */ MSCRIPT_CMD_UNSET_AUTOTALK(),
+    /* 0x000C 0x01 */ MSCRIPT_CMD_DONE(),
 };
 
 static MsgScript D_8092DD00[] = {
-    /* 0x0000 0x03 */ MSCRIPT_BEGIN_TEXT(0x082E),
-    /* 0x0003 0x01 */ MSCRIPT_AWAIT_TEXT(),
-    /* 0x0004 0x01 */ MSCRIPT_DONE(),
+    /* 0x0000 0x03 */ MSCRIPT_CMD_BEGIN_TEXT(0x082E),
+    /* 0x0003 0x01 */ MSCRIPT_CMD_AWAIT_TEXT(),
+    /* 0x0004 0x01 */ MSCRIPT_CMD_DONE(),
 };
 
 ActorInit En_Dns_InitVars = {
@@ -231,7 +231,7 @@ void func_8092C934(EnDns* this) {
     }
 }
 
-MsgScript* func_8092C9BC(EnDns* this, PlayState* play) {
+MsgScript* EnDns_GetMsgScript(EnDns* this, PlayState* play) {
     Player* player = GET_PLAYER(play);
 
     if (!CHECK_WEEKEVENTREG(WEEKEVENTREG_23_20)) {
@@ -294,7 +294,7 @@ s32 func_8092CAD0(EnDns* this, PlayState* play) {
             }
             this->unk_2DA = this->actor.world.rot.y;
         }
-        this->unk_1E0 = func_8092C9BC(this, play);
+        this->msgScript = EnDns_GetMsgScript(this, play);
         this->actionFunc = func_8092D4D8;
         ret = true;
     }
@@ -459,7 +459,7 @@ void func_8092D1B8(EnDns* this, PlayState* play) {
             SubS_SetOfferMode(&this->unk_2C6, SUBS_OFFER_MODE_AUTO, SUBS_OFFER_MODE_MASK);
             Audio_PlaySfx(NA_SE_SY_FOUND);
             SET_EVENTINF(EVENTINF_15);
-            this->unk_2F4 = func_8092CCEC;
+            this->msgScriptCallback = func_8092CCEC;
             EnDns_ChangeAnim(this, EN_DNS_ANIM_WALK);
             this->actionFunc = EnDns_DoNothing;
         } else if (CHECK_EVENTINF(EVENTINF_16)) {
@@ -508,9 +508,9 @@ void func_8092D4D8(EnDns* this, PlayState* play) {
         if (func_8092CE38(this)) {
             EnDns_ChangeAnim(this, EN_DNS_ANIM_WALK);
         }
-    } else if (MsgEvent_RunScript(&this->actor, play, this->unk_1E0, this->unk_2F4, &this->unk_1DC)) {
-        SubS_SetOfferMode(&this->unk_2C6, 3, 7);
-        this->unk_2F4 = NULL;
+    } else if (MsgEvent_RunScript(&this->actor, play, this->msgScript, this->msgScriptCallback, &this->msgScriptPos)) {
+        SubS_SetOfferMode(&this->unk_2C6, SUBS_OFFER_MODE_ONSCREEN, SUBS_OFFER_MODE_MASK);
+        this->msgScriptCallback = NULL;
         if (ENDNS_GET_4000(&this->actor)) {
             if (!CHECK_EVENTINF(EVENTINF_15)) {
                 this->skelAnime.curFrame = this->animCurFrame;

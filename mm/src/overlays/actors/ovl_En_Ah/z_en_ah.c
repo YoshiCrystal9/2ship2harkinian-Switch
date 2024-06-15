@@ -39,34 +39,34 @@ static u8 D_80BD3DB0[] = {
 };
 
 MsgScript D_80BD3DE8[] = {
-    /* 0x0000 0x03 */ MSCRIPT_BEGIN_TEXT(0x28FF),
-    /* 0x0003 0x01 */ MSCRIPT_AWAIT_TEXT(),
-    /* 0x0004 0x01 */ MSCRIPT_DONE(),
+    /* 0x0000 0x03 */ MSCRIPT_CMD_BEGIN_TEXT(0x28FF),
+    /* 0x0003 0x01 */ MSCRIPT_CMD_AWAIT_TEXT(),
+    /* 0x0004 0x01 */ MSCRIPT_CMD_DONE(),
 };
 
 MsgScript D_80BD3DF0[] = {
-    /* 0x0000 0x03 */ MSCRIPT_BEGIN_TEXT(0x2900),
-    /* 0x0003 0x01 */ MSCRIPT_AWAIT_TEXT(),
-    /* 0x0004 0x01 */ MSCRIPT_DONE(),
+    /* 0x0000 0x03 */ MSCRIPT_CMD_BEGIN_TEXT(0x2900),
+    /* 0x0003 0x01 */ MSCRIPT_CMD_AWAIT_TEXT(),
+    /* 0x0004 0x01 */ MSCRIPT_CMD_DONE(),
 };
 
 MsgScript D_80BD3DF8[] = {
-    /* 0x0000 0x05 */ MSCRIPT_BRANCH_ON_WEEK_EVENT_REG(0x33, 0x01, 0x000A - 0x0005),
-    /* 0x0005 0x03 */ MSCRIPT_BEGIN_TEXT(0x28FE),
-    /* 0x0008 0x01 */ MSCRIPT_AWAIT_TEXT(),
-    /* 0x0009 0x01 */ MSCRIPT_DONE(),
+    /* 0x0000 0x05 */ MSCRIPT_CMD_CHECK_WEEK_EVENT_REG(WEEKEVENTREG_DELIVERED_PENDANT_OF_MEMORIES, 0x000A - 0x0005),
+    /* 0x0005 0x03 */ MSCRIPT_CMD_BEGIN_TEXT(0x28FE),
+    /* 0x0008 0x01 */ MSCRIPT_CMD_AWAIT_TEXT(),
+    /* 0x0009 0x01 */ MSCRIPT_CMD_DONE(),
 
-    /* 0x000A 0x03 */ MSCRIPT_BEGIN_TEXT(0x28FC),
-    /* 0x000D 0x01 */ MSCRIPT_AWAIT_TEXT(),
-    /* 0x000E 0x01 */ MSCRIPT_DONE(),
+    /* 0x000A 0x03 */ MSCRIPT_CMD_BEGIN_TEXT(0x28FC),
+    /* 0x000D 0x01 */ MSCRIPT_CMD_AWAIT_TEXT(),
+    /* 0x000E 0x01 */ MSCRIPT_CMD_DONE(),
 };
 
 MsgScript D_80BD3E08[] = {
-    /* 0x0000 0x03 */ MSCRIPT_BEGIN_TEXT(0x28FD),
-    /* 0x0003 0x01 */ MSCRIPT_AWAIT_TEXT(),
-    /* 0x0004 0x03 */ MSCRIPT_CONTINUE_TEXT(0x2954),
-    /* 0x0007 0x01 */ MSCRIPT_AWAIT_TEXT(),
-    /* 0x0008 0x01 */ MSCRIPT_DONE(),
+    /* 0x0000 0x03 */ MSCRIPT_CMD_BEGIN_TEXT(0x28FD),
+    /* 0x0003 0x01 */ MSCRIPT_CMD_AWAIT_TEXT(),
+    /* 0x0004 0x03 */ MSCRIPT_CMD_CONTINUE_TEXT(0x2954),
+    /* 0x0007 0x01 */ MSCRIPT_CMD_AWAIT_TEXT(),
+    /* 0x0008 0x01 */ MSCRIPT_CMD_DONE(),
 };
 
 ActorInit En_Ah_InitVars = {
@@ -387,10 +387,8 @@ s32 func_80BD3198(EnAh* this, PlayState* play) {
     return false;
 }
 
-MsgScript* func_80BD3294(EnAh* this, PlayState* play) {
-    s32 mask = Player_GetMask(play);
-
-    if (PLAYER_MASK_KAFEIS_MASK == mask) {
+MsgScript* EnAh_GetMsgScript(EnAh* this, PlayState* play) {
+    if (Player_GetMask(play) == PLAYER_MASK_KAFEIS_MASK) {
         return D_80BD3E08;
     }
 
@@ -538,12 +536,12 @@ void func_80BD3768(EnAh* this, PlayState* play) {
     Vec3f sp40;
     Vec3f sp34;
 
-    if (MsgEvent_RunScript(&this->actor, play, func_80BD3294(this, play), NULL, &this->unk_1E0)) {
-        SubS_SetOfferMode(&this->unk_2D8, 3, 7);
+    if (MsgEvent_RunScript(&this->actor, play, EnAh_GetMsgScript(this, play), NULL, &this->msgScriptPos)) {
+        SubS_SetOfferMode(&this->unk_2D8, SUBS_OFFER_MODE_ONSCREEN, SUBS_OFFER_MODE_MASK);
         this->unk_2D8 &= ~8;
         this->unk_2D8 |= 0x80;
         this->unk_2F4 = 20;
-        this->unk_1E0 = 0;
+        this->msgScriptPos = 0;
         this->actionFunc = func_80BD36B8;
     } else if (this->unk_1DC != 2) {
         if (this->unk_1E4 != NULL) {

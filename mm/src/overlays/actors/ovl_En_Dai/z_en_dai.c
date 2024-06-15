@@ -251,28 +251,28 @@ void func_80B3E834(EnDai* this) {
     }
 }
 
-static MsgScript D_80B3FC8C[] = {
-    /* 0x0000 0x03 */ MSCRIPT_BRANCH_IF_GORON(0x0009 - 0x0003),
-    /* 0x0003 0x03 */ MSCRIPT_BEGIN_TEXT(0x0C90),
-    /* 0x0006 0x01 */ MSCRIPT_AWAIT_TEXT(),
-    /* 0x0007 0x01 */ MSCRIPT_CLOSE_TEXT(),
-    /* 0x0008 0x01 */ MSCRIPT_DONE(),
+static MsgScript sMsgScript[] = {
+    /* 0x0000 0x03 */ MSCRIPT_CMD_CHECK_GORON(0x0009 - 0x0003),
+    /* 0x0003 0x03 */ MSCRIPT_CMD_BEGIN_TEXT(0x0C90),
+    /* 0x0006 0x01 */ MSCRIPT_CMD_AWAIT_TEXT(),
+    /* 0x0007 0x01 */ MSCRIPT_CMD_CLOSE_TEXT(),
+    /* 0x0008 0x01 */ MSCRIPT_CMD_DONE(),
 
-    /* 0x0009 0x05 */ MSCRIPT_BRANCH_ON_WEEK_EVENT_REG(0x55, 0x20, 0x001F - 0x000E),
-    /* 0x000E 0x03 */ MSCRIPT_BEGIN_TEXT(0x0C91),
-    /* 0x0011 0x01 */ MSCRIPT_AWAIT_TEXT(),
-    /* 0x0012 0x03 */ MSCRIPT_CONTINUE_TEXT(0x0C92),
-    /* 0x0015 0x01 */ MSCRIPT_AWAIT_TEXT(),
-    /* 0x0016 0x03 */ MSCRIPT_CONTINUE_TEXT(0x0C93),
-    /* 0x0019 0x01 */ MSCRIPT_AWAIT_TEXT(),
-    /* 0x001A 0x01 */ MSCRIPT_CLOSE_TEXT(),
-    /* 0x001B 0x03 */ MSCRIPT_WEEK_EVENT_REG_SET(0x55, 0x20),
-    /* 0x001E 0x01 */ MSCRIPT_DONE(),
+    /* 0x0009 0x05 */ MSCRIPT_CMD_CHECK_WEEK_EVENT_REG(WEEKEVENTREG_85_20, 0x001F - 0x000E),
+    /* 0x000E 0x03 */ MSCRIPT_CMD_BEGIN_TEXT(0x0C91),
+    /* 0x0011 0x01 */ MSCRIPT_CMD_AWAIT_TEXT(),
+    /* 0x0012 0x03 */ MSCRIPT_CMD_CONTINUE_TEXT(0x0C92),
+    /* 0x0015 0x01 */ MSCRIPT_CMD_AWAIT_TEXT(),
+    /* 0x0016 0x03 */ MSCRIPT_CMD_CONTINUE_TEXT(0x0C93),
+    /* 0x0019 0x01 */ MSCRIPT_CMD_AWAIT_TEXT(),
+    /* 0x001A 0x01 */ MSCRIPT_CMD_CLOSE_TEXT(),
+    /* 0x001B 0x03 */ MSCRIPT_CMD_SET_WEEK_EVENT_REG(WEEKEVENTREG_85_20),
+    /* 0x001E 0x01 */ MSCRIPT_CMD_DONE(),
 
-    /* 0x001F 0x03 */ MSCRIPT_BEGIN_TEXT(0x0C94),
-    /* 0x0022 0x01 */ MSCRIPT_AWAIT_TEXT(),
-    /* 0x0023 0x01 */ MSCRIPT_CLOSE_TEXT(),
-    /* 0x0024 0x01 */ MSCRIPT_DONE(),
+    /* 0x001F 0x03 */ MSCRIPT_CMD_BEGIN_TEXT(0x0C94),
+    /* 0x0022 0x01 */ MSCRIPT_CMD_AWAIT_TEXT(),
+    /* 0x0023 0x01 */ MSCRIPT_CMD_CLOSE_TEXT(),
+    /* 0x0024 0x01 */ MSCRIPT_CMD_DONE(),
 };
 
 static f32 D_80B3FCB4[] = {
@@ -469,9 +469,9 @@ void func_80B3EEDC(EnDai* this, PlayState* play) {
 }
 
 void func_80B3EF90(EnDai* this, PlayState* play) {
-    if (MsgEvent_RunScript(&this->actor, play, D_80B3FC8C, NULL, &this->unk_1D0)) {
-        SubS_SetOfferMode(&this->unk_1CE, 3, 7);
-        this->unk_1D0 = 0;
+    if (MsgEvent_RunScript(&this->actor, play, sMsgScript, NULL, &this->msgScriptPos)) {
+        SubS_SetOfferMode(&this->unk_1CE, SUBS_OFFER_MODE_ONSCREEN, SUBS_OFFER_MODE_MASK);
+        this->msgScriptPos = 0;
         this->actionFunc = func_80B3F00C;
     } else {
         Math_ApproachS(&this->actor.shape.rot.y, this->actor.yawTowardsPlayer, 4, 0x2AA8);

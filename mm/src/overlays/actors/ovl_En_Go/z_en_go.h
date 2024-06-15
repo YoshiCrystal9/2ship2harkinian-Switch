@@ -94,7 +94,7 @@ typedef struct EnGo {
     /* 0x284 */ Path* gatekeeperPath;
     /* 0x288 */ s8 taisouObjectSlot;
     /* 0x289 */ s8 hakuginDemoObjectSlot;
-    /* 0x28C */ s32 msgScriptResumePos;
+    /* 0x28C */ s32 msgScriptPos;
     /* 0x290 */ Vec3f headPos;
     /* 0x29C */ Vec3f bodyPos;
     /* 0x2A8 */ Vec3s headRot;
@@ -130,8 +130,8 @@ typedef struct EnGo {
     /* 0x3C8 */ s16 fidgetTableZ[ENGO_FIDGET_TABLE_LEN];
     /* 0x3CE */ s16 fidgetTableY[ENGO_FIDGET_TABLE_LEN];
     /* 0x3D4 */ s16 surprisePhase;
-    /* 0x3D8 */ MsgEventCallback msgEventCallback;
-    /* 0x3DC */ s32 curAnimIndex;
+    /* 0x3D8 */ MsgScriptCallback msgScriptCallback;
+    /* 0x3DC */ s32 animIndex;
     /* 0x3E0 */ UNK_TYPE1 unk3E0[0x4];
     /* 0x3E4 */ s32 indexPathPoint;
     /* 0x3E8 */ s32 indexEffect;

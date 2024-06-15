@@ -31,42 +31,42 @@ ActorInit Dm_Tag_InitVars = {
 };
 
 MsgScript D_80C22BF0[] = {
-    /* 0x0000 0x03 */ MSCRIPT_BEGIN_TEXT(0x28F0),
-    /* 0x0003 0x01 */ MSCRIPT_AWAIT_TEXT(),
-    /* 0x0004 0x01 */ MSCRIPT_PAUSE(),
-    /* 0x0005 0x03 */ MSCRIPT_BRANCH_ON_CALLBACK_OPTIONAL(0x0),
-    /* 0x0008 0x01 */ MSCRIPT_DONE(),
+    /* 0x0000 0x03 */ MSCRIPT_CMD_BEGIN_TEXT(0x28F0),
+    /* 0x0003 0x01 */ MSCRIPT_CMD_AWAIT_TEXT(),
+    /* 0x0004 0x01 */ MSCRIPT_CMD_PAUSE(),
+    /* 0x0005 0x03 */ MSCRIPT_CMD_CHECK_CALLBACK(0x0),
+    /* 0x0008 0x01 */ MSCRIPT_CMD_DONE(),
 };
 
 MsgScript D_80C22BFC[] = {
-    /* 0x0000 0x03 */ MSCRIPT_BRANCH_ON_CALLBACK_OPTIONAL(0x0),
-    /* 0x0003 0x03 */ MSCRIPT_BEGIN_TEXT(0x28F1),
-    /* 0x0006 0x01 */ MSCRIPT_AWAIT_TEXT(),
-    /* 0x0007 0x03 */ MSCRIPT_BRANCH_ON_CALLBACK_OPTIONAL(0x0),
-    /* 0x000A 0x03 */ MSCRIPT_BEGIN_TEXT(0x28F2),
-    /* 0x000D 0x01 */ MSCRIPT_AWAIT_TEXT(),
-    /* 0x000E 0x03 */ MSCRIPT_BRANCH_ON_CALLBACK_OPTIONAL(0x0),
-    /* 0x0011 0x03 */ MSCRIPT_BEGIN_TEXT(0x28F3),
-    /* 0x0014 0x01 */ MSCRIPT_AWAIT_TEXT(),
-    /* 0x0015 0x03 */ MSCRIPT_BRANCH_ON_CALLBACK_OPTIONAL(0x0),
-    /* 0x0018 0x03 */ MSCRIPT_BEGIN_TEXT(0x28F4),
-    /* 0x001B 0x01 */ MSCRIPT_AWAIT_TEXT(),
-    /* 0x001C 0x03 */ MSCRIPT_BRANCH_ON_CALLBACK_OPTIONAL(0x0),
-    /* 0x001F 0x03 */ MSCRIPT_BEGIN_TEXT(0x28F5),
-    /* 0x0022 0x01 */ MSCRIPT_AWAIT_TEXT(),
-    /* 0x0023 0x03 */ MSCRIPT_BRANCH_ON_CALLBACK_OPTIONAL(0x0),
-    /* 0x0026 0x03 */ MSCRIPT_BEGIN_TEXT(0x28F6),
-    /* 0x0029 0x01 */ MSCRIPT_AWAIT_TEXT(),
-    /* 0x002A 0x01 */ MSCRIPT_PAUSE(),
-    /* 0x002B 0x03 */ MSCRIPT_WEEK_EVENT_REG_SET(0x55, 0x04),
-    /* 0x002E 0x03 */ MSCRIPT_BRANCH_ON_CALLBACK_OPTIONAL(0x0),
-    /* 0x0031 0x01 */ MSCRIPT_DONE(),
+    /* 0x0000 0x03 */ MSCRIPT_CMD_CHECK_CALLBACK(0x0),
+    /* 0x0003 0x03 */ MSCRIPT_CMD_BEGIN_TEXT(0x28F1),
+    /* 0x0006 0x01 */ MSCRIPT_CMD_AWAIT_TEXT(),
+    /* 0x0007 0x03 */ MSCRIPT_CMD_CHECK_CALLBACK(0x0),
+    /* 0x000A 0x03 */ MSCRIPT_CMD_BEGIN_TEXT(0x28F2),
+    /* 0x000D 0x01 */ MSCRIPT_CMD_AWAIT_TEXT(),
+    /* 0x000E 0x03 */ MSCRIPT_CMD_CHECK_CALLBACK(0x0),
+    /* 0x0011 0x03 */ MSCRIPT_CMD_BEGIN_TEXT(0x28F3),
+    /* 0x0014 0x01 */ MSCRIPT_CMD_AWAIT_TEXT(),
+    /* 0x0015 0x03 */ MSCRIPT_CMD_CHECK_CALLBACK(0x0),
+    /* 0x0018 0x03 */ MSCRIPT_CMD_BEGIN_TEXT(0x28F4),
+    /* 0x001B 0x01 */ MSCRIPT_CMD_AWAIT_TEXT(),
+    /* 0x001C 0x03 */ MSCRIPT_CMD_CHECK_CALLBACK(0x0),
+    /* 0x001F 0x03 */ MSCRIPT_CMD_BEGIN_TEXT(0x28F5),
+    /* 0x0022 0x01 */ MSCRIPT_CMD_AWAIT_TEXT(),
+    /* 0x0023 0x03 */ MSCRIPT_CMD_CHECK_CALLBACK(0x0),
+    /* 0x0026 0x03 */ MSCRIPT_CMD_BEGIN_TEXT(0x28F6),
+    /* 0x0029 0x01 */ MSCRIPT_CMD_AWAIT_TEXT(),
+    /* 0x002A 0x01 */ MSCRIPT_CMD_PAUSE(),
+    /* 0x002B 0x03 */ MSCRIPT_CMD_SET_WEEK_EVENT_REG(WEEKEVENTREG_85_04),
+    /* 0x002E 0x03 */ MSCRIPT_CMD_CHECK_CALLBACK(0x0),
+    /* 0x0031 0x01 */ MSCRIPT_CMD_DONE(),
 };
 
 MsgScript D_80C22C30[] = {
-    /* 0x0000 0x03 */ MSCRIPT_BEGIN_TEXT(0x28EF),
-    /* 0x0003 0x01 */ MSCRIPT_AWAIT_TEXT(),
-    /* 0x0004 0x01 */ MSCRIPT_DONE(),
+    /* 0x0000 0x03 */ MSCRIPT_CMD_BEGIN_TEXT(0x28EF),
+    /* 0x0003 0x01 */ MSCRIPT_CMD_AWAIT_TEXT(),
+    /* 0x0004 0x01 */ MSCRIPT_CMD_DONE(),
 };
 
 Actor* DmTag_FindActor(DmTag* this, PlayState* play, u8 actorCategory, s16 actorId) {
@@ -211,22 +211,22 @@ s32 func_80C227E8(Actor* thisx, PlayState* play) {
     return false;
 }
 
-MsgScript* func_80C22880(DmTag* this, PlayState* play) {
+MsgScript* DmTag_GetMsgScript(DmTag* this, PlayState* play) {
     s32 time;
 
     switch (this->unk_18E) {
         case 1:
-            time = SCHEDULE_TIME_NOW;
-            if ((time >= SCHEDULE_TIME(21, 30)) && (time < SCHEDULE_TIME(23, 0))) {
+            time = SCRIPT_TIME_NOW;
+            if ((time >= SCRIPT_TIME(21, 30)) && (time < SCRIPT_TIME(23, 0))) {
                 if (gSaveContext.save.day == 2) {
-                    this->msgEventCallback = func_80C227E8;
+                    this->msgScriptCallback = func_80C227E8;
                     return D_80C22BF0;
                 }
             }
             return D_80C22C30;
 
         case 2:
-            this->msgEventCallback = func_80C224D8;
+            this->msgScriptCallback = func_80C224D8;
             return D_80C22BFC;
 
         default:
@@ -243,7 +243,7 @@ s32 func_80C2291C(DmTag* this, PlayState* play) {
         Actor_TalkOfferAccepted(&this->actor, &play->state)) {
         this->unk_18C |= 8;
         SubS_SetOfferMode(&this->unk_18C, SUBS_OFFER_MODE_NONE, SUBS_OFFER_MODE_MASK);
-        this->msgEventScript = func_80C22880(this, play);
+        this->msgScript = DmTag_GetMsgScript(this, play);
         this->actionFunc = func_80C229FC;
         ret = true;
     }
@@ -259,7 +259,7 @@ void DmTag_DoNothing(DmTag* this, PlayState* play) {
 }
 
 void func_80C229FC(DmTag* this, PlayState* play) {
-    if (MsgEvent_RunScript(&this->actor, play, this->msgEventScript, this->msgEventCallback, &this->msgEventArg4)) {
+    if (MsgEvent_RunScript(&this->actor, play, this->msgScript, this->msgScriptCallback, &this->msgScriptPos)) {
         this->actionFunc = func_80C229AC;
     }
 }
