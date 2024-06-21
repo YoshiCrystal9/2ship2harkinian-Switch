@@ -6,11 +6,11 @@
 #define dgGomessScytheSwingAnim "__OTR__objects/object_death/gGomessScytheSwingAnim"
 static const ALIGN_ASSET(2) char gGomessScytheSwingAnim[] = dgGomessScytheSwingAnim;
 
-#define dobject_death_Anim_0015B4 "__OTR__objects/object_death/object_death_Anim_0015B4"
-static const ALIGN_ASSET(2) char object_death_Anim_0015B4[] = dobject_death_Anim_0015B4;
+#define dgGomessBatSwarmStartAnim "__OTR__objects/object_death/gGomessBatSwarmStartAnim"
+static const ALIGN_ASSET(2) char gGomessBatSwarmStartAnim[] = dgGomessBatSwarmStartAnim;
 
-#define dobject_death_Anim_001834 "__OTR__objects/object_death/object_death_Anim_001834"
-static const ALIGN_ASSET(2) char object_death_Anim_001834[] = dobject_death_Anim_001834;
+#define dgGomessBatSwarmAnim "__OTR__objects/object_death/gGomessBatSwarmAnim"
+static const ALIGN_ASSET(2) char gGomessBatSwarmAnim[] = dgGomessBatSwarmAnim;
 
 #define dgGomessDamagedAnim "__OTR__objects/object_death/gGomessDamagedAnim"
 static const ALIGN_ASSET(2) char gGomessDamagedAnim[] = dgGomessDamagedAnim;
@@ -33,11 +33,11 @@ static const ALIGN_ASSET(2) char object_death_DL_006D18[] = dobject_death_DL_006
 #define dobject_death_DL_006E08 "__OTR__objects/object_death/object_death_DL_006E08"
 static const ALIGN_ASSET(2) char object_death_DL_006E08[] = dobject_death_DL_006E08;
 
-#define dobject_death_DL_006F88 "__OTR__objects/object_death/object_death_DL_006F88"
-static const ALIGN_ASSET(2) char object_death_DL_006F88[] = dobject_death_DL_006F88;
+#define dgGomessScytheHandleDL "__OTR__objects/object_death/gGomessScytheHandleDL"
+static const ALIGN_ASSET(2) char gGomessScytheHandleDL[] = dgGomessScytheHandleDL;
 
-#define dobject_death_DL_0073D0 "__OTR__objects/object_death/object_death_DL_0073D0"
-static const ALIGN_ASSET(2) char object_death_DL_0073D0[] = dobject_death_DL_0073D0;
+#define dgGomessScytheBladeDL "__OTR__objects/object_death/gGomessScytheBladeDL"
+static const ALIGN_ASSET(2) char gGomessScytheBladeDL[] = dgGomessScytheBladeDL;
 
 #define dobject_death_DL_0074B8 "__OTR__objects/object_death/object_death_DL_0074B8"
 static const ALIGN_ASSET(2) char object_death_DL_0074B8[] = dobject_death_DL_0074B8;
