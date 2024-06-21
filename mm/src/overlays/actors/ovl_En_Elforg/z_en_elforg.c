@@ -108,8 +108,8 @@ void EnElforg_Init(Actor* thisx, PlayState* play) {
             break;
     }
 
-    if (Map_IsInDungeonOrBossArea(play)) {
-        this->area = gSaveContext.dungeonIndex + STRAY_FAIRY_AREA_WOODFALL;
+    if (Map_IsInDungeonOrBossScene(play)) {
+        this->area = gSaveContext.dungeonSceneSharedIndex + STRAY_FAIRY_AREA_WOODFALL;
     } else {
         this->area = STRAY_FAIRY_GET_NON_DUNGEON_AREA(thisx);
     }
@@ -499,11 +499,11 @@ void EnElforg_FreeFloating(EnElforg* this, PlayState* play) {
                     return;
                 }
 
-                if (Map_IsInDungeonOrBossArea(play)) {
-                    gSaveContext.save.saveInfo.inventory.strayFairies[gSaveContext.dungeonIndex]++;
+                if (Map_IsInDungeonOrBossScene(play)) {
+                    gSaveContext.save.saveInfo.inventory.strayFairies[gSaveContext.dungeonSceneSharedIndex]++;
                     // You found a Stray Fairy!
                     Message_StartTextbox(play, 0x11, NULL);
-                    if (gSaveContext.save.saveInfo.inventory.strayFairies[(void)0, gSaveContext.dungeonIndex] >=
+                    if (gSaveContext.save.saveInfo.inventory.strayFairies[(void)0, gSaveContext.dungeonSceneSharedIndex] >=
                         STRAY_FAIRY_SCATTERED_TOTAL) {
                         // BENTODO This had | 0x900 which interfered with the 16 bit sequence IDs. Removing it doesn't
                         // seem to do anything bad.

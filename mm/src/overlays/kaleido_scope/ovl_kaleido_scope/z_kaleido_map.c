@@ -80,7 +80,7 @@ void KaleidoScope_DrawDungeonStrayFairyCount(PlayState* play) {
                         1 << 10);
 
     // Get digits for current number of stray fairies collected
-    counterDigits[1] = gSaveContext.save.saveInfo.inventory.strayFairies[(void)0, gSaveContext.dungeonIndex];
+    counterDigits[1] = gSaveContext.save.saveInfo.inventory.strayFairies[(void)0, gSaveContext.dungeonSceneSharedIndex];
     counterDigits[0] = counterDigits[1] / 10;
     counterDigits[1] -= (s16)(counterDigits[0] * 10);
 
@@ -109,10 +109,10 @@ TexturePtr sDungeonItemTextures[] = {
 };
 
 TexturePtr sDungeonTitleTextures[] = {
-    gPauseWoodfallTitleENGTex,   // DUNGEON_INDEX_WOODFALL_TEMPLE
-    gPauseSnowheadTitleENGTex,   // DUNGEON_INDEX_SNOWHEAD_TEMPLE
-    gPauseGreatBayTitleENGTex,   // DUNGEON_INDEX_GREAT_BAY_TEMPLE
-    gPauseStoneTowerTitleENGTex, // DUNGEON_INDEX_STONE_TOWER_TEMPLE
+    gPauseWoodfallTitleENGTex,   // DUNGEON_SCENE_INDEX_WOODFALL_TEMPLE
+    gPauseSnowheadTitleENGTex,   // DUNGEON_SCENE_INDEX_SNOWHEAD_TEMPLE
+    gPauseGreatBayTitleENGTex,   // DUNGEON_SCENE_INDEX_GREAT_BAY_TEMPLE
+    gPauseStoneTowerTitleENGTex, // DUNGEON_SCENE_INDEX_STONE_TOWER_TEMPLE
 };
 
 s16 sDungeonMapFloorIconPosY[] = { 67, 81, 95, 109, 123 };
@@ -125,30 +125,30 @@ void KaleidoScope_DrawDungeonMap(PlayState* play) {
     static s16 sStrayFairyIconAlpha = 255;
     static f32 sStrayFairyIconScale = 100.0f;
     static TexturePtr sStrayFairyIconTextures[][4] = {
-        // DUNGEON_INDEX_WOODFALL_TEMPLE
+        // DUNGEON_SCENE_INDEX_WOODFALL_TEMPLE
         { gStrayFairyWoodfallIconTex, gDungeonStrayFairyWoodfallIconTex, gStrayFairyWoodfallIconTex,
           gDungeonStrayFairyWoodfallIconTex },
-        // DUNGEON_INDEX_SNOWHEAD_TEMPLE
+        // DUNGEON_SCENE_INDEX_SNOWHEAD_TEMPLE
         { gStrayFairySnowheadIconTex, gDungeonStrayFairySnowheadIconTex, gStrayFairySnowheadIconTex,
           gDungeonStrayFairySnowheadIconTex },
-        // DUNGEON_INDEX_GREAT_BAY_TEMPLE
+        // DUNGEON_SCENE_INDEX_GREAT_BAY_TEMPLE
         { gStrayFairyGreatBayIconTex, gDungeonStrayFairyGreatBayIconTex, gStrayFairyGreatBayIconTex,
           gDungeonStrayFairyGreatBayIconTex },
-        // DUNGEON_INDEX_STONE_TOWER_TEMPLE
+        // DUNGEON_SCENE_INDEX_STONE_TOWER_TEMPLE
         { gStrayFairyStoneTowerIconTex, gDungeonStrayFairyStoneTowerIconTex, gStrayFairyStoneTowerIconTex,
           gDungeonStrayFairyStoneTowerIconTex },
     };
     static u8 sStrayFairyIconPrimColors[][3] = {
-        { 255, 110, 160 }, // DUNGEON_INDEX_WOODFALL_TEMPLE
-        { 90, 255, 100 },  // DUNGEON_INDEX_SNOWHEAD_TEMPLE
-        { 120, 255, 255 }, // DUNGEON_INDEX_GREAT_BAY_TEMPLE
-        { 245, 245, 90 },  // DUNGEON_INDEX_STONE_TOWER_TEMPLE
+        { 255, 110, 160 }, // DUNGEON_SCENE_INDEX_WOODFALL_TEMPLE
+        { 90, 255, 100 },  // DUNGEON_SCENE_INDEX_SNOWHEAD_TEMPLE
+        { 120, 255, 255 }, // DUNGEON_SCENE_INDEX_GREAT_BAY_TEMPLE
+        { 245, 245, 90 },  // DUNGEON_SCENE_INDEX_STONE_TOWER_TEMPLE
     };
     static u8 sStrayFairyIconEnvColors[][3] = {
-        { 255, 255, 255 }, // DUNGEON_INDEX_WOODFALL_TEMPLE
-        { 255, 255, 255 }, // DUNGEON_INDEX_SNOWHEAD_TEMPLE
-        { 255, 255, 255 }, // DUNGEON_INDEX_GREAT_BAY_TEMPLE
-        { 225, 170, 0 },   // DUNGEON_INDEX_STONE_TOWER_TEMPLE
+        { 255, 255, 255 }, // DUNGEON_SCENE_INDEX_WOODFALL_TEMPLE
+        { 255, 255, 255 }, // DUNGEON_SCENE_INDEX_SNOWHEAD_TEMPLE
+        { 255, 255, 255 }, // DUNGEON_SCENE_INDEX_GREAT_BAY_TEMPLE
+        { 225, 170, 0 },   // DUNGEON_SCENE_INDEX_STONE_TOWER_TEMPLE
     };
     static s32 sStrayFairyIconRectS[] = {
         1 << 10, // mirror texture horizontally
@@ -187,8 +187,8 @@ void KaleidoScope_DrawDungeonMap(PlayState* play) {
     gDPSetCombineMode(POLY_OPA_DISP++, G_CC_MODULATEIA, G_CC_MODULATEIA);
 
     // QUAD_MAP_PAGE_DUNGEON_TITLE
-    POLY_OPA_DISP =
-        Gfx_DrawTexQuadIA8(POLY_OPA_DISP, sDungeonTitleTextures[((void)0, gSaveContext.dungeonIndex)], 128, 16, 0);
+    POLY_OPA_DISP = Gfx_DrawTexQuadIA8(
+        POLY_OPA_DISP, sDungeonTitleTextures[((void)0, gSaveContext.dungeonSceneSharedIndex)], 128, 16, 0);
 
     gDPPipeSync(POLY_OPA_DISP++);
 
@@ -224,13 +224,15 @@ void KaleidoScope_DrawDungeonMap(PlayState* play) {
                                       PRIMITIVE, 0, PRIMITIVE, ENVIRONMENT, TEXEL0, ENVIRONMENT, TEXEL0, 0, PRIMITIVE,
                                       0);
 
-                    gDPSetPrimColor(
-                        POLY_OPA_DISP++, 0, 0, sStrayFairyIconPrimColors[((void)0, gSaveContext.dungeonIndex)][0],
-                        sStrayFairyIconPrimColors[((void)0, gSaveContext.dungeonIndex)][1],
-                        sStrayFairyIconPrimColors[((void)0, gSaveContext.dungeonIndex)][2], sStrayFairyIconAlpha);
-                    gDPSetEnvColor(POLY_OPA_DISP++, sStrayFairyIconEnvColors[((void)0, gSaveContext.dungeonIndex)][0],
-                                   sStrayFairyIconEnvColors[((void)0, gSaveContext.dungeonIndex)][1],
-                                   sStrayFairyIconEnvColors[((void)0, gSaveContext.dungeonIndex)][2], 0);
+                    gDPSetPrimColor(POLY_OPA_DISP++, 0, 0,
+                                    sStrayFairyIconPrimColors[((void)0, gSaveContext.dungeonSceneSharedIndex)][0],
+                                    sStrayFairyIconPrimColors[((void)0, gSaveContext.dungeonSceneSharedIndex)][1],
+                                    sStrayFairyIconPrimColors[((void)0, gSaveContext.dungeonSceneSharedIndex)][2],
+                                    sStrayFairyIconAlpha);
+                    gDPSetEnvColor(POLY_OPA_DISP++,
+                                   sStrayFairyIconEnvColors[((void)0, gSaveContext.dungeonSceneSharedIndex)][0],
+                                   sStrayFairyIconEnvColors[((void)0, gSaveContext.dungeonSceneSharedIndex)][1],
+                                   sStrayFairyIconEnvColors[((void)0, gSaveContext.dungeonSceneSharedIndex)][2], 0);
 
                     scale = sStrayFairyIconScale / 100.0f;
 
@@ -274,7 +276,7 @@ void KaleidoScope_DrawDungeonMap(PlayState* play) {
 
                     gDPLoadTextureBlock(
                         POLY_OPA_DISP++,
-                        sStrayFairyIconTextures[((void)0, gSaveContext.dungeonIndex)][sStrayFairyIconIndex],
+                        sStrayFairyIconTextures[((void)0, gSaveContext.dungeonSceneSharedIndex)][sStrayFairyIconIndex],
                         G_IM_FMT_RGBA, G_IM_SIZ_32b, 32, 24, 0, G_TX_MIRROR | G_TX_WRAP, G_TX_NOMIRROR | G_TX_WRAP, 5,
                         G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
                     gSPTextureRectangle(POLY_OPA_DISP++, 54 << 2, 140 << 2, 86 << 2, 164 << 2, G_TX_RENDERTILE,
@@ -284,7 +286,7 @@ void KaleidoScope_DrawDungeonMap(PlayState* play) {
                     Gfx_SetupDL42_Opa(play->state.gfxCtx);
                 }
             }
-        } else if (CHECK_DUNGEON_ITEM(i, gSaveContext.dungeonIndex)) {
+        } else if (CHECK_DUNGEON_ITEM(i, gSaveContext.dungeonSceneSharedIndex)) {
             gDPLoadTextureBlock(POLY_OPA_DISP++, sDungeonItemTextures[i], G_IM_FMT_RGBA, G_IM_SIZ_32b, 24, 24, 0,
                                 G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMASK, G_TX_NOMASK,
                                 G_TX_NOLOD, G_TX_NOLOD);
@@ -314,7 +316,7 @@ void KaleidoScope_DrawDungeonMap(PlayState* play) {
                                       sDungeonMapFloorIconPosY[R_PLAYER_FLOOR_REVERSE_INDEX], 16, 16, 1 << 10, 1 << 10);
 
             // Draw skull face next to the dungeon floor icon the boss is located at.
-            if (CHECK_DUNGEON_ITEM(DUNGEON_COMPASS, gSaveContext.dungeonIndex)) {
+            if (CHECK_DUNGEON_ITEM(DUNGEON_COMPASS, gSaveContext.dungeonSceneSharedIndex)) {
                 POLY_OPA_DISP = Gfx_DrawTexRectRGBA16(
                     POLY_OPA_DISP, gDungeonMapSkullTex, 16, 16, 108,
                     sDungeonMapFloorIconPosY[FLOOR_INDEX_MAX - MapDisp_GetBossRoomStorey()], 16, 16, 1 << 10, 1 << 10);
@@ -366,7 +368,8 @@ void KaleidoScope_UpdateDungeonCursor(PlayState* play) {
                                 KaleidoScope_MoveCursorToSpecialPos(play, PAUSE_CURSOR_PAGE_RIGHT);
                                 break;
                             }
-                            if (CHECK_DUNGEON_ITEM(pauseCtx->cursorPoint[PAUSE_MAP], gSaveContext.dungeonIndex)) {
+                            if (CHECK_DUNGEON_ITEM(pauseCtx->cursorPoint[PAUSE_MAP],
+                                                   gSaveContext.dungeonSceneSharedIndex)) {
                                 break;
                             }
                         }
@@ -378,11 +381,11 @@ void KaleidoScope_UpdateDungeonCursor(PlayState* play) {
                     KaleidoScope_MoveCursorFromSpecialPos(play);
                     pauseCtx->cursorXIndex[PAUSE_MAP] = 1;
                     pauseCtx->cursorPoint[PAUSE_MAP] = DUNGEON_MAP;
-                    if (!CHECK_DUNGEON_ITEM(DUNGEON_MAP, gSaveContext.dungeonIndex)) {
+                    if (!CHECK_DUNGEON_ITEM(DUNGEON_MAP, gSaveContext.dungeonSceneSharedIndex)) {
                         pauseCtx->cursorPoint[PAUSE_MAP]--; // DUNGEON_COMPASS
-                        if (!CHECK_DUNGEON_ITEM(DUNGEON_COMPASS, gSaveContext.dungeonIndex)) {
+                        if (!CHECK_DUNGEON_ITEM(DUNGEON_COMPASS, gSaveContext.dungeonSceneSharedIndex)) {
                             pauseCtx->cursorPoint[PAUSE_MAP]--; // DUNGEON_BOSS_KEY
-                            if (!CHECK_DUNGEON_ITEM(DUNGEON_BOSS_KEY, gSaveContext.dungeonIndex)) {
+                            if (!CHECK_DUNGEON_ITEM(DUNGEON_BOSS_KEY, gSaveContext.dungeonSceneSharedIndex)) {
                                 pauseCtx->cursorSlot[PAUSE_MAP] = DUNGEON_STRAY_FAIRIES;
                                 pauseCtx->cursorPoint[PAUSE_MAP] = DUNGEON_STRAY_FAIRIES;
                             }
@@ -405,7 +408,8 @@ void KaleidoScope_UpdateDungeonCursor(PlayState* play) {
                                 pauseCtx->cursorPoint[PAUSE_MAP] = DUNGEON_STRAY_FAIRIES;
                                 break;
                             }
-                            if (CHECK_DUNGEON_ITEM(pauseCtx->cursorPoint[PAUSE_MAP], gSaveContext.dungeonIndex)) {
+                            if (CHECK_DUNGEON_ITEM(pauseCtx->cursorPoint[PAUSE_MAP],
+                                                   gSaveContext.dungeonSceneSharedIndex)) {
                                 break;
                             }
                         }
@@ -414,7 +418,7 @@ void KaleidoScope_UpdateDungeonCursor(PlayState* play) {
             } else if ((pauseCtx->cursorSpecialPos == 0) && (pauseCtx->stickAdjY > 30)) {
                 if (pauseCtx->cursorPoint[PAUSE_MAP] >= DUNGEON_FLOOR_INDEX_4) {
                     for (i = pauseCtx->cursorPoint[PAUSE_MAP] - (DUNGEON_FLOOR_INDEX_4 + 1); i >= 0; i--) {
-                        if (GET_DUNGEON_FLOOR_VISITED(((void)0, gSaveContext.dungeonIndex), i) ||
+                        if (GET_DUNGEON_FLOOR_VISITED(((void)0, gSaveContext.dungeonSceneSharedIndex), i) ||
                             MapDisp_IsValidStorey(FLOOR_INDEX_MAX - i)) {
                             pauseCtx->cursorPoint[PAUSE_MAP] = i + DUNGEON_FLOOR_INDEX_4;
                             pauseCtx->cursorShrinkRate = 4.0f;
@@ -434,7 +438,7 @@ void KaleidoScope_UpdateDungeonCursor(PlayState* play) {
                     (pauseCtx->cursorPoint[PAUSE_MAP] <= DUNGEON_FLOOR_INDEX_1)) {
                     for (i = pauseCtx->cursorPoint[PAUSE_MAP] - (DUNGEON_FLOOR_INDEX_4 - 1); i <= DUNGEON_FLOOR_INDEX_0;
                          i++) {
-                        if (GET_DUNGEON_FLOOR_VISITED(((void)0, gSaveContext.dungeonIndex), i) ||
+                        if (GET_DUNGEON_FLOOR_VISITED(((void)0, gSaveContext.dungeonSceneSharedIndex), i) ||
                             MapDisp_IsValidStorey(FLOOR_INDEX_MAX - i)) {
                             pauseCtx->cursorPoint[PAUSE_MAP] = i + DUNGEON_FLOOR_INDEX_4;
                             pauseCtx->cursorShrinkRate = 4.0f;
@@ -456,7 +460,8 @@ void KaleidoScope_UpdateDungeonCursor(PlayState* play) {
                             KaleidoScope_MoveCursorToSpecialPos(play, PAUSE_CURSOR_PAGE_RIGHT);
                             break;
                         }
-                        if (CHECK_DUNGEON_ITEM(pauseCtx->cursorPoint[PAUSE_MAP], gSaveContext.dungeonIndex)) {
+                        if (CHECK_DUNGEON_ITEM(pauseCtx->cursorPoint[PAUSE_MAP],
+                                               gSaveContext.dungeonSceneSharedIndex)) {
                             break;
                         }
                     }
@@ -484,7 +489,7 @@ void KaleidoScope_UpdateDungeonCursor(PlayState* play) {
                     pauseCtx->itemDescriptionOn = true;
                     func_801514B0(play, 0x17AF, 1);
                 } else if (CHECK_BTN_ALL(CONTROLLER1(&play->state)->press.button, BTN_A) && (msgCtx->msgLength == 0) &&
-                           CHECK_DUNGEON_ITEM(pauseCtx->cursorPoint[PAUSE_MAP], gSaveContext.dungeonIndex)) {
+                           CHECK_DUNGEON_ITEM(pauseCtx->cursorPoint[PAUSE_MAP], gSaveContext.dungeonSceneSharedIndex)) {
                     pauseCtx->itemDescriptionOn = true;
                     func_801514B0(play, 0x17AC + pauseCtx->cursorPoint[PAUSE_MAP], 1);
                 }

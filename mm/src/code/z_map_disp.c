@@ -1,10 +1,10 @@
 #include "global.h"
 #include "gfx.h"
+#include "sys_cmpdma.h"
 #include "assets/interface/icon_item_dungeon_static/icon_item_dungeon_static.h"
 #include "assets/interface/parameter_static/parameter_static.h"
-#include "assets/archives/map_i_static/map_i_static.h"
-#include "assets/archives/map_grand_static/map_grand_static.h"
-#include "overlays/actors/ovl_En_Door/z_en_door.h"
+#include "assets/objects/gameplay_keep/gameplay_keep.h"
+#include "overlays/actors/ovl_Door_Shutter/z_door_shutter.h"
 #include "overlays/kaleido_scope/ovl_kaleido_scope/z_kaleido_scope.h"
 
 #include "BenPort.h"
@@ -53,7 +53,11 @@ static const u32 sLoadTextureBlock_siz_LINE_BYTES[4] = {
     G_IM_SIZ_32b_LINE_BYTES,
 };
 
-#define gDPLoadTextureBlock_TEST(pkt, timg, fmt, siz, width, height, pal, cms, cmt, masks, maskt, shifts, shiftt)      \
+/**
+ * Implements a version of gDPLoadTextureBlock using table lookups instead of token pasting, to allow values to be
+ * passed into `siz` during runtime.
+ */
+#define gDPLoadTextureBlock_Runtime(pkt, timg, fmt, siz, width, height, pal, cms, cmt, masks, maskt, shifts, shiftt)   \
     _DW({                                                                                                              \
         gDPSetTextureImage(pkt, fmt, sLoadTextureBlock_siz_LOAD_BLOCK[siz], 1, timg);                                  \
         gDPSetTile(pkt, fmt, sLoadTextureBlock_siz_LOAD_BLOCK[siz], 0, 0, G_TX_LOADTILE, 0, cmt, maskt, shiftt, cms,   \
@@ -69,8 +73,6 @@ static const u32 sLoadTextureBlock_siz_LINE_BYTES[4] = {
                        ((height)-1) << G_TEXTURE_IMAGE_FRAC);                                                          \
     })
 
-// static const UNK_TYPE4 D_801BEB30[2] = { 0, 0 };
-
 static const u64 sWhiteSquareTex[] = {
     0xFFFFFFFFFFFFFFFF, 0xFFFFFFFFFFFFFFFF, 0xFFFFFFFFFFFFFFFF, 0xFFFFFFFFFFFFFFFF,
     0xFFFFFFFFFFFFFFFF, 0xFFFFFFFFFFFFFFFF, 0xFFFFFFFFFFFFFFFF, 0xFFFFFFFFFFFFFFFF,
@@ -84,18 +86,13 @@ static MapDisp sMapDisp = {
 
 MapDataRoom sMapDataRooms[ROOM_MAX];
 MapDataChest sMapDataChests[32];
-
 static MapDataScene sMapDataScene = {
     sMapDataRooms,
     80,
 };
-
 static s32 sSceneNumRooms = 0; // current scene's no. of rooms
-
-static s32 sNumChests = 0; // MinimapChest count
-
+static s32 sNumChests = 0;     // MinimapChest count
 static TransitionActorList sTransitionActorList = { 0, NULL };
-
 static Color_RGBA8 sMinimapActorCategoryColors[12] = {
     { 255, 255, 255, 255 }, { 255, 255, 255, 255 }, { 0, 255, 0, 255 },     { 255, 255, 255, 255 },
     { 255, 255, 255, 255 }, { 255, 0, 0, 255 },     { 255, 255, 255, 255 }, { 255, 255, 255, 255 },
@@ -491,9 +488,9 @@ void MapDisp_Minimap_DrawActorIcon(PlayState* play, Actor* actor) {
             gDPSetEnvColor(OVERLAY_DISP++, 0, 0, 0, play->interfaceCtx.minimapAlpha);
             gDPPipeSync(OVERLAY_DISP++);
 
-            gDPLoadTextureBlock_TEST(OVERLAY_DISP++, gMapChestIconTex, G_IM_FMT_RGBA, G_IM_SIZ_16b, 8, 8, 0,
-                                     G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMASK, G_TX_NOMASK,
-                                     G_TX_NOLOD, G_TX_NOLOD);
+            gDPLoadTextureBlock_Runtime(OVERLAY_DISP++, gMapChestIconTex, G_IM_FMT_RGBA, G_IM_SIZ_16b, 8, 8, 0,
+                                        G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMASK, G_TX_NOMASK,
+                                        G_TX_NOLOD, G_TX_NOLOD);
 
             // #region 2S2H [Cosmetic] Hud Editor chest icons
             if (HudEditor_ShouldOverrideDraw()) {
@@ -704,11 +701,14 @@ void MapDisp_AwaitGameplayDangeonKeep(PlayState* play) {
 
     if (objectSlot <= OBJECT_SLOT_NONE) {
         sMapDisp.unk20 |= 1;
-    } else {
-        do { } while (!Object_IsLoaded(&play->objectCtx, objectSlot)); }
+        return;
+    }
 
-    //! FAKE: https://decomp.me/scratch/kvGBZ
-    if (&play->objectCtx) {}
+    while (true) {
+        if (Object_IsLoaded(&play->objectCtx, objectSlot)) {
+            break;
+        }
+    }
 }
 
 void MapDisp_Init(PlayState* play) {
@@ -866,7 +866,7 @@ s16 MapDisp_GetBossRoomStorey(void) {
 
 // TransitionActor params test
 s32 MapDisp_IsBossDoor(s32 params) {
-    if (ENDOOR_PARAMS_GET_TYPE((u16)params) == ENDOOR_TYPE_5) {
+    if (DOORSHUTTER_PARAMS_GET_TYPE((u16)params) == DOORSHUTTER_TYPE_BOSS_DOOR) {
         return true;
     }
     return false;
@@ -1323,7 +1323,7 @@ void MapDisp_Minimap_DrawRedCompassIcon(PlayState* play, s32 x, s32 z, s32 rot) 
     }
 }
 
-s32 MapDisp_IsLocationRomaniRanchCutscene(PlayState* play) {
+s32 MapDisp_IsLocationRomaniRanchAltScene(PlayState* play) {
     if ((gSaveContext.save.entrance == ENTRANCE(ROMANI_RANCH, 0)) && (Cutscene_GetSceneLayer(play) != 0)) {
         return true;
     }
@@ -1331,15 +1331,15 @@ s32 MapDisp_IsLocationRomaniRanchCutscene(PlayState* play) {
 }
 
 s32 MapDisp_CanDisplayMinimap(PlayState* play) {
-    if ((!MapExp_CurRoomHasMapI(play) && Inventory_IsMapVisible(play->sceneId)) ||
-        (MapExp_CurRoomHasMapI(play) && CHECK_DUNGEON_ITEM(DUNGEON_MAP, gSaveContext.mapIndex))) {
+    if ((!Map_CurRoomHasMapI(play) && Inventory_IsMapVisible(play->sceneId)) ||
+        (Map_CurRoomHasMapI(play) && CHECK_DUNGEON_ITEM(DUNGEON_MAP, gSaveContext.mapIndex))) {
         return true;
     }
     return false;
 }
 
 s32 MapDisp_IsLocationMinimapBlocked(PlayState* play) {
-    if (((play->csCtx.state != CS_STATE_IDLE) && !MapDisp_IsLocationRomaniRanchCutscene(play)) ||
+    if (((play->csCtx.state != CS_STATE_IDLE) && !MapDisp_IsLocationRomaniRanchAltScene(play)) ||
         (sMapDisp.unk20 & 2) || Map_IsInBossScene(play)) {
         return true;
     }
@@ -1401,8 +1401,8 @@ void MapDisp_DrawMinimap(PlayState* play, s32 playerInitX, s32 playerInitZ, s32 
                 }
                 MapDisp_Minimap_DrawDoorActors(play);
             }
-            if ((!MapExp_CurRoomHasMapI(play) || CHECK_DUNGEON_ITEM(DUNGEON_COMPASS, gSaveContext.mapIndex)) &&
-                (MapExp_CurRoomHasMapI(play) || Inventory_IsMapVisible(play->sceneId))) {
+            if ((!Map_CurRoomHasMapI(play) || CHECK_DUNGEON_ITEM(DUNGEON_COMPASS, gSaveContext.mapIndex)) &&
+                (Map_CurRoomHasMapI(play) || Inventory_IsMapVisible(play->sceneId))) {
                 if (play->interfaceCtx.minigameState == MINIGAME_STATE_NONE) {
                     MapDisp_Minimap_DrawRedCompassIcon(play, playerInitX, playerInitZ, playerInitDir);
                 }
@@ -1414,7 +1414,7 @@ void MapDisp_DrawMinimap(PlayState* play, s32 playerInitX, s32 playerInitZ, s32 
     hudEditorActiveElement = HUD_EDITOR_ELEMENT_NONE;
 }
 
-void MapDisp_ResetIMap(void) {
+void MapDisp_ResetMapI(void) {
     s32 i;
 
     sPauseDungeonMap.textureCount = 0;
@@ -1429,11 +1429,11 @@ void MapDisp_ResetIMap(void) {
 }
 
 void MapDisp_InitMapI(PlayState* play) {
-    MapDisp_ResetIMap();
+    MapDisp_ResetMapI();
 }
 
 void MapDisp_DestroyMapI(PlayState* play) {
-    MapDisp_ResetIMap();
+    MapDisp_ResetMapI();
 }
 
 // alloc pause screen dungeon map
@@ -1564,19 +1564,19 @@ s32 MapDisp_ConvertBossSceneToDungeonScene(s32 sceneId) {
  * @param viewWidth width in pixels of the dungeon map view window
  * @param viewHeight height in pixels of the dungeon map view window
  * @param scaleFrac ratio to convert world space coordinates to map coordinates
- * @param dungeonIndex enum DungeonIndex for retrieving map/compass data
+ * @param dungeonSceneSharedIndex enum DungeonSceneIndex for retrieving map/compass data
  */
 void MapDisp_DrawRooms(PlayState* play, s32 viewX, s32 viewY, s32 viewWidth, s32 viewHeight, f32 scaleFrac,
-                       s32 dungeonIndex) {
-    static u16 sUnvisitedRoomPal[0x10] = {
+                       s32 dungeonSceneSharedIndex) {
+    static u16 sUnvisitedRoomPal[16] = {
         0x0000, 0x0000, 0xFFC1, 0x07C1, 0x07FF, 0x003F, 0xFB3F, 0xF305,
         0x0453, 0x0577, 0x0095, 0x82E5, 0xFD27, 0x7A49, 0x94A5, 0x0001,
     }; // palette 0
-    static u16 sVisitedRoomPal[0x10] = {
+    static u16 sVisitedRoomPal[16] = {
         0x0000, 0x027F, 0xFFC1, 0x07C1, 0x07FF, 0x003F, 0xFB3F, 0xF305,
         0x0453, 0x0577, 0x0095, 0x82E5, 0xFD27, 0x7A49, 0x94A5, 0x0001,
     }; // palette 1
-    static u16 sCurrentRoomPal[0x10] = {
+    static u16 sCurrentRoomPal[16] = {
         0x0000, 0x0623, 0xFFC1, 0x07C1, 0x07FF, 0x003F, 0xFB3F, 0xF305,
         0x0453, 0x0577, 0x0095, 0x82E5, 0xFD27, 0x7A49, 0x94A5, 0x0001,
     }; // palette 2
@@ -1612,19 +1612,19 @@ void MapDisp_DrawRooms(PlayState* play, s32 viewX, s32 viewY, s32 viewWidth, s32
     sMergedPal[(0x10 * 2 * 2) + (1 * 2) + 0] = (pulseColor >> 8) & 0xFF;
     sMergedPal[(0x10 * 2 * 2) + (1 * 2) + 1] = pulseColor & 0xFF;
 
-    if (CHECK_DUNGEON_ITEM(DUNGEON_MAP, dungeonIndex)) {
+    if (CHECK_DUNGEON_ITEM(DUNGEON_MAP, dungeonSceneSharedIndex)) {
         s32 requiredScopeTemp;
 
-        sUnvisitedRoomPal[0xF] = 0xAD5F;
-        sVisitedRoomPal[0xF] = 0xAD5F;
-        sCurrentRoomPal[0xF] = 0xAD5F;
+        sUnvisitedRoomPal[15] = 0xAD5F;
+        sVisitedRoomPal[15] = 0xAD5F;
+        sCurrentRoomPal[15] = 0xAD5F;
 
         for (i = 0; i <= 2; i++) {
             sMergedPal[(0x10 * 2 * i) + (0xF * 2) + 0] = (0xAD5F >> 8) & 0xFF;
             sMergedPal[(0x10 * 2 * i) + (0xF * 2) + 1] = 0xAD5F & 0xFF;
         }
     } else {
-        sCurrentRoomPal[0xF] = sVisitedRoomPal[0xF] = sUnvisitedRoomPal[0xF] = 0;
+        sCurrentRoomPal[15] = sVisitedRoomPal[15] = sUnvisitedRoomPal[15] = 0;
 
         for (i = 0; i <= 2; i++) {
             sMergedPal[(0x10 * 2 * i) + (0xF * 2) + 0] = sMergedPal[(0x10 * 2 * i) + (0xF * 2) + 1] = 0;
@@ -1728,7 +1728,7 @@ void MapDisp_DrawRooms(PlayState* play, s32 viewX, s32 viewY, s32 viewWidth, s32
             gDPLoadTextureBlock_4b(POLY_OPA_DISP++, roomTexture, G_IM_FMT_CI, texWidth, texHeight, 1,
                                    G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMASK, G_TX_NOMASK,
                                    G_TX_NOLOD, G_TX_NOLOD);
-        } else if (CHECK_DUNGEON_ITEM(DUNGEON_MAP, dungeonIndex)) {
+        } else if (CHECK_DUNGEON_ITEM(DUNGEON_MAP, dungeonSceneSharedIndex)) {
             gDPLoadTextureBlock_4b(POLY_OPA_DISP++, roomTexture, G_IM_FMT_CI, texWidth, texHeight, 0,
                                    G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMASK, G_TX_NOMASK,
                                    G_TX_NOLOD, G_TX_NOLOD);
@@ -1757,7 +1757,7 @@ void MapDisp_DrawRooms(PlayState* play, s32 viewX, s32 viewY, s32 viewWidth, s32
  * @param viewWidth width in pixels of the dungeon map view window
  * @param viewHeight height in pixels of the dungeon map view window
  * @param scaleFrac ratio to convert world space coordinates to map coordinates
- * @param dungeonIndex enum DungeonIndex for retrieving map/compass data
+ * @param dungeonSceneSharedIndex enum DungeonSceneIndex for retrieving map/compass data
  */
 void MapDisp_DrawChests(PlayState* play, s32 viewX, s32 viewY, s32 viewWidth, s32 viewHeight, f32 scaleFrac) {
     s32 pad[23];
@@ -1783,9 +1783,9 @@ void MapDisp_DrawChests(PlayState* play, s32 viewX, s32 viewY, s32 viewWidth, s3
     gDPSetEnvColor(POLY_OPA_DISP++, 0, 0, 0, 255);
     gDPPipeSync(POLY_OPA_DISP++);
 
-    gDPLoadTextureBlock_TEST(POLY_OPA_DISP++, gMapChestIconTex, G_IM_FMT_RGBA, G_IM_SIZ_16b, 8, 8, 0,
-                             G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD,
-                             G_TX_NOLOD);
+    gDPLoadTextureBlock_Runtime(POLY_OPA_DISP++, gMapChestIconTex, G_IM_FMT_RGBA, G_IM_SIZ_16b, 8, 8, 0,
+                                G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMASK, G_TX_NOMASK,
+                                G_TX_NOLOD, G_TX_NOLOD);
 
     for (i = 0; i < sMapDisp.numChests; i++) {
         room = mapDataChests[i].room;
@@ -1847,10 +1847,10 @@ void MapDisp_DrawChests(PlayState* play, s32 viewX, s32 viewY, s32 viewWidth, s3
  * @param viewWidth width in pixels of the dungeon map view window
  * @param viewHeight height in pixels of the dungeon map view window
  * @param scaleFrac ratio to convert world space coordinates to map coordinates
- * @param dungeonIndex enum DungeonIndex for retrieving map/compass data
+ * @param dungeonSceneSharedIndex enum DungeonSceneIndex for retrieving map/compass data
  */
 void MapDisp_DrawRoomExits(PlayState* play, s32 viewX, s32 viewY, s32 viewWidth, s32 viewHeight, f32 scaleFrac,
-                           s32 dungeonIndex) {
+                           s32 dungeonSceneSharedIndex) {
     PauseContext* pauseCtx = &play->pauseCtx;
     TransitionActorList* transitionActors = &sTransitionActorList;
     s32 texPosX;
@@ -1907,10 +1907,10 @@ void MapDisp_DrawRoomExits(PlayState* play, s32 viewX, s32 viewY, s32 viewWidth,
  * @param viewWidth width in pixels of the dungeon map view window
  * @param viewHeight height in pixels of the dungeon map view window
  * @param scaleFrac ratio to convert world space coordinates to map coordinates
- * @param dungeonIndex enum DungeonIndex for retrieving map/compass data
+ * @param dungeonSceneSharedIndex enum DungeonSceneIndex for retrieving map/compass data
  */
 void MapDisp_DrawBossIcon(PlayState* play, s32 viewX, s32 viewY, s32 viewWidth, s32 viewHeight, f32 scaleFrac,
-                          s32 dungeonIndex) {
+                          s32 dungeonSceneSharedIndex) {
     s32 i;
     TransitionActorList* transitionActorList = &sTransitionActorList;
     s32 offsetX = 4;
@@ -1927,10 +1927,10 @@ void MapDisp_DrawBossIcon(PlayState* play, s32 viewX, s32 viewY, s32 viewWidth, 
     gDPSetEnvColor(POLY_OPA_DISP++, 0, 0, 0, 255);
     gDPPipeSync(POLY_OPA_DISP++);
 
-    if (CHECK_DUNGEON_ITEM(DUNGEON_COMPASS, dungeonIndex)) {
-        gDPLoadTextureBlock_TEST(POLY_OPA_DISP++, gMapBossIconTex, G_IM_FMT_IA, G_IM_SIZ_8b, 8, 8, 0,
-                                 G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMASK, G_TX_NOMASK,
-                                 G_TX_NOLOD, G_TX_NOLOD);
+    if (CHECK_DUNGEON_ITEM(DUNGEON_COMPASS, dungeonSceneSharedIndex)) {
+        gDPLoadTextureBlock_Runtime(POLY_OPA_DISP++, gMapBossIconTex, G_IM_FMT_IA, G_IM_SIZ_8b, 8, 8, 0,
+                                    G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMASK, G_TX_NOMASK,
+                                    G_TX_NOLOD, G_TX_NOLOD);
 
         for (i = 0; i < transitionActorList->count; i++) {
             if (!MapDisp_IsBossDoor(sTransitionActors[i].params)) {
@@ -1986,7 +1986,7 @@ s32 MapDisp_SkipDrawDungeonMap(PlayState* play) {
     if (pauseCtx->pageIndex != PAUSE_MAP) {
         return true;
     }
-    if ((pauseCtx->state == PAUSE_STATE_SAVEPROMPT) || IS_PAUSE_STATE_GAMEOVER) {
+    if ((pauseCtx->state == PAUSE_STATE_SAVEPROMPT) || IS_PAUSE_STATE_GAMEOVER(pauseCtx)) {
         return true;
     }
     if ((pauseCtx->state != PAUSE_STATE_MAIN) || (pauseCtx->mainState != PAUSE_MAIN_STATE_IDLE)) {
@@ -2006,32 +2006,32 @@ void MapDisp_DrawDungeonFloorSelect(PlayState* play) {
     s16 texLRX;
     s32 pad;
     s32 storey;
-    s32 dungeonIndex = 0;
+    s32 dungeonSceneSharedIndex = 0;
 
     if ((sMapDisp.mapDataScene != NULL) && (sSceneNumRooms != 0) && !MapDisp_SkipDrawDungeonMap(play)) {
         if (Map_IsInBossScene(play)) {
             switch (play->sceneId) {
                 case SCENE_MITURIN_BS:
-                    dungeonIndex = DUNGEON_INDEX_WOODFALL_TEMPLE;
+                    dungeonSceneSharedIndex = DUNGEON_SCENE_INDEX_WOODFALL_TEMPLE;
                     break;
 
                 case SCENE_HAKUGIN_BS:
-                    dungeonIndex = DUNGEON_INDEX_SNOWHEAD_TEMPLE;
+                    dungeonSceneSharedIndex = DUNGEON_SCENE_INDEX_SNOWHEAD_TEMPLE;
                     break;
 
                 case SCENE_SEA_BS:
-                    dungeonIndex = DUNGEON_INDEX_GREAT_BAY_TEMPLE;
+                    dungeonSceneSharedIndex = DUNGEON_SCENE_INDEX_GREAT_BAY_TEMPLE;
                     break;
 
                 case SCENE_INISIE_BS:
-                    dungeonIndex = DUNGEON_INDEX_STONE_TOWER_TEMPLE;
+                    dungeonSceneSharedIndex = DUNGEON_SCENE_INDEX_STONE_TOWER_TEMPLE;
                     break;
 
                 default:
                     break;
             }
         } else {
-            dungeonIndex = gSaveContext.mapIndex;
+            dungeonSceneSharedIndex = gSaveContext.mapIndex;
         }
         OPEN_DISPS(play->state.gfxCtx);
 
@@ -2043,7 +2043,7 @@ void MapDisp_DrawDungeonFloorSelect(PlayState* play) {
         for (storey = 0; storey < sMapDisp.numStoreys; storey++) {
             if (GET_DUNGEON_FLOOR_VISITED(
                     Play_GetOriginalSceneId(MapDisp_ConvertBossSceneToDungeonScene(play->sceneId)), 4 - storey) ||
-                CHECK_DUNGEON_ITEM_ALT(DUNGEON_MAP, dungeonIndex)) {
+                CHECK_DUNGEON_ITEM_ALT(DUNGEON_MAP, dungeonSceneSharedIndex)) {
                 gDPLoadTextureBlock(POLY_OPA_DISP++, MapDisp_GetDungeonMapFloorTexture(sMapDisp.bottomStorey + storey),
                                     G_IM_FMT_IA, G_IM_SIZ_8b, 24, 16, 0, G_TX_NOMIRROR | G_TX_WRAP,
                                     G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
@@ -2135,7 +2135,7 @@ void MapDisp_DrawDungeonMap(PlayState* play) {
     f32 scaleFrac;
     s32 scale;
     s32 var_v0;
-    s32 dungeonIndex = 0;
+    s32 dungeonSceneSharedIndex = 0;
     s32 offsetX = 0;
     s32 offsetY = 0;
 
@@ -2146,26 +2146,26 @@ void MapDisp_DrawDungeonMap(PlayState* play) {
     if (Map_IsInBossScene(play)) {
         switch (play->sceneId) {
             case SCENE_MITURIN_BS:
-                dungeonIndex = DUNGEON_INDEX_WOODFALL_TEMPLE;
+                dungeonSceneSharedIndex = DUNGEON_SCENE_INDEX_WOODFALL_TEMPLE;
                 break;
 
             case SCENE_HAKUGIN_BS:
-                dungeonIndex = DUNGEON_INDEX_SNOWHEAD_TEMPLE;
+                dungeonSceneSharedIndex = DUNGEON_SCENE_INDEX_SNOWHEAD_TEMPLE;
                 break;
 
             case SCENE_SEA_BS:
-                dungeonIndex = DUNGEON_INDEX_GREAT_BAY_TEMPLE;
+                dungeonSceneSharedIndex = DUNGEON_SCENE_INDEX_GREAT_BAY_TEMPLE;
                 break;
 
             case SCENE_INISIE_BS:
-                dungeonIndex = DUNGEON_INDEX_STONE_TOWER_TEMPLE;
+                dungeonSceneSharedIndex = DUNGEON_SCENE_INDEX_STONE_TOWER_TEMPLE;
                 break;
 
             default:
                 break;
         }
     } else {
-        dungeonIndex = gSaveContext.mapIndex;
+        dungeonSceneSharedIndex = gSaveContext.mapIndex;
     }
 
     mapDataRoom = sMapDisp.mapDataScene->rooms;
@@ -2192,11 +2192,11 @@ void MapDisp_DrawDungeonMap(PlayState* play) {
 
     scaleFrac = 1.0f / scale;
 
-    MapDisp_DrawRooms(play, offsetX + 144, offsetY + 85, 120, 100, scaleFrac, dungeonIndex);
-    MapDisp_DrawRoomExits(play, offsetX + 144, offsetY + 85, 120, 100, scaleFrac, dungeonIndex);
-    MapDisp_DrawBossIcon(play, offsetX + 144, offsetY + 85, 120, 100, scaleFrac, dungeonIndex);
+    MapDisp_DrawRooms(play, offsetX + 144, offsetY + 85, 120, 100, scaleFrac, dungeonSceneSharedIndex);
+    MapDisp_DrawRoomExits(play, offsetX + 144, offsetY + 85, 120, 100, scaleFrac, dungeonSceneSharedIndex);
+    MapDisp_DrawBossIcon(play, offsetX + 144, offsetY + 85, 120, 100, scaleFrac, dungeonSceneSharedIndex);
 
-    if (CHECK_DUNGEON_ITEM(DUNGEON_COMPASS, dungeonIndex)) {
+    if (CHECK_DUNGEON_ITEM(DUNGEON_COMPASS, dungeonSceneSharedIndex)) {
         MapDisp_DrawChests(play, offsetX + 144, offsetY + 85, 120, 100, scaleFrac);
     }
 }
