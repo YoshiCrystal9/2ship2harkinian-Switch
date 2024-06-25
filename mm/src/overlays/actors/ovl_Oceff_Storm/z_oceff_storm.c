@@ -192,7 +192,7 @@ void OceffStorm_Draw2(Actor* thisx, PlayState* play) {
     // 2S2H [Cosmetic] Changed to Wide variant to support widescreen
     gSPWideTextureRectangle(POLY_XLU_DISP++, OTRGetRectDimensionFromLeftEdge(0) << 2, 0,
                             OTRGetRectDimensionFromRightEdge(SCREEN_WIDTH) << 2, SCREEN_HEIGHT << 2, G_TX_RENDERTILE, 0,
-                            0, (s32)(0.13671875 * (1 << 10)), (s32)(-0.13671875 * (1 << 10)));
+                            0, (s32)(0.13671875f * (1 << 10)), (s32)(-0.13671875f * (1 << 10)));
 
     CLOSE_DISPS(play->state.gfxCtx);
 }

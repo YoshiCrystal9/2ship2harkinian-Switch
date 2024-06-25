@@ -283,7 +283,7 @@ void EnNeoReeba_Move(EnNeoReeba* this, PlayState* play) {
 
     if (remainingDist < 2.0f) {
         EnNeoReeba_SetupChooseAction(this);
-    } else if (remainingDist < 40.0f && this->actor.speed > 3.0f) {
+    } else if ((remainingDist < 40.0f) && (this->actor.speed > 3.0f)) {
         this->actor.speed -= 2.0f;
     }
 
@@ -313,12 +313,12 @@ void EnNeoReeba_ReturnHome(EnNeoReeba* this, PlayState* play) {
 
     if (remainingDist < 2.0f) {
         EnNeoReeba_SetupChooseAction(this);
-    } else if (remainingDist < 40.0f && this->actor.speed > 3.0f) {
+    } else if ((remainingDist < 40.0f) && (this->actor.speed > 3.0f)) {
         this->actor.speed -= 1.0f;
     }
 
-    if (Actor_WorldDistXZToPoint(&player->actor, &this->actor.home.pos) > 200.0f ||
-        fabsf(this->actor.playerHeightRel) > 100.0f) {
+    if ((Actor_WorldDistXZToPoint(&player->actor, &this->actor.home.pos) > 200.0f) ||
+        (fabsf(this->actor.playerHeightRel) > 100.0f)) {
         EnNeoReeba_SetupSink(this);
     }
 }

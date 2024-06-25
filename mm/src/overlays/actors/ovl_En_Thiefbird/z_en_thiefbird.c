@@ -170,7 +170,7 @@ void EnThiefbird_Init(Actor* thisx, PlayState* play) {
     CollisionCheck_SetInfo(&this->actor.colChkInfo, &sDamageTable, &sColChkInfoInit);
     ActorShape_Init(&this->actor.shape, 1500.0f, ActorShadow_DrawCircle, 35.0f);
     if (this->actor.params == 1) {
-        D_80C1392C = 1;
+        D_80C1392C = true;
         Math_Vec3f_Copy(&D_80C13920, &this->actor.world.pos);
         Actor_Kill(&this->actor);
         return;
@@ -494,10 +494,8 @@ void func_80C11590(EnThiefbird* this, PlayState* play) {
 
     if (this->actor.bgCheckFlags & BGCHECKFLAG_WALL) {
         this->unk_192 = this->actor.wallYaw;
-    } else {
-        if (Actor_WorldDistXZToPoint(&this->actor, &this->actor.home.pos) > 300.0f) {
-            this->unk_192 = Actor_WorldYawTowardPoint(&this->actor, &this->actor.home.pos);
-        }
+    } else if (Actor_WorldDistXZToPoint(&this->actor, &this->actor.home.pos) > 300.0f) {
+        this->unk_192 = Actor_WorldYawTowardPoint(&this->actor, &this->actor.home.pos);
     }
 
     if (!Math_SmoothStepToS(&this->actor.shape.rot.y, this->unk_192, 5, 0x300, 0x10) && onAnimFirstFrame &&
@@ -587,7 +585,7 @@ void func_80C1193C(EnThiefbird* this, PlayState* play) {
             this->collider.base.atFlags &= ~AT_HIT;
             Actor_PlaySfx(&this->actor, NA_SE_EN_THIEFBIRD_VOICE);
             if (!(this->collider.base.atFlags & AT_BOUNCED)) {
-                if ((D_80C1392C != 0) && CUR_UPG_VALUE(UPG_QUIVER) &&
+                if (D_80C1392C && (CUR_UPG_VALUE(UPG_QUIVER) != 0) &&
                     ((STOLEN_ITEM_1 == STOLEN_ITEM_NONE) || (STOLEN_ITEM_2 == STOLEN_ITEM_NONE)) &&
                     GameInteractor_Should(VB_THIEF_BIRD_STEAL, Rand_ZeroOne() < 0.5f) && func_80C10B0C(this, play)) {
                     func_80C1242C(this);
@@ -629,12 +627,11 @@ void func_80C11D14(EnThiefbird* this, PlayState* play) {
     }
 
     if (this->drawDmgEffType == ACTOR_DRAW_DMGEFF_FROZEN_NO_SFX) {
-        if (this->unk_18E < 38) {
-            func_80C114C0(this, play);
-            this->actor.speed = 4.0f;
-        } else {
+        if (this->unk_18E >= 38) {
             return;
         }
+        func_80C114C0(this, play);
+        this->actor.speed = 4.0f;
     }
 
     if (this->unk_18E < 20) {
@@ -709,6 +706,7 @@ void func_80C11F6C(EnThiefbird* this, PlayState* play) {
     }
 
     this->unk_18E = 40;
+
     if (Rand_ZeroOne() < 0.9f) {
         Item_DropCollectible(play, &this->actor.focus.pos, ITEM00_RUPEE_GREEN);
     }
@@ -731,12 +729,11 @@ void func_80C1215C(EnThiefbird* this, PlayState* play) {
     }
 
     if (this->drawDmgEffType == ACTOR_DRAW_DMGEFF_FROZEN_NO_SFX) {
-        if (this->unk_18E < 38) {
-            func_80C114C0(this, play);
-            this->actor.speed = 4.0f;
-        } else {
+        if (this->unk_18E >= 38) {
             return;
         }
+        func_80C114C0(this, play);
+        this->actor.speed = 4.0f;
     }
 
     SkelAnime_Update(&this->skelAnime);
@@ -806,6 +803,7 @@ void func_80C124B0(EnThiefbird* this, PlayState* play) {
     s16 temp_v1;
 
     SkelAnime_Update(&this->skelAnime);
+
     if (this->actor.bgCheckFlags & BGCHECKFLAG_WALL) {
         this->unk_192 = this->actor.wallYaw;
     } else {
@@ -815,6 +813,7 @@ void func_80C124B0(EnThiefbird* this, PlayState* play) {
     Math_SmoothStepToS(&this->actor.shape.rot.y, this->unk_192, 6, 0x1000, 0x100);
     Math_SmoothStepToS(&this->actor.shape.rot.x, Actor_WorldPitchTowardPoint(&this->actor, &D_80C13920), 6, 0x1000,
                        0x100);
+
     temp_v0 = func_800BC270(play, &this->actor, 80.0f, 0x138B0);
     if (temp_v0 != NULL) {
         temp_v1 = temp_v0->world.rot.x - Actor_WorldPitchTowardPoint(temp_v0, &this->actor.focus.pos);
@@ -992,7 +991,7 @@ void func_80C12D00(EnThiefbird* this) {
     EnThiefbirdUnkStruct* ptr = &this->unk_3F0[0];
 
     for (i = 0; i < ARRAY_COUNT(this->unk_3F0); i++, ptr++) {
-        if (ptr->unk_22) {
+        if (ptr->unk_22 != 0) {
             ptr->unk_22--;
             Math_Vec3f_Sum(&ptr->unk_00, &ptr->unk_0C, &ptr->unk_00);
             Math_Vec3f_Sum(&ptr->unk_0C, &D_80C1368C, &ptr->unk_0C);
@@ -1051,6 +1050,7 @@ void EnThiefbird_Update(Actor* thisx, PlayState* play2) {
     }
 
     func_80C12D00(this);
+
     if (((this->skelAnime.animation == &gTakkuriFlyAnim) && Animation_OnFrame(&this->skelAnime, 13.0f)) ||
         ((this->skelAnime.animation == &gTakkuriFlyWithItemAnim) && Animation_OnFrame(&this->skelAnime, 1.0f))) {
         Actor_PlaySfx(&this->actor, NA_SE_EN_KAICHO_FLUTTER);
