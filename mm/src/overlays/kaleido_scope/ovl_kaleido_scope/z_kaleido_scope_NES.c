@@ -991,7 +991,7 @@ void KaleidoScope_DrawPages(PlayState* play, GraphicsContext* gfxCtx) {
             }
             gSPMatrix(POLY_OPA_DISP++, Matrix_NewMtx(gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
 
-            if (IS_PAUSE_STATE_GAMEOVER) {
+            if (IS_PAUSE_STATE_GAMEOVER(pauseCtx)) {
                 POLY_OPA_DISP = KaleidoScope_DrawPageSections(POLY_OPA_DISP, pauseCtx->promptPageVtx, sGameOverTexs);
             } else {
                 POLY_OPA_DISP = KaleidoScope_DrawPageSections(POLY_OPA_DISP, pauseCtx->promptPageVtx, sSaveTexs);
@@ -3576,7 +3576,7 @@ void KaleidoScope_Update(PlayState* play) {
                                 // like grottos and cutscenes
                                 gSaveContext.save.shipSaveInfo.pauseSaveEntrance = SavingEnhancements_GetSaveEntrance();
                             }
-                            Play_SaveCycleSceneFlags(&play->state);
+                            Play_SaveCycleSceneFlags(play);
                             gSaveContext.save.saveInfo.playerData.savedSceneId = play->sceneId;
                             func_8014546C(sramCtx);
                             if (!gSaveContext.flashSaveAvailable ||
@@ -3864,7 +3864,7 @@ void KaleidoScope_Update(PlayState* play) {
                 } else {
                     Audio_PlaySfx(NA_SE_SY_PIECE_OF_HEART);
                     pauseCtx->promptChoice = PAUSE_PROMPT_YES;
-                    Play_SaveCycleSceneFlags(&play->state);
+                    Play_SaveCycleSceneFlags(play);
                     gSaveContext.save.saveInfo.playerData.savedSceneId = play->sceneId;
                     gSaveContext.save.saveInfo.playerData.health = 0x30;
                     func_8014546C(sramCtx);
@@ -3914,7 +3914,7 @@ void KaleidoScope_Update(PlayState* play) {
             if (CHECK_BTN_ALL(input->press.button, BTN_A) || CHECK_BTN_ALL(input->press.button, BTN_START)) {
                 if (pauseCtx->promptChoice == PAUSE_PROMPT_YES) {
                     Audio_PlaySfx(NA_SE_SY_PIECE_OF_HEART);
-                    Play_SaveCycleSceneFlags(&play->state);
+                    Play_SaveCycleSceneFlags(play);
                     if (gSaveContext.save.entrance == ENTRANCE(UNSET_0D, 0)) {}
                 } else { // PAUSE_PROMPT_NO
                     Audio_PlaySfx(NA_SE_SY_DECIDE);
@@ -3936,7 +3936,7 @@ void KaleidoScope_Update(PlayState* play) {
                     BgCheck_InitCollisionHeaders(&play->colCtx, play);
 
                     if (pauseCtx->promptChoice == PAUSE_PROMPT_YES) {
-                        func_80169FDC(&play->state);
+                        func_80169FDC(play);
                         gSaveContext.respawnFlag = -2;
                         gSaveContext.nextTransitionType = TRANS_TYPE_FADE_BLACK;
                         gSaveContext.save.saveInfo.playerData.health = 0x30;

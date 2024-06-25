@@ -149,7 +149,6 @@ extern UNK_PTR D_801C5C50;
 // extern UNK_TYPE1 D_801C5C9C;
 extern UNK_PTR D_801C5CB0;
 
-extern s32 gDbgCamEnabled;
 // extern UNK_TYPE1 D_801D0D54;
 // extern UNK_TYPE2 sQuakeIndex;
 // extern UNK_TYPE2 sIsCameraUnderwater;
@@ -270,9 +269,6 @@ extern u8 gSampleBankTable[];
 
 extern void (*sKaleidoScopeUpdateFunc)(PlayState* play);
 extern void (*sKaleidoScopeDrawFunc)(PlayState* play);
-
-extern s32 gTransitionTileState;
-extern Color_RGBA8_u32 gVisMonoColor;
 
 extern GfxMasterList* gGfxMasterDL;
 
