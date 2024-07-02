@@ -478,10 +478,11 @@ s32 Inventory_GetBtnBItem(PlayState* play) {
     } else if (gSaveContext.bButtonStatus == BTN_DISABLED) {
         return ITEM_NONE;
     } else if (CUR_FORM_EQUIP(EQUIP_SLOT_B) == ITEM_NONE) {
-        if (play->interfaceCtx.bButtonDoActionActive) {
-            if (play->interfaceCtx.bButtonDoAction != DO_ACTION_ATTACK) {
-                return play->interfaceCtx.bButtonDoAction;
-            }
+        //! @bug "Weird B": If the B button is empty and there's a B do action text displaying, pressing B will use the
+        //! item with the same id as the current do action. It's unclear what this code was originally intended for.
+        if (play->interfaceCtx.bButtonPlayerDoActionActive &&
+            play->interfaceCtx.bButtonPlayerDoAction != DO_ACTION_ATTACK) {
+            return play->interfaceCtx.bButtonPlayerDoAction;
         }
         return ITEM_NONE;
     } else {

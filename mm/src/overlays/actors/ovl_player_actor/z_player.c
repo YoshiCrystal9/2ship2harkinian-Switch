@@ -11168,10 +11168,10 @@ void Player_SetDoAction(PlayState* play, Player* this) {
     }
 
     if (doActionB > DO_ACTION_UNDEFINED) {
-        Interface_SetBButtonDoAction(play, doActionB);
-    } else if (play->interfaceCtx.bButtonDoActionActive) {
-        play->interfaceCtx.bButtonDoActionActive = false;
-        play->interfaceCtx.bButtonDoAction = 0;
+        Interface_SetBButtonPlayerDoAction(play, doActionB);
+    } else if (play->interfaceCtx.bButtonPlayerDoActionActive) {
+        play->interfaceCtx.bButtonPlayerDoActionActive = false;
+        play->interfaceCtx.bButtonPlayerDoAction = 0;
     }
 
     // Set A do action
@@ -13693,9 +13693,9 @@ s32 Player_UpperAction_1(Player* this, PlayState* play) {
 s32 Player_UpperAction_ChangeHeldItem(Player* this, PlayState* play) {
     if (PlayerAnimation_Update(play, &this->skelAnimeUpper) ||
         ((Player_ItemToItemAction(this, this->heldItemId) == this->heldItemAction) &&
-         (sPlayerUseHeldItem = sPlayerUseHeldItem ||
-                               ((this->modelAnimType != PLAYER_ANIMTYPE_3) &&
-                                (this->heldItemAction != PLAYER_IA_DEKU_STICK) && (play->bButtonAmmoPlusOne == 0))))) {
+         (sPlayerUseHeldItem = (sPlayerUseHeldItem || ((this->modelAnimType != PLAYER_ANIMTYPE_3) &&
+                                                       (this->heldItemAction != PLAYER_IA_DEKU_STICK) &&
+                                                       (play->bButtonAmmoPlusOne == 0)))))) {
         Player_SetUpperAction(play, this, sPlayerUpperActionUpdateFuncs[this->heldItemAction]);
         this->unk_ACC = 0;
         this->unk_AA4 = 0;
@@ -15691,7 +15691,7 @@ void Player_Action_35(Player* this, PlayState* play) {
                 if (play->bButtonAmmoPlusOne != 0) {
                     play->func_18780(this, play);
                     Player_SetAction(play, this, Player_Action_80, 0);
-                    if (play->sceneId == 0x45) {
+                    if (play->sceneId == SCENE_20SICHITAI) {
                         play->bButtonAmmoPlusOne = 0;
                     }
                 } else if (!Player_ActionChange_4(this, play)) {
@@ -17299,7 +17299,7 @@ void Player_Action_63(Player* this, PlayState* play) {
         }
     } else if (this->av2.actionVar2 != 0) {
         if (play->msgCtx.ocarinaMode == OCARINA_MODE_END) {
-            play->interfaceCtx.unk_222 = 0;
+            play->interfaceCtx.bButtonInterfaceDoActionActive = false;
             CutsceneManager_Stop(play->playerCsIds[PLAYER_CS_ID_ITEM_OCARINA]);
             this->actor.flags &= ~ACTOR_FLAG_20000000;
 
@@ -17336,7 +17336,7 @@ void Player_Action_63(Player* this, PlayState* play) {
                 } else {
                     Actor* actor;
 
-                    play->interfaceCtx.unk_222 = 0;
+                    play->interfaceCtx.bButtonInterfaceDoActionActive = false;
                     CutsceneManager_Stop(play->playerCsIds[PLAYER_CS_ID_ITEM_OCARINA]);
                     this->actor.flags &= ~ACTOR_FLAG_20000000;
 
@@ -17355,7 +17355,7 @@ void Player_Action_63(Player* this, PlayState* play) {
                 }
             } else if ((play->msgCtx.ocarinaMode == OCARINA_MODE_EVENT) &&
                        (play->msgCtx.lastPlayedSong == OCARINA_SONG_ELEGY)) {
-                play->interfaceCtx.unk_222 = 0;
+                play->interfaceCtx.bButtonInterfaceDoActionActive = false;
                 CutsceneManager_Stop(play->playerCsIds[PLAYER_CS_ID_ITEM_OCARINA]);
 
                 this->actor.flags &= ~ACTOR_FLAG_20000000;
