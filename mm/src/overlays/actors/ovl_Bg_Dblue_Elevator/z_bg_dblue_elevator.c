@@ -11,21 +11,22 @@
 
 #define THIS ((BgDblueElevator*)thisx)
 
-void BgDblueElevator_Init(Actor* thisx, PlayState* play);
+void BgDblueElevator_SpawnRipplesAndSplashes(BgDblueElevator* this, PlayState* play);
+void BgDblueElevator_CheckWaterBoxInfo(BgDblueElevator* this, PlayState* play2);
+s32 BgDblueElevator_GetWaterFlowFromCeiling(BgDblueElevator* this, PlayState* play);
+s32 BgDblueElevator_GetWaterFlowFromPipes(BgDblueElevator* this, PlayState* play);
+
+void BgDblueElevator_Init(Actor* thisx, PlayState* play2);
 void BgDblueElevator_Destroy(Actor* thisx, PlayState* play);
 void BgDblueElevator_Update(Actor* thisx, PlayState* play);
 void BgDblueElevator_Draw(Actor* thisx, PlayState* play);
 
-void func_80B91F20(BgDblueElevator* this, PlayState* play);
-void func_80B91F74(BgDblueElevator* this, PlayState* play);
-s32 func_80B922C0(BgDblueElevator* this, PlayState* play);
-s32 func_80B922FC(BgDblueElevator* this, PlayState* play);
-void func_80B924DC(BgDblueElevator* this);
-void func_80B924F8(BgDblueElevator* this, PlayState* play);
-void func_80B9257C(BgDblueElevator* this);
-void func_80B925B8(BgDblueElevator* this, PlayState* play);
-void func_80B92644(BgDblueElevator* this);
-void func_80B92660(BgDblueElevator* this, PlayState* play);
+void BgDblueElevator_SetupWaitActivation(BgDblueElevator* this);
+void BgDblueElevator_WaitActivation(BgDblueElevator* this, PlayState* play);
+void BgDblueElevator_SetupPause(BgDblueElevator* this);
+void BgDblueElevator_Pause(BgDblueElevator* this, PlayState* play);
+void BgDblueElevator_SetupMove(BgDblueElevator* this);
+void BgDblueElevator_Move(BgDblueElevator* this, PlayState* play);
 
 ActorInit Bg_Dblue_Elevator_InitVars = {
     /**/ ACTOR_BG_DBLUE_ELEVATOR,
@@ -39,56 +40,17 @@ ActorInit Bg_Dblue_Elevator_InitVars = {
     /**/ BgDblueElevator_Draw,
 };
 
-static ElevatorProps D_80B92960[] = {
-    {
-        0,
-        ((s32(*)(BgDblueElevator*, PlayState*))func_80B922C0),
-        320.0f,
-        0x1E,
-        1,
-        1.0f,
-        0.1f,
-        6.0f,
-    },
-    {
-        1,
-        ((s32(*)(BgDblueElevator*, PlayState*))func_80B922C0),
-        195.0f,
-        0x1E,
-        1,
-        1.0f,
-        0.1f,
-        5.0f,
-    },
-    {
-        0,
-        ((s32(*)(BgDblueElevator*, PlayState*))func_80B922FC),
-        280.0f,
-        0x1E,
-        1,
-        1.0f,
-        0.1f,
-        6.0f,
-    },
-    {
-        0,
-        ((s32(*)(BgDblueElevator*, PlayState*))func_80B922FC),
-        280.0f,
-        0x1E,
-        -1,
-        1.0f,
-        0.1f,
-        6.0f,
-    },
+static BgDblueElevatorStruct1 D_80B92960[] = {
+    { false, BgDblueElevator_GetWaterFlowFromCeiling, 320.0f, 30, 1, 1.0f, 0.1f, 6.0f },
+    { true, BgDblueElevator_GetWaterFlowFromCeiling, 195.0f, 30, 1, 1.0f, 0.1f, 5.0f },
+    { false, BgDblueElevator_GetWaterFlowFromPipes, 280.0f, 30, 1, 1.0f, 0.1f, 6.0f },
+    { false, BgDblueElevator_GetWaterFlowFromPipes, 280.0f, 30, -1, 1.0f, 0.1f, 6.0f },
 };
 
-static s16 D_80B929D0[4] = { -90, -90, 90, 90 };
-
-static s16 D_80B929D8[4] = { -100, 90, 90, -100 };
-
-static s8 D_80B929E0[3] = { 0, 2, 4 };
-
-static s8 D_80B929E4[6] = { 0, 1, 2, 3, 4, 5 };
+static s16 D_80B929D0[] = { -90, -90, 90, 90 };
+static s16 D_80B929D8[] = { -100, 90, 90, -100 };
+static s8 sLargeRipplesLives[] = { 0, 2, 4 };
+static s8 sSmallRipplesLives[] = { 0, 1, 2, 3, 4, 5 };
 
 static InitChainEntry sInitChain[] = {
     ICHAIN_F32(uncullZoneForward, 4000, ICHAIN_CONTINUE),
@@ -97,256 +59,269 @@ static InitChainEntry sInitChain[] = {
     ICHAIN_VEC3F_DIV1000(scale, 100, ICHAIN_STOP),
 };
 
-void func_80B91F20(BgDblueElevator* this, PlayState* play) {
-    s32 pad;
+void BgDblueElevator_CheckWaterBoxInfo(BgDblueElevator* this, PlayState* play2) {
+    PlayState* play = play2;
     WaterBox* waterBox;
     s32 bgId;
 
-    this->unk_16B = WaterBox_GetSurfaceImpl(play, &play->colCtx, this->dyna.actor.world.pos.x,
-                                            this->dyna.actor.world.pos.z, &this->unk_16C, &waterBox, &bgId);
+    this->isWithinWaterBoxXZ =
+        WaterBox_GetSurfaceImpl(play, &play->colCtx, this->dyna.actor.world.pos.x, this->dyna.actor.world.pos.z,
+                                &this->waterSurfacePosY, &waterBox, &bgId);
 }
 
-void func_80B91F74(BgDblueElevator* this, PlayState* play) {
+void BgDblueElevator_SpawnRipplesAndSplashes(BgDblueElevator* this, PlayState* play) {
     s32 i;
-    Vec3f spB0;
-    Vec3f spA4;
+    Vec3f ripplePos;
+    Vec3f splashPos;
     s32 j;
-    f32 temp1;
-    f32 temp2;
-    f32 temp_v0;
-    f32 temp_v1;
-    s32 pad;
+    f32 d1;
+    f32 d2;
+    f32 v1;
+    f32 v2;
     f32 var_fs0;
+    s32 rand;
 
     Matrix_Push();
     Matrix_RotateYS(this->dyna.actor.shape.rot.y, MTXMODE_NEW);
 
-    for (i = 0; i < 3; i++) {
-        temp_v0 = D_80B929D0[i];
-        temp_v1 = D_80B929D8[i];
-        temp1 = D_80B929D0[i + 1] - D_80B929D0[i];
-        temp2 = D_80B929D8[i + 1] - D_80B929D8[i];
+    for (i = 0; i < ARRAY_COUNT(D_80B929D0) - 1; i++) {
+        v1 = D_80B929D0[i];
+        v2 = D_80B929D8[i];
+        d1 = D_80B929D0[i + 1] - D_80B929D0[i];
+        d2 = D_80B929D8[i + 1] - D_80B929D8[i];
 
         for (j = 0; j < 7; j++) {
-            spB0.x = (j * temp1 * (1.0f / 7.0f)) + temp_v0;
-            spB0.y = this->unk_16C;
-            spB0.z = (j * temp2 * (1.0f / 7.0f)) + temp_v1;
+            ripplePos.x = ((d1 * j) * (1.0f / 7.0f)) + v1;
+            ripplePos.y = this->waterSurfacePosY;
+            ripplePos.z = ((d2 * j) * (1.0f / 7.0f)) + v2;
 
-            spB0.x += (Rand_ZeroOne() - 0.5f) * 20.0f;
-            spB0.z += (Rand_ZeroOne() - 0.5f) * 20.0f;
-
-            Matrix_MultVec3f(&spB0, &spA4);
-            spA4.x += this->dyna.actor.world.pos.x;
-            spA4.z += this->dyna.actor.world.pos.z;
-            EffectSsGSplash_Spawn(play, &spA4, NULL, NULL, 0, (Rand_ZeroOne() * 400.0f) + 210.0f);
+            ripplePos.x += (Rand_ZeroOne() - 0.5f) * 20.0f;
+            ripplePos.z += (Rand_ZeroOne() - 0.5f) * 20.0f;
+            Matrix_MultVec3f(&ripplePos, &splashPos);
+            splashPos.x += this->dyna.actor.world.pos.x;
+            splashPos.z += this->dyna.actor.world.pos.z;
+            EffectSsGSplash_Spawn(play, &splashPos, NULL, NULL, 0, (Rand_ZeroOne() * 400.0f) + 210.0f);
         }
     }
 
-    for (i = 0; i < 3; i++) {
-        spB0.x = ((Rand_ZeroOne() - 0.5f) * 60.0f) + this->dyna.actor.world.pos.x;
-        spB0.y = this->unk_16C;
-        spB0.z = ((Rand_ZeroOne() - 0.5f) * 60.0f) + this->dyna.actor.world.pos.z;
-        EffectSsGRipple_Spawn(play, &spB0, 1000, 3000, D_80B929E0[i]);
+    for (i = 0; i < ARRAY_COUNT(sLargeRipplesLives); i++) {
+        ripplePos.x = ((Rand_ZeroOne() - 0.5f) * 60.0f) + this->dyna.actor.world.pos.x;
+        ripplePos.y = this->waterSurfacePosY;
+        ripplePos.z = ((Rand_ZeroOne() - 0.5f) * 60.0f) + this->dyna.actor.world.pos.z;
+        EffectSsGRipple_Spawn(play, &ripplePos, 1000, 3000, sLargeRipplesLives[i]);
     }
 
-    for (i = 0; i < 6; i++) {
+    for (i = 0; i < ARRAY_COUNT(sSmallRipplesLives); i++) {
         var_fs0 = Rand_ZeroOne();
         var_fs0 = 1.0f - (var_fs0 * var_fs0);
-        if ((s32)Rand_Next() > 0) {
+        rand = Rand_Next();
+        if (rand > 0) {
             var_fs0 = -var_fs0;
         }
-        spB0.x = (var_fs0 * 100.0f) + this->dyna.actor.world.pos.x;
-        spB0.y = this->unk_16C;
-
+        ripplePos.x = (var_fs0 * 100.0f) + this->dyna.actor.world.pos.x;
+        ripplePos.y = this->waterSurfacePosY;
         var_fs0 = Rand_ZeroOne();
         var_fs0 = 1.0f - (var_fs0 * var_fs0);
-
-        if ((s32)Rand_Next() > 0) {
+        rand = Rand_Next();
+        if (rand > 0) {
             var_fs0 = -var_fs0;
         }
-        spB0.z = (var_fs0 * 100.0f) + this->dyna.actor.world.pos.z;
-        EffectSsGRipple_Spawn(play, &spB0, 400, 800, D_80B929E4[i]);
+        ripplePos.z = (var_fs0 * 100.0f) + this->dyna.actor.world.pos.z;
+        EffectSsGRipple_Spawn(play, &ripplePos, 400, 800, sSmallRipplesLives[i]);
     }
-
     Matrix_Pop();
 }
 
-s32 func_80B922C0(BgDblueElevator* this, PlayState* play) {
-    s32 params = this->dyna.actor.params & 0x7F;
+s32 BgDblueElevator_GetWaterFlowFromCeiling(BgDblueElevator* this, PlayState* play) {
+    Actor* thisx = &this->dyna.actor;
 
-    if (Flags_GetSwitch(play, params) != 0) {
-        return false;
-    } else {
-        return true;
+    if (Flags_GetSwitch(play, BG_DBLUE_ELEVATOR_GET_SWITCH_FLAG(thisx, 0))) {
+        return BG_DBLUE_ELEVATOR_WATER_FLOW_STOPPED;
     }
+    return BG_DBLUE_ELEVATOR_WATER_FLOW_FORWARD;
 }
 
-s32 func_80B922FC(BgDblueElevator* this, PlayState* play) {
-    s32 ret = 0;
+s32 BgDblueElevator_GetWaterFlowFromPipes(BgDblueElevator* this, PlayState* play) {
+    Actor* thisx = &this->dyna.actor;
+    s32 waterFlow = BG_DBLUE_ELEVATOR_WATER_FLOW_STOPPED;
 
-    if (Flags_GetSwitch(play, this->dyna.actor.params & 0x7F) == 0) {
-        ret = 1;
+    // This checks if the first the yellow tank turnkey is open.
+    if (!Flags_GetSwitch(play, BG_DBLUE_ELEVATOR_GET_SWITCH_FLAG(thisx, 0))) {
+        waterFlow = BG_DBLUE_ELEVATOR_WATER_FLOW_FORWARD;
     }
-    if ((Flags_GetSwitch(play, (this->dyna.actor.params + 1) & 0x7F) != 0) &&
-        (Flags_GetSwitch(play, (this->dyna.actor.params + 2) & 0x7F) != 0) &&
-        (Flags_GetSwitch(play, (this->dyna.actor.params + 3) & 0x7F) != 0)) {
-        ret += 2;
+
+    // This checks if water is flowing from the red pipes.
+    if (Flags_GetSwitch(play, BG_DBLUE_ELEVATOR_GET_SWITCH_FLAG(thisx, 1)) &&
+        Flags_GetSwitch(play, BG_DBLUE_ELEVATOR_GET_SWITCH_FLAG(thisx, 2)) &&
+        Flags_GetSwitch(play, BG_DBLUE_ELEVATOR_GET_SWITCH_FLAG(thisx, 3))) {
+        waterFlow += BG_DBLUE_ELEVATOR_WATER_FLOW_REVERSED;
     }
-    return ret;
+    return waterFlow;
 }
 
-void BgDblueElevator_Init(Actor* thisx, PlayState* play) {
+void BgDblueElevator_Init(Actor* thisx, PlayState* play2) {
     BgDblueElevator* this = THIS;
-    s32 pad;
-    s32 params = (this->dyna.actor.params >> 8) & 3;
-    ElevatorProps* elevator = &D_80B92960[params];
-    s32 temp_v0;
+    PlayState* play = play2;
+    s32 index = BG_DBLUE_ELEVATOR_GET_INDEX(&this->dyna.actor);
+    BgDblueElevatorStruct1* ptr = &D_80B92960[index];
+    s32 waterFlow;
 
     Actor_ProcessInitChain(&this->dyna.actor, sInitChain);
-    DynaPolyActor_Init(&this->dyna, 1);
+    DynaPolyActor_Init(&this->dyna, DYNA_TRANSFORM_POS);
     DynaPolyActor_LoadMesh(play, &this->dyna, &gGreatBayTempleObjectElevatorCol);
+    waterFlow = ptr->getWaterFlow(this, play);
 
-    temp_v0 = elevator->actionFunc(this, play);
-
-    if (temp_v0 == 2) {
-        this->unk_168 = -elevator->unk_0D;
+    if (waterFlow == BG_DBLUE_ELEVATOR_WATER_FLOW_REVERSED) {
+        this->direction = -ptr->initialDirection;
     } else {
-        this->unk_168 = elevator->unk_0D;
+        this->direction = ptr->initialDirection;
     }
 
-    func_80B91F20(this, play);
+    BgDblueElevator_CheckWaterBoxInfo(this, play);
 
-    if ((temp_v0 == 0) || (temp_v0 == 3)) {
-        func_80B924DC(this);
+    if ((waterFlow == BG_DBLUE_ELEVATOR_WATER_FLOW_STOPPED) ||
+        (waterFlow == BG_DBLUE_ELEVATOR_WATER_FLOW_BOTH_DIRECTIONS)) {
+        BgDblueElevator_SetupWaitActivation(this);
     } else {
-        func_80B92644(this);
+        BgDblueElevator_SetupMove(this);
     }
 }
 
 void BgDblueElevator_Destroy(Actor* thisx, PlayState* play) {
     BgDblueElevator* this = THIS;
+
     DynaPoly_DeleteBgActor(play, &play->colCtx.dyna, this->dyna.bgId);
 }
 
-void func_80B924DC(BgDblueElevator* this) {
-    this->unk_169 = 60;
-    this->actionFunc = func_80B924F8;
+void BgDblueElevator_SetupWaitActivation(BgDblueElevator* this) {
+    this->activationTimer = 60;
+    this->actionFunc = BgDblueElevator_WaitActivation;
 }
 
-void func_80B924F8(BgDblueElevator* this, PlayState* play) {
-    s32 params = (this->dyna.actor.params >> 8) & 3;
-    ElevatorProps* elevator = &D_80B92960[params];
-    s32 temp_v0 = elevator->actionFunc(this, play);
+/**
+ * The elevator waits for 3 seconds (60 frames) when water restarts flowing before resuming its halted cycle.
+ */
+void BgDblueElevator_WaitActivation(BgDblueElevator* this, PlayState* play) {
+    s32 waterFlow;
+    s32 index = BG_DBLUE_ELEVATOR_GET_INDEX(&this->dyna.actor);
 
-    if ((temp_v0 == 0) || (temp_v0 == 3)) {
-        this->unk_169 = 60;
-        return;
-    }
-
-    this->unk_169--;
-    if (this->unk_169 <= 0) {
-        func_80B92644(this);
-    }
-}
-
-void func_80B9257C(BgDblueElevator* this) {
-    s32 params = (this->dyna.actor.params >> 8) & 3;
-    ElevatorProps* elevator = &D_80B92960[params];
-
-    this->unk_16A = elevator->unk_0C;
-    this->actionFunc = func_80B925B8;
-}
-
-void func_80B925B8(BgDblueElevator* this, PlayState* play) {
-    s32 params = (this->dyna.actor.params >> 8) & 3;
-    ElevatorProps* elevator = &D_80B92960[params];
-    s32 temp_v0 = elevator->actionFunc(this, play);
-
-    if ((temp_v0 == 0) || (temp_v0 == 3)) {
-        func_80B924DC(this);
-        return;
-    }
-
-    this->unk_16A -= 1;
-    if (this->unk_16A <= 0) {
-        func_80B92644(this);
+    waterFlow = D_80B92960[index].getWaterFlow(this, play);
+    if ((waterFlow == BG_DBLUE_ELEVATOR_WATER_FLOW_STOPPED) ||
+        (waterFlow == BG_DBLUE_ELEVATOR_WATER_FLOW_BOTH_DIRECTIONS)) {
+        this->activationTimer = 60;
+    } else {
+        this->activationTimer--;
+        if (this->activationTimer <= 0) {
+            BgDblueElevator_SetupMove(this);
+        }
     }
 }
 
-void func_80B92644(BgDblueElevator* this) {
-    this->unk_160 = 0.0f;
-    this->actionFunc = func_80B92660;
+void BgDblueElevator_SetupPause(BgDblueElevator* this) {
+    s32 index = BG_DBLUE_ELEVATOR_GET_INDEX(&this->dyna.actor);
+    BgDblueElevatorStruct1* ptr = &D_80B92960[index];
+
+    this->pauseTimer = ptr->pauseDuration;
+    this->actionFunc = BgDblueElevator_Pause;
 }
 
-void func_80B92660(BgDblueElevator* this, PlayState* play) {
-    s32 params = (this->dyna.actor.params >> 8) & 3;
-    ElevatorProps* elevator = &D_80B92960[params];
-    s32 temp_v0 = elevator->actionFunc(this, play);
+/**
+ * As the elevator cycles up and down or sideways, it will pause for a set amount of time at each end of its path
+ * before moving again.
+ */
+void BgDblueElevator_Pause(BgDblueElevator* this, PlayState* play) {
+    s32 waterFlow;
+    s32 index = BG_DBLUE_ELEVATOR_GET_INDEX(&this->dyna.actor);
+
+    waterFlow = D_80B92960[index].getWaterFlow(this, play);
+    if ((waterFlow == BG_DBLUE_ELEVATOR_WATER_FLOW_STOPPED) ||
+        (waterFlow == BG_DBLUE_ELEVATOR_WATER_FLOW_BOTH_DIRECTIONS)) {
+        BgDblueElevator_SetupWaitActivation(this);
+    } else {
+        this->pauseTimer--;
+        if (this->pauseTimer <= 0) {
+            BgDblueElevator_SetupMove(this);
+        }
+    }
+}
+
+void BgDblueElevator_SetupMove(BgDblueElevator* this) {
+    this->actionFunc = BgDblueElevator_Move;
+    this->posStep = 0.0f;
+}
+
+void BgDblueElevator_Move(BgDblueElevator* this, PlayState* play) {
+    s32 index = BG_DBLUE_ELEVATOR_GET_INDEX(&this->dyna.actor);
+    BgDblueElevatorStruct1* ptr = &D_80B92960[index];
+    s32 waterFlow = ptr->getWaterFlow(this, play);
+
+    f32 targetPosOffset;
+    s32 hasReachedEnd;
+    s32 isDeactivated;
+    f32 posStep;
+
+    Vec3f basePosOffset;
+    Vec3f posOffset;
+    f32 nearWaterSurfaceCheck;
 
     s32 pad;
-    s32 sp5C;
-    s32 sp58;
-    f32 var_fa0;
-    Vec3f sp48;
-    Vec3f sp3C;
-    f32 var_fv1;
-    s32 pad2;
 
-    if ((temp_v0 == 0) || (temp_v0 == 3)) {
-        sp58 = Math_StepToF(&this->unk_160, 0.0f, elevator->unk_14);
+    if ((waterFlow == BG_DBLUE_ELEVATOR_WATER_FLOW_STOPPED) ||
+        (waterFlow == BG_DBLUE_ELEVATOR_WATER_FLOW_BOTH_DIRECTIONS)) {
+        isDeactivated = Math_StepToF(&this->posStep, 0.0f, ptr->decelerationStep);
     } else {
-        sp58 = 0;
-        Math_StepToF(&this->unk_160, elevator->unk_18, elevator->unk_10);
+        isDeactivated = false;
+        Math_StepToF(&this->posStep, ptr->targetPosStep, ptr->accelerationStep);
     }
 
-    if (this->unk_168 > 0) {
-        var_fa0 = elevator->unk_08;
+    if (this->direction > 0) {
+        targetPosOffset = ptr->targetPosOffset;
     } else {
-        var_fa0 = -elevator->unk_08;
+        targetPosOffset = -ptr->targetPosOffset;
     }
 
-    if (this->unk_160 <= 1.1f) {
-        var_fv1 = 1.1f;
+    if (this->posStep <= 1.1f) {
+        posStep = 1.1f;
     } else {
-        var_fv1 = this->unk_160;
+        posStep = this->posStep;
     }
 
-    if (Math_SmoothStepToF(&this->unk_164, var_fa0, 0.4f, var_fv1, 1.0f) < 0.001f) {
-        sp5C = 1;
+    if (Math_SmoothStepToF(&this->posOffset, targetPosOffset, 0.4f, posStep, 1.0f) < 0.001f) {
+        hasReachedEnd = true;
     } else {
-        sp5C = 0;
+        hasReachedEnd = false;
     }
 
-    if (elevator->unk_00 == 0) {
-        this->dyna.actor.world.pos.y = this->unk_164 + this->dyna.actor.home.pos.y;
-        if (((this->dyna.actor.flags & 0x40) == 0x40) && (this->unk_16B != 0)) {
-            if (this->unk_168 > 0) {
-                var_fv1 = ((this->dyna.actor.world.pos.y + -10.0f) - this->unk_16C) *
-                          (((&this->dyna.actor.prevPos)->y + -10.0f) - this->unk_16C);
+    if (!ptr->isHorizontal) {
+        this->dyna.actor.world.pos.y = this->posOffset + this->dyna.actor.home.pos.y;
+        if (CHECK_FLAG_ALL(this->dyna.actor.flags, ACTOR_FLAG_40) && (this->isWithinWaterBoxXZ)) {
+            if (this->direction > 0) {
+                nearWaterSurfaceCheck = ((this->dyna.actor.world.pos.y + -10.0f) - this->waterSurfacePosY) *
+                                        ((this->dyna.actor.prevPos.y + -10.0f) - this->waterSurfacePosY);
             } else {
-                var_fv1 = ((this->dyna.actor.world.pos.y + -30.0f) - this->unk_16C) *
-                          ((this->dyna.actor.prevPos.y + -30.0f) - this->unk_16C);
+                nearWaterSurfaceCheck = ((this->dyna.actor.world.pos.y + -30.0f) - this->waterSurfacePosY) *
+                                        ((this->dyna.actor.prevPos.y + -30.0f) - this->waterSurfacePosY);
             }
-            if (var_fv1 <= 0.0f) {
-                func_80B91F74(this, play);
+            if (nearWaterSurfaceCheck <= 0.0f) {
+                BgDblueElevator_SpawnRipplesAndSplashes(this, play);
             }
         }
     } else {
         Matrix_RotateYS(this->dyna.actor.shape.rot.y, MTXMODE_NEW);
-        sp48.x = this->unk_164;
-        sp48.z = sp48.y = 0.0f;
-        Matrix_MultVec3f(&sp48, &sp3C);
-        Math_Vec3f_Sum(&this->dyna.actor.home.pos, &sp3C, &this->dyna.actor.world.pos);
+        basePosOffset.x = this->posOffset;
+        basePosOffset.y = 0.0f;
+        basePosOffset.z = 0.0f;
+        Matrix_MultVec3f(&basePosOffset, &posOffset);
+        Math_Vec3f_Sum(&this->dyna.actor.home.pos, &posOffset, &this->dyna.actor.world.pos);
     }
 
-    if (sp58 != 0) {
-        func_80B924DC(this);
-        return;
-    }
-
-    if (sp5C != 0) {
-        this->unk_168 = -this->unk_168;
-        func_80B9257C(this);
+    if (isDeactivated) {
+        BgDblueElevator_SetupWaitActivation(this);
+    } else {
+        if (hasReachedEnd) {
+            this->direction = -this->direction;
+            BgDblueElevator_SetupPause(this);
+        }
     }
 }
 
