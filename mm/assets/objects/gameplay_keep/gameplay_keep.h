@@ -2607,8 +2607,8 @@ static const ALIGN_ASSET(2) char gDoorGoronOpenRightAnim[] = dgDoorGoronOpenRigh
 #define dgDoorDekuOpenLeftAnim "__OTR__objects/gameplay_keep/gDoorDekuOpenLeftAnim"
 static const ALIGN_ASSET(2) char gDoorDekuOpenLeftAnim[] = dgDoorDekuOpenLeftAnim;
 
-#define dgameplay_keep_zeroes_unk_00022E78 "__OTR__objects/gameplay_keep/gameplay_keep_zeroes_unk_00022E78"
-static const ALIGN_ASSET(2) char gameplay_keep_zeroes_unk_00022E78[] = dgameplay_keep_zeroes_unk_00022E78;
+#define dgGameplayKeepEmptyBlob "__OTR__objects/gameplay_keep/gGameplayKeepEmptyBlob"
+static const ALIGN_ASSET(2) char gGameplayKeepEmptyBlob[] = dgGameplayKeepEmptyBlob;
 
 #define dgDoorDekuOpenRightAnim "__OTR__objects/gameplay_keep/gDoorDekuOpenRightAnim"
 static const ALIGN_ASSET(2) char gDoorDekuOpenRightAnim[] = dgDoorDekuOpenRightAnim;

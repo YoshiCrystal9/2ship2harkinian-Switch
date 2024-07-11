@@ -21,8 +21,8 @@ static const ALIGN_ASSET(2) char gTurtleWaveTexAnim[] = dgTurtleWaveTexAnim;
 #define dgTurtleZoraCapeAsleepCol "__OTR__objects/object_kamejima/gTurtleZoraCapeAsleepCol"
 static const ALIGN_ASSET(2) char gTurtleZoraCapeAsleepCol[] = dgTurtleZoraCapeAsleepCol;
 
-#define dgTurtleEmptyTexAnim "__OTR__objects/object_kamejima/gTurtleEmptyTexAnim"
-static const ALIGN_ASSET(2) char gTurtleEmptyTexAnim[] = dgTurtleEmptyTexAnim;
+#define dgTurtleEmpty1TexAnim "__OTR__objects/object_kamejima/gTurtleEmpty1TexAnim"
+static const ALIGN_ASSET(2) char gTurtleEmpty1TexAnim[] = dgTurtleEmpty1TexAnim;
 
 #define dgTurtleZoraCapeAwakeCol "__OTR__objects/object_kamejima/gTurtleZoraCapeAwakeCol"
 static const ALIGN_ASSET(2) char gTurtleZoraCapeAwakeCol[] = dgTurtleZoraCapeAwakeCol;

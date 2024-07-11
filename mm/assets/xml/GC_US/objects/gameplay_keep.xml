@@ -963,7 +963,7 @@
         <Animation Name="gDoorGoronOpenLeftAnim" Offset="0x22CF8" />
         <Animation Name="gDoorGoronOpenRightAnim" Offset="0x22DE0" />
         <Animation Name="gDoorDekuOpenLeftAnim" Offset="0x22EB8" />
-        <Blob Name="gameplay_keep_zeroes_unk_00022E78" Size="0xA8" Offset="0x22EC8" />
+        <Blob Name="gGameplayKeepEmptyBlob" Size="0xA8" Offset="0x22EC8" />
         <Animation Name="gDoorDekuOpenRightAnim" Offset="0x23040" />
         <Collision Name="gFramedDoorCol" Offset="0x23150" />
         <DList Name="gEffDustDL" Offset="0x23180" />

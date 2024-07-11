@@ -9,14 +9,14 @@ static const ALIGN_ASSET(2) char gBoxBigChestOpenChildAnim[] = dgBoxBigChestOpen
 #define dgBoxBigChestOpenAdultAnim "__OTR__objects/object_box/gBoxBigChestOpenAdultAnim"
 static const ALIGN_ASSET(2) char gBoxBigChestOpenAdultAnim[] = dgBoxBigChestOpenAdultAnim;
 
-#define dobject_box_zeroes_unk_0000025C "__OTR__objects/object_box/object_box_zeroes_unk_0000025C"
-static const ALIGN_ASSET(2) char object_box_zeroes_unk_0000025C[] = dobject_box_zeroes_unk_0000025C;
+#define dgBoxChestEmpty1Blob "__OTR__objects/object_box/gBoxChestEmpty1Blob"
+static const ALIGN_ASSET(2) char gBoxChestEmpty1Blob[] = dgBoxChestEmpty1Blob;
 
 #define dgBoxChestOpenAnim "__OTR__objects/object_box/gBoxChestOpenAnim"
 static const ALIGN_ASSET(2) char gBoxChestOpenAnim[] = dgBoxChestOpenAnim;
 
-#define dobject_box_zeroes_unk_0000044C "__OTR__objects/object_box/object_box_zeroes_unk_0000044C"
-static const ALIGN_ASSET(2) char object_box_zeroes_unk_0000044C[] = dobject_box_zeroes_unk_0000044C;
+#define dgBoxChestEmpty2Blob "__OTR__objects/object_box/gBoxChestEmpty2Blob"
+static const ALIGN_ASSET(2) char gBoxChestEmpty2Blob[] = dgBoxChestEmpty2Blob;
 
 #define dgBoxChestBaseDL "__OTR__objects/object_box/gBoxChestBaseDL"
 static const ALIGN_ASSET(2) char gBoxChestBaseDL[] = dgBoxChestBaseDL;
@@ -90,8 +90,8 @@ static const ALIGN_ASSET(2) char gBoxBigChestOpenGoronAnim[] = dgBoxBigChestOpen
 #define dgBoxBigChestOpenDekuAnim "__OTR__objects/object_box/gBoxBigChestOpenDekuAnim"
 static const ALIGN_ASSET(2) char gBoxBigChestOpenDekuAnim[] = dgBoxBigChestOpenDekuAnim;
 
-#define dobject_box_zeroes_unk_00007F40 "__OTR__objects/object_box/object_box_zeroes_unk_00007F40"
-static const ALIGN_ASSET(2) char object_box_zeroes_unk_00007F40[] = dobject_box_zeroes_unk_00007F40;
+#define dgBoxChestEmpty3Blob "__OTR__objects/object_box/gBoxChestEmpty3Blob"
+static const ALIGN_ASSET(2) char gBoxChestEmpty3Blob[] = dgBoxChestEmpty3Blob;
 
 #define dgBoxChestCol "__OTR__objects/object_box/gBoxChestCol"
 static const ALIGN_ASSET(2) char gBoxChestCol[] = dgBoxChestCol;

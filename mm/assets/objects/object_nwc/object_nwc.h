@@ -24,8 +24,8 @@ static const ALIGN_ASSET(2) char gNwcEyeOpenTex[] = dgNwcEyeOpenTex;
 #define dgNwcEyeClosedTex "__OTR__objects/object_nwc/gNwcEyeClosedTex"
 static const ALIGN_ASSET(2) char gNwcEyeClosedTex[] = dgNwcEyeClosedTex;
 
-#define dgNwcBlinkTexAnim "__OTR__objects/object_nwc/gNwcBlinkTexAnim"
-static const ALIGN_ASSET(2) char gNwcBlinkTexAnim[] = dgNwcBlinkTexAnim;
+#define dgNwcEyeTexAnim "__OTR__objects/object_nwc/gNwcEyeTexAnim"
+static const ALIGN_ASSET(2) char gNwcEyeTexAnim[] = dgNwcEyeTexAnim;
 
 #define dobject_nwc_Tex_000C00 "__OTR__objects/object_nwc/object_nwc_Tex_000C00"
 static const ALIGN_ASSET(2) char object_nwc_Tex_000C00[] = dobject_nwc_Tex_000C00;

@@ -342,8 +342,8 @@ static const ALIGN_ASSET(2) char gDmZl4FluteWrapperDL[] = dgDmZl4FluteWrapperDL;
 #define dgDmZl4FluteHoleTex "__OTR__objects/object_zl4/gDmZl4FluteHoleTex"
 static const ALIGN_ASSET(2) char gDmZl4FluteHoleTex[] = dgDmZl4FluteHoleTex;
 
-#define dgDmZlEmptyTexAnim "__OTR__objects/object_zl4/gDmZlEmptyTexAnim"
-static const ALIGN_ASSET(2) char gDmZlEmptyTexAnim[] = dgDmZlEmptyTexAnim;
+#define dgDmZl4EmptyTexAnim "__OTR__objects/object_zl4/gDmZl4EmptyTexAnim"
+static const ALIGN_ASSET(2) char gDmZl4EmptyTexAnim[] = dgDmZl4EmptyTexAnim;
 
 typedef enum Zl4Limb {
     /* 0x00 */ ZL4_LIMB_NONE,

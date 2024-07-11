@@ -93,8 +93,8 @@ static const ALIGN_ASSET(2) char gBurlyGuyPantsTex[] = dgBurlyGuyPantsTex;
 #define dgBurlyGuyShoesTex "__OTR__objects/object_shn/gBurlyGuyShoesTex"
 static const ALIGN_ASSET(2) char gBurlyGuyShoesTex[] = dgBurlyGuyShoesTex;
 
-#define dgBurlyGuyUnused8050TexAnim "__OTR__objects/object_shn/gBurlyGuyUnused8050TexAnim"
-static const ALIGN_ASSET(2) char gBurlyGuyUnused8050TexAnim[] = dgBurlyGuyUnused8050TexAnim;
+#define dgBurlyGuyEmpty1TexAnim "__OTR__objects/object_shn/gBurlyGuyEmpty1TexAnim"
+static const ALIGN_ASSET(2) char gBurlyGuyEmpty1TexAnim[] = dgBurlyGuyEmpty1TexAnim;
 
 #define dgUnusedTownShootingGalleryManEyesDL "__OTR__objects/object_shn/gUnusedTownShootingGalleryManEyesDL"
 static const ALIGN_ASSET(2) char gUnusedTownShootingGalleryManEyesDL[] = dgUnusedTownShootingGalleryManEyesDL;
