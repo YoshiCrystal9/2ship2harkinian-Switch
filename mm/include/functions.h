@@ -413,12 +413,12 @@ void Path_CopyLastPoint(Path* path, Vec3f* dest);
 
 void Room_Noop(PlayState* play, Room* room, Input* input, s32 arg3);
 void Room_Init(PlayState* play, RoomContext* roomCtx);
-size_t Room_AllocateAndLoad(PlayState* play, RoomContext* roomCtx);
-s32 Room_StartRoomTransition(PlayState* play, RoomContext* roomCtx, s32 index);
-s32 Room_HandleLoadCallbacks(PlayState* play, RoomContext* roomCtx);
+size_t Room_SetupFirstRoom(PlayState* play, RoomContext* roomCtx);
+s32 Room_RequestNewRoom(PlayState* play, RoomContext* roomCtx, s32 index);
+s32 Room_ProcessRoomRequest(PlayState* play, RoomContext* roomCtx);
 void Room_Draw(PlayState* play, Room* room, u32 flags);
 
-void func_8012EBF8(PlayState* play, RoomContext* roomCtx);
+void Room_FinishRoomChange(PlayState* play, RoomContext* roomCtx);
 s32 Inventory_GetBtnBItem(PlayState* play);
 void Inventory_ChangeEquipment(s16 value);
 u8 Inventory_DeleteEquipment(PlayState* play, s16 equipment);
