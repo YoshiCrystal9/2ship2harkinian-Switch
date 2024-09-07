@@ -8839,7 +8839,7 @@ void func_8083BF54(PlayState* play, Player* this) {
         this->unk_AB8 = CLAMP(this->unk_AB8, 0.0f, var_fa1);
 
         if ((this->linearVelocity == 0.0f) && (fabsf(this->unk_AB8 - temp_fv1_2) > 2.0f)) {
-            Actor_PlaySfx_FlaggedCentered1(&this->actor, sfxId);
+            Actor_PlaySfx_Flagged2(&this->actor, sfxId);
         }
 
         this->actor.gravity -= this->unk_AB8 * 0.004f;
@@ -11829,7 +11829,7 @@ void func_808445C4(PlayState* play, Player* this) {
         pos.y = (Rand_CenteredFloat(5.0f) + bodyPartsPos->y) - this->actor.world.pos.y;
         pos.z = (Rand_CenteredFloat(5.0f) + bodyPartsPos->z) - this->actor.world.pos.z;
         EffectSsFhgFlash_SpawnShock(play, &this->actor, &pos, scale, FHGFLASH_SHOCK_PLAYER);
-        Actor_PlaySfx_FlaggedCentered1(&this->actor, NA_SE_PL_SPARK - SFX_FLAG);
+        Actor_PlaySfx_Flagged2(&this->actor, NA_SE_PL_SPARK - SFX_FLAG);
     }
 }
 
@@ -15214,9 +15214,9 @@ void Player_Action_26(Player* this, PlayState* play) {
             func_8083CB58(this, speedTarget, this->actor.shape.rot.y);
 
             if (func_8083FBC4(play, this)) {
-                Actor_PlaySfx_FlaggedCentered1(&this->actor, (this->floorSfxOffset == NA_SE_PL_WALK_SNOW - SFX_FLAG)
-                                                                 ? NA_SE_PL_ROLL_SNOW_DUST - SFX_FLAG
-                                                                 : NA_SE_PL_ROLL_DUST - SFX_FLAG);
+                Actor_PlaySfx_Flagged2(&this->actor, (this->floorSfxOffset == NA_SE_PL_WALK_SNOW - SFX_FLAG)
+                                                         ? NA_SE_PL_ROLL_SNOW_DUST - SFX_FLAG
+                                                         : NA_SE_PL_ROLL_DUST - SFX_FLAG);
             }
 
             Player_PlayAnimSfx(this, D_8085D61C);
@@ -16851,7 +16851,7 @@ void Player_Action_56(Player* this, PlayState* play) {
             this->unk_B86[0] = 1;
         } else {
             speedTarget = 9.0f;
-            Actor_PlaySfx_FlaggedCentered1(&this->actor, NA_SE_PL_ZORA_SWIM_LV - SFX_FLAG);
+            Actor_PlaySfx_Flagged2(&this->actor, NA_SE_PL_ZORA_SWIM_LV - SFX_FLAG);
         }
 
         // Y
@@ -18193,8 +18193,7 @@ void Player_Action_83(Player* this, PlayState* play) {
     }
 
     this->shockTimer = 40;
-    Actor_PlaySfx_FlaggedCentered1(&this->actor,
-                                   this->ageProperties->voiceSfxIdOffset + (NA_SE_VO_LI_TAKEN_AWAY - SFX_FLAG));
+    Actor_PlaySfx_Flagged2(&this->actor, this->ageProperties->voiceSfxIdOffset + (NA_SE_VO_LI_TAKEN_AWAY - SFX_FLAG));
 }
 
 void Player_Action_84(Player* this, PlayState* play) {
@@ -19206,7 +19205,7 @@ void Player_Action_95(Player* this, PlayState* play) {
 
         func_800AE930(&play->colCtx, Effect_GetByIndex(this->meleeWeaponEffectIndex[2]), &this->actor.world.pos, 2.0f,
                       this->currentYaw, this->actor.floorPoly, this->actor.floorBgId);
-        Actor_PlaySfx_FlaggedCentered1(&this->actor, Player_GetFloorSfx(this, NA_SE_PL_SLIP_LEVEL - SFX_FLAG));
+        Actor_PlaySfx_Flagged2(&this->actor, Player_GetFloorSfx(this, NA_SE_PL_SLIP_LEVEL - SFX_FLAG));
     }
 }
 
@@ -19234,7 +19233,7 @@ void func_808576BC(PlayState* play, Player* this) {
     }
 
     if (var_v0 > 0x1770) {
-        Actor_PlaySfx_FlaggedCentered1(&this->actor, NA_SE_PL_GORON_SLIP - SFX_FLAG);
+        Actor_PlaySfx_Flagged2(&this->actor, NA_SE_PL_GORON_SLIP - SFX_FLAG);
     }
 
     if (func_8083F8A8(play, this, 12.0f, -1 - (var_v0 >> 0xC), (var_v0 >> 0xA) + 1.0f, (var_v0 >> 7) + 160, 20, true)) {
@@ -19511,7 +19510,7 @@ void Player_Action_96(Player* this, PlayState* play) {
                                                       (gSaveContext.save.saveInfo.playerData.magic >= 2) &&
                                                       (this->av2.actionVar2 >= 0x36B0))) {
                             this->av1.actionVar1++;
-                            Actor_PlaySfx_FlaggedCentered1(&this->actor, NA_SE_PL_GORON_BALL_CHARGE - SFX_FLAG);
+                            Actor_PlaySfx_Flagged2(&this->actor, NA_SE_PL_GORON_BALL_CHARGE - SFX_FLAG);
                         } else {
                             this->av1.actionVar1 = 4;
                         }
@@ -20635,7 +20634,7 @@ void Player_CsAction_32(PlayState* play, Player* this, CsCmdActorCue* cue) {
     if (BEN_ANIM_EQUAL(this->skelAnime.animation, gPlayerAnim_cl_nigeru)) {
         Player_PlayAnimSfx(this, D_8085DA48);
     } else if (BEN_ANIM_EQUAL(this->skelAnime.animation, gPlayerAnim_alink_rakkatyu)) {
-        Actor_PlaySfx_FlaggedCentered1(&this->actor, NA_SE_PL_FLYING_AIR - SFX_FLAG);
+        Actor_PlaySfx_Flagged2(&this->actor, NA_SE_PL_FLYING_AIR - SFX_FLAG);
     } else {
         Player_CsAnimHelper_PlayAnimSfxLostHorse(this);
     }
