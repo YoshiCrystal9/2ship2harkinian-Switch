@@ -34,6 +34,8 @@
 #include "global.h"
 #include "PR/controller.h"
 #include "PR/os_motor.h"
+
+#include "controller.h"
 #include "fault.h"
 #include <stdio.h>
 #include <string.h>

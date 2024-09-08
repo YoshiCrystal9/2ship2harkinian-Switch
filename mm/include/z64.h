@@ -13,6 +13,7 @@ extern "C" {
 #include "ultra64.h"
 
 #include "color.h"
+#include "controller.h"
 #include "gfx.h"
 #include "gfxprint.h"
 #include "ichain.h"

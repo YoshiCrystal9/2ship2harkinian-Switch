@@ -719,7 +719,7 @@ void EnDoor_Idle(EnDoor* this, PlayState* play) {
         Vec3f playerPosRelToDoor;
 
         // Check if player is near this door and looking at it
-        Actor_OffsetOfPointInActorCoords(&this->knobDoor.dyna.actor, &playerPosRelToDoor, &player->actor.world.pos);
+        Actor_WorldToActorCoords(&this->knobDoor.dyna.actor, &playerPosRelToDoor, &player->actor.world.pos);
         if (sDoorIsMilkBarMember ||
             ((fabsf(playerPosRelToDoor.y) < 20.0f) && (fabsf(playerPosRelToDoor.x) < 20.0f) &&
              GameInteractor_Should(VB_BE_NEAR_DOOR, fabsf(playerPosRelToDoor.z) < 50.0f, &playerPosRelToDoor.z))) {
