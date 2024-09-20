@@ -1024,7 +1024,7 @@ void Play_UpdateMain(PlayState* this) {
 
             sp5C = IS_PAUSED(&this->pauseCtx);
 
-            AnimationContext_Reset(&this->animationCtx);
+            AnimTaskQueue_Reset(&this->animTaskQueue);
             Object_UpdateEntries(&this->objectCtx);
 
             if (!sp5C && (IREG(72) == 0)) {
@@ -1072,7 +1072,7 @@ void Play_UpdateMain(PlayState* this) {
 
             Message_Update(this);
             Interface_Update(this);
-            AnimationContext_Update(this, &this->animationCtx);
+            AnimTaskQueue_Update(this, &this->animTaskQueue);
             SoundSource_UpdateAll(this);
             ShrinkWindow_Update(this->state.framerateDivisor);
             TransitionFade_Update(&this->unk_18E48, this->state.framerateDivisor);
@@ -2335,7 +2335,7 @@ void Play_Init(GameState* thisx) {
     Effect_Init(this);
     EffectSS_Init(this, 100);
     CollisionCheck_InitContext(this, &this->colChkCtx);
-    AnimationContext_Reset(&this->animationCtx);
+    AnimTaskQueue_Reset(&this->animTaskQueue);
     Cutscene_InitContext(this, &this->csCtx);
 
     if (gSaveContext.nextCutsceneIndex != 0xFFEF) {
@@ -2487,7 +2487,7 @@ void Play_Init(GameState* thisx) {
     Environment_PlaySceneSequence(this);
     gSaveContext.seqId = this->sceneSequences.seqId;
     gSaveContext.ambienceId = this->sceneSequences.ambienceId;
-    AnimationContext_Update(this, &this->animationCtx);
+    AnimTaskQueue_Update(this, &this->animTaskQueue);
     // BENTODO: crash in Message_FindMessage
     Cutscene_HandleEntranceTriggers(this);
     gSaveContext.respawnFlag = 0;
