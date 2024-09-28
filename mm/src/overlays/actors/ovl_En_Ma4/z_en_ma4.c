@@ -55,7 +55,7 @@ typedef enum {
     /* 3 */ MA4_STATE_AFTERDESCRIBETHEMCS
 } EnMa4State;
 
-ActorInit En_Ma4_InitVars = {
+ActorProfile En_Ma4_Profile = {
     /**/ ACTOR_EN_MA4,
     /**/ ACTORCAT_NPC,
     /**/ FLAGS,

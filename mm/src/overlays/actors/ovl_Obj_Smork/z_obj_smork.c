@@ -18,7 +18,7 @@ void ObjSmork_Destroy(Actor* thisx, PlayState* play);
 void ObjSmork_Update(Actor* thisx, PlayState* play);
 void ObjSmork_Draw(Actor* thisx, PlayState* play);
 
-ActorInit Obj_Smork_InitVars = {
+ActorProfileObj_Smork_Profile = {
     ACTOR_OBJ_SMORK,
     ACTORCAT_PROP,
     FLAGS,

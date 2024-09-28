@@ -77,19 +77,6 @@ typedef enum {
 } Boss07MaskDamageEffect;
 
 typedef enum {
-    /* 0x0 */ MAJORAS_REMAINS_DMGEFF_0,
-    /* 0x2 */ MAJORAS_REMAINS_DMGEFF_2 = 2,
-    /* 0x3 */ MAJORAS_REMAINS_DMGEFF_3,
-    /* 0x4 */ MAJORAS_REMAINS_DMGEFF_4,
-    /* 0x9 */ MAJORAS_REMAINS_DMGEFF_9 = 9,
-    /* 0xA */ MAJORAS_REMAINS_DMGEFF_A,
-    /* 0xC */ MAJORAS_REMAINS_DMGEFF_C = 0xC,
-    /* 0xD */ MAJORAS_REMAINS_DMGEFF_D,
-    /* 0xE */ MAJORAS_REMAINS_DMGEFF_E,
-    /* 0xF */ MAJORAS_REMAINS_DMGEFF_F,
-} Boss07RemainsDamageEffect;
-
-typedef enum {
     /* 0x0 */ MAJORAS_TOP_DMGEFF_0,
     /* 0xA */ MAJORAS_TOP_DMGEFF_A = 0xA,
     /* 0xB */ MAJORAS_TOP_DMGEFF_B,
@@ -376,7 +363,7 @@ static s16 sShotPrimColors[4][3] = {
 
 #include "z_boss_07_dmgtbl.inc"
 
-ActorInit Boss_07_InitVars = {
+ActorProfile Boss_07_Profile = {
     ACTOR_BOSS_07,
     ACTORCAT_BOSS,
     FLAGS,

@@ -91,7 +91,7 @@ void EnBal_OfferGetItem(EnBal* this, PlayState* play);
 void EnBal_SetupThankYou(EnBal* this);
 void EnBal_ThankYou(EnBal* this, PlayState* play);
 
-ActorInit En_Bal_InitVars = {
+ActorProfile En_Bal_Profile = {
     /**/ ACTOR_EN_BAL,
     /**/ ACTORCAT_NPC,
     /**/ FLAGS,

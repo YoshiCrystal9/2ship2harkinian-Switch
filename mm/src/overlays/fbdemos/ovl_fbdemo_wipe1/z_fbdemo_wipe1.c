@@ -22,7 +22,7 @@ s32 TransitionWipe1_IsDone(void* thisx);
 
 #include "assets/overlays/ovl_fbdemo_wipe1/ovl_fbdemo_wipe1.h"
 
-TransitionInit TransitionWipe1_InitVars = {
+TransitionProfile TransitionWipe1_Profile = {
     TransitionWipe1_Init,     TransitionWipe1_Destroy,     TransitionWipe1_Update,
     TransitionWipe1_Draw,     TransitionWipe1_Start,       TransitionWipe1_SetType,
     TransitionWipe1_SetColor, TransitionWipe1_SetEnvColor, TransitionWipe1_IsDone,

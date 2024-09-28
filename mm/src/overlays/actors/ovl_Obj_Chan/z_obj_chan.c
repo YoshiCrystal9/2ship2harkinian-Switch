@@ -29,7 +29,7 @@ void ObjChan_Reset(void);
 void ObjChan_ChandelierAction(ObjChan* this, PlayState* play);
 void ObjChan_PotAction(ObjChan* this, PlayState* play);
 
-ActorInit Obj_Chan_InitVars = {
+ActorProfile Obj_Chan_Profile = {
     /**/ ACTOR_OBJ_CHAN,
     /**/ ACTORCAT_BG,
     /**/ FLAGS,

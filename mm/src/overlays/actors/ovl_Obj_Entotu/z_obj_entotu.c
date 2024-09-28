@@ -18,7 +18,7 @@ void ObjEntotu_Destroy(Actor* thisx, PlayState* play);
 void ObjEntotu_Update(Actor* thisx, PlayState* play);
 void ObjEntotu_Draw(Actor* thisx, PlayState* play);
 
-ActorInit Obj_Entotu_InitVars = {
+ActorProfileObj_Entotu_Profile = {
     ACTOR_OBJ_ENTOTU,
     ACTORCAT_PROP,
     FLAGS,

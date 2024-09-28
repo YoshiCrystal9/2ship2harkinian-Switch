@@ -3509,8 +3509,8 @@ void Actor_FreeOverlay(ActorOverlay* entry) {
     if (entry->numLoaded == 0) {
         // #region 2S2H [Port] Added reset function is called when loaded count is 0
         // to clean up static variables
-        if (entry->initInfo->reset != NULL) {
-            entry->initInfo->reset();
+        if (entry->profile->reset != NULL) {
+            entry->profile->reset();
         }
         // #endregion
 
@@ -3536,16 +3536,16 @@ Actor* Actor_Spawn(ActorContext* actorCtx, PlayState* play, s16 actorId, f32 pos
                                          CS_ID_NONE, HALFDAYBIT_ALL, NULL);
 }
 
-ActorInit* Actor_LoadOverlay(ActorContext* actorCtx, s16 index) {
+ActorProfile* Actor_LoadOverlay(ActorContext* actorCtx, s16 index) {
     size_t overlaySize;
     ActorOverlay* overlayEntry = &gActorOverlayTable[index];
-    ActorInit* actorInit;
+    ActorProfile* profile;
 
     overlaySize = (uintptr_t)overlayEntry->vramEnd - (uintptr_t)overlayEntry->vramStart;
 
     // 2S2H [Port] vramStart will always be NULL in the port, so the else block is never run
     if (overlayEntry->vramStart == NULL) {
-        actorInit = overlayEntry->initInfo;
+        profile = overlayEntry->profile;
     } else {
         if (overlayEntry->loadedRamAddr == NULL) {
             if (overlayEntry->allocType & ALLOCTYPE_ABSOLUTE) {
@@ -3568,21 +3568,21 @@ ActorInit* Actor_LoadOverlay(ActorContext* actorCtx, s16 index) {
             overlayEntry->numLoaded = 0;
         }
 
-        actorInit = (void*)(uintptr_t)((overlayEntry->initInfo != NULL)
-                                           ? (void*)((uintptr_t)overlayEntry->initInfo -
-                                                     (intptr_t)((uintptr_t)overlayEntry->vramStart -
-                                                                (uintptr_t)overlayEntry->loadedRamAddr))
-                                           : NULL);
+        profile = (void*)(uintptr_t)((overlayEntry->profile != NULL)
+                                         ? (void*)((uintptr_t)overlayEntry->profile -
+                                                   (intptr_t)((uintptr_t)overlayEntry->vramStart -
+                                                              (uintptr_t)overlayEntry->loadedRamAddr))
+                                         : NULL);
     }
 
-    return actorInit;
+    return profile;
 }
 
 Actor* Actor_SpawnAsChildAndCutscene(ActorContext* actorCtx, PlayState* play, s16 index, f32 x, f32 y, f32 z, s16 rotX,
                                      s16 rotY, s16 rotZ, s32 params, u32 csId, u32 halfDaysBits, Actor* parent) {
     s32 pad;
     Actor* actor;
-    ActorInit* actorInit;
+    ActorProfile* profile;
     s32 objectSlot;
     ActorOverlay* overlayEntry;
 
@@ -3590,27 +3590,27 @@ Actor* Actor_SpawnAsChildAndCutscene(ActorContext* actorCtx, PlayState* play, s1
         return NULL;
     }
 
-    actorInit = Actor_LoadOverlay(actorCtx, index);
-    if (actorInit == NULL) {
+    profile = Actor_LoadOverlay(actorCtx, index);
+    if (profile == NULL) {
         return NULL;
     }
 
-    objectSlot = Object_GetSlot(&play->objectCtx, actorInit->objectId);
+    objectSlot = Object_GetSlot(&play->objectCtx, profile->objectId);
     if ((objectSlot <= OBJECT_SLOT_NONE) ||
-        ((actorInit->type == ACTORCAT_ENEMY) && Flags_GetClear(play, play->roomCtx.curRoom.num) &&
-         (actorInit->id != ACTOR_BOSS_05))) {
+        ((profile->type == ACTORCAT_ENEMY) && Flags_GetClear(play, play->roomCtx.curRoom.num) &&
+         (profile->id != ACTOR_BOSS_05))) {
         Actor_FreeOverlay(&gActorOverlayTable[index]);
         return NULL;
     }
 
-    actor = ZeldaArena_Malloc(actorInit->instanceSize);
+    actor = ZeldaArena_Malloc(profile->instanceSize);
     if (actor == NULL) {
         Actor_FreeOverlay(&gActorOverlayTable[index]);
         return NULL;
     }
 
     // #region 2S2H [ActorExtension]
-    ActorExtension_Alloc(actor, actorInit->id);
+    ActorExtension_Alloc(actor, profile->id);
     SetActorListIndex(actor, currentActorListIndex);
     currentActorListIndex = -1;
     // #endregion
@@ -3625,22 +3625,22 @@ Actor* Actor_SpawnAsChildAndCutscene(ActorContext* actorCtx, PlayState* play, s1
         overlayEntry->numLoaded++;
     }
 
-    memset(actor, 0, actorInit->instanceSize);
+    memset(actor, 0, profile->instanceSize);
     actor->overlayEntry = overlayEntry;
-    actor->id = actorInit->id;
-    actor->flags = actorInit->flags;
+    actor->id = profile->id;
+    actor->flags = profile->flags;
 
-    if (actorInit->id == ACTOR_EN_PART) {
+    if (profile->id == ACTOR_EN_PART) {
         actor->objectSlot = rotZ;
         rotZ = 0;
     } else {
         actor->objectSlot = objectSlot;
     }
 
-    actor->init = actorInit->init;
-    actor->destroy = actorInit->destroy;
-    actor->update = actorInit->update;
-    actor->draw = actorInit->draw;
+    actor->init = profile->init;
+    actor->destroy = profile->destroy;
+    actor->update = profile->update;
+    actor->draw = profile->draw;
 
     if (parent != NULL) {
         actor->room = parent->room;
@@ -3669,7 +3669,7 @@ Actor* Actor_SpawnAsChildAndCutscene(ActorContext* actorCtx, PlayState* play, s1
         actor->halfDaysBits = HALFDAYBIT_ALL;
     }
 
-    Actor_AddToCategory(actorCtx, actor, actorInit->type);
+    Actor_AddToCategory(actorCtx, actor, profile->type);
 
     {
         uintptr_t sp20 = gSegments[6];

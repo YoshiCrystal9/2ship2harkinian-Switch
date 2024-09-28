@@ -69,7 +69,7 @@ static u8 D_80AEF800[] = {
     /* 0xE */ SCHEDULE_CMD_RET_NONE(),
 };
 
-ActorInit En_Tk_InitVars = {
+ActorProfile En_Tk_Profile = {
     /**/ ACTOR_EN_TK,
     /**/ ACTORCAT_NPC,
     /**/ FLAGS,

@@ -16,7 +16,7 @@ void OceffWipe7_Destroy(Actor* thisx, PlayState* play);
 void OceffWipe7_Update(Actor* thisx, PlayState* play);
 void OceffWipe7_Draw(Actor* thisx, PlayState* play);
 
-ActorInit Oceff_Wipe7_InitVars = {
+ActorProfileOceff_Wipe7_Profile = {
     ACTOR_OCEFF_WIPE7,
     ACTORCAT_ITEMACTION,
     FLAGS,

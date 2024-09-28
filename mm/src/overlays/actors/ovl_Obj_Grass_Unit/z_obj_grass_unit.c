@@ -22,7 +22,7 @@
 void ObjGrassUnit_Init(Actor* this, PlayState* play2);
 void ObjGrassUnit_Reset(void);
 
-ActorInit Obj_Grass_Unit_InitVars = {
+ActorProfile Obj_Grass_Unit_Profile = {
     /**/ ACTOR_OBJ_GRASS_UNIT,
     /**/ ACTORCAT_BG,
     /**/ FLAGS,

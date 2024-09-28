@@ -19,7 +19,7 @@ void ObjToudai_Draw(Actor* thisx, PlayState* play);
 
 #include "BenPort.h"
 
-ActorInit Obj_Toudai_InitVars = {
+ActorProfileObj_Toudai_Profile = {
     ACTOR_OBJ_TOUDAI,
     ACTORCAT_PROP,
     FLAGS,

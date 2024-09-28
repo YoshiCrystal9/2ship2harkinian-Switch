@@ -23,7 +23,7 @@ void FireArrow_Fly(ArrowFire* this, PlayState* play);
 
 #include "overlays/ovl_Arrow_Fire/ovl_Arrow_Fire.h"
 
-ActorInit Arrow_Fire_InitVars = {
+ActorProfile Arrow_Fire_Profile = {
     /**/ ACTOR_ARROW_FIRE,
     /**/ ACTORCAT_ITEMACTION,
     /**/ FLAGS,

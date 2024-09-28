@@ -23,7 +23,7 @@ void ArrowLight_Fly(ArrowLight* this, PlayState* play);
 
 #include "overlays/ovl_Arrow_Light/ovl_Arrow_Light.h"
 
-ActorInit Arrow_Light_InitVars = {
+ActorProfile Arrow_Light_Profile = {
     /**/ ACTOR_ARROW_LIGHT,
     /**/ ACTORCAT_ITEMACTION,
     /**/ FLAGS,

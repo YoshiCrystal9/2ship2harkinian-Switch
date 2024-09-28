@@ -1,9 +1,9 @@
 #include "z64effect_ss.h"
 #include "segment_symbols.h"
 
-// Init Vars and linker symbol declarations (used in the table below)
+// Profile and linker symbol declarations (used in the table below)
 #define DEFINE_EFFECT_SS(name, _enumValue) \
-    extern EffectSsInit name##_InitVars;   \
+    extern EffectSsProfile name##_Profile; \
     DECLARE_OVERLAY_SEGMENT(name)
 
 #define DEFINE_EFFECT_SS_UNSET(_enumValue)
@@ -15,7 +15,7 @@
 
 #define DEFINE_EFFECT_SS(name, _enumValue)     \
     {                                          \
-        0, 0, 0, 0, NULL, &name##_InitVars, 1, \
+        0, 0, 0, 0, NULL, &name##_Profile, 1, \
     },
 
 #define DEFINE_EFFECT_SS_UNSET(_enumValue) { 0 },

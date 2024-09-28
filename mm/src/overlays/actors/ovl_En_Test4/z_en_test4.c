@@ -24,7 +24,7 @@ void EnTest4_Reset(void);
 void EnTest4_HandleEvents(EnTest4* this, PlayState* play);
 void EnTest4_HandleCutscene(EnTest4* this, PlayState* play);
 
-ActorInit En_Test4_InitVars = {
+ActorProfileEn_Test4_Profile = {
     ACTOR_EN_TEST4,
     ACTORCAT_SWITCH,
     FLAGS,

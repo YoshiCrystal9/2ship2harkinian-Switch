@@ -32,7 +32,7 @@ f32 sNearestGrassElementsDistSq[OBJ_GRASS_NEAREST_ELEM_MAX];
 
 #include "overlays/ovl_Obj_Grass/ovl_Obj_Grass.h"
 
-ActorInit Obj_Grass_InitVars = {
+ActorProfile Obj_Grass_Profile = {
     /**/ ACTOR_OBJ_GRASS,
     /**/ ACTORCAT_PROP,
     /**/ FLAGS,

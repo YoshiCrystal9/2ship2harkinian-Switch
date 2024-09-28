@@ -147,7 +147,7 @@ static DamageTable sRedTwinmoldDamageTable = {
     /* Powder Keg     */ DMG_ENTRY(1, 0xF),
 };
 
-ActorInit Boss_02_InitVars = {
+ActorProfile Boss_02_Profile = {
     /**/ ACTOR_BOSS_02,
     /**/ ACTORCAT_BOSS,
     /**/ FLAGS,

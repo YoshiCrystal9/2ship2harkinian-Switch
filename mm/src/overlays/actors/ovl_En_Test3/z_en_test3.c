@@ -171,7 +171,7 @@ static u8 sScheduleScript[] = {
     /* 0x138 */ SCHEDULE_CMD_RET_NONE(),
 };
 
-ActorInit En_Test3_InitVars = {
+ActorProfile En_Test3_Profile = {
     /**/ ACTOR_EN_TEST3,
     /**/ ACTORCAT_NPC,
     /**/ FLAGS,

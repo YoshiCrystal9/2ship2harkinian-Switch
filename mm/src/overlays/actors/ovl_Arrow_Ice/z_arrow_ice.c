@@ -23,7 +23,7 @@ void ArrowIce_Fly(ArrowIce* this, PlayState* play);
 
 #include "overlays/ovl_Arrow_Ice/ovl_Arrow_Ice.h"
 
-ActorInit Arrow_Ice_InitVars = {
+ActorProfile Arrow_Ice_Profile = {
     /**/ ACTOR_ARROW_ICE,
     /**/ ACTORCAT_ITEMACTION,
     /**/ FLAGS,

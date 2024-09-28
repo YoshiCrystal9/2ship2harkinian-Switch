@@ -42,7 +42,7 @@ typedef struct {
     /* 0x2 */ Vec3s unk_2; // scale
 } struct_80124618; // size = 0x8
 
-typedef struct ActorInit {
+typedef struct ActorProfile {
     /* 0x00 */ s16 id;
     /* 0x02 */ u8 type;
     /* 0x04 */ u32 flags;
@@ -55,7 +55,7 @@ typedef struct ActorInit {
     // #region 2S2H [Port]
     /*      */ ActorResetFunc reset;
     // #endregion
-} ActorInit; // size = 0x20
+} ActorProfile; // size = 0x20
 
 typedef enum AllocType {
     /* 0 */ ALLOCTYPE_NORMAL,
@@ -69,7 +69,7 @@ typedef struct ActorOverlay {
     /* 0x08 */ void* vramStart;
     /* 0x0C */ void* vramEnd;
     /* 0x10 */ void* loadedRamAddr; // original name: "allocp"
-    /* 0x14 */ ActorInit* initInfo;
+    /* 0x14 */ ActorProfile* profile;
     /* 0x18 */ char* name;
     /* 0x1C */ u16 allocType; // bit 0: don't allocate memory, use actorContext->0x250? bit 1: Always keep loaded?
     /* 0x1E */ s8 numLoaded; // original name: "clients"

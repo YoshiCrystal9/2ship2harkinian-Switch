@@ -42,7 +42,7 @@ typedef enum EnKbtAnimation {
     /* 13 */ ENKBT_ANIM_MAX
 } EnKbtAnimation;
 
-ActorInit En_Kbt_InitVars = {
+ActorProfile En_Kbt_Profile = {
     /**/ ACTOR_EN_KBT,
     /**/ ACTORCAT_NPC,
     /**/ FLAGS,

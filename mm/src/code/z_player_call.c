@@ -11,7 +11,7 @@ ActorFunc sPlayerCallDestroyFunc;
 ActorFunc sPlayerCallUpdateFunc;
 ActorFunc sPlayerCallDrawFunc;
 
-ActorInit Player_InitVars = {
+ActorProfile Player_Profile = {
     /**/ ACTOR_PLAYER,
     /**/ ACTORCAT_PLAYER,
     /**/ FLAGS,

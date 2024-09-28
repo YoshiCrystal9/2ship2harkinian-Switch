@@ -24,7 +24,7 @@ void EnEstone_SpawnEffect(EnEstone* this, Vec3f* pos, Vec3f* velocity, Vec3f* ac
 void EnEstone_UpdateEffects(EnEstone* this, PlayState* play);
 void EnEstone_DrawEffects(EnEstone* this, PlayState* play);
 
-ActorInit En_Estone_InitVars = {
+ActorProfile En_Estone_Profile = {
     /**/ ACTOR_EN_ESTONE,
     /**/ ACTORCAT_PROP,
     /**/ FLAGS,
