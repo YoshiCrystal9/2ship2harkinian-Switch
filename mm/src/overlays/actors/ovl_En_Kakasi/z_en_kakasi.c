@@ -1047,7 +1047,7 @@ void EnKakasi_DiggingAway(EnKakasi* this, PlayState* play) {
 void EnKakasi_SetupIdleUnderground(EnKakasi* this) {
     this->picto.actor.shape.yOffset = -7000.0f;
     this->picto.actor.draw = NULL;
-    this->picto.actor.flags |= ACTOR_FLAG_CANT_LOCK_ON;
+    this->picto.actor.flags |= ACTOR_FLAG_LOCK_ON_DISABLED;
     this->unkState196 = 5;
     this->actionFunc = EnKakasi_IdleUnderground;
 }
@@ -1058,7 +1058,7 @@ void EnKakasi_IdleUnderground(EnKakasi* this, PlayState* play) {
                                   (this->picto.actor.xzDistToPlayer < this->songSummonDist) &&
                                   ((BREG(1) != 0) || (play->msgCtx.ocarinaMode == OCARINA_MODE_PLAYED_SCARECROW_SPAWN)),
                               this)) {
-        this->picto.actor.flags &= ~ACTOR_FLAG_CANT_LOCK_ON;
+        this->picto.actor.flags &= ~ACTOR_FLAG_LOCK_ON_DISABLED;
         play->msgCtx.ocarinaMode = OCARINA_MODE_END;
         this->actionFunc = EnKakasi_SetupRiseOutOfGround;
     }

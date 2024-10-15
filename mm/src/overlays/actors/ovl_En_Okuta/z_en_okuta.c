@@ -16,7 +16,7 @@
 #include "objects/object_okuta/object_okuta.h"
 #include "overlays/ovl_En_Okuta/ovl_En_Okuta.h"
 
-#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_UNFRIENDLY)
+#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_HOSTILE)
 
 #define THIS ((EnOkuta*)thisx)
 

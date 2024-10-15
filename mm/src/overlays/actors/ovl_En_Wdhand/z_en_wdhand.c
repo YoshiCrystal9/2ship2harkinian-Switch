@@ -7,7 +7,7 @@
 #include "z_en_wdhand.h"
 #include "objects/object_wdhand/object_wdhand.h"
 
-#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_UNFRIENDLY)
+#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_HOSTILE)
 
 #define THIS ((EnWdhand*)thisx)
 

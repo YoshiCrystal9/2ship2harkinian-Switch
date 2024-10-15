@@ -9,7 +9,7 @@
 #include "overlays/actors/ovl_Obj_Syokudai/z_obj_syokudai.h"
 #include "2s2h/GameInteractor/GameInteractor.h"
 
-#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_UNFRIENDLY | ACTOR_FLAG_IGNORE_QUAKE | ACTOR_FLAG_4000)
+#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_HOSTILE | ACTOR_FLAG_IGNORE_QUAKE | ACTOR_FLAG_4000)
 
 #define THIS ((EnFirefly*)thisx)
 

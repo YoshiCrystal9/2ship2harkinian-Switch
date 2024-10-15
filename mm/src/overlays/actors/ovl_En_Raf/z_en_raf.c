@@ -9,7 +9,7 @@
 #include "2s2h/Enhancements/FrameInterpolation/FrameInterpolation.h"
 #include "BenPort.h"
 
-#define FLAGS (ACTOR_FLAG_CANT_LOCK_ON)
+#define FLAGS (ACTOR_FLAG_LOCK_ON_DISABLED)
 
 #define THIS ((EnRaf*)thisx)
 
@@ -567,7 +567,7 @@ void EnRaf_Explode(EnRaf* this, PlayState* play) {
     this->timer = 5;
     if (this->grabTarget == CARNIVOROUS_LILY_GRAB_TARGET_EXPLOSIVE) {
         Actor_ChangeCategory(play, &play->actorCtx, &this->dyna.actor, ACTORCAT_ENEMY);
-        this->dyna.actor.flags |= (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_UNFRIENDLY);
+        this->dyna.actor.flags |= (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_HOSTILE);
     }
 
     this->actionFunc = EnRaf_PostDetonation;
@@ -581,7 +581,7 @@ void EnRaf_PostDetonation(EnRaf* this, PlayState* play) {
         this->collider.dim.radius = 50;
         this->collider.dim.height = 10;
         Actor_ChangeCategory(play, &play->actorCtx, &this->dyna.actor, ACTORCAT_PROP);
-        this->dyna.actor.flags &= ~(ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_UNFRIENDLY);
+        this->dyna.actor.flags &= ~(ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_HOSTILE);
         EnRaf_SetupDormant(this);
     } else if (this->grabTarget == CARNIVOROUS_LILY_GRAB_TARGET_EXPLOSIVE) {
         this->collider.dim.radius = 80;

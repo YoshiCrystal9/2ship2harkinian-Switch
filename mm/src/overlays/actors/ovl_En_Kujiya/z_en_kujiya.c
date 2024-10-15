@@ -10,7 +10,7 @@
 #include "objects/object_kujiya/object_kujiya.h"
 #include "GameInteractor/GameInteractor.h"
 
-#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_CANT_LOCK_ON)
+#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_LOCK_ON_DISABLED)
 
 #define THIS ((EnKujiya*)thisx)
 
