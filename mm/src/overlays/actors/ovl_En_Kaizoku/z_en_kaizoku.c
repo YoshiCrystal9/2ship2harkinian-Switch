@@ -1101,7 +1101,7 @@ void func_80B87C7C(EnKaizoku* this) {
     this->picto.actor.world.rot.y = this->picto.actor.shape.rot.y;
     this->bodyCollider.elem.elemType = ELEMTYPE_UNK4;
     this->bodyCollider.base.colType = COLTYPE_NONE;
-    this->swordCollider.info.elemType = ELEMTYPE_UNK4;
+    this->swordCollider.elem.elemType = ELEMTYPE_UNK4;
     this->action = KAIZOKU_ACTION_6;
     this->actionFunc = func_80B87D3C;
 }
@@ -1130,7 +1130,7 @@ void func_80B87D3C(EnKaizoku* this, PlayState* play) {
         (this->picto.actor.bgCheckFlags & (BGCHECKFLAG_GROUND | BGCHECKFLAG_GROUND_TOUCH))) {
         this->bodyCollider.elem.elemType = ELEMTYPE_UNK1;
         this->bodyCollider.base.colType = COLTYPE_HIT3;
-        this->swordCollider.info.elemType = ELEMTYPE_UNK2;
+        this->swordCollider.elem.elemType = ELEMTYPE_UNK2;
         this->picto.actor.shape.rot.x = 0;
         this->picto.actor.world.rot.y = this->picto.actor.shape.rot.y = this->picto.actor.yawTowardsPlayer;
         this->picto.actor.speed = 0.0f;
@@ -1146,7 +1146,7 @@ void func_80B87E28(EnKaizoku* this) {
     Actor_PlaySfx(&this->picto.actor, NA_SE_EN_TEKU_JUMP);
     this->bodyCollider.elem.elemType = ELEMTYPE_UNK4;
     this->bodyCollider.base.colType = COLTYPE_NONE;
-    this->swordCollider.info.elemType = ELEMTYPE_UNK4;
+    this->swordCollider.elem.elemType = ELEMTYPE_UNK4;
     this->action = KAIZOKU_ACTION_7;
     this->actionFunc = func_80B87E9C;
     this->picto.actor.shape.rot.y = this->picto.actor.world.rot.y = this->picto.actor.yawTowardsPlayer;
@@ -1656,7 +1656,7 @@ void func_80B894C0(EnKaizoku* this, PlayState* play) {
         }
 
         if ((this->picto.actor.xzDistToPlayer <= 65.0f) && ((play->gameplayFrames % 8) != 0)) {
-            this->swordCollider.info.elemType = ELEMTYPE_UNK2;
+            this->swordCollider.elem.elemType = ELEMTYPE_UNK2;
             func_80B87F70(this);
         } else {
             func_80B87E28(this);
@@ -1766,9 +1766,9 @@ void func_80B89A08(EnKaizoku* this, PlayState* play) {
     s32 i;
 
     if (gSaveContext.save.saveInfo.playerData.health <= 0x10) {
-        this->swordCollider.info.toucher.damage = 0;
+        this->swordCollider.elem.toucher.damage = 0;
     } else {
-        this->swordCollider.info.toucher.damage = 4;
+        this->swordCollider.elem.toucher.damage = 4;
     }
 
     if (!(this->swordCollider.base.atFlags & AT_BOUNCED) && (this->swordCollider.base.atFlags & AT_HIT)) {
@@ -1841,7 +1841,7 @@ void func_80B89A08(EnKaizoku* this, PlayState* play) {
                                          40);
                     this->bodyCollider.elem.elemType = ELEMTYPE_UNK1;
                     this->bodyCollider.base.colType = COLTYPE_HIT3;
-                    this->swordCollider.info.elemType = ELEMTYPE_UNK2;
+                    this->swordCollider.elem.elemType = ELEMTYPE_UNK2;
                     func_80B891B8(this);
                 }
                 break;
@@ -1881,7 +1881,7 @@ void func_80B89A08(EnKaizoku* this, PlayState* play) {
                     Actor_ApplyDamage(&this->picto.actor);
                     this->bodyCollider.elem.elemType = ELEMTYPE_UNK1;
                     this->bodyCollider.base.colType = COLTYPE_HIT3;
-                    this->swordCollider.info.elemType = ELEMTYPE_UNK4;
+                    this->swordCollider.elem.elemType = ELEMTYPE_UNK4;
                     this->unk_2B8 = 80;
                     this->drawDmgEffType = ACTOR_DRAW_DMGEFF_FROZEN_SFX;
                     this->drawDmgEffScale = 0.0f;
@@ -1922,7 +1922,7 @@ void func_80B89A08(EnKaizoku* this, PlayState* play) {
 
             this->bodyCollider.elem.elemType = ELEMTYPE_UNK1;
             this->bodyCollider.base.colType = COLTYPE_HIT3;
-            this->swordCollider.info.elemType = ELEMTYPE_UNK4;
+            this->swordCollider.elem.elemType = ELEMTYPE_UNK4;
             Math_Vec3f_Copy(&sp58, &this->picto.actor.focus.pos);
             for (i = 0; i < 3; i++) {
                 sp58.y += Rand_ZeroFloat(20.0f);
