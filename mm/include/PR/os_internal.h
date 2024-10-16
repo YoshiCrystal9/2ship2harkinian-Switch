@@ -10,9 +10,9 @@
 #include "os_internal_rsp.h"
 
 typedef struct __osHwInt {
-    /* 0x00 */ OSMesgQueue* queue;
-    /* 0x04 */ OSMesg msg;
-} __osHwInt; // size = 0x08
+    /* 0x0 */ s32 (*handler)(void);
+    /* 0x4 */ void* stackEnd;
+} __osHwInt; // size = 0x8
 
 typedef struct {
     /* 0x00 */ u32 initialized;

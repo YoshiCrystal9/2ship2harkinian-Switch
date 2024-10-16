@@ -50,19 +50,19 @@ void PreRender_SetValuesSave(PreRender* thisx, u32 width, u32 height, void* fbuf
 void PreRender_Init(PreRender* thisx);
 void PreRender_SetValues(PreRender* thisx, u32 width, u32 height, void* fbuf, void* zbuf);
 void PreRender_Destroy(PreRender* thisx);
-void PreRender_CopyImage(PreRender* thisx, Gfx** gfxp, void* img, void* imgDst, u32 useThresholdAlphaCompare);
-void PreRender_RestoreBuffer(PreRender* thisx, Gfx** gfxp, void* buf, void* bufSave);
-void func_8016FF90(PreRender* thisx, Gfx** gfxp, void* buf, void* bufSave, s32 envR, s32 envG, s32 envB, s32 envA);
-void func_80170200(PreRender* thisx, Gfx** gfxp, void* buf, void* bufSave);
-void PreRender_CoverageRgba16ToI8(PreRender* thisx, Gfx** gfxp, void* img, void* cvgDst);
-void PreRender_SaveZBuffer(PreRender* thisx, Gfx** gfxp);
-void PreRender_SaveFramebuffer(PreRender* thisx, Gfx** gfxp);
-void PreRender_FetchFbufCoverage(PreRender* thisx, Gfx** gfxp);
-void PreRender_DrawCoverage(PreRender* thisx, Gfx** gfxp);
-void PreRender_RestoreZBuffer(PreRender* thisx, Gfx** gfxp);
-void func_80170798(PreRender* thisx, Gfx** gfxp);
-void func_80170AE0(PreRender* thisx, Gfx** gfxp, s32 alpha);
-void PreRender_RestoreFramebuffer(PreRender* thisx, Gfx** gfxp);
+void PreRender_CopyImage(PreRender* thisx, Gfx** gfxP, void* img, void* imgDst, u32 useThresholdAlphaCompare);
+void PreRender_RestoreBuffer(PreRender* thisx, Gfx** gfxP, void* buf, void* bufSave);
+void func_8016FF90(PreRender* thisx, Gfx** gfxP, void* buf, void* bufSave, s32 envR, s32 envG, s32 envB, s32 envA);
+void func_80170200(PreRender* thisx, Gfx** gfxP, void* buf, void* bufSave);
+void PreRender_CoverageRgba16ToI8(PreRender* thisx, Gfx** gfxP, void* img, void* cvgDst);
+void PreRender_SaveZBuffer(PreRender* thisx, Gfx** gfxP);
+void PreRender_SaveFramebuffer(PreRender* thisx, Gfx** gfxP);
+void PreRender_FetchFbufCoverage(PreRender* thisx, Gfx** gfxP);
+void PreRender_DrawCoverage(PreRender* thisx, Gfx** gfxP);
+void PreRender_RestoreZBuffer(PreRender* thisx, Gfx** gfxP);
+void func_80170798(PreRender* thisx, Gfx** gfxP);
+void func_80170AE0(PreRender* thisx, Gfx** gfxP, s32 alpha);
+void PreRender_RestoreFramebuffer(PreRender* thisx, Gfx** gfxP);
 void PreRender_AntiAliasFilterPixel(PreRender* thisx, s32 x, s32 y);
 void PreRender_AntiAliasFilter(PreRender* thisx);
 u32 PreRender_Get5bMedian9(u8* px1, u8* px2, u8* px3);
@@ -71,7 +71,7 @@ void PreRender_ApplyFilters(PreRender* thisx);
 void PreRender_ApplyFiltersSlowlyInit(PreRender* thisx);
 void PreRender_ApplyFiltersSlowlyDestroy(PreRender* thisx);
 void func_801720C4(PreRender* thisx);
-void Prerender_DrawBackground2D(Gfx** gfxp, void* timg, void* tlut, u16 width, u16 height, u8 fmt, u8 siz, u16 tt,
+void Prerender_DrawBackground2D(Gfx** gfxP, void* timg, void* tlut, u16 width, u16 height, u8 fmt, u8 siz, u16 tt,
                                 u16 tlutCount, f32 x, f32 y, f32 xScale, f32 yScale, u32 flags);
 
 #ifdef __cplusplus

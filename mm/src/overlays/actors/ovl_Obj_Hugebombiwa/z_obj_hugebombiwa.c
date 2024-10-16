@@ -485,7 +485,7 @@ void func_80A55064(ObjHugebombiwa* this, PlayState* play) {
     Vec3f spA4;
     s32 pad2;
     CollisionPoly* sp9C;
-    s32 sp98;
+    s32 bgId;
     f32 temp_f0;
     EnHugebombiwaStruct* ptr;
     s16 phi_s3 = this->actor.shape.rot.y - 0x4000;
@@ -511,7 +511,7 @@ void func_80A55064(ObjHugebombiwa* this, PlayState* play) {
         spA4.y = ptr->unk_0C.y + 60.0f;
         spA4.z = ptr->unk_0C.z;
 
-        temp_f0 = BgCheck_EntityRaycastFloor5(&play->colCtx, &sp9C, &sp98, &this->actor, &spA4);
+        temp_f0 = BgCheck_EntityRaycastFloor5(&play->colCtx, &sp9C, &bgId, &this->actor, &spA4);
         if ((temp_f0 <= BGCHECK_Y_MIN + 10.0f) || ((ptr->unk_0C.y - (350.0f * ptr->unk_00.y)) < temp_f0)) {
             this->unk_4B0++;
             ptr->unk_24 = 1;
@@ -581,7 +581,7 @@ void func_80A55564(ObjHugebombiwa* this, PlayState* play) {
     Vec3f spA4;
     s32 pad;
     CollisionPoly* sp9C;
-    s32 sp98;
+    s32 bgId;
     f32 temp_f0;
     s16 phi_s3 = this->actor.shape.rot.y - 0x4000;
 
@@ -607,7 +607,7 @@ void func_80A55564(ObjHugebombiwa* this, PlayState* play) {
         spA4.y = ptr->unk_0C.y + 60.0f;
         spA4.z = ptr->unk_0C.z;
 
-        temp_f0 = BgCheck_EntityRaycastFloor5(&play->colCtx, &sp9C, &sp98, &this->actor, &spA4);
+        temp_f0 = BgCheck_EntityRaycastFloor5(&play->colCtx, &sp9C, &bgId, &this->actor, &spA4);
         if ((temp_f0 <= BGCHECK_Y_MIN + 10.0f) || (ptr->unk_0C.y < temp_f0)) {
             this->unk_4B0++;
             ptr->unk_24 = 1;
