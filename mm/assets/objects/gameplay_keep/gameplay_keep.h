@@ -2535,8 +2535,8 @@ static const ALIGN_ASSET(2) char gCompassArrowDL[] = dgCompassArrowDL;
 #define dgameplay_keep_DL_01ED90 "__OTR__objects/gameplay_keep/gameplay_keep_DL_01ED90"
 static const ALIGN_ASSET(2) char gameplay_keep_DL_01ED90[] = dgameplay_keep_DL_01ED90;
 
-#define dgZTargetArrowDL "__OTR__objects/gameplay_keep/gZTargetArrowDL"
-static const ALIGN_ASSET(2) char gZTargetArrowDL[] = dgZTargetArrowDL;
+#define dgLockOnArrowDL "__OTR__objects/gameplay_keep/gLockOnArrowDL"
+static const ALIGN_ASSET(2) char gLockOnArrowDL[] = dgLockOnArrowDL;
 
 #define dgameplay_keep_Tex_01F200 "__OTR__objects/gameplay_keep/gameplay_keep_Tex_01F200"
 static const ALIGN_ASSET(2) char gameplay_keep_Tex_01F200[] = dgameplay_keep_Tex_01F200;
@@ -3753,8 +3753,8 @@ static const ALIGN_ASSET(2) char gSunSparkleModelDL[] = dgSunSparkleModelDL;
 #define dgSunDL "__OTR__objects/gameplay_keep/gSunDL"
 static const ALIGN_ASSET(2) char gSunDL[] = dgSunDL;
 
-#define dgZTargetLockOnTriangleDL "__OTR__objects/gameplay_keep/gZTargetLockOnTriangleDL"
-static const ALIGN_ASSET(2) char gZTargetLockOnTriangleDL[] = dgZTargetLockOnTriangleDL;
+#define dgLockOnReticleTriangleDL "__OTR__objects/gameplay_keep/gLockOnReticleTriangleDL"
+static const ALIGN_ASSET(2) char gLockOnReticleTriangleDL[] = dgLockOnReticleTriangleDL;
 
 #define dgSongOfTimeClockDL "__OTR__objects/gameplay_keep/gSongOfTimeClockDL"
 static const ALIGN_ASSET(2) char gSongOfTimeClockDL[] = dgSongOfTimeClockDL;
