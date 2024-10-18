@@ -312,7 +312,7 @@ typedef struct LockOnReticle {
     /* 0x10 */ Color_RGBA8 color;
 } LockOnReticle; // size = 0x14
 
-typedef struct TargetContext {
+typedef struct Attention {
     /* 0x00 */ Vec3f fairyPos; // Used by Tatl to indicate a targetable actor or general hint
     /* 0x0C */ Vec3f reticlePos; // Main reticle pos which each `LockOnReticle` instance can reference
     /* 0x18 */ Color_RGBAf fairyInnerColor;
@@ -329,7 +329,7 @@ typedef struct TargetContext {
     /* 0x8C */ Actor* forcedTargetActor; // Never set to non-NULL
     /* 0x90 */ Actor* bgmEnemy;
     /* 0x94 */ Actor* arrowPointedActor;
-} TargetContext; // size = 0x98
+} Attention; // size = 0x98
 
 typedef enum TargetMode {
     /*  0 */ TARGET_MODE_0,
@@ -432,7 +432,7 @@ typedef struct ActorContext {
     /* 0x00F */ u8 numLensActors;
     /* 0x010 */ ActorListEntry actorLists[ACTORCAT_MAX];
     /* 0x0A0 */ Actor* lensActors[LENS_ACTOR_MAX]; // Draws up to LENS_ACTOR_MAX number of invisible actors
-    /* 0x120 */ TargetContext targetCtx;
+    /* 0x120 */ Attention attention;
     /* 0x1B8 */ ActorContextSceneFlags sceneFlags;
     /* 0x1E4 */ TitleCardContext titleCtxt;
     /* 0x1F4 */ PlayerImpact playerImpact;

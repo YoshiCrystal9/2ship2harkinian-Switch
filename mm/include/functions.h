@@ -118,7 +118,7 @@ void func_800B4AEC(PlayState* play, Actor* actor, f32 y);
 void func_800B4B50(Actor* actor, Lights* mapper, PlayState* play);
 void Actor_GetProjectedPos(PlayState* play, Vec3f* worldPos, Vec3f* projectedPos, f32* invW);
 
-void Target_Draw(TargetContext* targetCtx, PlayState* play);
+void Target_Draw(Attention* targetCtx, PlayState* play);
 
 s32 Flags_GetSwitch(PlayState* play, s32 flag);
 void Flags_SetSwitch(PlayState* play, s32 flag);

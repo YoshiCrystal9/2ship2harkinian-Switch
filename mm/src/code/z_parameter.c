@@ -9264,7 +9264,7 @@ void Interface_Draw(PlayState* play) {
                 gSPMatrix(OVERLAY_DISP++, interfaceCtx->view.shipMirrorProjectionPtr,
                           G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_PROJECTION);
             }
-            Target_Draw(&play->actorCtx.targetCtx, play);
+            Attention_Draw(&play->actorCtx.attention, play);
             if (CVarGetInteger("gModes.MirroredWorld.State", 0)) {
                 gSPMatrix(OVERLAY_DISP++, interfaceCtx->view.projectionPtr,
                           G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_PROJECTION);

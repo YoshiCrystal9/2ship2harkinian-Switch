@@ -970,11 +970,11 @@ void func_8088E850(EnElf* this, PlayState* play) {
                 break;
 
             default:
-                targetFairyActor = play->actorCtx.targetCtx.fairyActor;
+                targetFairyActor = play->actorCtx.attention.fairyActor;
                 if ((player->stateFlags1 & PLAYER_STATE1_40) && (player->talkActor != NULL)) {
                     Math_Vec3f_Copy(&nextPos, &player->talkActor->focus.pos);
                 } else {
-                    Math_Vec3f_Copy(&nextPos, &play->actorCtx.targetCtx.fairyPos);
+                    Math_Vec3f_Copy(&nextPos, &play->actorCtx.attention.fairyPos);
                 }
                 nextPos.y += 1500.0f * this->actor.scale.y;
 
@@ -1039,7 +1039,7 @@ void func_8088EF18(Color_RGBAf* dest, Color_RGBAf* newColor, Color_RGBAf* curCol
 }
 
 void func_8088EFA4(EnElf* this, PlayState* play) {
-    Actor* targetFairyActor = play->actorCtx.targetCtx.fairyActor;
+    Actor* targetFairyActor = play->actorCtx.attention.fairyActor;
     Player* player = GET_PLAYER(play);
     f32 transitionRate;
 
@@ -1064,7 +1064,7 @@ void func_8088EFA4(EnElf* this, PlayState* play) {
             this->outerColor.b = 80.0f;
             this->outerColor.a = 0.0f;
         }
-    } else if (play->actorCtx.targetCtx.fairyMoveProgressFactor != 0.0f) {
+    } else if (play->actorCtx.attention.fairyMoveProgressFactor != 0.0f) {
         this->unk_268 = 0;
         this->unk_238 = 1.0f;
         if (!this->unk_269) {
@@ -1072,18 +1072,18 @@ void func_8088EFA4(EnElf* this, PlayState* play) {
         }
     } else if (this->unk_268 == 0) {
         if ((targetFairyActor == NULL) ||
-            (Math_Vec3f_DistXYZ(&this->actor.world.pos, &play->actorCtx.targetCtx.fairyPos) < 50.0f)) {
+            (Math_Vec3f_DistXYZ(&this->actor.world.pos, &play->actorCtx.attention.fairyPos) < 50.0f)) {
             this->unk_268 = 1;
         }
     } else if (this->unk_238 != 0.0f) {
         if (Math_StepToF(&this->unk_238, 0.0f, 0.25f)) {
-            this->innerColor = play->actorCtx.targetCtx.fairyInnerColor;
-            this->outerColor = play->actorCtx.targetCtx.fairyOuterColor;
+            this->innerColor = play->actorCtx.attention.fairyInnerColor;
+            this->outerColor = play->actorCtx.attention.fairyOuterColor;
         } else {
             transitionRate = 0.25f / this->unk_238;
-            func_8088EF18(&this->innerColor, &play->actorCtx.targetCtx.fairyInnerColor, &this->innerColor,
+            func_8088EF18(&this->innerColor, &play->actorCtx.attention.fairyInnerColor, &this->innerColor,
                           transitionRate);
-            func_8088EF18(&this->outerColor, &play->actorCtx.targetCtx.fairyOuterColor, &this->outerColor,
+            func_8088EF18(&this->outerColor, &play->actorCtx.attention.fairyOuterColor, &this->outerColor,
                           transitionRate);
         }
     }
@@ -1136,7 +1136,7 @@ void func_8088F214(EnElf* this, PlayState* play) {
         sp34 = 1;
         Actor_PlaySfx_Flagged(&this->actor, NA_SE_EV_BELL_ANGER - SFX_FLAG);
     } else {
-        targetFairyActor = play->actorCtx.targetCtx.fairyActor;
+        targetFairyActor = play->actorCtx.attention.fairyActor;
         if (player->stateFlags1 & PLAYER_STATE1_400) {
             sp34 = 10;
             this->unk_25C = 100;
@@ -1280,7 +1280,7 @@ void func_8088FA38(EnElf* this, PlayState* play) {
     Player* player = GET_PLAYER(play);
 
     if (this->fairyFlags & 0x10) {
-        refPos = play->actorCtx.targetCtx.fairyPos;
+        refPos = play->actorCtx.attention.fairyPos;
 
         if (this->unk_234 != NULL) {
             refPos = this->unk_234->world.pos;
