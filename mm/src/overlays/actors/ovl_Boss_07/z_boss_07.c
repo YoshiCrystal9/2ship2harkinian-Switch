@@ -179,6 +179,169 @@ typedef enum {
     /* 4 */ MAJORAS_MASK_DEATH_STATE_4,
 } Boss07MaskDeathState;
 
+static ColliderJntSphElementInit sJntSphElementsInit[11] = {
+    {
+        { ELEM_MATERIAL_UNK3, { 0xF7CFFFFF, 0x00, 0x10 }, { 0xF7CEFFFE, 0x00, 0x00 }, ATELEM_ON | ATELEM_SFX_NORMAL, ACELEM_ON, OCELEM_ON, },
+        { 0, { { 0, 0, 0 }, 20 }, 100 },
+    },
+    {
+        { ELEM_MATERIAL_UNK3, { 0xF7CFFFFF, 0x00, 0x10 }, { 0xF7CEFFFE, 0x00, 0x00 }, ATELEM_ON | ATELEM_SFX_NORMAL, ACELEM_ON, OCELEM_ON, },
+        { 1, { { 0, 0, 0 }, 30 }, 100 },
+    },
+    {
+        { ELEM_MATERIAL_UNK3, { 0xF7CFFFFF, 0x00, 0x10 }, { 0xF7CEFFFE, 0x00, 0x00 }, ATELEM_ON | ATELEM_SFX_NORMAL, ACELEM_ON, OCELEM_ON, },
+        { 1, { { 0, 0, 0 }, 25 }, 100 },
+    },
+    {
+        { ELEM_MATERIAL_UNK3, { 0xF7CFFFFF, 0x00, 0x10 }, { 0xF7CEFFFE, 0x00, 0x00 }, ATELEM_ON | ATELEM_SFX_NORMAL, ACELEM_ON, OCELEM_ON, },
+        { 1, { { 0, 0, 0 }, 15 }, 100 },
+    },
+    {
+        { ELEM_MATERIAL_UNK3, { 0xF7CFFFFF, 0x00, 0x10 }, { 0xF7CEFFFE, 0x00, 0x00 }, ATELEM_ON | ATELEM_SFX_NORMAL, ACELEM_ON, OCELEM_ON, },
+        { 1, { { 0, 0, 0 }, 15 }, 100 },
+    },
+    {
+        { ELEM_MATERIAL_UNK3, { 0xF7CFFFFF, 0x00, 0x10 }, { 0xF7CEFFFE, 0x00, 0x00 }, ATELEM_ON | ATELEM_SFX_NORMAL, ACELEM_ON, OCELEM_ON, },
+        { 1, { { 0, 0, 0 }, 15 }, 100 },
+    },
+    {
+        { ELEM_MATERIAL_UNK3, { 0xF7CFFFFF, 0x00, 0x10 }, { 0xF7CEFFFE, 0x00, 0x00 }, ATELEM_ON | ATELEM_SFX_NORMAL, ACELEM_ON, OCELEM_ON, },
+        { 1, { { 0, 0, 0 }, 15 }, 100 },
+    },
+    {
+        { ELEM_MATERIAL_UNK3, { 0xF7CFFFFF, 0x00, 0x10 }, { 0xF7CEFFFE, 0x00, 0x00 }, ATELEM_ON | ATELEM_SFX_NORMAL, ACELEM_ON, OCELEM_ON, },
+        { 1, { { 0, 0, 0 }, 15 }, 150 },
+    },
+    {
+        { ELEM_MATERIAL_UNK3, { 0xF7CFFFFF, 0x00, 0x10 }, { 0xF7CEFFFE, 0x00, 0x00 }, ATELEM_ON | ATELEM_SFX_NORMAL, ACELEM_ON, OCELEM_ON, },
+        { 1, { { 0, 0, 0 }, 15 }, 150 },
+    },
+    {
+        { ELEM_MATERIAL_UNK3, { 0xF7CFFFFF, 0x00, 0x10 }, { 0xF7CEFFFE, 0x00, 0x00 }, ATELEM_ON | ATELEM_SFX_NORMAL, ACELEM_ON, OCELEM_ON, },
+        { 1, { { 0, 0, 0 }, 15 }, 150 },
+    },
+    {
+        { ELEM_MATERIAL_UNK3, { 0xF7CFFFFF, 0x00, 0x10 }, { 0xF7CEFFFE, 0x00, 0x00 }, ATELEM_ON | ATELEM_SFX_NORMAL, ACELEM_ON, OCELEM_ON, },
+        { 1, { { 0, 0, 0 }, 15 }, 150 },
+    },
+};
+
+// static ColliderJntSphInit sJntSphInit = {
+static ColliderJntSphInit D_80A07BCC = {
+    { COL_MATERIAL_HIT3, AT_ON | AT_TYPE_ENEMY, AC_ON | AC_TYPE_PLAYER, OC1_ON | OC1_TYPE_PLAYER, OC2_TYPE_1, COLSHAPE_JNTSPH, },
+    ARRAY_COUNT(sJntSphElementsInit), sJntSphElementsInit, // sJntSphElementsInit,
+};
+
+// static ColliderCylinderInit sCylinderInit = {
+static ColliderCylinderInit D_80A07BDC = {
+    { COL_MATERIAL_METAL, AT_ON | AT_TYPE_ENEMY, AC_ON | AC_TYPE_PLAYER, OC1_ON | OC1_TYPE_ALL, OC2_TYPE_1, COLSHAPE_CYLINDER, },
+    { ELEM_MATERIAL_UNK2, { 0xF7CFFFFF, 0x00, 0x10 }, { 0xF7CEFFFE, 0x00, 0x00 }, ATELEM_ON | ATELEM_SFX_NORMAL, ACELEM_ON, OCELEM_ON, },
+    { 80, 200, 0, { 0, 0, 0 } },
+};
+
+// static ColliderJntSphElementInit sJntSphElementsInit[1] = {
+static ColliderJntSphElementInit D_80A07C08[1] = {
+    {
+        { ELEM_MATERIAL_UNK3, { 0xF7CFFFFF, 0x04, 0x10 }, { 0xF7CEFFFE, 0x00, 0x00 }, ATELEM_ON | ATELEM_SFX_HARD, ACELEM_ON, OCELEM_ON, },
+        { 0, { { 0, 0, 0 }, 36 }, 200 },
+    },
+};
+
+// static ColliderJntSphInit sJntSphInit = {
+static ColliderJntSphInit D_80A07C2C = {
+    { COL_MATERIAL_HIT3, AT_ON | AT_TYPE_ENEMY, AC_ON | AC_TYPE_PLAYER, OC1_ON | OC1_TYPE_PLAYER, OC2_TYPE_1, COLSHAPE_JNTSPH, },
+    ARRAY_COUNT(sJntSphElementsInit), D_80A07C08, // sJntSphElementsInit,
+};
+
+// static ColliderQuadInit sQuadInit = {
+static ColliderQuadInit D_80A07C3C = {
+    { COL_MATERIAL_METAL, AT_ON | AT_TYPE_ENEMY, AC_ON | AC_HARD | AC_TYPE_PLAYER, OC1_ON | OC1_TYPE_ALL, OC2_TYPE_1, COLSHAPE_QUAD, },
+    { ELEM_MATERIAL_UNK2, { 0xF7CFFFFF, 0x04, 0x00 }, { 0xF7CEFFFE, 0x00, 0x00 }, ATELEM_ON | ATELEM_SFX_NORMAL, ACELEM_ON, OCELEM_ON, },
+    { { { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f } } },
+};
+
+// static ColliderQuadInit sQuadInit = {
+static ColliderQuadInit D_80A07C8C = {
+    { COL_MATERIAL_HIT3, AT_ON | AT_TYPE_ENEMY, AC_ON | AC_TYPE_PLAYER, OC1_ON | OC1_TYPE_ALL, OC2_TYPE_1, COLSHAPE_QUAD, },
+    { ELEM_MATERIAL_UNK2, { 0xF7CFFFFF, 0x04, 0x10 }, { 0xF7CEFFFE, 0x00, 0x00 }, ATELEM_ON | ATELEM_SFX_NORMAL, ACELEM_ON, OCELEM_ON, },
+    { { { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f } } },
+};
+
+// static ColliderJntSphElementInit sJntSphElementsInit[11] = {
+static ColliderJntSphElementInit D_80A07CDC[11] = {
+    {
+        { ELEM_MATERIAL_UNK3, { 0xF7CFFFFF, 0x00, 0x10 }, { 0xF7CEFFFE, 0x00, 0x00 }, ATELEM_ON | ATELEM_SFX_NORMAL, ACELEM_ON, OCELEM_ON, },
+        { 0, { { 0, 0, 0 }, 25 }, 100 },
+    },
+    {
+        { ELEM_MATERIAL_UNK3, { 0xF7CFFFFF, 0x00, 0x10 }, { 0xF7CEFFFE, 0x00, 0x00 }, ATELEM_ON | ATELEM_SFX_NORMAL, ACELEM_ON, OCELEM_ON, },
+        { 1, { { 0, 0, 0 }, 40 }, 100 },
+    },
+    {
+        { ELEM_MATERIAL_UNK3, { 0xF7CFFFFF, 0x00, 0x10 }, { 0xF7CEFFFE, 0x00, 0x00 }, ATELEM_ON | ATELEM_SFX_NORMAL, ACELEM_ON, OCELEM_ON, },
+        { 1, { { 0, 0, 0 }, 0 }, 0 },
+    },
+    {
+        { ELEM_MATERIAL_UNK3, { 0xF7CFFFFF, 0x00, 0x10 }, { 0xF7CEFFFE, 0x00, 0x00 }, ATELEM_ON | ATELEM_SFX_NORMAL, ACELEM_ON, OCELEM_ON, },
+        { 1, { { 0, 0, 0 }, 15 }, 100 },
+    },
+    {
+        { ELEM_MATERIAL_UNK3, { 0xF7CFFFFF, 0x00, 0x10 }, { 0xF7CEFFFE, 0x00, 0x00 }, ATELEM_ON | ATELEM_SFX_NORMAL, ACELEM_ON, OCELEM_ON, },
+        { 1, { { 0, 0, 0 }, 15 }, 100 },
+    },
+    {
+        { ELEM_MATERIAL_UNK3, { 0xF7CFFFFF, 0x00, 0x10 }, { 0xF7CEFFFE, 0x00, 0x00 }, ATELEM_ON | ATELEM_SFX_NORMAL, ACELEM_ON, OCELEM_ON, },
+        { 1, { { 0, 0, 0 }, 15 }, 100 },
+    },
+    {
+        { ELEM_MATERIAL_UNK3, { 0xF7CFFFFF, 0x00, 0x10 }, { 0xF7CEFFFE, 0x00, 0x00 }, ATELEM_ON | ATELEM_SFX_NORMAL, ACELEM_ON, OCELEM_ON, },
+        { 1, { { 0, 0, 0 }, 15 }, 100 },
+    },
+    {
+        { ELEM_MATERIAL_UNK3, { 0xF7CFFFFF, 0x00, 0x10 }, { 0xF7CEFFFE, 0x00, 0x00 }, ATELEM_ON | ATELEM_SFX_NORMAL, ACELEM_ON, OCELEM_ON, },
+        { 1, { { 0, 0, 0 }, 15 }, 150 },
+    },
+    {
+        { ELEM_MATERIAL_UNK3, { 0xF7CFFFFF, 0x00, 0x10 }, { 0xF7CEFFFE, 0x00, 0x00 }, ATELEM_ON | ATELEM_SFX_NORMAL, ACELEM_ON, OCELEM_ON, },
+        { 1, { { 0, 0, 0 }, 15 }, 150 },
+    },
+    {
+        { ELEM_MATERIAL_UNK3, { 0xF7CFFFFF, 0x00, 0x10 }, { 0xF7CEFFFE, 0x00, 0x00 }, ATELEM_ON | ATELEM_SFX_NORMAL, ACELEM_ON, OCELEM_ON, },
+        { 1, { { 0, 0, 0 }, 15 }, 150 },
+    },
+    {
+        { ELEM_MATERIAL_UNK3, { 0xF7CFFFFF, 0x00, 0x10 }, { 0xF7CEFFFE, 0x00, 0x00 }, ATELEM_ON | ATELEM_SFX_NORMAL, ACELEM_ON, OCELEM_ON, },
+        { 1, { { 0, 0, 0 }, 15 }, 150 },
+    },
+};
+
+// static ColliderJntSphInit sJntSphInit = {
+static ColliderJntSphInit D_80A07E68 = {
+    { COL_MATERIAL_HIT3, AT_ON | AT_TYPE_ENEMY, AC_ON | AC_TYPE_PLAYER, OC1_ON | OC1_TYPE_PLAYER, OC2_TYPE_1, COLSHAPE_JNTSPH, },
+    ARRAY_COUNT(sJntSphElementsInit), D_80A07CDC, // sJntSphElementsInit,
+};
+
+// static ColliderCylinderInit sCylinderInit = {
+static ColliderCylinderInit D_80A07E78 = {
+    { COL_MATERIAL_NONE, AT_ON | AT_TYPE_ENEMY, AC_ON | AC_TYPE_PLAYER, OC1_ON | OC1_TYPE_ALL, OC2_TYPE_1, COLSHAPE_CYLINDER, },
+    { ELEM_MATERIAL_UNK0, { 0xF7CFFFFF, 0x04, 0x10 }, { 0x00300000, 0x00, 0x00 }, ATELEM_ON | ATELEM_SFX_NORMAL, ACELEM_ON, OCELEM_ON, },
+    { 15, 30, -15, { 0, 0, 0 } },
+};
+
+// static ColliderCylinderInit sCylinderInit = {
+static ColliderCylinderInit D_80A07EA4 = {
+    { COL_MATERIAL_METAL, AT_ON | AT_TYPE_ENEMY, AC_ON | AC_TYPE_PLAYER, OC1_ON | OC1_TYPE_ALL, OC2_TYPE_1, COLSHAPE_CYLINDER, },
+    { ELEM_MATERIAL_UNK0, { 0xF7CFFFFF, 0x04, 0x10 }, { 0xF7CFFFFF, 0x00, 0x00 }, ATELEM_ON | ATELEM_SFX_NORMAL, ACELEM_ON | ACELEM_HOOKABLE, OCELEM_ON, },
+    { 50, 100, -50, { 0, 0, 0 } },
+};
+
+// static ColliderCylinderInit sCylinderInit = {
+static ColliderCylinderInit D_80A07ED0 = {
+    { COL_MATERIAL_METAL, AT_ON | AT_TYPE_ENEMY, AC_ON | AC_HARD | AC_TYPE_PLAYER, OC1_ON | OC1_TYPE_ALL, OC2_TYPE_1, COLSHAPE_CYLINDER, },
+    { ELEM_MATERIAL_UNK0, { 0xF7CFFFFF, 0x04, 0x10 }, { 0xF7FFFFFF, 0x00, 0x00 }, ATELEM_ON | ATELEM_SFX_NORMAL, ACELEM_ON | ACELEM_HOOKABLE, OCELEM_ON, },
+    { 40, 20, 15, { 0, 0, 0 } },
+};
+
 typedef enum {
     /* 0 */ MAJORAS_INCARNATION_INTRO_STATE_0,
     /* 1 */ MAJORAS_INCARNATION_INTRO_STATE_1,
@@ -1978,17 +2141,17 @@ void Boss07_Wrath_CollisionCheck(Boss07* this, PlayState* play) {
     Player* player = GET_PLAYER(play);
 
     if (this->invincibilityTimer == 0) {
-        if (this->kickCollider.elements[0].base.toucherFlags & TOUCH_HIT) {
-            this->kickCollider.elements[0].base.toucherFlags &= ~TOUCH_HIT;
+        if (this->kickCollider.elements[0].base.atElemFlags & ATELEM_HIT) {
+            this->kickCollider.elements[0].base.atElemFlags &= ~ATELEM_HIT;
             player->pushedYaw = this->actor.yawTowardsPlayer;
             player->pushedSpeed = 20.0f;
             Boss07_SpawnDustAtPos(play, &player->actor.world.pos, 12);
             Audio_PlaySfx(NA_SE_IT_HOOKSHOT_STICK_OBJ);
         }
         for (i = 0; i < ARRAY_COUNT(this->bodyElements); i++) {
-            if (this->bodyCollider.elements[i].base.bumperFlags & BUMP_HIT) {
+            if (this->bodyCollider.elements[i].base.acElemFlags & ACELEM_HIT) {
                 for (j = 0; j < ARRAY_COUNT(this->bodyElements); j++) {
-                    this->bodyCollider.elements[j].base.bumperFlags &= ~BUMP_HIT;
+                    this->bodyCollider.elements[j].base.acElemFlags &= ~ACELEM_HIT;
                 }
                 if (this->unk_1804 == ACTOR_DRAW_DMGEFF_FROZEN_NO_SFX) {
                     this->unk_1806 = 0;
@@ -2199,7 +2362,7 @@ void Boss07_Wrath_Update(Actor* thisx, PlayState* play2) {
     Boss07_Wrath_WhipCollisionCheck(this->leftWhip.pos, this->leftWhip.tension, this, play);
     if (this->collisionTimer != 0) {
         for (i = 0; i < ARRAY_COUNT(this->bodyElements); i++) {
-            this->bodyCollider.elements[i].base.bumperFlags &= ~BUMP_HIT;
+            this->bodyCollider.elements[i].base.acElemFlags &= ~ACELEM_HIT;
         }
     }
     Boss07_Wrath_CollisionCheck(this, play);
@@ -3555,9 +3718,9 @@ void Boss07_Incarnation_CollisionCheck(Boss07* this, PlayState* play) {
 
     if (this->invincibilityTimer == 0) {
         for (i = 0; i < ARRAY_COUNT(this->bodyElements); i++) {
-            if (this->bodyCollider.elements[i].base.bumperFlags & BUMP_HIT) {
+            if (this->bodyCollider.elements[i].base.acElemFlags & ACELEM_HIT) {
                 for (j = 0; j < ARRAY_COUNT(this->bodyElements); j++) {
-                    this->bodyCollider.elements[j].base.bumperFlags &= ~BUMP_HIT;
+                    this->bodyCollider.elements[j].base.acElemFlags &= ~ACELEM_HIT;
                 }
                 if (this->unk_1804 == ACTOR_DRAW_DMGEFF_FROZEN_NO_SFX) {
                     this->unk_1806 = 0;
@@ -3661,7 +3824,7 @@ void Boss07_Incarnation_Update(Actor* thisx, PlayState* play2) {
     }
     if (this->collisionTimer != 0) {
         for (i = 0; i < ARRAY_COUNT(this->bodyElements); i++) {
-            this->bodyCollider.elements[i].base.bumperFlags &= ~BUMP_HIT;
+            this->bodyCollider.elements[i].base.acElemFlags &= ~ACELEM_HIT;
         }
     }
     Boss07_Incarnation_CollisionCheck(this, play);
@@ -4336,14 +4499,14 @@ void Boss07_Mask_Beam(Boss07* this, PlayState* play) {
                             Boss07_SpawnEffect(play, &spBC, &spB0, &spA4, Rand_ZeroFloat(10.0f) + 25.0f);
                         }
                     }
-                } else if (!player->isBurning && (this->actionState != MAJORAS_MASK_BEAM_END)) {
+                } else if (!player->bodyIsBurning && (this->actionState != MAJORAS_MASK_BEAM_END)) {
                     s32 pad2;
 
                     func_800B8D50(play, &this->actor, 5.0f, this->actor.shape.rot.y, 0.0f, 0x10);
-                    for (pad2 = 0; pad2 < ARRAY_COUNT(player->flameTimers); pad2++) {
-                        player->flameTimers[pad2] = Rand_S16Offset(0, 200);
+                    for (pad2 = 0; pad2 < ARRAY_COUNT(player->bodyFlameTimers); pad2++) {
+                        player->bodyFlameTimers[pad2] = Rand_S16Offset(0, 200);
                     }
-                    player->isBurning = true;
+                    player->bodyIsBurning = true;
                     Player_PlaySfx(player, player->ageProperties->voiceSfxIdOffset + NA_SE_VO_LI_DEMO_DAMAGE);
                 }
             }
@@ -4737,8 +4900,8 @@ void Boss07_Mask_CollisionCheck(Boss07* this, PlayState* play) {
             this->dmgShakeTimer = 15;
             if ((this->actionFunc == Boss07_Mask_Stunned) || (player->stateFlags3 & PLAYER_STATE3_200)) {
                 hitActor = this->maskBackCollider.base.ac;
-                hitbox = this->maskBackCollider.info.acHitElem;
-                damage = (hitbox->toucher.dmgFlags & 0xF7CFFFFF) ? this->actor.colChkInfo.damage : 0;
+                hitbox = this->maskBackCollider.elem.acHitElem;
+                damage = (hitbox->atDmgInfo.dmgFlags & 0xF7CFFFFF) ? this->actor.colChkInfo.damage : 0;
                 this->invincibilityTimer = 50;
                 this->dmgFogEffectTimer = 15;
                 AudioSfx_StopByPos(&this->actor.projectedPos);
@@ -5239,7 +5402,7 @@ void Boss07_Remains_CollisionCheck(Boss07* this, PlayState* play) {
         this->spawnCollider.base.acFlags &= ~AC_HIT;
         this->invincibilityTimer = 15;
         hitbox = this->spawnCollider.elem.acHitElem;
-        if (hitbox->toucher.dmgFlags & DMG_HOOKSHOT) {
+        if (hitbox->atDmgInfo.dmgFlags & DMG_HOOKSHOT) {
             Boss07_Remains_SetupStunned(this, play);
         } else {
             u8 damage = this->actor.colChkInfo.damage;
@@ -5391,7 +5554,7 @@ void Boss07_Remains_Fly(Boss07* this, PlayState* play) {
             this->actor.world.rot.y = Math_Atan2S(-this->actor.world.pos.x, -this->actor.world.pos.z);
             this->actionState = MAJORAS_REMAINS_FLY;
             this->noclipTimer = 100;
-            this->spawnCollider.base.colType = COLTYPE_HIT3;
+            this->spawnCollider.base.colMaterial = COL_MATERIAL_HIT3;
             this->actor.flags |= (ACTOR_FLAG_200 | ACTOR_FLAG_TARGETABLE);
             Actor_PlaySfx(&this->actor, NA_SE_EN_LAST1_DEMO_BREAK);
             break;
