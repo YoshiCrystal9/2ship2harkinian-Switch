@@ -8,7 +8,7 @@
 #include "objects/gameplay_keep/gameplay_keep.h"
 #include "2s2h/GameInteractor/GameInteractor.h"
 
-#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_10)
+#define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_10)
 
 #define THIS ((EnMinifrog*)thisx)
 
@@ -135,7 +135,7 @@ void EnMinifrog_Init(Actor* thisx, PlayState* play) {
             this->frog = NULL;
         } else {
             this->frog = EnMinifrog_GetFrog(play);
-            this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
+            this->actor.flags &= ~ACTOR_FLAG_ATTENTION_ENABLED;
 
             // Frog has been returned
             if (CHECK_WEEKEVENTREG(sIsFrogReturnedFlags[this->frogIndex])) {

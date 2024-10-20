@@ -10,7 +10,7 @@
 #include "2s2h/Enhancements/FrameInterpolation/FrameInterpolation.h"
 #include "2s2h/GameInteractor/GameInteractor.h"
 
-#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_HOSTILE | ACTOR_FLAG_10 | ACTOR_FLAG_200)
+#define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_HOSTILE | ACTOR_FLAG_10 | ACTOR_FLAG_200)
 
 #define THIS ((EnSlime*)thisx)
 
@@ -798,7 +798,7 @@ f32 EnSlime_SnapIceBlockPosition(f32 currentPosition, f32 homePosition) {
  */
 void EnSlime_SetupSpawnIceBlock(EnSlime* this) {
     this->collider.base.acFlags &= ~AC_ON;
-    this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
+    this->actor.flags &= ~ACTOR_FLAG_ATTENTION_ENABLED;
     this->drawDmgEffAlpha = 0.0f;
     this->actor.speed = 0.0f;
     this->actor.velocity.y = 0.0f;
@@ -835,7 +835,7 @@ void EnSlime_SpawnIceBlock(EnSlime* this, PlayState* play) {
             this->actor.colorFilterTimer = 0;
             this->collider.base.acFlags |= AC_ON;
             this->iceBlockTimer = ICE_BLOCK_UNUSED;
-            this->actor.flags |= ACTOR_FLAG_TARGETABLE;
+            this->actor.flags |= ACTOR_FLAG_ATTENTION_ENABLED;
             this->actor.gravity = -2.0f;
             EnSlime_SetupIdle(this);
         }
@@ -919,7 +919,7 @@ void EnSlime_IceBlockThaw(EnSlime* this, PlayState* play) {
 
     if (this->iceBlockTimer == ICE_BLOCK_UNUSED) {
         this->collider.base.acFlags |= AC_ON;
-        this->actor.flags |= ACTOR_FLAG_TARGETABLE;
+        this->actor.flags |= ACTOR_FLAG_ATTENTION_ENABLED;
         this->actor.flags &= ~ACTOR_FLAG_10;
         EnSlime_SetupIdle(this);
     }
@@ -981,7 +981,7 @@ void EnSlime_Revive(EnSlime* this, PlayState* play) {
     this->timer++;
     if (this->timer == 28) {
         this->actor.flags &= ~ACTOR_FLAG_10;
-        this->actor.flags |= ACTOR_FLAG_TARGETABLE;
+        this->actor.flags |= ACTOR_FLAG_ATTENTION_ENABLED;
         this->collider.base.acFlags |= AC_ON;
         this->actor.shape.rot.y = this->actor.home.rot.y;
         EnSlime_SetupMoveInDirection(this);
@@ -1043,7 +1043,7 @@ void EnSlime_UpdateDamage(EnSlime* this, PlayState* play) {
             if (Actor_ApplyDamage(&this->actor) == 0) {
                 Actor_SetDropFlag(&this->actor, &this->collider.elem);
                 Enemy_StartFinishingBlow(play, &this->actor);
-                this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
+                this->actor.flags &= ~ACTOR_FLAG_ATTENTION_ENABLED;
             }
 
             if (this->actor.colChkInfo.damageEffect == EN_SLIME_DMGEFF_BLUNT) {

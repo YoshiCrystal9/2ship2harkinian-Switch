@@ -8,7 +8,7 @@
 #include "objects/gameplay_keep/gameplay_keep.h"
 #include "2s2h/GameInteractor/GameInteractor.h"
 
-#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_10 | ACTOR_FLAG_2000000)
+#define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_10 | ACTOR_FLAG_2000000)
 
 #define THIS ((EnYb*)thisx)
 
@@ -122,7 +122,7 @@ void EnYb_Init(Actor* thisx, PlayState* play) {
     } else { // else (night 6pm to midnight): wait to appear
         this->alpha = 0;
         this->actionFunc = EnYb_WaitForMidnight;
-        this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
+        this->actor.flags &= ~ACTOR_FLAG_ATTENTION_ENABLED;
     }
 
     if (CHECK_WEEKEVENTREG(WEEKEVENTREG_82_04)) {
@@ -399,7 +399,7 @@ void EnYb_WaitForMidnight(EnYb* this, PlayState* play) {
         this->alpha += 5;
         if (this->alpha > 250) {
             this->alpha = 255;
-            this->actor.flags |= ACTOR_FLAG_TARGETABLE;
+            this->actor.flags |= ACTOR_FLAG_ATTENTION_ENABLED;
             this->actionFunc = EnYb_Idle;
         }
         EnYb_EnableProximityMusic(this);
@@ -410,11 +410,11 @@ void EnYb_Update(Actor* thisx, PlayState* play) {
     s32 pad;
     EnYb* this = THIS;
 
-    if (CHECK_FLAG_ALL(this->actor.flags, ACTOR_FLAG_TARGETABLE)) {
+    if (CHECK_FLAG_ALL(this->actor.flags, ACTOR_FLAG_ATTENTION_ENABLED)) {
         Collider_UpdateCylinder(&this->actor, &this->collider);
         CollisionCheck_SetOC(play, &play->colChkCtx, &this->collider.base);
     }
-    if (CHECK_FLAG_ALL(this->actor.flags, ACTOR_FLAG_TARGETABLE)) {
+    if (CHECK_FLAG_ALL(this->actor.flags, ACTOR_FLAG_ATTENTION_ENABLED)) {
         Actor_MoveWithGravity(&this->actor);
         Actor_UpdateBgCheckInfo(play, &this->actor, 40.0f, 25.0f, 40.0f, UPDBGCHECKINFO_FLAG_1 | UPDBGCHECKINFO_FLAG_4);
     }

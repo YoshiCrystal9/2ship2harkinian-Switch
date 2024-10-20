@@ -8,7 +8,7 @@
 
 #include "2s2h/GameInteractor/GameInteractor.h"
 
-#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_FRIENDLY)
+#define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY)
 
 #define THIS ((EnGk*)thisx)
 
@@ -1105,7 +1105,7 @@ void EnGk_Init(Actor* thisx, PlayState* play) {
             this->actionFunc = func_80B51FD0;
             this->actor.draw = NULL;
             this->actor.flags |= ACTOR_FLAG_10;
-            this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
+            this->actor.flags &= ~ACTOR_FLAG_ATTENTION_ENABLED;
         } else {
             Actor_Kill(&this->actor);
         }

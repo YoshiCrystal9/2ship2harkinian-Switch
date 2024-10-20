@@ -12,7 +12,7 @@
 #include "objects/gameplay_keep/gameplay_keep.h"
 #include "GameInteractor/GameInteractor.h"
 
-#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_10)
+#define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_10)
 
 #define THIS ((EnGeg*)thisx)
 
@@ -461,7 +461,7 @@ void func_80BB217C(EnGeg* this, PlayState* play) {
         this->actor.gravity = -1.0f;
         func_80BB1C1C(this);
         this->actionFunc = func_80BB221C;
-        this->actor.targetMode = TARGET_MODE_3;
+        this->actor.attentionRangeType = ATTENTION_RANGE_3;
     }
 }
 

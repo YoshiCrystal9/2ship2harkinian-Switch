@@ -9,7 +9,7 @@
 #include "objects/object_tsn/object_tsn.h"
 #include "2s2h/GameInteractor/GameInteractor.h"
 
-#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_10 | ACTOR_FLAG_2000000)
+#define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_10 | ACTOR_FLAG_2000000)
 
 #define THIS ((EnTsn*)thisx)
 
@@ -80,7 +80,7 @@ void func_80ADFCEC(EnTsn* this, PlayState* play) {
     this->actor.update = func_80AE0F84;
     this->actor.destroy = NULL;
     this->actor.draw = NULL;
-    this->actor.targetMode = TARGET_MODE_7;
+    this->actor.attentionRangeType = ATTENTION_RANGE_7;
 
     switch (ENTSN_GET_F(&this->actor)) {
         case ENTSN_F_0:

@@ -11,7 +11,7 @@
 #include "objects/object_boss04/object_boss04.h"
 #include "2s2h/Enhancements/FrameInterpolation/FrameInterpolation.h"
 
-#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_HOSTILE | ACTOR_FLAG_10 | ACTOR_FLAG_20)
+#define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_HOSTILE | ACTOR_FLAG_10 | ACTOR_FLAG_20)
 
 #define THIS ((EnTanron2*)thisx)
 
@@ -123,7 +123,7 @@ void EnTanron2_Init(Actor* thisx, PlayState* play) {
     EnTanron2* this = THIS;
 
     D_80BB8450 = (Boss04*)this->actor.parent;
-    this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
+    this->actor.flags &= ~ACTOR_FLAG_ATTENTION_ENABLED;
 
     if (this->actor.params == 100) {
         this->actor.update = func_80BB7B90;
@@ -137,7 +137,7 @@ void EnTanron2_Init(Actor* thisx, PlayState* play) {
     this->actor.draw = NULL;
     this->actor.colChkInfo.health = 1;
     this->actor.colChkInfo.damageTable = &sDamageTable;
-    this->actor.targetMode = TARGET_MODE_5;
+    this->actor.attentionRangeType = ATTENTION_RANGE_5;
 
     Collider_InitAndSetCylinder(play, &this->collider1, &this->actor, &sCylinderInit1);
     Collider_InitAndSetCylinder(play, &this->collider2, &this->actor, &sCylinderInit2);
@@ -206,7 +206,7 @@ void func_80BB6B80(EnTanron2* this) {
     this->actor.velocity.x = 0.0f;
     this->unk_158 = 0;
     this->unk_159 = 1;
-    this->actor.flags |= ACTOR_FLAG_TARGETABLE;
+    this->actor.flags |= ACTOR_FLAG_ATTENTION_ENABLED;
     this->collider1.dim.radius = 30;
     this->collider1.dim.height = 50;
     this->collider1.dim.yShift = -25;
@@ -552,10 +552,10 @@ void EnTanron2_Update(Actor* thisx, PlayState* play) {
 
             if (ABS_ALT(BINANG_SUB(D_80BB8450->actor.yawTowardsPlayer, atan)) > 0x3000) {
                 this->unk_159 = 0;
-                this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
+                this->actor.flags &= ~ACTOR_FLAG_ATTENTION_ENABLED;
             } else {
                 this->unk_159 = 1;
-                this->actor.flags |= ACTOR_FLAG_TARGETABLE;
+                this->actor.flags |= ACTOR_FLAG_ATTENTION_ENABLED;
             }
         }
     }

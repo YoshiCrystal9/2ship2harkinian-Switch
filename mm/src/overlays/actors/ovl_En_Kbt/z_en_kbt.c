@@ -8,7 +8,7 @@
 #include "BenPort.h"
 #include "2s2h/GameInteractor/GameInteractor.h"
 
-#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_FRIENDLY)
+#define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY)
 
 #define THIS ((EnKbt*)thisx)
 
@@ -113,7 +113,7 @@ void EnKbt_Init(Actor* thisx, PlayState* play) {
         this->unk_282 = 0;
         this->actionFunc = func_80B34598;
     }
-    this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
+    this->actor.flags &= ~ACTOR_FLAG_ATTENTION_ENABLED;
 }
 
 void EnKbt_Destroy(Actor* thisx, PlayState* play) {

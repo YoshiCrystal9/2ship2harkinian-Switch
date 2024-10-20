@@ -8,7 +8,7 @@
 #include "overlays/actors/ovl_En_Clear_Tag/z_en_clear_tag.h"
 #include "objects/object_bat/object_bat.h"
 
-#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_HOSTILE | ACTOR_FLAG_IGNORE_QUAKE | ACTOR_FLAG_4000)
+#define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_HOSTILE | ACTOR_FLAG_IGNORE_QUAKE | ACTOR_FLAG_4000)
 
 #define THIS ((EnBat*)thisx)
 
@@ -317,7 +317,7 @@ void EnBat_DiveAttack(EnBat* this, PlayState* play) {
 }
 
 void EnBat_SetupDie(EnBat* this, PlayState* play) {
-    this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
+    this->actor.flags &= ~ACTOR_FLAG_ATTENTION_ENABLED;
     Enemy_StartFinishingBlow(play, &this->actor);
     this->actor.speed *= Math_CosS(this->actor.world.rot.x);
     this->actor.bgCheckFlags &= ~BGCHECKFLAG_GROUND;

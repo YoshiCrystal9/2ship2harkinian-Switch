@@ -8,7 +8,7 @@
 #include "overlays/actors/ovl_En_Clear_Tag/z_en_clear_tag.h"
 #include "GameInteractor/GameInteractor.h"
 
-#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_10)
+#define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_10)
 
 #define THIS ((EnBal*)thisx)
 
@@ -199,7 +199,7 @@ void EnBal_Init(Actor* thisx, PlayState* play) {
     f32 endFrame = Animation_GetLastFrame(&gTingleFloatIdleAnim);
 
     this->locationMapId = TINGLE_GET_MAP_ID(&this->picto.actor);
-    this->picto.actor.targetMode = 1;
+    this->picto.actor.attentionRangeType = 1;
     this->picto.actor.uncullZoneForward = 3000.0f;
     Actor_SetScale(&this->picto.actor, 0.02f);
     SkelAnime_InitFlex(play, &this->skelAnime, &gTingleSkel, &gTingleFloatIdleAnim, this->jointTable, this->morphTable,

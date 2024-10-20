@@ -14,7 +14,7 @@
 #include "2s2h/Enhancements/FrameInterpolation/FrameInterpolation.h"
 #include "BenPort.h"
 
-#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_HOSTILE | ACTOR_FLAG_10 | ACTOR_FLAG_20 | ACTOR_FLAG_200)
+#define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_HOSTILE | ACTOR_FLAG_10 | ACTOR_FLAG_20 | ACTOR_FLAG_200)
 
 #define THIS ((EnBigslime*)thisx)
 
@@ -301,7 +301,7 @@ static InitChainEntry sInitChain[] = {
     ICHAIN_S8(hintId, TATL_HINT_ID_GEKKO_GIANT_SLIME, ICHAIN_CONTINUE),
     ICHAIN_F32_DIV1000(targetArrowOffset, -13221, ICHAIN_CONTINUE),
     ICHAIN_F32_DIV1000(gravity, -2000, ICHAIN_CONTINUE),
-    ICHAIN_U8(targetMode, TARGET_MODE_5, ICHAIN_STOP),
+    ICHAIN_U8(attentionRangeType, ATTENTION_RANGE_5, ICHAIN_STOP),
 };
 
 void EnBigslime_Init(Actor* thisx, PlayState* play2) {
@@ -370,7 +370,7 @@ void EnBigslime_Init(Actor* thisx, PlayState* play2) {
     this->bigslimeFrozenTexAnim = Lib_SegmentedToVirtual(gBigslimeFrozenTexAnim);
     this->iceShardTexAnim = Lib_SegmentedToVirtual(gBigslimeIceShardTexAnim);
     this->actor.world.pos.y = GBT_ROOM_5_MIN_Y;
-    this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
+    this->actor.flags &= ~ACTOR_FLAG_ATTENTION_ENABLED;
     this->actor.shape.shadowAlpha = 255;
     this->gekkoScale = 0.007f;
     this->actor.shape.rot.y = 0;
@@ -763,7 +763,7 @@ void EnBigslime_BreakIntoMinislime(EnBigslime* this, PlayState* play) {
     EnBigslime_SetPlayerParams(this, play);
     EnBigslime_EndCutscene(this, play);
     this->actor.colChkInfo.mass = 50;
-    this->actor.flags &= ~(ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_400);
+    this->actor.flags &= ~(ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_400);
     this->actor.flags |= ACTOR_FLAG_200;
     this->actor.hintId = TATL_HINT_ID_GEKKO_GIANT_SLIME;
     this->gekkoRot.x = 0;
@@ -999,7 +999,7 @@ void EnBigslime_CallMinislime(EnBigslime* this, PlayState* play) {
         if (this->callTimer == 0) {
             EnBigslime_EndCutscene(this, play);
             this->formBigslimeTimer = 2;
-            this->actor.flags |= ACTOR_FLAG_TARGETABLE;
+            this->actor.flags |= ACTOR_FLAG_ATTENTION_ENABLED;
             EnBigslime_SetupIdleNoticePlayer(this);
         }
     } else if (this->isAnimFinished) {
@@ -2039,7 +2039,7 @@ void EnBigslime_JumpGekko(EnBigslime* this, PlayState* play) {
 
     if (this->actor.bgCheckFlags & BGCHECKFLAG_GROUND) {
         this->gekkoCollider.base.acFlags |= AC_ON;
-        this->actor.flags |= ACTOR_FLAG_TARGETABLE;
+        this->actor.flags |= ACTOR_FLAG_ATTENTION_ENABLED;
     }
 
     this->jumpTimer--;
@@ -2352,7 +2352,7 @@ void EnBigslime_SetupCutsceneDefeat(EnBigslime* this, PlayState* play) {
         this->minislime[i]->actor.params = MINISLIME_DEFEAT_IDLE;
     }
 
-    this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
+    this->actor.flags &= ~ACTOR_FLAG_ATTENTION_ENABLED;
     EnBigslime_GekkoThaw(this, play);
     this->actionFunc = EnBigslime_CutsceneDefeat;
 }
