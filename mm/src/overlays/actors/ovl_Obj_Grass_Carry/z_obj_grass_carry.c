@@ -10,7 +10,7 @@
 #include "overlays/actors/ovl_Obj_Grass/z_obj_grass.h"
 #include "GameInteractor/GameInteractor.h"
 
-#define FLAGS (ACTOR_FLAG_10 | ACTOR_FLAG_20 | ACTOR_FLAG_800000)
+#define FLAGS (ACTOR_FLAG_10 | ACTOR_FLAG_20 | ACTOR_FLAG_THROW_ONLY)
 
 #define THIS ((ObjGrassCarry*)thisx)
 

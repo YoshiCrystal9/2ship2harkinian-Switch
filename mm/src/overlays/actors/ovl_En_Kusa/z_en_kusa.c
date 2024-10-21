@@ -14,7 +14,7 @@
 #include "2s2h/ShipUtils.h"
 #include "GameInteractor/GameInteractor.h"
 
-#define FLAGS (ACTOR_FLAG_10 | ACTOR_FLAG_800000)
+#define FLAGS (ACTOR_FLAG_10 | ACTOR_FLAG_THROW_ONLY)
 
 #define THIS ((EnKusa*)thisx)
 

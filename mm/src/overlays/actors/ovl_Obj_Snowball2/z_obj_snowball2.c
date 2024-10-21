@@ -8,7 +8,7 @@
 #include "objects/object_goroiwa/object_goroiwa.h"
 #include "2s2h/GameInteractor/GameInteractor.h"
 
-#define FLAGS (ACTOR_FLAG_800000)
+#define FLAGS (ACTOR_FLAG_THROW_ONLY)
 
 #define THIS ((ObjSnowball2*)thisx)
 
