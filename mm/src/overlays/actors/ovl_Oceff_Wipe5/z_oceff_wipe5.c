@@ -8,7 +8,7 @@
 #include "assets/overlays/ovl_Oceff_Wipe5/ovl_Oceff_Wipe5.h"
 #include "BenPort.h"
 
-#define FLAGS (ACTOR_FLAG_10 | ACTOR_FLAG_2000000)
+#define FLAGS (ACTOR_FLAG_10 | ACTOR_FLAG_UPDATE_DURING_OCARINA)
 
 #define THIS ((OceffWipe5*)thisx)
 

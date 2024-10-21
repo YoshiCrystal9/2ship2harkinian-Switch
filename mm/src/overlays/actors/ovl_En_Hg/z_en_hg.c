@@ -7,8 +7,9 @@
 #include "z_en_hg.h"
 #include "2s2h/GameInteractor/GameInteractor.h"
 
-#define FLAGS \
-    (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_10 | ACTOR_FLAG_100000 | ACTOR_FLAG_2000000)
+#define FLAGS                                                                                 \
+    (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_10 | ACTOR_FLAG_100000 | \
+     ACTOR_FLAG_UPDATE_DURING_OCARINA)
 
 #define THIS ((EnHg*)thisx)
 
@@ -193,7 +194,7 @@ void EnHg_ChasePlayer(EnHg* this, PlayState* play) {
     s32 pad;
 
     this->actor.speed = 1.6f;
-    if (!(player->stateFlags2 & PLAYER_STATE2_8000000) && (Message_GetState(&play->msgCtx) == TEXT_STATE_NONE)) {
+    if (!(player->stateFlags2 & PLAYER_STATE2_USING_OCARINA) && (Message_GetState(&play->msgCtx) == TEXT_STATE_NONE)) {
         if (((this->skelAnime.curFrame > 9.0f) && (this->skelAnime.curFrame < 16.0f)) ||
             ((this->skelAnime.curFrame > 44.0f) && (this->skelAnime.curFrame < 51.0f))) {
             Actor_MoveWithGravity(&this->actor);
@@ -389,7 +390,7 @@ void EnHg_WaitForPlayerAction(EnHg* this, PlayState* play) {
         return;
     }
 
-    if (player->stateFlags2 & PLAYER_STATE2_8000000) {
+    if (player->stateFlags2 & PLAYER_STATE2_USING_OCARINA) {
         if (!sHasSoundPlayed) {
             Audio_PlaySfx(NA_SE_SY_TRE_BOX_APPEAR);
         }

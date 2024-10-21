@@ -14,8 +14,8 @@
 #include "2s2h/Enhancements/FrameInterpolation/FrameInterpolation.h"
 #include "2s2h/GameInteractor/GameInteractor.h"
 
-#define FLAGS                                                                                  \
-    (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_10 | ACTOR_FLAG_2000000 | \
+#define FLAGS                                                                                                \
+    (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_10 | ACTOR_FLAG_UPDATE_DURING_OCARINA | \
      ACTOR_FLAG_LOCK_ON_DISABLED)
 
 #define THIS ((EnFu*)thisx)

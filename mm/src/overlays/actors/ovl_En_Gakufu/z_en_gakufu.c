@@ -8,7 +8,7 @@
 #include "interface/parameter_static/parameter_static.h"
 #include "public/bridge/consolevariablebridge.h"
 
-#define FLAGS (ACTOR_FLAG_10 | ACTOR_FLAG_2000000)
+#define FLAGS (ACTOR_FLAG_10 | ACTOR_FLAG_UPDATE_DURING_OCARINA)
 
 #define THIS ((EnGakufu*)thisx)
 
@@ -143,7 +143,7 @@ void EnGakufu_Init(Actor* thisx, PlayState* play) {
         return;
     }
 
-    this->actor.flags &= ~ACTOR_FLAG_2000000;
+    this->actor.flags &= ~ACTOR_FLAG_UPDATE_DURING_OCARINA;
 
     if (EnGakufu_IsPlayerInRange(this, play)) {
         SET_EVENTINF(EVENTINF_31);
