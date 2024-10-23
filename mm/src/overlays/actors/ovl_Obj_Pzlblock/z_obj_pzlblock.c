@@ -9,7 +9,7 @@
 #include "objects/object_secom_obj/object_secom_obj.h"
 #include "2s2h/GameInteractor/GameInteractor.h"
 
-#define FLAGS (ACTOR_FLAG_10 | ACTOR_FLAG_CAN_PRESS_SWITCH)
+#define FLAGS (ACTOR_FLAG_10 | ACTOR_FLAG_CAN_PRESS_SWITCHES)
 
 #define THIS ((ObjPzlblock*)thisx)
 
