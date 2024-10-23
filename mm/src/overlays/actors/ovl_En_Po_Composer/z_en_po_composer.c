@@ -722,7 +722,7 @@ void EnPoComposer_Draw(Actor* thisx, PlayState* play) {
         gDPSetEnvColor(&dl[1], this->envColor.r, this->envColor.g, this->envColor.b, this->lightColor.a);
 
         Matrix_Put(&this->lanternMtxF);
-        gSPMatrix(&dl[2], Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+        MATRIX_FINALIZE_AND_LOAD(&dl[2], play->state.gfxCtx);
 
         gSPDisplayList(&dl[3], gPoeComposerLanternBaseDL);
         gSPDisplayList(&dl[4], gPoeComposerLanternGlassDL);

@@ -527,7 +527,7 @@ void EnMkk_Draw(Actor* thisx, PlayState* play) {
             gSPDisplayList(&gfx[0], gSetupDLs[SETUPDL_25]);
             gDPSetPrimColor(&gfx[1], 0, 0xFF, primColors->r, primColors->g, primColors->b, primColors->a);
             gSPSegment(&gfx[2], 0x08, D_801AEFA0);
-            gSPMatrix(&gfx[3], Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+            MATRIX_FINALIZE_AND_LOAD(&gfx[3], play->state.gfxCtx);
             gSPDisplayList(&gfx[4], dLists->unkC);
             POLY_OPA_DISP = &gfx[5];
         }
@@ -536,7 +536,7 @@ void EnMkk_Draw(Actor* thisx, PlayState* play) {
         gDPSetEnvColor(&gfx[1], 255, 255, 255, this->alpha);
         gSPDisplayList(&gfx[2], dLists->unk0);
         Matrix_ReplaceRotation(&play->billboardMtxF);
-        gSPMatrix(&gfx[3], Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+        MATRIX_FINALIZE_AND_LOAD(&gfx[3], play->state.gfxCtx);
         gSPDisplayList(&gfx[4], dLists->unk4);
         if (thisx->params == 0) {
             matrix = Matrix_GetCurrent();
@@ -545,7 +545,7 @@ void EnMkk_Draw(Actor* thisx, PlayState* play) {
             matrix->mf[3][2] = this->unk_154.z;
 
             Matrix_Scale(0.85f, 0.85f, 0.85f, MTXMODE_APPLY);
-            gSPMatrix(&gfx[5], Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+            MATRIX_FINALIZE_AND_LOAD(&gfx[5], play->state.gfxCtx);
             gSPDisplayList(&gfx[6], dLists->unk4);
 
             matrix->mf[3][0] = this->unk_160.x;
@@ -553,7 +553,7 @@ void EnMkk_Draw(Actor* thisx, PlayState* play) {
             matrix->mf[3][2] = this->unk_160.z;
 
             Matrix_Scale(0.85f, 0.85f, 0.85f, MTXMODE_APPLY);
-            gSPMatrix(&gfx[7], Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+            MATRIX_FINALIZE_AND_LOAD(&gfx[7], play->state.gfxCtx);
             gSPDisplayList(&gfx[8], dLists->unk4);
             gSPDisplayList(&gfx[9], dLists->unk8);
 
@@ -581,7 +581,7 @@ void func_80A4F4C8(Actor* thisx, PlayState* play) {
     gDPSetEnvColor(&gfx[1], 255, 255, 255, this->alpha);
     gSPDisplayList(&gfx[2], dLists->unk0);
     Matrix_ReplaceRotation(&play->billboardMtxF);
-    gSPMatrix(&gfx[3], Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    MATRIX_FINALIZE_AND_LOAD(&gfx[3], play->state.gfxCtx);
     gSPDisplayList(&gfx[4], dLists->unk4);
 
     matrix = Matrix_GetCurrent();
@@ -589,21 +589,21 @@ void func_80A4F4C8(Actor* thisx, PlayState* play) {
     matrix->mf[3][1] = this->unk_154.y + 5.0f;
     matrix->mf[3][2] = this->unk_154.z;
 
-    gSPMatrix(&gfx[5], Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    MATRIX_FINALIZE_AND_LOAD(&gfx[5], play->state.gfxCtx);
     gSPDisplayList(&gfx[6], dLists->unk4);
 
     matrix->mf[3][0] = this->unk_160.x;
     matrix->mf[3][1] = this->unk_160.y + 5.0f;
     matrix->mf[3][2] = this->unk_160.z;
 
-    gSPMatrix(&gfx[7], Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    MATRIX_FINALIZE_AND_LOAD(&gfx[7], play->state.gfxCtx);
     gSPDisplayList(&gfx[8], dLists->unk4);
 
     matrix->mf[3][0] = this->unk_16C.x;
     matrix->mf[3][1] = this->unk_16C.y + 5.0f;
     matrix->mf[3][2] = this->unk_16C.z;
 
-    gSPMatrix(&gfx[9], Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    MATRIX_FINALIZE_AND_LOAD(&gfx[9], play->state.gfxCtx);
     gSPDisplayList(&gfx[10], dLists->unk4);
     gSPDisplayList(&gfx[11], dLists->unk8);
     POLY_XLU_DISP = &gfx[12];

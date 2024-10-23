@@ -596,7 +596,7 @@ void func_808DD3C8(Actor* thisx, PlayState* play2) {
 
             Matrix_Mult(&play->billboardMtxF, MTXMODE_APPLY);
 
-            gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+            MATRIX_FINALIZE_AND_LOAD(POLY_XLU_DISP++, play->state.gfxCtx);
             gSPDisplayList(POLY_XLU_DISP++, gEffDustDL);
             FrameInterpolation_RecordCloseChild();
         }
@@ -666,7 +666,7 @@ void func_808DD970(Actor* thisx, PlayState* play2) {
 
             Matrix_Mult(&play->billboardMtxF, MTXMODE_APPLY);
 
-            gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+            MATRIX_FINALIZE_AND_LOAD(POLY_XLU_DISP++, play->state.gfxCtx);
             gSPSegment(POLY_XLU_DISP++, 0x08, Lib_SegmentedToVirtual(gEffDust5Tex));
             gSPClearGeometryMode(POLY_XLU_DISP++, G_LIGHTING);
 
@@ -726,7 +726,7 @@ void func_808DDE9C(Actor* thisx, PlayState* play2) {
                 Matrix_Scale(2.0f, 4.0f, 2.0f, MTXMODE_APPLY);
             }
 
-            gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+            MATRIX_FINALIZE_AND_LOAD(POLY_XLU_DISP++, play->state.gfxCtx);
             gSPDisplayList(POLY_XLU_DISP++, gFallingRainDropDL);
             FrameInterpolation_RecordCloseChild();
         }
@@ -753,8 +753,7 @@ void func_808DDE9C(Actor* thisx, PlayState* play2) {
                 temp_f12 = (Rand_ZeroOne() * 0.05f) + 0.05f;
                 Matrix_Scale(temp_f12, temp_f12, temp_f12, MTXMODE_APPLY);
 
-                gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(play->state.gfxCtx),
-                          G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+                MATRIX_FINALIZE_AND_LOAD(POLY_XLU_DISP++, play->state.gfxCtx);
                 gSPDisplayList(POLY_XLU_DISP++, gEffShockwaveDL);
                 FrameInterpolation_RecordCloseChild();
             }

@@ -265,7 +265,7 @@ void EnTest6_DrawAmmoDropDefault(EnTest6* this, PlayState* play, SoTCsAmmoDrops*
         POLY_OPA_DISP = Gfx_SetupDL66(POLY_OPA_DISP);
 
         gSPSegment(POLY_OPA_DISP++, 0x08, Lib_SegmentedToVirtual(sSoTCsAmmoDropTextures[ammoDrop->type]));
-        gSPMatrix(POLY_OPA_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+        MATRIX_FINALIZE_AND_LOAD(POLY_OPA_DISP++, play->state.gfxCtx);
         gSPDisplayList(POLY_OPA_DISP++, gItemDropDL);
     }
 
@@ -276,7 +276,7 @@ void EnTest6_DrawAmmoDropDefault(EnTest6* this, PlayState* play, SoTCsAmmoDrops*
     Matrix_RotateZS(play->state.frames * 512, MTXMODE_APPLY);
     Matrix_Translate(0.0f, 0.0f, 2.0f, MTXMODE_APPLY);
 
-    gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    MATRIX_FINALIZE_AND_LOAD(POLY_XLU_DISP++, play->state.gfxCtx);
 
     Gfx_SetupDL25_Xlu(play->state.gfxCtx);
 
@@ -318,7 +318,7 @@ void EnTest6_DrawAmmoDropRupee(EnTest6* this, PlayState* play, SoTCsAmmoDrops* a
         Matrix_Scale(ammoDrop->scale * 0.018f, ammoDrop->scale * 0.018f, ammoDrop->scale * 0.018f, MTXMODE_APPLY);
         Matrix_Mult(&play->billboardMtxF, MTXMODE_APPLY);
 
-        gSPMatrix(POLY_OPA_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+        MATRIX_FINALIZE_AND_LOAD(POLY_OPA_DISP++, play->state.gfxCtx);
         gSPSegment(POLY_OPA_DISP++, 0x08, Lib_SegmentedToVirtual(sSoTCsAmmoDropTextures[ammoDrop->type]));
         gSPDisplayList(POLY_OPA_DISP++, gRupeeDL);
     }
@@ -330,7 +330,7 @@ void EnTest6_DrawAmmoDropRupee(EnTest6* this, PlayState* play, SoTCsAmmoDrops* a
     Matrix_RotateZS(play->state.frames * 256, MTXMODE_APPLY);
     Matrix_Translate(0.0f, 0.0f, 4.0f, MTXMODE_APPLY);
 
-    gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    MATRIX_FINALIZE_AND_LOAD(POLY_XLU_DISP++, play->state.gfxCtx);
 
     Gfx_SetupDL25_Xlu(play->state.gfxCtx);
 
@@ -1234,7 +1234,7 @@ void EnTest6_DrawThreeDayResetSoTCutscene(EnTest6* this, PlayState* play) {
         Matrix_Scale(0.8f, 0.8f, 0.8f, MTXMODE_APPLY);
         Matrix_RotateZS(angle, MTXMODE_APPLY);
 
-        gSPMatrix(this->gfx++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+        MATRIX_FINALIZE_AND_LOAD(this->gfx++, play->state.gfxCtx);
         gDPSetPrimColor(this->gfx++, 0, 0xFF, 28, 28, 28, 255);
         gDPSetEnvColor(this->gfx++, 255, 255, 255, 255);
         gDPSetRenderMode(this->gfx++, G_RM_FOG_SHADE_A, G_RM_AA_ZB_OPA_SURF2);
@@ -1249,7 +1249,7 @@ void EnTest6_DrawThreeDayResetSoTCutscene(EnTest6* this, PlayState* play) {
         Matrix_Scale(0.8f, 0.8f, 0.8f, MTXMODE_APPLY);
         Matrix_RotateZS(-angle, MTXMODE_APPLY);
 
-        gSPMatrix(this->gfx++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+        MATRIX_FINALIZE_AND_LOAD(this->gfx++, play->state.gfxCtx);
         gDPSetPrimColor(this->gfx++, 0, 0xFF, 28, 28, 28, 255);
         gDPSetEnvColor(this->gfx++, 255, 255, 255, 255);
         gDPSetRenderMode(this->gfx++, G_RM_FOG_SHADE_A, G_RM_AA_ZB_OPA_SURF2);
@@ -1332,7 +1332,7 @@ void EnTest6_DrawDoubleSoTCutscene(EnTest6* this, PlayState* play) {
         // the drawn shape is spun internally
         Matrix_RotateZS(clockNormalAngle, MTXMODE_APPLY);
 
-        gSPMatrix(this->gfx++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+        MATRIX_FINALIZE_AND_LOAD(this->gfx++, play->state.gfxCtx);
         gDPSetPrimColor(this->gfx++, 0, 0xFF, this->clockColorGray, this->clockColorGray, this->clockColorGray, 255);
         gDPSetEnvColor(this->gfx++, 235, 238, 235, 255);
         gDPSetRenderMode(this->gfx++, G_RM_FOG_SHADE_A, G_RM_AA_ZB_OPA_SURF2);
@@ -1381,7 +1381,7 @@ void EnTest6_DrawInvertedSoTCutscene(EnTest6* this, PlayState* play2) {
                 Matrix_RotateXS(-0x4000, MTXMODE_APPLY);
                 Matrix_RotateZS(this->invSoTClockYaw, MTXMODE_APPLY);
 
-                gSPMatrix(this->gfx++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+                MATRIX_FINALIZE_AND_LOAD(this->gfx++, play->state.gfxCtx);
                 gDPSetPrimColor(this->gfx++, 0, 0xFF, 28, 28, 28, 255);
                 gDPSetEnvColor(this->gfx++, 245, 245, 200, this->alpha);
                 gDPSetRenderMode(this->gfx++, G_RM_FOG_SHADE_A, G_RM_AA_ZB_XLU_SURF2);
@@ -1405,8 +1405,7 @@ void EnTest6_DrawInvertedSoTCutscene(EnTest6* this, PlayState* play2) {
                     Matrix_Mult(&play->billboardMtxF, MTXMODE_APPLY);
                     Matrix_RotateZS(this->invSoTClockYaw + (i << 2), MTXMODE_APPLY);
 
-                    gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(play->state.gfxCtx),
-                              G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+                    MATRIX_FINALIZE_AND_LOAD(POLY_XLU_DISP++, play->state.gfxCtx);
                     gSPDisplayList(POLY_XLU_DISP++, gEffFlash1DL);
                 }
             }

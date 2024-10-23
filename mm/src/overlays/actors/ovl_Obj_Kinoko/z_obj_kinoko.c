@@ -84,11 +84,11 @@ void ObjKinoko_Draw(Actor* thisx, PlayState* play) {
     gDPSetPrimColor(&gfx[0], 0, 0, 169, 63, 186, (u8)thisx->speed);
     gDPSetEnvColor(&gfx[1], 110, 44, 200, 100);
     gDPSetRenderMode(&gfx[2], G_RM_PASS, G_RM_ZB_CLD_SURF2);
-    gSPMatrix(&gfx[3], Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    MATRIX_FINALIZE_AND_LOAD(&gfx[3], play->state.gfxCtx);
     // Index adjust 2 -> 4 (for gsDPPipeSync) to account for our extraction size changes
     gSPDisplayList(&gfx[4], &gameplay_keep_DL_029D10_Data[4]);
     Matrix_RotateXS(-0x4000, MTXMODE_APPLY);
-    gSPMatrix(&gfx[5], Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    MATRIX_FINALIZE_AND_LOAD(&gfx[5], play->state.gfxCtx);
     gSPDisplayList(&gfx[6], &gameplay_keep_DL_029D10_Data[4]);
     // #endregion
     POLY_XLU_DISP = &gfx[7];

@@ -477,7 +477,7 @@ void MapDisp_Minimap_DrawActorIcon(PlayState* play, Actor* actor) {
                 Matrix_Scale(elemScale, 1.0f, elemScale, MTXMODE_APPLY);
             }
             // #endregion
-            gSPMatrix(OVERLAY_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+            MATRIX_FINALIZE_AND_LOAD(OVERLAY_DISP++, play->state.gfxCtx);
             gDPSetPrimColor(OVERLAY_DISP++, 0, 0, 200, 255, 0, play->interfaceCtx.minimapAlpha);
             gSPDisplayList(OVERLAY_DISP++, gCompassArrowDL);
         } else if ((actor->id == ACTOR_EN_BOX) && !Flags_GetTreasure(play, actor->params & 0x1F) &&
@@ -1316,7 +1316,7 @@ void MapDisp_Minimap_DrawRedCompassIcon(PlayState* play, s32 x, s32 z, s32 rot) 
             Matrix_Scale(elemScale, 1.0f, elemScale, MTXMODE_APPLY);
         }
         // #endregion
-        gSPMatrix(OVERLAY_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+        MATRIX_FINALIZE_AND_LOAD(OVERLAY_DISP++, play->state.gfxCtx);
         gDPSetPrimColor(OVERLAY_DISP++, 0, 255, 200, 0, 0, play->interfaceCtx.minimapAlpha);
         gSPDisplayList(OVERLAY_DISP++, gCompassArrowDL);
 

@@ -1334,13 +1334,13 @@ void EnDeath_DrawScytheSpinning(EnDeath* this, PlayState* play) {
         Matrix_Put(&this->scytheMtxF);
         Matrix_RotateXS(i * 0x2100, MTXMODE_APPLY);
 
-        gSPMatrix(gfx++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+        MATRIX_FINALIZE_AND_LOAD(gfx++, play->state.gfxCtx);
         gSPDisplayList(gfx++, gGomessScytheHandleDL);
 
         Matrix_Translate(0.0f, -1084.0f, 7012.0f, MTXMODE_APPLY);
         Matrix_RotateZYX(-0x4000, 0, -0x4000, MTXMODE_APPLY);
 
-        gSPMatrix(gfx++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+        MATRIX_FINALIZE_AND_LOAD(gfx++, play->state.gfxCtx);
         gSPDisplayList(gfx++, gGomessScytheBladeDL);
         FrameInterpolation_RecordCloseChild();
     }
@@ -1372,13 +1372,13 @@ void EnDeath_DrawScythe(EnDeath* this, PlayState* play) {
     Matrix_Put(&this->scytheMtxF);
     Matrix_Scale(this->scytheScale, this->scytheScale, this->scytheScale, MTXMODE_APPLY);
 
-    gSPMatrix(&gfx[0], Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    MATRIX_FINALIZE_AND_LOAD(&gfx[0], play->state.gfxCtx);
     gSPDisplayList(&gfx[1], gGomessScytheHandleDL);
 
     Matrix_Translate(0.0f, -1084.0f, 7012.0f, MTXMODE_APPLY);
     Matrix_RotateZYX(-0x4000, 0, -0x4000, MTXMODE_APPLY);
 
-    gSPMatrix(&gfx[2], Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    MATRIX_FINALIZE_AND_LOAD(&gfx[2], play->state.gfxCtx);
     gSPDisplayList(&gfx[3], gGomessScytheBladeDL);
 
     Matrix_MultZero(&this->scytheWorldPos);
@@ -1450,7 +1450,7 @@ void EnDeath_DrawBats(EnDeath* this, PlayState* play) {
                     cmf->mf[3][1] = effect->pos.y + quakeOffset.y;
                     cmf->mf[3][2] = effect->pos.z + quakeOffset.z;
 
-                    gSPMatrix(gfx++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+                    MATRIX_FINALIZE_AND_LOAD(gfx++, play->state.gfxCtx);
                     gSPDisplayList(gfx++, sMinideathDLs[effect->animFrame]);
                     FrameInterpolation_RecordCloseChild();
                 }
@@ -1466,7 +1466,7 @@ void EnDeath_DrawBats(EnDeath* this, PlayState* play) {
                     cmf->mf[3][1] = effect->pos.y + quakeOffset.y;
                     cmf->mf[3][2] = effect->pos.z + quakeOffset.z;
 
-                    gSPMatrix(gfx++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+                    MATRIX_FINALIZE_AND_LOAD(gfx++, play->state.gfxCtx);
                     gSPDisplayList(gfx++, sMinideathDLs[effect->animFrame]);
                     FrameInterpolation_RecordCloseChild();
                 }
@@ -1487,7 +1487,7 @@ void EnDeath_DrawBats(EnDeath* this, PlayState* play) {
                 cmf->mf[3][1] = miniDeath->actor.world.pos.y + (20.0f - effect->vel.y);
                 cmf->mf[3][2] = miniDeath->actor.world.pos.z - effect->vel.z;
 
-                gSPMatrix(gfx++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+                MATRIX_FINALIZE_AND_LOAD(gfx++, play->state.gfxCtx);
                 gSPDisplayList(gfx++, sMinideathDLs[effect->animFrame]);
                     FrameInterpolation_RecordCloseChild();
             }
@@ -1501,7 +1501,7 @@ void EnDeath_DrawBats(EnDeath* this, PlayState* play) {
         cmf->mf[3][1] = this->corePos.y + quakeOffset.y;
         cmf->mf[3][2] = this->corePos.z + quakeOffset.z;
 
-        gSPMatrix(gfx++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+        MATRIX_FINALIZE_AND_LOAD(gfx++, play->state.gfxCtx);
         gSPDisplayList(gfx++, sMinideathDLs[0]);
     }
 
@@ -1549,7 +1549,7 @@ void EnDeath_DrawFlames(EnDeath* this, PlayState* play2) {
             cmf->mf[3][1] = sparklePos->y;
             cmf->mf[3][2] = sparklePos->z;
 
-            gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+            MATRIX_FINALIZE_AND_LOAD(POLY_XLU_DISP++, play->state.gfxCtx);
             gSPDisplayList(POLY_XLU_DISP++, gEffFire1DL);
             FrameInterpolation_RecordCloseChild();
         }
@@ -1578,8 +1578,7 @@ void EnDeath_DrawFlames(EnDeath* this, PlayState* play2) {
                 gSPSegment(POLY_XLU_DISP++, 0x08,
                            Gfx_TwoTexScroll(play->state.gfxCtx, 0, 0, 0, 32, 64, 1, 0,
                                             ((play->gameplayFrames + ((i + j) * 10)) * -20) & 511, 32, 128));
-                gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(play->state.gfxCtx),
-                          G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+                MATRIX_FINALIZE_AND_LOAD(POLY_XLU_DISP++, play->state.gfxCtx);
                 gSPDisplayList(POLY_XLU_DISP++, gEffFire1DL);
                 FrameInterpolation_RecordCloseChild();
             }
@@ -1598,7 +1597,7 @@ void EnDeath_DrawCore(EnDeath* this, PlayState* play) {
 
     Matrix_ReplaceRotation(&play->billboardMtxF);
 
-    gSPMatrix(&gfx[0], Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    MATRIX_FINALIZE_AND_LOAD(&gfx[0], play->state.gfxCtx);
     gSPDisplayList(&gfx[1], gGomessCoreDL);
 
     if (this->actor.params >= 5) {
