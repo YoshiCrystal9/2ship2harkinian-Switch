@@ -88,7 +88,7 @@ void DmChar02_Init(Actor* thisx, PlayState* play) {
     if (GameInteractor_Should(VB_STK_HAVE_OCARINA,
                               gSaveContext.save.saveInfo.inventory.items[SLOT_OCARINA] == ITEM_NONE)) {
         this->animIndex = DMCHAR02_ANIM_HIT_GROUND;
-        this->actor.targetArrowOffset = 3000.0f;
+        this->actor.lockOnArrowOffset = 3000.0f;
         ActorShape_Init(&this->actor.shape, 0.0f, ActorShadow_DrawCircle, 24.0f);
         SkelAnime_InitFlex(play, &this->skelAnime, &gClockTowerOcarinaOfTimeSkel, NULL, NULL, NULL, 0);
         DmChar02_ChangeAnim(&this->skelAnime, &sAnimationInfo[DMCHAR02_ANIM_HIT_GROUND], 0);
