@@ -575,7 +575,7 @@ void EnAob01_BeforeRace_Idle(EnAob01* this, PlayState* play) {
     if (EnAob01_ProcessIdleAnim(this)) {
         if (EnAob01_PlayerIsHoldingDog(this, play) && !(this->stateFlags & ENAOB01_FLAG_PLAYER_CAN_TALK)) {
             if (this->collider.base.ocFlags2 & OC2_HIT_PLAYER) {
-                this->actor.flags |= ACTOR_FLAG_10000;
+                this->actor.flags |= ACTOR_FLAG_TALK_OFFER_AUTO_ACCEPTED;
                 Actor_OfferTalk(&this->actor, play, 100.0f);
                 this->stateFlags |= ENAOB01_FLAG_TALKING_TO_PLAYER_HOLDING_DOG;
                 this->actionFunc = EnAob01_BeforeRace_Talk;
@@ -620,7 +620,7 @@ void EnAob01_BeforeRace_Talk(EnAob01* this, PlayState* play) {
 
         this->actor.textId = 0;
         this->stateFlags &= ~ENAOB01_FLAG_TALKING_TO_PLAYER_HOLDING_DOG;
-        this->actor.flags &= ~ACTOR_FLAG_10000;
+        this->actor.flags &= ~ACTOR_FLAG_TALK_OFFER_AUTO_ACCEPTED;
         this->actionFunc = EnAob01_BeforeRace_Idle;
         return;
     }
@@ -635,7 +635,7 @@ void EnAob01_BeforeRace_Talk(EnAob01* this, PlayState* play) {
 
     if (this->stateFlags & ENAOB01_FLAG_TALKING_TO_PLAYER_HOLDING_DOG) {
         if (Actor_TalkOfferAccepted(&this->actor, &play->state)) {
-            this->actor.flags &= ~ACTOR_FLAG_10000;
+            this->actor.flags &= ~ACTOR_FLAG_TALK_OFFER_AUTO_ACCEPTED;
             Player_SetAutoLockOnActor(play, &this->actor);
             if (this->stateFlags & ENAOB01_FLAG_PLAYER_TOLD_TO_PICK_A_DOG) {
                 EnAob01_BeforeRace_HandleConversation(this, play);
@@ -845,7 +845,7 @@ void EnAob01_Race_StartCutscene(EnAob01* this, PlayState* play) {
  */
 void EnAob01_AfterRace_GiveRaceResult(EnAob01* this, PlayState* play) {
     if (Actor_TalkOfferAccepted(&this->actor, &play->state)) {
-        this->actor.flags &= ~ACTOR_FLAG_10000;
+        this->actor.flags &= ~ACTOR_FLAG_TALK_OFFER_AUTO_ACCEPTED;
         Player_SetAutoLockOnActor(play, &this->actor);
         this->rupeesBet = gSaveContext.unk_3F5C;
         switch (GET_EVENTINF_DOG_RACE_RACE_STANDING) {
@@ -1134,7 +1134,7 @@ void EnAob01_Init(Actor* thisx, PlayState* play) {
             EnAob01_InitializeDogTextOffsets();
             EnAob01_SpawnDogs(this, play);
             this->actor.flags |= ACTOR_FLAG_ATTENTION_ENABLED;
-            this->actor.flags |= ACTOR_FLAG_10000;
+            this->actor.flags |= ACTOR_FLAG_TALK_OFFER_AUTO_ACCEPTED;
             this->actionFunc = EnAob01_AfterRace_GiveRaceResult;
             break;
     }

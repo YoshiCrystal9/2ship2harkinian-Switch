@@ -233,7 +233,7 @@ s32 func_8095A978(EnOwl* this, PlayState* play, u16 textId, f32 targetDist, f32 
 
     this->actor.textId = textId;
     if (this->actor.xzDistToPlayer < targetDist) {
-        this->actor.flags |= ACTOR_FLAG_10000;
+        this->actor.flags |= ACTOR_FLAG_TALK_OFFER_AUTO_ACCEPTED;
         Actor_OfferTalkExchange(&this->actor, play, targetDist, arg4, PLAYER_IA_NONE);
     }
 
@@ -299,7 +299,7 @@ void func_8095ABF0(EnOwl* this, PlayState* play) {
     if (Actor_TextboxIsClosing(&this->actor, play)) {
         SEQCMD_STOP_SEQUENCE(SEQ_PLAYER_FANFARE, 0);
         func_8095AAD0(this, play);
-        this->actor.flags &= ~ACTOR_FLAG_10000;
+        this->actor.flags &= ~ACTOR_FLAG_TALK_OFFER_AUTO_ACCEPTED;
     }
 }
 
@@ -314,7 +314,7 @@ void func_8095AC50(EnOwl* this, PlayState* play) {
             func_8095ABA8(this);
             this->actionFunc = func_8095AB1C;
         }
-        this->actor.flags &= ~ACTOR_FLAG_10000;
+        this->actor.flags &= ~ACTOR_FLAG_TALK_OFFER_AUTO_ACCEPTED;
     }
 }
 
@@ -515,10 +515,10 @@ void func_8095B574(EnOwl* this, PlayState* play) {
         this->actionFlags |= 0x40;
         this->csIdIndex = 2;
     } else if (this->actor.xzDistToPlayer < 200.0f) {
-        this->actor.flags |= ACTOR_FLAG_10000;
+        this->actor.flags |= ACTOR_FLAG_TALK_OFFER_AUTO_ACCEPTED;
         Actor_OfferTalkExchange(&this->actor, play, 200.0f, 400.0f, PLAYER_IA_NONE);
     } else {
-        this->actor.flags &= ~ACTOR_FLAG_10000;
+        this->actor.flags &= ~ACTOR_FLAG_TALK_OFFER_AUTO_ACCEPTED;
     }
     func_8095B480(this, play);
 }
@@ -694,7 +694,7 @@ void func_8095BA84(EnOwl* this, PlayState* play) {
                         this->eyeTexIndex = 0;
                         this->blinkTimer = Rand_S16Offset(60, 60);
                         this->actionFlags |= 8;
-                        this->actor.flags &= ~ACTOR_FLAG_10000;
+                        this->actor.flags &= ~ACTOR_FLAG_TALK_OFFER_AUTO_ACCEPTED;
                         this->actor.home.rot.x = 0;
                         func_8095ACEC(this);
                         this->csIdIndex = 0;
@@ -706,7 +706,7 @@ void func_8095BA84(EnOwl* this, PlayState* play) {
                         Message_CloseTextbox(play);
                         SEQCMD_STOP_SEQUENCE(SEQ_PLAYER_FANFARE, 0);
                         func_8095ACEC(this);
-                        this->actor.flags &= ~ACTOR_FLAG_10000;
+                        this->actor.flags &= ~ACTOR_FLAG_TALK_OFFER_AUTO_ACCEPTED;
                         this->actor.textId = 0xBF0;
                         this->actionFunc = func_8095BE0C;
                         break;
@@ -718,7 +718,7 @@ void func_8095BA84(EnOwl* this, PlayState* play) {
                     case 0xBF5:
                         Message_CloseTextbox(play);
                         SEQCMD_STOP_SEQUENCE(SEQ_PLAYER_FANFARE, 0);
-                        this->actor.flags &= ~ACTOR_FLAG_10000;
+                        this->actor.flags &= ~ACTOR_FLAG_TALK_OFFER_AUTO_ACCEPTED;
                         EnOwl_ChangeMode(this, func_8095B3DC, func_8095C484, &this->skelAnimeFlying,
                                          &gOwlUnfoldWingsAnim, 0.0f);
                         this->eyeTexIndex = 0;
@@ -750,10 +750,10 @@ void func_8095BE0C(EnOwl* this, PlayState* play) {
             Actor_OfferTalkExchange(&this->actor, play, 200.0f, 200.0f, PLAYER_IA_NONE);
         }
     } else if (this->actor.xzDistToPlayer < 200.0f) {
-        this->actor.flags |= ACTOR_FLAG_10000;
+        this->actor.flags |= ACTOR_FLAG_TALK_OFFER_AUTO_ACCEPTED;
         Actor_OfferTalkExchange(&this->actor, play, 200.0f, 200.0f, PLAYER_IA_NONE);
     } else {
-        this->actor.flags &= ~ACTOR_FLAG_10000;
+        this->actor.flags &= ~ACTOR_FLAG_TALK_OFFER_AUTO_ACCEPTED;
     }
 }
 
