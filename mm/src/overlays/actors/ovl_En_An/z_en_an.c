@@ -1600,7 +1600,7 @@ s32 EnAn_ChangeAnim(EnAn* this, PlayState* play, EnAnAnimation animIndex) {
             break;
 
         default:
-            if (animIndex != this->animIndex) {
+            if (this->animIndex != animIndex) {
                 changeAnim = true;
             }
             break;
