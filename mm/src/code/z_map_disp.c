@@ -449,7 +449,7 @@ void MapDisp_Minimap_DrawActorIcon(PlayState* play, Actor* actor) {
 
         OPEN_DISPS(play->state.gfxCtx);
 
-        if ((actor->category == ACTORCAT_PLAYER) && (actor->flags & ACTOR_FLAG_80000000)) {
+        if ((actor->category == ACTORCAT_PLAYER) && (actor->flags & ACTOR_FLAG_MINIMAP_ICON_ENABLED)) {
             s16 compassRot;
 
             Gfx_SetupDL42_Overlay(play->state.gfxCtx);
@@ -505,7 +505,7 @@ void MapDisp_Minimap_DrawActorIcon(PlayState* play, Actor* actor) {
         } else {
             Gfx_SetupDL39_Overlay(play->state.gfxCtx);
             gDPSetCombineMode(OVERLAY_DISP++, G_CC_MODULATEIA_PRIM, G_CC_MODULATEIA_PRIM);
-            if (actor->flags & ACTOR_FLAG_80000000) {
+            if (actor->flags & ACTOR_FLAG_MINIMAP_ICON_ENABLED) {
                 gDPSetPrimColor(OVERLAY_DISP++, 0, 0, sMinimapActorCategoryColors[actor->category].r,
                                 sMinimapActorCategoryColors[actor->category].g,
                                 sMinimapActorCategoryColors[actor->category].b, play->interfaceCtx.minimapAlpha);
@@ -542,7 +542,8 @@ void MapDisp_Minimap_DrawActors(PlayState* play) {
             while (actor != NULL) {
                 if ((actor->update != NULL) && (actor->init == NULL) &&
                     Object_IsLoaded(&play->objectCtx, actor->objectSlot) &&
-                    ((actor->id == ACTOR_EN_BOX) || (i == ACTORCAT_PLAYER) || (actor->flags & ACTOR_FLAG_80000000)) &&
+                    ((actor->id == ACTOR_EN_BOX) || (i == ACTORCAT_PLAYER) ||
+                     (actor->flags & ACTOR_FLAG_MINIMAP_ICON_ENABLED)) &&
                     ((sMapDisp.curRoom == actor->room) || (actor->room == -1))) {
                     MapDisp_Minimap_DrawActorIcon(play, actor);
                 }

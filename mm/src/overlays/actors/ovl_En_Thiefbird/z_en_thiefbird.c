@@ -10,8 +10,9 @@
 
 #include "2s2h/GameInteractor/GameInteractor.h"
 
-#define FLAGS \
-    (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_HOSTILE | ACTOR_FLAG_200 | ACTOR_FLAG_IGNORE_QUAKE | ACTOR_FLAG_80000000)
+#define FLAGS                                                                                       \
+    (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_HOSTILE | ACTOR_FLAG_200 | ACTOR_FLAG_IGNORE_QUAKE | \
+     ACTOR_FLAG_MINIMAP_ICON_ENABLED)
 
 #define THIS ((EnThiefbird*)thisx)
 

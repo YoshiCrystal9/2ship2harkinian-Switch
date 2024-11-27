@@ -9,7 +9,7 @@
 
 #include "2s2h/GameInteractor/GameInteractor.h"
 
-#define FLAGS (ACTOR_FLAG_80000000)
+#define FLAGS (ACTOR_FLAG_MINIMAP_ICON_ENABLED)
 
 #define THIS ((EnLookNuts*)thisx)
 
