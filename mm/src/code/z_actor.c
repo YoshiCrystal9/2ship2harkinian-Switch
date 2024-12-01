@@ -1090,7 +1090,7 @@ void TitleCard_Draw(GameState* gameState, TitleCardContext* titleCtx) {
 
 // unused
 s32 func_800B6434(PlayState* play, TitleCardContext* titleCtx) {
-    if ((play->actorCtx.titleCtxt.delayTimer != 0) || (play->actorCtx.titleCtxt.alpha != 0)) {
+    if ((play->actorCtx.titleCtx.delayTimer != 0) || (play->actorCtx.titleCtx.alpha != 0)) {
         titleCtx->durationTimer = 0;
         titleCtx->delayTimer = 0;
         return false;
@@ -2629,7 +2629,7 @@ void Actor_InitContext(PlayState* play, ActorContext* actorCtx, ActorEntry* acto
     actorCtx->sceneFlags.collectible[0] = cycleFlags->collectible;
     actorCtx->sceneFlags.clearedRoom = cycleFlags->clearedRoom;
 
-    TitleCard_ContextInit(&play->state, &actorCtx->titleCtxt);
+    TitleCard_ContextInit(&play->state, &actorCtx->titleCtx);
     Actor_InitPlayerImpact(play);
 
     actorCtx->absoluteSpace = NULL;
@@ -2904,7 +2904,7 @@ void Actor_UpdateAll(PlayState* play, ActorContext* actorCtx) {
         Attention_Update(&actorCtx->attention, player, actor, play);
     }
 
-    TitleCard_Update(&play->state, &actorCtx->titleCtxt);
+    TitleCard_Update(&play->state, &actorCtx->titleCtx);
     Actor_UpdatePlayerImpact(play);
     DynaPoly_UpdateBgActorTransforms(play, &play->colCtx.dyna);
 }
@@ -3384,7 +3384,7 @@ void Actor_DrawAll(PlayState* play, ActorContext* actorCtx) {
         Lights_DrawGlow(play);
     }
 
-    TitleCard_Draw(&play->state, &actorCtx->titleCtxt);
+    TitleCard_Draw(&play->state, &actorCtx->titleCtx);
 
     CLOSE_DISPS(play->state.gfxCtx);
 }
