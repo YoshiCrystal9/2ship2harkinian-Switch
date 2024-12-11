@@ -9,8 +9,8 @@ static const ALIGN_ASSET(2) char gMajorasIncarnationPirouetteAnim[] = dgMajorasI
 #define dgMajorasIncarnationEnergyBallAttackAnim "__OTR__objects/object_boss07/gMajorasIncarnationEnergyBallAttackAnim"
 static const ALIGN_ASSET(2) char gMajorasIncarnationEnergyBallAttackAnim[] = dgMajorasIncarnationEnergyBallAttackAnim;
 
-#define dgMajorasIncarnationDamageAnim "__OTR__objects/object_boss07/gMajorasIncarnationDamageAnim"
-static const ALIGN_ASSET(2) char gMajorasIncarnationDamageAnim[] = dgMajorasIncarnationDamageAnim;
+#define dgMajorasIncarnationDamagedAnim "__OTR__objects/object_boss07/gMajorasIncarnationDamagedAnim"
+static const ALIGN_ASSET(2) char gMajorasIncarnationDamagedAnim[] = dgMajorasIncarnationDamagedAnim;
 
 #define dgMajorasIncarnationIntroDanceAnim "__OTR__objects/object_boss07/gMajorasIncarnationIntroDanceAnim"
 static const ALIGN_ASSET(2) char gMajorasIncarnationIntroDanceAnim[] = dgMajorasIncarnationIntroDanceAnim;
@@ -243,8 +243,8 @@ static const ALIGN_ASSET(2) char gMajorasWrathBackflipUppercutAttackAnim[] = dgM
 #define dgMajorasWrathHighKickAnim "__OTR__objects/object_boss07/gMajorasWrathHighKickAnim"
 static const ALIGN_ASSET(2) char gMajorasWrathHighKickAnim[] = dgMajorasWrathHighKickAnim;
 
-#define dgMajorasWrathDamageAnim "__OTR__objects/object_boss07/gMajorasWrathDamageAnim"
-static const ALIGN_ASSET(2) char gMajorasWrathDamageAnim[] = dgMajorasWrathDamageAnim;
+#define dgMajorasWrathDamagedAnim "__OTR__objects/object_boss07/gMajorasWrathDamagedAnim"
+static const ALIGN_ASSET(2) char gMajorasWrathDamagedAnim[] = dgMajorasWrathDamagedAnim;
 
 #define dgMajorasWrathDeathAnim "__OTR__objects/object_boss07/gMajorasWrathDeathAnim"
 static const ALIGN_ASSET(2) char gMajorasWrathDeathAnim[] = dgMajorasWrathDeathAnim;
@@ -264,8 +264,8 @@ static const ALIGN_ASSET(2) char gMajorasWrathBackflipAnim[] = dgMajorasWrathBac
 #define dgMajorasWrathKickAnim "__OTR__objects/object_boss07/gMajorasWrathKickAnim"
 static const ALIGN_ASSET(2) char gMajorasWrathKickAnim[] = dgMajorasWrathKickAnim;
 
-#define dgMajorasWrathReleaseTopAnim "__OTR__objects/object_boss07/gMajorasWrathReleaseTopAnim"
-static const ALIGN_ASSET(2) char gMajorasWrathReleaseTopAnim[] = dgMajorasWrathReleaseTopAnim;
+#define dgMajorasWrathThrowTopAnim "__OTR__objects/object_boss07/gMajorasWrathThrowTopAnim"
+static const ALIGN_ASSET(2) char gMajorasWrathThrowTopAnim[] = dgMajorasWrathThrowTopAnim;
 
 #define dgMajorasWrathGrabAnim "__OTR__objects/object_boss07/gMajorasWrathGrabAnim"
 static const ALIGN_ASSET(2) char gMajorasWrathGrabAnim[] = dgMajorasWrathGrabAnim;

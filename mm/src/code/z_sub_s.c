@@ -1565,7 +1565,7 @@ s32 SubS_OfferTalkExchangeCustom(Actor* actor, PlayState* play, f32 xzRange, f32
     return canAccept;
 }
 
-s32 SubS_ActorAndPlayerFaceEachOther(PlayState* play, Actor* actor, void* data) {
+s32 SubS_ArePlayerAndActorFacing(PlayState* play, Actor* actor, void* data) {
     Player* player = GET_PLAYER(play);
     Vec3s* yawRanges = (Vec3s*)data;
     s16 playerYaw = ABS(BINANG_SUB(Actor_WorldYawTowardActor(&player->actor, actor), player->actor.shape.rot.y));
@@ -1591,7 +1591,7 @@ s32 SubS_OfferTalkExchangeFacing(Actor* actor, PlayState* play, f32 xzRange, f32
     yawRanges.x = playerYawRange;
     yawRanges.y = actorYawRange;
     return SubS_OfferTalkExchangeCustom(actor, play, xzRange, yRange, exchangeItemAction, &yawRanges,
-                                        SubS_ActorAndPlayerFaceEachOther);
+                                        SubS_ArePlayerAndActorFacing);
 }
 
 /**
