@@ -10,8 +10,6 @@
 
 #define FLAGS (ACTOR_FLAG_THROW_ONLY)
 
-#define THIS ((ObjSnowball2*)thisx)
-
 void ObjSnowball2_Init(Actor* thisx, PlayState* play);
 void ObjSnowball2_Destroy(Actor* thisx, PlayState* play);
 void ObjSnowball2_Update(Actor* thisx, PlayState* play);
@@ -195,7 +193,7 @@ void func_80B39108(ObjSnowball2* this, PlayState* play) {
 }
 
 void func_80B39470(Actor* thisx, PlayState* play) {
-    ObjSnowball2* this = THIS;
+    ObjSnowball2* this = (ObjSnowball2*)thisx;
     Vec3f sp58;
     s32 phi_s0;
     s32 i;
@@ -218,7 +216,7 @@ void func_80B395C4(PlayState* play, Vec3f* arg1) {
 }
 
 void func_80B395EC(Actor* thisx, PlayState* play) {
-    ObjSnowball2* this = THIS;
+    ObjSnowball2* this = (ObjSnowball2*)thisx;
     Vec3f sp18;
 
     sp18.x = this->actor.world.pos.x;
@@ -264,7 +262,7 @@ void func_80B39638(PlayState* play, Vec3f* arg1) {
 }
 
 void func_80B39834(Actor* thisx, PlayState* play) {
-    ObjSnowball2* this = THIS;
+    ObjSnowball2* this = (ObjSnowball2*)thisx;
     s32 i;
 
     for (i = 0; i < 3; i++) {
@@ -317,7 +315,7 @@ static InitChainEntry sInitChain[] = {
 };
 
 void ObjSnowball2_Init(Actor* thisx, PlayState* play) {
-    ObjSnowball2* this = THIS;
+    ObjSnowball2* this = (ObjSnowball2*)thisx;
 
     Actor_ProcessInitChain(&this->actor, sInitChain);
     Collider_InitJntSph(play, &this->collider);
@@ -334,7 +332,7 @@ void ObjSnowball2_Init(Actor* thisx, PlayState* play) {
 }
 
 void ObjSnowball2_Destroy(Actor* thisx, PlayState* play) {
-    ObjSnowball2* this = THIS;
+    ObjSnowball2* this = (ObjSnowball2*)thisx;
 
     Collider_DestroyJntSph(play, &this->collider);
 }
@@ -606,7 +604,7 @@ void func_80B3A500(ObjSnowball2* this, PlayState* play) {
 }
 
 void ObjSnowball2_Update(Actor* thisx, PlayState* play) {
-    ObjSnowball2* this = THIS;
+    ObjSnowball2* this = (ObjSnowball2*)thisx;
 
     this->actionFunc(this, play);
 
@@ -626,7 +624,7 @@ void ObjSnowball2_Update(Actor* thisx, PlayState* play) {
 }
 
 void ObjSnowball2_Draw(Actor* thisx, PlayState* play) {
-    ObjSnowball2* this = THIS;
+    ObjSnowball2* this = (ObjSnowball2*)thisx;
 
     Gfx_DrawDListOpa(play, object_goroiwa_DL_008B90);
 }

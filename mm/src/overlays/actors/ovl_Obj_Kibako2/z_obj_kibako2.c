@@ -11,8 +11,6 @@
 
 #define FLAGS 0x00000000
 
-#define THIS ((ObjKibako2*)thisx)
-
 void ObjKibako2_Init(Actor* thisx, PlayState* play);
 void ObjKibako2_Destroy(Actor* thisx, PlayState* play);
 void ObjKibako2_Update(Actor* thisx, PlayState* play);
@@ -147,7 +145,7 @@ void ObjKibako2_SpawnContents(ObjKibako2* this, PlayState* play) {
 }
 
 void ObjKibako2_Init(Actor* thisx, PlayState* play) {
-    ObjKibako2* this = THIS;
+    ObjKibako2* this = (ObjKibako2*)thisx;
     s32 pad;
     s32 contents = KIBAKO2_CONTENTS(&this->dyna.actor);
 
@@ -176,7 +174,7 @@ void ObjKibako2_Init(Actor* thisx, PlayState* play) {
 }
 
 void ObjKibako2_Destroy(Actor* thisx, PlayState* play) {
-    ObjKibako2* this = THIS;
+    ObjKibako2* this = (ObjKibako2*)thisx;
 
     Collider_DestroyCylinder(play, &this->collider);
     DynaPoly_DeleteBgActor(play, &play->colCtx.dyna, this->dyna.bgId);
@@ -230,7 +228,7 @@ void ObjKibako2_Kill(ObjKibako2* this, PlayState* play) {
 }
 
 void ObjKibako2_Update(Actor* thisx, PlayState* play) {
-    ObjKibako2* this = THIS;
+    ObjKibako2* this = (ObjKibako2*)thisx;
 
     if (this->unk_1AC != 0) {
         play->actorCtx.flags |= ACTORCTX_FLAG_3;

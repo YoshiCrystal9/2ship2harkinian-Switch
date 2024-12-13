@@ -11,8 +11,6 @@
 
 #define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_10)
 
-#define THIS ((EnFsn*)thisx)
-
 #define SI_NONE 0
 
 #define ENFSN_END_CONVERSATION (1 << 0)
@@ -1490,7 +1488,7 @@ void EnFsn_Blink(EnFsn* this) {
 
 void EnFsn_Init(Actor* thisx, PlayState* play) {
     s32 pad;
-    EnFsn* this = THIS;
+    EnFsn* this = (EnFsn*)thisx;
 
     ActorShape_Init(&this->actor.shape, 0.0f, ActorShadow_DrawCircle, 20.0f);
 
@@ -1524,13 +1522,13 @@ void EnFsn_Init(Actor* thisx, PlayState* play) {
 }
 
 void EnFsn_Destroy(Actor* thisx, PlayState* play) {
-    EnFsn* this = THIS;
+    EnFsn* this = (EnFsn*)thisx;
 
     Collider_DestroyCylinder(play, &this->collider);
 }
 
 void EnFsn_Update(Actor* thisx, PlayState* play) {
-    EnFsn* this = THIS;
+    EnFsn* this = (EnFsn*)thisx;
 
     this->actionFunc(this, play);
     Actor_MoveWithGravity(&this->actor);
@@ -1661,7 +1659,7 @@ void EnFsn_DrawStickDirectionPrompts(EnFsn* this, PlayState* play) {
 }
 
 s32 EnFsn_OverrideLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3f* pos, Vec3s* rot, Actor* thisx) {
-    EnFsn* this = THIS;
+    EnFsn* this = (EnFsn*)thisx;
     s32 fidgetIndex;
 
     if (limbIndex == FSN_LIMB_HEAD) {
@@ -1697,7 +1695,7 @@ s32 EnFsn_OverrideLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3f* p
 }
 
 void EnFsn_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* rot, Actor* thisx) {
-    EnFsn* this = THIS;
+    EnFsn* this = (EnFsn*)thisx;
 
     if (limbIndex == FSN_LIMB_HEAD) {
         this->actor.focus.pos.x = this->actor.world.pos.x;
@@ -1716,7 +1714,7 @@ void EnFsn_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* rot,
 void EnFsn_Draw(Actor* thisx, PlayState* play) {
     static TexturePtr sEyeTextures[] = { gFsnEyeOpenTex, gFsnEyeHalfTex, gFsnEyeClosedTex };
     s32 pad;
-    EnFsn* this = THIS;
+    EnFsn* this = (EnFsn*)thisx;
     s16 i;
 
     OPEN_DISPS(play->state.gfxCtx);

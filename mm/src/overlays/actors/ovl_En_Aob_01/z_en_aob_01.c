@@ -10,8 +10,6 @@
 
 #define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_10)
 
-#define THIS ((EnAob01*)thisx)
-
 void EnAob01_Init(Actor* thisx, PlayState* play);
 void EnAob01_Destroy(Actor* thisx, PlayState* play);
 void EnAob01_Update(Actor* thisx, PlayState* play);
@@ -1099,7 +1097,7 @@ void EnAob01_InitializeDogTextOffsets(void) {
 
 void EnAob01_Init(Actor* thisx, PlayState* play) {
     s32 pad;
-    EnAob01* this = THIS;
+    EnAob01* this = (EnAob01*)thisx;
 
     ActorShape_Init(&this->actor.shape, 0.0f, NULL, 0.0f);
     SkelAnime_InitFlex(play, &this->skelAnime, &gMamamuYanSkel, NULL, this->jointTable, this->morphTable,
@@ -1141,7 +1139,7 @@ void EnAob01_Init(Actor* thisx, PlayState* play) {
 }
 
 void EnAob01_Destroy(Actor* thisx, PlayState* play) {
-    EnAob01* this = THIS;
+    EnAob01* this = (EnAob01*)thisx;
 
     if (!(this->stateFlags & ENAOB01_FLAG_STARTED_RACE)) {
         CLEAR_WEEKEVENTREG(WEEKEVENTREG_KICKOUT_WAIT);
@@ -1151,14 +1149,14 @@ void EnAob01_Destroy(Actor* thisx, PlayState* play) {
 }
 
 void EnAob01_Update(Actor* thisx, PlayState* play) {
-    EnAob01* this = THIS;
+    EnAob01* this = (EnAob01*)thisx;
 
     this->actionFunc(this, play);
     EnAob01_UpdateCommon(this, play);
 }
 
 s32 EnAob01_OverrideLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3f* pos, Vec3s* rot, Actor* thisx) {
-    EnAob01* this = THIS;
+    EnAob01* this = (EnAob01*)thisx;
     TexturePtr eyeTextures[] = {
         gMamamuYanEyeOpenTex,
         gMamamuYanEyeHalfTex,
@@ -1198,7 +1196,7 @@ s32 EnAob01_OverrideLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3f*
 
 void EnAob01_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* rot, Actor* thisx) {
     static Vec3f sFocusOffset = { 0.0f, 0.0f, 0.0f };
-    EnAob01* this = THIS;
+    EnAob01* this = (EnAob01*)thisx;
 
     if (limbIndex == MAMAMU_YAN_LIMB_HEAD) {
         Matrix_MultVec3f(&sFocusOffset, &this->actor.focus.pos);
@@ -1210,7 +1208,7 @@ void EnAob01_TransformLimbDraw(PlayState* play, s32 limbIndex, Actor* thisx) {
 
 void EnAob01_Draw(Actor* thisx, PlayState* play) {
     s32 pad;
-    EnAob01* this = THIS;
+    EnAob01* this = (EnAob01*)thisx;
     Vec3f pos;
     Vec3f scale;
 

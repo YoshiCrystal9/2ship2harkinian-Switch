@@ -11,8 +11,6 @@
 
 #define FLAGS (ACTOR_FLAG_10)
 
-#define THIS ((ObjOshihiki*)thisx)
-
 void ObjOshihiki_Init(Actor* thisx, PlayState* play);
 void ObjOshihiki_Destroy(Actor* thisx, PlayState* play);
 void ObjOshihiki_Update(Actor* thisx, PlayState* play);
@@ -195,7 +193,7 @@ void ObjOshihiki_SetColor(ObjOshihiki* this, PlayState* play) {
 }
 
 void ObjOshihiki_Init(Actor* thisx, PlayState* play) {
-    ObjOshihiki* this = THIS;
+    ObjOshihiki* this = (ObjOshihiki*)thisx;
 
     DynaPolyActor_Init(&this->dyna, DYNA_TRANSFORM_POS);
 
@@ -238,7 +236,7 @@ void ObjOshihiki_Init(Actor* thisx, PlayState* play) {
 }
 
 void ObjOshihiki_Destroy(Actor* thisx, PlayState* play) {
-    ObjOshihiki* this = THIS;
+    ObjOshihiki* this = (ObjOshihiki*)thisx;
 
     DynaPoly_DeleteBgActor(play, &play->colCtx.dyna, this->dyna.bgId);
 }
@@ -572,7 +570,7 @@ void ObjOshihiki_Fall(ObjOshihiki* this, PlayState* play) {
 }
 
 void ObjOshihiki_Update(Actor* thisx, PlayState* play) {
-    ObjOshihiki* this = THIS;
+    ObjOshihiki* this = (ObjOshihiki*)thisx;
 
     this->stateFlags &=
         ~(PUSHBLOCK_SETUP_FALL | PUSHBLOCK_FALL | PUSHBLOCK_SETUP_PUSH | PUSHBLOCK_PUSH | PUSHBLOCK_SETUP_ON_ACTOR |
@@ -593,7 +591,7 @@ void ObjOshihiki_Update(Actor* thisx, PlayState* play) {
 
 void ObjOshihiki_Draw(Actor* thisx, PlayState* play) {
     s32 pad;
-    ObjOshihiki* this = THIS;
+    ObjOshihiki* this = (ObjOshihiki*)thisx;
 
     OPEN_DISPS(play->state.gfxCtx);
 

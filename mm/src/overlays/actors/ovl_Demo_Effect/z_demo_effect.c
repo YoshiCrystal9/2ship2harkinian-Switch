@@ -12,8 +12,6 @@
 
 #define FLAGS (ACTOR_FLAG_10 | ACTOR_FLAG_20)
 
-#define THIS ((DemoEffect*)thisx)
-
 void DemoEffect_Init(Actor* thisx, PlayState* play);
 void DemoEffect_Destroy(Actor* thisx, PlayState* play);
 void DemoEffect_Update(Actor* thisx, PlayState* play);
@@ -44,7 +42,7 @@ void DemoEffect_Init(Actor* thisx, PlayState* play) {
         GAMEPLAY_KEEP, GAMEPLAY_KEEP, GAMEPLAY_KEEP, GAMEPLAY_KEEP,
     };
     s32 pad;
-    DemoEffect* this = THIS;
+    DemoEffect* this = (DemoEffect*)thisx;
     s32 type = DEMO_EFFECT_GET_TYPE(&this->actor);
     s32 objectSlot;
     s32 pad2;
@@ -109,7 +107,7 @@ void DemoEffect_Init(Actor* thisx, PlayState* play) {
 }
 
 void DemoEffect_Destroy(Actor* thisx, PlayState* play) {
-    DemoEffect* this = THIS;
+    DemoEffect* this = (DemoEffect*)thisx;
 
     switch (DEMO_EFFECT_GET_TYPE(&this->actor)) {
         case DEMO_EFFECT_TIMEWARP_TIMEBLOCK_LARGE:
@@ -264,14 +262,14 @@ void DemoEffect_ExpandLight(DemoEffect* this, PlayState* play) {
 }
 
 void DemoEffect_Update(Actor* thisx, PlayState* play) {
-    DemoEffect* this = THIS;
+    DemoEffect* this = (DemoEffect*)thisx;
 
     this->actionFunc(this, play);
 }
 
 s32 DemoEffect_OverrideLimbDrawTimewarp(PlayState* play, SkelCurve* skelCurve, s32 limbIndex, Actor* thisx) {
     s32 pad;
-    DemoEffect* this = THIS;
+    DemoEffect* this = (DemoEffect*)thisx;
     u32 frames = play->gameplayFrames;
 
     OPEN_DISPS(play->state.gfxCtx);
@@ -298,7 +296,7 @@ s32 DemoEffect_OverrideLimbDrawTimewarp(PlayState* play, SkelCurve* skelCurve, s
 
 void DemoEffect_DrawTimewarp(Actor* thisx, PlayState* play) {
     GraphicsContext* gfxCtx = play->state.gfxCtx;
-    DemoEffect* this = THIS;
+    DemoEffect* this = (DemoEffect*)thisx;
 
     OPEN_DISPS(gfxCtx);
 
@@ -312,7 +310,7 @@ void DemoEffect_DrawTimewarp(Actor* thisx, PlayState* play) {
 
 void DemoEffect_DrawLight(Actor* thisx, PlayState* play2) {
     PlayState* play = play2;
-    DemoEffect* this = THIS;
+    DemoEffect* this = (DemoEffect*)thisx;
     s16 zRot = (this->timer * 0x400) & 0xFFFF;
 
     OPEN_DISPS(play->state.gfxCtx);

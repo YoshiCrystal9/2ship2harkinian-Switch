@@ -13,8 +13,6 @@
 
 #define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_10)
 
-#define THIS ((EnSob1*)thisx)
-
 void EnSob1_Init(Actor* thisx, PlayState* play);
 void EnSob1_Destroy(Actor* thisx, PlayState* play);
 void EnSob1_Update(Actor* thisx, PlayState* play);
@@ -411,7 +409,7 @@ s32 EnSob1_GetObjectIndices(EnSob1* this, PlayState* play, s16* objectIds) {
 }
 
 void EnSob1_Init(Actor* thisx, PlayState* play) {
-    EnSob1* this = THIS;
+    EnSob1* this = (EnSob1*)thisx;
     s32 pad;
     s16* objectIds;
 
@@ -452,7 +450,7 @@ void EnSob1_Init(Actor* thisx, PlayState* play) {
 }
 
 void EnSob1_Destroy(Actor* thisx, PlayState* play) {
-    EnSob1* this = THIS;
+    EnSob1* this = (EnSob1*)thisx;
 
     Collider_DestroyCylinder(play, &this->collider);
 }
@@ -1506,7 +1504,7 @@ void EnSob1_InitShop(EnSob1* this, PlayState* play) {
 
 void EnSob1_Update(Actor* thisx, PlayState* play) {
     EnSob1ActionFunc changeObjectFunc;
-    EnSob1* this = THIS;
+    EnSob1* this = (EnSob1*)thisx;
 
     if (this->actionFunc != EnSob1_InitShop) {
         this->blinkFunc(this);
@@ -1645,7 +1643,7 @@ void EnSob1_DrawStickDirectionPrompt(PlayState* play, EnSob1* this) {
 
 s32 EnSob1_ZoraShopkeeper_OverrideLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3f* pos, Vec3s* rot,
                                            Actor* thisx) {
-    EnSob1* this = THIS;
+    EnSob1* this = (EnSob1*)thisx;
 
     if (limbIndex == ZORA_LIMB_HEAD) {
         rot->x += this->headRot;
@@ -1655,7 +1653,7 @@ s32 EnSob1_ZoraShopkeeper_OverrideLimbDraw(PlayState* play, s32 limbIndex, Gfx**
 
 s32 EnSob1_BombShopkeeper_OverrideLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3f* pos, Vec3s* rot,
                                            Actor* thisx) {
-    EnSob1* this = THIS;
+    EnSob1* this = (EnSob1*)thisx;
 
     if (limbIndex == BOMB_SHOPKEEPER_LIMB_HEAD) {
         Matrix_RotateXS(this->headRot, MTXMODE_APPLY);
@@ -1686,7 +1684,7 @@ Gfx* EnSob1_EndDList(GraphicsContext* gfxCtx) {
 
 void EnSob1_ZoraShopkeeper_Draw(Actor* thisx, PlayState* play) {
     static TexturePtr sZoraShopkeeperEyeTextures[] = { gZoraEyeOpenTex, gZoraEyeHalfTex, gZoraEyeClosedTex };
-    EnSob1* this = THIS;
+    EnSob1* this = (EnSob1*)thisx;
     s32 pad;
     s32 i;
 
@@ -1711,7 +1709,7 @@ void EnSob1_ZoraShopkeeper_Draw(Actor* thisx, PlayState* play) {
 
 void EnSob1_GoronShopkeeper_Draw(Actor* thisx, PlayState* play) {
     static TexturePtr sGoronShopkeeperEyeTextures[] = { gGoronEyeOpenTex, gGoronEyeHalfTex, gGoronEyeClosedTex };
-    EnSob1* this = THIS;
+    EnSob1* this = (EnSob1*)thisx;
     s32 pad;
     s32 i;
 
@@ -1733,7 +1731,7 @@ void EnSob1_GoronShopkeeper_Draw(Actor* thisx, PlayState* play) {
 }
 
 void EnSob1_BombShopkeeper_Draw(Actor* thisx, PlayState* play) {
-    EnSob1* this = THIS;
+    EnSob1* this = (EnSob1*)thisx;
     s32 pad;
     u32 frames;
     s32 i;

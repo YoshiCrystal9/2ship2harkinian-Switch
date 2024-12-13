@@ -9,8 +9,6 @@
 
 #define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_10)
 
-#define THIS ((EnMnk*)thisx)
-
 void EnMnk_Init(Actor* thisx, PlayState* play);
 void EnMnk_Destroy(Actor* thisx, PlayState* play);
 void EnMnk_Update(Actor* thisx, PlayState* play);
@@ -244,7 +242,7 @@ void EnMnk_Monkey_StartInvisible(EnMnk* this, PlayState* play) {
 }
 
 void EnMnk_MonkeyTiedUp_Init(Actor* thisx, PlayState* play) {
-    EnMnk* this = THIS;
+    EnMnk* this = (EnMnk*)thisx;
     s16 csId;
     s32 i;
 
@@ -273,7 +271,7 @@ void EnMnk_MonkeyTiedUp_Init(Actor* thisx, PlayState* play) {
 }
 
 void EnMnk_MonkeyHanging_Init(Actor* thisx, PlayState* play) {
-    EnMnk* this = THIS;
+    EnMnk* this = (EnMnk*)thisx;
 
     Actor_ChangeCategory(play, &play->actorCtx, &this->picto.actor, ACTORCAT_PROP);
     this->actionFunc = EnMnk_MonkeyHanging_StruggleBeforeDunk;
@@ -292,7 +290,7 @@ void EnMnk_MonkeyHanging_Init(Actor* thisx, PlayState* play) {
 }
 
 void EnMnk_Init(Actor* thisx, PlayState* play) {
-    EnMnk* this = THIS;
+    EnMnk* this = (EnMnk*)thisx;
     s32 pad;
 
     Actor_SetScale(&this->picto.actor, 0.012f);
@@ -492,7 +490,7 @@ void EnMnk_Init(Actor* thisx, PlayState* play) {
 }
 
 void EnMnk_Destroy(Actor* thisx, PlayState* play) {
-    EnMnk* this = THIS;
+    EnMnk* this = (EnMnk*)thisx;
 
     Collider_DestroyCylinder(play, &this->collider);
     if ((MONKEY_GET_TYPE(&this->picto.actor) == MONKEY_TIED_UP) && (this->flags & MONKEY_FLAGS_2000)) {
@@ -2049,7 +2047,7 @@ void EnMnk_DoNothing(EnMnk* this, PlayState* play) {
 }
 
 void EnMnk_Update(Actor* thisx, PlayState* play) {
-    EnMnk* this = THIS;
+    EnMnk* this = (EnMnk*)thisx;
 
     if (!(this->flags & MONKEY_FLAGS_1)) {
         Actor_MoveWithGravity(&this->picto.actor);
@@ -2097,7 +2095,7 @@ void EnMnk_Update(Actor* thisx, PlayState* play) {
 }
 
 s32 EnMnk_Monkey_OverrideLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3f* pos, Vec3s* rot, Actor* thisx) {
-    EnMnk* this = THIS;
+    EnMnk* this = (EnMnk*)thisx;
 
     if (limbIndex == OBJECT_MNK_2_LIMB_03) {
         rot->x += this->unk_3CC;
@@ -2124,7 +2122,7 @@ s32 EnMnk_MonkeyHanging_PropOverrideLimbDraw(PlayState* play, s32 limbIndex, Gfx
 }
 
 void EnMnk_Monkey_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* rot, Actor* thisx) {
-    EnMnk* this = THIS;
+    EnMnk* this = (EnMnk*)thisx;
 
     if (limbIndex == OBJECT_MNK_2_LIMB_04) {
         Matrix_MultVec3f(&sMonkeyFocusPosOffset, &this->picto.actor.focus.pos);
@@ -2132,7 +2130,7 @@ void EnMnk_Monkey_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3
 }
 
 void EnMnk_MonkeyTiedUp_PropPostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* rot, Actor* thisx) {
-    EnMnk* this = THIS;
+    EnMnk* this = (EnMnk*)thisx;
 
     if (limbIndex == OBJECT_MNK_1_LIMB_04) {
         Matrix_Get(&this->unk_36C);
@@ -2140,7 +2138,7 @@ void EnMnk_MonkeyTiedUp_PropPostLimbDraw(PlayState* play, s32 limbIndex, Gfx** d
 }
 
 void EnMnk_MonkeyHanging_PropPostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* rot, Actor* thisx) {
-    EnMnk* this = THIS;
+    EnMnk* this = (EnMnk*)thisx;
 
     switch (limbIndex) {
         case OBJECT_MNK_3_LIMB_01:
@@ -2218,7 +2216,7 @@ void EnMnk_Monkey_DrawFace(EnMnk* this, PlayState* play) {
 }
 
 void EnMnk_Draw(Actor* thisx, PlayState* play) {
-    EnMnk* this = THIS;
+    EnMnk* this = (EnMnk*)thisx;
 
     EnMnk_Monkey_DrawFace(this, play);
     SkelAnime_DrawFlexOpa(play, this->skelAnime.skeleton, this->skelAnime.jointTable, this->skelAnime.dListCount,
@@ -2226,7 +2224,7 @@ void EnMnk_Draw(Actor* thisx, PlayState* play) {
 }
 
 void EnMnk_MonkeyTiedUp_Draw(Actor* thisx, PlayState* play) {
-    EnMnk* this = THIS;
+    EnMnk* this = (EnMnk*)thisx;
 
     SkelAnime_DrawFlexOpa(play, this->propSkelAnime.skeleton, this->propSkelAnime.jointTable,
                           this->propSkelAnime.dListCount, EnMnk_MonkeyTiedUp_PropOverrideLimbDraw,
@@ -2238,7 +2236,7 @@ void EnMnk_MonkeyTiedUp_Draw(Actor* thisx, PlayState* play) {
 }
 
 void EnMnk_MonkeyHanging_Draw(Actor* thisx, PlayState* play) {
-    EnMnk* this = THIS;
+    EnMnk* this = (EnMnk*)thisx;
 
     SkelAnime_DrawFlexOpa(play, this->propSkelAnime.skeleton, this->propSkelAnime.jointTable,
                           this->propSkelAnime.dListCount, EnMnk_MonkeyHanging_PropOverrideLimbDraw,

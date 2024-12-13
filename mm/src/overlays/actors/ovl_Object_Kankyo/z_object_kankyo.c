@@ -11,8 +11,6 @@
 
 #define FLAGS (ACTOR_FLAG_10 | ACTOR_FLAG_20 | ACTOR_FLAG_UPDATE_DURING_OCARINA)
 
-#define THIS ((ObjectKankyo*)thisx)
-
 void ObjectKankyo_Init(Actor* thisx, PlayState* play);
 void ObjectKankyo_Destroy(Actor* thisx, PlayState* play);
 void ObjectKankyo_Update(Actor* thisx, PlayState* play);
@@ -95,7 +93,7 @@ void func_808DC038(ObjectKankyo* this, PlayState* play) {
 }
 
 void ObjectKankyo_Init(Actor* thisx, PlayState* play) {
-    ObjectKankyo* this = THIS;
+    ObjectKankyo* this = (ObjectKankyo*)thisx;
     s16 i;
 
     for (i = 0; i < ARRAY_COUNT(this->unk_14C); i++) {
@@ -125,7 +123,7 @@ void ObjectKankyo_Init(Actor* thisx, PlayState* play) {
 }
 
 void ObjectKankyo_Destroy(Actor* thisx, PlayState* play) {
-    ObjectKankyo* this = THIS;
+    ObjectKankyo* this = (ObjectKankyo*)thisx;
 
     Actor_Kill(&this->actor);
 }
@@ -490,13 +488,13 @@ void func_808DCDB4(ObjectKankyo* this, PlayState* play) {
 }
 
 void ObjectKankyo_Update(Actor* thisx, PlayState* play) {
-    ObjectKankyo* this = THIS;
+    ObjectKankyo* this = (ObjectKankyo*)thisx;
 
     this->actionFunc(this, play);
 }
 
 void ObjectKankyo_Draw(Actor* thisx, PlayState* play) {
-    ObjectKankyo* this = THIS;
+    ObjectKankyo* this = (ObjectKankyo*)thisx;
 
     switch (this->actor.params) {
         case 0:
@@ -517,7 +515,7 @@ void ObjectKankyo_Draw(Actor* thisx, PlayState* play) {
 
 void func_808DD3C8(Actor* thisx, PlayState* play2) {
     PlayState* play = play2;
-    ObjectKankyo* this = THIS;
+    ObjectKankyo* this = (ObjectKankyo*)thisx;
     Vec3f worldPos;
     Vec3f screenPos;
     s16 i;
@@ -614,7 +612,7 @@ void func_808DD970(Actor* thisx, PlayState* play2) {
     s16 i;
     f32 phi_f26;
     PlayState* play = play2;
-    ObjectKankyo* this = THIS;
+    ObjectKankyo* this = (ObjectKankyo*)thisx;
     f32 tempA;
 
     if (play->sceneId == SCENE_KYOJINNOMA) {
@@ -688,7 +686,7 @@ f32 func_808DDE74(void) {
 
 void func_808DDE9C(Actor* thisx, PlayState* play2) {
     PlayState* play = play2;
-    ObjectKankyo* this = THIS;
+    ObjectKankyo* this = (ObjectKankyo*)thisx;
     Player* player = GET_PLAYER(play);
     s32 i;
     u8 phi_s5;

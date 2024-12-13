@@ -9,8 +9,6 @@
 
 #define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_REACT_TO_LENS)
 
-#define THIS ((EnStoneheishi*)thisx)
-
 void EnStoneheishi_Init(Actor* thisx, PlayState* play);
 void EnStoneheishi_Destroy(Actor* thisx, PlayState* play);
 void EnStoneheishi_Update(Actor* thisx, PlayState* play);
@@ -117,7 +115,7 @@ typedef enum {
 } EnStoneHeishiBottle;
 
 void EnStoneheishi_Init(Actor* thisx, PlayState* play) {
-    EnStoneheishi* this = THIS;
+    EnStoneheishi* this = (EnStoneheishi*)thisx;
 
     ActorShape_Init(&this->actor.shape, 0.0f, ActorShadow_DrawCircle, 25.0f);
     SkelAnime_InitFlex(play, &this->skelAnime, &gSoldierSkel, &gSoldierWaveAnim, this->jointTable, this->morphTable,
@@ -137,7 +135,7 @@ void EnStoneheishi_Init(Actor* thisx, PlayState* play) {
 }
 
 void EnStoneheishi_Destroy(Actor* thisx, PlayState* play) {
-    EnStoneheishi* this = THIS;
+    EnStoneheishi* this = (EnStoneheishi*)thisx;
 
     Collider_DestroyCylinder(play, &this->collider);
 }
@@ -440,7 +438,7 @@ void func_80BC9E50(EnStoneheishi* this, PlayState* play) {
 
 void EnStoneheishi_Update(Actor* thisx, PlayState* play) {
     s32 pad;
-    EnStoneheishi* this = THIS;
+    EnStoneheishi* this = (EnStoneheishi*)thisx;
     Player* player = GET_PLAYER(play);
 
     if (this->timer != 0) {
@@ -484,7 +482,7 @@ void EnStoneheishi_Update(Actor* thisx, PlayState* play) {
 
 s32 EnStoneheishi_OverrideLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3f* pos, Vec3s* rot, Actor* thisx,
                                    Gfx** gfxP) {
-    EnStoneheishi* this = THIS;
+    EnStoneheishi* this = (EnStoneheishi*)thisx;
 
     if (limbIndex == SOLDIER_LIMB_HEAD) {
         rot->x += this->headRot.y;
@@ -497,7 +495,7 @@ s32 EnStoneheishi_OverrideLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, 
 
 void EnStoneheishi_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* rot, Actor* thisx, Gfx** gfxP) {
     static Vec3f sLeftHandPos = { 0.0f, 0.0f, 0.0f };
-    EnStoneheishi* this = THIS;
+    EnStoneheishi* this = (EnStoneheishi*)thisx;
     Gfx* gfx;
 
     if ((limbIndex == SOLDIER_LIMB_LEFT_HAND) && (this->bottleDisplay != EN_STONE_BOTTLE_NONE)) {
@@ -533,7 +531,7 @@ void EnStoneheishi_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec
 }
 
 void EnStoneheishi_Draw(Actor* thisx, PlayState* play) {
-    EnStoneheishi* this = THIS;
+    EnStoneheishi* this = (EnStoneheishi*)thisx;
 
     OPEN_DISPS(play->state.gfxCtx);
 

@@ -29,8 +29,6 @@
 
 #define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_HOSTILE | ACTOR_FLAG_10 | ACTOR_FLAG_HOOKSHOT_PULLS_PLAYER)
 
-#define THIS ((EnRd*)thisx)
-
 void EnRd_Init(Actor* thisx, PlayState* play);
 void EnRd_Destroy(Actor* thisx, PlayState* play);
 void EnRd_Update(Actor* thisx, PlayState* play);
@@ -185,7 +183,7 @@ static InitChainEntry sInitChain[] = {
 };
 
 void EnRd_Init(Actor* thisx, PlayState* play) {
-    EnRd* this = THIS;
+    EnRd* this = (EnRd*)thisx;
     s32 pad;
 
     Actor_ProcessInitChain(&this->actor, sInitChain);
@@ -281,7 +279,7 @@ void EnRd_Init(Actor* thisx, PlayState* play) {
 }
 
 void EnRd_Destroy(Actor* thisx, PlayState* play) {
-    EnRd* this = THIS;
+    EnRd* this = (EnRd*)thisx;
 
     if (gSaveContext.sunsSongState != SUNSSONG_INACTIVE) {
         gSaveContext.sunsSongState = SUNSSONG_INACTIVE;
@@ -1265,7 +1263,7 @@ void EnRd_UpdateEffect(EnRd* this, PlayState* play) {
 }
 
 void EnRd_Update(Actor* thisx, PlayState* play) {
-    EnRd* this = THIS;
+    EnRd* this = (EnRd*)thisx;
 
     EnRd_UpdateDamage(this, play);
     if ((gSaveContext.sunsSongState != SUNSSONG_INACTIVE) && (!this->stunnedBySunsSong)) {
@@ -1305,7 +1303,7 @@ void EnRd_Update(Actor* thisx, PlayState* play) {
 
 s32 EnRd_OverrideLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3f* pos, Vec3s* rot, Actor* thisx,
                           Gfx** gfx) {
-    EnRd* this = THIS;
+    EnRd* this = (EnRd*)thisx;
 
     if (limbIndex == REDEAD_LIMB_HEAD_ROOT) {
         rot->y += this->headRotY;
@@ -1316,7 +1314,7 @@ s32 EnRd_OverrideLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3f* po
 }
 
 void EnRd_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* rot, Actor* thisx, Gfx** gfx) {
-    EnRd* this = THIS;
+    EnRd* this = (EnRd*)thisx;
 
     if ((this->drawDmgEffTimer != 0) &&
         ((limbIndex == REDEAD_LIMB_LEFT_THIGH) || (limbIndex == REDEAD_LIMB_LEFT_SHIN) ||
@@ -1335,7 +1333,7 @@ void EnRd_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* rot, 
 void EnRd_Draw(Actor* thisx, PlayState* play) {
     static Vec3f sScale = { 0.25f, 0.25f, 0.25f };
     s32 pad;
-    EnRd* this = THIS;
+    EnRd* this = (EnRd*)thisx;
     Vec3f pos = this->actor.world.pos;
 
     OPEN_DISPS(play->state.gfxCtx);

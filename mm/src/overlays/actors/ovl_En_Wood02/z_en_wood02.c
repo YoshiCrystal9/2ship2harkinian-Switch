@@ -10,8 +10,6 @@
 
 #define FLAGS 0x00000000
 
-#define THIS ((EnWood02*)thisx)
-
 void EnWood02_Init(Actor* thisx, PlayState* play);
 void EnWood02_Destroy(Actor* thisx, PlayState* play);
 void EnWood02_Update(Actor* thisx, PlayState* play2);
@@ -179,7 +177,7 @@ void EnWood02_SpawnOffspring(EnWood02* this, PlayState* play) {
 void EnWood02_Init(Actor* thisx, PlayState* play) {
     s16 spawnType = 0;
     f32 actorScale = 1.0f;
-    EnWood02* this = THIS;
+    EnWood02* this = (EnWood02*)thisx;
     s32 pad;
     CollisionPoly* outPoly;
     s32 bgId;
@@ -336,7 +334,7 @@ void EnWood02_Init(Actor* thisx, PlayState* play) {
 }
 
 void EnWood02_Destroy(Actor* thisx, PlayState* play) {
-    EnWood02* this = THIS;
+    EnWood02* this = (EnWood02*)thisx;
 
     if ((this->actor.params < WOOD_BUSH_GREEN_SMALL) || (this->actor.params == WOOD_TREE_SPECIAL)) {
         Collider_DestroyCylinder(play, &this->collider);
@@ -372,7 +370,7 @@ void func_808C4458(EnWood02* this, PlayState* play, Vec3f* arg2, u16 arg3) {
 
 void EnWood02_Update(Actor* thisx, PlayState* play2) {
     PlayState* play = play2;
-    EnWood02* this = THIS;
+    EnWood02* this = (EnWood02*)thisx;
     f32 wobbleAmplitude;
 
     // Despawn extra trees in a group if out of range
@@ -476,7 +474,7 @@ void EnWood02_Update(Actor* thisx, PlayState* play2) {
 }
 
 void EnWood02_Draw(Actor* thisx, PlayState* play) {
-    EnWood02* this = THIS;
+    EnWood02* this = (EnWood02*)thisx;
     GraphicsContext* gfxCtx = play->state.gfxCtx;
     u8 red;
     u8 green;

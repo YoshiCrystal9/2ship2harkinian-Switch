@@ -14,8 +14,6 @@
 
 #define FLAGS (ACTOR_FLAG_10)
 
-#define THIS ((EnMThunder*)thisx)
-
 void EnMThunder_Init(Actor* thisx, PlayState* play);
 void EnMThunder_Destroy(Actor* thisx, PlayState* play);
 void EnMThunder_Update(Actor* thisx, PlayState* play);
@@ -103,7 +101,7 @@ void EnMThunder_UnkType_Setup(EnMThunder* this, PlayState* play) {
 
 void EnMThunder_Init(Actor* thisx, PlayState* play) {
     s32 pad;
-    EnMThunder* this = THIS;
+    EnMThunder* this = (EnMThunder*)thisx;
     Player* player = GET_PLAYER(play);
 
     Collider_InitCylinder(play, &this->collider);
@@ -195,7 +193,7 @@ void EnMThunder_Init(Actor* thisx, PlayState* play) {
 }
 
 void EnMThunder_Destroy(Actor* thisx, PlayState* play) {
-    EnMThunder* this = THIS;
+    EnMThunder* this = (EnMThunder*)thisx;
 
     if (this->isCharging) {
         Magic_Reset(play);
@@ -464,7 +462,7 @@ void EnMThunder_UnkType_Attack(EnMThunder* this, PlayState* play) {
 }
 
 void EnMThunder_Update(Actor* thisx, PlayState* play) {
-    EnMThunder* this = THIS;
+    EnMThunder* this = (EnMThunder*)thisx;
 
     this->actionFunc(this, play);
     EnMThunder_AdjustLights(play, this->adjustLightsArg1);
@@ -474,7 +472,7 @@ void EnMThunder_Update(Actor* thisx, PlayState* play) {
 }
 
 void EnMThunder_UnkType_Update(Actor* thisx, PlayState* play) {
-    EnMThunder* this = THIS;
+    EnMThunder* this = (EnMThunder*)thisx;
 
     this->actionFunc(this, play);
     Lights_PointNoGlowSetInfo(&this->lightInfo, this->actor.world.pos.x, this->actor.world.pos.y,
@@ -484,7 +482,7 @@ void EnMThunder_UnkType_Update(Actor* thisx, PlayState* play) {
 
 void EnMThunder_Draw(Actor* thisx, PlayState* play2) {
     PlayState* play = play2;
-    EnMThunder* this = THIS;
+    EnMThunder* this = (EnMThunder*)thisx;
     Player* player = GET_PLAYER(play);
     f32 scale;
     s32 y2Scroll;

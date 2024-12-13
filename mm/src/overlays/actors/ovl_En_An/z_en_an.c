@@ -15,8 +15,6 @@
 
 #define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_10 | ACTOR_FLAG_20)
 
-#define THIS ((EnAn*)thisx)
-
 void EnAn_Init(Actor* thisx, PlayState* play);
 void EnAn_Destroy(Actor* thisx, PlayState* play);
 void EnAn_Update(Actor* thisx, PlayState* play);
@@ -1886,7 +1884,7 @@ s16 EnAn_GetChildCsId(EnAn* this, s32 numCutscenes) {
 }
 
 s32 EnAn_MsgEvent_ReceiveLetterFromPostman(Actor* thisx, PlayState* play) {
-    EnAn* this = THIS;
+    EnAn* this = (EnAn*)thisx;
     s16 csId = EnAn_GetCsId(this, 0);
     s32 ret = false;
 
@@ -1932,7 +1930,7 @@ s32 EnAn_MsgEvent_ReceiveLetterFromPostman(Actor* thisx, PlayState* play) {
 }
 
 s32 EnAn_MsgEvent_AttendGoron(Actor* thisx, PlayState* play) {
-    EnAn* this = THIS;
+    EnAn* this = (EnAn*)thisx;
     s16 csId = EnAn_GetCsId(this, 0);
     s32 ret = false;
 
@@ -1977,7 +1975,7 @@ s32 EnAn_MsgEvent_AttendGoron(Actor* thisx, PlayState* play) {
 }
 
 s32 EnAn_MsgEvent_GiveLunchToGranny(Actor* thisx, PlayState* play) {
-    EnAn* this = THIS;
+    EnAn* this = (EnAn*)thisx;
     s16 csId = EnAn_GetChildCsId(this, 0);
     s32 ret = false;
 
@@ -2024,7 +2022,7 @@ s32 EnAn_MsgEvent_GiveLunchToGranny(Actor* thisx, PlayState* play) {
 
 // Only used if Player is using Kafei's Mask or if Human and Promised midnight meeting
 s32 EnAn_MsgEvent_MidnightMeeting(Actor* thisx, PlayState* play) {
-    EnAn* this = THIS;
+    EnAn* this = (EnAn*)thisx;
 
     if (this->msgEventState == 0) {
         Player_SetCsActionWithHaltedActors(play, &this->actor, PLAYER_CSACTION_WAIT);
@@ -2040,7 +2038,7 @@ s32 EnAn_MsgEvent_MidnightMeeting(Actor* thisx, PlayState* play) {
 }
 
 s32 EnAn_MsgEvent_Cooking(Actor* thisx, PlayState* play) {
-    EnAn* this = THIS;
+    EnAn* this = (EnAn*)thisx;
     s32 ret = false;
 
     switch (this->msgEventState) {
@@ -2070,7 +2068,7 @@ s32 EnAn_MsgEvent_Cooking(Actor* thisx, PlayState* play) {
 }
 
 s32 EnAn_MsgEvent_LaundryPool(Actor* thisx, PlayState* play) {
-    EnAn* this = THIS;
+    EnAn* this = (EnAn*)thisx;
     s32 ret = false;
 
     switch (this->msgEventState) {
@@ -3812,7 +3810,7 @@ void EnAn_HandleCouplesMaskCutscene(EnAn* this, PlayState* play) {
 
 void EnAn_Init(Actor* thisx, PlayState* play) {
     s32 pad;
-    EnAn* this = THIS;
+    EnAn* this = (EnAn*)thisx;
     s32 temp_v1;
     s32 watchedCouplesMaskCs;
 
@@ -3847,13 +3845,13 @@ void EnAn_Init(Actor* thisx, PlayState* play) {
 }
 
 void EnAn_Destroy(Actor* thisx, PlayState* play) {
-    EnAn* this = THIS;
+    EnAn* this = (EnAn*)thisx;
 
     Collider_DestroyCylinder(play, &this->collider);
 }
 
 void EnAn_Update(Actor* thisx, PlayState* play) {
-    EnAn* this = THIS;
+    EnAn* this = (EnAn*)thisx;
 
     if (EnAn_InitObjectSlots(this, play)) {
         return;
@@ -3885,7 +3883,7 @@ void EnAn_Update(Actor* thisx, PlayState* play) {
 }
 
 void EnAn_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* rot, Actor* thisx) {
-    EnAn* this = THIS;
+    EnAn* this = (EnAn*)thisx;
 
     if (limbIndex == ANJU1_LIMB_HEAD) {
         static Vec3f D_80B58ED4 = { 1000.0f, 0.0f, 0.0f };
@@ -3904,7 +3902,7 @@ void EnAn_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* rot, 
 }
 
 void EnAn_TransformLimbDraw(PlayState* play, s32 limbIndex, Actor* thisx) {
-    EnAn* this = THIS;
+    EnAn* this = (EnAn*)thisx;
     s32 stepRot;
     s32 overrideRot;
 
@@ -3934,7 +3932,7 @@ void EnAn_TransformLimbDraw(PlayState* play, s32 limbIndex, Actor* thisx) {
 }
 
 void EnAn_Draw(Actor* thisx, PlayState* play) {
-    EnAn* this = THIS;
+    EnAn* this = (EnAn*)thisx;
 
     if ((this->scheduleResult != ANJU_SCH_NONE) || this->forceDraw) {
         static TexturePtr sMouthTextures[ENAN_MOUTH_MAX] = {

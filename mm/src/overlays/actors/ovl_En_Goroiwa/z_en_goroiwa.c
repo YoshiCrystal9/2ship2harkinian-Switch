@@ -13,8 +13,6 @@
 
 #define FLAGS (ACTOR_FLAG_10 | ACTOR_FLAG_MINIMAP_ICON_ENABLED)
 
-#define THIS ((EnGoroiwa*)thisx)
-
 void EnGoroiwa_Init(Actor* thisx, PlayState* play);
 void EnGoroiwa_Destroy(Actor* thisx, PlayState* play);
 void EnGoroiwa_Update(Actor* thisx, PlayState* play);
@@ -951,7 +949,7 @@ void func_80941274(EnGoroiwa* this, PlayState* play) {
 
 void EnGoroiwa_Init(Actor* thisx, PlayState* play) {
     s32 pad;
-    EnGoroiwa* this = THIS;
+    EnGoroiwa* this = (EnGoroiwa*)thisx;
     f32 temp_f0;
     s32 pathIndex = ENGOROIWA_GET_PATH_INDEX(&this->actor);
     Path* path = &play->setupPathList[pathIndex];
@@ -1016,7 +1014,7 @@ void EnGoroiwa_Init(Actor* thisx, PlayState* play) {
 }
 
 void EnGoroiwa_Destroy(Actor* thisx, PlayState* play) {
-    EnGoroiwa* this = THIS;
+    EnGoroiwa* this = (EnGoroiwa*)thisx;
 
     Collider_DestroyJntSph(play, &this->collider);
     Effect_Destroy(play, this->unk_248);
@@ -1430,7 +1428,7 @@ void func_80942604(EnGoroiwa* this, PlayState* play) {
 
 void EnGoroiwa_Update(Actor* thisx, PlayState* play) {
     s32 pad;
-    EnGoroiwa* this = THIS;
+    EnGoroiwa* this = (EnGoroiwa*)thisx;
     Player* player = GET_PLAYER(play);
     s32 bgId;
     s32 sp5C = false;
@@ -1609,7 +1607,7 @@ void EnGoroiwa_Draw(Actor* thisx, PlayState* play) {
         object_goroiwa_DL_003B40,
         object_goroiwa_DL_008B90,
     };
-    EnGoroiwa* this = THIS;
+    EnGoroiwa* this = (EnGoroiwa*)thisx;
     s32 params = ENGOROIWA_GET_C000(&this->actor);
 
     // #region 2S2H [Interpolation] Track when a boulder resets back to its "home" position and mark

@@ -18,8 +18,6 @@
 
 #define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_HOSTILE)
 
-#define THIS ((EnOkuta*)thisx)
-
 void EnOkuta_Init(Actor* thisx, PlayState* play2);
 void EnOkuta_Destroy(Actor* thisx, PlayState* play);
 void EnOkuta_Update(Actor* thisx, PlayState* play2);
@@ -146,7 +144,7 @@ static InitChainEntry sInitChain[] = {
 
 void EnOkuta_Init(Actor* thisx, PlayState* play2) {
     PlayState* play = play2;
-    EnOkuta* this = THIS;
+    EnOkuta* this = (EnOkuta*)thisx;
     WaterBox* waterBox;
     f32 waterSurface;
     s32 bgId;
@@ -201,7 +199,7 @@ void EnOkuta_Init(Actor* thisx, PlayState* play2) {
 }
 
 void EnOkuta_Destroy(Actor* thisx, PlayState* play) {
-    EnOkuta* this = THIS;
+    EnOkuta* this = (EnOkuta*)thisx;
     Collider_DestroyCylinder(play, &this->collider);
 }
 
@@ -884,7 +882,7 @@ void EnOkuta_UpdateDamage(EnOkuta* this, PlayState* play) {
 
 void EnOkuta_Update(Actor* thisx, PlayState* play2) {
     PlayState* play = play2;
-    EnOkuta* this = THIS;
+    EnOkuta* this = (EnOkuta*)thisx;
     s32 pad[2];
 
     if (EN_OKUTA_GET_TYPE(&this->actor) == EN_OKUTA_TYPE_RED_OCTOROK) {
@@ -941,7 +939,7 @@ void EnOkuta_Update(Actor* thisx, PlayState* play2) {
 }
 
 void EnOkuta_Projectile_Update(Actor* thisx, PlayState* play) {
-    EnOkuta* this = THIS;
+    EnOkuta* this = (EnOkuta*)thisx;
     Player* player = GET_PLAYER(play);
     s32 pad;
     Vec3f prevPos;
@@ -1022,7 +1020,7 @@ s32 EnOkuta_GetSnoutScale(EnOkuta* this, f32 curFrame, Vec3f* scale) {
 }
 
 s32 EnOkuta_OverrideLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3f* pos, Vec3s* rot, Actor* thisx) {
-    EnOkuta* this = THIS;
+    EnOkuta* this = (EnOkuta*)thisx;
     s32 shouldScaleLimb = false;
     Vec3f scale;
     f32 curFrame = this->skelAnime.curFrame;
@@ -1077,7 +1075,7 @@ static Vec3f sEffectsBodyPartOffsets[3] = {
 };
 
 void EnOkuta_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* rot, Actor* thisx) {
-    EnOkuta* this = THIS;
+    EnOkuta* this = (EnOkuta*)thisx;
     s32 bodyPartIndex = sLimbToBodyParts[limbIndex];
     s32 i;
 
@@ -1098,7 +1096,7 @@ void EnOkuta_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* ro
 }
 
 void EnOkuta_Draw(Actor* thisx, PlayState* play) {
-    EnOkuta* this = THIS;
+    EnOkuta* this = (EnOkuta*)thisx;
     s32 pad;
     Gfx* gfx;
 

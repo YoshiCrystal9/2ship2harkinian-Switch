@@ -18,8 +18,6 @@
     (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_10 | ACTOR_FLAG_UPDATE_DURING_OCARINA | \
      ACTOR_FLAG_LOCK_ON_DISABLED)
 
-#define THIS ((EnFu*)thisx)
-
 void EnFu_Init(Actor* thisx, PlayState* play);
 void EnFu_Destroy(Actor* thisx, PlayState* play);
 void EnFu_Update(Actor* thisx, PlayState* play);
@@ -203,7 +201,7 @@ void func_809619D0(EnFu* this, PlayState* play) {
 
 void EnFu_Init(Actor* thisx, PlayState* play) {
     s32 pad;
-    EnFu* this = THIS;
+    EnFu* this = (EnFu*)thisx;
     Actor* fuKaiten = play->actorCtx.actorLists[ACTORCAT_BG].first;
 
     while (fuKaiten != NULL) {
@@ -249,7 +247,7 @@ void EnFu_Init(Actor* thisx, PlayState* play) {
 }
 
 void EnFu_Destroy(Actor* thisx, PlayState* play) {
-    EnFu* this = THIS;
+    EnFu* this = (EnFu*)thisx;
 
     CLEAR_WEEKEVENTREG(WEEKEVENTREG_KICKOUT_WAIT);
     CLEAR_WEEKEVENTREG(WEEKEVENTREG_08_01);
@@ -1376,7 +1374,7 @@ void func_809642E0(EnFu* this, PlayState* play) {
 }
 
 void EnFu_Update(Actor* thisx, PlayState* play) {
-    EnFu* this = THIS;
+    EnFu* this = (EnFu*)thisx;
 
     this->actionFunc(this, play);
 
@@ -1391,7 +1389,7 @@ void EnFu_Update(Actor* thisx, PlayState* play) {
 }
 
 s32 EnFu_OverrideLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3f* pos, Vec3s* rot, Actor* thisx) {
-    EnFu* this = THIS;
+    EnFu* this = (EnFu*)thisx;
 
     if (limbIndex == HONEY_AND_DARLING_LIMB_MAN_HEAD) {
         Matrix_Translate(1600.0f, 300.0f, 0.0f, MTXMODE_APPLY);
@@ -1412,7 +1410,7 @@ s32 EnFu_OverrideLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3f* po
 void EnFu_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* rot, Actor* thisx) {
     static Vec3f D_80964C28 = { -2500.0f, 0.0f, 0.0f };
     static Vec3f D_80964C34 = { -3500.0f, 0.0f, 0.0f };
-    EnFu* this = THIS;
+    EnFu* this = (EnFu*)thisx;
 
     if (limbIndex == HONEY_AND_DARLING_LIMB_MAN_HEAD) {
         Matrix_MultVec3f(&D_80964C28, &this->unk_508);
@@ -1423,7 +1421,7 @@ void EnFu_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* rot, 
 
 void EnFu_Draw(Actor* thisx, PlayState* play) {
     s32 pad;
-    EnFu* this = THIS;
+    EnFu* this = (EnFu*)thisx;
 
     Matrix_Push();
     func_80964950(play, this->unk_2D8, ARRAY_COUNT(this->unk_2D8));

@@ -12,8 +12,6 @@
 
 #define FLAGS (ACTOR_FLAG_10 | ACTOR_FLAG_20)
 
-#define THIS ((BgDblueMovebg*)thisx)
-
 void BgDblueMovebg_Init(Actor* thisx, PlayState* play);
 void BgDblueMovebg_Destroy(Actor* thisx, PlayState* play);
 void BgDblueMovebg_Update(Actor* thisx, PlayState* play);
@@ -159,7 +157,7 @@ s32 func_80A29A80(PlayState* play, s32 switchFlagBase, s32 arg2) {
 
 void BgDblueMovebg_Init(Actor* thisx, PlayState* play) {
     s32 pad;
-    BgDblueMovebg* this = THIS;
+    BgDblueMovebg* this = (BgDblueMovebg*)thisx;
     s32 i;
 
     Actor_ProcessInitChain(&this->dyna.actor, sInitChain);
@@ -287,7 +285,7 @@ void BgDblueMovebg_Init(Actor* thisx, PlayState* play) {
 }
 
 void BgDblueMovebg_Destroy(Actor* thisx, PlayState* play) {
-    BgDblueMovebg* this = THIS;
+    BgDblueMovebg* this = (BgDblueMovebg*)thisx;
 
     DynaPoly_DeleteBgActor(play, &play->colCtx.dyna, this->dyna.bgId);
     if ((this->unk_160 == 9) || (this->unk_160 == 8)) {
@@ -722,7 +720,7 @@ void func_80A2B1A0(BgDblueMovebg* this, PlayState* play) {
 }
 
 void BgDblueMovebg_Update(Actor* thisx, PlayState* play) {
-    BgDblueMovebg* this = THIS;
+    BgDblueMovebg* this = (BgDblueMovebg*)thisx;
 
     this->actionFunc(this, play);
 
@@ -734,7 +732,7 @@ void BgDblueMovebg_Update(Actor* thisx, PlayState* play) {
 }
 
 void func_80A2B274(Actor* thisx, PlayState* play) {
-    BgDblueMovebg* this = THIS;
+    BgDblueMovebg* this = (BgDblueMovebg*)thisx;
     s16 temp_v1;
 
     if (this != D_80A2BBF0) {
@@ -754,7 +752,7 @@ void func_80A2B274(Actor* thisx, PlayState* play) {
 
 void func_80A2B308(Actor* thisx, PlayState* play) {
     s32 pad;
-    BgDblueMovebg* this = THIS;
+    BgDblueMovebg* this = (BgDblueMovebg*)thisx;
 
     OPEN_DISPS(play->state.gfxCtx);
 
@@ -768,7 +766,7 @@ void func_80A2B308(Actor* thisx, PlayState* play) {
 
 void BgDblueMovebg_Draw(Actor* thisx, PlayState* play2) {
     PlayState* play = play2;
-    BgDblueMovebg* this = THIS;
+    BgDblueMovebg* this = (BgDblueMovebg*)thisx;
     s32 i;
     s32 j;
     Gfx* gfx;

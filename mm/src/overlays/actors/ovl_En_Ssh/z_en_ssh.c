@@ -9,8 +9,6 @@
 
 #define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_HOSTILE | ACTOR_FLAG_10 | ACTOR_FLAG_20)
 
-#define THIS ((EnSsh*)thisx)
-
 void EnSsh_Init(Actor* thisx, PlayState* play);
 void EnSsh_Destroy(Actor* thisx, PlayState* play);
 void EnSsh_Update(Actor* thisx, PlayState* play);
@@ -663,7 +661,7 @@ void EnSsh_Init(Actor* thisx, PlayState* play) {
     // 2S2H [Port] - Due to the nature of the port, this ends up reading the correct data anyway
     f32 endFrame = Animation_GetLastFrame(&object_st_Anim_000304);
     s32 pad;
-    EnSsh* this = THIS;
+    EnSsh* this = (EnSsh*)thisx;
 
     ActorShape_Init(&this->actor.shape, 0.0f, ActorShadow_DrawCircle, 30.0f);
     SkelAnime_Init(play, &this->skelAnime, &object_ssh_Skel_006470, NULL, this->jointTable, this->morphTable,
@@ -694,7 +692,7 @@ void EnSsh_Init(Actor* thisx, PlayState* play) {
 }
 
 void EnSsh_Destroy(Actor* thisx, PlayState* play) {
-    EnSsh* this = THIS;
+    EnSsh* this = (EnSsh*)thisx;
     s32 i;
 
     Effect_Destroy(play, this->blureIdx);
@@ -870,7 +868,7 @@ void EnSsh_Start(EnSsh* this, PlayState* play) {
 }
 
 void EnSsh_Update(Actor* thisx, PlayState* play) {
-    EnSsh* this = THIS;
+    EnSsh* this = (EnSsh*)thisx;
 
     EnSsh_UpdateColliderScale(this);
 
@@ -903,7 +901,7 @@ void EnSsh_Update(Actor* thisx, PlayState* play) {
 }
 
 s32 EnSsh_OverrideLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3f* pos, Vec3s* rot, Actor* thisx) {
-    EnSsh* this = THIS;
+    EnSsh* this = (EnSsh*)thisx;
 
     switch (limbIndex) {
         case OBJECT_SSH_LIMB_01:
@@ -941,7 +939,7 @@ s32 EnSsh_OverrideLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3f* p
 }
 
 void EnSsh_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* rot, Actor* thisx) {
-    EnSsh* this = THIS;
+    EnSsh* this = (EnSsh*)thisx;
 
     if ((limbIndex == OBJECT_SSH_LIMB_05) && (this->stateFlags & SSH_STATE_FATHER)) {
         OPEN_DISPS(play->state.gfxCtx);
@@ -956,7 +954,7 @@ void EnSsh_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* rot,
 void EnSsh_Draw(Actor* thisx, PlayState* play) {
     static TexturePtr D_80976178[] = { object_ssh_Tex_001970, object_ssh_Tex_001DF0, object_ssh_Tex_0021F0 };
     s32 pad;
-    EnSsh* this = THIS;
+    EnSsh* this = (EnSsh*)thisx;
 
     EnSsh_CheckBodyStickHit(this, play);
     EnSsh_Sway(this);

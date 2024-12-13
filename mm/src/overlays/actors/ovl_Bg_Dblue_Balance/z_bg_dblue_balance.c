@@ -10,8 +10,6 @@
 
 #define FLAGS 0x00000000
 
-#define THIS ((BgDblueBalance*)thisx)
-
 void BgDblueBalance_Init(Actor* thisx, PlayState* play);
 void BgDblueBalance_Destroy(Actor* thisx, PlayState* play);
 void BgDblueBalance_Update(Actor* thisx, PlayState* play);
@@ -304,7 +302,7 @@ bool func_80B82B00(s16 arg0, s16 arg1, s16 arg2) {
 
 void BgDblueBalance_Init(Actor* thisx, PlayState* play) {
     s32 pad;
-    BgDblueBalance* this = THIS;
+    BgDblueBalance* this = (BgDblueBalance*)thisx;
     s32 sp2C = BGDBLUEBALANCE_GET_300(&this->dyna.actor);
     s32 pad2;
     s32 isSwitchFlagSet = Flags_GetSwitch(play, BGDBLUEBALANCE_GET_SWITCH_FLAG(&this->dyna.actor));
@@ -351,7 +349,7 @@ void BgDblueBalance_Init(Actor* thisx, PlayState* play) {
 
 void BgDblueBalance_Destroy(Actor* thisx, PlayState* play) {
     s32 pad;
-    BgDblueBalance* this = THIS;
+    BgDblueBalance* this = (BgDblueBalance*)thisx;
     s32 sp1C = BGDBLUEBALANCE_GET_300(&this->dyna.actor);
 
     DynaPoly_DeleteBgActor(play, &play->colCtx.dyna, this->dyna.bgId);
@@ -534,7 +532,7 @@ void func_80B82DE0(BgDblueBalance* this, PlayState* play) {
 }
 
 void BgDblueBalance_Update(Actor* thisx, PlayState* play) {
-    BgDblueBalance* this = THIS;
+    BgDblueBalance* this = (BgDblueBalance*)thisx;
 
     this->unk_17A = this->unk_178;
 
@@ -544,7 +542,7 @@ void BgDblueBalance_Update(Actor* thisx, PlayState* play) {
 }
 
 void func_80B8330C(Actor* thisx, PlayState* play) {
-    BgDblueBalance* this = THIS;
+    BgDblueBalance* this = (BgDblueBalance*)thisx;
 
     this->isSwitchPressed = DynaPolyActor_IsSwitchPressed(&this->dyna);
     this->isHeavySwitchPressed = DynaPolyActor_IsHeavySwitchPressed(&this->dyna);
@@ -620,7 +618,7 @@ void func_80B833C4(BgDblueBalance* this, PlayState* play) {
 }
 
 void func_80B83518(Actor* thisx, PlayState* play) {
-    BgDblueBalance* this = THIS;
+    BgDblueBalance* this = (BgDblueBalance*)thisx;
 
     this->isSwitchFlagSet = Flags_GetSwitch(play, BGDBLUEBALANCE_GET_SWITCH_FLAG(&this->dyna.actor));
 
@@ -646,7 +644,7 @@ void func_80B83518(Actor* thisx, PlayState* play) {
 
 void BgDblueBalance_Draw(Actor* thisx, PlayState* play) {
     s32 pad;
-    BgDblueBalance* this = THIS;
+    BgDblueBalance* this = (BgDblueBalance*)thisx;
     BgDblueBalanceTypeInfo* ptr2 = &sTypeInfo[BGDBLUEBALANCE_GET_300(&this->dyna.actor)];
     BgDblueBalance* sp38;
     Gfx* gfx;
@@ -678,7 +676,7 @@ void BgDblueBalance_Draw(Actor* thisx, PlayState* play) {
 
 void func_80B83758(Actor* thisx, PlayState* play) {
     s32 pad;
-    BgDblueBalance* this = THIS;
+    BgDblueBalance* this = (BgDblueBalance*)thisx;
     f32 temp_f0;
     Gfx* gfx;
     s32 i;

@@ -8,8 +8,6 @@
 
 #define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_UPDATE_DURING_OCARINA)
 
-#define THIS ((EnZos*)thisx)
-
 void EnZos_Init(Actor* thisx, PlayState* play);
 void EnZos_Destroy(Actor* thisx, PlayState* play);
 void EnZos_Update(Actor* thisx, PlayState* play);
@@ -84,7 +82,7 @@ static ColliderCylinderInit sCylinderInit = {
 };
 
 void EnZos_Init(Actor* thisx, PlayState* play) {
-    EnZos* this = THIS;
+    EnZos* this = (EnZos*)thisx;
 
     Actor_SetScale(&this->actor, 0.0115f);
     this->actionFunc = func_80BBBDE0;
@@ -130,7 +128,7 @@ void EnZos_Init(Actor* thisx, PlayState* play) {
 }
 
 void EnZos_Destroy(Actor* thisx, PlayState* play) {
-    EnZos* this = THIS;
+    EnZos* this = (EnZos*)thisx;
 
     CLEAR_WEEKEVENTREG(WEEKEVENTREG_52_10);
 }
@@ -695,7 +693,7 @@ void func_80BBC37C(EnZos* this, PlayState* play) {
 
 void EnZos_Update(Actor* thisx, PlayState* play) {
     s32 pad;
-    EnZos* this = THIS;
+    EnZos* this = (EnZos*)thisx;
 
     Actor_MoveWithGravity(&this->actor);
     Collider_UpdateCylinder(&this->actor, &this->collider);
@@ -732,7 +730,7 @@ void EnZos_Draw(Actor* thisx, PlayState* play) {
         gEvanEyeHalfTex,
         gEvanEyeClosedTex,
     };
-    EnZos* this = THIS;
+    EnZos* this = (EnZos*)thisx;
     Gfx* gfx;
 
     OPEN_DISPS(play->state.gfxCtx);

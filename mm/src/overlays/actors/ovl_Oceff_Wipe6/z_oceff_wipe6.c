@@ -9,8 +9,6 @@
 
 #define FLAGS (ACTOR_FLAG_10 | ACTOR_FLAG_UPDATE_DURING_OCARINA)
 
-#define THIS ((OceffWipe6*)thisx)
-
 void OceffWipe6_Init(Actor* thisx, PlayState* play);
 void OceffWipe6_Destroy(Actor* thisx, PlayState* play);
 void OceffWipe6_Update(Actor* thisx, PlayState* play);
@@ -33,7 +31,7 @@ ActorProfileOceff_Wipe6_Profile = {
 static Vtx* gOceff6VtxData;
 
 void OceffWipe6_Init(Actor* thisx, PlayState* play) {
-    OceffWipe6* this = THIS;
+    OceffWipe6* this = (OceffWipe6*)thisx;
 
     gOceff6VtxData = ResourceMgr_LoadVtxByName(gOceff6Vtx);
 
@@ -48,7 +46,7 @@ void OceffWipe6_Destroy(Actor* thisx, PlayState* play) {
 }
 
 void OceffWipe6_Update(Actor* thisx, PlayState* play) {
-    OceffWipe6* this = THIS;
+    OceffWipe6* this = (OceffWipe6*)thisx;
 
     this->actor.world.pos = GET_ACTIVE_CAM(play)->eye;
     if (this->counter < 100) {
@@ -59,7 +57,7 @@ void OceffWipe6_Update(Actor* thisx, PlayState* play) {
 }
 
 void OceffWipe6_Draw(Actor* thisx, PlayState* play) {
-    OceffWipe6* this = THIS;
+    OceffWipe6* this = (OceffWipe6*)thisx;
     f32 z;
     u8 alpha;
     s32 i;

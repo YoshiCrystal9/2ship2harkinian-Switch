@@ -13,8 +13,6 @@
 
 #define FLAGS (ACTOR_FLAG_10 | ACTOR_FLAG_100000 | ACTOR_FLAG_UPDATE_DURING_OCARINA)
 
-#define THIS ((EnPaper*)thisx)
-
 void EnPaper_Init(Actor* thisx, PlayState* play);
 void EnPaper_Destroy(Actor* thisx, PlayState* play);
 void EnPaper_Update(Actor* thisx, PlayState* play);
@@ -42,7 +40,7 @@ ActorProfile En_Paper_Profile = {
 static Vec3f sUnitVecZ = { 0.0f, 0.0f, 1.0f };
 
 void EnPaper_Init(Actor* thisx, PlayState* play) {
-    EnPaper* this = THIS;
+    EnPaper* this = (EnPaper*)thisx;
 
     Actor_SetScale(&this->actor, 0.01f);
     this->timer = 70;
@@ -193,7 +191,7 @@ void EnPaper_UpdateWind(EnPaper* this) {
 }
 
 void EnPaper_Update(Actor* thisx, PlayState* play) {
-    EnPaper* this = THIS;
+    EnPaper* this = (EnPaper*)thisx;
 
     this->actionFunc(this, play);
     EnPaper_UpdateWind(this);
@@ -207,7 +205,7 @@ void EnPaper_Update(Actor* thisx, PlayState* play) {
 }
 
 void EnPaper_Draw(Actor* thisx, PlayState* play) {
-    EnPaper* this = THIS;
+    EnPaper* this = (EnPaper*)thisx;
     EnPaperConfetto* piece = this->pieces;
     s32 i;
 

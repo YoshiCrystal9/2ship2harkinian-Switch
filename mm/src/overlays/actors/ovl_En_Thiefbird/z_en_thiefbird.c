@@ -14,8 +14,6 @@
     (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_HOSTILE | ACTOR_FLAG_HOOKSHOT_PULLS_ACTOR | ACTOR_FLAG_IGNORE_QUAKE | \
      ACTOR_FLAG_MINIMAP_ICON_ENABLED)
 
-#define THIS ((EnThiefbird*)thisx)
-
 void EnThiefbird_Init(Actor* thisx, PlayState* play);
 void EnThiefbird_Destroy(Actor* thisx, PlayState* play);
 void EnThiefbird_Update(Actor* thisx, PlayState* play2);
@@ -151,7 +149,7 @@ Vec3f D_80C13920;
 s32 D_80C1392C;
 
 void EnThiefbird_Init(Actor* thisx, PlayState* play) {
-    EnThiefbird* this = THIS;
+    EnThiefbird* this = (EnThiefbird*)thisx;
     s32 i;
     ColliderJntSphElementDim* dim;
 
@@ -186,7 +184,7 @@ void EnThiefbird_Init(Actor* thisx, PlayState* play) {
 }
 
 void EnThiefbird_Destroy(Actor* thisx, PlayState* play) {
-    EnThiefbird* this = THIS;
+    EnThiefbird* this = (EnThiefbird*)thisx;
 
     Collider_DestroyJntSph(play, &this->collider);
 }
@@ -1017,7 +1015,7 @@ void func_80C12D00(EnThiefbird* this) {
 
 void EnThiefbird_Update(Actor* thisx, PlayState* play2) {
     PlayState* play = play2;
-    EnThiefbird* this = THIS;
+    EnThiefbird* this = (EnThiefbird*)thisx;
 
     func_80C12B1C(this, play);
     this->actionFunc(this, play);
@@ -1059,7 +1057,7 @@ void EnThiefbird_Update(Actor* thisx, PlayState* play2) {
 }
 
 s32 EnThiefbird_OverrideLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3f* pos, Vec3s* rot, Actor* thisx) {
-    EnThiefbird* this = THIS;
+    EnThiefbird* this = (EnThiefbird*)thisx;
 
     if ((limbIndex == TAKKURI_LIMB_RIGHT_EAR) || (limbIndex == TAKKURI_LIMB_LEFT_EAR)) {
         this->unk_3E4 = *dList;
@@ -1094,7 +1092,7 @@ static s8 sLimbToBodyParts[TAKKURI_LIMB_MAX] = {
 };
 
 void EnThiefbird_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* rot, Actor* thisx) {
-    EnThiefbird* this = THIS;
+    EnThiefbird* this = (EnThiefbird*)thisx;
     s32 pad;
     Gfx* gfx;
     s8 bodyPartIndex;
@@ -1181,7 +1179,7 @@ void func_80C13354(EnThiefbird* this, PlayState* play2) {
 }
 
 void EnThiefbird_Draw(Actor* thisx, PlayState* play) {
-    EnThiefbird* this = THIS;
+    EnThiefbird* this = (EnThiefbird*)thisx;
 
     Gfx_SetupDL25_Opa(play->state.gfxCtx);
     SkelAnime_DrawFlexOpa(play, this->skelAnime.skeleton, this->skelAnime.jointTable, this->skelAnime.dListCount,

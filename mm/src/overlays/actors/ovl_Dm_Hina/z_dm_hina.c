@@ -10,8 +10,6 @@
 
 #define FLAGS (ACTOR_FLAG_10 | ACTOR_FLAG_20)
 
-#define THIS ((DmHina*)thisx)
-
 void DmHina_Init(Actor* thisx, PlayState* play);
 void DmHina_Destroy(Actor* thisx, PlayState* play);
 void DmHina_Update(Actor* thisx, PlayState* play);
@@ -35,7 +33,7 @@ ActorProfile Dm_Hina_Profile = {
 };
 
 void DmHina_Init(Actor* thisx, PlayState* play) {
-    DmHina* this = THIS;
+    DmHina* this = (DmHina*)thisx;
 
     this->isDrawn = true;
     this->actionFunc = func_80A1F470;
@@ -128,7 +126,7 @@ void func_80A1F75C(DmHina* this, PlayState* play) {
 }
 
 void DmHina_Update(Actor* thisx, PlayState* play) {
-    DmHina* this = THIS;
+    DmHina* this = (DmHina*)thisx;
 
     this->actionFunc(this, play);
     func_80A1F75C(this, play);
@@ -161,7 +159,7 @@ void func_80A1F9AC(DmHina* this, PlayState* play) {
 }
 
 void DmHina_Draw(Actor* thisx, PlayState* play) {
-    DmHina* this = THIS;
+    DmHina* this = (DmHina*)thisx;
     f32 scale;
 
     if (this->isDrawn) {

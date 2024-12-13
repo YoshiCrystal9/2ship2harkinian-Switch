@@ -11,8 +11,6 @@
 
 #define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_10)
 
-#define THIS ((EnMm3*)thisx)
-
 void EnMm3_Init(Actor* thisx, PlayState* play);
 void EnMm3_Destroy(Actor* thisx, PlayState* play);
 void EnMm3_Update(Actor* thisx, PlayState* play);
@@ -96,7 +94,7 @@ TexturePtr D_80A704FC[] = { object_mm_Tex_002950, object_mm_Tex_002750 };
 
 void EnMm3_Init(Actor* thisx, PlayState* play) {
     s32 pad;
-    EnMm3* this = THIS;
+    EnMm3* this = (EnMm3*)thisx;
 
     ActorShape_Init(&this->actor.shape, 0.0f, ActorShadow_DrawCircle, 21.0f);
     SkelAnime_InitFlex(play, &this->skelAnime, &object_mm_Skel_0096E8, &object_mm_Anim_00A4E0, this->jointTable,
@@ -118,7 +116,7 @@ void EnMm3_Init(Actor* thisx, PlayState* play) {
 }
 
 void EnMm3_Destroy(Actor* thisx, PlayState* play) {
-    EnMm3* this = THIS;
+    EnMm3* this = (EnMm3*)thisx;
 
     CLEAR_WEEKEVENTREG(WEEKEVENTREG_KICKOUT_WAIT);
     Collider_DestroyCylinder(play, &this->collider);
@@ -553,7 +551,7 @@ void func_80A70084(EnMm3* this, PlayState* play) {
 
 void EnMm3_Update(Actor* thisx, PlayState* play) {
     s32 pad;
-    EnMm3* this = THIS;
+    EnMm3* this = (EnMm3*)thisx;
 
     this->actionFunc(this, play);
 
@@ -568,7 +566,7 @@ void EnMm3_Update(Actor* thisx, PlayState* play) {
 }
 
 s32 EnMm3_OverrideLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3f* pos, Vec3s* rot, Actor* thisx) {
-    EnMm3* this = THIS;
+    EnMm3* this = (EnMm3*)thisx;
 
     if (limbIndex == OBJECT_MM_LIMB_08) {
         rot->x += this->torsoRot.y;
@@ -584,7 +582,7 @@ s32 EnMm3_OverrideLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3f* p
 }
 
 void EnMm3_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* rot, Actor* thisx) {
-    EnMm3* this = THIS;
+    EnMm3* this = (EnMm3*)thisx;
 
     if (limbIndex == OBJECT_MM_LIMB_0F) {
         Matrix_MultVec3f(&D_80A704F0, &this->actor.focus.pos);
@@ -592,7 +590,7 @@ void EnMm3_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* rot,
 }
 
 void EnMm3_Draw(Actor* thisx, PlayState* play) {
-    EnMm3* this = THIS;
+    EnMm3* this = (EnMm3*)thisx;
 
     OPEN_DISPS(play->state.gfxCtx);
 

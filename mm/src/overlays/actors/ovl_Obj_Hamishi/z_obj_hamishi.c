@@ -11,8 +11,6 @@
 
 #define FLAGS (ACTOR_FLAG_10)
 
-#define THIS ((ObjHamishi*)thisx)
-
 void ObjHamishi_Init(Actor* thisx, PlayState* play);
 void ObjHamishi_Destroy(Actor* thisx, PlayState* play2);
 void ObjHamishi_Update(Actor* thisx, PlayState* play);
@@ -64,7 +62,7 @@ static InitChainEntry sInitChain[] = {
 };
 
 void func_809A0F20(Actor* thisx, PlayState* play) {
-    ObjHamishi* this = THIS;
+    ObjHamishi* this = (ObjHamishi*)thisx;
 
     Collider_InitCylinder(play, &this->collider);
     Collider_SetCylinder(play, &this->collider, &this->actor, &sCylinderInit);
@@ -163,7 +161,7 @@ s32 ObjHamishi_IsUnderwater(ObjHamishi* this, PlayState* play) {
 }
 
 void ObjHamishi_Init(Actor* thisx, PlayState* play) {
-    ObjHamishi* this = THIS;
+    ObjHamishi* this = (ObjHamishi*)thisx;
 
     Actor_ProcessInitChain(&this->actor, sInitChain);
 
@@ -196,14 +194,14 @@ void ObjHamishi_Init(Actor* thisx, PlayState* play) {
 
 void ObjHamishi_Destroy(Actor* thisx, PlayState* play2) {
     PlayState* play = play2;
-    ObjHamishi* this = THIS;
+    ObjHamishi* this = (ObjHamishi*)thisx;
 
     Collider_DestroyCylinder(play, &this->collider);
 }
 
 void ObjHamishi_Update(Actor* thisx, PlayState* play) {
     s32 pad;
-    ObjHamishi* this = THIS;
+    ObjHamishi* this = (ObjHamishi*)thisx;
     s32 sp24 = (this->collider.base.acFlags & AC_HIT) != 0;
 
     func_809A0F78(this);
@@ -263,7 +261,7 @@ void ObjHamishi_Update(Actor* thisx, PlayState* play) {
 }
 
 void ObjHamishi_Draw(Actor* thisx, PlayState* play) {
-    ObjHamishi* this = THIS;
+    ObjHamishi* this = (ObjHamishi*)thisx;
 
     OPEN_DISPS(play->state.gfxCtx);
 

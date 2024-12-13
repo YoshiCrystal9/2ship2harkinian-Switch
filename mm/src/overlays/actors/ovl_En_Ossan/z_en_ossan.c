@@ -11,8 +11,6 @@
 
 #define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_10)
 
-#define THIS ((EnOssan*)thisx)
-
 #define LOOKED_AT_PLAYER (1 << 0)
 #define END_INTERACTION (1 << 1)
 
@@ -267,7 +265,7 @@ void EnOssan_SpawnShopItems(EnOssan* this, PlayState* play, ShopItem* shop) {
 }
 
 void EnOssan_Init(Actor* thisx, PlayState* play) {
-    EnOssan* this = THIS;
+    EnOssan* this = (EnOssan*)thisx;
     s16 objectId;
 
     if ((this->actor.params > ENOSSAN_PART_TIME_WORKER) && (this->actor.params < ENOSSAN_CURIOSITY_SHOP_MAN)) {
@@ -287,7 +285,7 @@ void EnOssan_Init(Actor* thisx, PlayState* play) {
 }
 
 void EnOssan_Destroy(Actor* thisx, PlayState* play) {
-    EnOssan* this = THIS;
+    EnOssan* this = (EnOssan*)thisx;
 
     Collider_DestroyCylinder(play, &this->collider);
 }
@@ -1603,7 +1601,7 @@ void EnOssan_GetCutscenes(EnOssan* this, PlayState* play) {
 }
 
 void EnOssan_Update(Actor* thisx, PlayState* play) {
-    EnOssan* this = THIS;
+    EnOssan* this = (EnOssan*)thisx;
 
     if (this->actionFunc != EnOssan_InitShop) {
         this->blinkFunc(this);
@@ -1739,7 +1737,7 @@ void EnOssan_DrawStickDirectionPrompts(PlayState* play, EnOssan* this) {
 
 s32 EnOssan_CuriosityShopMan_OverrideLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3f* pos, Vec3s* rot,
                                               Actor* thisx) {
-    EnOssan* this = THIS;
+    EnOssan* this = (EnOssan*)thisx;
 
     if (limbIndex == FSN_LIMB_HEAD) {
         Matrix_RotateXS(this->headRot.y, MTXMODE_APPLY);
@@ -1749,7 +1747,7 @@ s32 EnOssan_CuriosityShopMan_OverrideLimbDraw(PlayState* play, s32 limbIndex, Gf
 
 s32 EnOssan_PartTimer_OverrideLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3f* pos, Vec3s* rot,
                                        Actor* thisx) {
-    EnOssan* this = THIS;
+    EnOssan* this = (EnOssan*)thisx;
 
     if (limbIndex == ANI_LIMB_HEAD) {
         Matrix_RotateXS(this->partTimerHeadRot.y, MTXMODE_APPLY);
@@ -1759,7 +1757,7 @@ s32 EnOssan_PartTimer_OverrideLimbDraw(PlayState* play, s32 limbIndex, Gfx** dLi
 }
 
 void EnOssan_CuriosityShopMan_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* rot, Actor* thisx) {
-    EnOssan* this = THIS;
+    EnOssan* this = (EnOssan*)thisx;
 
     if ((limbIndex == FSN_LIMB_PELVIS) || (limbIndex == FSN_LIMB_LEFT_UPPER_ARM) ||
         (limbIndex == FSN_LIMB_RIGHT_UPPER_ARM)) {
@@ -1770,7 +1768,7 @@ void EnOssan_CuriosityShopMan_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx**
 
 void EnOssan_PartTimer_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* rot, Actor* thisx) {
     static Vec3f sFocusOffset = { 800.0f, 500.0f, 0.0f };
-    EnOssan* this = THIS;
+    EnOssan* this = (EnOssan*)thisx;
 
     if (limbIndex == ANI_LIMB_HEAD) {
         Matrix_MultVec3f(&sFocusOffset, &this->actor.focus.pos);
@@ -1780,7 +1778,7 @@ void EnOssan_PartTimer_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList,
 void EnOssan_CuriosityShopMan_Draw(Actor* thisx, PlayState* play) {
     static TexturePtr sEyeTextures[] = { gFsnEyeOpenTex, gFsnEyeHalfTex, gFsnEyeClosedTex };
     s32 pad;
-    EnOssan* this = THIS;
+    EnOssan* this = (EnOssan*)thisx;
 
     OPEN_DISPS(play->state.gfxCtx);
 
@@ -1798,7 +1796,7 @@ void EnOssan_CuriosityShopMan_Draw(Actor* thisx, PlayState* play) {
 void EnOssan_PartTimer_Draw(Actor* thisx, PlayState* play) {
     static TexturePtr sEyeTextures[] = { gAniOpenEyeTex, gAniClosingEyeTex, gAniClosedEyeTex };
     s32 pad;
-    EnOssan* this = THIS;
+    EnOssan* this = (EnOssan*)thisx;
 
     OPEN_DISPS(play->state.gfxCtx);
 

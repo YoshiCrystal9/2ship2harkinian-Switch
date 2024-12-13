@@ -15,8 +15,6 @@
 
 #define FLAGS (ACTOR_FLAG_10 | ACTOR_FLAG_THROW_ONLY)
 
-#define THIS ((EnKusa2*)thisx)
-
 void EnKusa2_Init(Actor* thisx, PlayState* play);
 void EnKusa2_Destroy(Actor* thisx, PlayState* play);
 void EnKusa2_Update(Actor* thisx, PlayState* play);
@@ -864,7 +862,7 @@ static InitChainEntry sInitChain[] = {
 
 void EnKusa2_Init(Actor* thisx, PlayState* play) {
     s32 pad;
-    EnKusa2* this = THIS;
+    EnKusa2* this = (EnKusa2*)thisx;
 
     Actor_ProcessInitChain(&this->actor, sInitChain);
     if (!ENKUSA2_GET_1(&this->actor)) {
@@ -905,7 +903,7 @@ void EnKusa2_Init(Actor* thisx, PlayState* play) {
 }
 
 void EnKusa2_Destroy(Actor* thisx, PlayState* play) {
-    EnKusa2* this = THIS;
+    EnKusa2* this = (EnKusa2*)thisx;
 
     if (ENKUSA2_GET_1(&this->actor) == 1) {
         Collider_DestroyCylinder(play, &this->collider);
@@ -1302,7 +1300,7 @@ void func_80A5E4BC(EnKusa2* this, PlayState* play) {
 
 void func_80A5E604(Actor* thisx, PlayState* play) {
     s32 pad;
-    EnKusa2* this = THIS;
+    EnKusa2* this = (EnKusa2*)thisx;
 
     this->actionFunc(this, play);
 
@@ -1320,7 +1318,7 @@ void func_80A5E604(Actor* thisx, PlayState* play) {
 }
 
 void EnKusa2_Update(Actor* thisx, PlayState* play) {
-    EnKusa2* this = THIS;
+    EnKusa2* this = (EnKusa2*)thisx;
 
     if ((this->unk_1C0 != NULL) && (this->unk_1C0->actor.update == NULL)) {
         this->unk_1C0 = NULL;
@@ -1336,7 +1334,7 @@ void func_80A5E6F0(Actor* thisx, PlayState* play) {
         gKakeraLeafTipDL,
         gKakeraLeafMiddleDL,
     };
-    EnKusa2* this = THIS;
+    EnKusa2* this = (EnKusa2*)thisx;
     s32 i;
 
     OPEN_DISPS(play->state.gfxCtx);
@@ -1374,7 +1372,7 @@ void func_80A5E80C(PlayState* play, s32 arg1) {
 }
 
 void EnKusa2_Draw(Actor* thisx, PlayState* play) {
-    EnKusa2* this = THIS;
+    EnKusa2* this = (EnKusa2*)thisx;
 
     Ship_ExtendedCullingActorAdjustProjectedZ(&this->actor);
 
@@ -1403,7 +1401,7 @@ void func_80A5E9B4(Actor* thisx, PlayState* play) {
 }
 
 void func_80A5EA48(Actor* thisx, PlayState* play) {
-    EnKusa2* this = THIS;
+    EnKusa2* this = (EnKusa2*)thisx;
 
     if (this->unk_1CF == 0xFF) {
         Gfx_DrawDListOpa(play, gKusaBushType1DL);

@@ -9,8 +9,6 @@
 
 #define FLAGS (ACTOR_FLAG_10)
 
-#define THIS ((EnElforg*)thisx)
-
 void EnElforg_Init(Actor* thisx, PlayState* play);
 void EnElforg_Destroy(Actor* thisx, PlayState* play);
 void EnElforg_Update(Actor* thisx, PlayState* play);
@@ -68,7 +66,7 @@ void EnElforg_InitializeParams(EnElforg* this) {
 
 void EnElforg_Init(Actor* thisx, PlayState* play) {
     s32 pad;
-    EnElforg* this = THIS;
+    EnElforg* this = (EnElforg*)thisx;
 
     Actor_SetScale(thisx, 0.01f);
     this->strayFairyFlags = 0;
@@ -156,7 +154,7 @@ void EnElforg_Init(Actor* thisx, PlayState* play) {
 }
 
 void EnElforg_Destroy(Actor* thisx, PlayState* play) {
-    EnElforg* this = THIS;
+    EnElforg* this = (EnElforg*)thisx;
 
     if (STRAY_FAIRY_TYPE(&this->actor) == STRAY_FAIRY_TYPE_COLLIDER) {
         Collider_DestroyCylinder(play, &this->collider);
@@ -601,7 +599,7 @@ void EnElforg_HiddenByCollider(EnElforg* this, PlayState* play) {
 }
 
 void EnElforg_Update(Actor* thisx, PlayState* play) {
-    EnElforg* this = THIS;
+    EnElforg* this = (EnElforg*)thisx;
 
     this->actionFunc(this, play);
 
@@ -625,7 +623,7 @@ void EnElforg_Update(Actor* thisx, PlayState* play) {
 
 s32 EnElforg_OverrideLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3f* pos, Vec3s* rot, Actor* thisx,
                               Gfx** gfx) {
-    EnElforg* this = THIS;
+    EnElforg* this = (EnElforg*)thisx;
 
     if (this->direction < 0) {
         if (limbIndex == STRAY_FAIRY_LIMB_LEFT_FACING_HEAD) {
@@ -640,7 +638,7 @@ s32 EnElforg_OverrideLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3f
 
 void EnElforg_Draw(Actor* thisx, PlayState* play) {
     s32 pad;
-    EnElforg* this = THIS;
+    EnElforg* this = (EnElforg*)thisx;
 
     OPEN_DISPS(play->state.gfxCtx);
 

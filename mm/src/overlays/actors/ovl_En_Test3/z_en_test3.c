@@ -16,8 +16,6 @@
 
 #define FLAGS (ACTOR_FLAG_10 | ACTOR_FLAG_20 | ACTOR_FLAG_CAN_PRESS_SWITCHES)
 
-#define THIS ((EnTest3*)thisx)
-
 typedef struct {
     /* 0x0 */ s8 unk_0;
     /* 0x1 */ s8 unk_1_0 : 4;
@@ -504,7 +502,7 @@ s32 func_80A3ED24(EnTest3* this, PlayState* play) {
 
 void EnTest3_Init(Actor* thisx, PlayState* play2) {
     PlayState* play = play2;
-    EnTest3* this = THIS;
+    EnTest3* this = (EnTest3*)thisx;
     Camera* subCam;
 
     if (D_80A41D24) {
@@ -560,7 +558,7 @@ void EnTest3_Init(Actor* thisx, PlayState* play2) {
 
 void EnTest3_Destroy(Actor* thisx, PlayState* play2) {
     PlayState* play = play2;
-    EnTest3* this = THIS;
+    EnTest3* this = (EnTest3*)thisx;
 
     Effect_Destroy(play, this->player.meleeWeaponEffectIndex[0]);
     Effect_Destroy(play, this->player.meleeWeaponEffectIndex[1]);
@@ -1110,7 +1108,7 @@ void func_80A40A6C(EnTest3* this, PlayState* play) {
 
 void EnTest3_Update(Actor* thisx, PlayState* play2) {
     PlayState* play = play2;
-    EnTest3* this = THIS;
+    EnTest3* this = (EnTest3*)thisx;
 
     sKafeiControlInput.rel.button = sKafeiControlInput.cur.button;
     sKafeiControlInput.cur.button = 0;
@@ -1164,7 +1162,7 @@ void EnTest3_Update(Actor* thisx, PlayState* play2) {
 s32 D_80A418C8 = false;
 
 s32 EnTest3_OverrideLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3f* pos, Vec3s* rot, Actor* thisx) {
-    EnTest3* this = THIS;
+    EnTest3* this = (EnTest3*)thisx;
 
     if (limbIndex == KAFEI_LIMB_ROOT) {
         sKafeiCurBodyPartPos = &this->player.bodyPartsPos[0] - 1;
@@ -1219,7 +1217,7 @@ s32 EnTest3_OverrideLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3f*
 
 void EnTest3_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList1, Gfx** dList2, Vec3s* rot, Actor* thisx) {
     s32 pad;
-    EnTest3* this = THIS;
+    EnTest3* this = (EnTest3*)thisx;
 
     if (*dList2 != NULL) {
         Matrix_MultZero(sKafeiCurBodyPartPos);
@@ -1329,7 +1327,7 @@ static KafeiFace sFaceExpressions[] = {
 
 void EnTest3_Draw(Actor* thisx, PlayState* play2) {
     PlayState* play = play2;
-    EnTest3* this = THIS;
+    EnTest3* this = (EnTest3*)thisx;
     s32 eyeTexIndex = GET_EYE_INDEX_FROM_JOINT_TABLE(this->player.skelAnime.jointTable);
     s32 mouthTexIndex = GET_MOUTH_INDEX_FROM_JOINT_TABLE(this->player.skelAnime.jointTable);
     Gfx* gfx;

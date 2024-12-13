@@ -9,8 +9,6 @@
 
 #define FLAGS (ACTOR_FLAG_10 | ACTOR_FLAG_20)
 
-#define THIS ((BgIngate*)thisx)
-
 void BgIngate_Init(Actor* thisx, PlayState* play2);
 void BgIngate_Destroy(Actor* thisx, PlayState* play);
 void BgIngate_Update(Actor* thisx, PlayState* play);
@@ -317,7 +315,7 @@ void func_809543D4(BgIngate* this, PlayState* play) {
 
 void BgIngate_Init(Actor* thisx, PlayState* play2) {
     PlayState* play = play2;
-    BgIngate* this = THIS;
+    BgIngate* this = (BgIngate*)thisx;
     s32 phi_a2;
     Vec3s* sp38;
     Vec3f sp2C;
@@ -370,7 +368,7 @@ void BgIngate_Init(Actor* thisx, PlayState* play2) {
 }
 
 void BgIngate_Destroy(Actor* thisx, PlayState* play) {
-    BgIngate* this = THIS;
+    BgIngate* this = (BgIngate*)thisx;
 
     if (this->unk160 & 8) {
         DynaPoly_DeleteBgActor(play, &play->colCtx.dyna, this->dyna.bgId);
@@ -378,7 +376,7 @@ void BgIngate_Destroy(Actor* thisx, PlayState* play) {
 }
 
 void BgIngate_Update(Actor* thisx, PlayState* play) {
-    BgIngate* this = THIS;
+    BgIngate* this = (BgIngate*)thisx;
 
     this->actionFunc(this, play);
 }

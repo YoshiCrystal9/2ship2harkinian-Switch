@@ -10,8 +10,6 @@
 
 #define FLAGS (ACTOR_FLAG_10 | ACTOR_FLAG_20 | ACTOR_FLAG_LOCK_ON_DISABLED)
 
-#define THIS ((EnSyatekiDekunuts*)thisx)
-
 void EnSyatekiDekunuts_Init(Actor* thisx, PlayState* play2);
 void EnSyatekiDekunuts_Destroy(Actor* thisx, PlayState* play);
 void EnSyatekiDekunuts_Update(Actor* thisx, PlayState* play);
@@ -109,7 +107,7 @@ static s32 sDrawFlowers = true; // This makes it so only one EnSyatekiDekunuts d
 void EnSyatekiDekunuts_Init(Actor* thisx, PlayState* play2) {
     // static s32 sDrawFlowers = true; // This makes it so only one EnSyatekiDekunuts draws all the flowers.
     // #endregion
-    EnSyatekiDekunuts* this = THIS;
+    EnSyatekiDekunuts* this = (EnSyatekiDekunuts*)thisx;
     PlayState* play = play2;
     s32 pathType;
     Path* path;
@@ -164,7 +162,7 @@ void EnSyatekiDekunuts_Init(Actor* thisx, PlayState* play2) {
 }
 
 void EnSyatekiDekunuts_Destroy(Actor* thisx, PlayState* play) {
-    EnSyatekiDekunuts* this = THIS;
+    EnSyatekiDekunuts* this = (EnSyatekiDekunuts*)thisx;
 
     Collider_DestroyCylinder(play, &this->collider);
 }
@@ -428,7 +426,7 @@ void EnSyatekiDekunuts_Dead(EnSyatekiDekunuts* this, PlayState* play) {
 
 void EnSyatekiDekunuts_Update(Actor* thisx, PlayState* play) {
     s32 pad;
-    EnSyatekiDekunuts* this = THIS;
+    EnSyatekiDekunuts* this = (EnSyatekiDekunuts*)thisx;
 
     this->actionFunc(this, play);
 
@@ -458,7 +456,7 @@ void EnSyatekiDekunuts_Update(Actor* thisx, PlayState* play) {
 
 s32 EnSyatekiDekunuts_OverrideLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3f* pos, Vec3s* rot,
                                        Actor* thisx) {
-    EnSyatekiDekunuts* this = THIS;
+    EnSyatekiDekunuts* this = (EnSyatekiDekunuts*)thisx;
 
     if ((limbIndex == DEKU_SCRUB_LIMB_HEADDRESS) && (this->headdressType == SG_DEKU_HEADDRESS_TYPE_FLIPPED_UP)) {
         rot->z += this->headdressRotZ;
@@ -468,7 +466,7 @@ s32 EnSyatekiDekunuts_OverrideLimbDraw(PlayState* play, s32 limbIndex, Gfx** dLi
 }
 
 void EnSyatekiDekunuts_Draw(Actor* thisx, PlayState* play) {
-    EnSyatekiDekunuts* this = THIS;
+    EnSyatekiDekunuts* this = (EnSyatekiDekunuts*)thisx;
     Vec3f flowerPos;
     s32 i;
 

@@ -8,8 +8,6 @@
 
 #define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_10 | ACTOR_FLAG_MINIMAP_ICON_ENABLED)
 
-#define THIS ((EnGe3*)thisx)
-
 void EnGe3_Init(Actor* thisx, PlayState* play);
 void EnGe3_Destroy(Actor* thisx, PlayState* play);
 void EnGe3_Update(Actor* thisx, PlayState* play);
@@ -69,7 +67,7 @@ static ColliderCylinderInit sCylinderInit = {
 
 void EnGe3_Init(Actor* thisx, PlayState* play) {
     s32 pad;
-    EnGe3* this = THIS;
+    EnGe3* this = (EnGe3*)thisx;
 
     ActorShape_Init(&this->picto.actor.shape, 0.0f, ActorShadow_DrawCircle, 20.0f);
     SkelAnime_InitFlex(play, &this->skelAnime, &gGerudoRedSkel, NULL, this->jointTable, this->morphTable,
@@ -106,7 +104,7 @@ void EnGe3_Init(Actor* thisx, PlayState* play) {
 }
 
 void EnGe3_Destroy(Actor* thisx, PlayState* play) {
-    EnGe3* this = THIS;
+    EnGe3* this = (EnGe3*)thisx;
 
     Collider_DestroyCylinder(play, &this->collider);
 }
@@ -306,7 +304,7 @@ void EnGe3_AveilsChamberIdle(EnGe3* this, PlayState* play) {
 
 void EnGe3_UpdateColliderAndMove(Actor* thisx, PlayState* play) {
     s32 pad;
-    EnGe3* this = THIS;
+    EnGe3* this = (EnGe3*)thisx;
 
     Collider_UpdateCylinder(&this->picto.actor, &this->collider);
     CollisionCheck_SetOC(play, &play->colChkCtx, &this->collider.base);
@@ -327,7 +325,7 @@ void EnGe3_Blink(EnGe3* this, PlayState* play) {
 }
 
 void EnGe3_Update(Actor* thisx, PlayState* play) {
-    EnGe3* this = THIS;
+    EnGe3* this = (EnGe3*)thisx;
 
     EnGe3_UpdateColliderAndMove(&this->picto.actor, play);
     this->actionFunc(this, play);
@@ -345,7 +343,7 @@ s32 EnGe3_ValidatePictograph(PlayState* play, Actor* thisx) {
 }
 
 s32 EnGe3_OverrideLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3f* pos, Vec3s* rot, Actor* thisx) {
-    EnGe3* this = THIS;
+    EnGe3* this = (EnGe3*)thisx;
 
     switch (limbIndex) {
         case GERUDO_RED_LIMB_VEIL:
@@ -403,7 +401,7 @@ s32 EnGe3_OverrideLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3f* p
 }
 
 void EnGe3_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* rot, Actor* thisx) {
-    EnGe3* this = THIS;
+    EnGe3* this = (EnGe3*)thisx;
     Vec3f sFocusOffset = { 600.0f, 700.0f, 0.0f };
 
     if (limbIndex == GERUDO_RED_LIMB_HEAD) {
@@ -418,7 +416,7 @@ void EnGe3_Draw(Actor* thisx, PlayState* play) {
         gGerudoRedEyeClosedTex,
     };
     s32 pad;
-    EnGe3* this = THIS;
+    EnGe3* this = (EnGe3*)thisx;
 
     OPEN_DISPS(play->state.gfxCtx);
 

@@ -10,8 +10,6 @@
 
 #define FLAGS (ACTOR_FLAG_10)
 
-#define THIS ((ElfMsg*)thisx)
-
 void ElfMsg_Init(Actor* thisx, PlayState* play);
 void ElfMsg_Destroy(Actor* thisx, PlayState* play);
 void ElfMsg_Update(Actor* thisx, PlayState* play);
@@ -71,7 +69,7 @@ s32 func_8092DF9C(ElfMsg* this, PlayState* play) {
 }
 
 void ElfMsg_Init(Actor* thisx, PlayState* play) {
-    ElfMsg* this = THIS;
+    ElfMsg* this = (ElfMsg*)thisx;
 
     if (!func_8092DF9C(this, play)) {
         Actor_ProcessInitChain(&this->actor, sInitChain);
@@ -133,7 +131,7 @@ void func_8092E284(ElfMsg* this, PlayState* play) {
 }
 
 void ElfMsg_Update(Actor* thisx, PlayState* play) {
-    ElfMsg* this = THIS;
+    ElfMsg* this = (ElfMsg*)thisx;
 
     if (func_8092DF9C(this, play) == 0) {
         if (Actor_TalkOfferAccepted(&this->actor, &play->state)) {

@@ -39,8 +39,6 @@ when set, gets cleared next EnBox_Update call and clip to the floor
 #define ENBOX_MOVE_0x40 (1 << 6)
 #define ENBOX_MOVE_0x80 (1 << 7)
 
-#define THIS ((EnBox*)thisx)
-
 void EnBox_Init(Actor* thisx, PlayState* play);
 void EnBox_Destroy(Actor* thisx, PlayState* play);
 void EnBox_Update(Actor* thisx, PlayState* play);
@@ -178,7 +176,7 @@ void EnBox_ClipToGround(EnBox* this, PlayState* play) {
 
 void EnBox_Init(Actor* thisx, PlayState* play) {
     s32 pad;
-    EnBox* this = THIS;
+    EnBox* this = (EnBox*)thisx;
     s16 csId;
     CollisionHeader* colHeader;
     f32 startFrame;
@@ -298,7 +296,7 @@ void EnBox_Init(Actor* thisx, PlayState* play) {
 }
 
 void EnBox_Destroy(Actor* thisx, PlayState* play) {
-    EnBox* this = THIS;
+    EnBox* this = (EnBox*)thisx;
 
     DynaPoly_DeleteBgActor(play, &play->colCtx.dyna, this->dyna.bgId);
 }
@@ -601,7 +599,7 @@ void EnBox_SpawnIceSmoke(EnBox* this, PlayState* play) {
 }
 
 void EnBox_Update(Actor* thisx, PlayState* play) {
-    EnBox* this = THIS;
+    EnBox* this = (EnBox*)thisx;
 
     if (this->movementFlags & ENBOX_MOVE_STICK_TO_GROUND) {
         this->movementFlags &= ~ENBOX_MOVE_STICK_TO_GROUND;
@@ -631,7 +629,7 @@ void EnBox_Update(Actor* thisx, PlayState* play) {
 
 void EnBox_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* rot, Actor* thisx, Gfx** gfx) {
     s32 pad;
-    EnBox* this = THIS;
+    EnBox* this = (EnBox*)thisx;
 
     if (limbIndex == OBJECT_BOX_CHEST_LIMB_01) {
         MATRIX_FINALIZE_AND_LOAD((*gfx)++, play->state.gfxCtx);
@@ -695,7 +693,7 @@ Gfx* EnBox_SetRenderMode3(GraphicsContext* gfxCtx) {
 
 void EnBox_Draw(Actor* thisx, PlayState* play) {
     s32 pad;
-    EnBox* this = THIS;
+    EnBox* this = (EnBox*)thisx;
 
     OPEN_DISPS(play->state.gfxCtx);
 

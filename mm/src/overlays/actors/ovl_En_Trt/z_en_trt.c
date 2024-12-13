@@ -12,8 +12,6 @@
 
 #define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY)
 
-#define THIS ((EnTrt*)thisx)
-
 #define ENTRT_FULLY_AWAKE (1 << 0)
 #define ENTRT_GIVEN_MUSHROOM (1 << 1)
 #define ENTRT_TALKED (1 << 2)
@@ -1721,21 +1719,21 @@ static InitChainEntry sInitChain[] = {
 };
 
 void EnTrt_Init(Actor* thisx, PlayState* play) {
-    EnTrt* this = THIS;
+    EnTrt* this = (EnTrt*)thisx;
 
     Actor_ProcessInitChain(&this->actor, sInitChain);
     EnTrt_InitShop(this, play);
 }
 
 void EnTrt_Destroy(Actor* thisx, PlayState* play) {
-    EnTrt* this = THIS;
+    EnTrt* this = (EnTrt*)thisx;
 
     SkelAnime_Free(&this->skelAnime, play);
     Collider_DestroyCylinder(play, &this->collider);
 }
 
 void EnTrt_Update(Actor* thisx, PlayState* play) {
-    EnTrt* this = THIS;
+    EnTrt* this = (EnTrt*)thisx;
 
     this->blinkFunc(this);
     EnTrt_UpdateJoystickInputState(play, this);
@@ -1788,7 +1786,7 @@ void EnTrt_UpdateLimb(s16 pitch, s16 yaw, Vec3f* pos, Vec3s* rot, s32 overrideRo
 }
 
 s32 EnTrt_OverrideLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3f* pos, Vec3s* rot, Actor* thisx) {
-    EnTrt* this = THIS;
+    EnTrt* this = (EnTrt*)thisx;
     s32 i;
 
     for (i = 0; i < ARRAY_COUNT(this->items); i++) {
@@ -1804,7 +1802,7 @@ s32 EnTrt_OverrideLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3f* p
 }
 
 void EnTrt_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* rot, Actor* thisx) {
-    EnTrt* this = THIS;
+    EnTrt* this = (EnTrt*)thisx;
     s32 overrideRot;
 
     overrideRot = false;
@@ -1822,7 +1820,7 @@ void EnTrt_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* rot,
 }
 
 void EnTrt_TransformLimbDraw(PlayState* play, s32 limbIndex, Actor* thisx) {
-    EnTrt* this = THIS;
+    EnTrt* this = (EnTrt*)thisx;
 
     if (limbIndex == KOTAKE_LIMB_HEAD) {
         Matrix_Translate(this->headPos.x, this->headPos.y, this->headPos.z, MTXMODE_NEW);
@@ -1835,7 +1833,7 @@ void EnTrt_TransformLimbDraw(PlayState* play, s32 limbIndex, Actor* thisx) {
 
 void EnTrt_Draw(Actor* thisx, PlayState* play) {
     static TexturePtr sEyeTextures[] = { gKotakeEyeOpenTex, gKotakeEyeHalfTex, gKotakeEyeClosedTex };
-    EnTrt* this = THIS;
+    EnTrt* this = (EnTrt*)thisx;
     s32 pad;
 
     OPEN_DISPS(play->state.gfxCtx);

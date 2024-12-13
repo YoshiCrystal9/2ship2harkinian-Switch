@@ -12,8 +12,6 @@
 
 #define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_LOCK_ON_DISABLED)
 
-#define THIS ((EnKujiya*)thisx)
-
 void EnKujiya_Init(Actor* thisx, PlayState* play);
 void EnKujiya_Destroy(Actor* thisx, PlayState* play);
 void EnKujiya_Update(Actor* thisx, PlayState* play);
@@ -56,7 +54,7 @@ ActorProfile En_Kujiya_Profile = {
       (HS_GET_LOTTERY_CODE_GUESS() & 0xF)))
 
 void EnKujiya_Init(Actor* thisx, PlayState* play) {
-    EnKujiya* this = THIS;
+    EnKujiya* this = (EnKujiya*)thisx;
 
     Actor_SetScale(&this->actor, 0.1f);
 
@@ -363,13 +361,13 @@ void EnKujiya_TurnToClosed(EnKujiya* this, PlayState* play) {
 }
 
 void EnKujiya_Update(Actor* thisx, PlayState* play) {
-    EnKujiya* this = THIS;
+    EnKujiya* this = (EnKujiya*)thisx;
 
     this->actionFunc(this, play);
 }
 
 void EnKujiya_Draw(Actor* thisx, PlayState* play) {
-    EnKujiya* this = THIS;
+    EnKujiya* this = (EnKujiya*)thisx;
 
     AnimatedMat_Draw(play, Lib_SegmentedToVirtual(gLotteryShopTexAnim));
 

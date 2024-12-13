@@ -8,8 +8,6 @@
 
 #define FLAGS (ACTOR_FLAG_10)
 
-#define THIS ((EnMttag*)thisx)
-
 void EnMttag_Init(Actor* thisx, PlayState* play);
 void EnMttag_Destroy(Actor* thisx, PlayState* play);
 void EnMttag_Update(Actor* thisx, PlayState* play);
@@ -476,7 +474,7 @@ void EnMttag_HandleCantWinChoice(EnMttag* this, PlayState* play) {
 
 void EnMttag_Init(Actor* thisx, PlayState* play) {
     Player* player;
-    EnMttag* this = THIS;
+    EnMttag* this = (EnMttag*)thisx;
 
     if (gSaveContext.save.entrance == ENTRANCE(GORON_RACETRACK, 1)) {
         player = GET_PLAYER(play);
@@ -502,7 +500,7 @@ void EnMttag_Init(Actor* thisx, PlayState* play) {
 }
 
 void EnMttag_Destroy(Actor* thisx, PlayState* play) {
-    EnMttag* this = THIS;
+    EnMttag* this = (EnMttag*)thisx;
 
     if (gSaveContext.timerStates[TIMER_ID_MINIGAME_2] != TIMER_STATE_6) {
         gSaveContext.timerStates[TIMER_ID_MINIGAME_2] = TIMER_STATE_STOP;
@@ -510,7 +508,7 @@ void EnMttag_Destroy(Actor* thisx, PlayState* play) {
 }
 
 void EnMttag_Update(Actor* thisx, PlayState* play) {
-    EnMttag* this = THIS;
+    EnMttag* this = (EnMttag*)thisx;
 
     this->actionFunc(this, play);
 }

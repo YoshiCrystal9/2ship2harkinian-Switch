@@ -10,8 +10,6 @@
 
 #define FLAGS (ACTOR_FLAG_10)
 
-#define THIS ((EnGamelupy*)thisx)
-
 void EnGamelupy_Init(Actor* thisx, PlayState* play);
 void EnGamelupy_Destroy(Actor* thisx, PlayState* play);
 void EnGamelupy_Update(Actor* thisx, PlayState* play);
@@ -66,7 +64,7 @@ static Color_RGBA8 sEnvColor = { 100, 200, 0, 255 };
 
 void EnGamelupy_Init(Actor* thisx, PlayState* play) {
     s32 pad;
-    EnGamelupy* this = THIS;
+    EnGamelupy* this = (EnGamelupy*)thisx;
 
     Actor_SetScale(&this->actor, 0.03f);
     ActorShape_Init(&this->actor.shape, 0.0f, ActorShadow_DrawCircle, 10.0f);
@@ -87,7 +85,7 @@ void EnGamelupy_Init(Actor* thisx, PlayState* play) {
 }
 
 void EnGamelupy_Destroy(Actor* thisx, PlayState* play) {
-    EnGamelupy* this = THIS;
+    EnGamelupy* this = (EnGamelupy*)thisx;
 
     Collider_DestroyCylinder(play, &this->collider);
 }
@@ -168,7 +166,7 @@ void EnGamelupy_UpdateCollision(EnGamelupy* this, PlayState* play) {
 }
 
 void EnGamelupy_Update(Actor* thisx, PlayState* play) {
-    EnGamelupy* this = THIS;
+    EnGamelupy* this = (EnGamelupy*)thisx;
 
     this->actionFunc(this, play);
     Actor_MoveWithGravity(&this->actor);
@@ -178,7 +176,7 @@ void EnGamelupy_Update(Actor* thisx, PlayState* play) {
 
 void EnGamelupy_Draw(Actor* thisx, PlayState* play) {
     s32 pad;
-    EnGamelupy* this = THIS;
+    EnGamelupy* this = (EnGamelupy*)thisx;
 
     OPEN_DISPS(play->state.gfxCtx);
 

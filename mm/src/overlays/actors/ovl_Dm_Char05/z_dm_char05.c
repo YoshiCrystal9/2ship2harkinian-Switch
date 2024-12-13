@@ -10,8 +10,6 @@
 
 #define FLAGS (ACTOR_FLAG_10 | ACTOR_FLAG_20)
 
-#define THIS ((DmChar05*)thisx)
-
 void DmChar05_Init(Actor* thisx, PlayState* play);
 void DmChar05_Destroy(Actor* thisx, PlayState* play);
 void DmChar05_Update(Actor* thisx, PlayState* play);
@@ -82,7 +80,7 @@ void DmChar05_ChangeAnim(SkelAnime* skelAnime, AnimationInfo* animInfo, u16 anim
 }
 
 void func_80AAC63C(Actor* thisx, PlayState* play) {
-    DmChar05* this = THIS;
+    DmChar05* this = (DmChar05*)thisx;
 
     ActorShape_Init(&this->actor.shape, 0.0f, ActorShadow_DrawCircle, 24.0f);
     SkelAnime_Init(play, &this->skelAnime, &object_dmask_Skel_010B0, NULL, NULL, NULL, 0);
@@ -95,7 +93,7 @@ void func_80AAC63C(Actor* thisx, PlayState* play) {
 }
 
 void func_80AAC6E4(Actor* thisx, PlayState* play) {
-    DmChar05* this = THIS;
+    DmChar05* this = (DmChar05*)thisx;
 
     ActorShape_Init(&this->actor.shape, 0.0f, ActorShadow_DrawCircle, 24.0f);
     SkelAnime_Init(play, &this->skelAnime, &object_dmask_Skel_042B0, NULL, NULL, NULL, 0);
@@ -104,7 +102,7 @@ void func_80AAC6E4(Actor* thisx, PlayState* play) {
 }
 
 void func_80AAC770(Actor* thisx, PlayState* play) {
-    DmChar05* this = THIS;
+    DmChar05* this = (DmChar05*)thisx;
 
     ActorShape_Init(&this->actor.shape, 0.0f, ActorShadow_DrawCircle, 24.0f);
     SkelAnime_InitFlex(play, &this->skelAnime, &object_dmask_Skel_001D0, NULL, NULL, NULL, 0);
@@ -113,7 +111,7 @@ void func_80AAC770(Actor* thisx, PlayState* play) {
 }
 
 void func_80AAC7FC(Actor* thisx, PlayState* play) {
-    DmChar05* this = THIS;
+    DmChar05* this = (DmChar05*)thisx;
 
     ActorShape_Init(&this->actor.shape, 0.0f, ActorShadow_DrawCircle, 24.0f);
     SkelAnime_Init(play, &this->skelAnime, &object_dmask_Skel_013D0, NULL, NULL, NULL, 0);
@@ -122,13 +120,13 @@ void func_80AAC7FC(Actor* thisx, PlayState* play) {
 }
 
 void func_80AAC888(Actor* thisx, PlayState* play) {
-    DmChar05* this = THIS;
+    DmChar05* this = (DmChar05*)thisx;
 
     this->actionFunc = func_80AACA98;
 }
 
 void DmChar05_Init(Actor* thisx, PlayState* play) {
-    DmChar05* this = THIS;
+    DmChar05* this = (DmChar05*)thisx;
 
     this->animIndex = DMCHAR05_ANIM_0;
     this->unk_18E = 0;
@@ -584,7 +582,7 @@ void func_80AAD4A8(DmChar05* this, PlayState* play) {
 }
 
 void DmChar05_Update(Actor* thisx, PlayState* play) {
-    DmChar05* this = THIS;
+    DmChar05* this = (DmChar05*)thisx;
 
     func_80AACF04(this, play);
     if (Cutscene_IsCueInChannel(play, CS_CMD_ACTOR_CUE_109)) {
@@ -622,7 +620,7 @@ void DmChar05_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* r
 }
 
 void func_80AAD998(Actor* thisx, PlayState* play) {
-    DmChar05* this = THIS;
+    DmChar05* this = (DmChar05*)thisx;
     s32 pad[2];
 
     if (this->unk_18E == 0) {
@@ -644,7 +642,7 @@ void func_80AAD998(Actor* thisx, PlayState* play) {
 }
 
 void func_80AADA90(Actor* thisx, PlayState* play) {
-    DmChar05* this = THIS;
+    DmChar05* this = (DmChar05*)thisx;
 
     if (this->unk_18E == 0) {
         if (Cutscene_IsCueInChannel(play, CS_CMD_ACTOR_CUE_473) &&
@@ -659,7 +657,7 @@ void func_80AADA90(Actor* thisx, PlayState* play) {
 }
 
 void func_80AADB4C(Actor* thisx, PlayState* play) {
-    DmChar05* this = THIS;
+    DmChar05* this = (DmChar05*)thisx;
 
     if (this->unk_18E == 0) {
         if (Cutscene_IsCueInChannel(play, CS_CMD_ACTOR_CUE_518) &&
@@ -675,7 +673,7 @@ void func_80AADB4C(Actor* thisx, PlayState* play) {
 
 void func_80AADC00(Actor* thisx, PlayState* play) {
     s32 pad;
-    DmChar05* this = THIS;
+    DmChar05* this = (DmChar05*)thisx;
     s32 cueChannel;
 
     if (Cutscene_IsCueInChannel(play, CS_CMD_ACTOR_CUE_559)) {
@@ -695,7 +693,7 @@ void func_80AADC00(Actor* thisx, PlayState* play) {
 }
 
 void DmChar05_Draw(Actor* thisx, PlayState* play) {
-    DmChar05* this = THIS;
+    DmChar05* this = (DmChar05*)thisx;
 
     switch (DMCHAR05_GET(&this->actor)) {
         case DMCHAR05_0:

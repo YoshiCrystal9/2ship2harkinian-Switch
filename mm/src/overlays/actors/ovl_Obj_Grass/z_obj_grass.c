@@ -18,8 +18,6 @@
 
 #define FLAGS (ACTOR_FLAG_10 | ACTOR_FLAG_20)
 
-#define THIS ((ObjGrass*)thisx)
-
 void ObjGrass_Init(Actor* thisx, PlayState* play);
 void ObjGrass_Destroy(Actor* thisx, PlayState* play);
 void ObjGrass_Update(Actor* thisx, PlayState* play);
@@ -157,7 +155,7 @@ void ObjGrass_SpawnFragments(Vec3f* basePos, PlayState* play) {
 }
 
 void ObjGrass_Init(Actor* thisx, PlayState* play) {
-    ObjGrass* this = THIS;
+    ObjGrass* this = (ObjGrass*)thisx;
     s32 i;
 
     Actor_SetScale(&this->actor, 0.4f);
@@ -176,7 +174,7 @@ void ObjGrass_Init(Actor* thisx, PlayState* play) {
 }
 
 void ObjGrass_Destroy(Actor* thisx, PlayState* play) {
-    ObjGrass* this = THIS;
+    ObjGrass* this = (ObjGrass*)thisx;
     s32 i;
 
     for (i = 0; i < ARRAY_COUNT(this->grassElemColliders); i++) {
@@ -403,7 +401,7 @@ void ObjGrass_CalcAnimationMatrices(ObjGrass* this) {
 }
 
 void ObjGrass_Update(Actor* thisx, PlayState* play) {
-    ObjGrass* this = THIS;
+    ObjGrass* this = (ObjGrass*)thisx;
 
     ObjGrass_ProcessColliders(this, play);
     ObjGrass_UpdateGrass(this, play);
@@ -463,7 +461,7 @@ void ObjGrass_InitDraw(ObjGrass* this, PlayState* play) {
 }
 
 void ObjGrass_DrawOpa(Actor* thisx, PlayState* play2) {
-    ObjGrass* this = THIS;
+    ObjGrass* this = (ObjGrass*)thisx;
     PlayState* play = play2;
     Lights* lights;
     ObjGrassGroup* grassGroup;
@@ -513,7 +511,7 @@ void ObjGrass_DrawOpa(Actor* thisx, PlayState* play2) {
 }
 
 void ObjGrass_DrawXlu(Actor* thisx, PlayState* play) {
-    ObjGrass* this = THIS;
+    ObjGrass* this = (ObjGrass*)thisx;
     ObjGrassGroup* grassGroup;
     ObjGrassElement* grassElem;
     s32 i;
@@ -554,7 +552,7 @@ void ObjGrass_DrawXlu(Actor* thisx, PlayState* play) {
 }
 
 void ObjGrass_Draw(Actor* thisx, PlayState* play) {
-    ObjGrass* this = THIS;
+    ObjGrass* this = (ObjGrass*)thisx;
 
     ObjGrass_InitDraw(this, play);
     ObjGrass_DrawOpa(thisx, play);

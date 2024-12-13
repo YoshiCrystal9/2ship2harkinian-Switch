@@ -10,8 +10,6 @@
 
 #define FLAGS (ACTOR_FLAG_10 | ACTOR_FLAG_100000)
 
-#define THIS ((ObjMoonStone*)thisx)
-
 void ObjMoonStone_Init(Actor* thisx, PlayState* play);
 void ObjMoonStone_Destroy(Actor* thisx, PlayState* play);
 void ObjMoonStone_Update(Actor* thisx, PlayState* play);
@@ -39,7 +37,7 @@ ActorProfile Obj_Moon_Stone_Profile = {
 };
 
 void ObjMoonStone_Init(Actor* thisx, PlayState* play) {
-    ObjMoonStone* this = THIS;
+    ObjMoonStone* this = (ObjMoonStone*)thisx;
 
     Actor_SetScale(&this->actor, 0.3f);
     this->unk194 = (this->actor.params & 0xF000) >> 0xC;
@@ -137,7 +135,7 @@ void func_80C06870(ObjMoonStone* this, PlayState* play) {
 }
 
 void ObjMoonStone_Update(Actor* thisx, PlayState* play) {
-    ObjMoonStone* this = THIS;
+    ObjMoonStone* this = (ObjMoonStone*)thisx;
     Player* player = GET_PLAYER(play);
 
     if (!(player->stateFlags1 & (PLAYER_STATE1_2 | PLAYER_STATE1_DEAD | PLAYER_STATE1_200 | PLAYER_STATE1_10000000))) {

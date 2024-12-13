@@ -10,8 +10,6 @@
 
 #define FLAGS 0x00000000
 
-#define THIS ((EnItem00*)thisx)
-
 void EnItem00_Init(Actor* thisx, PlayState* play);
 void EnItem00_Destroy(Actor* thisx, PlayState* play);
 void EnItem00_Update(Actor* thisx, PlayState* play);
@@ -76,7 +74,7 @@ void EnItem00_SetObject(EnItem00* this, PlayState* play, f32* shadowOffset, f32*
 }
 
 void EnItem00_Init(Actor* thisx, PlayState* play) {
-    EnItem00* this = THIS;
+    EnItem00* this = (EnItem00*)thisx;
     s32 pad;
     f32 shadowOffset = 980.0f;
     f32 shadowScale = 6.0f;
@@ -314,7 +312,7 @@ void EnItem00_Init(Actor* thisx, PlayState* play) {
 }
 
 void EnItem00_Destroy(Actor* thisx, PlayState* play) {
-    EnItem00* this = THIS;
+    EnItem00* this = (EnItem00*)thisx;
 
     Collider_DestroyCylinder(play, &this->collider);
 }
@@ -491,7 +489,7 @@ void func_800A6A40(EnItem00* this, PlayState* play) {
 }
 
 void EnItem00_Update(Actor* thisx, PlayState* play) {
-    EnItem00* this = THIS;
+    EnItem00* this = (EnItem00*)thisx;
     s32 pad;
     Player* player = GET_PLAYER(play);
     s32 sp38 = player->stateFlags3 & PLAYER_STATE3_1000;
@@ -709,7 +707,7 @@ void EnItem00_Update(Actor* thisx, PlayState* play) {
 
 void EnItem00_Draw(Actor* thisx, PlayState* play) {
     s32 pad;
-    EnItem00* this = THIS;
+    EnItem00* this = (EnItem00*)thisx;
 
     if (!(this->unk14E & this->unk150)) {
         // 2S2H [Interpolation] Skip interpolation when the item moves from the ground to over the player head

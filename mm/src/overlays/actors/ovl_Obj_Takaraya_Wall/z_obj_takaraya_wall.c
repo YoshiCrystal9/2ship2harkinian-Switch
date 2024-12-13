@@ -31,8 +31,6 @@
 
 #define FLAGS (ACTOR_FLAG_10 | ACTOR_FLAG_20)
 
-#define THIS ((ObjTakarayaWall*)thisx)
-
 void ObjTakarayaWall_Init(Actor* thisx, PlayState* play);
 void ObjTakarayaWall_Destroy(Actor* thisx, PlayState* play);
 void ObjTakarayaWall_Update(Actor* thisx, PlayState* play2);
@@ -277,7 +275,7 @@ void ObjTakarayaWall_CarvePath(s32 row, s32 column) {
 }
 
 void ObjTakarayaWall_Init(Actor* thisx, PlayState* play) {
-    ObjTakarayaWall* this = THIS;
+    ObjTakarayaWall* this = (ObjTakarayaWall*)thisx;
     Actor* chest;
     s32 column;
     s32 i;
@@ -338,7 +336,7 @@ void ObjTakarayaWall_Init(Actor* thisx, PlayState* play) {
 }
 
 void ObjTakarayaWall_Destroy(Actor* thisx, PlayState* play) {
-    ObjTakarayaWall* this = THIS;
+    ObjTakarayaWall* this = (ObjTakarayaWall*)thisx;
     s32 i;
     s32 j;
 
@@ -443,7 +441,7 @@ void ObjTakarayaWall_Manage(ObjTakarayaWall* this, PlayState* play) {
 
 void ObjTakarayaWall_Update(Actor* thisx, PlayState* play2) {
     PlayState* play = play2;
-    ObjTakarayaWall* this = THIS;
+    ObjTakarayaWall* this = (ObjTakarayaWall*)thisx;
 
     this->actionFunc(this, play);
 
@@ -453,7 +451,7 @@ void ObjTakarayaWall_Update(Actor* thisx, PlayState* play2) {
 
 void ObjTakarayaWall_Draw(Actor* thisx, PlayState* play) {
     Vec3f audioPos;
-    ObjTakarayaWall* this = THIS;
+    ObjTakarayaWall* this = (ObjTakarayaWall*)thisx;
     MtxF* mtx;
     Gfx* gfx;
     s32 i;

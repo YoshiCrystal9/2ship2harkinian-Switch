@@ -11,8 +11,6 @@
 
 #define FLAGS (ACTOR_FLAG_LOCK_ON_DISABLED)
 
-#define THIS ((EnRaf*)thisx)
-
 void EnRaf_Init(Actor* thisx, PlayState* play);
 void EnRaf_Destroy(Actor* thisx, PlayState* play);
 void EnRaf_Update(Actor* thisx, PlayState* play);
@@ -202,7 +200,7 @@ void EnRaf_ClearPixelPetal(u8* mask, u8* clearPixelTable, s32 index) {
 }
 
 void EnRaf_Init(Actor* thisx, PlayState* play) {
-    EnRaf* this = THIS;
+    EnRaf* this = (EnRaf*)thisx;
     static Vec3f limbScale = { 1.0f, 1.0f, 1.0f };
     s32 pad;
     s32 i;
@@ -260,7 +258,7 @@ void EnRaf_Init(Actor* thisx, PlayState* play) {
 }
 
 void EnRaf_Destroy(Actor* thisx, PlayState* play) {
-    EnRaf* this = THIS;
+    EnRaf* this = (EnRaf*)thisx;
 
     DynaPoly_DeleteBgActor(play, &play->colCtx.dyna, this->dyna.bgId);
     Collider_DestroyCylinder(play, &this->collider);
@@ -723,7 +721,7 @@ void EnRaf_Dormant(EnRaf* this, PlayState* play) {
 
 void EnRaf_Update(Actor* thisx, PlayState* play) {
     s32 pad;
-    EnRaf* this = THIS;
+    EnRaf* this = (EnRaf*)thisx;
     WaterBox* waterBox;
     f32 ySurface;
     Vec3f ripplePos;
@@ -825,7 +823,7 @@ static Vec3f sUpperSegmentTargetScaleDuringSpit[] = {
 
 void EnRaf_TransformLimbDraw(PlayState* play2, s32 limbIndex, Actor* thisx) {
     PlayState* play = play2;
-    EnRaf* this = THIS;
+    EnRaf* this = (EnRaf*)thisx;
     s32 i;
 
     switch (this->petalScaleType) {
@@ -906,7 +904,7 @@ void EnRaf_TransformLimbDraw(PlayState* play2, s32 limbIndex, Actor* thisx) {
 }
 
 void EnRaf_Draw(Actor* thisx, PlayState* play) {
-    EnRaf* this = THIS;
+    EnRaf* this = (EnRaf*)thisx;
 
     Gfx_SetupDL25_Opa(play->state.gfxCtx);
     Gfx_SetupDL25_Xlu(play->state.gfxCtx);

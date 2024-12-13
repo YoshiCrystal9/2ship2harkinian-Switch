@@ -9,8 +9,6 @@
 
 #define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY)
 
-#define THIS ((EnGinkoMan*)thisx)
-
 void EnGinkoMan_Init(Actor* thisx, PlayState* play);
 void EnGinkoMan_Destroy(Actor* thisx, PlayState* play);
 void EnGinkoMan_Update(Actor* thisx, PlayState* play);
@@ -60,7 +58,7 @@ static AnimationInfo sAnimationInfo[GINKO_ANIM_MAX] = {
 };
 
 void EnGinkoMan_Init(Actor* thisx, PlayState* play) {
-    EnGinkoMan* this = THIS;
+    EnGinkoMan* this = (EnGinkoMan*)thisx;
 
     this->actor.attentionRangeType = ATTENTION_RANGE_1;
     this->actor.uncullZoneForward = 400.0f;
@@ -670,7 +668,7 @@ void EnGinkoMan_FacePlayer(EnGinkoMan* this, PlayState* play) {
 }
 
 void EnGinkoMan_Update(Actor* thisx, PlayState* play) {
-    EnGinkoMan* this = THIS;
+    EnGinkoMan* this = (EnGinkoMan*)thisx;
 
     this->actionFunc(this, play);
     this->actor.focus.pos = this->actor.world.pos;
@@ -679,7 +677,7 @@ void EnGinkoMan_Update(Actor* thisx, PlayState* play) {
 }
 
 s32 EnGinkoMan_OverrideLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3f* pos, Vec3s* rot, Actor* thisx) {
-    EnGinkoMan* this = THIS;
+    EnGinkoMan* this = (EnGinkoMan*)thisx;
 
     if (limbIndex == OBJECT_BOJ_LIMB_0F) {
         *dList = object_boj_DL_00B1D8;
@@ -702,7 +700,7 @@ void EnGinkoMan_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s*
 }
 
 void EnGinkoMan_Draw(Actor* thisx, PlayState* play) {
-    EnGinkoMan* this = THIS;
+    EnGinkoMan* this = (EnGinkoMan*)thisx;
 
     OPEN_DISPS(play->state.gfxCtx);
 

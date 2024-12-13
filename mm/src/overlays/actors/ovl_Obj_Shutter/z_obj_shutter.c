@@ -9,8 +9,6 @@
 
 #define FLAGS (ACTOR_FLAG_10 | ACTOR_FLAG_20)
 
-#define THIS ((ObjShutter*)thisx)
-
 void ObjShutter_Init(Actor* thisx, PlayState* play);
 void ObjShutter_Destroy(Actor* thisx, PlayState* play);
 void ObjShutter_Update(Actor* thisx, PlayState* play2);
@@ -41,7 +39,7 @@ static u8 sScheduleScript[] = {
 };
 
 void ObjShutter_Update(Actor* thisx, PlayState* play2) {
-    ObjShutter* this = THIS;
+    ObjShutter* this = (ObjShutter*)thisx;
     PlayState* play = play2;
     ScheduleOutput scheduleOutput;
 
@@ -76,7 +74,7 @@ void ObjShutter_Update(Actor* thisx, PlayState* play2) {
 }
 
 void ObjShutter_Draw(Actor* thisx, PlayState* play) {
-    ObjShutter* this = THIS;
+    ObjShutter* this = (ObjShutter*)thisx;
 
     Matrix_Translate(this->actor.world.pos.x, this->actor.world.pos.y + this->verticalOffset, this->actor.world.pos.z,
                      MTXMODE_NEW);

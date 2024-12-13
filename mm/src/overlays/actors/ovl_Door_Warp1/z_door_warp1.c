@@ -11,8 +11,6 @@
 
 #define FLAGS 0x00000000
 
-#define THIS ((DoorWarp1*)thisx)
-
 void DoorWarp1_Init(Actor* thisx, PlayState* play);
 void DoorWarp1_Destroy(Actor* thisx, PlayState* play);
 void DoorWarp1_Update(Actor* thisx, PlayState* play);
@@ -117,7 +115,7 @@ s32 func_808B866C(DoorWarp1* this, PlayState* play) {
 }
 
 void DoorWarp1_Init(Actor* thisx, PlayState* play) {
-    DoorWarp1* this = THIS;
+    DoorWarp1* this = (DoorWarp1*)thisx;
 
     this->unk_1CC = 0;
     this->unk_202 = 0;
@@ -177,7 +175,7 @@ void DoorWarp1_Init(Actor* thisx, PlayState* play) {
 
 void DoorWarp1_Destroy(Actor* thisx, PlayState* play) {
     s32 pad;
-    DoorWarp1* this = THIS;
+    DoorWarp1* this = (DoorWarp1*)thisx;
     s16 i;
 
     LightContext_RemoveLight(play, &play->lightCtx, this->unk_1DC);
@@ -915,7 +913,7 @@ void func_808BABF4(DoorWarp1* this, PlayState* play) {
 }
 
 void DoorWarp1_Update(Actor* thisx, PlayState* play) {
-    DoorWarp1* this = THIS;
+    DoorWarp1* this = (DoorWarp1*)thisx;
 
     if (this->unk_203 == 0) {
         this->unk_204 = 1.0f;
@@ -1096,7 +1094,7 @@ void func_808BB4F4(DoorWarp1* this, PlayState* play2) {
 }
 
 void DoorWarp1_Draw(Actor* thisx, PlayState* play) {
-    DoorWarp1* this = THIS;
+    DoorWarp1* this = (DoorWarp1*)thisx;
 
     switch (DOORWARP1_GET_FF(&this->dyna.actor)) {
         case ENDOORWARP1_FF_0:

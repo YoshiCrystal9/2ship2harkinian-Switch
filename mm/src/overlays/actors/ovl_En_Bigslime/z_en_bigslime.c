@@ -18,8 +18,6 @@
     (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_HOSTILE | ACTOR_FLAG_10 | ACTOR_FLAG_20 | \
      ACTOR_FLAG_HOOKSHOT_PULLS_ACTOR)
 
-#define THIS ((EnBigslime*)thisx)
-
 void EnBigslime_Init(Actor* thisx, PlayState* play2);
 void EnBigslime_Destroy(Actor* thisx, PlayState* play);
 void EnBigslime_UpdateGekko(Actor* thisx, PlayState* play);
@@ -314,7 +312,7 @@ void EnBigslime_Init(Actor* thisx, PlayState* play2) {
         WEEKEVENTREG_33_02,
     };
     PlayState* play = play2;
-    EnBigslime* this = THIS;
+    EnBigslime* this = (EnBigslime*)thisx;
     s32 i;
 
     sBigslimeStaticVtxData = ResourceMgr_LoadVtxByName(sBigslimeStaticVtx);
@@ -381,7 +379,7 @@ void EnBigslime_Init(Actor* thisx, PlayState* play2) {
 }
 
 void EnBigslime_Destroy(Actor* thisx, PlayState* play) {
-    EnBigslime* this = THIS;
+    EnBigslime* this = (EnBigslime*)thisx;
     s32 i;
 
     for (i = 0; i < BIGSLIME_NUM_RING_FACES; i++) {
@@ -2775,7 +2773,7 @@ void EnBigslime_UpdateEffects(EnBigslime* this) {
 }
 
 void EnBigslime_UpdateBigslime(Actor* thisx, PlayState* play) {
-    EnBigslime* this = THIS;
+    EnBigslime* this = (EnBigslime*)thisx;
     s32 i;
     Vec3f vtxMax;
     Vec3f vtxMin;
@@ -2821,7 +2819,7 @@ void EnBigslime_UpdateBigslime(Actor* thisx, PlayState* play) {
 
 void EnBigslime_UpdateGekko(Actor* thisx, PlayState* play) {
     static s32 isGekkoOnGround = false;
-    EnBigslime* this = THIS;
+    EnBigslime* this = (EnBigslime*)thisx;
     Player* player;
     s32 pad;
 
@@ -2986,7 +2984,7 @@ void EnBigslime_DrawBigslime(Actor* thisx, PlayState* play) {
         { 84, 0.45f },  { 90, 0.5f },   { 96, 0.6f },  { 102, 0.2f },  { 108, 0.4f },  { 114, 0.15f }, { 120, 0.35f },
         { 126, 0.65f }, { 132, 0.25f }, { 138, 0.3f }, { 144, 0.15f }, { 150, 0.45f }, { 156, 0.3f },  { 161, 0.25f },
     };
-    EnBigslime* this = THIS;
+    EnBigslime* this = (EnBigslime*)thisx;
     EnBigslimeBubbles* bubblesInfoPtr;
     Vtx* dynamicVtx;
     MtxF* billboardMtxF;
@@ -3070,7 +3068,7 @@ static s8 sLimbToBodyParts[GEKKO_LIMB_MAX] = {
 static Vec3f sRightFootOffsetRef = { 1500.0f, 2200.0f, 0.0f };
 
 void EnBigslime_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* rot, Actor* thisx) {
-    EnBigslime* this = THIS;
+    EnBigslime* this = (EnBigslime*)thisx;
     Vec3f rightFootOffset;
 
     if (limbIndex == GEKKO_LIMB_HEAD) {
@@ -3092,7 +3090,7 @@ void EnBigslime_DrawGekko(Actor* thisx, PlayState* play) {
     static Color_RGBA8 sGekkoDamageColor = { 255, 0, 0, 0 };
     static Color_RGBA8 sGekkoStunColor = { 0, 0, 255, 0 };
     Vec3f gekkoPos;
-    EnBigslime* this = THIS;
+    EnBigslime* this = (EnBigslime*)thisx;
     s32 pad;
 
     Gfx_SetupDL25_Opa(play->state.gfxCtx);

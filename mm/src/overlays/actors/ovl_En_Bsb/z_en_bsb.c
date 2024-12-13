@@ -19,8 +19,6 @@
     (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_HOSTILE | ACTOR_FLAG_10 | ACTOR_FLAG_20 | \
      ACTOR_FLAG_UPDATE_DURING_OCARINA)
 
-#define THIS ((EnBsb*)thisx)
-
 void EnBsb_Init(Actor* thisx, PlayState* play);
 void EnBsb_Destroy(Actor* thisx, PlayState* play);
 void EnBsb_Update(Actor* thisx, PlayState* play);
@@ -352,7 +350,7 @@ void func_80C0B31C(PlayState* play, EnBsb* this, Vec3f* pos) {
 }
 
 void EnBsb_Init(Actor* thisx, PlayState* play) {
-    EnBsb* this = THIS;
+    EnBsb* this = (EnBsb*)thisx;
     s32 csId;
     s32 i;
 
@@ -405,7 +403,7 @@ void EnBsb_Init(Actor* thisx, PlayState* play) {
 }
 
 void EnBsb_Destroy(Actor* thisx, PlayState* play) {
-    EnBsb* this = THIS;
+    EnBsb* this = (EnBsb*)thisx;
 
     if (this->unk_02B0 == OBJECT_BSB_LIMB_NONE) {
         Audio_RestorePrevBgm();
@@ -1605,7 +1603,7 @@ s32 func_80C0E9CC(EnBsb* this, PlayState* play) {
 }
 
 void EnBsb_Update(Actor* thisx, PlayState* play) {
-    EnBsb* this = THIS;
+    EnBsb* this = (EnBsb*)thisx;
     s32 pad;
 
     DECR(this->unk_0292);
@@ -1670,7 +1668,7 @@ void EnBsb_Update(Actor* thisx, PlayState* play) {
 }
 
 s32 EnBsb_OverrideLimbDrawOpa(PlayState* play, s32 limbIndex, Gfx** dList, Vec3f* pos, Vec3s* rot, Actor* thisx) {
-    EnBsb* this = THIS;
+    EnBsb* this = (EnBsb*)thisx;
 
     OPEN_DISPS(play->state.gfxCtx);
 
@@ -1719,7 +1717,7 @@ s32 EnBsb_OverrideLimbDrawOpa(PlayState* play, s32 limbIndex, Gfx** dList, Vec3f
 
 s32 EnBsb_OverrideLimbDrawXlu(PlayState* play, s32 limbIndex, Gfx** dList, Vec3f* pos, Vec3s* rot, Actor* thisx,
                               Gfx** gfx) {
-    EnBsb* this = THIS;
+    EnBsb* this = (EnBsb*)thisx;
 
     if (limbIndex != this->unk_02B0) {
         *dList = NULL;
@@ -1743,7 +1741,7 @@ s32 EnBsb_OverrideLimbDrawXlu(PlayState* play, s32 limbIndex, Gfx** dList, Vec3f
 }
 
 void EnBsb_PostLimbDrawOpa(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* rot, Actor* thisx) {
-    EnBsb* this = THIS;
+    EnBsb* this = (EnBsb*)thisx;
 
     if (this->unk_02B0 == OBJECT_BSB_LIMB_NONE) {
         if (limbIndex == OBJECT_BSB_LIMB_0A) {
@@ -1778,7 +1776,7 @@ void EnBsb_PostLimbDrawOpa(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* r
 }
 
 void EnBsb_Draw(Actor* thisx, PlayState* play) {
-    EnBsb* this = THIS;
+    EnBsb* this = (EnBsb*)thisx;
     s32 pad;
 
     OPEN_DISPS(play->state.gfxCtx);

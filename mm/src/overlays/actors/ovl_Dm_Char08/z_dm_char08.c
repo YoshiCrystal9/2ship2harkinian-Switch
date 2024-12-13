@@ -12,8 +12,6 @@
 
 #define FLAGS (ACTOR_FLAG_UPDATE_DURING_OCARINA)
 
-#define THIS ((DmChar08*)thisx)
-
 void DmChar08_Init(Actor* thisx, PlayState* play2);
 void DmChar08_Destroy(Actor* thisx, PlayState* play);
 void DmChar08_Update(Actor* thisx, PlayState* play);
@@ -156,7 +154,7 @@ void DmChar08_ChangeAnim(SkelAnime* skelAnime, AnimationInfo* animInfo, u16 anim
 
 void DmChar08_Init(Actor* thisx, PlayState* play2) {
     PlayState* play = play2;
-    DmChar08* this = THIS;
+    DmChar08* this = (DmChar08*)thisx;
 
     // region 2S2H [Port] The turtle does some unique things with CPU modified collision poly
     // The effect is to have a the collision move with the turtle's fin. Depending on the player's
@@ -286,7 +284,7 @@ void DmChar08_Init(Actor* thisx, PlayState* play2) {
 }
 
 void DmChar08_Destroy(Actor* thisx, PlayState* play) {
-    DmChar08* this = THIS;
+    DmChar08* this = (DmChar08*)thisx;
 
     if (this->dynapolyInitialized) {
         DynaPoly_DeleteBgActor(play, &play->colCtx.dyna, this->dyna.bgId);
@@ -1061,7 +1059,7 @@ void DmChar08_UpdateCollision(DmChar08* this, PlayState* play) {
 }
 
 void DmChar08_Update(Actor* thisx, PlayState* play) {
-    DmChar08* this = THIS;
+    DmChar08* this = (DmChar08*)thisx;
 
     this->dyna.actor.focus.pos.x = this->focusPos.x;
     this->dyna.actor.focus.pos.y = this->focusPos.y + this->dyna.actor.lockOnArrowOffset;
@@ -1107,7 +1105,7 @@ s32 DmChar08_OverrideLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3f
 }
 
 void DmChar08_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* rot, Actor* thisx) {
-    DmChar08* this = THIS;
+    DmChar08* this = (DmChar08*)thisx;
     Vec3f src;
 
     if (limbIndex == TURTLE_LIMB_SHELL) {
@@ -1133,7 +1131,7 @@ void DmChar08_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* r
 }
 
 void DmChar08_TransformLimbDraw(PlayState* play, s32 limbIndex, Actor* thisx) {
-    DmChar08* this = THIS;
+    DmChar08* this = (DmChar08*)thisx;
     f32 one;
 
     switch (limbIndex) {
@@ -1190,7 +1188,7 @@ TexturePtr sBigTurtleEyeTextures[] = {
 
 void DmChar08_Draw(Actor* thisx, PlayState* play) {
     s32 pad;
-    DmChar08* this = THIS;
+    DmChar08* this = (DmChar08*)thisx;
 
     OPEN_DISPS(play->state.gfxCtx);
 

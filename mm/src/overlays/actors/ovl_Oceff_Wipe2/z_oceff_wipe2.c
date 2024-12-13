@@ -9,8 +9,6 @@
 
 #define FLAGS (ACTOR_FLAG_10 | ACTOR_FLAG_UPDATE_DURING_OCARINA)
 
-#define THIS ((OceffWipe2*)thisx)
-
 void OceffWipe2_Init(Actor* thisx, PlayState* play);
 void OceffWipe2_Destroy(Actor* thisx, PlayState* play);
 void OceffWipe2_Update(Actor* thisx, PlayState* play);
@@ -33,7 +31,7 @@ ActorProfileOceff_Wipe2_Profile = {
 static s32 sBssPad;
 
 void OceffWipe2_Init(Actor* thisx, PlayState* play) {
-    OceffWipe2* this = THIS;
+    OceffWipe2* this = (OceffWipe2*)thisx;
 
     Actor_SetScale(&this->actor, 0.1f);
     this->timer = 0;
@@ -41,14 +39,14 @@ void OceffWipe2_Init(Actor* thisx, PlayState* play) {
 }
 
 void OceffWipe2_Destroy(Actor* thisx, PlayState* play) {
-    OceffWipe2* this = THIS;
+    OceffWipe2* this = (OceffWipe2*)thisx;
 
     Magic_Reset(play);
     play->msgCtx.ocarinaSongEffectActive = false;
 }
 
 void OceffWipe2_Update(Actor* thisx, PlayState* play) {
-    OceffWipe2* this = THIS;
+    OceffWipe2* this = (OceffWipe2*)thisx;
 
     this->actor.world.pos = GET_ACTIVE_CAM(play)->eye;
     if (this->timer < 100) {
@@ -60,7 +58,7 @@ void OceffWipe2_Update(Actor* thisx, PlayState* play) {
 
 void OceffWipe2_Draw(Actor* thisx, PlayState* play) {
     u32 scroll = play->state.frames & 0xFF;
-    OceffWipe2* this = THIS;
+    OceffWipe2* this = (OceffWipe2*)thisx;
     f32 z;
     u8 alpha;
     s32 pad[2];

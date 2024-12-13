@@ -10,8 +10,6 @@
 
 #define FLAGS (ACTOR_FLAG_10 | ACTOR_FLAG_UPDATE_DURING_OCARINA)
 
-#define THIS ((OceffWipe5*)thisx)
-
 void OceffWipe5_Init(Actor* thisx, PlayState* play);
 void OceffWipe5_Destroy(Actor* thisx, PlayState* play);
 void OceffWipe5_Update(Actor* thisx, PlayState* play);
@@ -33,7 +31,7 @@ static s32 sBssPad;
 static Vtx* gOceff5VtxData;
 
 void OceffWipe5_Init(Actor* thisx, PlayState* play) {
-    OceffWipe5* this = THIS;
+    OceffWipe5* this = (OceffWipe5*)thisx;
 
     gOceff5VtxData = ResourceMgr_LoadVtxByName(gOceff5Vtx);
 
@@ -43,14 +41,14 @@ void OceffWipe5_Init(Actor* thisx, PlayState* play) {
 }
 
 void OceffWipe5_Destroy(Actor* thisx, PlayState* play) {
-    OceffWipe5* this = THIS;
+    OceffWipe5* this = (OceffWipe5*)thisx;
 
     Magic_Reset(play);
     play->msgCtx.ocarinaSongEffectActive = false;
 }
 
 void OceffWipe5_Update(Actor* thisx, PlayState* play) {
-    OceffWipe5* this = THIS;
+    OceffWipe5* this = (OceffWipe5*)thisx;
 
     this->actor.world.pos = GET_ACTIVE_CAM(play)->eye;
     if (this->counter < 100) {
@@ -69,7 +67,7 @@ static u8 sEnvColors[] = {
 };
 
 void OceffWipe5_Draw(Actor* thisx, PlayState* play) {
-    OceffWipe5* this = THIS;
+    OceffWipe5* this = (OceffWipe5*)thisx;
     f32 z;
     s32 pad;
     s32 i;

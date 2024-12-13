@@ -10,8 +10,6 @@
 
 #define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_HOSTILE | ACTOR_FLAG_10 | ACTOR_FLAG_100000)
 
-#define THIS ((EnKaizoku*)thisx)
-
 void EnKaizoku_Init(Actor* thisx, PlayState* play);
 void EnKaizoku_Destroy(Actor* thisx, PlayState* play);
 void EnKaizoku_Update(Actor* thisx, PlayState* play2);
@@ -249,7 +247,7 @@ static u8 sAnimationModes[EN_KAIZOKU_ANIM_MAX] = {
 
 void EnKaizoku_Init(Actor* thisx, PlayState* play) {
     s32 pad;
-    EnKaizoku* this = THIS;
+    EnKaizoku* this = (EnKaizoku*)thisx;
     Player* player = GET_PLAYER(play);
     EffectBlureInit1 blureInit;
 
@@ -308,7 +306,7 @@ void EnKaizoku_Init(Actor* thisx, PlayState* play) {
 }
 
 void EnKaizoku_Destroy(Actor* thisx, PlayState* play) {
-    EnKaizoku* this = THIS;
+    EnKaizoku* this = (EnKaizoku*)thisx;
 
     Effect_Destroy(play, this->blureIndex);
     Collider_DestroyCylinder(play, &this->bodyCollider);
@@ -1973,7 +1971,7 @@ static TexturePtr sEyeTextures[] = {
 };
 
 void EnKaizoku_Update(Actor* thisx, PlayState* play2) {
-    EnKaizoku* this = THIS;
+    EnKaizoku* this = (EnKaizoku*)thisx;
     PlayState* play = play2;
     Vec3f sp34;
     s32 pad;
@@ -2047,7 +2045,7 @@ void EnKaizoku_Update(Actor* thisx, PlayState* play2) {
 }
 
 s32 EnKaizoku_OverrideLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3f* pos, Vec3s* rot, Actor* thisx) {
-    EnKaizoku* this = THIS;
+    EnKaizoku* this = (EnKaizoku*)thisx;
 
     OPEN_DISPS(play->state.gfxCtx);
 
@@ -2077,7 +2075,7 @@ s32 EnKaizoku_OverrideLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3
 void EnKaizoku_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* rot, Actor* thisx) {
     Vec3f swordTip;
     Vec3f swordHilt;
-    EnKaizoku* this = THIS;
+    EnKaizoku* this = (EnKaizoku*)thisx;
 
     if (limbIndex == KAIZOKU_LIMB_R_SWORD) {
         Matrix_MultVec3f(&sSwordQuadOffset1, &this->swordCollider.dim.quad[1]);
@@ -2122,7 +2120,7 @@ void EnKaizoku_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* 
 }
 
 void EnKaizoku_TransformLimbDraw(PlayState* play, s32 limbIndex, Actor* thisx) {
-    EnKaizoku* this = THIS;
+    EnKaizoku* this = (EnKaizoku*)thisx;
 
     if (limbIndex == KAIZOKU_LIMB_R_SWORD) {
         Matrix_Scale(this->unk_2F8.x, this->unk_2F8.y, this->unk_2F8.z, MTXMODE_APPLY);
@@ -2135,7 +2133,7 @@ void EnKaizoku_TransformLimbDraw(PlayState* play, s32 limbIndex, Actor* thisx) {
 void EnKaizoku_Draw(Actor* thisx, PlayState* play) {
     f32 pad[4];
     f32 drawDmgEffAlpha;
-    EnKaizoku* this = THIS;
+    EnKaizoku* this = (EnKaizoku*)thisx;
 
     Gfx_SetupDL25_Xlu(play->state.gfxCtx);
     Gfx_SetupDL25_Opa(play->state.gfxCtx);

@@ -11,8 +11,6 @@
 
 #define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY)
 
-#define THIS ((ObjWarpstone*)thisx)
-
 void ObjWarpstone_Init(Actor* thisx, PlayState* play);
 void ObjWarpstone_Destroy(Actor* thisx, PlayState* play);
 void ObjWarpstone_Update(Actor* thisx, PlayState* play);
@@ -66,7 +64,7 @@ void ObjWarpstone_SetupAction(ObjWarpstone* this, ObjWarpstoneActionFunc actionF
 }
 
 void ObjWarpstone_Init(Actor* thisx, PlayState* play) {
-    ObjWarpstone* this = THIS;
+    ObjWarpstone* this = (ObjWarpstone*)thisx;
 
     Actor_ProcessInitChain(&this->dyna.actor, sInitChain);
     Collider_InitAndSetCylinder(play, &this->collider, &this->dyna.actor, &sCylinderInit);
@@ -83,7 +81,7 @@ void ObjWarpstone_Init(Actor* thisx, PlayState* play) {
 }
 
 void ObjWarpstone_Destroy(Actor* thisx, PlayState* play) {
-    ObjWarpstone* this = THIS;
+    ObjWarpstone* this = (ObjWarpstone*)thisx;
 
     Collider_DestroyCylinder(play, &this->collider);
 }
@@ -137,7 +135,7 @@ s32 ObjWarpstone_OpenedIdle(ObjWarpstone* this, PlayState* play) {
 }
 
 void ObjWarpstone_Update(Actor* thisx, PlayState* play) {
-    ObjWarpstone* this = THIS;
+    ObjWarpstone* this = (ObjWarpstone*)thisx;
     s32 pad;
 
     if (this->isTalking) {
@@ -168,7 +166,7 @@ void ObjWarpstone_Update(Actor* thisx, PlayState* play) {
 
 void ObjWarpstone_Draw(Actor* thisx, PlayState* play2) {
     PlayState* play = play2;
-    ObjWarpstone* this = THIS;
+    ObjWarpstone* this = (ObjWarpstone*)thisx;
 
     Gfx_DrawDListOpa(play, sOwlStatueDLs[this->modelIndex]);
     if (this->dyna.actor.home.rot.x != 0) {

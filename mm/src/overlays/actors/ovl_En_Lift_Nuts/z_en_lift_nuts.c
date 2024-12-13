@@ -9,8 +9,6 @@
 
 #define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_10 | ACTOR_FLAG_UPDATE_DURING_OCARINA)
 
-#define THIS ((EnLiftNuts*)thisx)
-
 void EnLiftNuts_Init(Actor* thisx, PlayState* play);
 void EnLiftNuts_Destroy(Actor* thisx, PlayState* play);
 void EnLiftNuts_Update(Actor* thisx, PlayState* play);
@@ -281,7 +279,7 @@ void EnLiftNuts_TryHide(EnLiftNuts* this, PlayState* play) {
 
 void EnLiftNuts_Init(Actor* thisx, PlayState* play) {
     s32 pad;
-    EnLiftNuts* this = THIS;
+    EnLiftNuts* this = (EnLiftNuts*)thisx;
     Path* path;
     Vec3s* points;
 
@@ -330,7 +328,7 @@ void EnLiftNuts_Init(Actor* thisx, PlayState* play) {
 }
 
 void EnLiftNuts_Destroy(Actor* thisx, PlayState* play) {
-    EnLiftNuts* this = THIS;
+    EnLiftNuts* this = (EnLiftNuts*)thisx;
 
     Collider_DestroyCylinder(play, &this->collider);
     EnLiftNuts_FreeSharedMemoryEntry(this, play);
@@ -1073,7 +1071,7 @@ void EnLiftNuts_UpdateCollision(EnLiftNuts* this, PlayState* play) {
 }
 
 void EnLiftNuts_Update(Actor* thisx, PlayState* play) {
-    EnLiftNuts* this = THIS;
+    EnLiftNuts* this = (EnLiftNuts*)thisx;
 
     SkelAnime_Update(&this->skelAnime);
     this->actionFunc(this, play);
@@ -1087,7 +1085,7 @@ void EnLiftNuts_Update(Actor* thisx, PlayState* play) {
 }
 
 s32 EnLiftNuts_OverrideLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3f* pos, Vec3s* rot, Actor* thisx) {
-    EnLiftNuts* this = THIS;
+    EnLiftNuts* this = (EnLiftNuts*)thisx;
 
     if ((limbIndex == BUSINESS_SCRUB_LIMB_RIGHT_HAND_HAT) || (limbIndex == BUSINESS_SCRUB_LIMB_RIGHT_HAND_BAG) ||
         (limbIndex == BUSINESS_SCRUB_LIMB_LEFT_HAND_BAG) || (limbIndex == BUSINESS_SCRUB_LIMB_SCALP) ||
@@ -1104,7 +1102,7 @@ s32 EnLiftNuts_OverrideLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec
 
 void EnLiftNuts_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* rot, Actor* thisx) {
     static Vec3f sFocusOffset = { 0.0f, 0.0f, 0.0f };
-    EnLiftNuts* this = THIS;
+    EnLiftNuts* this = (EnLiftNuts*)thisx;
 
     if (limbIndex == BUSINESS_SCRUB_LIMB_HAT) {
         Matrix_MultVec3f(&sFocusOffset, &this->actor.focus.pos);
@@ -1112,7 +1110,7 @@ void EnLiftNuts_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s*
 }
 
 void EnLiftNuts_Draw(Actor* thisx, PlayState* play) {
-    EnLiftNuts* this = THIS;
+    EnLiftNuts* this = (EnLiftNuts*)thisx;
 
     Gfx_SetupDL25_Opa(play->state.gfxCtx);
     SkelAnime_DrawFlexOpa(play, this->skelAnime.skeleton, this->skelAnime.jointTable, this->skelAnime.dListCount,

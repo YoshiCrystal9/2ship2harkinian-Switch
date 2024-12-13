@@ -9,8 +9,6 @@
 
 #define FLAGS 0x00000000
 
-#define THIS ((ObjFlowerpot*)thisx)
-
 void ObjFlowerpot_Init(Actor* thisx, PlayState* play);
 void ObjFlowerpot_Destroy(Actor* thisx, PlayState* play2);
 void ObjFlowerpot_Update(Actor* thisx, PlayState* play2);
@@ -395,7 +393,7 @@ void func_80A1C62C(ObjFlowerpot* this, PlayState* play) {
 
 void ObjFlowerpot_Init(Actor* thisx, PlayState* play) {
     s32 pad;
-    ObjFlowerpot* this = THIS;
+    ObjFlowerpot* this = (ObjFlowerpot*)thisx;
 
     Actor_ProcessInitChain(&this->actor, sInitChain);
 
@@ -431,7 +429,7 @@ void ObjFlowerpot_Init(Actor* thisx, PlayState* play) {
 
 void ObjFlowerpot_Destroy(Actor* thisx, PlayState* play2) {
     PlayState* play = play2;
-    ObjFlowerpot* this = THIS;
+    ObjFlowerpot* this = (ObjFlowerpot*)thisx;
 
     Collider_DestroyJntSph(play, &this->collider);
 }
@@ -649,7 +647,7 @@ void func_80A1CEF4(ObjFlowerpot* this, PlayState* play) {
 
 void ObjFlowerpot_Update(Actor* thisx, PlayState* play2) {
     PlayState* play = play2;
-    ObjFlowerpot* this = THIS;
+    ObjFlowerpot* this = (ObjFlowerpot*)thisx;
 
     this->actionFunc(this, play);
 
@@ -663,7 +661,7 @@ void ObjFlowerpot_Update(Actor* thisx, PlayState* play2) {
 
 void ObjFlowerpot_Draw(Actor* thisx, PlayState* play) {
     s32 pad;
-    ObjFlowerpot* this = THIS;
+    ObjFlowerpot* this = (ObjFlowerpot*)thisx;
 
     OPEN_DISPS(play->state.gfxCtx);
 

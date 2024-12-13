@@ -11,8 +11,6 @@
 
 #define FLAGS (ACTOR_FLAG_10 | ACTOR_FLAG_UPDATE_DURING_OCARINA)
 
-#define THIS ((ArrowFire*)thisx)
-
 void ArrowFire_Init(Actor* thisx, PlayState* play);
 void ArrowFire_Destroy(Actor* thisx, PlayState* play);
 void ArrowFire_Update(Actor* thisx, PlayState* play);
@@ -66,7 +64,7 @@ void ArrowFire_SetupAction(ArrowFire* this, ArrowFireActionFunc actionFunc) {
 }
 
 void ArrowFire_Init(Actor* thisx, PlayState* play) {
-    ArrowFire* this = THIS;
+    ArrowFire* this = (ArrowFire*)thisx;
 
     Actor_ProcessInitChain(&this->actor, sInitChain);
     this->radius = 0;
@@ -81,7 +79,7 @@ void ArrowFire_Init(Actor* thisx, PlayState* play) {
 }
 
 void ArrowFire_Destroy(Actor* thisx, PlayState* play) {
-    ArrowFire* this = THIS;
+    ArrowFire* this = (ArrowFire*)thisx;
 
     Magic_Reset(play);
     Collider_DestroyQuad(play, &this->collider1);
@@ -241,7 +239,7 @@ void FireArrow_SetQuadVerticies(ArrowFire* this) {
 
 void ArrowFire_Draw(Actor* thisx, PlayState* play) {
     EnArrow* arrow;
-    ArrowFire* this = THIS;
+    ArrowFire* this = (ArrowFire*)thisx;
     u32 frames = play->state.frames;
     s32 pad;
 

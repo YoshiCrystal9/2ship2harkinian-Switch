@@ -9,8 +9,6 @@
 
 #define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_REACT_TO_LENS)
 
-#define THIS ((EnGg2*)thisx)
-
 void EnGg2_Init(Actor* thisx, PlayState* play2);
 void EnGg2_Destroy(Actor* thisx, PlayState* play);
 void EnGg2_Update(Actor* thisx, PlayState* play);
@@ -383,7 +381,7 @@ void func_80B3B8A4(EnGg2* this) {
 
 void EnGg2_Init(Actor* thisx, PlayState* play2) {
     PlayState* play = play2;
-    EnGg2* this = THIS;
+    EnGg2* this = (EnGg2*)thisx;
 
     if (GameInteractor_Should(VB_CONSIDER_DARMANI_HEALED, INV_CONTENT(ITEM_MASK_GORON) == ITEM_MASK_GORON)) {
         Actor_Kill(&this->actor);
@@ -449,7 +447,7 @@ void EnGg2_Destroy(Actor* thisx, PlayState* play) {
 }
 
 void EnGg2_Update(Actor* thisx, PlayState* play) {
-    EnGg2* this = THIS;
+    EnGg2* this = (EnGg2*)thisx;
 
     if (play->actorCtx.lensMaskSize == LENS_MASK_ACTIVE_SIZE) {
         this->actor.flags |= ACTOR_FLAG_REACT_TO_LENS;
@@ -483,7 +481,7 @@ void EnGg2_Update(Actor* thisx, PlayState* play) {
 
 s32 EnGg2_OverrideLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3f* pos, Vec3s* rot, Actor* thisx,
                            Gfx** gfx) {
-    EnGg2* this = THIS;
+    EnGg2* this = (EnGg2*)thisx;
 
     if ((this->animIndex != ENGG2_ANIM_5) && (this->animIndex != ENGG2_ANIM_7)) {
         if (limbIndex == OBJECT_GG_LIMB_01) {
@@ -498,7 +496,7 @@ s32 EnGg2_OverrideLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3f* p
 }
 
 void EnGg2_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* rot, Actor* thisx, Gfx** gfx) {
-    EnGg2* this = THIS;
+    EnGg2* this = (EnGg2*)thisx;
 
     if (limbIndex == OBJECT_GG_LIMB_04) {
         Matrix_MultVec3f(&D_80B3C0A0, &this->unk_304);
@@ -506,7 +504,7 @@ void EnGg2_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* rot,
 }
 
 void EnGg2_Draw(Actor* thisx, PlayState* play) {
-    EnGg2* this = THIS;
+    EnGg2* this = (EnGg2*)thisx;
 
     OPEN_DISPS(play->state.gfxCtx);
 

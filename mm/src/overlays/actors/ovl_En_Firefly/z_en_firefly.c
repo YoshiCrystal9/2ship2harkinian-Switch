@@ -12,8 +12,6 @@
 #define FLAGS \
     (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_HOSTILE | ACTOR_FLAG_IGNORE_QUAKE | ACTOR_FLAG_CAN_ATTACH_TO_ARROW)
 
-#define THIS ((EnFirefly*)thisx)
-
 void EnFirefly_Init(Actor* thisx, PlayState* play);
 void EnFirefly_Destroy(Actor* thisx, PlayState* play);
 void EnFirefly_Update(Actor* thisx, PlayState* play2);
@@ -132,7 +130,7 @@ static InitChainEntry sInitChain[] = {
 };
 
 void EnFirefly_Init(Actor* thisx, PlayState* play) {
-    EnFirefly* this = THIS;
+    EnFirefly* this = (EnFirefly*)thisx;
 
     Actor_ProcessInitChain(&this->actor, sInitChain);
     ActorShape_Init(&this->actor.shape, 0.0f, ActorShadow_DrawCircle, 25.0f);
@@ -173,7 +171,7 @@ void EnFirefly_Init(Actor* thisx, PlayState* play) {
 }
 
 void EnFirefly_Destroy(Actor* thisx, PlayState* play) {
-    EnFirefly* this = THIS;
+    EnFirefly* this = (EnFirefly*)thisx;
 
     Collider_DestroySphere(play, &this->collider);
 }
@@ -675,7 +673,7 @@ void EnFirefly_UpdateDamage(EnFirefly* this, PlayState* play) {
 
 void EnFirefly_Update(Actor* thisx, PlayState* play2) {
     PlayState* play = play2;
-    EnFirefly* this = THIS;
+    EnFirefly* this = (EnFirefly*)thisx;
 
     if (this->collider.base.atFlags & AT_HIT) {
         this->collider.base.atFlags &= ~AT_HIT;
@@ -745,7 +743,7 @@ void EnFirefly_Update(Actor* thisx, PlayState* play2) {
 
 s32 EnFirefly_OverrideLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3f* pos, Vec3s* rot, Actor* thisx,
                                Gfx** gfx) {
-    EnFirefly* this = THIS;
+    EnFirefly* this = (EnFirefly*)thisx;
 
     if (this->isInvisible && (play->actorCtx.lensMaskSize != LENS_MASK_ACTIVE_SIZE)) {
         *dList = NULL;
@@ -768,7 +766,7 @@ void EnFirefly_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* 
     s16 auraScaleStep;
     s16 auraLife;
     s32 pad;
-    EnFirefly* this = THIS;
+    EnFirefly* this = (EnFirefly*)thisx;
 
     if ((this->currentType != KEESE_FIRE) && (limbIndex == FIRE_KEESE_LIMB_HEAD)) {
         gSPDisplayList((*gfx)++, gKeeseRedEyesDL);
@@ -819,7 +817,7 @@ void EnFirefly_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* 
 
 void EnFirefly_Draw(Actor* thisx, PlayState* play) {
     s32 pad;
-    EnFirefly* this = THIS;
+    EnFirefly* this = (EnFirefly*)thisx;
     Gfx* gfx;
 
     OPEN_DISPS(play->state.gfxCtx);

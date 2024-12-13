@@ -10,8 +10,6 @@
     (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_10 | ACTOR_FLAG_100000 | \
      ACTOR_FLAG_UPDATE_DURING_OCARINA)
 
-#define THIS ((EnPoComposer*)thisx)
-
 void EnPoComposer_Init(Actor* thisx, PlayState* play);
 void EnPoComposer_Destroy(Actor* thisx, PlayState* play);
 void EnPoComposer_Update(Actor* thisx, PlayState* play);
@@ -182,7 +180,7 @@ static InitChainEntry sInitChain[] = {
 static s32 sPlayerIsPlayingOcarina = false;
 
 void EnPoComposer_Init(Actor* thisx, PlayState* play) {
-    EnPoComposer* this = THIS;
+    EnPoComposer* this = (EnPoComposer*)thisx;
 
     Actor_ProcessInitChain(&this->actor, sInitChain);
     ActorShape_Init(&this->actor.shape, 0.0f, ActorShadow_DrawCircle, 30.0f);
@@ -241,7 +239,7 @@ void EnPoComposer_Init(Actor* thisx, PlayState* play) {
 }
 
 void EnPoComposer_Destroy(Actor* thisx, PlayState* play) {
-    EnPoComposer* this = THIS;
+    EnPoComposer* this = (EnPoComposer*)thisx;
 
     LightContext_RemoveLight(play, &play->lightCtx, this->lightNode);
     Collider_DestroyJntSph(play, &this->lanternCollider);
@@ -606,7 +604,7 @@ void EnPoComposer_UpdateCollision(EnPoComposer* this, PlayState* play) {
 }
 
 void EnPoComposer_Update(Actor* thisx, PlayState* play) {
-    EnPoComposer* this = THIS;
+    EnPoComposer* this = (EnPoComposer*)thisx;
 
     EnPoComposer_UpdateEnvColor(this);
     SkelAnime_Update(&this->skelAnime);
@@ -621,7 +619,7 @@ void EnPoComposer_Update(Actor* thisx, PlayState* play) {
 
 s32 EnPoComposer_OverrideLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3f* pos, Vec3s* rot, Actor* thisx,
                                   Gfx** gfx) {
-    EnPoComposer* this = THIS;
+    EnPoComposer* this = (EnPoComposer*)thisx;
 
     if ((this->lightColor.a == 0) || (limbIndex == POE_COMPOSER_LIMB_LANTERN)) {
         *dList = NULL;
@@ -639,7 +637,7 @@ s32 EnPoComposer_OverrideLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, V
 }
 
 void EnPoComposer_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* rot, Actor* thisx, Gfx** gfx) {
-    EnPoComposer* this = THIS;
+    EnPoComposer* this = (EnPoComposer*)thisx;
 
     Collider_UpdateSpheres(limbIndex, &this->lanternCollider);
     if (limbIndex == POE_COMPOSER_LIMB_LANTERN) {
@@ -648,7 +646,7 @@ void EnPoComposer_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3
 }
 
 void EnPoComposer_Draw(Actor* thisx, PlayState* play) {
-    EnPoComposer* this = THIS;
+    EnPoComposer* this = (EnPoComposer*)thisx;
     s32 pad;
     Gfx* dl;
     Color_RGBA8* clothingColor;

@@ -9,8 +9,6 @@
 
 #define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_10 | ACTOR_FLAG_THROW_ONLY)
 
-#define THIS ((EnDg*)thisx)
-
 void EnDg_Init(Actor* thisx, PlayState* play);
 void EnDg_Destroy(Actor* thisx, PlayState* play);
 void EnDg_Update(Actor* thisx, PlayState* play);
@@ -1305,7 +1303,7 @@ void EnDg_Talk(EnDg* this, PlayState* play) {
 }
 
 void EnDg_Init(Actor* thisx, PlayState* play) {
-    EnDg* this = THIS;
+    EnDg* this = (EnDg*)thisx;
     s32 pad;
 
     ActorShape_Init(&this->actor.shape, 0.0f, ActorShadow_DrawCircle, 24.0f);
@@ -1335,13 +1333,13 @@ void EnDg_Init(Actor* thisx, PlayState* play) {
 }
 
 void EnDg_Destroy(Actor* thisx, PlayState* play) {
-    EnDg* this = THIS;
+    EnDg* this = (EnDg*)thisx;
 
     Collider_DestroyCylinder(play, &this->collider);
 }
 
 void EnDg_Update(Actor* thisx, PlayState* play) {
-    EnDg* this = THIS;
+    EnDg* this = (EnDg*)thisx;
     Player* player = GET_PLAYER(play);
     s32 pad;
     Vec3f floorRot = { 0.0f, 0.0f, 0.0f };
@@ -1374,7 +1372,7 @@ s32 EnDg_OverrideLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3f* po
 }
 
 void EnDg_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* rot, Actor* thisx) {
-    EnDg* this = THIS;
+    EnDg* this = (EnDg*)thisx;
     Vec3f sFocusOffset = { 0.0f, 20.0f, 0.0f };
 
     if (limbIndex == DOG_LIMB_HEAD) {
@@ -1388,7 +1386,7 @@ void EnDg_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* rot, 
 }
 
 void EnDg_Draw(Actor* thisx, PlayState* play) {
-    EnDg* this = THIS;
+    EnDg* this = (EnDg*)thisx;
 
     OPEN_DISPS(play->state.gfxCtx);
 

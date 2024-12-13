@@ -10,8 +10,6 @@
 
 #define FLAGS (ACTOR_FLAG_10 | ACTOR_FLAG_20)
 
-#define THIS ((ObjToudai*)thisx)
-
 void ObjToudai_Init(Actor* thisx, PlayState* play);
 void ObjToudai_Destroy(Actor* thisx, PlayState* play);
 void ObjToudai_Update(Actor* thisx, PlayState* play);
@@ -104,7 +102,7 @@ u8 func_80A342F4(s16 arg0) {
 }
 
 void ObjToudai_Init(Actor* thisx, PlayState* play) {
-    ObjToudai* this = THIS;
+    ObjToudai* this = (ObjToudai*)thisx;
     ovl_Obj_Toudai_Vtx_D_80A34590data = ResourceMgr_LoadVtxByName(ovl_Obj_Toudai_Vtx_D_80A34590);
 
     memcpy(this->unk_148, ovl_Obj_Toudai_Vtx_D_80A34590data,
@@ -115,7 +113,7 @@ void ObjToudai_Destroy(Actor* thisx, PlayState* play) {
 }
 
 void ObjToudai_Update(Actor* thisx, PlayState* play) {
-    ObjToudai* this = THIS;
+    ObjToudai* this = (ObjToudai*)thisx;
     u8 temp_v0 = func_80A342F4(this->unk_238);
 
     if (temp_v0 != this->unk_236) {
@@ -129,7 +127,7 @@ void ObjToudai_Update(Actor* thisx, PlayState* play) {
 }
 
 void ObjToudai_Draw(Actor* thisx, PlayState* play) {
-    ObjToudai* this = THIS;
+    ObjToudai* this = (ObjToudai*)thisx;
 
     func_80A33B00(this, play);
     func_80A33BB4(this, play);

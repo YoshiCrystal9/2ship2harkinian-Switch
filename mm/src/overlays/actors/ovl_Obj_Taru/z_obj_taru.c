@@ -14,8 +14,6 @@
 
 #define FLAGS 0x00000000
 
-#define THIS ((ObjTaru*)thisx)
-
 void ObjTaru_Init(Actor* thisx, PlayState* play);
 void ObjTaru_Destroy(Actor* thisx, PlayState* play);
 void ObjTaru_Update(Actor* thisx, PlayState* play);
@@ -201,7 +199,7 @@ void func_80B9BD84(ObjTaru* this, PlayState* play) {
 
 void ObjTaru_Init(Actor* thisx, PlayState* play) {
     s32 pad;
-    ObjTaru* this = THIS;
+    ObjTaru* this = (ObjTaru*)thisx;
     s32 params8000;
 
     DynaPolyActor_Init(&this->dyna, 0);
@@ -236,7 +234,7 @@ void ObjTaru_Init(Actor* thisx, PlayState* play) {
 }
 
 void ObjTaru_Destroy(Actor* thisx, PlayState* play) {
-    ObjTaru* this = THIS;
+    ObjTaru* this = (ObjTaru*)thisx;
 
     if (!OBJ_TARU_GET_80(thisx)) {
         Collider_DestroyCylinder(play, &this->collider);
@@ -312,7 +310,7 @@ void func_80B9C1A0(ObjTaru* this, PlayState* play) {
 }
 
 void ObjTaru_Update(Actor* thisx, PlayState* play) {
-    ObjTaru* this = THIS;
+    ObjTaru* this = (ObjTaru*)thisx;
 
     if (!OBJ_TARU_GET_80(thisx)) {
         if (this->unk_1AC != 0) {
@@ -339,7 +337,7 @@ void ObjTaru_Update(Actor* thisx, PlayState* play) {
 
 void ObjTaru_Draw(Actor* thisx, PlayState* play) {
     Gfx* dList;
-    ObjTaru* this = THIS;
+    ObjTaru* this = (ObjTaru*)thisx;
 
     if (OBJ_TARU_GET_80(thisx)) {
         dList = gObjTaruBreakablePiratePanelDL;
