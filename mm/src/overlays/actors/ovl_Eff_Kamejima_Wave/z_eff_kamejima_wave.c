@@ -9,7 +9,7 @@
 
 #include "2s2h/BenPort.h"
 
-#define FLAGS (ACTOR_FLAG_10)
+#define FLAGS (ACTOR_FLAG_UPDATE_CULLING_DISABLED)
 
 void EffKamejimaWave_Init(Actor* thisx, PlayState* play);
 void EffKamejimaWave_Destroy(Actor* thisx, PlayState* play);

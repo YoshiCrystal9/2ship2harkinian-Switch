@@ -76,9 +76,9 @@ static AnimationInfo sAnimationInfo[TURTLE_ANIM_MAX] = {
 };
 
 static InitChainEntry sInitChain[] = {
-    ICHAIN_F32(uncullZoneForward, 4000, ICHAIN_CONTINUE),
-    ICHAIN_F32(uncullZoneScale, 4000, ICHAIN_CONTINUE),
-    ICHAIN_F32(uncullZoneDownward, 4000, ICHAIN_STOP),
+    ICHAIN_F32(cullingVolumeDistance, 4000, ICHAIN_CONTINUE),
+    ICHAIN_F32(cullingVolumeScale, 4000, ICHAIN_CONTINUE),
+    ICHAIN_F32(cullingVolumeDownward, 4000, ICHAIN_STOP),
 };
 
 static CollisionHeader* sTurtleGreatBayTempleColData;

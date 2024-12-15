@@ -10,7 +10,9 @@
 #include "2s2h/Enhancements/FrameInterpolation/FrameInterpolation.h"
 #include "2s2h/GameInteractor/GameInteractor.h"
 
-#define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_HOSTILE | ACTOR_FLAG_10 | ACTOR_FLAG_HOOKSHOT_PULLS_ACTOR)
+#define FLAGS                                                                                 \
+    (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_HOSTILE | ACTOR_FLAG_UPDATE_CULLING_DISABLED | \
+     ACTOR_FLAG_HOOKSHOT_PULLS_ACTOR)
 
 #define ICE_BLOCK_TIMER_MAX 254
 #define ICE_BLOCK_UNUSED (ICE_BLOCK_TIMER_MAX + 1)
@@ -282,7 +284,7 @@ void EnSlime_SetupInitializeIdle(EnSlime* this) {
  */
 void EnSlime_InitializeIdle(EnSlime* this, PlayState* play) {
     if (this->actor.bgCheckFlags & BGCHECKFLAG_GROUND) {
-        this->actor.flags &= ~ACTOR_FLAG_10;
+        this->actor.flags &= ~ACTOR_FLAG_UPDATE_CULLING_DISABLED;
         EnSlime_SetupIdle(this);
     }
 }
@@ -841,7 +843,7 @@ void EnSlime_SpawnIceBlock(EnSlime* this, PlayState* play) {
 }
 
 void EnSlime_SetupIceBlock(EnSlime* this) {
-    this->actor.flags |= ACTOR_FLAG_10;
+    this->actor.flags |= ACTOR_FLAG_UPDATE_CULLING_DISABLED;
     this->actionFunc = EnSlime_IceBlock;
 }
 
@@ -918,7 +920,7 @@ void EnSlime_IceBlockThaw(EnSlime* this, PlayState* play) {
     if (this->iceBlockTimer == ICE_BLOCK_UNUSED) {
         this->collider.base.acFlags |= AC_ON;
         this->actor.flags |= ACTOR_FLAG_ATTENTION_ENABLED;
-        this->actor.flags &= ~ACTOR_FLAG_10;
+        this->actor.flags &= ~ACTOR_FLAG_UPDATE_CULLING_DISABLED;
         EnSlime_SetupIdle(this);
     }
 }
@@ -929,7 +931,7 @@ void EnSlime_IceBlockThaw(EnSlime* this, PlayState* play) {
  */
 void EnSlime_SetupWaitForRevive(EnSlime* this) {
     this->actor.draw = NULL;
-    this->actor.flags |= ACTOR_FLAG_10;
+    this->actor.flags |= ACTOR_FLAG_UPDATE_CULLING_DISABLED;
     this->drawDmgEffAlpha = 0.0f;
     this->actor.gravity = 0.0f;
     this->actor.velocity.y = 0.0f;
@@ -978,7 +980,7 @@ void EnSlime_Revive(EnSlime* this, PlayState* play) {
 
     this->timer++;
     if (this->timer == 28) {
-        this->actor.flags &= ~ACTOR_FLAG_10;
+        this->actor.flags &= ~ACTOR_FLAG_UPDATE_CULLING_DISABLED;
         this->actor.flags |= ACTOR_FLAG_ATTENTION_ENABLED;
         this->collider.base.acFlags |= AC_ON;
         this->actor.shape.rot.y = this->actor.home.rot.y;

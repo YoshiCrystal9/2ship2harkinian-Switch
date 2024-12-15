@@ -7,7 +7,7 @@
 #include "z_en_zot.h"
 #include "z64snap.h"
 
-#define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_10)
+#define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_UPDATE_CULLING_DISABLED)
 
 void EnZot_Init(Actor* thisx, PlayState* play2);
 void EnZot_Destroy(Actor* thisx, PlayState* play);

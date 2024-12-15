@@ -8,7 +8,7 @@
 #include "assets/overlays/ovl_Oceff_Wipe5/ovl_Oceff_Wipe5.h"
 #include "BenPort.h"
 
-#define FLAGS (ACTOR_FLAG_10 | ACTOR_FLAG_UPDATE_DURING_OCARINA)
+#define FLAGS (ACTOR_FLAG_UPDATE_CULLING_DISABLED | ACTOR_FLAG_UPDATE_DURING_OCARINA)
 
 void OceffWipe5_Init(Actor* thisx, PlayState* play);
 void OceffWipe5_Destroy(Actor* thisx, PlayState* play);

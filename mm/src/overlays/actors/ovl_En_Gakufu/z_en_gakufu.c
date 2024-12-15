@@ -8,7 +8,7 @@
 #include "interface/parameter_static/parameter_static.h"
 #include "public/bridge/consolevariablebridge.h"
 
-#define FLAGS (ACTOR_FLAG_10 | ACTOR_FLAG_UPDATE_DURING_OCARINA)
+#define FLAGS (ACTOR_FLAG_UPDATE_CULLING_DISABLED | ACTOR_FLAG_UPDATE_DURING_OCARINA)
 
 void EnGakufu_Init(Actor* thisx, PlayState* play);
 void EnGakufu_Destroy(Actor* thisx, PlayState* play);

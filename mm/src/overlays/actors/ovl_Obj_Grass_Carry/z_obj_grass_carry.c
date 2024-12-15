@@ -10,7 +10,7 @@
 #include "overlays/actors/ovl_Obj_Grass/z_obj_grass.h"
 #include "GameInteractor/GameInteractor.h"
 
-#define FLAGS (ACTOR_FLAG_10 | ACTOR_FLAG_20 | ACTOR_FLAG_THROW_ONLY)
+#define FLAGS (ACTOR_FLAG_UPDATE_CULLING_DISABLED | ACTOR_FLAG_DRAW_CULLING_DISABLED | ACTOR_FLAG_THROW_ONLY)
 
 void ObjGrassCarry_Init(Actor* thisx, PlayState* play);
 void ObjGrassCarry_Destroy(Actor* thisx, PlayState* play);

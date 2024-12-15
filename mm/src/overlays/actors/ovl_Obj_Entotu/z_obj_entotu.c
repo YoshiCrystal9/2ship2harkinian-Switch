@@ -9,7 +9,7 @@
 #include "BenPort.h"
 #include <string.h>
 
-#define FLAGS (ACTOR_FLAG_10 | ACTOR_FLAG_20)
+#define FLAGS (ACTOR_FLAG_UPDATE_CULLING_DISABLED | ACTOR_FLAG_DRAW_CULLING_DISABLED)
 
 void ObjEntotu_Init(Actor* thisx, PlayState* play);
 void ObjEntotu_Destroy(Actor* thisx, PlayState* play);

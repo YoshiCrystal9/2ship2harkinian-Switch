@@ -22,7 +22,9 @@
 
 #include "2s2h/Enhancements/FrameInterpolation/FrameInterpolation.h"
 
-#define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_10 | ACTOR_FLAG_UPDATE_DURING_OCARINA)
+#define FLAGS                                                                                  \
+    (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_UPDATE_CULLING_DISABLED | \
+     ACTOR_FLAG_UPDATE_DURING_OCARINA)
 
 #define ENGO_STANDING_Y_OFFSET 0.0f  // Actor shape offset in use when a Goron is in any standing state.
 #define ENGO_ROLLEDUP_Y_OFFSET 14.0f // Actor shape offset in use when a Goron is "rolled up".
@@ -2657,7 +2659,7 @@ void EnGo_Snowball(EnGo* this, PlayState* play) {
     if ((this->actionFlags & ENGO_FLAG_HIT_BY_OTHER) && (this->actor.colChkInfo.damageEffect == ENGO_DMGEFF_BREAK)) {
         // Stop the Gatekeeper when hit by an appropriate effect
         Actor_PlaySfx(&this->actor, NA_SE_EV_SNOWBALL_BROKEN);
-        this->actor.flags &= ~ACTOR_FLAG_10;
+        this->actor.flags &= ~ACTOR_FLAG_UPDATE_CULLING_DISABLED;
         this->actor.flags |= ACTOR_FLAG_UPDATE_DURING_OCARINA;
         EnGo_InitSnow(this->effectTable, this->actor.world.pos);
         this->actor.shape.rot.x = 0;

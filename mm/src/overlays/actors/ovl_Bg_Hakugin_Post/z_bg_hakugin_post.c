@@ -10,7 +10,7 @@
 #include "objects/object_hakugin_obj/object_hakugin_obj.h"
 #include <string.h>
 
-#define FLAGS (ACTOR_FLAG_10 | ACTOR_FLAG_20)
+#define FLAGS (ACTOR_FLAG_UPDATE_CULLING_DISABLED | ACTOR_FLAG_DRAW_CULLING_DISABLED)
 
 void BgHakuginPost_Init(Actor* thisx, PlayState* play);
 void BgHakuginPost_Destroy(Actor* thisx, PlayState* play);

@@ -10,7 +10,7 @@
 #include "objects/object_fish/object_fish.h"
 #include "overlays/actors/ovl_En_Kanban/z_en_kanban.h"
 
-#define FLAGS (ACTOR_FLAG_10)
+#define FLAGS (ACTOR_FLAG_UPDATE_CULLING_DISABLED)
 
 #define WATER_SURFACE_Y(play) play->colCtx.colHeader->waterBoxes->minPos.y
 
@@ -2863,8 +2863,8 @@ void EnFishing_UpdateFish(Actor* thisx, PlayState* play2) {
     f32 temp;
     f32 temp2;
 
-    this->actor.uncullZoneForward = 700.0f;
-    this->actor.uncullZoneScale = 50.0f;
+    this->actor.cullingVolumeDistance = 700.0f;
+    this->actor.cullingVolumeScale = 50.0f;
 
     if (this->unk_148 == 0) {
         sp118 = (player->actor.speed * 0.15f) + 0.25f;
@@ -2983,8 +2983,8 @@ void EnFishing_UpdateFish(Actor* thisx, PlayState* play2) {
         case 100:
             EnFishing_HandleAquariumDialog(this, play);
 
-            this->actor.uncullZoneForward = 500.0f;
-            this->actor.uncullZoneScale = 300.0f;
+            this->actor.cullingVolumeDistance = 500.0f;
+            this->actor.cullingVolumeScale = 300.0f;
 
             Lights_PointNoGlowSetInfo(&this->lightInfo, this->actor.world.pos.x, this->actor.world.pos.y + 20.0f,
                                       this->actor.world.pos.z - 50.0f, 255, 255, 255, 255);
@@ -3507,8 +3507,8 @@ void EnFishing_UpdateFish(Actor* thisx, PlayState* play2) {
             break;
 
         case 5:
-            this->actor.uncullZoneForward = 1200.0f;
-            this->actor.uncullZoneScale = 200.0f;
+            this->actor.cullingVolumeDistance = 1200.0f;
+            this->actor.cullingVolumeScale = 200.0f;
 
             D_809171D4++;
 
@@ -5085,7 +5085,7 @@ void EnFishing_UpdateOwner(Actor* thisx, PlayState* play2) {
     if ((D_8090CD04 != 0) || Message_GetState(&play->msgCtx) != TEXT_STATE_NONE) {
         this->actor.flags &= ~ACTOR_FLAG_ATTENTION_ENABLED;
     } else {
-        this->actor.flags |= (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_20);
+        this->actor.flags |= (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_DRAW_CULLING_DISABLED);
     }
 
     if ((this->actor.xzDistToPlayer < 120.0f) || Message_GetState(&play->msgCtx) != TEXT_STATE_NONE) {

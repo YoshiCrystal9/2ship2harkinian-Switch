@@ -12,7 +12,7 @@
 #include "2s2h/BenGui/CosmeticEditor.h"
 #include "2s2h/GameInteractor/GameInteractor.h"
 
-#define FLAGS (ACTOR_FLAG_10)
+#define FLAGS (ACTOR_FLAG_UPDATE_CULLING_DISABLED)
 
 void EnMThunder_Init(Actor* thisx, PlayState* play);
 void EnMThunder_Destroy(Actor* thisx, PlayState* play);

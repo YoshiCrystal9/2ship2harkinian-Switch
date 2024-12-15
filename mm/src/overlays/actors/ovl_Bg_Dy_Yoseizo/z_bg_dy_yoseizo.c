@@ -8,7 +8,7 @@
 #include "overlays/actors/ovl_Demo_Effect/z_demo_effect.h"
 #include "2s2h/GameInteractor/GameInteractor.h"
 
-#define FLAGS (ACTOR_FLAG_10 | ACTOR_FLAG_20 | ACTOR_FLAG_UPDATE_DURING_OCARINA)
+#define FLAGS (ACTOR_FLAG_UPDATE_CULLING_DISABLED | ACTOR_FLAG_DRAW_CULLING_DISABLED | ACTOR_FLAG_UPDATE_DURING_OCARINA)
 
 void BgDyYoseizo_Init(Actor* thisx, PlayState* play);
 void BgDyYoseizo_Destroy(Actor* thisx, PlayState* play);

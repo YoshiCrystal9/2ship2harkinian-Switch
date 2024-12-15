@@ -10,8 +10,9 @@
 #include "objects/gameplay_keep/gameplay_keep.h"
 #include "2s2h/Enhancements/FrameInterpolation/FrameInterpolation.h"
 
-#define FLAGS \
-    (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_HOSTILE | ACTOR_FLAG_10 | ACTOR_FLAG_20 | ACTOR_FLAG_IGNORE_QUAKE)
+#define FLAGS                                                                                 \
+    (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_HOSTILE | ACTOR_FLAG_UPDATE_CULLING_DISABLED | \
+     ACTOR_FLAG_DRAW_CULLING_DISABLED | ACTOR_FLAG_IGNORE_QUAKE)
 
 void EnDeath_Init(Actor* thisx, PlayState* play2);
 void EnDeath_Destroy(Actor* thisx, PlayState* play);
@@ -1434,7 +1435,7 @@ void EnDeath_DrawBats(EnDeath* this, PlayState* play) {
 
     for (i = 0; i < ARRAY_COUNT(this->miniDeaths); i++) {
         if (this->actionFunc == EnDeath_BeginWithoutCutscene ||
-            CHECK_FLAG_ALL(this->miniDeaths[i]->actor.flags, ACTOR_FLAG_40)) {
+            CHECK_FLAG_ALL(this->miniDeaths[i]->actor.flags, ACTOR_FLAG_INSIDE_CULLING_VOLUME)) {
             miniDeath = this->miniDeaths[i];
             FrameInterpolation_RecordOpenChild(miniDeath, i);
 
@@ -1565,7 +1566,7 @@ void EnDeath_DrawFlames(EnDeath* this, PlayState* play2) {
     }
 
     for (i = 0; i < ARRAY_COUNT(this->miniDeaths); i++) {
-        if (CHECK_FLAG_ALL(this->miniDeaths[i]->actor.flags, ACTOR_FLAG_40)) {
+        if (CHECK_FLAG_ALL(this->miniDeaths[i]->actor.flags, ACTOR_FLAG_INSIDE_CULLING_VOLUME)) {
             for (effect = this->miniDeaths[i]->effects, j = 0; j < MINIDEATH_NUM_EFFECTS; j++, effect++) {
                 FrameInterpolation_RecordOpenChild(effect, 3);
                 cmf->mf[3][0] = effect->pos.x;

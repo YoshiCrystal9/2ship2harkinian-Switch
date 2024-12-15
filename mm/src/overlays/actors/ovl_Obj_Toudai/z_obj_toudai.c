@@ -8,7 +8,7 @@
 #include "objects/object_f53_obj/object_f53_obj.h"
 #include <string.h>
 
-#define FLAGS (ACTOR_FLAG_10 | ACTOR_FLAG_20)
+#define FLAGS (ACTOR_FLAG_UPDATE_CULLING_DISABLED | ACTOR_FLAG_DRAW_CULLING_DISABLED)
 
 void ObjToudai_Init(Actor* thisx, PlayState* play);
 void ObjToudai_Destroy(Actor* thisx, PlayState* play);

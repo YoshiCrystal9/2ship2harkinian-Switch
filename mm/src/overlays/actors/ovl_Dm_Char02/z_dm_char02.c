@@ -8,7 +8,7 @@
 #include "objects/object_stk2/object_stk2.h"
 #include "2s2h/GameInteractor/GameInteractor.h"
 
-#define FLAGS (ACTOR_FLAG_10 | ACTOR_FLAG_20)
+#define FLAGS (ACTOR_FLAG_UPDATE_CULLING_DISABLED | ACTOR_FLAG_DRAW_CULLING_DISABLED)
 
 void DmChar02_Init(Actor* thisx, PlayState* play);
 void DmChar02_Destroy(Actor* thisx, PlayState* play);

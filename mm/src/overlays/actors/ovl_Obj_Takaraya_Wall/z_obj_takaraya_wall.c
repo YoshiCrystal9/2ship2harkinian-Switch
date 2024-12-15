@@ -29,7 +29,7 @@
 
 #include "2s2h/Enhancements/FrameInterpolation/FrameInterpolation.h"
 
-#define FLAGS (ACTOR_FLAG_10 | ACTOR_FLAG_20)
+#define FLAGS (ACTOR_FLAG_UPDATE_CULLING_DISABLED | ACTOR_FLAG_DRAW_CULLING_DISABLED)
 
 void ObjTakarayaWall_Init(Actor* thisx, PlayState* play);
 void ObjTakarayaWall_Destroy(Actor* thisx, PlayState* play);
@@ -301,7 +301,7 @@ void ObjTakarayaWall_Init(Actor* thisx, PlayState* play) {
     this->actor.shape.rot.z = 0;
 
     if (chest != NULL) {
-        chest->uncullZoneForward = 2000.0f;
+        chest->cullingVolumeDistance = 2000.0f;
     }
 
     sTakarayaWallHeights[0][column] = -10.0f;

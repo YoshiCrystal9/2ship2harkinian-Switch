@@ -12,7 +12,7 @@
 #include "objects/gameplay_keep/gameplay_keep.h"
 #include "GameInteractor/GameInteractor.h"
 
-#define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_10)
+#define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_UPDATE_CULLING_DISABLED)
 
 void EnGeg_Init(Actor* thisx, PlayState* play);
 void EnGeg_Destroy(Actor* thisx, PlayState* play);

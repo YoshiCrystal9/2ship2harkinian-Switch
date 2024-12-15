@@ -9,7 +9,7 @@
 #include "2s2h/GameInteractor/GameInteractor.h"
 #include "public/bridge/consolevariablebridge.h"
 
-#define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_10)
+#define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_UPDATE_CULLING_DISABLED)
 
 #define SI_NONE 0
 

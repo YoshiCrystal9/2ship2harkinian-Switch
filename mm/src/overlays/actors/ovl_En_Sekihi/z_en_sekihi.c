@@ -12,7 +12,7 @@
 #include "objects/object_zog/object_zog.h"
 #include "2s2h/GameInteractor/GameInteractor.h"
 
-#define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_10)
+#define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_UPDATE_CULLING_DISABLED)
 
 void EnSekihi_Init(Actor* thisx, PlayState* play);
 void EnSekihi_Destroy(Actor* thisx, PlayState* play);

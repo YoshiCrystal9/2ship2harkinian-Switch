@@ -37,7 +37,7 @@
 #include "assets/objects/gameplay_keep/gameplay_keep.h"
 #include "overlays/actors/ovl_En_Clear_Tag/z_en_clear_tag.h"
 
-#define FLAGS 0x00000010
+#define FLAGS (ACTOR_FLAG_UPDATE_CULLING_DISABLED)
 
 #define ALIEN_COUNT 8
 #define EFFECT_COUNT 10
@@ -1944,7 +1944,7 @@ void EnInvadepoh_InvasionHandler_Init(EnInvadepoh* this, PlayState* play) {
     s32 alienCount;
     s32 pathIndex;
 
-    this->actor.flags |= ACTOR_FLAG_20;
+    this->actor.flags |= ACTOR_FLAG_DRAW_CULLING_DISABLED;
     pathIndex = EN_INVADEPOH_GET_PATH(&this->actor);
 
     for (alienCount = 1; alienCount < ALIEN_COUNT; alienCount++) {
@@ -1986,9 +1986,9 @@ void EnInvadepoh_InvasionHandler_Init(EnInvadepoh* this, PlayState* play) {
 }
 
 static InitChainEntry sAlienInitChain[] = {
-    ICHAIN_F32(uncullZoneForward, 20000, ICHAIN_CONTINUE),
-    ICHAIN_F32(uncullZoneScale, 500, ICHAIN_CONTINUE),
-    ICHAIN_F32(uncullZoneDownward, 600, ICHAIN_CONTINUE),
+    ICHAIN_F32(cullingVolumeDistance, 20000, ICHAIN_CONTINUE),
+    ICHAIN_F32(cullingVolumeScale, 500, ICHAIN_CONTINUE),
+    ICHAIN_F32(cullingVolumeDownward, 600, ICHAIN_CONTINUE),
     ICHAIN_VEC3F_DIV1000(scale, 10, ICHAIN_STOP),
 };
 
@@ -1999,7 +1999,7 @@ void EnInvadepoh_Alien_Init(EnInvadepoh* this, PlayState* play) {
     Collider_InitCylinder(play, &this->collider);
     ActorShape_Init(&this->actor.shape, 6800.0f, ActorShadow_DrawWhiteCircle, 150.0f);
     this->actor.shape.shadowAlpha = 140;
-    this->actor.flags = ACTOR_FLAG_10 | ACTOR_FLAG_IGNORE_QUAKE | ACTOR_FLAG_MINIMAP_ICON_ENABLED;
+    this->actor.flags = ACTOR_FLAG_UPDATE_CULLING_DISABLED | ACTOR_FLAG_IGNORE_QUAKE | ACTOR_FLAG_MINIMAP_ICON_ENABLED;
 
     if (EN_INVADEPOH_GET_TYPE(&this->actor) == EN_INVADEPOH_TYPE_ALIEN_ABDUCTOR) {
         this->actor.update = EnInvadepoh_AlienAbductor_WaitForObject;
@@ -2017,9 +2017,9 @@ void EnInvadepoh_Alien_Init(EnInvadepoh* this, PlayState* play) {
 }
 
 static InitChainEntry sCowInitChain[] = {
-    ICHAIN_F32(uncullZoneForward, 20000, ICHAIN_CONTINUE),
-    ICHAIN_F32(uncullZoneScale, 200, ICHAIN_CONTINUE),
-    ICHAIN_F32(uncullZoneDownward, 300, ICHAIN_CONTINUE),
+    ICHAIN_F32(cullingVolumeDistance, 20000, ICHAIN_CONTINUE),
+    ICHAIN_F32(cullingVolumeScale, 200, ICHAIN_CONTINUE),
+    ICHAIN_F32(cullingVolumeDownward, 300, ICHAIN_CONTINUE),
     ICHAIN_VEC3F_DIV1000(scale, 10, ICHAIN_STOP),
 };
 
@@ -2036,9 +2036,9 @@ void EnInvadepoh_Cow_Init(EnInvadepoh* this, PlayState* play) {
 }
 
 static InitChainEntry sCowTailInitChain[] = {
-    ICHAIN_F32(uncullZoneForward, 20000, ICHAIN_CONTINUE),
-    ICHAIN_F32(uncullZoneScale, 100, ICHAIN_CONTINUE),
-    ICHAIN_F32(uncullZoneDownward, 100, ICHAIN_CONTINUE),
+    ICHAIN_F32(cullingVolumeDistance, 20000, ICHAIN_CONTINUE),
+    ICHAIN_F32(cullingVolumeScale, 100, ICHAIN_CONTINUE),
+    ICHAIN_F32(cullingVolumeDownward, 100, ICHAIN_CONTINUE),
     ICHAIN_VEC3F_DIV1000(scale, 10, ICHAIN_STOP),
 };
 
@@ -2053,8 +2053,10 @@ void EnInvadepoh_CowTail_Init(EnInvadepoh* this, PlayState* play) {
 }
 
 static InitChainEntry sRomaniInitChain[] = {
-    ICHAIN_F32(uncullZoneForward, 20000, ICHAIN_CONTINUE), ICHAIN_F32(uncullZoneScale, 100, ICHAIN_CONTINUE),
-    ICHAIN_F32(uncullZoneDownward, 100, ICHAIN_CONTINUE),  ICHAIN_F32(lockOnArrowOffset, 1500, ICHAIN_CONTINUE),
+    ICHAIN_F32(cullingVolumeDistance, 20000, ICHAIN_CONTINUE),
+    ICHAIN_F32(cullingVolumeScale, 100, ICHAIN_CONTINUE),
+    ICHAIN_F32(cullingVolumeDownward, 100, ICHAIN_CONTINUE),
+    ICHAIN_F32(lockOnArrowOffset, 1500, ICHAIN_CONTINUE),
     ICHAIN_VEC3F_DIV1000(scale, 10, ICHAIN_STOP),
 };
 
@@ -2083,7 +2085,7 @@ void EnInvadepoh_Romani_Init(EnInvadepoh* this, PlayState* play) {
         this->actor.update = EnInvadepoh_AbductedRomani_WaitForObject;
     } else if (type == EN_INVADEPOH_TYPE_ROMANI_SILENT) {
         this->actor.update = EnInvadepoh_SilentRomani_WaitForObject;
-        this->actor.flags = ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_10;
+        this->actor.flags = ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_UPDATE_CULLING_DISABLED;
     } else if (type == EN_INVADEPOH_TYPE_ROMANI_NIGHT_1) {
         this->actor.update = EnInvadepoh_Night1Romani_WaitForObject;
     } else if (type == EN_INVADEPOH_TYPE_ROMANI_BARN) {
@@ -2123,9 +2125,9 @@ void EnInvadepoh_Romani_Init(EnInvadepoh* this, PlayState* play) {
 }
 
 static InitChainEntry sUfoInitChain[] = {
-    ICHAIN_F32(uncullZoneForward, 20000, ICHAIN_CONTINUE), ICHAIN_F32(uncullZoneScale, 1000, ICHAIN_CONTINUE),
-    ICHAIN_F32(uncullZoneDownward, 1000, ICHAIN_CONTINUE), ICHAIN_VEC3S(shape, 0, ICHAIN_CONTINUE),
-    ICHAIN_F32(terminalVelocity, -100, ICHAIN_CONTINUE),   ICHAIN_VEC3F_DIV1000(scale, 1000, ICHAIN_STOP),
+    ICHAIN_F32(cullingVolumeDistance, 20000, ICHAIN_CONTINUE), ICHAIN_F32(cullingVolumeScale, 1000, ICHAIN_CONTINUE),
+    ICHAIN_F32(cullingVolumeDownward, 1000, ICHAIN_CONTINUE),  ICHAIN_VEC3S(shape, 0, ICHAIN_CONTINUE),
+    ICHAIN_F32(terminalVelocity, -100, ICHAIN_CONTINUE),       ICHAIN_VEC3F_DIV1000(scale, 1000, ICHAIN_STOP),
 };
 
 void EnInvadepoh_Ufo_Init(EnInvadepoh* this, PlayState* play) {
@@ -2148,9 +2150,9 @@ void EnInvadepoh_Ufo_Init(EnInvadepoh* this, PlayState* play) {
 }
 
 static InitChainEntry sDogInitChain[] = {
-    ICHAIN_F32(uncullZoneForward, 2000, ICHAIN_CONTINUE),
-    ICHAIN_F32(uncullZoneScale, 50, ICHAIN_CONTINUE),
-    ICHAIN_F32(uncullZoneDownward, 50, ICHAIN_CONTINUE),
+    ICHAIN_F32(cullingVolumeDistance, 2000, ICHAIN_CONTINUE),
+    ICHAIN_F32(cullingVolumeScale, 50, ICHAIN_CONTINUE),
+    ICHAIN_F32(cullingVolumeDownward, 50, ICHAIN_CONTINUE),
     ICHAIN_F32(gravity, -3, ICHAIN_CONTINUE),
     ICHAIN_U8(attentionRangeType, ATTENTION_RANGE_4, ICHAIN_CONTINUE),
     ICHAIN_VEC3F_DIV1000(scale, 7, ICHAIN_STOP),
@@ -2173,9 +2175,9 @@ void EnInvadepoh_Dog_Init(EnInvadepoh* this, PlayState* play) {
 }
 
 static InitChainEntry sCremiaInitChain[] = {
-    ICHAIN_F32(uncullZoneForward, 20000, ICHAIN_CONTINUE),
-    ICHAIN_F32(uncullZoneScale, 100, ICHAIN_CONTINUE),
-    ICHAIN_F32(uncullZoneDownward, 150, ICHAIN_CONTINUE),
+    ICHAIN_F32(cullingVolumeDistance, 20000, ICHAIN_CONTINUE),
+    ICHAIN_F32(cullingVolumeScale, 100, ICHAIN_CONTINUE),
+    ICHAIN_F32(cullingVolumeDownward, 150, ICHAIN_CONTINUE),
     ICHAIN_F32(lockOnArrowOffset, 1500, ICHAIN_CONTINUE),
     ICHAIN_U8(attentionRangeType, ATTENTION_RANGE_3, ICHAIN_CONTINUE),
     ICHAIN_VEC3F_DIV1000(scale, 10, ICHAIN_STOP),
@@ -3123,7 +3125,7 @@ void EnInvadepoh_SilentRomani_Walk(EnInvadepoh* this, PlayState* play) {
 
     EnInvadepoh_Romani_StepYawAlongPath(this, 6, this->shapeAngularVelocityY, 0x46);
 
-    if (CHECK_FLAG_ALL(this->actor.flags, ACTOR_FLAG_40) &&
+    if (CHECK_FLAG_ALL(this->actor.flags, ACTOR_FLAG_INSIDE_CULLING_VOLUME) &&
         (Animation_OnFrame(&this->skelAnime, 0.0f) || Animation_OnFrame(&this->skelAnime, 7.0f))) {
         Actor_PlaySfx(&this->actor, NA_SE_EN_ROMANI_WALK);
     }
@@ -3308,7 +3310,7 @@ void EnInvadepoh_SilentRomani_WaitForObject(Actor* thisx, PlayState* play2) {
 void EnInvadepoh_SilentRomani_Update(Actor* thisx, PlayState* play2) {
     PlayState* play = play2;
     EnInvadepoh* this = (EnInvadepoh*)thisx;
-    s32 inUncullRange = CHECK_FLAG_ALL(this->actor.flags, ACTOR_FLAG_40);
+    s32 inUncullRange = CHECK_FLAG_ALL(this->actor.flags, ACTOR_FLAG_INSIDE_CULLING_VOLUME);
     s32 talkAccepted = Actor_TalkOfferAccepted(&this->actor, &play->state);
 
     if (talkAccepted) {
@@ -3653,7 +3655,7 @@ void EnInvadepoh_Night1Romani_Walk(EnInvadepoh* this, PlayState* play) {
         this->actor.flags |= (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY);
     }
 
-    if (CHECK_FLAG_ALL(this->actor.flags, ACTOR_FLAG_40) &&
+    if (CHECK_FLAG_ALL(this->actor.flags, ACTOR_FLAG_INSIDE_CULLING_VOLUME) &&
         (Animation_OnFrame(&this->skelAnime, 0.0f) || Animation_OnFrame(&this->skelAnime, 7.0f))) {
         Actor_PlaySfx(&this->actor, NA_SE_EN_ROMANI_WALK);
     }
@@ -3763,7 +3765,7 @@ void EnInvadepoh_Night1Romani_WaitForTime(Actor* thisx, PlayState* play2) {
 void EnInvadepoh_Night1Romani_Update(Actor* thisx, PlayState* play2) {
     PlayState* play = play2;
     EnInvadepoh* this = (EnInvadepoh*)thisx;
-    s32 inUncullRange = CHECK_FLAG_ALL(this->actor.flags, ACTOR_FLAG_40);
+    s32 inUncullRange = CHECK_FLAG_ALL(this->actor.flags, ACTOR_FLAG_INSIDE_CULLING_VOLUME);
     s32 talkAccepted = Actor_TalkOfferAccepted(&this->actor, &play->state);
 
     if (talkAccepted) {
@@ -3914,7 +3916,7 @@ void EnInvadepoh_BarnRomani_Walk(EnInvadepoh* this, PlayState* play) {
         this->actor.flags |= (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY);
     }
 
-    if (CHECK_FLAG_ALL(this->actor.flags, ACTOR_FLAG_40) &&
+    if (CHECK_FLAG_ALL(this->actor.flags, ACTOR_FLAG_INSIDE_CULLING_VOLUME) &&
         (Animation_OnFrame(&this->skelAnime, 0.0f) || Animation_OnFrame(&this->skelAnime, 7.0f))) {
         Actor_PlaySfx(&this->actor, NA_SE_EN_ROMANI_WALK);
     }
@@ -4025,7 +4027,7 @@ void EnInvadepoh_BarnRomani_WaitForTime(Actor* thisx, PlayState* play2) {
 void EnInvadepoh_BarnRomani_Update(Actor* thisx, PlayState* play2) {
     PlayState* play = play2;
     EnInvadepoh* this = (EnInvadepoh*)thisx;
-    s32 inUncullRange = CHECK_FLAG_ALL(this->actor.flags, ACTOR_FLAG_40);
+    s32 inUncullRange = CHECK_FLAG_ALL(this->actor.flags, ACTOR_FLAG_INSIDE_CULLING_VOLUME);
     s32 talkAccepted = Actor_TalkOfferAccepted(&this->actor, &play->state);
 
     if (talkAccepted) {
@@ -4200,7 +4202,7 @@ void EnInvadepoh_RewardRomani_Update(Actor* thisx, PlayState* play2) {
     PlayState* play = play2;
     EnInvadepoh* this = (EnInvadepoh*)thisx;
     EnInvadepohModelInfo* modelInfo = &this->modelInfo;
-    s32 inUncullRange = CHECK_FLAG_ALL(this->actor.flags, ACTOR_FLAG_40);
+    s32 inUncullRange = CHECK_FLAG_ALL(this->actor.flags, ACTOR_FLAG_INSIDE_CULLING_VOLUME);
 
     this->actionFunc(this, play);
 
@@ -4414,7 +4416,7 @@ void EnInvadepoh_Dog_WaitForInvasion(Actor* thisx, PlayState* play2) {
 void EnInvadepoh_Dog_Update(Actor* thisx, PlayState* play2) {
     PlayState* play = play2;
     EnInvadepoh* this = (EnInvadepoh*)thisx;
-    s32 inUncullRange = CHECK_FLAG_ALL(this->actor.flags, ACTOR_FLAG_40);
+    s32 inUncullRange = CHECK_FLAG_ALL(this->actor.flags, ACTOR_FLAG_INSIDE_CULLING_VOLUME);
 
     sClosestAlienThreat = EnInvadepoh_Dog_GetClosestAlienThreat();
     if (sClosestAlienThreat == NULL) {
@@ -4560,7 +4562,7 @@ void EnInvadepoh_Night3Cremia_Walk(EnInvadepoh* this, PlayState* play) {
         }
     }
 
-    if (CHECK_FLAG_ALL(this->actor.flags, ACTOR_FLAG_40) &&
+    if (CHECK_FLAG_ALL(this->actor.flags, ACTOR_FLAG_INSIDE_CULLING_VOLUME) &&
         (Animation_OnFrame(&this->skelAnime, 0.0f) || Animation_OnFrame(&this->skelAnime, 12.0f))) {
         Actor_PlaySfx(&this->actor, NA_SE_EN_ROMANI_WALK);
     }
@@ -4696,7 +4698,7 @@ void EnInvadepoh_Night3Cremia_WaitForTime(Actor* thisx, PlayState* play2) {
 void EnInvadepoh_Night3Cremia_Update(Actor* thisx, PlayState* play2) {
     PlayState* play = play2;
     EnInvadepoh* this = (EnInvadepoh*)thisx;
-    s32 inUncullRange = CHECK_FLAG_ALL(this->actor.flags, ACTOR_FLAG_40);
+    s32 inUncullRange = CHECK_FLAG_ALL(this->actor.flags, ACTOR_FLAG_INSIDE_CULLING_VOLUME);
     s32 talkAccepted = Actor_TalkOfferAccepted(&this->actor, &play->state);
 
     if (talkAccepted) {
@@ -4794,7 +4796,7 @@ void EnInvadepoh_Night3Romani_Walk(EnInvadepoh* this, PlayState* play) {
         modelInfo->headRotTarget.y = CLAMP((s16)(yaw * 0.7f), -0x1F40, 0x1F40);
     }
 
-    if (CHECK_FLAG_ALL(this->actor.flags, ACTOR_FLAG_40) &&
+    if (CHECK_FLAG_ALL(this->actor.flags, ACTOR_FLAG_INSIDE_CULLING_VOLUME) &&
         (Animation_OnFrame(&this->skelAnime, 0.0f) || Animation_OnFrame(&this->skelAnime, 7.0f))) {
         Actor_PlaySfx(&this->actor, NA_SE_EN_ROMANI_WALK);
     }
@@ -4925,7 +4927,7 @@ void EnInvadepoh_Night3Romani_WaitForTime(Actor* thisx, PlayState* play2) {
 void EnInvadepoh_Night3Romani_Update(Actor* thisx, PlayState* play2) {
     PlayState* play = play2;
     EnInvadepoh* this = (EnInvadepoh*)thisx;
-    s32 inUncullRange = CHECK_FLAG_ALL(this->actor.flags, ACTOR_FLAG_40);
+    s32 inUncullRange = CHECK_FLAG_ALL(this->actor.flags, ACTOR_FLAG_INSIDE_CULLING_VOLUME);
     s32 talkAccepted = Actor_TalkOfferAccepted(&this->actor, &play->state);
 
     if (talkAccepted) {

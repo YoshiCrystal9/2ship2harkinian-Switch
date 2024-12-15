@@ -35,7 +35,7 @@
 #include "overlays/actors/ovl_Demo_Effect/z_demo_effect.h"
 #include "2s2h/GameInteractor/GameInteractor.h"
 
-#define FLAGS (ACTOR_FLAG_10)
+#define FLAGS (ACTOR_FLAG_UPDATE_CULLING_DISABLED)
 
 //! TODO: this file require macros for its uses of weekEventReg
 

@@ -11,7 +11,7 @@
 #include "2s2h/Enhancements/FrameInterpolation/FrameInterpolation.h"
 #include "2s2h/GameInteractor/GameInteractor.h"
 
-#define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_HOSTILE | ACTOR_FLAG_10)
+#define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_HOSTILE | ACTOR_FLAG_UPDATE_CULLING_DISABLED)
 
 void EnFz_Init(Actor* thisx, PlayState* play);
 void EnFz_Destroy(Actor* thisx, PlayState* play);
@@ -158,7 +158,7 @@ static DamageTable sDamageTable = {
 static InitChainEntry sInitChain[] = {
     ICHAIN_S8(hintId, TATL_HINT_ID_FREEZARD, ICHAIN_CONTINUE),
     ICHAIN_U8(attentionRangeType, ATTENTION_RANGE_2, ICHAIN_CONTINUE),
-    ICHAIN_F32(uncullZoneForward, 1400, ICHAIN_CONTINUE),
+    ICHAIN_F32(cullingVolumeDistance, 1400, ICHAIN_CONTINUE),
     ICHAIN_F32(lockOnArrowOffset, 30, ICHAIN_STOP),
 };
 
@@ -189,7 +189,7 @@ void EnFz_Init(Actor* thisx, PlayState* play) {
     this->unk_BD7 = 1;
     this->unk_BD8 = 0;
     this->actor.speed = 0.0f;
-    this->actor.uncullZoneScale = 400.0f;
+    this->actor.cullingVolumeScale = 400.0f;
     this->unk_BAC = this->actor.world.pos.y;
     this->unk_BB4 = this->actor.world.pos.y;
     this->unk_BA8 = this->actor.world.pos.x;
