@@ -12,7 +12,7 @@
 #include "overlays/actors/ovl_En_Horse/z_en_horse.h"
 #include "2s2h/GameInteractor/GameInteractor.h"
 
-#define FLAGS (ACTOR_FLAG_UPDATE_CULLING_DISABLED | ACTOR_FLAG_DRAW_CULLING_DISABLED | ACTOR_FLAG_100000)
+#define FLAGS (ACTOR_FLAG_UPDATE_CULLING_DISABLED | ACTOR_FLAG_DRAW_CULLING_DISABLED | ACTOR_FLAG_FREEZE_EXCEPTION)
 
 void EnTest4_Init(Actor* thisx, PlayState* play);
 void EnTest4_Destroy(Actor* thisx, PlayState* play);

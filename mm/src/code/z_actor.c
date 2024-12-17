@@ -2691,9 +2691,8 @@ typedef struct {
     /* 0x0C */ u32 canFreezeCategory;
     /* 0x10 */ Actor* talkActor;
     /* 0x14 */ Player* player;
-    /* 0x18 */ u32 unk_18; // Bitmask of actor flags. The actor will only have main called if it has at least 1
-                           // flag set that matches this bitmask
-} UpdateActor_Params;      // size = 0x1C
+    /* 0x18 */ u32 updateActorFlagsMask; // Actor will update only if at least 1 actor flag is set in this bitmask
+} UpdateActor_Params;                    // size = 0x1C
 
 Actor* Actor_UpdateActor(UpdateActor_Params* params) {
     PlayState* play = params->play;
@@ -2733,7 +2732,7 @@ Actor* Actor_UpdateActor(UpdateActor_Params* params) {
             Actor_Kill(actor);
         } else if (((params->freezeExceptionFlag != 0) && !(actor->flags & params->freezeExceptionFlag)) ||
                    (((!params->freezeExceptionFlag) != 0) &&
-                    (!(actor->flags & ACTOR_FLAG_100000) ||
+                    (!(actor->flags & ACTOR_FLAG_FREEZE_EXCEPTION) ||
                      ((actor->category == ACTORCAT_EXPLOSIVES) && (params->player->stateFlags1 & PLAYER_STATE1_200))) &&
                     params->canFreezeCategory && (actor != params->talkActor) && (actor != params->player->heldActor) &&
                     (actor->parent != &params->player->actor))) {
@@ -2747,7 +2746,7 @@ Actor* Actor_UpdateActor(UpdateActor_Params* params) {
             actor->yawTowardsPlayer = Actor_WorldYawTowardActor(actor, &params->player->actor);
             actor->flags &= ~ACTOR_FLAG_SFX_FOR_PLAYER_BODY_HIT;
 
-            if ((DECR(actor->freezeTimer) == 0) && (actor->flags & params->unk_18)) {
+            if ((DECR(actor->freezeTimer) == 0) && (actor->flags & params->updateActorFlagsMask)) {
                 if (actor == params->player->focusActor) {
                     actor->isLockedOn = true;
                 } else {
@@ -2822,10 +2821,11 @@ void Actor_UpdateAll(PlayState* play, ActorContext* actorCtx) {
     params.player = player;
     params.play = play;
 
-    if (play->unk_18844) {
-        params.unk_18 = ACTOR_FLAG_200000;
+    if (play->soaringCsOrSoTCsPlaying) {
+        params.updateActorFlagsMask = ACTOR_FLAG_UPDATE_DURING_SOARING_AND_SOT_CS;
     } else {
-        params.unk_18 = ACTOR_FLAG_200000 | ACTOR_FLAG_INSIDE_CULLING_VOLUME | ACTOR_FLAG_UPDATE_CULLING_DISABLED;
+        params.updateActorFlagsMask = ACTOR_FLAG_UPDATE_DURING_SOARING_AND_SOT_CS | ACTOR_FLAG_INSIDE_CULLING_VOLUME |
+                                      ACTOR_FLAG_UPDATE_CULLING_DISABLED;
     }
 
     Actor_SpawnSetupActors(play, actorCtx);
@@ -3367,13 +3367,14 @@ void Actor_DrawAll(PlayState* play, ActorContext* actorCtx) {
     Gfx* sp58;
     ActorListEntry* actorEntry;
     Actor* actor;
-    s32 actorFlags;
+    s32 drawActorFlagsMask;
     s32 category;
 
-    if (play->unk_18844) {
-        actorFlags = ACTOR_FLAG_200000;
+    if (play->soaringCsOrSoTCsPlaying) {
+        drawActorFlagsMask = ACTOR_FLAG_UPDATE_DURING_SOARING_AND_SOT_CS;
     } else {
-        actorFlags = ACTOR_FLAG_200000 | ACTOR_FLAG_INSIDE_CULLING_VOLUME | ACTOR_FLAG_DRAW_CULLING_DISABLED;
+        drawActorFlagsMask = ACTOR_FLAG_UPDATE_DURING_SOARING_AND_SOT_CS | ACTOR_FLAG_INSIDE_CULLING_VOLUME |
+                             ACTOR_FLAG_DRAW_CULLING_DISABLED;
     }
 
     OPEN_DISPS(play->state.gfxCtx);
@@ -3423,7 +3424,7 @@ void Actor_DrawAll(PlayState* play, ActorContext* actorCtx) {
             }
 
             actor->isDrawn = false;
-            if ((actor->init == NULL) && (actor->draw != NULL) && (shipActorFlagsCopy & actorFlags)) {
+            if ((actor->init == NULL) && (actor->draw != NULL) && (shipActorFlagsCopy & drawActorFlagsMask)) {
                 // #endregion
                 if ((actor->flags & ACTOR_FLAG_REACT_TO_LENS) &&
                     ((play->roomCtx.curRoom.lensMode == LENS_MODE_SHOW_ACTORS) ||
@@ -3466,7 +3467,7 @@ void Actor_DrawAll(PlayState* play, ActorContext* actorCtx) {
     gSPBranchList(ref2, &tmp2[1]);
     POLY_XLU_DISP = &tmp2[1];
 
-    if (!play->unk_18844) {
+    if (!play->soaringCsOrSoTCsPlaying) {
         Lights_DrawGlow(play);
     }
 

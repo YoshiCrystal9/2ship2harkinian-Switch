@@ -62,7 +62,7 @@ void BgIknvObj_Init(Actor* thisx, PlayState* play) {
         case IKNV_OBJ_WATERWHEEL:
             this->displayListPtr = object_iknv_obj_DL_013058;
             this->actionFunc = BgIknvObj_UpdateWaterwheel;
-            this->dyna.actor.flags |= ACTOR_FLAG_100000;
+            this->dyna.actor.flags |= ACTOR_FLAG_FREEZE_EXCEPTION;
             this->dyna.actor.flags |= ACTOR_FLAG_UPDATE_CULLING_DISABLED;
             break;
         case IKNV_OBJ_RAISED_DOOR:

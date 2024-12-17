@@ -8,7 +8,7 @@
 #include "objects/object_gi_reserve00/object_gi_reserve00.h"
 #include "2s2h/GameInteractor/GameInteractor.h"
 
-#define FLAGS (ACTOR_FLAG_UPDATE_CULLING_DISABLED | ACTOR_FLAG_100000)
+#define FLAGS (ACTOR_FLAG_UPDATE_CULLING_DISABLED | ACTOR_FLAG_FREEZE_EXCEPTION)
 
 void ObjMoonStone_Init(Actor* thisx, PlayState* play);
 void ObjMoonStone_Destroy(Actor* thisx, PlayState* play);
