@@ -467,6 +467,7 @@ s32 AudioLoad_SyncLoadSample(Sample* sample, s32 fontId) {
             sample->sampleAddr = sampleAddr;
         }
     }
+    //! @bug Missing return, but the return value is never used so it's fine.
 }
 
 s32 AudioLoad_SyncLoadInstrument(s32 fontId, s32 instId, s32 drumId) {
@@ -483,7 +484,7 @@ s32 AudioLoad_SyncLoadInstrument(s32 fontId, s32 instId, s32 drumId) {
         if (instrument->normalRangeHi != 0x7F) {
             return AudioLoad_SyncLoadSample(instrument->highPitchTunedSample.sample, fontId);
         }
-        // TODO: is this missing return UB?
+        //! @bug Missing return, but the return value is never used so it's fine.
     } else if (instId == 0x7F) {
         Drum* drum = AudioPlayback_GetDrum(fontId, drumId);
 
@@ -493,7 +494,7 @@ s32 AudioLoad_SyncLoadInstrument(s32 fontId, s32 instId, s32 drumId) {
         AudioLoad_SyncLoadSample(drum->tunedSample.sample, fontId);
         return 0;
     }
-    // TODO: is this missing return UB?
+    //! @bug Missing return, but the return value is never used so it's fine.
 }
 
 void AudioLoad_AsyncLoad(s32 tableType, s32 id, s32 nChunks, s32 retData, OSMesgQueue* retQueue) {
