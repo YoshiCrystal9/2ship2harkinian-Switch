@@ -1508,7 +1508,7 @@ void* MapDisp_AllocDungeonMap(PlayState* play, void* heap) {
             if (!foundTexture) {
                 sPauseDungeonMap.roomSprite[sceneRoomIter] = NULL;
             } else {
-                void* dummy = sPauseDungeonMap.mapI_roomTextures[dungeonMapRoomIter]; //! FAKE:
+                s32 requiredScopeTemp;
 
                 sPauseDungeonMap.roomSprite[sceneRoomIter] = sPauseDungeonMap.mapI_roomTextures[dungeonMapRoomIter];
             }
