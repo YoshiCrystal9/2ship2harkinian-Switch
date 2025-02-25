@@ -1,7 +1,7 @@
 [comment]: <> (Todo: Make Light Mode Image)
 [comment]: <> (Todo: Make Dark Mode Image)
 
-# 2 Ship 2 Harkinian
+# 2 Ship 2 Harkinian Switch
 
 ## Discord
 
