@@ -646,7 +646,7 @@ nx_generate_nacp(2s2h.nacp
    VERSION "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}"
 )
 
-nx_create_nro(2s2h
+nx_create_nro(2ship
     NACP 2s2h.nacp
     ICON ${CMAKE_CURRENT_SOURCE_DIR}/icon.jpg
 )
