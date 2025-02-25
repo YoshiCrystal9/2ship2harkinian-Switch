@@ -13,6 +13,7 @@ shipofharkinian.json
 imgui.ini
 saves/*
 randomizer/*
+.idea/*
 
 mm/libultraship/extern/Debug/ImGui.lib
 
