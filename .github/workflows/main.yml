@@ -6,98 +6,6 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 jobs:
-  # build-linux-self-hosted:
-  #   strategy:
-  #     fail-fast: true
-  #   runs-on: [self-hosted, Linux]
-  #   steps:
-  #   - uses: actions/checkout@v4
-  #     with:
-  #       submodules: true
-  #   - name: Install dependencies
-  #     run: |
-  #       sudo apt update
-  #       sudo apt install -y $(cat .github/workflows/apt-deps.txt) file
-  #   - name: Install latest SDL
-  #     run: |
-  #       export PATH="/usr/lib/ccache:/usr/local/opt/ccache/libexec:$PATH"
-  #       if [ ! -d "SDL2-2.26.1" ]; then
-  #         wget https://www.libsdl.org/release/SDL2-2.26.1.tar.gz
-  #         tar -xzf SDL2-2.26.1.tar.gz
-  #       fi
-  #       cd SDL2-2.26.1
-  #       ./configure
-  #       make -j
-  #       sudo make install
-  #       sudo cp -av /usr/local/lib/libSDL* /lib/x86_64-linux-gnu/
-  #   - name: Build 2Ship
-  #     run: |
-  #       export PATH="/usr/lib/ccache:/usr/local/opt/ccache/libexec:$PATH"
-  #       cmake --no-warn-unused-cli -H. -Bbuild-cmake -GNinja -DCMAKE_BUILD_TYPE:STRING=Release
-  #       cmake --build build-cmake --config Release --target Generate2ShipOtr -j
-  #       cmake --build build-cmake --config Release -j
-
-  #       (cd build-cmake && cpack -G External)
-  #       mv README.md readme.txt
-  #       mv build-cmake/*.appimage 2ship.appimage
-  #     env:
-  #       CC: gcc
-  #       CXX: g++
-  #   # - name: Upload build
-  #   #   uses: actions/upload-artifact@v4
-  #   #   with:
-  #   #     name: 2ship-linux
-  #   #     path: |
-  #   #       2ship.appimage
-  #   #       readme.txt
-
-  # build-windows-self-hosted:
-  #   runs-on: [self-hosted, Windows]
-  #   steps:
-  #   - name: Install dependencies
-  #     run: |
-  #       choco install ninja -y
-  #       choco install gzip -y
-  #       Add-Content $env:GITHUB_PATH $env:ChocolateyInstall
-  #   - uses: actions/checkout@v4
-  #     with:
-  #       submodules: true
-  #   - name: Configure Developer Command Prompt
-  #     uses: ilammy/msvc-dev-cmd@v1
-  #   - name: Copy Rom
-  #     run: Copy-Item -Path C:\baserom_mm.z64 -Destination ${{github.workspace}}/OTRExporter/baserom.z64
-  #   - name: Build 2Ship
-  #     env:
-  #       VCPKG_ROOT: ${{github.workspace}}/vcpkg
-  #     run: |
-  #       set $env:PATH="$env:USERPROFILE/.cargo/bin;$env:PATH"
-  #       cmake -S . -B build-windows -G Ninja -DCMAKE_MAKE_PROGRAM=ninja -DCMAKE_BUILD_TYPE:STRING=Release
-  #       cmake --build build-windows --config Release --target Generate2ShipOtr --parallel 10
-  #       cmake --build build-windows --config Release --parallel 10
-
-  #       (cd build-windows && cpack)
-  #       cd ..
-  #       mv _packages/*.zip _packages/2ship-windows.zip
-  #   # Temporarily replaced with an upload to R2 until we go public
-  #   # - name: Unzip package
-  #   #   run: Expand-Archive -Path 2ship-windows.zip -DestinationPath 2ship-windows
-  #   # - name: Upload build
-  #   #   if: ${{ startsWith(github.ref, 'refs/heads/develop') }}
-  #   #   uses: actions/upload-artifact@v4
-  #   #   with:
-  #   #     name: 2ship-windows
-  #   #     path: 2ship-windows
-  #   - name: Upload build
-  #     if: ${{ startsWith(github.ref, 'refs/heads/develop') }}
-  #     uses: ryand56/r2-upload-action@latest
-  #     with:
-  #       r2-account-id: ${{ secrets.R2_ACCOUNT_ID }}
-  #       r2-access-key-id: ${{ secrets.R2_ACCESS_KEY_ID }}
-  #       r2-secret-access-key: ${{ secrets.R2_SECRET_ACCESS_KEY }}
-  #       r2-bucket: ${{ secrets.R2_BUCKET }}
-  #       source-dir: _packages
-  #       destination-dir: ./
-
   generate-2ship-otr:
     runs-on: ubuntu-22.04
     steps:
@@ -323,7 +231,70 @@ jobs:
         path: |
           2ship.appimage
           readme.txt
+  build-switch:
+    needs: generate-2ship-otr
+    runs-on: ${{ (vars.LINUX_RUNNER && fromJSON(vars.LINUX_RUNNER)) || 'ubuntu-latest' }}
+    container:
+      image: devkitpro/devkita64:20240120
+    steps:
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y ninja-build
+        sudo apt-get remove -y cmake
+        wget https://github.com/Kitware/CMake/releases/download/v3.28.3/cmake-3.28.3-linux-x86_64.sh -O /tmp/cmake.sh
+        sudo sh /tmp/cmake.sh --prefix=/usr/local/ --exclude-subdir
+        wget https://libzip.org/download/libzip-1.10.1.tar.gz
+        tar -xzvf libzip-1.10.1.tar.gz
+        cd libzip-1.10.1
+        mkdir build
+        cd build
+        cmake -H.. -B. -DCMAKE_TOOLCHAIN_FILE=/opt/devkitpro/cmake/Switch.cmake
+        make
+        make install
+        cd ../..
+        wget https://github.com/nlohmann/json/archive/refs/tags/v3.11.3.tar.gz
+        tar -xzvf v3.11.3.tar.gz
+        cd json-3.11.3
+        mkdir build
+        cd build
+        cmake -H.. -B. -DJSON_BuildTests=OFF -DCMAKE_TOOLCHAIN_FILE=/opt/devkitpro/cmake/Switch.cmake
+        make
+        make install
+        cd ../..
 
+    - name: Fix dubious ownership error
+      if: ${{ vars.LINUX_RUNNER }}
+      run: git config --global --add safe.directory '*'
+    - uses: actions/checkout@v3
+      with:
+        submodules: true
+    - name: ccache
+      uses: hendrikmuhs/ccache-action@v1.2.11
+      with:
+        key: ${{ runner.os }}-switch-ccache-${{ github.ref }}-${{ github.sha }}
+        restore-keys: |
+          ${{ runner.os }}-switch-ccache-${{ github.ref }}
+          ${{ runner.os }}-switch-ccache-
+    - name: Build 2ship
+      run: |
+        cmake -H. -Bbuild-switch -GNinja -DCMAKE_TOOLCHAIN_FILE=/opt/devkitpro/cmake/Switch.cmake -DCMAKE_BUILD_TYPE:STRING=Release -DCMAKE_CXX_COMPILER_LAUNCHER=ccache -DCMAKE_C_COMPILER_LAUNCHER=ccache
+        cmake --build build-switch --target 2s2h_nro -j3
+
+        mv build-switch/2ship/*.nro 2ship.nro
+        mv README.md readme.txt
+    - name: Download 2s2h.otr
+      uses: actions/download-artifact@v4
+      with:
+        name: 2ship.otr
+    - name: Upload build
+      uses: actions/upload-artifact@v4
+      with:
+        name: 2ship-switch
+        path: |
+          2ship.nro
+          2ship.otr
+          readme.txt
   build-windows:
     needs: generate-2ship-otr
     runs-on: windows-latest
