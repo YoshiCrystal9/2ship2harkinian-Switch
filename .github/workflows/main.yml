@@ -279,7 +279,7 @@ jobs:
     - name: Build 2ship
       run: |
         cmake -H. -Bbuild-switch -GNinja -DCMAKE_TOOLCHAIN_FILE=/opt/devkitpro/cmake/Switch.cmake -DCMAKE_BUILD_TYPE:STRING=Release -DCMAKE_CXX_COMPILER_LAUNCHER=ccache -DCMAKE_C_COMPILER_LAUNCHER=ccache
-        cmake --build build-switch --target 2s2h_nro -j3
+        cmake --build build-switch --target 2ship_nro -j3
 
         mv build-switch/2ship/*.nro 2ship.nro
         mv README.md readme.txt
