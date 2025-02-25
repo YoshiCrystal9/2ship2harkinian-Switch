@@ -648,7 +648,7 @@ nx_generate_nacp(2s2h.nacp
 
 nx_create_nro(2ship
     NACP 2s2h.nacp
-    ICON ${CMAKE_CURRENT_SOURCE_DIR}/icon.jpg
+    ICON ${CMAKE_CURRENT_SOURCE_DIR}/linux/2s2hIcon.png
 )
 
 INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/2s2h.nro DESTINATION . COMPONENT 2s2h)
