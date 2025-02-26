@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #ifndef _MSC_VER
 #include <unistd.h>
+#include <malloc.h>
 #endif
 
 u8* gAudioHeap;
