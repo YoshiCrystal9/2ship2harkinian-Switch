@@ -3,6 +3,8 @@
 #include <stdlib.h>
 #ifndef _MSC_VER
 #include <unistd.h>
+#endif
+#ifndef __APPLE__
 #include <malloc.h>
 #endif
 
