@@ -281,19 +281,19 @@ jobs:
         cmake -H. -Bbuild-switch -GNinja -DCMAKE_TOOLCHAIN_FILE=/opt/devkitpro/cmake/Switch.cmake -DCMAKE_BUILD_TYPE:STRING=Release -DCMAKE_CXX_COMPILER_LAUNCHER=ccache -DCMAKE_C_COMPILER_LAUNCHER=ccache
         cmake --build build-switch --target 2ship_nro -j3
 
-        mv build-switch/2ship/*.nro 2ship.nro
+        mv build-switch/mm/*.nro 2ship.nro
         mv README.md readme.txt
-    - name: Download 2s2h.otr
+    - name: Download 2s2h.o2r
       uses: actions/download-artifact@v4
       with:
-        name: 2ship.otr
+        name: 2ship.o2r
     - name: Upload build
       uses: actions/upload-artifact@v4
       with:
         name: 2ship-switch
         path: |
           2ship.nro
-          2ship.otr
+          2ship.o2r
           readme.txt
   build-windows:
     needs: generate-2ship-otr
