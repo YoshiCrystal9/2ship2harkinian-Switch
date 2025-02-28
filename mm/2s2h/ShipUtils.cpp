@@ -169,7 +169,11 @@ extern "C" void Ship_Random_Seed(u32 seed) {
 
 extern "C" s32 Ship_Random(s32 min, s32 max) {
     if (!seeded) {
+#if !defined(__SWITCH__) && !defined(__WIIU__)
         const auto seed = static_cast<uint32_t>(std::random_device{}());
+#else
+        uint32_t seed = static_cast<uint32_t>(std::hash<std::string>{}(std::to_string(rand())));
+#endif
         Ship_Random_Seed(seed);
     }
     boost::random::uniform_int_distribution<uint32_t> distribution(min, max - 1);

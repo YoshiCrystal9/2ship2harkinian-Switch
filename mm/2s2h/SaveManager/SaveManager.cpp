@@ -110,9 +110,16 @@ void SaveManager_WriteSaveFile(std::filesystem::path fileName, nlohmann::json j)
     }
 
     try {
+#if defined(__SWITCH__) || defined(__WIIU__)
+        FILE* w = fopen(filePath.c_str(), "w");
+        std::string json_string = j.dump(4);
+        fwrite(json_string.c_str(), sizeof(char), json_string.length(), w);
+        fclose(w);
+#else
         std::ofstream o(filePath);
         o << std::setw(4) << j << std::endl;
         o.close();
+#endif
     } catch (...) { SPDLOG_ERROR("Failed to write save file"); }
 }
 

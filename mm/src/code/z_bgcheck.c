@@ -423,6 +423,15 @@ s32 CollisionPoly_LineVsPoly(BgLineVsPolyTest* a0) {
         ((a0->checkOneFace != 0) && (planeDistA < 0.0f) && (0.0f < planeDistB)) || IS_ZERO(planeDistA - planeDistB)) {
         return false;
     }
+#if defined(__SWITCH__)
+    // on some platforms this ends up as very small numbers due to rounding issues
+    if (IS_ZERO(planeDistA)) {
+        planeDistA = 0.0f;
+    }
+    if (IS_ZERO(planeDistB)) {
+        planeDistB = 0.0f;
+    }
+#endif
 
     CollisionPoly_GetNormalF(a0->poly, &sPlane.normal.x, &sPlane.normal.y, &sPlane.normal.z);
     CollisionPoly_GetVertices(a0->poly, a0->vtxList, sPolyVerts);

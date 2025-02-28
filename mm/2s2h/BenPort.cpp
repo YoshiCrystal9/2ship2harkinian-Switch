@@ -36,7 +36,14 @@
 #else
 #include <SDL2/SDL_scancode.h>
 #endif
+
+#ifdef __SWITCH__
+#include <port/switch/SwitchImpl.h>
+#endif
+
+#if not defined (__SWITCH__) && not defined(__WIIU__)
 #include "Extractor/Extract.h"
+#endif
 // OTRTODO
 //#include <functions.h>
 #include "2s2h/Enhancements/FrameInterpolation/FrameInterpolation.h"
@@ -271,6 +278,7 @@ OTRGlobals::OTRGlobals() {
     for (uint32_t version : versions) {
         if (!validHashes.contains(version)) {
 #if defined(__SWITCH__)
+//            Ship::Switch::ThrowMissingOTR();
             SPDLOG_ERROR("Invalid O2R File!");
 #elif defined(__WIIU__)
             Ship::WiiU::ThrowInvalidOTR();

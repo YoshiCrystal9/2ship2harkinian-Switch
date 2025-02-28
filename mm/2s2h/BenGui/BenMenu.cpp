@@ -283,6 +283,25 @@ void BenMenu::AddSettings() {
                 .Max(8)
                 .DefaultValue(1));
 #endif
+#ifdef __SWITCH__
+    AddWidget(path, "Switch performance mode: %d", WIDGET_CVAR_SLIDER_INT)
+        .CVar(CVAR_MSAA_VALUE)
+        .Callback([](WidgetInfo& info) {
+            Ship::Context::GetInstance()->GetWindow()->SetMsaaLevel(CVarGetInteger(CVAR_MSAA_VALUE, 1));
+        })
+        .Options(
+            IntSliderOptions()
+                .Tooltip("placeholder")
+                .Min(1)
+                .Max(8)
+                .DefaultValue(1));
+//    UIWidgets::Spacer(0);
+//    ImGui::Text("Switch performance mode");
+//    if (UIWidgets::EnhancementCombobox(CVAR_ENHANCEMENT("SwitchPerfMode"), SWITCH_CPU_PROFILES, (int)Ship::SwitchProfiles::STOCK)) {
+//        SPDLOG_INFO("Profile:: %s", SWITCH_CPU_PROFILES[CVarGetInteger(CVAR_ENHANCEMENT("SwitchPerfMode"), (int)Ship::SwitchProfiles::STOCK)]);
+//        Ship::Switch::ApplyOverclock();
+//    }
+#endif
 
     AddWidget(path, "Current FPS: %d", WIDGET_CVAR_SLIDER_INT)
         .CVar("gInterpolationFPS")
