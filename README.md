@@ -1,4 +1,5 @@
 # 2 Ship 2 Harkinian Switch
+[![generate-builds](https://github.com/YoshiCrystal9/2ship2harkinian-Switch/actions/workflows/main.yml/badge.svg)](https://github.com/YoshiCrystal9/2ship2harkinian-Switch/actions/workflows/main.yml)
 
 ### Switch Build
 ```bash
