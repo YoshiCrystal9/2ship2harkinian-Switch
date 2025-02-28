@@ -57,6 +57,7 @@ void Rando::ActorBehavior::OnFileLoad() {
     Rando::ActorBehavior::InitEnFsnBehavior();
     Rando::ActorBehavior::InitEnFuBehavior();
     Rando::ActorBehavior::InitEnGamelupyBehavior();
+    Rando::ActorBehavior::InitEnGb2Behavior();
     Rando::ActorBehavior::InitEnGegBehavior();
     Rando::ActorBehavior::InitEnGgBehavior();
     Rando::ActorBehavior::InitEnGinkoBehavior();
@@ -67,6 +68,7 @@ void Rando::ActorBehavior::OnFileLoad() {
     Rando::ActorBehavior::InitEnHgBehavior();
     Rando::ActorBehavior::InitEnInBehavior();
     Rando::ActorBehavior::InitEnItem00Behavior();
+    Rando::ActorBehavior::InitEnJgameTsnBehavior();
     Rando::ActorBehavior::InitEnJgBehavior();
     Rando::ActorBehavior::InitEnJsBehavior();
     Rando::ActorBehavior::InitEnKgyBehavior();

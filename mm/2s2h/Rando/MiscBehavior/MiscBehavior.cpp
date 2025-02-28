@@ -44,7 +44,7 @@ void Rando::MiscBehavior::OnFileLoad() {
         BUTTON_ITEM_EQUIP(0, EQUIP_SLOT_B) = *item;
     });
 
-    // Fix vanilla bug where the player can often use magic before it's aquired.
+    // Fix vanilla bug where the player can often use magic before it's acquired.
     COND_VB_SHOULD(VB_GRANT_MAGIC_UPON_REQUEST, IS_RANDO, {
         if (!gSaveContext.save.saveInfo.playerData.isMagicAcquired) {
             *should = false;
@@ -54,6 +54,13 @@ void Rando::MiscBehavior::OnFileLoad() {
         }
     });
 
-    // Fix vanilla bug where the player can often use magic before it's aquired.
     COND_VB_SHOULD(VB_MEET_MOON_REQUIREMENTS, IS_RANDO, { *should = Rando::Logic::MeetsMoonRequirements(); });
+
+    // Fix issue where bombchus/bombs can't be used in Honey and Darling if the player has no sword equipped and no bow.
+    COND_VB_SHOULD(VB_CLEAR_B_BUTTON_FOR_NO_BOW, IS_RANDO, {
+        // Playing Honey and Darling
+        if (CHECK_WEEKEVENTREG(WEEKEVENTREG_08_01) && (gPlayState->sceneId == SCENE_BOWLING)) {
+            *should = false;
+        }
+    });
 }

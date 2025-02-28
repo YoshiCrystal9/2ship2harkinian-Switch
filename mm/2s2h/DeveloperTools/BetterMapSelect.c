@@ -14,8 +14,10 @@ void BetterMapSelect_LoadFileSelect(MapSelectState* mapSelectState);
     { humanName, BetterMapSelect_LoadGame, ENTRANCE(entranceSceneId, 0) },
 #define DEFINE_SCENE_UNSET(_enumValue)
 
-static SceneSelectEntry sBetterScenes[104] = {
+static SceneSelectEntry sBetterScenes[106] = {
 #include "tables/scene_table.h"
+    { "Chest Grottos", BetterMapSelect_LoadGame, ENTRANCE(GROTTOS, 4) },
+    { "Cow Grottos", BetterMapSelect_LoadGame, ENTRANCE(GROTTOS, 10) },
     { "File Select", BetterMapSelect_LoadFileSelect, 0 },
     { "Title Screen", MapSelect_LoadConsoleLogo, 0 },
 };
@@ -70,6 +72,7 @@ typedef struct {
     }
 
 // clang-format off
+// Unique grottos (and only one instance of the reused grottos)
 BetterMapSelectGrottoRespawnInfo sBetterMapSelectGrottoInfo[] = {
     /*  0 */ { { ENTRANCE(TERMINA_FIELD, 0), 0, 0x1F, -5644, PLAYER_PARAMS(0xFF, PLAYER_INITMODE_4), { -2782, 48, -1654 } },
                { ENTRANCE(TERMINA_FIELD, 0), 0, 0x01, -16384, PLAYER_PARAMS(0xFF, PLAYER_INITMODE_D), { -2400, 68, -400 } } },
@@ -107,56 +110,58 @@ BetterMapSelectGrottoRespawnInfo sBetterMapSelectGrottoInfo[] = {
                { ENTRANCE(GORON_VILLAGE_WINTER, 3), 0, 0x01, -12015, PLAYER_PARAMS(0xFF, PLAYER_INITMODE_D), { 2621, -200, -1389 } } },
 };
 
-// TODO: Figure out how to deal with re-used grottos
-
 // Grotto 4 re-use
-// Termina Field near Ikana pillar grotto
-// { { ENTRANCE(TERMINA_FIELD, 0), 0, 0x9A, 0, PLAYER_PARAMS(0xFF, PLAYER_INITMODE_4), { 2367, 315, -192 } },
-// { ENTRANCE(TERMINA_FIELD, 7), 0, 0x01, 16384, PLAYER_PARAMS(0xFF, PLAYER_INITMODE_D), { 1672, 68, -394 } } },
-// Termina Field near swamp grass grotto
-// { { ENTRANCE(TERMINA_FIELD, 0), 0, 0x3F, -22028, PLAYER_PARAMS(0xFF, PLAYER_INITMODE_4), { 1012, -221, 3642 } },
-// { ENTRANCE(TERMINA_FIELD, 6), 0, 0x01, 0, PLAYER_PARAMS(0xFF, PLAYER_INITMODE_D), { -412, -77, 1681 } } },
-// Road to Southern Swamp near heart piece tree grotto
-// { { ENTRANCE(ROAD_TO_SOUTHERN_SWAMP, 0), 0, 0x3E, 4187, PLAYER_PARAMS(0xFF, PLAYER_INITMODE_4), { 104, -182, 2202 } },
-// { ENTRANCE(ROAD_TO_SOUTHERN_SWAMP, 0), 0, 0x01, -3641, PLAYER_PARAMS(0xFF, PLAYER_INITMODE_D), { 331, -143, 245 } } },
-// Woods of Mystery Day 2 path grotto
-// { { ENTRANCE(WOODS_OF_MYSTERY, 0), 2, 0x5C, 0, PLAYER_PARAMS(0xFF, PLAYER_INITMODE_4), { 2, 0, -889 } },
-// { ENTRANCE(WOODS_OF_MYSTERY, 0), 1, 0x01, -16384, PLAYER_PARAMS(0xFF, PLAYER_INITMODE_D), { 274, 0, 0 } } },
-// Southern Swamp behind spider house grotto
-// { { ENTRANCE(SOUTHERN_SWAMP_POISONED, 0), 1, 0x3D, -5462, PLAYER_PARAMS(0xFF, PLAYER_INITMODE_4), { -1700, 38, 1800 } },
-// { ENTRANCE(SOUTHERN_SWAMP_POISONED, 8), 1, 0x01, -2731, PLAYER_PARAMS(0xFF, PLAYER_INITMODE_D), { -1049, 12, 2042 } } },
-// Mountain Village Spring ramps near Darmani grave grotto
-// { { ENTRANCE(MOUNTAIN_VILLAGE_SPRING, 0), 1, 0x3B, -10377, PLAYER_PARAMS(0xFF, PLAYER_INITMODE_4), { 2406, 1168, -1197 } },
-// { ENTRANCE(MOUNTAIN_VILLAGE_SPRING, 2), 0, 0x01, -22210, PLAYER_PARAMS(0xFF, PLAYER_INITMODE_D), { 2089, 15, 939 } } },
-// Path to Goron Village ramp hidden grotto
-// { { ENTRANCE(PATH_TO_GORON_VILLAGE_WINTER, 0), 0, 0x99, 12379, PLAYER_PARAMS(0xFF, PLAYER_INITMODE_4), { -1309, 320, 143 } },
-// { ENTRANCE(PATH_TO_GORON_VILLAGE_WINTER, 0), 0, 0x01, 20024, PLAYER_PARAMS(0xFF, PLAYER_INITMODE_D), { -2044, 200, 1288 } } },
-// Path to Snowhead snow triangle hidden grotto
-// { { ENTRANCE(PATH_TO_SNOWHEAD, 0), 0, 0x33, -19479, PLAYER_PARAMS(0xFF, PLAYER_INITMODE_4), { -987, 360, -2339 } },
-// { ENTRANCE(PATH_TO_SNOWHEAD, 1), 0, 0x01, 8192, PLAYER_PARAMS(0xFF, PLAYER_INITMODE_D), { -2518, 550, -3441 } } },
-// Great Bay behind Fisherman hut grotto
-// { { ENTRANCE(GREAT_BAY_COAST, 0), 0, 0x37, -11287, PLAYER_PARAMS(0xFF, PLAYER_INITMODE_4), { 1359, 80, 5018 } },
-// { ENTRANCE(GREAT_BAY_COAST, 4), 0, 0x01, -28217, PLAYER_PARAMS(0xFF, PLAYER_INITMODE_D), { 1137, 92, 4635 } } },
-// Zora Cape under rock grotto
-// { { ENTRANCE(ZORA_CAPE, 0), 0, 0x95, -14018, PLAYER_PARAMS(0xFF, PLAYER_INITMODE_4), { -562, 80, 2707 } },
-// { ENTRANCE(ZORA_CAPE, 0), 0, 0x01, 3583, PLAYER_PARAMS(0xFF, PLAYER_INITMODE_D), { 92, 12, 333 } } },
-// Road to Ikana under rock grotto
-// { { ENTRANCE(ROAD_TO_IKANA, 0), 0, 0x96, -19479, PLAYER_PARAMS(0xFF, PLAYER_INITMODE_4), { -428, 200, -335 } },
-// { ENTRANCE(ROAD_TO_IKANA, 0), 0, 0x01, 14563, PLAYER_PARAMS(0xFF, PLAYER_INITMODE_D), { -3006, 0, -305 } } },
-// Ikana Graveyard rock circle hidden grotto
-// { { ENTRANCE(IKANA_GRAVEYARD, 0), 0, 0xB8, -28217, PLAYER_PARAMS(0xFF, PLAYER_INITMODE_4), { 106, 314, -1777 } },
-// { ENTRANCE(IKANA_GRAVEYARD, 0), 0, 0x01, -32768, PLAYER_PARAMS(0xFF, PLAYER_INITMODE_D), { -45, -49, 864 } } },
-// Ikana Canyon near Secret Shrine grotto
-// { { ENTRANCE(IKANA_CANYON, 0), 2, 0xB4, -28217, PLAYER_PARAMS(0xFF, PLAYER_INITMODE_4), { -2475, -505, 2475 } },
-// { ENTRANCE(IKANA_CANYON, 12), 2, 0x01, 13653, PLAYER_PARAMS(0xFF, PLAYER_INITMODE_D), { -3068, -505, 2690 } } },
+BetterMapSelectGrottoRespawnInfo sBetterMapSelectChestGrottoInfo[] = {
+    // Termina Field near swamp grass grotto
+    /*  0 */ { { ENTRANCE(TERMINA_FIELD, 0), 0, 0x3F, -22028, PLAYER_PARAMS(0xFF, PLAYER_INITMODE_4), { 1012, -221, 3642 } },
+               { ENTRANCE(TERMINA_FIELD, 6), 0, 0x01, 0, PLAYER_PARAMS(0xFF, PLAYER_INITMODE_D), { -412, -77, 1681 } } },
+    // Termina Field near Ikana pillar grotto
+    /*  1 */ { { ENTRANCE(TERMINA_FIELD, 0), 0, 0x9A, 0, PLAYER_PARAMS(0xFF, PLAYER_INITMODE_4), { 2367, 315, -192 } },
+               { ENTRANCE(TERMINA_FIELD, 7), 0, 0x01, 16384, PLAYER_PARAMS(0xFF, PLAYER_INITMODE_D), { 1672, 68, -394 } } },
+    // Road to Southern Swamp near heart piece tree grotto
+    /*  2 */ { { ENTRANCE(ROAD_TO_SOUTHERN_SWAMP, 0), 0, 0x3E, 4187, PLAYER_PARAMS(0xFF, PLAYER_INITMODE_4), { 104, -182, 2202 } },
+               { ENTRANCE(ROAD_TO_SOUTHERN_SWAMP, 0), 0, 0x01, -3641, PLAYER_PARAMS(0xFF, PLAYER_INITMODE_D), { 331, -143, 245 } } },
+    // Woods of Mystery Day 2 path grotto
+    /*  3 */ { { ENTRANCE(WOODS_OF_MYSTERY, 0), 2, 0x5C, 0, PLAYER_PARAMS(0xFF, PLAYER_INITMODE_4), { 2, 0, -889 } },
+               { ENTRANCE(WOODS_OF_MYSTERY, 0), 1, 0x01, -16384, PLAYER_PARAMS(0xFF, PLAYER_INITMODE_D), { 274, 0, 0 } } },
+    // Southern Swamp behind spider house grotto
+    /*  4 */ { { ENTRANCE(SOUTHERN_SWAMP_POISONED, 0), 1, 0x3D, -5462, PLAYER_PARAMS(0xFF, PLAYER_INITMODE_4), { -1700, 38, 1800 } },
+               { ENTRANCE(SOUTHERN_SWAMP_POISONED, 8), 1, 0x01, -2731, PLAYER_PARAMS(0xFF, PLAYER_INITMODE_D), { -1049, 12, 2042 } } },
+    // Mountain Village Spring ramps near Darmani grave grotto
+    /*  5 */ { { ENTRANCE(MOUNTAIN_VILLAGE_SPRING, 0), 1, 0x3B, -10377, PLAYER_PARAMS(0xFF, PLAYER_INITMODE_4), { 2406, 1168, -1197 } },
+               { ENTRANCE(MOUNTAIN_VILLAGE_SPRING, 2), 0, 0x01, -22210, PLAYER_PARAMS(0xFF, PLAYER_INITMODE_D), { 2089, 15, 939 } } },
+    // Path to Goron Village ramp hidden grotto
+    /*  6 */ { { ENTRANCE(PATH_TO_GORON_VILLAGE_WINTER, 0), 0, 0x99, 12379, PLAYER_PARAMS(0xFF, PLAYER_INITMODE_4), { -1309, 320, 143 } },
+               { ENTRANCE(PATH_TO_GORON_VILLAGE_WINTER, 0), 0, 0x01, 20024, PLAYER_PARAMS(0xFF, PLAYER_INITMODE_D), { -2044, 200, 1288 } } },
+    // Path to Snowhead snow triangle hidden grotto
+    /*  7 */ { { ENTRANCE(PATH_TO_SNOWHEAD, 0), 0, 0x33, -19479, PLAYER_PARAMS(0xFF, PLAYER_INITMODE_4), { -987, 360, -2339 } },
+               { ENTRANCE(PATH_TO_SNOWHEAD, 1), 0, 0x01, 8192, PLAYER_PARAMS(0xFF, PLAYER_INITMODE_D), { -2518, 550, -3441 } } },
+    // Great Bay behind Fisherman hut grotto
+    /*  8 */ { { ENTRANCE(GREAT_BAY_COAST, 0), 0, 0x37, -11287, PLAYER_PARAMS(0xFF, PLAYER_INITMODE_4), { 1359, 80, 5018 } },
+               { ENTRANCE(GREAT_BAY_COAST, 4), 0, 0x01, -28217, PLAYER_PARAMS(0xFF, PLAYER_INITMODE_D), { 1137, 92, 4635 } } },
+    // Zora Cape under rock grotto
+    /*  9 */ { { ENTRANCE(ZORA_CAPE, 0), 0, 0x95, -14018, PLAYER_PARAMS(0xFF, PLAYER_INITMODE_4), { -562, 80, 2707 } },
+               { ENTRANCE(ZORA_CAPE, 0), 0, 0x01, 3583, PLAYER_PARAMS(0xFF, PLAYER_INITMODE_D), { 92, 12, 333 } } },
+    // Road to Ikana under rock grotto
+    /* 10 */ { { ENTRANCE(ROAD_TO_IKANA, 0), 0, 0x96, -19479, PLAYER_PARAMS(0xFF, PLAYER_INITMODE_4), { -428, 200, -335 } },
+               { ENTRANCE(ROAD_TO_IKANA, 0), 0, 0x01, 14563, PLAYER_PARAMS(0xFF, PLAYER_INITMODE_D), { -3006, 0, -305 } } },
+    // Ikana Graveyard rock circle hidden grotto
+    /* 11 */ { { ENTRANCE(IKANA_GRAVEYARD, 0), 1, 0xB8, -28217, PLAYER_PARAMS(0xFF, PLAYER_INITMODE_4), { 106, 314, -1777 } },
+               { ENTRANCE(IKANA_GRAVEYARD, 0), 0, 0x01, -32768, PLAYER_PARAMS(0xFF, PLAYER_INITMODE_D), { -45, -49, 864 } } },
+    // Ikana Canyon near Secret Shrine grotto
+    /* 12 */ { { ENTRANCE(IKANA_CANYON, 0), 2, 0xB4, -28217, PLAYER_PARAMS(0xFF, PLAYER_INITMODE_4), { -2475, -505, 2475 } },
+               { ENTRANCE(IKANA_CANYON, 12), 2, 0x01, 13653, PLAYER_PARAMS(0xFF, PLAYER_INITMODE_D), { -3068, -505, 2690 } } },
+};
 
 // Grotto 10 re-use
-// Termina Field Hollow Log hidden grotto
-// { { ENTRANCE(TERMINA_FIELD, 0), 0, 0x1F, -32768, PLAYER_PARAMS(0xFF, PLAYER_INITMODE_4), { -375, -222, 3976 } },
-// { ENTRANCE(TERMINA_FIELD, 6), 0, 0x01, 0, PLAYER_PARAMS(0xFF, PLAYER_INITMODE_D), { -412, -77, 1681 } } },
-// Great Bay Cliffs near Gerudo Fortress grotto
-// { { ENTRANCE(GREAT_BAY_COAST, 0), 0, 0xFF, -13654, PLAYER_PARAMS(0xFF, PLAYER_INITMODE_4), { 2077, 333, -215 } },
-// { ENTRANCE(GREAT_BAY_COAST, 6), 0, 0x01, 16019, PLAYER_PARAMS(0xFF, PLAYER_INITMODE_D), { 1321, -16, -1029 } } },
+BetterMapSelectGrottoRespawnInfo sBetterMapSelectCowGrottoInfo[] = {
+    // Termina Field Hollow Log hidden grotto
+    /* 0 */ { { ENTRANCE(TERMINA_FIELD, 0), 0, 0x1F, -32768, PLAYER_PARAMS(0xFF, PLAYER_INITMODE_4), { -375, -222, 3976 } },
+              { ENTRANCE(TERMINA_FIELD, 6), 0, 0x01, 0, PLAYER_PARAMS(0xFF, PLAYER_INITMODE_D), { -412, -77, 1681 } } },
+    // Great Bay Cliffs near Gerudo Fortress grotto
+    /* 1 */ { { ENTRANCE(GREAT_BAY_COAST, 0), 0, 0xFF, -13654, PLAYER_PARAMS(0xFF, PLAYER_INITMODE_4), { 2077, 333, -215 } },
+              { ENTRANCE(GREAT_BAY_COAST, 6), 0, 0x01, 16019, PLAYER_PARAMS(0xFF, PLAYER_INITMODE_D), { 1321, -16, -1029 } } },
+};
 
 // clang-format on
 
@@ -175,30 +180,42 @@ void BetterMapSelect_LoadGame(MapSelectState* mapSelectState, u32 entrance, s32 
 
     // Handle Grotto return locations
     if (Entrance_GetSceneIdAbsolute(entrance) == SCENE_KAKUSIANA) {
-        if (spawn >= 0 && spawn < ARRAY_COUNT(sBetterMapSelectGrottoInfo)) {
-            // Set player void out location
-            gSaveContext.respawn[RESPAWN_MODE_DOWN].data = sBetterMapSelectGrottoInfo[spawn].downRespawn.data;
-            gSaveContext.respawn[RESPAWN_MODE_DOWN].roomIndex = sBetterMapSelectGrottoInfo[spawn].downRespawn.roomIndex;
-            gSaveContext.respawn[RESPAWN_MODE_DOWN].entrance = sBetterMapSelectGrottoInfo[spawn].downRespawn.entrance;
-            gSaveContext.respawn[RESPAWN_MODE_DOWN].pos = sBetterMapSelectGrottoInfo[spawn].downRespawn.pos;
-            gSaveContext.respawn[RESPAWN_MODE_DOWN].yaw = sBetterMapSelectGrottoInfo[spawn].downRespawn.yaw;
-            gSaveContext.respawn[RESPAWN_MODE_DOWN].playerParams =
-                sBetterMapSelectGrottoInfo[spawn].downRespawn.playerParams;
+        BetterMapSelectGrottoRespawnInfo grotto;
 
-            // Copy void out to top
-            gSaveContext.respawn[RESPAWN_MODE_TOP] = gSaveContext.respawn[RESPAWN_MODE_DOWN];
-
-            // Set grotto respawn info
-            gSaveContext.respawn[RESPAWN_MODE_UNK_3].data = sBetterMapSelectGrottoInfo[spawn].grottoRespawn.data;
-            gSaveContext.respawn[RESPAWN_MODE_UNK_3].roomIndex =
-                sBetterMapSelectGrottoInfo[spawn].grottoRespawn.roomIndex;
-            gSaveContext.respawn[RESPAWN_MODE_UNK_3].entrance =
-                sBetterMapSelectGrottoInfo[spawn].grottoRespawn.entrance;
-            gSaveContext.respawn[RESPAWN_MODE_UNK_3].pos = sBetterMapSelectGrottoInfo[spawn].grottoRespawn.pos;
-            gSaveContext.respawn[RESPAWN_MODE_UNK_3].yaw = sBetterMapSelectGrottoInfo[spawn].grottoRespawn.yaw;
-            gSaveContext.respawn[RESPAWN_MODE_UNK_3].playerParams =
-                sBetterMapSelectGrottoInfo[spawn].grottoRespawn.playerParams;
+        if (entrance == ENTRANCE(GROTTOS, 0)) {
+            if (spawn >= 0 && spawn < ARRAY_COUNT(sBetterMapSelectGrottoInfo)) {
+                grotto = sBetterMapSelectGrottoInfo[spawn];
+            }
+        } else if (entrance == ENTRANCE(GROTTOS, 4)) {
+            if (spawn >= 0 && spawn < ARRAY_COUNT(sBetterMapSelectChestGrottoInfo)) {
+                grotto = sBetterMapSelectChestGrottoInfo[spawn];
+            }
+        } else if (entrance == ENTRANCE(GROTTOS, 10)) {
+            if (spawn >= 0 && spawn < ARRAY_COUNT(sBetterMapSelectCowGrottoInfo)) {
+                grotto = sBetterMapSelectCowGrottoInfo[spawn];
+            }
         }
+
+        gSaveContext.save.entrance = entrance;
+
+        // Set player void out location
+        gSaveContext.respawn[RESPAWN_MODE_DOWN].data = grotto.downRespawn.data;
+        gSaveContext.respawn[RESPAWN_MODE_DOWN].roomIndex = grotto.downRespawn.roomIndex;
+        gSaveContext.respawn[RESPAWN_MODE_DOWN].entrance = grotto.downRespawn.entrance;
+        gSaveContext.respawn[RESPAWN_MODE_DOWN].pos = grotto.downRespawn.pos;
+        gSaveContext.respawn[RESPAWN_MODE_DOWN].yaw = grotto.downRespawn.yaw;
+        gSaveContext.respawn[RESPAWN_MODE_DOWN].playerParams = grotto.downRespawn.playerParams;
+
+        // Copy void out to top
+        gSaveContext.respawn[RESPAWN_MODE_TOP] = gSaveContext.respawn[RESPAWN_MODE_DOWN];
+
+        // Set grotto respawn info
+        gSaveContext.respawn[RESPAWN_MODE_UNK_3].data = grotto.grottoRespawn.data;
+        gSaveContext.respawn[RESPAWN_MODE_UNK_3].roomIndex = grotto.grottoRespawn.roomIndex;
+        gSaveContext.respawn[RESPAWN_MODE_UNK_3].entrance = grotto.grottoRespawn.entrance;
+        gSaveContext.respawn[RESPAWN_MODE_UNK_3].pos = grotto.grottoRespawn.pos;
+        gSaveContext.respawn[RESPAWN_MODE_UNK_3].yaw = grotto.grottoRespawn.yaw;
+        gSaveContext.respawn[RESPAWN_MODE_UNK_3].playerParams = grotto.grottoRespawn.playerParams;
     }
 }
 

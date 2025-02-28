@@ -6,7 +6,13 @@
 #define CVAR CVarGetInteger(CVAR_NAME, 0)
 
 void RegisterFixEponaStealingSword() {
-    COND_VB_SHOULD(VB_CLEAR_B_BUTTON_FOR_HORSEBACK, CVAR, { *should = false; });
+    COND_VB_SHOULD(VB_CLEAR_B_BUTTON_FOR_NO_BOW, CVAR, {
+        Player* player = GET_PLAYER(gPlayState);
+        // Player riding epona
+        if (player->stateFlags1 & PLAYER_STATE1_800000) {
+            *should = false;
+        }
+    });
 }
 
 static RegisterShipInitFunc initFunc(RegisterFixEponaStealingSword, { CVAR_NAME });

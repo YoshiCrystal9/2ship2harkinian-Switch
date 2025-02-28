@@ -25,9 +25,9 @@
 /* 0x05 */ DEFINE_SCENE_UNSET(SCENE_UNSET_05)
 /* 0x06 */ DEFINE_SCENE_UNSET(SCENE_UNSET_06)
 // Lone Peak Shrine & Grottos
-/* 0x07 */ DEFINE_SCENE(KAKUSIANA,            SCENE_KAKUSIANA,         0,     SCENE_DRAW_CFG_MAT_ANIM,             RESTRICTIONS_NONE,                                    PERSISTENT_CYCLE_FLAGS_SET(0, 0, 0, (1 << 2) | (1 << 10) | (1 << 11)),                                      GROTTOS,                       98, "Lone Peak Shrine & Grottos")
+/* 0x07 */ DEFINE_SCENE(KAKUSIANA,            SCENE_KAKUSIANA,         0,     SCENE_DRAW_CFG_MAT_ANIM,             RESTRICTIONS_NONE,                                    PERSISTENT_CYCLE_FLAGS_SET(0, 0, 0, (1 << 2) | (1 << 10) | (1 << 11)),                                      GROTTOS,                      101, "Lone Peak Shrine & Grottos")
 // Cutscene Scene
-/* 0x08 */ DEFINE_SCENE(SPOT00,               SCENE_SPOT00,            0,     SCENE_DRAW_CFG_NOTHING,              RESTRICTIONS_NONE,                                    PERSISTENT_CYCLE_FLAGS_NONE,                                                                                CUTSCENE,                     100, "Cutscene Scene")
+/* 0x08 */ DEFINE_SCENE(SPOT00,               SCENE_SPOT00,            0,     SCENE_DRAW_CFG_NOTHING,              RESTRICTIONS_NONE,                                    PERSISTENT_CYCLE_FLAGS_NONE,                                                                                CUTSCENE,                      99, "Cutscene Scene")
 /* 0x09 */ DEFINE_SCENE_UNSET(SCENE_UNSET_09)
 // Magic Hags' Potion Shop
 /* 0x0A */ DEFINE_SCENE(Z2_WITCH_SHOP,        SCENE_WITCH_SHOP,        0x11A, SCENE_DRAW_CFG_MAT_ANIM,             RESTRICTIONS_INDOORS,                                 PERSISTENT_CYCLE_FLAGS_NONE,                                                                                MAGIC_HAGS_POTION_SHOP,        33, "Magic Hags' Potion Shop")
@@ -68,7 +68,7 @@
 // Ancient Castle of Ikana
 /* 0x1D */ DEFINE_SCENE(Z2_CASTLE,            SCENE_CASTLE,            0x142, SCENE_DRAW_CFG_MAT_ANIM,             RESTRICTIONS_NONE,                                    PERSISTENT_CYCLE_FLAGS_SET(0, (1 << 31), 0, (1 << 10)),                                                     IKANA_CASTLE,                  83, "Ancient Castle of Ikana")
 // Deku Scrub Playground
-/* 0x1E */ DEFINE_SCENE(Z2_DEKUTES,           SCENE_DEKUTES,           0,     SCENE_DRAW_CFG_MAT_ANIM,             RESTRICTIONS_SET(0, 1, 0, 0, 0, 3, 0, 0, 0, 0, 0, 1), PERSISTENT_CYCLE_FLAGS_NONE,                                                                                DEKU_SCRUB_PLAYGROUND,         99, "Deku Scrub Playground")
+/* 0x1E */ DEFINE_SCENE(Z2_DEKUTES,           SCENE_DEKUTES,           0,     SCENE_DRAW_CFG_MAT_ANIM,             RESTRICTIONS_SET(0, 1, 0, 0, 0, 3, 0, 0, 0, 0, 0, 1), PERSISTENT_CYCLE_FLAGS_NONE,                                                                                DEKU_SCRUB_PLAYGROUND,         98, "Deku Scrub Playground")
 // Odolwa's Lair
 /* 0x1F */ DEFINE_SCENE(Z2_MITURIN_BS,        SCENE_MITURIN_BS,        0,     SCENE_DRAW_CFG_DEFAULT,              RESTRICTIONS_NONE,                                    PERSISTENT_CYCLE_FLAGS_SET(0, 0, 0, (1 << 31)),                                                             ODOLWAS_LAIR,                  41, "Odolwa's Lair")
 // Town Shooting Gallery
@@ -208,7 +208,7 @@
 // Woods of Mystery
 /* 0x64 */ DEFINE_SCENE(Z2_26SARUNOMORI,      SCENE_26SARUNOMORI,      0x11D, SCENE_DRAW_CFG_MAT_ANIM,             RESTRICTIONS_NO_DOUBLE_TIME,                          PERSISTENT_CYCLE_FLAGS_NONE,                                                                                WOODS_OF_MYSTERY,              38, "Woods of Mystery")
 // Lost Woods (Intro)
-/* 0x65 */ DEFINE_SCENE(Z2_LOST_WOODS,        SCENE_LOST_WOODS,        0,     SCENE_DRAW_CFG_MAT_ANIM,             RESTRICTIONS_NONE,                                    PERSISTENT_CYCLE_FLAGS_NONE,                                                                                LOST_WOODS,                   101, "Lost Woods (Intro)")
+/* 0x65 */ DEFINE_SCENE(Z2_LOST_WOODS,        SCENE_LOST_WOODS,        0,     SCENE_DRAW_CFG_MAT_ANIM,             RESTRICTIONS_NONE,                                    PERSISTENT_CYCLE_FLAGS_NONE,                                                                                LOST_WOODS,                   100, "Lost Woods (Intro)")
 // Moon Link Trial
 /* 0x66 */ DEFINE_SCENE(Z2_LAST_LINK,         SCENE_LAST_LINK,         0,     SCENE_DRAW_CFG_DEFAULT,              RESTRICTIONS_MOON,                                    PERSISTENT_CYCLE_FLAGS_SET(0, 0, 0, 2),                                                                     MOON_LINK_TRIAL,               95, "Moon Link Trial")
 // The Moon

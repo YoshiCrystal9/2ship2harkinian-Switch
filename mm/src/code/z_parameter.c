@@ -3171,9 +3171,9 @@ void Interface_UpdateButtonsPart1(PlayState* play) {
 
                             if (play->bButtonAmmoPlusOne >= 2) {
                                 Interface_LoadItemIconImpl(play, EQUIP_SLOT_B);
-                            } else if (GameInteractor_Should(VB_CLEAR_B_BUTTON_FOR_HORSEBACK,
-                                                             gSaveContext.save.saveInfo.inventory.items[SLOT_BOW] ==
-                                                                 ITEM_NONE)) {
+                            } else if (GameInteractor_Should(
+                                           VB_CLEAR_B_BUTTON_FOR_NO_BOW,
+                                           (gSaveContext.save.saveInfo.inventory.items[SLOT_BOW] == ITEM_NONE))) {
                                 BUTTON_ITEM_EQUIP(CUR_FORM, EQUIP_SLOT_B) = ITEM_NONE;
                             } else {
                                 Interface_LoadItemIconImpl(play, EQUIP_SLOT_B);
@@ -3248,7 +3248,8 @@ void Interface_UpdateButtonsPart1(PlayState* play) {
 
                 if (play->bButtonAmmoPlusOne >= 2) {
                     Interface_LoadItemIconImpl(play, EQUIP_SLOT_B);
-                } else if (gSaveContext.save.saveInfo.inventory.items[SLOT_BOW] == ITEM_NONE) {
+                } else if (GameInteractor_Should(VB_CLEAR_B_BUTTON_FOR_NO_BOW,
+                                                 gSaveContext.save.saveInfo.inventory.items[SLOT_BOW] == ITEM_NONE)) {
                     BUTTON_ITEM_EQUIP(CUR_FORM, EQUIP_SLOT_B) = ITEM_NONE;
                 } else {
                     Interface_LoadItemIconImpl(play, EQUIP_SLOT_B);
