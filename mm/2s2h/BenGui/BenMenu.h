@@ -8,6 +8,10 @@
 #include "graphic/Fast3D/gfx_rendering_api.h"
 #include "2s2h/DeveloperTools/DeveloperTools.h"
 
+#ifdef __SWITCH__
+#include <port/switch/SwitchImpl.h>
+#endif
+
 namespace BenGui {
 
 static const std::unordered_map<int32_t, const char*> menuThemeOptions = {
@@ -102,6 +106,16 @@ static const std::unordered_map<int32_t, const char*> powerCrouchStabOptions = {
     { 0, "Patched (US/EU)" },
     { 1, "Unpatched (JP)" },
     { 2, "Unpatched (OoT)" },
+};
+
+static const std::unordered_map<int32_t, const char*> SwitchOCProfiles = {
+    { Ship::MAXIMUM, "MAXIMUM" },
+    { Ship::HIGH, "HIGH" },
+    { Ship::BOOST, "BOOST" },
+    { Ship::STOCK, "STOCK" },
+    { Ship::POWERSAVINGM1, "POWERSAVINGM1" },
+    { Ship::POWERSAVINGM2, "POWERSAVINGM2" },
+    { Ship::POWERSAVINGM3, "POWERSAVINGM3" },
 };
 
 static const std::unordered_map<int32_t, const char*> damageMultiplierOptions = {

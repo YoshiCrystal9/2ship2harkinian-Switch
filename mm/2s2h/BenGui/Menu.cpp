@@ -542,7 +542,11 @@ void Menu::DrawElement() {
     ImVec2 pos = window->DC.CursorPos;
     float centerX = pos.x + windowWidth / 2 - (style.ItemSpacing.x * (sectionCount + 1));
     std::vector<ImVec2> headerSizes;
+#ifdef __SWITCH__
+    float headerWidth = 600.0f + style.ItemSpacing.x;
+#else
     float headerWidth = 200.0f + style.ItemSpacing.x;
+#endif
     for (int i = 0; i < sectionCount; i++) {
         ImVec2 size = ImGui::CalcTextSize(menuEntries.at(i).label.c_str());
         headerSizes.push_back(size);
@@ -551,7 +555,11 @@ void Menu::DrawElement() {
             headerWidth += style.ItemSpacing.x;
         }
     }
+#ifdef __SWITCH__
+    ImVec2 menuSize = {windowWidth,windowHeight};
+#else
     ImVec2 menuSize = { std::fminf(1280, windowWidth), std::fminf(800, windowHeight) };
+#endif
     pos += window->WorkRect.GetSize() / 2 - menuSize / 2;
     ImGui::SetNextWindowPos(pos);
     ImGui::BeginChild("Menu Block", menuSize,
@@ -635,7 +643,11 @@ void Menu::DrawElement() {
         menuSearchText = menuSearch.InputBuf;
         menuSearchText.erase(std::remove(menuSearchText.begin(), menuSearchText.end(), ' '), menuSearchText.end());
         if (menuSearchText.length() < 1) {
+#ifdef __ANDROID__
+            ImGui::SameLine(headerWidth - 600.0f + style.ItemSpacing.x);
+#else
             ImGui::SameLine(headerWidth - 200.0f + style.ItemSpacing.x);
+#endif
             ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 0.4f), "Search...");
         }
         ImGui::PopStyleColor();
@@ -680,7 +692,11 @@ void Menu::DrawElement() {
     float sectionHeight = menuSize.y - headerHeight - 4 - style.ItemSpacing.y * 2;
     float columnHeight = sectionHeight - style.ItemSpacing.y * 4;
     ImGui::SetNextWindowPos(pos + style.ItemSpacing * 2);
+#ifdef __SWITCH__
+    float sidebarWidth = 600 - style.ItemSpacing.x;
+#else
     float sidebarWidth = 200 - style.ItemSpacing.x;
+#endif
 
     const char* sidebarCvar = menuEntries.at(headerIndex).sidebarCvar;
 
@@ -730,6 +746,9 @@ void Menu::DrawElement() {
     if (windowWidth < 800) {
         columns = 1;
     }
+#ifdef __SWITCH__
+    columns=1;
+#endif
     float columnWidth = (sectionWidth - style.ItemSpacing.x * columns) / columns;
     bool useColumns = columns > 1;
     if (!useColumns || (headerSearch && menuSearchText.length() > 0)) {

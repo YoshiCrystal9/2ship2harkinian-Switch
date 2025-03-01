@@ -197,10 +197,12 @@ OTRGlobals::OTRGlobals() {
         std::make_shared<Fast::Fast3dWindow>(std::vector<std::shared_ptr<Ship::GuiWindow>>({ benInputEditorWindow }));
     context->InitWindow(benFast3dWindow);
 
+#ifndef __SWITCH__
     // Override LUS defaults
     Ship::Context::GetInstance()->GetLogger()->set_level(
         (spdlog::level::level_enum)CVarGetInteger("gDeveloperTools.LogLevel", 1));
     Ship::Context::GetInstance()->GetLogger()->set_pattern("[%H:%M:%S.%e] [%s:%#] [%l] %v");
+#endif
 
     auto overlay = context->GetInstance()->GetWindow()->GetGui()->GetGameOverlay();
     overlay->LoadFont("Press Start 2P", 12.0f, "fonts/PressStart2P-Regular.ttf");
@@ -721,7 +723,9 @@ extern "C" void InitOTR() {
     } else {
         CVarClear("gLetItSnow");
     }
-
+#if defined(__SWITCH__) || defined(__WIIU__)
+    CVarRegisterInteger("gControlNav", 1);
+#endif
     srand(now);
 #ifdef ENABLE_CROWD_CONTROL
     CrowdControl::Instance = new CrowdControl();
