@@ -238,10 +238,13 @@ void BenMenu::AddSettings() {
     }
     path.sidebarName = "Graphics";
     AddSidebarEntry("Settings", "Graphics", 3);
+//dont enable fullscreen on switch pls
+#if not defined(__SWITCH__) and not defined(__WIIU__)
     AddWidget(path, "Toggle Fullscreen", WIDGET_CVAR_CHECKBOX)
         .CVar("gSettings.Fullscreen")
         .Callback([](WidgetInfo& info) { Ship::Context::GetInstance()->GetWindow()->ToggleFullscreen(); })
         .Options(CheckboxOptions().Tooltip("Toggles Fullscreen On/Off."));
+#endif
 #ifndef __APPLE__
     AddWidget(path, "Internal Resolution: %.0f%%", WIDGET_CVAR_SLIDER_FLOAT)
         .CVar(CVAR_INTERNAL_RESOLUTION)

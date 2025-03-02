@@ -724,8 +724,7 @@ extern "C" void InitOTR() {
         CVarClear("gLetItSnow");
     }
 #if defined(__SWITCH__) || defined(__WIIU__)
-    CVarRegisterInteger("gControlNav", 1);
-    CVarRegisterInteger("CVAR_IMGUI_CONTROLLER_NAV", 1);
+    CVarRegisterInteger("gSettings.ControlNav", 1);
 #endif
     srand(now);
 #ifdef ENABLE_CROWD_CONTROL
