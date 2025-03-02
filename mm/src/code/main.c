@@ -52,12 +52,8 @@ void InitOTR();
 #define SDL_main main
 #endif
 
-#ifdef __SWITCH__
-#include <SDL2/SDL.h>
-int SDL_main(int argc, char** argv /* void* arg*/) {
-#else
+
 void SDL_main(int argc, char** argv /* void* arg*/) {
-#endif
     intptr_t fb;
     intptr_t sysHeap;
     s32 exit;
