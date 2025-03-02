@@ -70,6 +70,10 @@ void GameInteractor_ExecuteBeforeMoonCrashSaveReset() {
     GameInteractor::Instance->ExecuteHooks<GameInteractor::BeforeMoonCrashSaveReset>();
 }
 
+void GameInteractor_ExecuteOnInterfaceDrawStart() {
+    GameInteractor::Instance->ExecuteHooks<GameInteractor::OnInterfaceDrawStart>();
+}
+
 void GameInteractor_ExecuteAfterInterfaceClockDraw() {
     GameInteractor::Instance->ExecuteHooks<GameInteractor::AfterInterfaceClockDraw>();
 }

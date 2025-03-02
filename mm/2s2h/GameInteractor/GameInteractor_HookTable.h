@@ -14,6 +14,7 @@ DEFINE_HOOK(OnFileSelectSaveLoad, (s16 fileNum, bool isOwlSave, SaveContext* sav
 DEFINE_HOOK(BeforeEndOfCycleSave, ())
 DEFINE_HOOK(AfterEndOfCycleSave, ())
 DEFINE_HOOK(BeforeMoonCrashSaveReset, ())
+DEFINE_HOOK(OnInterfaceDrawStart, ())
 DEFINE_HOOK(AfterInterfaceClockDraw, ())
 DEFINE_HOOK(BeforeInterfaceClockDraw, ())
 

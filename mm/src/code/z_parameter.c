@@ -8272,6 +8272,8 @@ void Interface_Draw(PlayState* play) {
         Interface_SetVertices(play);
         Interface_SetOrthoView(interfaceCtx);
 
+        GameInteractor_ExecuteOnInterfaceDrawStart();
+
         // Draw Grandma's Story
         if (interfaceCtx->storyDmaStatus == STORY_DMA_DONE) {
             gSPSegment(OVERLAY_DISP++, 0x07, interfaceCtx->storySegment);

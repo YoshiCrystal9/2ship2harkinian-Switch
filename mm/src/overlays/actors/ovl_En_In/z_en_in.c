@@ -796,6 +796,9 @@ s32 func_808F4414(PlayState* play, EnIn* this, s32 arg2) {
                     break;
 
                 case 0x3466:
+                    if (GameInteractor_Should(VB_BUY_GORMAN_MILK, false, &ret, this)) {
+                        break;
+                    }
                     if (msgCtx->choiceIndex == 0) {
                         Audio_PlaySfx_MessageDecide();
                         if (gSaveContext.save.saveInfo.playerData.rupees >= play->msgCtx.unk1206C) {
@@ -1099,6 +1102,9 @@ s32 func_808F4414(PlayState* play, EnIn* this, s32 arg2) {
                     break;
 
                 case 0x3490:
+                    if (GameInteractor_Should(VB_BUY_GORMAN_MILK, false, &ret, this)) {
+                        break;
+                    }
                     if (msgCtx->choiceIndex == 0) {
                         Audio_PlaySfx_MessageDecide();
                         if (gSaveContext.save.saveInfo.playerData.rupees >= play->msgCtx.unk1206C) {

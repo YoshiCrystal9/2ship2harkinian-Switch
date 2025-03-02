@@ -230,6 +230,7 @@ typedef enum {
     VB_GOHT_UNFREEZE,
     VB_PERFORM_AC_COLLISION,
     VB_GIVE_ITEM_FROM_GK_LULLABY,
+    VB_BUY_GORMAN_MILK,
     VB_PLAY_LOW_HP_ALARM,
     VB_PLAY_GORON_CHILD_CRY,
 } GIVanillaBehavior;
@@ -691,6 +692,7 @@ void GameInteractor_ExecuteOnFileSelectSaveLoad(s16 fileNum, bool isOwlSave, Sav
 void GameInteractor_ExecuteBeforeEndOfCycleSave();
 void GameInteractor_ExecuteAfterEndOfCycleSave();
 void GameInteractor_ExecuteBeforeMoonCrashSaveReset();
+void GameInteractor_ExecuteOnInterfaceDrawStart();
 void GameInteractor_ExecuteAfterInterfaceClockDraw();
 void GameInteractor_ExecuteBeforeInterfaceClockDraw();
 

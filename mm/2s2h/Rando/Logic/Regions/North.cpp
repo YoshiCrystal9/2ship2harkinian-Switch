@@ -283,7 +283,8 @@ static RegisterShipInitFunc initFunc([]() {
             EXIT(ENTRANCE(PATH_TO_SNOWHEAD, 1),             ENTRANCE(SNOWHEAD, 0), true),
         },
         .connections = {
-            CONNECTION(RR_SNOWHEAD_NEAR_TEMPLE, CAN_BE_GORON && (CAN_PLAY_SONG(LULLABY) || RANDO_SAVE_OPTIONS[RO_ACCESS_DUNGEONS] == RO_ACCESS_DUNGEONS_FORM_ONLY)),
+            CONNECTION(RR_SNOWHEAD_NEAR_TEMPLE, CanAccessDungeon(DUNGEON_INDEX_SNOWHEAD_TEMPLE)
+),
         },
         .oneWayEntrances = {
             ENTRANCE(SNOWHEAD, 3), // From Song of Soaring

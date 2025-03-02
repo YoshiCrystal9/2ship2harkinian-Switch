@@ -1026,6 +1026,9 @@ void BenMenu::AddEnhancements() {
             "Disables Black Bar Letterboxes during cutscenes and Z-targeting\nNote: there may be "
             "minor visual glitches that were covered up by the black bars\nPlease disable this "
             "setting before reporting a bug."));
+    AddWidget(path, "Enemy Health Bars", WIDGET_CVAR_CHECKBOX)
+        .CVar("gEnhancements.Graphics.EnemyHealthBars")
+        .Options(CheckboxOptions().Tooltip("Renders a health bar for enemies and bosses when Z-Targeted"));
     AddWidget(path, "Unstable", WIDGET_SEPARATOR_TEXT).Options(WidgetOptions{ .color = Colors::Orange });
     AddWidget(path, "Disable Scene Geometry Distance Check", WIDGET_CVAR_CHECKBOX)
         .CVar("gEnhancements.Graphics.DisableSceneGeometryDistanceCheck")

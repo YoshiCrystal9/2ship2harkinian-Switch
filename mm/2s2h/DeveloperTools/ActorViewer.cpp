@@ -2,6 +2,7 @@
 #include "2s2h/BenGui/UIWidgets.hpp"
 #include "2s2h/GameInteractor/GameInteractor.h"
 #include "2s2h/NameTag/NameTag.h"
+#include "2s2h/ActorExtension/ActorListIndex.h"
 #include <spdlog/fmt/fmt.h>
 #include <string>
 #include <vector>
@@ -123,6 +124,9 @@ void ActorViewer_AddTagForActor(Actor* actor) {
     if (CVarGetInteger(CVAR_ACTOR_NAME_TAGS("DisplayParams"), 0)) {
         parts.push_back(fmt::format("0x{:04X} ({})", (u16)actor->params, actor->params));
     }
+    if (CVarGetInteger(CVAR_ACTOR_NAME_TAGS("DisplayActorListIndex"), 0)) {
+        parts.push_back(fmt::format("{}", GetActorListIndex(actor)));
+    }
 
     std::string tag = "";
     for (size_t i = 0; i < parts.size(); i++) {
@@ -201,6 +205,8 @@ void ActorViewerWindow::DrawElement() {
                 optionChange |= UIWidgets::CVarCheckbox("Description", CVAR_ACTOR_NAME_TAGS("DisplayDescription"));
                 optionChange |= UIWidgets::CVarCheckbox("Category", CVAR_ACTOR_NAME_TAGS("DisplayCategory"));
                 optionChange |= UIWidgets::CVarCheckbox("Params", CVAR_ACTOR_NAME_TAGS("DisplayParams"));
+                optionChange |=
+                    UIWidgets::CVarCheckbox("Actor List Index", CVAR_ACTOR_NAME_TAGS("DisplayActorListIndex"));
 
                 ImGui::EndPopup();
             }
@@ -214,7 +220,8 @@ void ActorViewerWindow::DrawElement() {
                 bool noOptionsEnabled = !CVarGetInteger(CVAR_ACTOR_NAME_TAGS("DisplayID"), 0) &&
                                         !CVarGetInteger(CVAR_ACTOR_NAME_TAGS("DisplayDescription"), 0) &&
                                         !CVarGetInteger(CVAR_ACTOR_NAME_TAGS("DisplayCategory"), 0) &&
-                                        !CVarGetInteger(CVAR_ACTOR_NAME_TAGS("DisplayParams"), 0);
+                                        !CVarGetInteger(CVAR_ACTOR_NAME_TAGS("DisplayParams"), 0) &&
+                                        !CVarGetInteger(CVAR_ACTOR_NAME_TAGS("DisplayActorListIndex"), 0);
 
                 // Save the user an extra click and prevent adding "empty" tags by enabling,
                 // disabling, or setting an option based on what changed
