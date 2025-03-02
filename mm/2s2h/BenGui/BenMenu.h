@@ -108,6 +108,7 @@ static const std::unordered_map<int32_t, const char*> powerCrouchStabOptions = {
     { 2, "Unpatched (OoT)" },
 };
 
+#if defined(__SWITCH__)
 static const std::unordered_map<int32_t, const char*> SwitchOCProfiles = {
     { Ship::MAXIMUM, "MAXIMUM" },
     { Ship::HIGH, "HIGH" },
@@ -117,6 +118,7 @@ static const std::unordered_map<int32_t, const char*> SwitchOCProfiles = {
     { Ship::POWERSAVINGM2, "POWERSAVINGM2" },
     { Ship::POWERSAVINGM3, "POWERSAVINGM3" },
 };
+#endif
 
 static const std::unordered_map<int32_t, const char*> damageMultiplierOptions = {
     { 0, "1x" }, { 1, "2x" }, { 2, "4x" }, { 3, "8x" }, { 4, "16x" }, { 10, "1 Hit KO" },
