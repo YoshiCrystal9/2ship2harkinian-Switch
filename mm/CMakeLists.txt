@@ -609,16 +609,22 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "NintendoSwitch")
 	find_package(Opus REQUIRED)
 	link_libraries(Opus::opus)
 	find_package(OpusFile REQUIRED)
-	link_libraries(OpusFile::opusfile)
+	link_libraries(OpusFile::opusfile REQUIRED)
 	find_package(Vorbis REQUIRED)
 	link_libraries(Vorbis::vorbisfile)
 	find_package(Ogg REQUIRED)
 	link_libraries(Ogg::ogg)
-    set(ADDITIONAL_LIBRARY_DEPENDENCIES
+
+	set(ADDITIONAL_LIBRARY_DEPENDENCIES
         "libultraship;"
         SDL2::SDL2
         -lglad
         Threads::Threads
+			Opus::opus
+#			todo:fix opusfile
+#			OpusFile::opusFile
+			Vorbis::vorbisfile
+			Ogg::ogg
     )
 	target_include_directories(${PROJECT_NAME} PRIVATE
 #			${DEVKITPRO}/portlibs/switch/include/
