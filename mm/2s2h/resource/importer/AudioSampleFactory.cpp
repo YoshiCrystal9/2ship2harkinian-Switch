@@ -16,7 +16,7 @@
 #include <ogg/ogg.h>
 #include <vorbis/codec.h>
 #include "vorbis/vorbisfile.h"
-#include <opus.h>
+#include <opus/opus.h>
 
 struct OggFileData {
     void* data;
