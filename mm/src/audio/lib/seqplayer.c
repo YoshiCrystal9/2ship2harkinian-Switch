@@ -17,6 +17,7 @@
 #include "endianness.h"
 #include "global.h"
 #include "BenPort.h"
+#include "2s2h/Enhancements/Audio/AudioEditor.h"
 
 #define PROCESS_SCRIPT_END -1
 
@@ -31,7 +32,7 @@ s32 AudioScript_SeqLayerProcessScriptStep3(SequenceLayer* layer, s32 cmd);
 u8 AudioScript_GetInstrument(SequenceChannel* channel, u8 instId, Instrument** instOut, AdsrSettings* adsr);
 
 SequenceData ResourceMgr_LoadSeqByName(const char* path);
-extern char** gSequenceToResource;
+extern char** gSequenceMap;
 
 /**
  * sSeqInstructionArgsTable is a table for each sequence instruction
@@ -1287,20 +1288,27 @@ void AudioScript_SequenceChannelProcessScript(SequenceChannel* channel) {
                     }
                     break;
 
-                case 0xEB: // channel: set soundFont and instrument
+                case 0xEB: { // channel: set soundFont and instrument
+                    // #region 2S2H [Port] Custom sequences
+                    uint8_t result = (uint8_t)cmdArgs[0];
                     cmd = (u8)cmdArgs[0];
 
                     if (seqPlayer->defaultFont != 0xFF) {
-                        cmdArgU16 = ((u16*)gAudioCtx.sequenceFontTable)[seqPlayer->seqId];
-                        lowBits = gAudioCtx.sequenceFontTable[cmdArgU16];
-                        cmd = gAudioCtx.sequenceFontTable[cmdArgU16 + lowBits - cmd];
+                        if (gAudioCtx.seqReplaced[seqPlayer->playerIndex]) {
+                            seqPlayer->seqId = gAudioCtx.seqToPlay[seqPlayer->playerIndex];
+                            gAudioCtx.seqReplaced[seqPlayer->playerIndex] = 0;
+                        }
+                        u16 seqId = AudioEditor_GetReplacementSeq(seqPlayer->seqId);
+                        SequenceData sDat = ResourceMgr_LoadSeqByName(gSequenceMap[seqId]);
+                        cmd = sDat.fonts[sDat.numFonts - result - 1];
                     }
-
+                    // #end region
                     if (AudioHeap_SearchCaches(FONT_TABLE, CACHE_EITHER, cmd)) {
                         channel->fontId = cmd;
                     }
 
                     cmdArgs[0] = cmdArgs[1];
+                }
                     // fallthrough
                 case 0xC1: // channel: set instrument
                     cmd = (u8)cmdArgs[0];
@@ -1418,20 +1426,20 @@ void AudioScript_SequenceChannelProcessScript(SequenceChannel* channel) {
 
                 case 0xC6: // channel: set soundFont
                     cmd = (u8)cmdArgs[0];
-
+                    // #region 2S2H [Port] Audio assets in the archive and custom sequences
                     if (seqPlayer->defaultFont != 0xFF) {
                         if (gAudioCtx.seqReplaced[seqPlayer->playerIndex]) {
                             seqPlayer->seqId = gAudioCtx.seqToPlay[seqPlayer->playerIndex];
                             gAudioCtx.seqReplaced[seqPlayer->playerIndex] = 0;
                         }
-                        u16 seqId = seqPlayer->seqId; // AudioEditor_GetReplacementSeq(seqPlayer->seqId);
-                        SequenceData sDat = ResourceMgr_LoadSeqByName(gSequenceToResource[seqId]);
+                        u16 seqId = AudioEditor_GetReplacementSeq(seqPlayer->seqId);
+                        SequenceData sDat = ResourceMgr_LoadSeqByName(gSequenceMap[seqId]);
 
                         // The game apparantely would sometimes do negative array lookups, the result of which would get
                         // rejected by AudioHeap_SearchCaches, never changing the actual fontid.
                         if (cmd > sDat.numFonts)
                             break;
-
+                        // #end region
                         cmd = sDat.fonts[(sDat.numFonts - cmd - 1)];
                     }
 

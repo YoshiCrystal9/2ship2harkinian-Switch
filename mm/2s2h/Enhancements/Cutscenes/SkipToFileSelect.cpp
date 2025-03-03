@@ -21,7 +21,7 @@ void RegisterSkipToFileSelect() {
             // We need to call it manually before file select creates RNG values for new saves
             Rand_Seed(osGetTime());
             // Normally called on console logo screen
-            gSaveContext.seqId = (u8)NA_BGM_DISABLED;
+            gSaveContext.seqId = NA_BGM_DISABLED;
             gSaveContext.ambienceId = AMBIENCE_ID_DISABLED;
             gSaveContext.gameMode = GAMEMODE_TITLE_SCREEN;
 

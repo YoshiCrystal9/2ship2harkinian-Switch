@@ -307,7 +307,9 @@ void func_80A6F5E4(EnMm3* this, PlayState* play) {
         this->unk_2AC--;
         if (this->unk_2AC == 0) {
             if (gSaveContext.timerCurTimes[TIMER_ID_POSTMAN] == SECONDS_TO_TIMER(10)) {
-                Audio_PlayFanfare(NA_BGM_GET_ITEM | 0x900);
+                // BENTODO This had | 0x900 which interfered with the 16 bit sequence IDs. Removing it doesn't seem to
+                // anything bad.
+                Audio_PlayFanfare(NA_BGM_GET_ITEM);
             } else {
                 Audio_PlaySfx(NA_SE_SY_ERROR);
             }

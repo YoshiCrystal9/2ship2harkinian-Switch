@@ -197,7 +197,7 @@ void UpdateGameTime(u16 gameTime) {
         if (gPlayState->sequenceCtx.ambienceId != AMBIENCE_ID_13) {
             SEQCMD_STOP_SEQUENCE(SEQ_PLAYER_AMBIENCE, 0);
             SEQCMD_STOP_SEQUENCE(SEQ_PLAYER_BGM_MAIN, 240);
-            gSaveContext.seqId = (u8)NA_BGM_DISABLED;
+            gSaveContext.seqId = NA_BGM_DISABLED;
             gSaveContext.ambienceId = AMBIENCE_ID_DISABLED;
             Environment_PlaySceneSequence(gPlayState);
         }

@@ -77,7 +77,7 @@ void RegisterWarpPoint() {
         if (!CVarGetInteger("gEnhancements.Cutscenes.SkipToFileSelect", 0) &&
             CVarGetInteger(WARP_POINT_CVAR "BootToWarpPoint", 0) && CVarGetInteger(WARP_POINT_CVAR "Saved", 0)) {
             // Normally called on console logo screen
-            gSaveContext.seqId = (u8)NA_BGM_DISABLED;
+            gSaveContext.seqId = NA_BGM_DISABLED;
             gSaveContext.ambienceId = AMBIENCE_ID_DISABLED;
             gSaveContext.gameMode = GAMEMODE_TITLE_SCREEN;
             Warp();

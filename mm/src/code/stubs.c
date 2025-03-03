@@ -56,7 +56,7 @@ u64 aspMainDataEnd[100];
 
 u8 sNumSeqRequests[5];
 u32 sAudioSeqCmds[0x100];
-ActiveSequence gActiveSeqs[5];
+
 u8 sResetAudioHeapTimer;
 u16 sResetAudioHeapFadeReverbVolume;
 u16 sResetAudioHeapFadeReverbVolumeStep;
@@ -132,9 +132,6 @@ void Audio_osInvalDCache(void* buf, s32 size) {
 }
 
 void Audio_osWritebackDCache(void* mem, s32 size) {
-}
-
-void Audio_SetBGM(u32 bgmId) {
 }
 
 OSPiHandle* osDriveRomInit() {
@@ -231,8 +228,6 @@ void gSPInvalidateTexCache(Gfx* pkt, uintptr_t texAddr) {
     __gSPInvalidateTexCache(pkt, texAddr);
 }
 
-u16 func_801A5100(void) {
-}
 void __osDispatchThread(void) {
 }
 

@@ -680,7 +680,7 @@ void func_80AF2350(EnTest7* this, PlayState* play) {
 
     play->transitionTrigger = TRANS_TRIGGER_START;
     play->transitionType = TRANS_TYPE_FADE_BLACK;
-    gSaveContext.seqId = (u8)NA_BGM_DISABLED;
+    gSaveContext.seqId = NA_BGM_DISABLED;
     gSaveContext.ambienceId = AMBIENCE_ID_DISABLED;
 }
 

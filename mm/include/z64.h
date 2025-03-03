@@ -191,8 +191,9 @@ typedef struct {
 
 struct PlayState;
 
+// 2S2H [Custom Audio]. Was originally u8 seqId. Made 16 bit to allow for more than 255 sequences.
 typedef struct {
-    /* 0x0 */ u8   seqId;
+    /* 0x0 */ u16   seqId;
     /* 0x1 */ u8   ambienceId;
 } SequenceContext; // size = 0x2
 
@@ -296,15 +297,6 @@ typedef enum {
     /* 3 */ PICTO_PHOTO_STATE_READY
 } PictoPhotoState;
 
-//#define ROM_FILE(name) \
-//    { 0, 0, #name }
-//
-//#define ROM_FILE_EMPTY \
-//    { 0, 0, "" }
-//
-//#define ROM_FILE_UNSET \
-//    { 0 }
-//
 #ifdef __cplusplus
 }
 #endif

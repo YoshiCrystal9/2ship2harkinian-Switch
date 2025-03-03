@@ -4627,7 +4627,7 @@ void func_80831F34(PlayState* play, Player* this, PlayerAnimationHeader* anim) {
             play->gameOverCtx.state = GAMEOVER_DEATH_START;
             Audio_StopFanfare(0);
             Audio_PlayFanfare(NA_BGM_GAME_OVER);
-            gSaveContext.seqId = (u8)NA_BGM_DISABLED;
+            gSaveContext.seqId = NA_BGM_DISABLED;
             gSaveContext.ambienceId = AMBIENCE_ID_DISABLED;
         }
 
@@ -6253,7 +6253,7 @@ s32 Player_HandleExitsAndVoids(PlayState* play, Player* this, CollisionPoly* pol
                 if ((this->stateFlags1 & PLAYER_STATE1_8000000) && (this->floorProperty == FLOOR_PROPERTY_5)) {
                     Audio_PlaySfx_2(NA_SE_OC_TUNAMI);
                     Audio_MuteAllSeqExceptSystemAndOcarina(5);
-                    gSaveContext.seqId = (u8)NA_BGM_DISABLED;
+                    gSaveContext.seqId = NA_BGM_DISABLED;
                     gSaveContext.ambienceId = AMBIENCE_ID_DISABLED;
                 } else if (!(this->actor.bgCheckFlags & BGCHECKFLAG_GROUND) &&
                            (this->floorProperty == FLOOR_PROPERTY_12)) {
@@ -6275,7 +6275,7 @@ s32 Player_HandleExitsAndVoids(PlayState* play, Player* this, CollisionPoly* pol
                 if (floorType == FLOOR_TYPE_11) {
                     Audio_PlaySfx_2(NA_SE_OC_SECRET_HOLE_OUT);
                     Audio_MuteAllSeqExceptSystemAndOcarina(5);
-                    gSaveContext.seqId = (u8)NA_BGM_DISABLED;
+                    gSaveContext.seqId = NA_BGM_DISABLED;
                     gSaveContext.ambienceId = AMBIENCE_ID_DISABLED;
                 } else {
                     func_8085B74C(play);
@@ -13546,11 +13546,10 @@ s32 func_808482E0(PlayState* play, Player* this) {
             Audio_PlaySfx(NA_SE_SY_GET_BOXITEM);
         } else {
             s32 seqId;
-
             bool vanillaCondition = (this->getItemId == GI_HEART_CONTAINER) ||
                                     ((this->getItemId == GI_HEART_PIECE) && EQ_MAX_QUEST_HEART_PIECE_COUNT);
             if (GameInteractor_Should(VB_PLAY_HEART_CONTAINER_GET_FANFARE, vanillaCondition, this->getItemId)) {
-                seqId = NA_BGM_GET_HEART | 0x900;
+                seqId = NA_BGM_GET_HEART;
             } else {
                 s32 var_v1;
 
@@ -13558,7 +13557,7 @@ s32 func_808482E0(PlayState* play, Player* this) {
                     ((this->getItemId >= GI_RUPEE_PURPLE) && (this->getItemId <= GI_RUPEE_HUGE))) {
                     var_v1 = NA_BGM_GET_SMALL_ITEM;
                 } else {
-                    var_v1 = NA_BGM_GET_ITEM | 0x900;
+                    var_v1 = NA_BGM_GET_ITEM;
                 }
                 seqId = var_v1;
             }
@@ -17638,7 +17637,7 @@ void Player_Action_68(Player* this, PlayState* play) {
             if (this->av2.actionVar2 == 0) {
                 Message_StartTextbox(play, D_8085D798[this->av1.actionVar1 - 1].textId, &this->actor);
 
-                Audio_PlayFanfare(NA_BGM_GET_ITEM | 0x900);
+                Audio_PlayFanfare(NA_BGM_GET_ITEM);
                 this->av2.actionVar2 = 1;
             } else if (Message_GetState(&play->msgCtx) == TEXT_STATE_CLOSING) {
                 Actor* talkActor;
@@ -18034,7 +18033,7 @@ void Player_Action_77(Player* this, PlayState* play) {
         } else {
             play->transitionType = TRANS_TYPE_FADE_BLACK;
             gSaveContext.nextTransitionType = TRANS_TYPE_FADE_BLACK;
-            gSaveContext.seqId = (u8)NA_BGM_DISABLED;
+            gSaveContext.seqId = NA_BGM_DISABLED;
             gSaveContext.ambienceId = AMBIENCE_ID_DISABLED;
         }
 

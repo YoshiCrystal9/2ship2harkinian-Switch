@@ -2208,7 +2208,7 @@ void FileSelect_LoadGame(GameState* thisx) {
 
     gSaveContext.respawnFlag = 0;
     gSaveContext.respawn[RESPAWN_MODE_DOWN].entrance = ENTR_LOAD_OPENING;
-    gSaveContext.seqId = (u8)NA_BGM_DISABLED;
+    gSaveContext.seqId = NA_BGM_DISABLED;
     gSaveContext.ambienceId = AMBIENCE_ID_DISABLED;
     gSaveContext.showTitleCard = true;
     gSaveContext.dogParams = 0;

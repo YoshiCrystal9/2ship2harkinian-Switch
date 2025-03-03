@@ -7,6 +7,7 @@
 #include <Fast3D/gfx_pc.h>
 #include "UIWidgets.hpp"
 #include "HudEditor.h"
+#include "2s2h/Enhancements/Audio/AudioEditor.h"
 #include "CosmeticEditor.h"
 #include "Notification.h"
 #include "2s2h/Rando/CheckTracker/CheckTracker.h"
@@ -44,6 +45,7 @@ std::shared_ptr<CosmeticEditorWindow> mCosmeticEditorWindow;
 std::shared_ptr<ActorViewerWindow> mActorViewerWindow;
 std::shared_ptr<CollisionViewerWindow> mCollisionViewerWindow;
 std::shared_ptr<EventLogWindow> mEventLogWindow;
+std::shared_ptr<AudioEditor> mAudioEditorWindow;
 std::shared_ptr<BenMenu> mBenMenu;
 std::shared_ptr<Notification::Window> mNotificationWindow;
 std::shared_ptr<Rando::CheckTracker::CheckTrackerWindow> mRandoCheckTrackerWindow;
@@ -118,6 +120,9 @@ void SetupGuiElements() {
     mEventLogWindow = std::make_shared<EventLogWindow>("gWindows.EventLog", "Event Log", ImVec2(520, 600));
     gui->AddGuiWindow(mEventLogWindow);
 
+    mAudioEditorWindow = std::make_shared<AudioEditor>("gWindows.AudioEditor", "Audio Editor", ImVec2(520, 600));
+    gui->AddGuiWindow(mAudioEditorWindow);
+
     mItemTrackerWindow = std::make_shared<ItemTrackerWindow>("gWindows.ItemTracker", "Item Tracker");
     gui->AddGuiWindow(mItemTrackerWindow);
 
@@ -162,6 +167,7 @@ void Destroy() {
     mHudEditorWindow = nullptr;
     mCosmeticEditorWindow = nullptr;
     mActorViewerWindow = nullptr;
+    mAudioEditorWindow = nullptr;
     mItemTrackerWindow = nullptr;
     mItemTrackerSettingsWindow = nullptr;
 }

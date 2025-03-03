@@ -224,7 +224,8 @@ typedef struct SequencePlayer {
     /* 0x001 */ u8 state;
     /* 0x002 */ u8 noteAllocPolicy;
     /* 0x003 */ u8 muteFlags;
-    /* 0x004 */ u8 seqId;
+    // 2S2H [Custom Audio]. Was originally u8 seqId. Made 16 bit to allow for more than 255 sequences.
+    /* 0x004 */ u16 seqId;
     /* 0x005 */ u8 defaultFont;
     /* 0x006 */ u8 unk_06[1];
     /* 0x007 */ s8 playerIndex;
@@ -422,6 +423,8 @@ typedef struct {
     /* 0x1E0 */ s16 surroundEffectState[128];
 } NoteSynthesisBuffers; // size = 0x2E0
 
+struct OggOpusFile;
+
 typedef struct {
     /* 0x00 */ u8 atLoopPoint : 1;
     /* 0x00 */ u8 stopLoop : 1;
@@ -439,7 +442,8 @@ typedef struct {
     /* 0x18 */ UNK_TYPE1 unk_14[0x6];
     /* 0x1E */ u8 combFilterNeedsInit;
     /* 0x1F */ u8 unk_1F;
-    /* 0x20 */ UNK_TYPE1 unk_20[0x4];
+    struct OggOpusFile* opusFile; // Only for streamed opus audio
+    ///* 0x20 */ UNK_TYPE1 unk_20[0x4];
 } NoteSynthesisState; // size = 0x24
 
 typedef enum {
@@ -714,7 +718,7 @@ typedef struct {
     /* 0x4350 */ AudioCommonPoolSplit persistentCommonPoolSplit; // splits persistent common pool into caches for sequences, soundFonts, sample banks
     /* 0x435C */ AudioCommonPoolSplit temporaryCommonPoolSplit; // splits temporary common pool into caches for sequences, soundFonts, sample banks
     /* 0x4368 */ u8 sampleFontLoadStatus[0x30];
-    /* 0x4398 */ u8 fontLoadStatus[0x30];
+    /* 0x4398 */ u8* fontLoadStatus; // 2S2H [Port] [Custom Audio] Allow for new soundfonts. Was originally fontLoadStatus[0x30]
     /* 0x43C8 */ u8* seqLoadStatus;
     /* 0x4448 */ volatile u8 resetStatus;
     /* 0x4449 */ u8 specId;
@@ -744,8 +748,8 @@ typedef struct {
     /* 0x79E4 */ OSMesg threadCmdProcMsgBuf[4];
     /* 0x79F4 */ AudioCmd threadCmdBuf[0x100]; // Audio commands used to transfer audio requests from the graph thread to the audio thread
     /* 0x81F4 */ UNK_TYPE1 unk_81F4[4];
-    u16 seqToPlay[4];
-    u8 seqReplaced[4];
+    u16 seqToPlay[5];
+    u8 seqReplaced[5];
 } AudioContext; // size = 0x81F8
 
 typedef struct {
@@ -804,7 +808,7 @@ typedef struct {
 } ActiveSequence; // size = 0x21C
 
 typedef struct {
-    /* 0x0 */ u8 seqId;
+    /* 0x0 */ u16 seqId;
     /* 0x1 */ u8 priority;
 } SeqRequest; // size = 0x02
 

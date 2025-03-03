@@ -357,7 +357,9 @@ void EnStoneheishi_DrinkBottleProcess(EnStoneheishi* this, PlayState* play) {
 
         case EN_STONE_DRINK_BOTTLE_STAND_UP:
             if (this->endFrame <= currentFrame) {
-                Audio_PlayFanfare(NA_BGM_GET_ITEM | 0x900);
+                // BENTODO This had | 0x900 which interfered with the 16 bit sequence IDs. Removing it doesn't seem to
+                // anything bad.
+                Audio_PlayFanfare(NA_BGM_GET_ITEM);
                 this->bottleDisplay = EN_STONE_BOTTLE_NONE;
                 EnStoneheishi_ChangeAnim(this, EN_STONE_HEISHI_ANIM_STAND_UP);
                 this->drinkBottleState++;

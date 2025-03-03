@@ -13,7 +13,7 @@ void SaveContext_Init(void) {
     memset(&gSaveContext, 0, sizeof(SaveContext));
 
     gSaveContext.save.playerForm = 0;
-    gSaveContext.seqId = (u8)NA_BGM_DISABLED;
+    gSaveContext.seqId = NA_BGM_DISABLED;
     gSaveContext.ambienceId = AMBIENCE_ID_DISABLED;
     gSaveContext.forcedSeqId = NA_BGM_GENERAL_SFX;
     gSaveContext.nextCutsceneIndex = 0xFFEF;

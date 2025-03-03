@@ -7,6 +7,8 @@
 #define SEQCMD_ASYNC_ACTIVE 0x8000000
 #define SEQCMD_SEQPLAYER_MASK 0x7000000
 #define SEQCMD_SEQID_MASK 0xFF // Only applies to certain seqcmds
+// 2S2H [Custom Audio] Allow for 16 bit sequence IDs. Not 0xFFFF because the top bits are for the various flags
+#define SEQCMD_SEQID_MASK_16 0x7FF // Only applies to certain seqcmds
 
 typedef enum {
     /* 0x0 */ SEQCMD_OP_PLAY_SEQUENCE,

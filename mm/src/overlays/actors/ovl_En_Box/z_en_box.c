@@ -482,7 +482,9 @@ void EnBox_WaitOpen(EnBox* this, PlayState* play) {
                                this->dyna.actor.world.pos.x, this->dyna.actor.world.pos.y, this->dyna.actor.world.pos.z,
                                this->dyna.actor.shape.rot.x, this->dyna.actor.shape.rot.y, this->dyna.actor.shape.rot.z,
                                -1);
-            Audio_PlayFanfare(NA_BGM_OPEN_CHEST | 0x900);
+            // BENTODO This had | 0x900 which interfered with the 16 bit sequence IDs. Removing it doesn't seem to do
+            // anything bad.
+            Audio_PlayFanfare(NA_BGM_OPEN_CHEST);
         }
 
         if (this->getItemId == GI_STRAY_FAIRY) {

@@ -475,7 +475,8 @@ typedef struct SaveContext {
     /* 0x3EF8 */ s16 timerX[TIMER_ID_MAX];              // "event_xp"
     /* 0x3F06 */ s16 timerY[TIMER_ID_MAX];              // "event_yp"
     /* 0x3F14 */ s16 unk_3F14;                          // "character_change"
-    /* 0x3F16 */ u8 seqId;                              // "old_bgm"
+    // 2S2H [Custom Audio]. Was originally u8 seqId. Made 16 bit to allow for more than 255 sequences.
+    /* 0x3F16 */ u16 seqId;                              // "old_bgm"
     /* 0x3F17 */ u8 ambienceId;                         // "old_env"
     /* 0x3F18 */ u8 buttonStatus[6];                    // "button_item"
     /* 0x3F1E */ u8 hudVisibilityForceButtonAlphasByStatus; // if btn alphas are updated through Interface_UpdateButtonAlphas, instead update them through Interface_UpdateButtonAlphasByStatus "ck_fg"

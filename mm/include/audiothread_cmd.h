@@ -403,8 +403,9 @@ typedef enum {
  * @param flags set `& 1` to load the sequence, set `& 2` to load the soundfonts
  * @param data
  */
+// 2S2H [Custom Audio] encode the seqId into the second part of the command to use 16 bits for the id
 #define AUDIOCMD_GLOBAL_SYNC_LOAD_SEQ_PARTS(seqId, flags, data) \
-    AudioThread_QueueCmdS32(AUDIO_MK_CMD(AUDIOCMD_OP_GLOBAL_SYNC_LOAD_SEQ_PARTS, 0, seqId, flags), data)
+    AudioThread_QueueCmdS32(AUDIO_MK_CMD(AUDIOCMD_OP_GLOBAL_SYNC_LOAD_SEQ_PARTS, 0, 0, flags), (seqId << 16) | data)
 
 /**
  * Synchronously initialize a sequence player
@@ -413,8 +414,9 @@ typedef enum {
  * @param seqId the id of the sequence to play, see `SeqId`
  * @param fadeInTimer (s32) number of ticks to fade in the sequence to the requested volume
  */
+// 2S2H [Custom Audio] encode the seqId into the second part of the command to use 16 bits for the id
 #define AUDIOCMD_GLOBAL_INIT_SEQPLAYER(seqPlayerIndex, seqId, fadeInTimer) \
-    AudioThread_QueueCmdS32(AUDIO_MK_CMD(AUDIOCMD_OP_GLOBAL_INIT_SEQPLAYER, seqPlayerIndex, seqId, 0), fadeInTimer)
+    AudioThread_QueueCmdS32(AUDIO_MK_CMD(AUDIOCMD_OP_GLOBAL_INIT_SEQPLAYER, seqPlayerIndex, 0, 0), (seqId << 16) | fadeInTimer)
 
 /**
  * Disable a sequence player
@@ -433,9 +435,10 @@ typedef enum {
  * @param seqId the id of the sequence to play, see `SeqId`
  * @param skipTicks (s32) number of ticks to skip before starting the sequence
  */
+// 2S2H [Custom Audio] encode the seqId into the second part of the command to use 16 bits for the id
 #define AUDIOCMD_GLOBAL_INIT_SEQPLAYER_SKIP_TICKS(seqPlayerIndex, seqId, skipTicks)                               \
-    AudioThread_QueueCmdS32(AUDIO_MK_CMD(AUDIOCMD_OP_GLOBAL_INIT_SEQPLAYER_SKIP_TICKS, seqPlayerIndex, seqId, 0), \
-                            skipTicks)
+    AudioThread_QueueCmdS32(AUDIO_MK_CMD(AUDIOCMD_OP_GLOBAL_INIT_SEQPLAYER_SKIP_TICKS, seqPlayerIndex, 0, 0), \
+                            (seqId << 16) | skipTicks)
 
 /**
  * When processing an audio thread channel command on all channels, set which channels to process
@@ -574,8 +577,9 @@ typedef enum {
  *
  * @param seqId the id of the sequence to discard, see `SeqId`
  */
+// 2S2H [Custom Audio] encode the seqId into the second part of the command to use 16 bits for the id
 #define AUDIOCMD_GLOBAL_DISCARD_SEQ_FONTS(seqId) \
-    AudioThread_QueueCmdS32(AUDIO_MK_CMD(AUDIOCMD_OP_GLOBAL_DISCARD_SEQ_FONTS, 0, seqId, 0), 0)
+    AudioThread_QueueCmdU16(AUDIO_MK_CMD(AUDIOCMD_OP_GLOBAL_DISCARD_SEQ_FONTS, 0, 0, 0), seqId)
 
 /**
  * Stop processing all audio thread commands
@@ -616,8 +620,9 @@ typedef enum {
  * @param seqId the id of the sequence to load, see `SeqId`
  * @param retData return data from `externalLoadQueue`
  */
+// 2S2H [Custom Audio] encode the seqId into the second part of the command to use 16 bits for the id
 #define AUDIOCMD_GLOBAL_ASYNC_LOAD_SEQ(seqId, retData) \
-    AudioThread_QueueCmdS8(AUDIO_MK_CMD(AUDIOCMD_OP_GLOBAL_ASYNC_LOAD_SEQ, seqId, 0, retData), 0)
+    AudioThread_QueueCmdS8(AUDIO_MK_CMD(AUDIOCMD_OP_GLOBAL_ASYNC_LOAD_SEQ, 0, 0, retData), seqId)
 
 /**
  * No Operation. No code exists for this OP

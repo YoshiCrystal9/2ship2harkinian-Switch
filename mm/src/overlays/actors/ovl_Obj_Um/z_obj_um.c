@@ -1298,7 +1298,7 @@ void ObjUm_RunMinigame(ObjUm* this, PlayState* play) {
     switch (ObjUm_UpdatePath(this, play)) {
         case OBJUM_PATH_STATE_1:
         case OBJUM_PATH_STATE_FINISH:
-            gSaveContext.seqId = (u8)NA_BGM_DISABLED;
+            gSaveContext.seqId = NA_BGM_DISABLED;
             CLEAR_WEEKEVENTREG(WEEKEVENTREG_31_80);
             gSaveContext.ambienceId = AMBIENCE_ID_DISABLED;
 

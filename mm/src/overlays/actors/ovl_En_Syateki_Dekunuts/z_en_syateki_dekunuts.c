@@ -435,7 +435,9 @@ void EnSyatekiDekunuts_Update(Actor* thisx, PlayState* play) {
         (this->timer > 10)) {
         if ((this->collider.base.acFlags & AC_HIT) && (this->isAlive == true)) {
             if (SG_DEKU_GET_TYPE(&this->actor) == SG_DEKU_TYPE_BONUS) {
-                Audio_PlayFanfare(NA_BGM_GET_ITEM | 0x900);
+                // BENTODO This had | 0x900 which interfered with the 16 bit sequence IDs. Removing it doesn't seem to
+                // anything bad.
+                Audio_PlayFanfare(NA_BGM_GET_ITEM);
             } else {
                 Audio_PlaySfx(NA_SE_SY_TRE_BOX_APPEAR);
             }

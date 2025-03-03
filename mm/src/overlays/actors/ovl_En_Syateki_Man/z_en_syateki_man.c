@@ -1400,7 +1400,9 @@ void EnSyatekiMan_Town_RunGame(EnSyatekiMan* this, PlayState* play) {
             Audio_StopSubBgm();
             this->actionFunc = EnSyatekiMan_Town_EndGame;
             if (this->score == 50) {
-                Audio_PlayFanfare(NA_BGM_GET_ITEM | 0x900);
+                // BENTODO This had | 0x900 which interfered with the 16 bit sequence IDs. Removing it doesn't seem to
+                // anything bad.
+                Audio_PlayFanfare(NA_BGM_GET_ITEM);
                 Interface_SetPerfectLetters(play, PERFECT_LETTERS_TYPE_1);
             }
         }

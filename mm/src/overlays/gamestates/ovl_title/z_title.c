@@ -210,7 +210,7 @@ void ConsoleLogo_Main(GameState* thisx) {
     FrameInterpolation_StopRecord();
 
     if (this->exit) {
-        gSaveContext.seqId = (u8)NA_BGM_DISABLED;
+        gSaveContext.seqId = NA_BGM_DISABLED;
         gSaveContext.ambienceId = AMBIENCE_ID_DISABLED;
         gSaveContext.gameMode = GAMEMODE_TITLE_SCREEN;
 

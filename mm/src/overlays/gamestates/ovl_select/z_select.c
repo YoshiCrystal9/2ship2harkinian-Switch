@@ -83,7 +83,7 @@ void MapSelect_LoadGame(MapSelectState* this, u32 entrance, s32 spawn) {
     }
 
     gSaveContext.respawn[RESPAWN_MODE_DOWN].entrance = 0xFFFF;
-    gSaveContext.seqId = (u8)NA_BGM_DISABLED;
+    gSaveContext.seqId = NA_BGM_DISABLED;
     gSaveContext.ambienceId = AMBIENCE_ID_DISABLED;
     gSaveContext.showTitleCard = true;
     gSaveContext.respawnFlag = 0;

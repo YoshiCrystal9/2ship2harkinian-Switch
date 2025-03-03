@@ -86,7 +86,7 @@ static bool ActorSpawnHandler(std::shared_ptr<Ship::Console> Console, const std:
 static bool LoadSceneHandler(std::shared_ptr<Ship::Console> Console, const std::vector<std::string>&,
                              std::string* output) {
     gSaveContext.respawnFlag = 0;
-    gSaveContext.seqId = 0xFF;
+    gSaveContext.seqId = NA_BGM_DISABLED;
     gSaveContext.gameMode = 0;
 
     return 0;

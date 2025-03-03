@@ -3822,7 +3822,9 @@ void EnFishing_UpdateFish(Actor* thisx, PlayState* play2) {
             }
 
             if (this->unk_172[0] == 90) {
-                SEQCMD_PLAY_SEQUENCE(SEQ_PLAYER_BGM_MAIN, 0, NA_BGM_GET_HEART | 0x900 | SEQ_FLAG_ASYNC);
+                // BENTODO This had | 0x900 which interfered with the 16 bit sequence IDs. Removing it doesn't seem to
+                // do anything bad.
+                SEQCMD_PLAY_SEQUENCE(SEQ_PLAYER_BGM_MAIN, 0, NA_BGM_GET_HEART | SEQ_FLAG_ASYNC);
                 D_8090CCFC = 40;
 
                 if (this->unk_148 == 0) {
@@ -5390,7 +5392,9 @@ void EnFishing_UpdateOwner(Actor* thisx, PlayState* play2) {
 
         case 22:
             if (D_8090CD50 == 30) {
-                SEQCMD_PLAY_SEQUENCE(SEQ_PLAYER_BGM_MAIN, 0, NA_BGM_GET_ITEM | 0x900 | SEQ_FLAG_ASYNC);
+                // BENTODO This had | 0x900 which interfered with the 16 bit sequence IDs. Removing it doesn't seem to
+                // do anything bad.
+                SEQCMD_PLAY_SEQUENCE(SEQ_PLAYER_BGM_MAIN, 0, NA_BGM_GET_ITEM | SEQ_FLAG_ASYNC);
             }
 
             D_8090CD54 = 1;

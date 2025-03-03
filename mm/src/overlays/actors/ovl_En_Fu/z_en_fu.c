@@ -830,7 +830,9 @@ void func_80962F4C(EnFu* this, PlayState* play) {
             Audio_StopSubBgm();
             gSaveContext.timerCurTimes[TIMER_ID_MINIGAME_2] = SECONDS_TO_TIMER(0);
             gSaveContext.timerStates[TIMER_ID_MINIGAME_2] = TIMER_STATE_STOP;
-            Audio_PlayFanfare(NA_BGM_GET_ITEM | 0x900);
+            // BENTODO This had | 0x900 which interfered with the 16 bit sequence IDs. Removing it doesn't seem to do
+            // anything bad.
+            Audio_PlayFanfare(NA_BGM_GET_ITEM);
             Interface_SetPerfectLetters(play, PERFECT_LETTERS_TYPE_1);
             this->unk_54A = 3;
             func_809632D0(this);

@@ -162,8 +162,9 @@ void ObjBoat_UpdateCutscene(Actor* thisx, PlayState* play2) {
                 if (cue->id == 3) {
                     path = &play->setupPathList[path->additionalPathIndex];
                 }
-
-                this->maxPointIndex = path->count;
+                //! @bug This is missing a -1 for last valid index
+                // 2S2H [Port] Opting to fix this to keep it in bounds
+                this->maxPointIndex = path->count - 1;
                 this->points = Lib_SegmentedToVirtual(path->points);
                 Math_Vec3s_ToVec3f(&this->dyna.actor.world.pos, this->points);
                 this->dyna.actor.speed = cue->rot.z * (45.0f / 0x2000);

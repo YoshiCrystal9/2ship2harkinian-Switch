@@ -6,9 +6,9 @@ void AudioPlayback_NoteSetResamplingRate(NoteSampleState* sampleState, f32 resam
 void AudioPlayback_AudioListPushFront(AudioListItem* list, AudioListItem* item);
 void AudioPlayback_NoteInitForLayer(Note* note, SequenceLayer* layer);
 
-SoundFont* ResourceMgr_LoadAudioSoundFont(const char* path);
+SoundFont* ResourceMgr_LoadAudioSoundFontByName(const char* path);
 
-extern char* gFontToResource[256];
+extern char** gFontMap;
 
 void AudioPlayback_InitSampleState(Note* note, NoteSampleState* sampleState, NoteSubAttributes* subAttrs) {
     f32 volLeft;
@@ -153,6 +153,7 @@ void AudioPlayback_NoteInit(Note* note) {
     note->sampleState = gDefaultSampleState;
 }
 
+extern void aOPUSFree(struct OggOpusFile* opusFile);
 void AudioPlayback_NoteDisable(Note* note) {
     if (note->sampleState.bitField0.needsInit == true) {
         note->sampleState.bitField0.needsInit = false;
@@ -165,6 +166,11 @@ void AudioPlayback_NoteDisable(Note* note) {
     note->playbackState.prevParentLayer = NO_LAYER;
     note->playbackState.adsr.action.s.status = ADSR_STATUS_DISABLED;
     note->playbackState.adsr.current = 0;
+    // 2S2H [Custom Audio] Free the decoded opus data if needed.
+    if (note->synthesisState.opusFile != NULL) {
+        aOPUSFree(note->synthesisState.opusFile);
+        note->synthesisState.opusFile = NULL;
+    }
 }
 
 void AudioPlayback_ProcessNotes(void) {
@@ -366,7 +372,8 @@ Instrument* AudioPlayback_GetInstrumentInner(s32 fontId, s32 instId) {
     }
 
     int instCnt = 0;
-    SoundFont* sf = ResourceMgr_LoadAudioSoundFont(gFontToResource[fontId]);
+    // 2S2H [Port] Audio assets in the archive
+    SoundFont* sf = ResourceMgr_LoadAudioSoundFontByName(gFontMap[fontId]);
 
     if (instId >= sf->numInstruments)
         return NULL;
@@ -392,8 +399,8 @@ Drum* AudioPlayback_GetDrum(s32 fontId, s32 drumId) {
         gAudioCtx.audioErrorFlags = AUDIO_ERROR(0, fontId, AUDIO_ERROR_FONT_NOT_LOADED);
         return NULL;
     }
-
-    SoundFont* sf = ResourceMgr_LoadAudioSoundFont(gFontToResource[fontId]);
+    // 2S2H [Port] Audio assets in the archive
+    SoundFont* sf = ResourceMgr_LoadAudioSoundFontByName(gFontMap[fontId]);
     if (drumId < sf->numDrums) {
         drum = sf->drums[drumId];
     }
@@ -416,8 +423,8 @@ SoundEffect* AudioPlayback_GetSoundEffect(s32 fontId, s32 sfxId) {
         gAudioCtx.audioErrorFlags = AUDIO_ERROR(0, fontId, AUDIO_ERROR_FONT_NOT_LOADED);
         return NULL;
     }
-
-    SoundFont* sf = ResourceMgr_LoadAudioSoundFont(gFontToResource[fontId]);
+    // 2S2H [Port] Audio assets in the archive
+    SoundFont* sf = ResourceMgr_LoadAudioSoundFontByName(gFontMap[fontId]);
     if (sfxId < sf->numSfx) {
         soundEffect = &sf->soundEffects[sfxId];
     }

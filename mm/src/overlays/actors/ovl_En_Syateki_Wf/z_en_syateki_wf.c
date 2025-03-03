@@ -449,7 +449,9 @@ void EnSyatekiWf_Update(Actor* thisx, PlayState* play2) {
         //! weird behavior, like not getting a free replay after finishing a game with 2000 or more points.
         this->actor.colChkInfo.health -= 2;
         if (this->actor.colChkInfo.health == 0) {
-            Audio_PlayFanfare(NA_BGM_GET_ITEM | 0x900);
+            // BENTODO This had | 0x900 which interfered with the 16 bit sequence IDs. Removing it doesn't seem to
+            // anything bad.
+            Audio_PlayFanfare(NA_BGM_GET_ITEM);
             EnSyatekiWf_SetupDead(this, play);
         } else {
             Audio_PlaySfx(NA_SE_SY_TRE_BOX_APPEAR);

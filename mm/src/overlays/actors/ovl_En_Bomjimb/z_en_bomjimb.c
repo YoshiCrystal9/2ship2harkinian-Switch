@@ -758,7 +758,9 @@ void func_80C02740(EnBomjimb* this, PlayState* play) {
     gSaveContext.save.saveInfo.bombersCaughtNum++;
 
     if (gSaveContext.save.saveInfo.bombersCaughtNum > 4) {
-        Audio_PlayFanfare(NA_BGM_GET_ITEM | 0x900);
+        // BENTODO This had | 0x900 which interfered with the 16 bit sequence IDs. Removing it doesn't seem to do
+        // anything bad.
+        Audio_PlayFanfare(NA_BGM_GET_ITEM);
     } else {
         Actor_PlaySfx(&this->actor, NA_SE_SY_PIECE_OF_HEART);
     }

@@ -633,13 +633,13 @@ void Play_UpdateTransition(PlayState* this) {
                     (!Environment_IsFinalHours(this) || (Entrance_GetSceneId(this->nextEntrance + sceneLayer) < 0) ||
                      (AudioSeq_GetActiveSeqId(SEQ_PLAYER_BGM_MAIN) != NA_BGM_FINAL_HOURS))) {
                     Audio_MuteAllSeqExceptSystemAndOcarina(20);
-                    gSaveContext.seqId = (u8)NA_BGM_DISABLED;
+                    gSaveContext.seqId = NA_BGM_DISABLED;
                     gSaveContext.ambienceId = AMBIENCE_ID_DISABLED;
                 }
 
                 if (Environment_IsForcedSequenceDisabled()) {
                     Audio_MuteAllSeqExceptSystemAndOcarina(20);
-                    gSaveContext.seqId = (u8)NA_BGM_DISABLED;
+                    gSaveContext.seqId = NA_BGM_DISABLED;
                     gSaveContext.ambienceId = AMBIENCE_ID_DISABLED;
                 }
 
