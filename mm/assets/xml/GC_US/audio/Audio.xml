@@ -1,6 +1,6 @@
 <Root>
     <File Name="code" OutName="audio" RangeStart="0x0">
-        <Audio Name="audio" Offset="0x00" SoundFontTableOffset="0x13B6C0" SequenceTableOffset="0x13BB70" SampleBankTableOffset="0x13C380" SequenceFontTableOffset="0x13B960">
+        <Audio Name="audio" Offset="0x00" SoundFontTableOffset="0x138F10" SequenceTableOffset="0x1393C0" SampleBankTableOffset="0x139BD0" SequenceFontTableOffset="0x1391B0">
             <Sequences>
                 <Sequence Name="Sequence_0"/>
                 <Sequence Name="Sequence_1"/>
