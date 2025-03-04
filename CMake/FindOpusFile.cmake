@@ -9,7 +9,7 @@
 # Search for the OpusFile header
 find_path(OPUSFILE_INCLUDE_DIR
     NAMES opusfile.h
-    PATHS /usr/include/opus /usr/local/include/opus /opt/local/include/opus ${DEVKITPRO}/portlibs/switch/include/opus/
+    PATHS /usr/include/opus /usr/local/include/opus /opt/local/include/opus ${DEVKITPRO}/portlibs/switch/include/opus/ /opt/homebrew/include/opus
     DOC "Directory where opusfile.h is located"
 )
 
