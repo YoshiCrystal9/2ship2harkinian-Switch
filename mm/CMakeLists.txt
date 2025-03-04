@@ -621,8 +621,7 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "NintendoSwitch")
         -lglad
         Threads::Threads
 			Opus::opus
-#			todo:fix opusfile
-#			OpusFile::opusFile
+			OpusFile::opusfile
 			Vorbis::vorbisfile
 			Ogg::ogg
     )
@@ -704,7 +703,7 @@ endif()
 if(CMAKE_SYSTEM_NAME MATCHES "NintendoSwitch")
 
 nx_generate_nacp(2s2h.nacp
-   NAME "2s2h of Harkinian"
+   NAME "2Ship of Harkinian"
    AUTHOR "${PROJECT_TEAM}"
    VERSION "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}"
 )
