@@ -236,8 +236,6 @@ size_t SysUcode_GetUCodeBootSize(void);
 uint32_t SysUcode_GetUCode(void);
 u64* SysUcode_GetUCodeData(void);
 
-void func_80183070(void);
-
 s32 SysFlashrom_InitFlash(void);
 s32 SysFlashrom_ReadData(void* addr, u32 pageNum, u32 pageCount);
 void SysFlashrom_WriteDataAsync(u8* addr, u32 pageNum, u32 pageCount);

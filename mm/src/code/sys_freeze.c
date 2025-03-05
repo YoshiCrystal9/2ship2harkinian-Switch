@@ -1,6 +1,6 @@
 #include "global.h"
 
-void func_80183070(void) {
+NORETURN void Sys_Freeze(void) {
     for (;;) {
         Sleep_Msec(1000);
     }
