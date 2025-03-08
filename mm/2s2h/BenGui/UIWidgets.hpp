@@ -305,7 +305,7 @@ namespace UIWidgets {
         }
         FloatSliderOptions& IsPercentage(bool isPercentage_ = true) {
             isPercentage = isPercentage_;
-            format = "%.0f";
+            format = "%.0f%%";
             min = 0.0f;
             max = 1.0f;
             return *this;
