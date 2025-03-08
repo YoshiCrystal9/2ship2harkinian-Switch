@@ -240,6 +240,8 @@ inline bool CanKillEnemy(ActorId EnemyId) {
         case ACTOR_EN_DEKUBABA: // Neck bending Deku Baba
             return (CAN_USE_HUMAN_SWORD || CAN_BE_DEKU || CAN_BE_GORON || CAN_BE_ZORA || HAS_ITEM(ITEM_BOW) ||
                     CAN_USE_EXPLOSIVE || HAS_ITEM(ITEM_DEKU_STICK));
+        case ACTOR_OBJ_SNOWBALL: // Large Snowball
+            return (CAN_USE_EXPLOSIVE || CAN_BE_GORON || CAN_USE_MAGIC_ARROW(FIRE));
         default: // Incorrect actor ID inputed.
             assert(false);
             return false;

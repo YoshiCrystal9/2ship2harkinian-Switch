@@ -6,6 +6,7 @@
 
 #include "z_obj_snowball2.h"
 #include "objects/object_goroiwa/object_goroiwa.h"
+#include "2s2h/GameInteractor/GameInteractor.h"
 
 #define FLAGS (ACTOR_FLAG_800000)
 
@@ -87,6 +88,10 @@ void func_80B38E20(ObjSnowball2* this) {
 }
 
 void func_80B38E88(ObjSnowball2* this, PlayState* play) {
+    if (!GameInteractor_Should(VB_SNOWBALL_DROP_COLLECTIBLE, true, this)) {
+        return;
+    }
+
     s32 temp_v0;
 
     if (this->unk_1AE == 0) {
