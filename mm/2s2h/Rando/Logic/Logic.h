@@ -212,6 +212,8 @@ inline bool CanKillEnemy(ActorId EnemyId) {
             return (CAN_USE_SWORD || CAN_BE_ZORA);
         case ACTOR_EN_PAMETFROG: // Swamp Gekko
             return (HAS_ITEM(ITEM_BOW) && (CAN_BE_DEKU || CAN_USE_EXPLOSIVE || CAN_BE_GORON));
+        case ACTOR_EN_BIGSLIME: // Great Bay Gekko
+            return (CAN_USE_MAGIC_ARROW(ICE));
         case ACTOR_EN_SW: // Gold Skulltula
             return (CAN_USE_PROJECTILE || CAN_BE_DEKU || CAN_BE_GORON || CAN_USE_HUMAN_SWORD || CAN_USE_EXPLOSIVE);
         case ACTOR_EN_DINOFOS: // Dinofos
