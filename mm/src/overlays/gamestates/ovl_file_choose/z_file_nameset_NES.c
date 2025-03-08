@@ -1266,16 +1266,9 @@ void FileSelect_DrawOptionsImpl(GameState* thisx) {
 
         //! @bug the gOptionsMenuHeaders usage here will produce an OoB read for i == 5. It reads the first element of
         //! `gOptionsMenuSettings`
-        // 2S2H [Port] - directly use first element of gOptionsMenuSettings when i == 5, note this is fixed in the GC-US
-        // version
-        u16 height;
-        if (i == 5) {
-            height = gOptionsMenuSettings[0].height;
-        } else {
-            height = gOptionsMenuHeaders[i].height;
-        }
+        // 2S2H [Port] Use `gOptionsMenuSettings` instead for correct height values matching textures
         gDPLoadTextureBlock(POLY_OPA_DISP++, gOptionsMenuSettings[i].texture, G_IM_FMT_IA, G_IM_SIZ_8b,
-                            gOptionsMenuSettings[i].width, height, 0, G_TX_NOMIRROR | G_TX_WRAP,
+                            gOptionsMenuSettings[i].width, gOptionsMenuSettings[i].height, 0, G_TX_NOMIRROR | G_TX_WRAP,
                             G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
         gSP1Quadrangle(POLY_OPA_DISP++, vtx, vtx + 2, vtx + 3, vtx + 1, 0);
     }
