@@ -11,9 +11,11 @@
 // Image Icons
 #include "assets/interface/parameter_static/parameter_static.h"
 #include "assets/archives/icon_item_24_static/icon_item_24_static_yar.h"
+#include "assets/archives/icon_item_static/icon_item_static_yar.h"
 #include "assets/archives/schedule_dma_static/schedule_dma_static_yar.h"
 #include "assets/interface/icon_item_dungeon_static/icon_item_dungeon_static.h"
 #include "assets/interface/icon_item_field_static/icon_item_field_static.h"
+#include "assets/archives/icon_item_static/icon_item_static_yar.h"
 
 extern "C" {
 #include "z64.h"
@@ -54,6 +56,7 @@ std::vector<const char*> miscellaneousTextures = {
     gDungeonStrayFairyWoodfallIconTex,
     gPotTrackerIcon,
     gQuestIconGoldSkulltulaTex,
+    gMagicArrowEquipEffectTex,
     gRupeeCounterIconTex,
     gStrayFairyGreatBayIconTex,
     gStrayFairySnowheadIconTex,

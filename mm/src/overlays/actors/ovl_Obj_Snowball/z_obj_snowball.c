@@ -7,6 +7,7 @@
 #include "z_obj_snowball.h"
 #include "objects/object_goroiwa/object_goroiwa.h"
 #include "objects/gameplay_keep/gameplay_keep.h"
+#include "2s2h/GameInteractor/GameInteractor.h"
 
 #define FLAGS 0x00000000
 
@@ -110,6 +111,10 @@ void func_80B02CD0(ObjSnowball* this, PlayState* play) {
 }
 
 void func_80B02D58(ObjSnowball* this, PlayState* play) {
+    if (!GameInteractor_Should(VB_SNOWBALL_DROP_COLLECTIBLE, true, this)) {
+        return;
+    }
+
     s32 temp_v0 = func_800A8150(OBJSNOWBALL_GET_SWITCH_FLAG(&this->actor));
 
     if (temp_v0 >= 0) {
@@ -442,7 +447,7 @@ void func_80B03FF8(ObjSnowball* this, PlayState* play) {
 
     Actor_PlaySfx(&this->actor, NA_SE_EV_SNOWBALL_BROKEN);
 
-    if (rotY == 5) {
+    if (GameInteractor_Should(VB_SNOWBALL_SET_FLAG, rotY == 5, this, sp18->unk_00, sp18->unk_04)) {
         Flags_SetSwitch(play, OBJSNOWBALL_GET_SWITCH_FLAG(&this->actor));
     }
 }

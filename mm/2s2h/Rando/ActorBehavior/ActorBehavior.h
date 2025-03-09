@@ -10,6 +10,9 @@ namespace ActorBehavior {
 void Init();
 void OnFileLoad();
 
+RandoCheckId GetActorRandoCheckId(Actor* actor);
+void SetActorRandoCheckId(Actor* actor, RandoCheckId rc);
+
 void InitDmChar01Behavior();
 void InitDmChar05Behavior();
 void InitDmChar08Behavior();
@@ -80,6 +83,7 @@ void InitEnZowBehavior();
 void InitItemBHeartBehavior();
 void InitObjKibakoBehavior();
 void InitObjMoonStoneBehavior();
+void InitObjSnowballBehavior();
 void InitObjTaruBehavior();
 void InitObjTsuboBehavior();
 void InitObjWarpstoneBehavior();

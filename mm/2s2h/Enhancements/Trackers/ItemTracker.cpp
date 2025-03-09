@@ -23,6 +23,8 @@ typedef enum {
     TRACKER_ITEM_STRAY_FAIRY_SNOWHEAD,
     TRACKER_ITEM_STRAY_FAIRY_GREAT_BAY,
     TRACKER_ITEM_STRAY_FAIRY_STONE_TOWER,
+    TRACKER_ITEM_GOLD_SKULLTULA_TOKEN_SWAMP,
+    TRACKER_ITEM_GOLD_SKULLTULA_TOKEN_OCEAN,
     TRACKER_ITEM_KEY_WOODFALL,
     TRACKER_ITEM_KEY_SNOWHEAD,
     TRACKER_ITEM_KEY_GREAT_BAY,
@@ -55,6 +57,7 @@ ItemTrackerWindow::~ItemTrackerWindow() {
     config->SetInteger(CFG_TRACKER_ITEM("MiscDrawMode"), (int8_t)mItemDrawModes[SECTION_MISC]);
     config->SetInteger(CFG_TRACKER_ITEM("SongsDrawMode"), (int8_t)mItemDrawModes[SECTION_SONGS]);
     config->SetInteger(CFG_TRACKER_ITEM("StrayFairiesDrawMode"), (int8_t)mItemDrawModes[SECTION_STRAY_FAIRIES]);
+    config->SetInteger(CFG_TRACKER_ITEM("GoldSkulltulasDrawMode"), (int8_t)mItemDrawModes[SECTION_GOLD_SKULLTULAS]);
     config->SetInteger(CFG_TRACKER_ITEM("DungeonDrawMode"), (int8_t)mItemDrawModes[SECTION_DUNGEON]);
 
     config->Save();
@@ -96,6 +99,8 @@ void ItemTrackerWindow::LoadSettings() {
         CFG_TRACKER_ITEM("SongsDrawMode"), (int32_t)ItemTrackerDisplayType::MainWindow);
     mItemDrawModes[SECTION_STRAY_FAIRIES] = (ItemTrackerDisplayType)config->GetInteger(
         CFG_TRACKER_ITEM("StrayFairiesDrawMode"), (int32_t)ItemTrackerDisplayType::MainWindow);
+    mItemDrawModes[SECTION_GOLD_SKULLTULAS] = (ItemTrackerDisplayType)config->GetInteger(
+        CFG_TRACKER_ITEM("GoldSkulltulasDrawMode"), (int32_t)ItemTrackerDisplayType::MainWindow);
     mItemDrawModes[SECTION_DUNGEON] = (ItemTrackerDisplayType)config->GetInteger(
         CFG_TRACKER_ITEM("DungeonDrawMode"), (int32_t)ItemTrackerDisplayType::MainWindow);
 }
@@ -141,6 +146,18 @@ void DrawItem(char* tex, bool drawFaded, float itemSize) {
 
     ImGui::Image(gui->GetTextureByName(tex), ImVec2(itemSize, itemSize), ImVec2(0, 0), ImVec2(1, 1),
                  drawFaded ? fadedTex : opaqueTex);
+}
+
+void DrawItemTinted(char* tex, bool drawFaded, float itemSize, ImVec4 tintColor) {
+    auto gui = Ship::Context::GetInstance()->GetWindow()->GetGui();
+    if (!gui->HasTextureByName(tex)) {
+        return;
+    }
+
+    ImVec4 opacityMix = drawFaded ? fadedTex : opaqueTex;
+    ImVec4 color = ImVec4(opacityMix.x * tintColor.x, opacityMix.y * tintColor.y, opacityMix.z * tintColor.z,
+                          opacityMix.w * tintColor.w);
+    ImGui::Image(gui->GetTextureByName(tex), ImVec2(itemSize, itemSize), ImVec2(0, 0), ImVec2(1, 1), color);
 }
 
 static constexpr std::array<ImVec4, 5> songInfo = {
@@ -328,6 +345,8 @@ bool ItemTrackerWindow::HasItemCount(int itemId) {
         case TRACKER_ITEM_STRAY_FAIRY_SNOWHEAD:
         case TRACKER_ITEM_STRAY_FAIRY_GREAT_BAY:
         case TRACKER_ITEM_STRAY_FAIRY_STONE_TOWER:
+        case TRACKER_ITEM_GOLD_SKULLTULA_TOKEN_SWAMP:
+        case TRACKER_ITEM_GOLD_SKULLTULA_TOKEN_OCEAN:
         case TRACKER_ITEM_KEY_WOODFALL:
         case TRACKER_ITEM_KEY_SNOWHEAD:
         case TRACKER_ITEM_KEY_GREAT_BAY:
@@ -365,6 +384,26 @@ ItemTrackerWindow::CountInfo ItemTrackerWindow::GetItemCountInfo(int itemId) {
                 .maxCap = 15,
             };
             break;
+        case TRACKER_ITEM_GOLD_SKULLTULA_TOKEN_SWAMP: {
+            u32 swampTokenCount = (gSaveContext.save.saveInfo.skullTokenCount >> 16) & 0xFFFF;
+
+            info = {
+                .cur = (uint16_t)swampTokenCount,
+                .curCap = 30,
+                .maxCap = 30,
+            };
+            break;
+        }
+        case TRACKER_ITEM_GOLD_SKULLTULA_TOKEN_OCEAN: {
+            u32 oceanTokenCount = gSaveContext.save.saveInfo.skullTokenCount & 0xFFFF;
+
+            info = {
+                .cur = (uint16_t)oceanTokenCount,
+                .curCap = 30,
+                .maxCap = 30,
+            };
+            break;
+        }
         case TRACKER_ITEM_KEY_WOODFALL:
         case TRACKER_ITEM_KEY_SNOWHEAD:
         case TRACKER_ITEM_KEY_GREAT_BAY:
@@ -597,6 +636,67 @@ int ItemTrackerWindow::DrawStrayFairies(int columns, int prevDrawnColumns) {
     return 1;
 }
 
+int ItemTrackerWindow::DrawGoldSkulltulas(int columns, int prevDrawnColumns) {
+    int topPadding = 0;
+
+    // upper 16 bits store Swamp skulls, lower 16 bits store Ocean skulls
+    u32 swampTokenCount = (gSaveContext.save.saveInfo.skullTokenCount >> 16) & 0xFFFF;
+    u32 oceanTokenCount = gSaveContext.save.saveInfo.skullTokenCount & 0xFFFF;
+
+    for (size_t i = 0; i < 2; i++) {
+        int row = prevDrawnColumns + (i / columns);
+        int column = i % columns;
+        ImVec2 pos = ImVec2((column * (mIconSize + mIconSpacing) + 8.0f),
+                            (row * (mIconSize + mIconSpacing)) + 8.0f + topPadding);
+
+        ImGui::SetCursorPos(pos);
+        ImGui::BeginGroup();
+
+        // Determine tint color based on whether drawing Skulltula for Swamp or Ocean House
+        // Colors are not exactly their tints to account for Skulltula texture base colors
+        ImVec4 defaultSwampTint = ImVec4(25.0f / 255.0f, 251.0f / 255.0f, 0.0f, 1.0f);
+        ImVec4 defaultOceanTint = ImVec4(0.0f, 209.0f / 256.0f, 231.0f / 256.0f, 1.0f);
+
+        ImVec4 tintColor;
+        if (i == 0) {
+            tintColor = defaultSwampTint;
+        } else {
+            tintColor = defaultOceanTint;
+        }
+
+        bool drawFaded = i == 0 ? swampTokenCount == 0 : oceanTokenCount == 0;
+        const float arrowTexScalingFactor = 1.5f;
+        float posOffset = (mIconSize * arrowTexScalingFactor - mIconSize) / 2;
+
+        // Draw glowing background for skulltula
+        ImGui::SetNextItemAllowOverlap();
+        ImGui::SetCursorPos(ImVec2(pos.x - posOffset, pos.y - posOffset));
+        DrawItemTinted((char*)gMagicArrowEquipEffectTex, drawFaded, mIconSize * arrowTexScalingFactor, tintColor);
+
+        // Draw Skulltula icon
+        ImGui::SetCursorPos(pos);
+        DrawItem((char*)gQuestIconGoldSkulltulaTex, drawFaded, mIconSize);
+        ImVec2 finalPos = ImGui::GetCursorPos();
+
+        // Draw Ocean/Swamp accessibility text
+        const char* skulltulaHouseText = i == 0 ? "Swamp" : "Ocean";
+        ImGui::SetWindowFontScale(mTextSize / 13.0f);
+
+        float x = finalPos.x + (mIconSize / 2.0f) - (ImGui::CalcTextSize(skulltulaHouseText).x / 2.0f);
+        float y = finalPos.y - (mTextOffset / 36.0f) * mIconSize - 16 * (mTextSize / 13.0f);
+
+        // Normalize the offset based on the icon being 36x36 to account for larger icons.
+        ImGui::SetCursorPos({ x, y });
+        ImGui::Text("%s", skulltulaHouseText);
+
+        ImGui::SetCursorPos(finalPos);
+        DrawItemCount(i + TRACKER_ITEM_GOLD_SKULLTULA_TOKEN_SWAMP, pos);
+
+        ImGui::EndGroup();
+    }
+    return 1;
+}
+
 int ItemTrackerWindow::DrawSongs(int columns, int prevDrawnColumns) {
     int topPadding = 0;
 
@@ -770,6 +870,20 @@ void ItemTrackerWindow::DrawItemsInRows(int columns) {
         }
         advancedBy = DrawStrayFairies(5, drawPos);
         if (mItemDrawModes[SECTION_STRAY_FAIRIES] == ItemTrackerDisplayType::Separate) {
+            EndFloatingWindows();
+        } else {
+            mainWindowPos += advancedBy;
+        }
+    }
+
+    if (mItemDrawModes[SECTION_GOLD_SKULLTULAS] != ItemTrackerDisplayType::Hidden) {
+        int drawPos = mainWindowPos;
+        if (mItemDrawModes[SECTION_GOLD_SKULLTULAS] == ItemTrackerDisplayType::Separate) {
+            drawPos = 0;
+            BeginFloatingWindows("Gold Skulltulas");
+        }
+        advancedBy = DrawGoldSkulltulas(2, drawPos);
+        if (mItemDrawModes[SECTION_GOLD_SKULLTULAS] == ItemTrackerDisplayType::Separate) {
             EndFloatingWindows();
         } else {
             mainWindowPos += advancedBy;

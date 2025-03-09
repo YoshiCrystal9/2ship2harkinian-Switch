@@ -20,6 +20,7 @@ typedef enum {
     SECTION_MISC,
     SECTION_SONGS,
     SECTION_STRAY_FAIRIES,
+    SECTION_GOLD_SKULLTULAS,
     SECTION_DUNGEON,
     SECTION_MAX,
 } ItemTrackerSection;
@@ -76,6 +77,7 @@ class ItemTrackerWindow : public Ship::GuiWindow {
     int DrawMisc(int columns, int startAt);
     int DrawSongs(int columns, int startAt);
     int DrawStrayFairies(int columns, int startAt);
+    int DrawGoldSkulltulas(int columsn, int startAt);
     void DrawNote(size_t songIndex, bool drawFaded);
     void DrawOwlFace(bool drawFaded);
     int DrawDungeonItemsVert(int columns, int startAt);

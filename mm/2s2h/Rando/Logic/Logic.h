@@ -153,8 +153,10 @@ inline bool CanAccessDungeon(DungeonIndex dungeonIndex) {
         case RO_ACCESS_DUNGEONS_SONG_ONLY:
             return hasSongAccess;
         case RO_ACCESS_DUNGEONS_OPEN:
-        default:
             return true;
+        case RO_ACCESS_DUNGEONS_FORM_AND_SONG:
+        default:
+            return hasSongAccess && hasFormAccess;
     }
 }
 
@@ -210,6 +212,8 @@ inline bool CanKillEnemy(ActorId EnemyId) {
             return (CAN_USE_SWORD || CAN_BE_ZORA);
         case ACTOR_EN_PAMETFROG: // Swamp Gekko
             return (HAS_ITEM(ITEM_BOW) && (CAN_BE_DEKU || CAN_USE_EXPLOSIVE || CAN_BE_GORON));
+        case ACTOR_EN_BIGSLIME: // Great Bay Gekko
+            return (CAN_USE_MAGIC_ARROW(ICE));
         case ACTOR_EN_SW: // Gold Skulltula
             return (CAN_USE_PROJECTILE || CAN_BE_DEKU || CAN_BE_GORON || CAN_USE_HUMAN_SWORD || CAN_USE_EXPLOSIVE);
         case ACTOR_EN_DINOFOS: // Dinofos
@@ -238,6 +242,8 @@ inline bool CanKillEnemy(ActorId EnemyId) {
         case ACTOR_EN_DEKUBABA: // Neck bending Deku Baba
             return (CAN_USE_HUMAN_SWORD || CAN_BE_DEKU || CAN_BE_GORON || CAN_BE_ZORA || HAS_ITEM(ITEM_BOW) ||
                     CAN_USE_EXPLOSIVE || HAS_ITEM(ITEM_DEKU_STICK));
+        case ACTOR_OBJ_SNOWBALL: // Large Snowball
+            return (CAN_USE_EXPLOSIVE || CAN_BE_GORON || CAN_USE_MAGIC_ARROW(FIRE));
         default: // Incorrect actor ID inputed.
             assert(false);
             return false;

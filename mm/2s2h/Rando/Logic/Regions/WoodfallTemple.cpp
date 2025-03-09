@@ -19,6 +19,9 @@ static RegisterShipInitFunc initFunc([]() {
         .connections = {
             CONNECTION(RR_WOODFALL_TEMPLE_WATER_ROOM_UPPER, true),
         },
+        .events = {
+            EVENT(RE_ACCESS_FROG_CYAN, CanKillEnemy(ACTOR_EN_PAMETFROG)),
+        },
     };
     Regions[RR_WOODFALL_TEMPLE_BOSS_ROOM] = RandoRegion{ .sceneId = SCENE_MITURIN_BS,
         .checks = {

@@ -60,6 +60,7 @@ void Rando::MiscBehavior::InitOfferGetItemBehavior() {
             case ACTOR_EN_KENDO_JS:
             case ACTOR_EN_GURUGURU:
             case ACTOR_EN_HS:
+            case ACTOR_EN_MINIFROG:
             case ACTOR_EN_MM3:
             case ACTOR_EN_STH:
             case ACTOR_EN_ZOS:

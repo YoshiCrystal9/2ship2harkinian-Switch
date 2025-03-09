@@ -70,6 +70,7 @@ void ItemTrackerSettingsWindow::DrawElement() {
     UIWidgets::Combobox("Miscellaneous", mItemTrackerWindow->GetDrawModePtr(SECTION_MISC), displayTypes);
     UIWidgets::Combobox("Songs", mItemTrackerWindow->GetDrawModePtr(SECTION_SONGS), displayTypes);
     UIWidgets::Combobox("Stray Fairies", mItemTrackerWindow->GetDrawModePtr(SECTION_STRAY_FAIRIES), displayTypes);
+    UIWidgets::Combobox("Gold Skulltulas", mItemTrackerWindow->GetDrawModePtr(SECTION_GOLD_SKULLTULAS), displayTypes);
     UIWidgets::Combobox("Dungeon Items", mItemTrackerWindow->GetDrawModePtr(SECTION_DUNGEON), displayTypes);
 
     UIWidgets::Checkbox(
