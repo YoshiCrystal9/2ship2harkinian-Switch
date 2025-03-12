@@ -1,8 +1,5 @@
 #include <libultraship/bridge.h>
 #include "2s2h/GameInteractor/GameInteractor.h"
-#include "2s2h/CustomMessage/CustomMessage.h"
-#include "2s2h/CustomItem/CustomItem.h"
-#include "2s2h/Rando/Rando.h"
 #include "2s2h/ShipInit.hpp"
 
 extern "C" {
@@ -37,6 +34,8 @@ void RegisterSkipRaisingWoodfall() {
                 gSaveContext.respawn[RESPAWN_MODE_DOWN].playerParams = PLAYER_PARAMS(0xFF, PLAYER_INITMODE_D);
                 gSaveContext.nextTransitionType = TRANS_TYPE_FADE_BLACK_FAST;
                 gSaveContext.respawnFlag = -8;
+
+                Audio_PlaySequenceInCutscene(NA_BGM_DUNGEON_APPEAR);
             }
         }
     });

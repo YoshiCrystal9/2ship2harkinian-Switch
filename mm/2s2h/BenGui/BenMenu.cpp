@@ -1345,6 +1345,14 @@ void BenMenu::AddEnhancements() {
         .Options(CheckboxOptions().Tooltip("Dying will delete your file\n\n     " ICON_FA_EXCLAMATION_TRIANGLE
                                            " WARNING " ICON_FA_EXCLAMATION_TRIANGLE
                                            "\nTHIS IS NOT REVERSABLE\nUSE AT YOUR OWN RISK!"));
+    AddWidget(path, "Jinxed Timer: %d seconds", WIDGET_CVAR_SLIDER_INT)
+        .CVar("gEnhancements.DifficultyOptions.JinxedTimer")
+        .Options(
+            IntSliderOptions()
+                .Tooltip("Set the duration of the Jinxed effect. Setting it to 0 will prevent the effect entirely.")
+                .Min(0)
+                .Max(60)
+                .DefaultValue(60));
 
     // HUD Editor
     path = { "Enhancements", "HUD Editor", 1 };
