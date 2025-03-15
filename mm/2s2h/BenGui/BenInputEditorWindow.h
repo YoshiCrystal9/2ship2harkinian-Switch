@@ -91,6 +91,7 @@ class BenInputEditorWindow : public Ship::GuiWindow {
     bool mInputEditorPopupOpen;
     void DrawSetDefaultsButton(uint8_t portIndex);
     void DrawClearAllButton(uint8_t portIndex);
+    void OffsetMappingPopup();
 
     void DrawDeviceToggles(uint8_t portIndex);
 };

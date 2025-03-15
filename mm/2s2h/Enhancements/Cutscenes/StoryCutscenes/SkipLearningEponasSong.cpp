@@ -30,7 +30,7 @@ void RegisterSkipLearningEponasSong() {
             return;
         }
 
-        if (GameInteractor_Should(VB_GIVE_ITEM_FROM_MALON, true, enMa4)) {
+        if (GameInteractor_Should(VB_GIVE_ITEM_FROM_ROMANI, true, enMa4)) {
             GameInteractor::Instance->events.emplace_back(GIEventGiveItem{
                 .showGetItemCutscene = true,
                 .giveItem =

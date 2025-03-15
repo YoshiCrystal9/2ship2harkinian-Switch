@@ -622,7 +622,7 @@ void EnMa4_ChooseNextDialogue(EnMa4* this, PlayState* play) {
                 EnMa4_SetFaceExpression(this, 0, 0);
 
                 // Check if player has Epona's song
-                if (GameInteractor_Should(VB_MALON_CONSIDER_EPONA_SONG_GIVEN, CHECK_QUEST_ITEM(QUEST_SONG_EPONA),
+                if (GameInteractor_Should(VB_ROMANI_CONSIDER_EPONA_SONG_GIVEN, CHECK_QUEST_ITEM(QUEST_SONG_EPONA),
                                           true)) {
                     Message_StartTextbox(play, 0x334C, &this->actor);
                     this->textId = 0x334C;
@@ -753,7 +753,7 @@ void EnMa4_HorsebackGameWait(EnMa4* this, PlayState* play) {
     }
 
     if ((gSaveContext.timerCurTimes[TIMER_ID_MINIGAME_2] >= SECONDS_TO_TIMER(120)) ||
-        GameInteractor_Should(VB_WIN_MALON_PRACTICE, this->poppedBalloonCounter == 10, this)) {
+        GameInteractor_Should(VB_WIN_ROMANI_PRACTICE, this->poppedBalloonCounter == 10, this)) {
         gSaveContext.timerStates[TIMER_ID_MINIGAME_2] = TIMER_STATE_6;
         EnMa4_SetupHorsebackGameEnd(this, play);
         D_80AC0258 = 0;

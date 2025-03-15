@@ -210,6 +210,7 @@ void BenInputEditorWindow::DrawButtonLineAddMappingButton(uint8_t port, N64Butto
     if (ImGui::Button(StringHelper::Sprintf("%s###addButtonMappingButton%d-%d", ICON_FA_PLUS, port, bitmask).c_str(),
                       ImVec2(SCALE_IMGUI_SIZE(20.0f), 0.0f))) {
         ImGui::OpenPopup(popupId.c_str());
+        OffsetMappingPopup();
     };
     ImGui::PopStyleVar();
 
@@ -269,6 +270,7 @@ void BenInputEditorWindow::DrawButtonLineEditMappingButton(uint8_t port, N64Butt
                 .c_str(),
             ImVec2(ImGui::CalcTextSize(physicalInputDisplayName.c_str()).x + SCALE_IMGUI_SIZE(12.0f), 0.0f))) {
         ImGui::OpenPopup(popupId.c_str());
+        OffsetMappingPopup();
     }
     if (ImGui::IsItemHovered(ImGuiHoveredFlags_DelayNormal | ImGuiHoveredFlags_NoSharedDelay)) {
         ImGui::SetTooltip("%s", mapping->GetPhysicalDeviceName().c_str());
@@ -310,6 +312,7 @@ void BenInputEditorWindow::DrawButtonLineEditMappingButton(uint8_t port, N64Butt
         if (ImGui::Button(StringHelper::Sprintf("%s###editAxisThresholdButton%s", ICON_FA_COG, id.c_str()).c_str(),
                           ImVec2(ImGui::CalcTextSize(ICON_FA_COG).x + SCALE_IMGUI_SIZE(10.0f), 0.0f))) {
             ImGui::OpenPopup(popupId.c_str());
+            OffsetMappingPopup();
         }
         if (ImGui::IsItemHovered(ImGuiHoveredFlags_DelayNormal | ImGuiHoveredFlags_NoSharedDelay)) {
             ImGui::SetTooltip("Edit axis threshold");
@@ -452,6 +455,7 @@ void BenInputEditorWindow::DrawStickDirectionLineAddMappingButton(uint8_t port, 
                 .c_str(),
             ImVec2(SCALE_IMGUI_SIZE(20.0f), 0.0f))) {
         ImGui::OpenPopup(popupId.c_str());
+        OffsetMappingPopup();
     };
     ImGui::PopStyleVar();
 
@@ -534,6 +538,7 @@ void BenInputEditorWindow::DrawStickDirectionLineEditMappingButton(uint8_t port,
                 .c_str(),
             ImVec2(ImGui::CalcTextSize(physicalInputDisplayName.c_str()).x + SCALE_IMGUI_SIZE(12.0f), 0.0f))) {
         ImGui::OpenPopup(popupId.c_str());
+        OffsetMappingPopup();
     }
     if (ImGui::IsItemHovered(ImGuiHoveredFlags_DelayNormal | ImGuiHoveredFlags_NoSharedDelay)) {
         ImGui::SetTooltip("%s", mapping->GetPhysicalDeviceName().c_str());
@@ -815,6 +820,7 @@ void BenInputEditorWindow::DrawAddRumbleMappingButton(uint8_t port) {
     if (ImGui::Button(StringHelper::Sprintf("%s###addRumbleMapping%d", ICON_FA_PLUS, port).c_str(),
                       ImVec2(SCALE_IMGUI_SIZE(20.0f), SCALE_IMGUI_SIZE(20.0f)))) {
         ImGui::OpenPopup(popupId.c_str());
+        OffsetMappingPopup();
     }
     ImGui::PopStyleVar();
 
@@ -998,6 +1004,7 @@ void BenInputEditorWindow::DrawAddLEDMappingButton(uint8_t port) {
     if (ImGui::Button(StringHelper::Sprintf("%s###addLEDMapping%d", ICON_FA_PLUS, port).c_str(),
                       ImVec2(SCALE_IMGUI_SIZE(20.0f), SCALE_IMGUI_SIZE(20.0f)))) {
         ImGui::OpenPopup(popupId.c_str());
+        OffsetMappingPopup();
     }
     ImGui::PopStyleVar();
 
@@ -1077,6 +1084,7 @@ void BenInputEditorWindow::DrawAddGyroMappingButton(uint8_t port) {
     if (ImGui::Button(StringHelper::Sprintf("%s###addGyroMapping%d", ICON_FA_PLUS, port).c_str(),
                       ImVec2(SCALE_IMGUI_SIZE(20.0f), SCALE_IMGUI_SIZE(20.0f)))) {
         ImGui::OpenPopup(popupId.c_str());
+        OffsetMappingPopup();
     }
     ImGui::PopStyleVar();
 
@@ -1473,4 +1481,11 @@ void BenInputEditorWindow::DrawFullContents() {
 
 void BenInputEditorWindow::DrawElement() {
     DrawFullContents();
+}
+
+void BenInputEditorWindow::OffsetMappingPopup() {
+    const float HORIZONTAL_OFFSET = 10.0f;
+    ImVec2 pos = ImGui::GetMousePos();
+    pos.x += HORIZONTAL_OFFSET;
+    ImGui::SetNextWindowPos(pos);
 }
