@@ -235,6 +235,7 @@ typedef enum {
     VB_PLAY_GORON_CHILD_CRY,
     VB_SNOWBALL_DROP_COLLECTIBLE,
     VB_SNOWBALL_SET_FLAG,
+    VB_START_JUMPSLASH,
 } GIVanillaBehavior;
 
 typedef enum {

@@ -721,6 +721,9 @@ void BenMenu::AddEnhancements() {
     AddWidget(path, "Prevent Diving Over Water", WIDGET_CVAR_CHECKBOX)
         .CVar("gEnhancements.Player.PreventDiveOverWater")
         .Options(CheckboxOptions().Tooltip("Prevents Link from automatically diving over bodies of water."));
+    AddWidget(path, "Manual Jump", WIDGET_CVAR_CHECKBOX)
+        .CVar("gEnhancements.Player.ManualJump")
+        .Options(CheckboxOptions().Tooltip("Z + A to Jump and B while midair to Jump Attack"));
     AddWidget(path, "Dpad Equips", WIDGET_CVAR_CHECKBOX)
         .CVar("gEnhancements.Dpad.DpadEquips")
         .Options(CheckboxOptions().Tooltip("Allows you to equip items to your d-pad"));

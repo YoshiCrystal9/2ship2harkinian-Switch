@@ -8007,9 +8007,11 @@ s32 Player_ActionChange_10(Player* this, PlayState* play) {
                     } else {
                         func_80836B3C(play, this, 0.0f);
                     }
-                } else if (!(this->stateFlags1 & PLAYER_STATE1_8000000) &&
-                           (Player_GetMeleeWeaponHeld(this) != PLAYER_MELEEWEAPON_NONE) &&
-                           Player_CanUpdateItems(this) && (this->transformation != PLAYER_FORM_GORON)) {
+                } else if (GameInteractor_Should(VB_START_JUMPSLASH,
+                                                 !(this->stateFlags1 & PLAYER_STATE1_8000000) &&
+                                                     (Player_GetMeleeWeaponHeld(this) != PLAYER_MELEEWEAPON_NONE) &&
+                                                     Player_CanUpdateItems(this) &&
+                                                     (this->transformation != PLAYER_FORM_GORON))) {
                     func_808395F0(play, this, PLAYER_MWA_JUMPSLASH_START, 5.0f, 5.0f);
                 } else if (!func_80839A84(play, this)) {
                     func_80836B3C(play, this, 0.0f);
