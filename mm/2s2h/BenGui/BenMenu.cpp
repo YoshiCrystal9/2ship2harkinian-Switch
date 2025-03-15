@@ -872,6 +872,13 @@ void BenMenu::AddEnhancements() {
                      .Min(1)
                      .Max(10)
                      .DefaultValue(10));
+    AddWidget(path, "Frog Choir Count", WIDGET_CVAR_SLIDER_INT)
+        .CVar("gEnhancements.Minigames.FrogChoirCount")
+        .Options(IntSliderOptions()
+                     .Tooltip("Choose how many frogs you need to save for the choir performance.")
+                     .Min(1)
+                     .Max(5)
+                     .DefaultValue(5));
     AddWidget(path, "Skip Gorman Horse Race", WIDGET_CVAR_CHECKBOX)
         .CVar("gEnhancements.Minigames.SkipHorseRace")
         .Options(CheckboxOptions().Tooltip("Instantly win the Gorman Horse Race"));
