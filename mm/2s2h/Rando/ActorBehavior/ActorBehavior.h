@@ -60,6 +60,7 @@ void InitEnLiftNutsBehavior();
 void InitEnMa4Behavior();
 void InitEnMaYtoBehavior();
 void InitEnMnkBehavior();
+void InitEnNbBehavior();
 void InitEnOsnBehavior();
 void InitEnOwlBehavior();
 void InitEnPmBehavior();
