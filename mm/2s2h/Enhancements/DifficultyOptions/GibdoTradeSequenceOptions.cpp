@@ -59,7 +59,7 @@ void RegisterGibdoTradeSequenceOptions() {
         *should = false;
 
         EnTalkGibud* gibudCtx = va_arg(args, EnTalkGibud*);
-        bool doEndTradeMessage = va_arg(args, bool);
+        bool doEndTradeMessage = (bool)va_arg(args, int);
 
         if (doEndTradeMessage) {
             Message_StartTextbox(gPlayState, 0x138A, &gibudCtx->actor);
