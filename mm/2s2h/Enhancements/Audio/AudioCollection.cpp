@@ -185,7 +185,9 @@ AudioCollection::AudioCollection() {
         SEQUENCE_MAP_ENTRY(NA_BGM_CREMIA_CARRIAGE, "Cremia Carriage", "NA_BGM_CREMIA_CARRIAGE", SEQ_BGM_WORLD, true,
                            true),
         SEQUENCE_MAP_ENTRY(NA_BGM_KEATON_QUIZ, "Keaton Quiz", "NA_BGM_KEATON_QUIZ", SEQ_BGM_WORLD, true, true),
-        SEQUENCE_MAP_ENTRY(NA_BGM_END_CREDITS, "Credits (First Half)", "NA_BGM_END_CREDITS", SEQ_BGM_WORLD, true, true),
+        // The credits cutscene uses the position in the sequence to advance. It should not be changed.
+        SEQUENCE_MAP_ENTRY(NA_BGM_END_CREDITS, "Credits (First Half)", "NA_BGM_END_CREDITS", SEQ_BGM_WORLD, false,
+                           false),
         SEQUENCE_MAP_ENTRY(NA_BGM_OPENING_LOOP, "Opening Loop", "NA_BGM_OPENING_LOOP", SEQ_BGM_WORLD, true, true),
         SEQUENCE_MAP_ENTRY(NA_BGM_TITLE_THEME, "Title Theme", "NA_BGM_TITLE_THEME", SEQ_BGM_WORLD, true, true),
         SEQUENCE_MAP_ENTRY(NA_BGM_DUNGEON_APPEAR, "Dungeon Appear", "NA_BGM_DUNGEON_APPEAR", SEQ_BGM_EVENT, true, true),
@@ -198,7 +200,7 @@ AudioCollection::AudioCollection() {
         SEQUENCE_MAP_ENTRY(NA_BGM_MOONS_DESTRUCTION, "Moon's Destruction", "NA_BGM_MOONS_DESTRUCTION", SEQ_BGM_EVENT,
                            true, true),
         SEQUENCE_MAP_ENTRY(NA_BGM_END_CREDITS_SECOND_HALF, "Credits (Second Half)", "NA_BGM_END_CREDITS_SECOND_HALF",
-                           SEQ_BGM_WORLD, true, true),
+                           SEQ_BGM_WORLD, false, false),
     };
 
     // Initialize counts for each type
@@ -366,11 +368,12 @@ size_t AudioCollection::CountSequencesByType(SeqType type) {
 }
 
 uint16_t AudioCollection::GetMaxOriginalSeqId() const {
-    uint16_t maxId = 0;
-    for (const auto& [seqId, seqInfo] : mSequenceMap) {
-        if (!(seqInfo.category & SEQ_BGM_CUSTOM) && seqId > maxId) {
-            maxId = seqId;
-        }
-    }
-    return maxId;
+    return 0x7F;
+    // uint16_t maxId = 0;
+    // for (const auto& [seqId, seqInfo] : mSequenceMap) {
+    //     if (!(seqInfo.category & SEQ_BGM_CUSTOM) && seqId > maxId) {
+    //         maxId = seqId;
+    //     }
+    // }
+    // return maxId;
 }

@@ -27,7 +27,7 @@ std::unordered_map<int32_t, const char*> accessDungeonOptions = {
 std::unordered_map<int32_t, const char*> accessTrialsOptions = {
     { RO_ACCESS_TRIALS_20_MASKS, "2-6-12-20 Masks" },
     { RO_ACCESS_TRIALS_REMAINS, "Requires Associated Remains" },
-    { RO_ACCESS_TRIALS_FORMS, "Requires Assocaited Transformation" },
+    { RO_ACCESS_TRIALS_FORMS, "Requires Associated Transformation" },
     { RO_ACCESS_TRIALS_OPEN, "Open" },
 };
 

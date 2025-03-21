@@ -113,6 +113,7 @@ void Rando::ActorBehavior::OnFileLoad() {
     Rando::ActorBehavior::InitEnRzBehavior();
     Rando::ActorBehavior::InitEnScopenutsBehavior();
     Rando::ActorBehavior::InitEnSellnutsBehavior();
+    Rando::ActorBehavior::InitEnShnBehavior();
     Rando::ActorBehavior::InitEnSiBehavior();
     Rando::ActorBehavior::InitEnSob1Behavior();
     Rando::ActorBehavior::InitEnSshBehavior();

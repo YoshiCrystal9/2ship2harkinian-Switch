@@ -161,6 +161,9 @@ static RegisterShipInitFunc initFunc([]() {
             // May consider cutting Deku and Goron from this since getting down as them may be seen as a trick. But its possible and is pretty easy to do.
             CONNECTION(RR_IKANA_CANYON_LOWER, true),
         },
+        .events = {
+            EVENT(RE_ACCESS_PICTOGRAPH_TINGLE, HAS_ITEM(ITEM_PICTOGRAPH_BOX)),
+        },
         .oneWayEntrances = {
             ENTRANCE(IKANA_CANYON, 4), // From Song of Soaring
             ENTRANCE(IKANA_CANYON, 15), // From Stone Tower Temple Blue Warp
