@@ -16,7 +16,7 @@ typedef union {
     f32 f;
 } fu;
 
-#define ROUND(x) (s32)(((x) >= 0.0) ? ((x) + 0.5) : ((x) - 0.5))
+//#define ROUND(x) (s32)(((x) >= 0.0) ? ((x) + 0.5) : ((x) - 0.5))
 
 extern f32 __libm_qnan_f;
 

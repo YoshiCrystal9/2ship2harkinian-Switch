@@ -3,12 +3,14 @@
 #include "spdlog/spdlog.h"
 
 namespace SOH {
-std::shared_ptr<Ship::IResource> ResourceFactoryBinaryTextMMV0::ReadResource(std::shared_ptr<Ship::File> file) {
-    if (!FileHasValidFormatAndReader(file)) {
+std::shared_ptr<Ship::IResource>
+ResourceFactoryBinaryTextMMV0::ReadResource(std::shared_ptr<Ship::File> file,
+                                            std::shared_ptr<Ship::ResourceInitData> initData) {
+    if (!FileHasValidFormatAndReader(file, initData)) {
         return nullptr;
     }
 
-    auto text = std::make_shared<TextMM>(file->InitData);
+    auto text = std::make_shared<TextMM>(initData);
     auto reader = std::get<std::shared_ptr<Ship::BinaryReader>>(file->Reader);
 
     const uint32_t msgCount = reader->ReadUInt32();
@@ -33,12 +35,14 @@ std::shared_ptr<Ship::IResource> ResourceFactoryBinaryTextMMV0::ReadResource(std
     return text;
 }
 
-std::shared_ptr<Ship::IResource> ResourceFactoryXMLTextMMV0::ReadResource(std::shared_ptr<Ship::File> file) {
-    if (!FileHasValidFormatAndReader(file)) {
+std::shared_ptr<Ship::IResource>
+ResourceFactoryXMLTextMMV0::ReadResource(std::shared_ptr<Ship::File> file,
+                                         std::shared_ptr<Ship::ResourceInitData> initData) {
+    if (!FileHasValidFormatAndReader(file, initData)) {
         return nullptr;
     }
 
-    auto text = std::make_shared<TextMM>(file->InitData);
+    auto text = std::make_shared<TextMM>(initData);
     auto reader = std::get<std::shared_ptr<tinyxml2::XMLDocument>>(file->Reader)->FirstChildElement();
 
     auto child = reader->FirstChildElement();

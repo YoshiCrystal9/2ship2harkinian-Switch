@@ -7,12 +7,14 @@
 #include <type_traits>
 
 namespace SOH {
-std::shared_ptr<Ship::IResource> ResourceFactoryBinaryAudioSequenceV2::ReadResource(std::shared_ptr<Ship::File> file) {
-    if (!FileHasValidFormatAndReader(file)) {
+std::shared_ptr<Ship::IResource>
+ResourceFactoryBinaryAudioSequenceV2::ReadResource(std::shared_ptr<Ship::File> file,
+                                                   std::shared_ptr<Ship::ResourceInitData> initData) {
+    if (!FileHasValidFormatAndReader(file, initData)) {
         return nullptr;
     }
 
-    auto audioSequence = std::make_shared<AudioSequence>(file->InitData);
+    auto audioSequence = std::make_shared<AudioSequence>(initData);
     auto reader = std::get<std::shared_ptr<Ship::BinaryReader>>(file->Reader);
 
     audioSequence->sequence.seqDataSize = reader->ReadUInt32();
@@ -303,20 +305,21 @@ static void WriteStereoSingleSeq(Ship::BinaryWriter* writer, uint16_t delay, uin
     WriteLdlayer(writer, 1, rLayerOffset);
 }
 
-std::shared_ptr<Ship::IResource> ResourceFactoryXMLAudioSequenceV0::ReadResource(std::shared_ptr<Ship::File> file) {
-    if (!FileHasValidFormatAndReader(file)) {
+std::shared_ptr<Ship::IResource>
+ResourceFactoryXMLAudioSequenceV0::ReadResource(std::shared_ptr<Ship::File> file,
+                                                std::shared_ptr<Ship::ResourceInitData> initData) {
+    if (!FileHasValidFormatAndReader(file, initData)) {
         return nullptr;
     }
 
-    auto sequence = std::make_shared<AudioSequence>(file->InitData);
+    auto sequence = std::make_shared<AudioSequence>(initData);
     auto child = std::get<std::shared_ptr<tinyxml2::XMLDocument>>(file->Reader)->FirstChildElement();
     unsigned int i = 0;
-    std::shared_ptr<Ship::ResourceInitData> initData = std::make_shared<Ship::ResourceInitData>();
 
     sequence->sequence.medium =
-        ResourceFactoryXMLSoundFontV0::MediumStrToInt(child->Attribute("Medium"), file->InitData->Path.c_str());
+        ResourceFactoryXMLSoundFontV0::MediumStrToInt(child->Attribute("Medium"), initData->Path.c_str());
     sequence->sequence.cachePolicy =
-        ResourceFactoryXMLSoundFontV0::CachePolicyToInt(child->Attribute("CachePolicy"), file->InitData->Path.c_str());
+        ResourceFactoryXMLSoundFontV0::CachePolicyToInt(child->Attribute("CachePolicy"), initData->Path.c_str());
     sequence->sequence.seqDataSize = child->IntAttribute("Size");
     sequence->sequence.seqNumber = child->IntAttribute("Index");
     bool streamed = child->BoolAttribute("Streamed");
@@ -335,10 +338,7 @@ std::shared_ptr<Ship::IResource> ResourceFactoryXMLAudioSequenceV0::ReadResource
     const char* path = child->Attribute("Path");
     std::shared_ptr<Ship::File> seqFile;
     if (path != nullptr) {
-        initData->Path = path;
-        initData->IsCustom = false;
-        initData->ByteOrder = Ship::Endianness::Native;
-        seqFile = Ship::Context::GetInstance()->GetResourceManager()->GetArchiveManager()->LoadFile(path, initData);
+        seqFile = Ship::Context::GetInstance()->GetResourceManager()->GetArchiveManager()->LoadFile(path);
     }
 
     if (!streamed) {

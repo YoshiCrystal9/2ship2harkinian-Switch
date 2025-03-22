@@ -140,10 +140,10 @@ void CreateCylinderData() {
     cylinderVtx.push_back(gdSPDefVtxN(0, 128, 0, 0, 0, 0, 127, 0, 0xFF)); // Top center vertex
     // Create two rings of vertices
     for (int i = 0; i < CYL_DIVS; ++i) {
-        short vtx_x = floorf(0.5f + cosf(2.f * M_PI * i / CYL_DIVS) * 128.f);
-        short vtx_z = floorf(0.5f - sinf(2.f * M_PI * i / CYL_DIVS) * 128.f);
-        signed char norm_x = cosf(2.f * M_PI * i / CYL_DIVS) * 127.f;
-        signed char norm_z = -sinf(2.f * M_PI * i / CYL_DIVS) * 127.f;
+        short vtx_x = floorf(0.5f + cosf(2.f * M_PIf * i / CYL_DIVS) * 128.f);
+        short vtx_z = floorf(0.5f - sinf(2.f * M_PIf * i / CYL_DIVS) * 128.f);
+        signed char norm_x = cosf(2.f * M_PIf * i / CYL_DIVS) * 127.f;
+        signed char norm_z = -sinf(2.f * M_PIf * i / CYL_DIVS) * 127.f;
         cylinderVtx.push_back(gdSPDefVtxN(vtx_x, 0, vtx_z, 0, 0, norm_x, 0, norm_z, 0xFF));
         cylinderVtx.push_back(gdSPDefVtxN(vtx_x, 128, vtx_z, 0, 0, norm_x, 0, norm_z, 0xFF));
     }

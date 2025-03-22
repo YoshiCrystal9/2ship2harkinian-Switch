@@ -186,12 +186,14 @@ static void OggDecoderWorker(std::shared_ptr<SOH::AudioSample> audioSample, std:
 }
 
 namespace SOH {
-std::shared_ptr<Ship::IResource> ResourceFactoryBinaryAudioSampleV2::ReadResource(std::shared_ptr<Ship::File> file) {
-    if (!FileHasValidFormatAndReader(file)) {
+std::shared_ptr<Ship::IResource>
+ResourceFactoryBinaryAudioSampleV2::ReadResource(std::shared_ptr<Ship::File> file,
+                                                 std::shared_ptr<Ship::ResourceInitData> initData) {
+    if (!FileHasValidFormatAndReader(file, initData)) {
         return nullptr;
     }
 
-    auto audioSample = std::make_shared<AudioSample>(file->InitData);
+    auto audioSample = std::make_shared<AudioSample>(initData);
     auto reader = std::get<std::shared_ptr<Ship::BinaryReader>>(file->Reader);
 
     audioSample->sample.codec = reader->ReadUByte();
@@ -233,20 +235,21 @@ std::shared_ptr<Ship::IResource> ResourceFactoryBinaryAudioSampleV2::ReadResourc
     return audioSample;
 }
 
-std::shared_ptr<Ship::IResource> ResourceFactoryXMLAudioSampleV0::ReadResource(std::shared_ptr<Ship::File> file) {
-    if (!FileHasValidFormatAndReader(file)) {
+std::shared_ptr<Ship::IResource>
+ResourceFactoryXMLAudioSampleV0::ReadResource(std::shared_ptr<Ship::File> file,
+                                              std::shared_ptr<Ship::ResourceInitData> initData) {
+    if (!FileHasValidFormatAndReader(file, initData)) {
         return nullptr;
     }
 
-    auto audioSample = std::make_shared<AudioSample>(file->InitData);
+    auto audioSample = std::make_shared<AudioSample>(initData);
     auto child = std::get<std::shared_ptr<tinyxml2::XMLDocument>>(file->Reader)->FirstChildElement();
-    std::shared_ptr<Ship::ResourceInitData> initData = std::make_shared<Ship::ResourceInitData>();
     const char* customFormatStr = child->Attribute("CustomFormat");
     memset(&audioSample->sample, 0, sizeof(audioSample->sample));
     audioSample->sample.isRelocated = 0;
-    audioSample->sample.codec = CodecStrToInt(child->Attribute("Codec"), file->InitData->Path.c_str());
+    audioSample->sample.codec = CodecStrToInt(child->Attribute("Codec"), initData->Path.c_str());
     audioSample->sample.medium =
-        ResourceFactoryXMLSoundFontV0::MediumStrToInt(child->Attribute("Medium"), file->InitData->Path.c_str());
+        ResourceFactoryXMLSoundFontV0::MediumStrToInt(child->Attribute("Medium"), initData->Path.c_str());
     audioSample->sample.unk_bit26 = child->IntAttribute("bit26");
 
     tinyxml2::XMLElement* loopRoot = child->FirstChildElement("ADPCMLoop");
@@ -282,10 +285,8 @@ std::shared_ptr<Ship::IResource> ResourceFactoryXMLAudioSampleV0::ReadResource(s
     audioSample->sample.size = size;
 
     const char* path = child->Attribute("Path");
-    initData->Path = path;
-    initData->IsCustom = false;
-    initData->ByteOrder = Ship::Endianness::Native;
-    auto sampleFile = Ship::Context::GetInstance()->GetResourceManager()->GetArchiveManager()->LoadFile(path, initData);
+
+    auto sampleFile = Ship::Context::GetInstance()->GetResourceManager()->GetArchiveManager()->LoadFile(path);
     audioSample->sample.fileSize = sampleFile->Buffer.get()->size();
     if (customFormatStr != nullptr) {
         // Compressed files can take a really long time to decode (~250ms per).

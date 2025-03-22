@@ -1726,7 +1726,7 @@ void Boss01_VerticalSlash(Boss01* this, PlayState* play) {
     sOdolwaSwordTrailPosY = 90.0f;
     sOdolwaSwordTrailPosZ = -70.0f;
     sOdolwaSwordTrailRotX = 0.4712388f;
-    sOdolwaSwordTrailRotY = M_PI;
+    sOdolwaSwordTrailRotY = M_PIf;
     sOdolwaSwordTrailRotZ = 1.7278761f;
 
     if (Animation_OnFrame(&this->skelAnime, 12.0f)) {
@@ -2617,13 +2617,13 @@ void Boss01_DrawSwordTrail(Boss01* this, PlayState* play) {
     vtx = ResourceMgr_LoadVtxByName(Lib_SegmentedToVirtual(&gOdolwaSwordTrailVtx));
 
     for (i = 0; i < ARRAY_COUNT(sSwordTrailOuterVertexIndices); i++) {
-        vtx[sSwordTrailOuterVertexIndices[i]].v.ob[0] = cosf((i * M_PI) / sSwordTrailAngularRangeDivisor) * 200.0f;
+        vtx[sSwordTrailOuterVertexIndices[i]].v.ob[0] = cosf((i * M_PIf) / sSwordTrailAngularRangeDivisor) * 200.0f;
         vtx[sSwordTrailOuterVertexIndices[i]].v.ob[1] = 0;
-        vtx[sSwordTrailOuterVertexIndices[i]].v.ob[2] = sinf((i * M_PI) / sSwordTrailAngularRangeDivisor) * 200.0f;
+        vtx[sSwordTrailOuterVertexIndices[i]].v.ob[2] = sinf((i * M_PIf) / sSwordTrailAngularRangeDivisor) * 200.0f;
 
-        vtx[sSwordTrailInnerVertexIndices[i]].v.ob[0] = cosf((i * M_PI) / sSwordTrailAngularRangeDivisor) * 100.0f;
+        vtx[sSwordTrailInnerVertexIndices[i]].v.ob[0] = cosf((i * M_PIf) / sSwordTrailAngularRangeDivisor) * 100.0f;
         vtx[sSwordTrailInnerVertexIndices[i]].v.ob[1] = 0;
-        vtx[sSwordTrailInnerVertexIndices[i]].v.ob[2] = sinf((i * M_PI) / sSwordTrailAngularRangeDivisor) * 100.0f;
+        vtx[sSwordTrailInnerVertexIndices[i]].v.ob[2] = sinf((i * M_PIf) / sSwordTrailAngularRangeDivisor) * 100.0f;
     }
 
     gSPSegment(
@@ -3575,11 +3575,11 @@ void Boss01_DrawEffects(PlayState* play) {
                        Gfx_TwoTexScroll(play->state.gfxCtx, G_TX_RENDERTILE, 0, 0, 32, 64, 1, 0,
                                         ((effect->timer + (i * 10)) * -20) & 0x1FF, 32, 128));
 
-            Matrix_RotateYF(i * (M_PI / 16.0f), MTXMODE_APPLY);
+            Matrix_RotateYF(i * (M_PIf / 16.0f), MTXMODE_APPLY);
             Matrix_Translate(0.0f, 0.0f, KREG(49) + 200.0f, MTXMODE_APPLY);
             Matrix_ReplaceRotation(&play->billboardMtxF);
             if (Boss01_RandZeroOne() < 0.5f) {
-                Matrix_RotateYF(M_PI, MTXMODE_APPLY);
+                Matrix_RotateYF(M_PIf, MTXMODE_APPLY);
             }
 
             Matrix_Scale(KREG(48) * 0.0001f + 0.018f,

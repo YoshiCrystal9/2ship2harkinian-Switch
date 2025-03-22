@@ -439,6 +439,8 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang|AppleClang")
             -Wno-missing-braces
             $<$<COMPILE_LANGUAGE:C>:
                 #-Werror-implicit-function-declaration
+                -Wno-discarded-array-qualifiers
+                -Wno-discarded-qualifiers
                 -Wno-incompatible-pointer-types
                 -Wno-int-conversion
             >
@@ -513,8 +515,10 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang|AppleClang")
             -Wno-parentheses
             -Wno-narrowing
             -Wno-missing-braces
-            -Wno-int-conversion
             $<$<COMPILE_LANGUAGE:C>:
+                -Wno-discarded-qualifiers
+                -Wno-discarded-array-qualifiers
+                -Wno-int-conversion
                 #-Werror-implicit-function-declaration
                 -Wno-incompatible-pointer-types
             >

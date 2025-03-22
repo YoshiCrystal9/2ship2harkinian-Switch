@@ -749,7 +749,7 @@ void guLookAt(Mtx* m, f32 xEye, f32 yEye, f32 zEye, f32 xAt, f32 yAt, f32 zAt, f
     // guMtxF2L(mf, m);
 }
 void guRotateF(float m[4][4], float a, float x, float y, float z) {
-    static float D_80097F90 = M_PI / 180.0f;
+    static float D_80097F90 = M_PIf / 180.0f;
     float sine;
     float cosine;
     float ab;

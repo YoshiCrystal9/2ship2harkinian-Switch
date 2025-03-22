@@ -576,14 +576,14 @@ void func_80B057A4(Vec3f* arg0, Vec3f* arg1, f32 arg2) {
     } else if (temp_fa0 >= 1.0f) {
         var_fv1 = 0.0f;
     } else {
-        var_fv1 = M_PI;
+        var_fv1 = M_PIf;
     }
 
     if (var_fv1 < arg2) {
         arg2 = var_fv1;
     }
 
-    if (!(arg2 < (M_PI / 180.0f))) {
+    if (!(arg2 < (M_PIf / 180.0f))) {
         Math3D_Vec3f_Cross(arg0, arg1, &sp34);
         if (func_80B0573C(&sp34)) {
             Matrix_RotateAxisF(arg2, &sp34, MTXMODE_NEW);
@@ -1975,7 +1975,7 @@ void func_80B0A2A4(BossHakugin* this, PlayState* play) {
     Math_SmoothStepToS(&this->actor.home.rot.y, this->unk_01A0, 5, 0x800, 0x100);
     this->unk_019C--;
     this->actor.shape.rot.y =
-        (s32)(Math_SinF(this->unk_019C * (M_PI / 18.0f)) * this->unk_01A2) + this->actor.home.rot.y;
+        (s32)(Math_SinF(this->unk_019C * (M_PIf / 18.0f)) * this->unk_01A2) + this->actor.home.rot.y;
 
     if (this->unk_019C == 0) {
         if (this->unk_01A2 > 0) {
@@ -1987,9 +1987,9 @@ void func_80B0A2A4(BossHakugin* this, PlayState* play) {
         this->unk_01AE = Rand_ZeroFloat(6144.0f);
     }
 
-    this->unk_0374.z = (8192.0f * Math_SinS(this->unk_01AE)) * Math_SinF(this->unk_019C * (M_PI / 9));
-    this->unk_0374.y = (8192.0f * Math_CosS(this->unk_01AE)) * Math_SinF(this->unk_019C * (M_PI / 9));
-    this->actor.shape.rot.z = Math_SinF(this->unk_019C * (M_PI / 18)) * -(this->unk_01A2 * 0.3f);
+    this->unk_0374.z = (8192.0f * Math_SinS(this->unk_01AE)) * Math_SinF(this->unk_019C * (M_PIf / 9));
+    this->unk_0374.y = (8192.0f * Math_CosS(this->unk_01AE)) * Math_SinF(this->unk_019C * (M_PIf / 9));
+    this->actor.shape.rot.z = Math_SinF(this->unk_019C * (M_PIf / 18)) * -(this->unk_01A2 * 0.3f);
     this->actor.world.rot.y = this->actor.shape.rot.y;
     at.x = (Math_SinS(this->actor.shape.rot.y) * 100.0f) + this->actor.world.pos.x;
     at.y = this->actor.world.pos.y + 200.0f;
@@ -2392,8 +2392,8 @@ void func_80B0B660(BossHakugin* this, PlayState* play) {
         }
     } else if (this->unk_0192 == 3) {
         sp60 = BINANG_TO_RAD(Math3D_Vec3fDistSq(sp6C, &spA4->actor.world.pos) * (1.0f / SQ(120.0f)) * 32.0f);
-        if (sp60 > M_PI / 4.0f) {
-            sp60 = M_PI / 4.0f;
+        if (sp60 > M_PIf / 4.0f) {
+            sp60 = M_PIf / 4.0f;
         }
         Math_Vec3f_Diff(&spA4->actor.world.pos, sp6C, &sp70);
         if (func_80B0573C(&sp70)) {

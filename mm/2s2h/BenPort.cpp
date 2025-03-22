@@ -514,7 +514,7 @@ ArchiveVersion ReadPortVersionFromArchive(std::string archivePath, bool isO2rTyp
         archive = make_shared<Ship::OtrArchive>(archivePath);
     }
     if (archive->Open()) {
-        auto t = archive->LoadFile("portVersion", std::make_shared<Ship::ResourceInitData>());
+        auto t = archive->LoadFile("portVersion");
         if (t != nullptr && t->IsLoaded) {
             auto stream = std::make_shared<Ship::MemoryStream>(t->Buffer->data(), t->Buffer->size());
             auto reader = std::make_shared<Ship::BinaryReader>(stream);

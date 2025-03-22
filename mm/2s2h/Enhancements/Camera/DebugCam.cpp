@@ -59,7 +59,7 @@ void Camera_SetRollFromUp(Camera* camera) {
     f32 det = preRollUp.x * up->y * normal.z + up->x * normal.y * preRollUp.z + normal.x * preRollUp.y * up->z -
               normal.x * up->y * preRollUp.z - normal.y * up->z * preRollUp.x - normal.z * up->x * preRollUp.y;
 
-    camera->roll = RAD_TO_BINANG(atan2(-det, -dot) - M_PI);
+    camera->roll = RAD_TO_BINANG(atan2(-det, -dot) - M_PIf);
 }
 
 void Camera_RotateGeographic(Camera* camera, f32 pitchDiff, f32 yawDiff) {

@@ -7,12 +7,13 @@
 namespace SOH {
 
 std::shared_ptr<Ship::IResource>
-ResourceFactoryBinaryTextureAnimationV0::ReadResource(std::shared_ptr<Ship::File> file) {
-    if (!FileHasValidFormatAndReader(file)) {
+ResourceFactoryBinaryTextureAnimationV0::ReadResource(std::shared_ptr<Ship::File> file,
+                                                      std::shared_ptr<Ship::ResourceInitData> initData) {
+    if (!FileHasValidFormatAndReader(file, initData)) {
         return nullptr;
     }
 
-    auto tAnim = std::make_shared<TextureAnimation>(file->InitData);
+    auto tAnim = std::make_shared<TextureAnimation>(initData);
     auto reader = std::get<std::shared_ptr<Ship::BinaryReader>>(file->Reader);
 
     const size_t numEntries = reader->ReadUInt32();

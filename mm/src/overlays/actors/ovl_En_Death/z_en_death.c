@@ -376,7 +376,7 @@ f32 EnDeath_UpdateCoreVelocityAndRotation(EnDeath* this) {
     this->coreVelocity *= 0.02f;
     this->coreVelocity = SQ(this->coreVelocity) * 3.0f + 80.0f;
 
-    tmp = 22.5f / (this->coreVelocity * (2 * M_PI));
+    tmp = 22.5f / (this->coreVelocity * (2 * M_PIf));
     this->coreRotation += (s16)(65536.0f * tmp);
 }
 
