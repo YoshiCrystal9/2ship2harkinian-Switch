@@ -87,11 +87,6 @@ using namespace UIWidgets;
 
 void RegisterResolutionWidgets() {
     WidgetPath path = { "Settings", "Graphics", 2 };
-#ifdef __APPLE__
-    mBenMenu
-        ->AddWidget(path, ICON_FA_INFO_CIRCLE " These settings may behave incorrectly on Retina displays.", WIDGET_TEXT)
-        .Options(WidgetOptions().Color(Colors::Green));
-#endif
 
     // Resolution visualiser
     mBenMenu->AddWidget(path, "Viewport dimensions: {} x {}", WIDGET_TEXT).PreFunc([](WidgetInfo& info) {

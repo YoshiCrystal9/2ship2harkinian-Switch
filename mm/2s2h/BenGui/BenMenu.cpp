@@ -242,7 +242,6 @@ void BenMenu::AddSettings() {
         .CVar("gSettings.Fullscreen")
         .Callback([](WidgetInfo& info) { Ship::Context::GetInstance()->GetWindow()->ToggleFullscreen(); })
         .Options(CheckboxOptions().Tooltip("Toggles Fullscreen On/Off."));
-#ifndef __APPLE__
     AddWidget(path, "Internal Resolution: %.0f%%", WIDGET_CVAR_SLIDER_FLOAT)
         .CVar(CVAR_INTERNAL_RESOLUTION)
         .Callback([](WidgetInfo& info) {
@@ -267,7 +266,6 @@ void BenMenu::AddSettings() {
                 .Format("")
                 .Min(0.5f)
                 .Max(2.0f));
-#endif
 #ifndef __WIIU__
     AddWidget(path, "Anti-aliasing (MSAA): %d", WIDGET_CVAR_SLIDER_INT)
         .CVar(CVAR_MSAA_VALUE)
