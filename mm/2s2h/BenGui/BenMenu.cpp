@@ -1371,73 +1371,13 @@ void BenMenu::AddDevTools() {
     AddWidget(path, "Popout Menu", WIDGET_CVAR_CHECKBOX)
         .CVar("gSettings.Menu.Popout")
         .Options(CheckboxOptions().Tooltip("Changes the menu display from overlay to windowed."));
-    AddWidget(path, "Set Warp Point", WIDGET_BUTTON)
-        .Options(ButtonOptions().Tooltip("Creates warp point that you can teleport to later"))
-        .Callback([](WidgetInfo& info) {
-            Player* player = GET_PLAYER(gPlayState);
-
-            CVarSetInteger(WARP_POINT_CVAR "Entrance", gSaveContext.save.entrance);
-            CVarSetInteger(WARP_POINT_CVAR "Room", gPlayState->roomCtx.curRoom.num);
-            CVarSetFloat(WARP_POINT_CVAR "X", player->actor.world.pos.x);
-            CVarSetFloat(WARP_POINT_CVAR "Y", player->actor.world.pos.y);
-            CVarSetFloat(WARP_POINT_CVAR "Z", player->actor.world.pos.z);
-            CVarSetFloat(WARP_POINT_CVAR "Rotation", player->actor.shape.rot.y);
-            CVarSetInteger(WARP_POINT_CVAR "Saved", 1);
-            Ship::Context::GetInstance()->GetWindow()->GetGui()->SaveConsoleVariablesNextFrame();
-        })
-        .PreFunc(
-            [](WidgetInfo& info) { info.isHidden = mBenMenu->disabledMap.at(DISABLE_FOR_NULL_PLAY_STATE).active; });
-    AddWidget(path, "Scene Room ID", WIDGET_TEXT).PreFunc([](WidgetInfo& info) {
-        u32 sceneId =
-            Entrance_GetSceneIdAbsolute(CVarGetInteger(WARP_POINT_CVAR "Entrance", ENTRANCE(SOUTH_CLOCK_TOWN, 0)));
-        info.name = fmt::format("{} Room {}", warpPointSceneList[sceneId], CVarGetInteger(WARP_POINT_CVAR "Room", 0));
-        info.isHidden = mBenMenu->disabledMap.at(DISABLE_FOR_NULL_PLAY_STATE).active ||
-                        mBenMenu->disabledMap.at(DISABLE_FOR_WARP_POINT_NOT_SET).active;
-    });
-    AddWidget(path, ICON_FA_TIMES, WIDGET_BUTTON)
-        .Options(ButtonOptions().Tooltip("Clear warp point").Size(Sizes::Inline))
-        .Callback([](WidgetInfo& info) {
-            CVarClear(WARP_POINT_CVAR "Entrance");
-            CVarClear(WARP_POINT_CVAR "Room");
-            CVarClear(WARP_POINT_CVAR "X");
-            CVarClear(WARP_POINT_CVAR "Y");
-            CVarClear(WARP_POINT_CVAR "Z");
-            CVarClear(WARP_POINT_CVAR "Rotation");
-            CVarClear(WARP_POINT_CVAR "Saved");
-            Ship::Context::GetInstance()->GetWindow()->GetGui()->SaveConsoleVariablesNextFrame();
-        })
-        .PreFunc([](WidgetInfo& info) {
-            info.isHidden = mBenMenu->disabledMap.at(DISABLE_FOR_NULL_PLAY_STATE).active ||
-                            mBenMenu->disabledMap.at(DISABLE_FOR_WARP_POINT_NOT_SET).active;
-        })
-        .SameLine(true);
-    AddWidget(path, "Warp", WIDGET_BUTTON)
-        .Options(ButtonOptions().Tooltip("Teleport to the set warp point").Size(Sizes::Inline))
-        .Callback([](WidgetInfo& info) { Warp(); })
-        .PreFunc([](WidgetInfo& info) {
-            info.isHidden = mBenMenu->disabledMap.at(DISABLE_FOR_NULL_PLAY_STATE).active ||
-                            mBenMenu->disabledMap.at(DISABLE_FOR_WARP_POINT_NOT_SET).active;
-        })
-        .SameLine(true);
     AddWidget(path, "Debug Mode", WIDGET_CVAR_CHECKBOX)
         .CVar("gDeveloperTools.DebugEnabled")
-        .Options(CheckboxOptions().Tooltip("Enables Debug Mode, allowing you to select maps with L + R + Z."))
-        .Callback([](WidgetInfo& info) {
-            if (!CVarGetInteger("gDeveloperTools.DebugEnabled", 0)) {
-                CVarClear("gDeveloperTools.DebugSaveFileMode");
-                CVarClear("gDeveloperTools.PreventActorUpdate");
-                CVarClear("gDeveloperTools.PreventActorDraw");
-                CVarClear("gDeveloperTools.PreventActorInit");
-                CVarClear("gDeveloperTools.DisableObjectDependency");
-                if (gPlayState != NULL) {
-                    gPlayState->frameAdvCtx.enabled = false;
-                }
-                RegisterDebugSaveCreate();
-                RegisterPreventActorUpdateHooks();
-                RegisterPreventActorDrawHooks();
-                RegisterPreventActorInitHooks();
-            }
-        });
+        .Options(CheckboxOptions().Tooltip("Enables Debug Mode, allowing the following:\n\n"
+                                           "- Open debug warp menu with L + R + Z\n"
+                                           "- Enable debug no-clip mode with L + D-Right\n"
+                                           "- Open built-in debug inventory editor when paused with L\n"
+                                           "- Saves created will inherit inventory from \"Debug Save File Mode\""));
     AddWidget(path, "Better Map Select", WIDGET_CVAR_CHECKBOX)
         .CVar("gDeveloperTools.BetterMapSelect.Enabled")
         .Options(CheckboxOptions().Tooltip(
@@ -1451,22 +1391,18 @@ void BenMenu::AddDevTools() {
                               "- Vanilla Debug Save: Uses the title screen save info (8 hearts, all items and masks)\n"
                               "- 100\% Save: All items, equipment, mask, quest status and bombers notebook complete")
                      .ComboMap(debugSaveOptions))
-        .Callback([](WidgetInfo& info) { RegisterDebugSaveCreate(); })
         .PreFunc([](WidgetInfo& info) { info.isHidden = mBenMenu->disabledMap.at(DISABLE_FOR_DEBUG_MODE_OFF).active; });
     AddWidget(path, "Prevent Actor Update", WIDGET_CVAR_CHECKBOX)
         .CVar("gDeveloperTools.PreventActorUpdate")
         .Options(CheckboxOptions().Tooltip("Prevents Actors from updating."))
-        .Callback([](WidgetInfo& info) { RegisterPreventActorUpdateHooks(); })
         .PreFunc([](WidgetInfo& info) { info.isHidden = mBenMenu->disabledMap.at(DISABLE_FOR_DEBUG_MODE_OFF).active; });
     AddWidget(path, "Prevent Actor Draw", WIDGET_CVAR_CHECKBOX)
         .CVar("gDeveloperTools.PreventActorDraw")
         .Options(CheckboxOptions().Tooltip("Prevents Actors from drawing."))
-        .Callback([](WidgetInfo& info) { RegisterPreventActorDrawHooks(); })
         .PreFunc([](WidgetInfo& info) { info.isHidden = mBenMenu->disabledMap.at(DISABLE_FOR_DEBUG_MODE_OFF).active; });
     AddWidget(path, "Prevent Actor Init", WIDGET_CVAR_CHECKBOX)
         .CVar("gDeveloperTools.PreventActorInit")
         .Options(CheckboxOptions().Tooltip("Prevents Actors from initializing."))
-        .Callback([](WidgetInfo& info) { RegisterPreventActorInitHooks(); })
         .PreFunc([](WidgetInfo& info) { info.isHidden = mBenMenu->disabledMap.at(DISABLE_FOR_DEBUG_MODE_OFF).active; });
     AddWidget(path, "Disable Object Dependency", WIDGET_CVAR_CHECKBOX)
         .CVar("gDeveloperTools.DisableObjectDependency")
@@ -1516,6 +1452,8 @@ void BenMenu::AddDevTools() {
             }
         })
         .SameLine(true);
+    path.column = 2;
+    AddWidget(path, "Warp Point", WIDGET_CUSTOM).CustomFunction([](WidgetInfo& info) { RenderWarpPointSection(); });
 
     // dev tools windows
     path = { "Dev Tools", "Collision Viewer", 1 };
@@ -1683,9 +1621,6 @@ void BenMenu::InitElement() {
         { DISABLE_FOR_FRAME_ADVANCE_OFF,
           { [](disabledInfo& info) -> bool { return !(gPlayState != nullptr && gPlayState->frameAdvCtx.enabled); },
             "Frame Advance is Disabled" } },
-        { DISABLE_FOR_WARP_POINT_NOT_SET,
-          { [](disabledInfo& info) -> bool { return !CVarGetInteger(WARP_POINT_CVAR "Saved", 0); },
-            "Warp Point Not Saved" } },
         { DISABLE_FOR_INTRO_SKIP_OFF,
           { [](disabledInfo& info) -> bool { return !CVarGetInteger("gEnhancements.Cutscenes.SkipIntroSequence", 0); },
             "Intro Skip Not Selected" } },

@@ -3,6 +3,7 @@
 #include "window/gui/IconsFontAwesome4.h"
 #include "2s2h/GameInteractor/GameInteractor.h"
 #include "2s2h/DeveloperTools/DeveloperTools.h"
+#include "2s2h/ShipInit.hpp"
 
 extern "C" {
 #include "z64.h"
@@ -73,6 +74,12 @@ void Warp() {
 }
 
 void RegisterWarpPoint() {
+    static bool registered = false;
+    if (registered) {
+        return;
+    }
+    registered = true;
+
     GameInteractor::Instance->RegisterGameHook<GameInteractor::OnConsoleLogoUpdate>([]() {
         if (!CVarGetInteger("gEnhancements.Cutscenes.SkipToFileSelect", 0) &&
             CVarGetInteger(WARP_POINT_CVAR "BootToWarpPoint", 0) && CVarGetInteger(WARP_POINT_CVAR "Saved", 0)) {
@@ -86,10 +93,8 @@ void RegisterWarpPoint() {
 }
 
 void RenderWarpPointSection() {
-    if (gPlayState == NULL)
-        return;
-
-    if (UIWidgets::Button("Set Warp Point")) {
+    if (UIWidgets::Button("Set Warp Point", { { .disabled = gPlayState == NULL,
+                                                .disabledTooltip = "Cannot set warp points when not in-game" } })) {
         Player* player = GET_PLAYER(gPlayState);
 
         CVarSetInteger(WARP_POINT_CVAR "Entrance", gSaveContext.save.entrance);
@@ -104,22 +109,35 @@ void RenderWarpPointSection() {
     if (CVarGetInteger(WARP_POINT_CVAR "Saved", 0)) {
         u32 sceneId =
             Entrance_GetSceneIdAbsolute(CVarGetInteger(WARP_POINT_CVAR "Entrance", ENTRANCE(SOUTH_CLOCK_TOWN, 0)));
-        ImGui::AlignTextToFramePadding();
-        ImGui::Text("%s Room %d", warpPointSceneList[sceneId], CVarGetInteger(WARP_POINT_CVAR "Room", 0));
-        ImGui::SameLine();
-        if (UIWidgets::Button(ICON_FA_TIMES, { .size = UIWidgets::Sizes::Inline })) {
-            CVarClear(WARP_POINT_CVAR "Entrance");
-            CVarClear(WARP_POINT_CVAR "Room");
-            CVarClear(WARP_POINT_CVAR "X");
-            CVarClear(WARP_POINT_CVAR "Y");
-            CVarClear(WARP_POINT_CVAR "Z");
-            CVarClear(WARP_POINT_CVAR "Rotation");
-            CVarClear(WARP_POINT_CVAR "Saved");
-            Ship::Context::GetInstance()->GetWindow()->GetGui()->SaveConsoleVariablesNextFrame();
-        }
-        ImGui::SameLine();
-        if (UIWidgets::Button("Warp", { .size = UIWidgets::Sizes::Inline })) {
-            Warp();
+        if (ImGui::BeginTable("Warp point table", 3, ImGuiTableFlags_SizingFixedFit)) {
+            ImGui::TableSetupColumn("##Entrance", ImGuiTableColumnFlags_WidthStretch);
+            ImGui::TableSetupColumn("##Clear", ImGuiTableColumnFlags_WidthFixed);
+            ImGui::TableSetupColumn("##Warp", ImGuiTableColumnFlags_WidthFixed);
+            ImGui::TableNextRow();
+
+            ImGui::TableNextColumn();
+            ImGui::TextWrapped("%s Room %d", warpPointSceneList[sceneId], CVarGetInteger(WARP_POINT_CVAR "Room", 0));
+
+            ImGui::TableNextColumn();
+            if (UIWidgets::Button(ICON_FA_TIMES, { .size = UIWidgets::Sizes::Inline })) {
+                CVarClear(WARP_POINT_CVAR "Entrance");
+                CVarClear(WARP_POINT_CVAR "Room");
+                CVarClear(WARP_POINT_CVAR "X");
+                CVarClear(WARP_POINT_CVAR "Y");
+                CVarClear(WARP_POINT_CVAR "Z");
+                CVarClear(WARP_POINT_CVAR "Rotation");
+                CVarClear(WARP_POINT_CVAR "Saved");
+                Ship::Context::GetInstance()->GetWindow()->GetGui()->SaveConsoleVariablesNextFrame();
+            }
+
+            ImGui::TableNextColumn();
+            if (UIWidgets::Button("Warp", { .size = UIWidgets::Sizes::Inline })) {
+                Warp();
+            }
+
+            ImGui::EndTable();
         }
     }
 }
+
+RegisterShipInitFunc initFuncWarpPoint(RegisterWarpPoint, {});
