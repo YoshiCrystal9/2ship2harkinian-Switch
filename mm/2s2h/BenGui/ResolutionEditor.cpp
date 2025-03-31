@@ -252,15 +252,15 @@ void RegisterResolutionWidgets() {
     //
     //    UIWidgets::Spacer(0);
     //
-    //    // Integer scaling settings group (Pixel-perfect Mode)
+    //    // Integer scaling settings group (Pixel Perfect Mode)
     //    static const ImGuiTreeNodeFlags IntegerScalingResolvedImGuiFlag =
     //        CVarGetInteger(CVAR_PREFIX_ADVANCED_RESOLUTION ".PixelPerfectMode", 0) ? ImGuiTreeNodeFlags_DefaultOpen
     //                                                                    : ImGuiTreeNodeFlags_None;
     //    if (ImGui::CollapsingHeader("Integer Scaling Settings", IntegerScalingResolvedImGuiFlag)) {
     //        const bool disabled_pixelPerfectMode =
     //            !CVarGetInteger(CVAR_PREFIX_ADVANCED_RESOLUTION ".PixelPerfectMode", 0) || disabled_everything;
-    //        // Pixel-perfect Mode
-    //        UIWidgets::PaddedEnhancementCheckbox("Pixel-perfect Mode", CVAR_PREFIX_ADVANCED_RESOLUTION
+    //        // Pixel Perfect Mode
+    //        UIWidgets::PaddedEnhancementCheckbox("Pixel Perfect Mode", CVAR_PREFIX_ADVANCED_RESOLUTION
     //        ".PixelPerfectMode", true,
     //                                                true, disabled_pixelCount || disabled_everything, "",
     //                                                UIWidgets::CheckboxGraphics::Cross, false);
@@ -275,7 +275,7 @@ void RegisterResolutionWidgets() {
     //            "Integer scale factor: %d", "##ARSIntScale", CVAR_PREFIX_ADVANCED_RESOLUTION ".IntegerScale.Factor",
     //            1, max_integerScaleFactor, "%d", 1, true, disabled_pixelPerfectMode ||
     //            CVarGetInteger(CVAR_PREFIX_ADVANCED_RESOLUTION ".IntegerScale.FitAutomatically", 0));
-    //        UIWidgets::Tooltip("Integer scales the image. Only available in pixel-perfect mode.");
+    //        UIWidgets::Tooltip("Integer scales the image. Only available in Pixel Perfect Mode.");
     //        // Display warning if size is being clamped or if framebuffer is larger than viewport.
     //        if (!disabled_pixelPerfectMode &&
     //            (CVarGetInteger(CVAR_PREFIX_ADVANCED_RESOLUTION ".IntegerScale.NeverExceedBounds", 1) &&
@@ -289,8 +289,8 @@ void RegisterResolutionWidgets() {
     //            "Automatically scale image to fit viewport", CVAR_PREFIX_ADVANCED_RESOLUTION
     //            ".IntegerScale.FitAutomatically", true, true, disabled_pixelPerfectMode, "",
     //            UIWidgets::CheckboxGraphics::Cross, false);
-    //        UIWidgets::Tooltip("Automatically sets scale factor to fit window. Only available in pixel-perfect
-    //        mode."); if (CVarGetInteger(CVAR_PREFIX_ADVANCED_RESOLUTION ".IntegerScale.FitAutomatically", 0)) {
+    //        UIWidgets::Tooltip("Automatically sets scale factor to fit window. Only available in Pixel Perfect
+    //        Mode."); if (CVarGetInteger(CVAR_PREFIX_ADVANCED_RESOLUTION ".IntegerScale.FitAutomatically", 0)) {
     //            // This is just here to update the value shown on the slider.
     //            // The function in LUS to handle this setting will ignore IntegerScaleFactor while active.
     //            CVarSetInteger(CVAR_PREFIX_ADVANCED_RESOLUTION ".IntegerScale.Factor", integerScale_maximumBounds);
