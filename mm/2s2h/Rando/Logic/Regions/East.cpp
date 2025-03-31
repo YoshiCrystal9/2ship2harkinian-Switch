@@ -95,7 +95,9 @@ static RegisterShipInitFunc initFunc([]() {
     };
     Regions[RR_GHOST_HUT] = RandoRegion{ .sceneId = SCENE_TOUGITES,
         .checks = {
-            CHECK(RC_IKANA_CANYON_GHOST_HUT_PIECE_OF_HEART, CHECK_MAX_HP(4)),
+            // The first three sisters can be damaged with almost anything, but Meg requires ranged attacks.
+            // Not using CAN_USE_EXPLOSIVE here, as the Blast Mask cannot reach, and the Powder Keg can only be used once.
+            CHECK(RC_IKANA_CANYON_GHOST_HUT_PIECE_OF_HEART, CHECK_MAX_HP(4) && (CAN_USE_PROJECTILE || HAS_ITEM(ITEM_BOMB) || HAS_ITEM(ITEM_BOMBCHU))),
         },
         .exits = { //     TO                                         FROM
             EXIT(ENTRANCE(IKANA_CANYON, 1),                 ENTRANCE(GHOST_HUT, 0), true),
