@@ -321,11 +321,6 @@ extern "C" uint32_t Ship_GetInterpolationFPS() {
     return OTRGlobals::Instance->GetInterpolationFPS();
 }
 
-// Numer of interpolated frames
-extern "C" uint32_t Ship_GetInterpolationFrameCount() {
-    return ceil((float)Ship_GetInterpolationFPS() / 20.0f);
-}
-
 struct ExtensionEntry {
     std::string path;
     std::string ext;
@@ -929,11 +924,8 @@ void RunCommands(Gfx* Commands, const std::vector<std::unordered_map<Mtx*, MtxF>
     // Process window events for resize, mouse, keyboard events
     wnd->HandleEvents();
 
-    gInterpolationIndex = 0;
-
     for (const auto& m : mtx_replacements) {
         wnd->DrawAndRunGraphicsCommands(Commands, m);
-        gInterpolationIndex++;
     }
 }
 

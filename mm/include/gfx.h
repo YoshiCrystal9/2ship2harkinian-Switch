@@ -243,7 +243,6 @@ void func_8012CF0C(GraphicsContext* gfxCtx, s32 clearFb, s32 clearZb, u8 r, u8 g
 void func_8012D374(GraphicsContext* gfxCtx, u8 r, u8 g, u8 b);
 void func_8012D40C(f32* param_1, f32* param_2, s16* param_3);
 void gSPSegment(void* value, int segNum, uintptr_t target);
-void gSPSegmentInterp(void* value, int segNum, uintptr_t target);
 void gSPSegmentLoadRes(void* value, int segNum, uintptr_t target);
 // void gDPSetTextureImage(Gfx* pkt, u32 format, u32 size, u32 width, uintptr_t i);
 // void gDPSetTextureImageFB(Gfx* pkt, u32 format, u32 size, u32 width, int fb);

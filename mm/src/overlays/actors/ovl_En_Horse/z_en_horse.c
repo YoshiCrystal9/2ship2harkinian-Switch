@@ -13,7 +13,6 @@
 #include "overlays/actors/ovl_En_Horse_Game_Check/z_en_horse_game_check.h"
 #include "objects/object_horse_link_child/object_horse_link_child.h"
 #include "2s2h/GameInteractor/GameInteractor.h"
-#include "BenPort.h"
 
 #define FLAGS (ACTOR_FLAG_10)
 
@@ -1963,7 +1962,6 @@ void EnHorse_PlayIdleAnimation(EnHorse* this, s32 animIndex, f32 morphFrames, f3
                 this->stateFlags &= ~ENHORSE_LAND2_SOUND;
             }
         }
-
         Animation_Change(&this->skin.skelAnime, sAnimationHeaders[this->type][this->animIndex], 1.0f, startFrames,
                          Animation_GetLastFrame(sAnimationHeaders[this->type][this->animIndex]), ANIMMODE_ONCE,
                          morphFrames);
@@ -4204,10 +4202,6 @@ void EnHorse_Update(Actor* thisx, PlayState* play2) {
     Vec3f dustVel = { 0.0f, 1.0f, 0.0f };
     Player* player = GET_PLAYER(play);
 
-    for (int i = 0; i < Ship_GetInterpolationFrameCount(); i++)
-        memcpy(&this->skin.skelAnime.extraJointTable[i * this->skin.skelAnime.limbCount],
-               this->skin.skelAnime.jointTable, this->skin.skelAnime.limbCount * sizeof(Vec3s));
-
     if (this->type == HORSE_TYPE_2) {
         Actor_SetScale(&this->actor, 0.00648f);
     } else if (this->type == HORSE_TYPE_DONKEY) {
@@ -4241,9 +4235,6 @@ void EnHorse_Update(Actor* thisx, PlayState* play2) {
     this->unk_3EC = thisx->world.rot.y;
     if ((this->animIndex == ENHORSE_ANIM_STOPPING) || (this->animIndex == ENHORSE_ANIM_REARING)) {
         this->skin.skelAnime.jointTable[0].y += 0x154;
-
-        for (int i = 0; i < Ship_GetInterpolationFrameCount(); i++)
-            this->skin.skelAnime.extraJointTable[this->skin.skelAnime.limbCount * i].y += 0x154;
     }
 
     this->curFrame = this->skin.skelAnime.curFrame;
@@ -4727,12 +4718,6 @@ void EnHorse_Draw(Actor* thisx, PlayState* play) {
                 this->skin.skelAnime.jointTable->x = 0;
                 this->skin.skelAnime.jointTable->y = 0;
                 this->skin.skelAnime.jointTable->z = 0;
-
-                for (int i = 0; i < Ship_GetInterpolationFrameCount(); i++) {
-                    this->skin.skelAnime.extraJointTable[this->skin.skelAnime.limbCount * i].x = 0;
-                    this->skin.skelAnime.extraJointTable[this->skin.skelAnime.limbCount * i].y = 0;
-                    this->skin.skelAnime.extraJointTable[this->skin.skelAnime.limbCount * i].z = 0;
-                }
             }
             SkelAnime_DrawFlexOpa(play, this->skin.skelAnime.skeleton, this->skin.skelAnime.jointTable,
                                   this->skin.skelAnime.dListCount, func_80888D18, NULL, &this->actor);

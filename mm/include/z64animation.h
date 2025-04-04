@@ -176,8 +176,7 @@ typedef struct SkelAnime {
     /* 0x14 */ f32 animLength;    // Total number of frames in the current animation's file.
     /* 0x18 */ f32 curFrame;      // Current frame in the animation
     /* 0x1C */ f32 playSpeed;     // Multiplied by R_UPDATE_RATE / 3 to get the animation's frame rate.
-	/* 0x20 */ Vec3s* jointTable; // Current translation of model and rotations of all limbs
-	/* 0x20 */ Vec3s* extraJointTable; // For interpolation on skinned skeletons
+    /* 0x20 */ Vec3s* jointTable; // Current translation of model and rotations of all limbs
     /* 0x24 */ Vec3s* morphTable; // Table of values used to morph between animations
     /* 0x28 */ f32 morphWeight;   // Weight of the current animation morph as a fraction in [0,1]
     /* 0x2C */ f32 morphRate;     // Reciprocal of the number of frames in the morph
@@ -190,9 +189,6 @@ typedef struct SkelAnime {
     /* 0x36 */ s16 prevRot;       // Previous rotation in worldspace.
     /* 0x38 */ Vec3s prevTransl;  // Previous modelspace translation.
     /* 0x3E */ Vec3s baseTransl;  // Base modelspace translation.
-
-	bool isSkinned;
-
 } SkelAnime; // size = 0x44
 
 typedef s32 (*OverrideLimbDrawOpa)(struct PlayState* play, s32 limbIndex, Gfx** dList, Vec3f* pos, Vec3s* rot,

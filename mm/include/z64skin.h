@@ -7,13 +7,6 @@ struct GraphicsContext;
 struct GameState;
 struct PlayState;
 
-// At 30fps, you have 2 interpolation frames
-// At 60fps, you have 3.
-// At 120fps, you have 6.
-// Do monitors go beyond 144hz?
-// We support up to 360fps, so let's go with that.
-#define MAX_INTERP_FRAMES 18
-
 /**
  * Holds a compact version of a vertex used in the Skin system (doesn't has the x, y, z positions or the flag member)
  * It is used to initialise the Vtx used by an animated limb
@@ -74,7 +67,7 @@ typedef struct {
 
 typedef struct {
     /* 0x0 */ u8 index; // alternates every draw cycle
-    /* 0x4 */ Vtx* buf[2 * MAX_INTERP_FRAMES]; // number of vertices in buffer determined by `totalVtxCount`
+    /* 0x4 */ Vtx* buf[2]; // number of vertices in buffer determined by `totalVtxCount`
 } SkinLimbVtx; // size = 0xC
 
 typedef struct {
@@ -108,6 +101,6 @@ void Skin_InitAnimatedLimb(struct GameState* gameState, Skin* skin, s32 limbInde
 void Skin_Init(struct GameState* gameState, Skin* skin, SkeletonHeader* skeletonHeader, AnimationHeader* animationHeader);
 void Skin_Free(struct GameState* gameState, Skin* skin);
 s32 func_801387D4(Skin* skin, SkinLimb** skeleton, MtxF* limbMatrices, u8 parentIndex, u8 limbIndex);
-s32 Skin_ApplyAnimTransformations(Skin* skin, MtxF* limbMatrices, Actor* actor, s32 setTranslation, Vec3s* jointRot);
+s32 Skin_ApplyAnimTransformations(Skin* skin, MtxF* limbMatrices, Actor* actor, s32 setTranslation);
 
 #endif
