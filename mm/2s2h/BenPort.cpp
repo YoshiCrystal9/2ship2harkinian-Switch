@@ -106,6 +106,7 @@ CrowdControl* CrowdControl::Instance;
 #include "window/gui/resource/Font.h"
 #include "window/gui/resource/FontFactory.h"
 #include "2s2h/Enhancements/Audio/AudioCollection.h"
+#include "BenGui/BenInputEditorWindow.h"
 
 OTRGlobals* OTRGlobals::Instance;
 GameInteractor* GameInteractor::Instance;

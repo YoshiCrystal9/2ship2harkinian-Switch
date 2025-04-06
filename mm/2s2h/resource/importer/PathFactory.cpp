@@ -1,6 +1,5 @@
 #include "2s2h/resource/importer/PathFactory.h"
 #include "2s2h/resource/type/Path.h"
-#include "spdlog/spdlog.h"
 
 namespace SOH {
 std::shared_ptr<Ship::IResource>

@@ -2,7 +2,6 @@
 
 #include <cstdint>
 #include <vector>
-#include "Resource.h"
 #include "SceneCommand.h"
 #include "z64math.h"
 

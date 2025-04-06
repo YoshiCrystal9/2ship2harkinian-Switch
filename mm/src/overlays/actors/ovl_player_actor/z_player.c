@@ -48,6 +48,7 @@
 #include "2s2h/BenPort.h"
 #include "2s2h/GameInteractor/GameInteractor.h"
 #include "2s2h/CustomMessage/CustomMessage.h"
+#include "public/bridge/consolevariablebridge.h"
 
 #define THIS ((Player*)thisx)
 

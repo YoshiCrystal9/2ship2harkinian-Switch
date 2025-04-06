@@ -1,6 +1,5 @@
 #include "2s2h/resource/importer/scenecommand/SetObjectListFactory.h"
 #include "2s2h/resource/type/scenecommand/SetObjectList.h"
-#include "spdlog/spdlog.h"
 
 namespace SOH {
 std::shared_ptr<Ship::IResource> SetObjectListFactory::ReadResource(std::shared_ptr<Ship::ResourceInitData> initData,

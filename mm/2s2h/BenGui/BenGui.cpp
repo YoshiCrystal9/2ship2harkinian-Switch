@@ -3,7 +3,6 @@
 #include <spdlog/spdlog.h>
 #include <imgui.h>
 #include <imgui_internal.h>
-#include <libultraship/libultraship.h>
 #include <Fast3D/gfx_pc.h>
 #include "UIWidgets.hpp"
 #include "HudEditor.h"
@@ -21,12 +20,17 @@
 #endif
 
 #include "include/global.h"
-#include "include/z64audio.h"
 
 #include "Enhancements/Trackers/ItemTracker.h"
 #include "Enhancements/Trackers/ItemTrackerSettings.h"
 #include "Enhancements/Trackers/DisplayOverlay.h"
 #include "BenMenu.h"
+#include "BenMenuBar.h"
+#include "DeveloperTools/HookDebugger.h"
+#include "DeveloperTools/SaveEditor.h"
+#include "DeveloperTools/ActorViewer.h"
+#include "DeveloperTools/CollisionViewer.h"
+#include "DeveloperTools/EventLog.h"
 
 namespace BenGui {
 // MARK: - Delegates

@@ -1,5 +1,4 @@
 #include "MiscBehavior.h"
-#include <libultraship/libultraship.h>
 
 extern "C" {
 #include <variables.h>

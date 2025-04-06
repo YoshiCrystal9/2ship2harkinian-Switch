@@ -1,13 +1,10 @@
 #include "CollisionViewer.h"
-#include "2s2h/Enhancements/FrameInterpolation/FrameInterpolation.h"
 #include "2s2h/BenGui/UIWidgets.hpp"
 
 #include <vector>
 #include <string>
 #include <cmath>
 #include <random>
-#include <libultraship/bridge.h>
-#include <libultraship/libultraship.h>
 #include "2s2h/GameInteractor/GameInteractor.h"
 
 extern "C" {

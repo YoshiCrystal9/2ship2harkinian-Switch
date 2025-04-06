@@ -1,6 +1,6 @@
 #include "2s2h/resource/importer/CutsceneFactory.h"
 #include "2s2h/resource/type/Cutscene.h"
-#include "spdlog/spdlog.h"
+
 // TODO headers
 // extern "C" {
 //#include "z64cutscene.h"

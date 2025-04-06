@@ -1,21 +1,19 @@
 #include "ShipUtils.h"
-#include <libultraship/libultraship.h>
 #include "assets/2s2h_assets.h"
 #include <string>
 #include <random>
+#include <vector>
 #include <boost/random/mersenne_twister.hpp>
 #include <boost/random/uniform_int_distribution.hpp>
-#include <boost/random/uniform_real_distribution.hpp>
 #include <boost_custom/container_hash/hash_32.hpp>
-
+#include "public/bridge/consolevariablebridge.h"
+#include "Context.h"
 // Image Icons
 #include "assets/interface/parameter_static/parameter_static.h"
 #include "assets/archives/icon_item_24_static/icon_item_24_static_yar.h"
 #include "assets/archives/icon_item_static/icon_item_static_yar.h"
-#include "assets/archives/schedule_dma_static/schedule_dma_static_yar.h"
 #include "assets/interface/icon_item_dungeon_static/icon_item_dungeon_static.h"
 #include "assets/interface/icon_item_field_static/icon_item_field_static.h"
-#include "assets/archives/icon_item_static/icon_item_static_yar.h"
 
 extern "C" {
 #include "z64.h"

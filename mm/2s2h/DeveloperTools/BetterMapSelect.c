@@ -1,9 +1,8 @@
 
 #include "BetterMapSelect.h"
-
 #include "overlays/gamestates/ovl_file_choose/z_file_select.h"
 #include "overlays/gamestates/ovl_select/z_select.h"
-#include <libultraship/bridge.h>
+#include "public/bridge/consolevariablebridge.h"
 
 void BetterMapSelect_LoadGame(MapSelectState* mapSelectState, u32 entrance, s32 spawn);
 void BetterMapSelect_LoadFileSelect(MapSelectState* mapSelectState);

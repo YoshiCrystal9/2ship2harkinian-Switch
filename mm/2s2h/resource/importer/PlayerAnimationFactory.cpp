@@ -1,6 +1,5 @@
 #include "2s2h/resource/importer/PlayerAnimationFactory.h"
 #include "2s2h/resource/type/PlayerAnimation.h"
-#include "spdlog/spdlog.h"
 
 namespace SOH {
 std::shared_ptr<Ship::IResource>

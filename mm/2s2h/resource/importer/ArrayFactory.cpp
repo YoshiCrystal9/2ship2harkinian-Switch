@@ -1,6 +1,5 @@
 #include "2s2h/resource/importer/ArrayFactory.h"
 #include "2s2h/resource/type/Array.h"
-#include "spdlog/spdlog.h"
 #include "graphic/Fast3D/lus_gbi.h"
 
 namespace SOH {

@@ -1,8 +1,6 @@
 #include "BenPort.h"
-#include <libultraship/libultraship.h>
 #include "2s2h/resource/type/Scene.h"
 #include <utils/StringHelper.h>
-#include "global.h"
 #include "2s2h/resource/type/TextMM.h"
 #include <message_data_static.h>
 

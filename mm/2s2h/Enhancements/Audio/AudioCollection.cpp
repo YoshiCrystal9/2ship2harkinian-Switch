@@ -1,10 +1,7 @@
 #include "AudioCollection.h"
 #include "sequence.h"
-#include "sfx.h"
-#include <vector>
 #include <utils/StringHelper.h>
-#include <libultraship/bridge.h>
-#include <libultraship/classes.h>
+#include "public/bridge/consolevariablebridge.h"
 #include <2s2h/BenPort.h>
 #include <locale>
 #include <filesystem>

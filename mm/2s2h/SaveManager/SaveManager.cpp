@@ -3,7 +3,6 @@
 #include <fstream>
 #include <filesystem>
 #include <nlohmann/json.hpp>
-#include <libultraship/libultraship.h>
 
 #include "BenJsonConversions.hpp"
 #include "BenPort.h"

@@ -1,6 +1,5 @@
 #include "2s2h/resource/importer/scenecommand/SetMinimapListFactory.h"
 #include "2s2h/resource/type/scenecommand/SetMinimapList.h"
-#include "spdlog/spdlog.h"
 
 namespace SOH {
 std::shared_ptr<Ship::IResource> SetMinimapListFactory::ReadResource(std::shared_ptr<Ship::ResourceInitData> initData,

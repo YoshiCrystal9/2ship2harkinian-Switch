@@ -1,6 +1,5 @@
 #include "2s2h/resource/importer/CollisionHeaderFactory.h"
 #include "2s2h/resource/type/CollisionHeader.h"
-#include "spdlog/spdlog.h"
 
 namespace SOH {
 std::shared_ptr<Ship::IResource>

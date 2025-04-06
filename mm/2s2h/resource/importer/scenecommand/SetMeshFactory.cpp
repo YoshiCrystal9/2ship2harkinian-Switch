@@ -1,7 +1,7 @@
 #include "2s2h/resource/importer/scenecommand/SetMeshFactory.h"
 #include "2s2h/resource/type/scenecommand/SetMesh.h"
 #include "spdlog/spdlog.h"
-#include "libultraship/libultraship.h"
+#include "Context.h"
 
 namespace SOH {
 std::shared_ptr<Ship::IResource> SetMeshFactory::ReadResource(std::shared_ptr<Ship::ResourceInitData> initData,

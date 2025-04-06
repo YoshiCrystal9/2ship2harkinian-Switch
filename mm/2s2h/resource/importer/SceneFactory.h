@@ -5,6 +5,7 @@
 #include "2s2h/resource/importer/scenecommand/SceneCommandFactory.h"
 #include "Resource.h"
 #include "ResourceFactoryBinary.h"
+#include <unordered_map>
 
 namespace SOH {
 class ResourceFactoryBinarySceneV0 : public Ship::ResourceFactoryBinary {

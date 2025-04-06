@@ -3,8 +3,8 @@
 #ifdef __cplusplus
 
 #include <string>
-#include <libultraship/libultraship.h>
-
+#include <cstdint>
+#include <GuiWindow.h>
 namespace Notification {
 
 struct Options {

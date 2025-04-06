@@ -1,5 +1,5 @@
 #include "ActorBehavior.h"
-#include <libultraship/libultraship.h>
+#include "public/bridge/consolevariablebridge.h"
 #include "2s2h/CustomItem/CustomItem.h"
 #include "assets/2s2h_assets.h"
 #include "2s2h/ActorExtension/ActorListIndex.h"

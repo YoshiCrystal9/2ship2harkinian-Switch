@@ -16,6 +16,7 @@
 #include <string.h>
 
 #include "2s2h_assets.h"
+#include "public/bridge/consolevariablebridge.h"
 
 const char* gBombersNotebookPhotos[] = {
     gBombersNotebookPhotoAnjuTex,

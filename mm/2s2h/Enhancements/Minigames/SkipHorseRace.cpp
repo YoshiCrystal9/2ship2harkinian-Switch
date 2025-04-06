@@ -1,10 +1,11 @@
-#include <libultraship/bridge.h>
+#include "public/bridge/consolevariablebridge.h"
 #include "2s2h/GameInteractor/GameInteractor.h"
 #include "2s2h/Enhancements/Enhancements.h"
 #include "2s2h/ShipInit.hpp"
 
 extern "C" {
 #include "functions.h"
+#include "variables.h"
 #include "z64horse.h"
 }
 

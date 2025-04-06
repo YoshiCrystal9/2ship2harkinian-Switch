@@ -2,9 +2,10 @@
 #ifndef SAVE_MANAGER_H
 #define SAVE_MANAGER_H
 
-#include <libultraship/libultraship.h>
-
 #ifdef __cplusplus
+#include <string>
+#include <filesystem>
+#include <nlohmann/json.hpp>
 std::string SaveManager_GetFileName(int fileNum, bool isBackup = false);
 bool SaveManager_HandleFileDropped(std::string filePath);
 bool BinarySaveConverter_HandleFileDropped(std::string filePath);

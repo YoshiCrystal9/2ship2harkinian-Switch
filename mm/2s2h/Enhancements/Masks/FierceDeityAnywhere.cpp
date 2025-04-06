@@ -1,5 +1,5 @@
-#include <libultraship/bridge.h>
 #include "2s2h/ActorExtension/ActorExtension.h"
+#include "public/bridge/consolevariablebridge.h"
 #include "2s2h/GameInteractor/GameInteractor.h"
 #include "2s2h/ShipInit.hpp"
 

@@ -1,4 +1,5 @@
 #include "ActorBehavior.h"
+#include "2s2h/CustomMessage/CustomMessage.h"
 
 // These come from corresponding entries in z_message.c.
 #define GORON_MASK_TEXT 0x79

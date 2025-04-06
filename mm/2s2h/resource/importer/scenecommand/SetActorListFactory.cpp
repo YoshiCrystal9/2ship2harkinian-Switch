@@ -1,6 +1,5 @@
 #include "2s2h/resource/importer/scenecommand/SetActorListFactory.h"
 #include "2s2h/resource/type/scenecommand/SetActorList.h"
-#include "spdlog/spdlog.h"
 
 namespace SOH {
 std::shared_ptr<Ship::IResource> SetActorListFactory::ReadResource(std::shared_ptr<Ship::ResourceInitData> initData,

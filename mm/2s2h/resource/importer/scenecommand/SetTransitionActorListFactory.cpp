@@ -1,6 +1,5 @@
 #include "2s2h/resource/importer/scenecommand/SetTransitionActorListFactory.h"
 #include "2s2h/resource/type/scenecommand/SetTransitionActorList.h"
-#include "spdlog/spdlog.h"
 
 namespace SOH {
 std::shared_ptr<Ship::IResource>

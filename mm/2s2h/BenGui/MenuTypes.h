@@ -1,7 +1,6 @@
 #ifndef MENUTYPES_H
 #define MENUTYPES_H
 
-#include <libultraship/libultraship.h>
 #include "UIWidgets.hpp"
 
 typedef enum {

@@ -1,4 +1,5 @@
 #include "global.h"
+#include "public/bridge/consolevariablebridge.h"
 
 /**
  * Spawn an object file of a specified ID that will persist through room changes.

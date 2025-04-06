@@ -1,10 +1,14 @@
 #include "Spoiler.h"
-#include <libultraship/libultraship.h>
 #include <nlohmann/json.hpp>
 #include <fstream>
 #include <filesystem>
 #include <spdlog/spdlog.h>
 #include "BenPort.h"
+#include "public/bridge/consolevariablebridge.h"
+
+extern "C" {
+#include "sfx.h"
+}
 
 bool Rando::Spoiler::HandleFileDropped(std::string filePath) {
     try {

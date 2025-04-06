@@ -1,6 +1,5 @@
 #include "ResolutionEditor.h"
 #include <imgui.h>
-#include <libultraship/libultraship.h>
 
 #include <BenGui/UIWidgets.hpp>
 #include <graphic/Fast3D/gfx_pc.h>

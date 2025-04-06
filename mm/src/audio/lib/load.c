@@ -18,6 +18,7 @@
 #include "2s2h/Enhancements/Audio/AudioCollection.h"
 #include "2s2h/Enhancements/Audio/AudioEditor.h"
 #include "BenPort.h"
+#include "luslog.h"
 // Windows deprecated the use of `strdup` it uses _strdup. Linux/Unix doesn't have _strdup.
 #ifdef _MSC_VER
 #define strdup _strdup

@@ -1,8 +1,7 @@
 #include "2s2h/resource/importer/TextureAnimationFactory.h"
 #include "2s2h/resource/type/TextureAnimation.h"
-#include <libultraship/libultraship.h>
+#include "gbi.h"
 #include "spdlog/spdlog.h"
-#include <stdlib.h>
 
 namespace SOH {
 

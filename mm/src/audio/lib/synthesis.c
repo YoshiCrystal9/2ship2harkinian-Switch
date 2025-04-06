@@ -1,6 +1,7 @@
 #include "global.h"
 #include "resourcebridge.h"
 #include "2s2h/mixer.h"
+#include "public/bridge/consolevariablebridge.h"
 
 // DMEM Addresses for the RSP
 #define DMEM_TEMP 0x3B0

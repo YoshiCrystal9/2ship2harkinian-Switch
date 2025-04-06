@@ -13,6 +13,7 @@
 
 #include "2s2h/ShipUtils.h"
 #include "2s2h/Enhancements/FrameInterpolation/FrameInterpolation.h"
+#include "public/bridge/consolevariablebridge.h"
 
 #define FLAGS (ACTOR_FLAG_10 | ACTOR_FLAG_20)
 

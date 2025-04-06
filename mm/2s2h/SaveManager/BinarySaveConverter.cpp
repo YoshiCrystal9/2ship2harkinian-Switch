@@ -1,4 +1,3 @@
-#include <libultraship/libultraship.h>
 #include <fstream>
 #include <filesystem>
 #include <nlohmann/json.hpp>
@@ -6,6 +5,8 @@
 #include "2s2h/SaveManager/SaveManager.h"
 #include "utils/binarytools/BinaryReader.h"
 #include <string>
+#include "spdlog/spdlog.h"
+#include "Context.h"
 
 extern "C" {
 #include "z64math.h"

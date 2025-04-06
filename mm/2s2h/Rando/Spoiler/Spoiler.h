@@ -1,8 +1,9 @@
 #ifndef RANDO_SPOILER_H
 #define RANDO_SPOILER_H
 
-#include "Rando/Rando.h"
-#include <libultraship/libultraship.h>
+#include <vector>
+#include <string>
+#include "nlohmann/json.hpp"
 
 namespace Rando {
 

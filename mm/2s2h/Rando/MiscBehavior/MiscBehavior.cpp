@@ -1,4 +1,3 @@
-#include <libultraship/libultraship.h>
 #include "MiscBehavior.h"
 #include "2s2h/Rando/Logic/Logic.h"
 

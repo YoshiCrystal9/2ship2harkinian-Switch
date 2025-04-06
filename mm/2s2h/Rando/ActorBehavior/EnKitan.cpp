@@ -1,5 +1,5 @@
 #include "ActorBehavior.h"
-#include <libultraship/libultraship.h>
+#include "public/bridge/consolevariablebridge.h"
 
 extern "C" {
 #include "overlays/actors/ovl_En_Kitan/z_en_kitan.h"

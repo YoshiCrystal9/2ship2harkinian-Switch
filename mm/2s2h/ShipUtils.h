@@ -1,11 +1,13 @@
 #ifndef SHIP_UTILS_H
 #define SHIP_UTILS_H
 
-#include <libultraship/libultraship.h>
 #include "PR/ultratypes.h"
 
-#ifdef __cplusplus
+#include "gbi.h"
 
+#ifdef __cplusplus
+#include <string>
+#include <array>
 void LoadGuiTextures();
 std::string convertEnumToReadableName(const std::string& input);
 extern std::array<const char*, 11> digitList;

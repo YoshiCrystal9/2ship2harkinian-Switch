@@ -2,8 +2,6 @@
 #ifndef ACTOR_EXTENSION_H
 #define ACTOR_EXTENSION_H
 
-#include <libultraship/libultraship.h>
-
 #ifdef __cplusplus
 extern "C" {
 #include "z64actor.h"

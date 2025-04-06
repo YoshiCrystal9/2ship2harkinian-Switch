@@ -3,6 +3,7 @@
 
 #include "StaticData/StaticData.h"
 #include "Types.h"
+#include "variables.h"
 
 #define IS_RANDO (gSaveContext.save.shipSaveInfo.saveType == SAVETYPE_RANDO)
 #define RANDO_SAVE_CHECKS gSaveContext.save.shipSaveInfo.rando.randoSaveChecks

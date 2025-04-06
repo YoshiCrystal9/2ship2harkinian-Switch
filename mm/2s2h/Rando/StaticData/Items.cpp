@@ -1,5 +1,5 @@
 #include "StaticData.h"
-#include "libultraship/bridge.h"
+#include "public/bridge/consolevariablebridge.h"
 #include "2s2h/ShipUtils.h"
 #include "2s2h/Rando/Rando.h"
 

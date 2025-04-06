@@ -1,8 +1,6 @@
 #include "BenPort.h"
-#include <libultraship/libultraship.h>
 #include "2s2h/resource/type/Scene.h"
 #include <utils/StringHelper.h>
-#include <Vertex.h>
 #include "2s2h/GameInteractor/GameInteractor.h"
 
 extern "C" {

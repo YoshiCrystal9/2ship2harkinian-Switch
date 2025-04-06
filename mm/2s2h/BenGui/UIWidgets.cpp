@@ -1,10 +1,7 @@
 #include "UIWidgets.hpp"
 #include <imgui_internal.h>
-#include <sstream>
-#include <libultraship/libultraship.h>
 #include <string>
 #include <unordered_map>
-#include <libultraship/libultra/types.h>
 #include "2s2h/ShipUtils.h"
 #include <spdlog/fmt/fmt.h>
 

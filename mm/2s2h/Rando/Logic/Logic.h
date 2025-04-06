@@ -1,13 +1,13 @@
 #ifndef RANDO_LOGIC_H
 #define RANDO_LOGIC_H
 
-#include <libultraship/bridge.h>
 #include "Rando/Rando.h"
 #include "2s2h/GameInteractor/GameInteractor.h"
 #include "2s2h/ShipUtils.h"
 
 #include <unordered_map>
 #include <set>
+#include <cassert>
 
 extern "C" {
 #include "functions.h"

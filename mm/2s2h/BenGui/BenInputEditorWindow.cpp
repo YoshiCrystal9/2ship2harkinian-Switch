@@ -1,4 +1,7 @@
 #include "BenInputEditorWindow.h"
+#include <Context.h>
+#include "public/bridge/consolevariablebridge.h"
+#include "controller/controldevice/controller/mapping/ControllerRumbleMapping.h"
 #include "utils/StringHelper.h"
 #ifndef __WIIU__
 #include "controller/controldevice/controller/mapping/sdl/SDLAxisDirectionToButtonMapping.h"

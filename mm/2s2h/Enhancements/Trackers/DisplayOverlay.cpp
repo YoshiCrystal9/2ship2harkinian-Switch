@@ -1,6 +1,8 @@
 
 #include "DisplayOverlay.h"
-#include <libultraship/libultraship.h>
+#include <spdlog/fmt/fmt.h>
+#include "public/bridge/consolevariablebridge.h"
+#include "Context.h"
 
 extern "C" {
 #include "variables.h"

@@ -1,9 +1,12 @@
 #ifndef MENU_H
 #define MENU_H
 
-#include <libultraship/libultraship.h>
+#include "GuiWindow.h"
 #include "UIWidgets.hpp"
 #include "MenuTypes.h"
+#include <string>
+#include <unordered_map>
+#include <vector>
 
 namespace Ship {
 class Menu : public GuiWindow {

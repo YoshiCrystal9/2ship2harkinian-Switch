@@ -2,7 +2,6 @@
 #ifndef ACTOR_LIST_INDEX_H
 #define ACTOR_LIST_INDEX_H
 
-#include <libultraship/libultraship.h>
 #include "2s2h/ActorExtension/ActorExtension.h"
 
 #ifdef __cplusplus

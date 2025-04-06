@@ -1,6 +1,5 @@
 #include "2s2h/resource/importer/BackgroundFactory.h"
 #include "2s2h/resource/type/Background.h"
-#include "spdlog/spdlog.h"
 
 namespace SOH {
 std::shared_ptr<Ship::IResource>

@@ -1,6 +1,5 @@
 #include "2s2h/resource/importer/scenecommand/SetEchoSettingsFactory.h"
 #include "2s2h/resource/type/scenecommand/SetEchoSettings.h"
-#include "spdlog/spdlog.h"
 
 namespace SOH {
 std::shared_ptr<Ship::IResource> SetEchoSettingsFactory::ReadResource(std::shared_ptr<Ship::ResourceInitData> initData,

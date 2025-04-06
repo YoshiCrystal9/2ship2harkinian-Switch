@@ -271,14 +271,12 @@ typedef enum {
 
 #ifdef __cplusplus
 
-#include "2s2h/CustomMessage/CustomMessage.h"
 #include <vector>
 #include <functional>
 #include <map>
 #include <unordered_map>
 #include <cstdint>
 #include <algorithm>
-#include <variant>
 
 #include <version>
 #ifdef __cpp_lib_source_location

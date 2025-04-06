@@ -3,6 +3,7 @@
 #include "z64view.h"
 #include "2s2h/Enhancements/FrameInterpolation/FrameInterpolation.h"
 #include "2s2h/GameInteractor/GameInteractor.h"
+#include "public/bridge/consolevariablebridge.h"
 
 s32 View_ApplyPerspective(View* view);
 s32 View_ApplyOrtho(View* view);

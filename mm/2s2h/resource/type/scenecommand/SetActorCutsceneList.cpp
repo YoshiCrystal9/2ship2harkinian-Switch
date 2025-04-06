@@ -1,5 +1,4 @@
 #include "SetActorCutsceneList.h"
-#include "2s2h/resource/type/scenecommand/SetActorCutsceneList.h"
 
 namespace SOH {
 CutsceneEntry* SetActorCutsceneList::GetPointer() {

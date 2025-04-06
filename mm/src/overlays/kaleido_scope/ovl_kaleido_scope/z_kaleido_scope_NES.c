@@ -25,6 +25,7 @@
 #include "2s2h/GameInteractor/GameInteractor.h"
 
 #include "2s2h/Enhancements/Songs/Songs.h"
+#include "public/bridge/consolevariablebridge.h"
 
 // Page Textures (Background of Page):
 // Broken up into multiple textures.

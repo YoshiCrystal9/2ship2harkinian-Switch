@@ -1,4 +1,5 @@
-#include <libultraship/libultraship.h>
+#ifndef COSMETIC_EDITOR_H
+#define COSMETIC_EDITOR_H
 
 #ifdef __cplusplus
 
@@ -87,3 +88,5 @@ typedef struct {
 #ifdef __cplusplus
 }
 #endif //__cplusplus
+
+#endif

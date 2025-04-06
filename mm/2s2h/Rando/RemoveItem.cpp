@@ -1,5 +1,4 @@
 #include "Rando/Rando.h"
-#include <libultraship/libultraship.h>
 
 extern "C" {
 #include "variables.h"

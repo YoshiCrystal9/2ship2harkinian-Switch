@@ -5,6 +5,9 @@
 
 #include <vector>
 #include <set>
+#include <unordered_map>
+#include <string>
+#include <functional>
 
 struct ShipInit {
     static std::unordered_map<std::string, std::vector<std::function<void()>>>& GetAll() {

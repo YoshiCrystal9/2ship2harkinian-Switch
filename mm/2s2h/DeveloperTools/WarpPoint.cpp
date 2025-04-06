@@ -1,4 +1,3 @@
-#include <libultraship/libultraship.h>
 #include "2s2h/BenGui/UIWidgets.hpp"
 #include "window/gui/IconsFontAwesome4.h"
 #include "2s2h/GameInteractor/GameInteractor.h"
