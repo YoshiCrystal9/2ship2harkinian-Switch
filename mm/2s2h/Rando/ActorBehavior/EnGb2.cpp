@@ -31,6 +31,11 @@ void Rando::ActorBehavior::InitEnGb2Behavior() {
         player->talkActorDistance = refActor->xzDistToPlayer;
         player->exchangeItemAction = PLAYER_IA_MINUS1;
         Player_TalkWithPlayer(gPlayState, refActor);
+        /*
+         * This actor sets MSGMODE_TEXT_CLOSING state and expects GI to set it back to MSGMODE_TEXT_START. Because the
+         * GI is skipped, we manually start the textbox to prevent the player from being able to move during dialog.
+         */
+        Message_StartTextbox(gPlayState, 0x14DE, refActor);
     });
 
     COND_ID_HOOK(OnOpenText, 0x14D1, IS_RANDO, [](u16* textId, bool* loadFromMessageTable) {
