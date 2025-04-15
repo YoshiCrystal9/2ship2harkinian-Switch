@@ -112,8 +112,8 @@ static RegisterShipInitFunc initFunc([]() {
     };
     Regions[RR_BENEATH_THE_WELL_MIRROR_SHIELD_ROOM] = RandoRegion{ .name = "Mirror Shield Room", .sceneId = SCENE_REDEAD,
         .checks = {
-            // You can carry a flame using a stick from RR_BENEATH_THE_WELL_BABA_AND_POTS_ROOM.
-            CHECK(RC_BENEATH_THE_WELL_MIRROR_SHIELD, CAN_LIGHT_TORCH_NEAR_ANOTHER)
+            // In cases where the player comes from the exit. The flame is accessed two rooms back(RR_BENEATH_THE_WELL_BABA_AND_POTS_ROOM) and the door locks on the way out, so we also need to factor the requirements to get back into this room.
+            CHECK(RC_BENEATH_THE_WELL_MIRROR_SHIELD, (HAS_BOTTLE && CAN_ACCESS(BIG_POE) && HAS_ITEM(ITEM_MASK_GIBDO) && CAN_ACCESS(MILK_REFILL) && HAS_ITEM(ITEM_DEKU_STICK)) || CAN_USE_MAGIC_ARROW(FIRE))
         },
         .connections = {
             CONNECTION(RR_BENEATH_THE_WELL_FOUR_SPIKED_BARS, true),
