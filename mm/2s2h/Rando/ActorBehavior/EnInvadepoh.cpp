@@ -1,5 +1,4 @@
 #include "ActorBehavior.h"
-#include <libultraship/libultraship.h>
 
 void Rando::ActorBehavior::InitEnInvadepohBehavior() {
     // This is the same block found for non-scripted actors in OfferGetItem.cpp, but without Player_TalkWithPlayer().

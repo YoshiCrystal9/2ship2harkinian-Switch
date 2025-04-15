@@ -1,5 +1,4 @@
 #include "ActorBehavior.h"
-#include <libultraship/libultraship.h>
 
 extern "C" {
 #include "overlays/actors/ovl_En_Dno/z_en_dno.h"
