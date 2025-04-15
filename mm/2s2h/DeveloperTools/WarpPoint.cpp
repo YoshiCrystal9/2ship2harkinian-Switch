@@ -46,6 +46,21 @@ void Warp() {
         gSaveContext.save.cutsceneIndex = 0;
         gSaveContext.save.playerForm = PLAYER_FORM_HUMAN;
         gSaveContext.save.linkAge = 0;
+
+        // Need to unset flag values that are outside of `.save`
+        // Normally would happened in the MapSelect_LoadGame, but is skipped because of the dummy file num below
+        // This is mostly copied from Sram_OpenSave.
+        for (size_t i = 0; i < ARRAY_COUNT(gSaveContext.eventInf); i++) {
+            gSaveContext.eventInf[i] = 0;
+        }
+        for (int i = 0; i < ARRAY_COUNT(gSaveContext.cycleSceneFlags); i++) {
+            gSaveContext.cycleSceneFlags[i].chest = gSaveContext.save.saveInfo.permanentSceneFlags[i].chest;
+            gSaveContext.cycleSceneFlags[i].switch0 = gSaveContext.save.saveInfo.permanentSceneFlags[i].switch0;
+            gSaveContext.cycleSceneFlags[i].switch1 = gSaveContext.save.saveInfo.permanentSceneFlags[i].switch1;
+            gSaveContext.cycleSceneFlags[i].clearedRoom = gSaveContext.save.saveInfo.permanentSceneFlags[i].clearedRoom;
+            gSaveContext.cycleSceneFlags[i].collectible = gSaveContext.save.saveInfo.permanentSceneFlags[i].collectible;
+        }
+
         // Using dummy file num to bypass debug save setup in map select and manually execute save init/load hooks after
         gSaveContext.fileNum = 0xFE;
         MapSelect_LoadGame((MapSelectState*)gGameState, entrance, 0);
