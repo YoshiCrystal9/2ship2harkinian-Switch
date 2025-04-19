@@ -2,7 +2,8 @@
 #include <imgui.h>
 
 #include <BenGui/UIWidgets.hpp>
-#include <graphic/Fast3D/gfx_pc.h>
+#include <graphic/Fast3D/Fast3dWindow.h>
+#include <graphic/Fast3D/interpreter.h>
 #include "2s2h/BenPort.h"
 #include "2s2h/BenGui/BenMenu.h"
 
@@ -84,15 +85,30 @@ static bool disabled_pixelCount;
 
 using namespace UIWidgets;
 
+static std::weak_ptr<Fast::Interpreter> mInterpreter;
+
+std::shared_ptr<Fast::Interpreter> GetInterpreter() {
+    auto intP = mInterpreter.lock();
+    if (!intP) {
+        assert(false && "Lost reference to Fast::Interpreter");
+    }
+    return intP;
+}
+
 void RegisterResolutionWidgets() {
+    auto fastWnd = dynamic_pointer_cast<Fast::Fast3dWindow>(Ship::Context::GetInstance()->GetWindow());
+    mInterpreter = fastWnd->GetInterpreterWeak();
+
     WidgetPath path = { "Settings", "Graphics", 2 };
 
     // Resolution visualiser
     mBenMenu->AddWidget(path, "Viewport dimensions: {} x {}", WIDGET_TEXT).PreFunc([](WidgetInfo& info) {
+        auto gfx_current_game_window_viewport = GetInterpreter().get()->mGameWindowViewport;
         info.name = fmt::format("Viewport dimensions: {} x {}", gfx_current_game_window_viewport.width,
                                 gfx_current_game_window_viewport.height);
     });
     mBenMenu->AddWidget(path, "Internal resolution: {} x {}", WIDGET_TEXT).PreFunc([](WidgetInfo& info) {
+        auto gfx_current_dimensions = GetInterpreter().get()->mCurDimensions;
         info.name =
             fmt::format("Internal resolution: {} x {}", gfx_current_dimensions.width, gfx_current_dimensions.height);
     });
@@ -153,6 +169,8 @@ void RegisterResolutionWidgets() {
         })
         .Options(ComboboxOptions().ComboMap(aspectRatioPresetLabels));
     mBenMenu->AddWidget(path, "AspectRationCustom", WIDGET_CUSTOM).CustomFunction([](WidgetInfo& info) {
+        auto gfx_current_dimensions = GetInterpreter().get()->mCurDimensions;
+
         // Hide aspect ratio input fields if using one of the presets.
         if (item_aspectRatio == default_aspectRatio && !showHorizontalResField) {
             // Declare input interaction bools outside of IF statement to prevent Y field from disappearing.
@@ -451,6 +469,9 @@ void RegisterResolutionWidgets() {
 }
 
 void UpdateResolutionVars() {
+    auto gfx_current_game_window_viewport = GetInterpreter().get()->mGameWindowViewport;
+    auto gfx_current_dimensions = GetInterpreter().get()->mCurDimensions;
+
     // Clamp and update the cvars that don't use UIWidgets
     if (update[UPDATE_aspectRatioX] || update[UPDATE_aspectRatioY] || update[UPDATE_verticalPixelCount]) {
         if (update[UPDATE_aspectRatioX]) {
