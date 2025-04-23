@@ -3359,6 +3359,10 @@ void Interface_UpdateButtonsPart2(PlayState* play) {
         if (GET_PLAYER_FORM == player->transformation) {
             for (i = EQUIP_SLOT_C_LEFT; i <= EQUIP_SLOT_C_RIGHT; i++) {
                 // Individual C button
+                //! @bug When C-buttons are empty, their item code is 255. However, gPlayerFormItemRestrictions's second
+                //! dimension has only been allocated 114 elements. This leads to inconsistent behaviour when checking
+                //! the status of empty C-buttons - for most forms, the C-buttons are enabled when empty, however for
+                //! Deku Link only, empty C-buttons are disabled.
                 ItemId itemId = GET_CUR_FORM_BTN_ITEM(i);
                 if (GameInteractor_Should(VB_ITEM_BE_RESTRICTED, !gPlayerFormItemRestrictions[GET_PLAYER_FORM][itemId],
                                           &itemId)) {
