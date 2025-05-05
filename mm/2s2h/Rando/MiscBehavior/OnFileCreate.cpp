@@ -346,9 +346,6 @@ void Rando::MiscBehavior::OnFileCreate(s16 fileNum) {
                                              std::to_string(RANDO_SAVE_OPTIONS[RO_LOGIC]));
                 }
 
-                RANDO_SAVE_CHECKS[RC_STARTING_ITEM_DEKU_MASK].eligible = true;
-                RANDO_SAVE_CHECKS[RC_STARTING_ITEM_SONG_OF_HEALING].eligible = true;
-
                 if (CVarGetInteger("gRando.GenerateSpoiler", 0)) {
                     nlohmann::json spoiler = Rando::Spoiler::GenerateFromSaveContext();
                     spoiler["inputSeed"] = inputSeed;
@@ -371,6 +368,10 @@ void Rando::MiscBehavior::OnFileCreate(s16 fileNum) {
 
                 Audio_PlaySfx(NA_SE_SY_ATTENTION_SOUND);
             }
+
+            RANDO_SAVE_CHECKS[RC_STARTING_ITEM_DEKU_MASK].eligible = true;
+            RANDO_SAVE_CHECKS[RC_STARTING_ITEM_SONG_OF_HEALING].eligible = true;
+
         } catch (const std::exception& e) {
             SPDLOG_ERROR("Error with randomizer save creation: {}", e.what());
             Audio_PlaySfx(NA_SE_SY_QUIZ_INCORRECT);
