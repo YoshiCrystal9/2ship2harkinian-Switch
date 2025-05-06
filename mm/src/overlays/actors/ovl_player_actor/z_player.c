@@ -14794,6 +14794,7 @@ void Player_Action_18(Player* this, PlayState* play) {
         s16 var_a3;
 
         xStick *= GameInteractor_InvertControl(GI_INVERT_SHIELD_X);
+        yStick *= GameInteractor_InvertControl(GI_INVERT_SHIELD_Y);
         var_a1 = (yStick * Math_CosS(temp_a0)) + (Math_SinS(temp_a0) * xStick);
         temp_ft5 = (xStick * Math_CosS(temp_a0)) - (Math_SinS(temp_a0) * yStick);
 

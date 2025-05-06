@@ -702,6 +702,10 @@ void BenMenu::AddEnhancements() {
         .CVar("gEnhancements.Equipment.ChuDrops")
         .Options(
             CheckboxOptions().Tooltip("When a bomb drop is spawned, it has a 50% chance to be a Bombchu instead."));
+    AddWidget(path, "Invert Shield Y Axis", WIDGET_CVAR_CHECKBOX)
+        .CVar("gEnhancements.Equipment.InvertShieldY")
+        .Options(CheckboxOptions().Tooltip(
+            "Invert the Y axis while holding the shield so that it moves up with the left stick."));
 
     path.column = SECTION_COLUMN_2;
     AddWidget(path, "Modes", WIDGET_SEPARATOR_TEXT);
