@@ -375,8 +375,7 @@ static RegisterShipInitFunc initFunc([]() {
             EXIT(ENTRANCE(PATH_TO_SNOWHEAD, 1),             ENTRANCE(SNOWHEAD, 0), true),
         },
         .connections = {
-            CONNECTION(RR_SNOWHEAD_NEAR_TEMPLE, CanAccessDungeon(DUNGEON_INDEX_SNOWHEAD_TEMPLE)
-),
+            CONNECTION(RR_SNOWHEAD_NEAR_TEMPLE, CanAccessDungeon(DUNGEON_INDEX_SNOWHEAD_TEMPLE) && CAN_BE_GORON),
         },
         .oneWayEntrances = {
             ENTRANCE(SNOWHEAD, 3), // From Song of Soaring
@@ -391,12 +390,28 @@ static RegisterShipInitFunc initFunc([]() {
             CHECK(RC_SNOWHEAD_LARGE_SNOWBALL_05, CanKillEnemy(ACTOR_OBJ_SNOWBALL)),
             CHECK(RC_SNOWHEAD_LARGE_SNOWBALL_06, CanKillEnemy(ACTOR_OBJ_SNOWBALL)),
         },
+        .connections = {
+            CONNECTION(RR_SNOWHEAD_NEAR_PATH, true),
+            CONNECTION(RR_SNOWHEAD_OUTSIDE_FOUNTAIN, true),
+            CONNECTION(RR_SNOWHEAD_OUTSIDE_TEMPLE_ENTRANCE, true),
+        },
+    };
+    Regions[RR_SNOWHEAD_OUTSIDE_FOUNTAIN] = RandoRegion{ .sceneId = SCENE_12HAKUGINMAE,
         .exits = { //     TO                                         FROM
-            EXIT(ENTRANCE(SNOWHEAD_TEMPLE, 0),              ENTRANCE(SNOWHEAD, 1), CAN_BE_GORON),
             EXIT(ENTRANCE(FAIRY_FOUNTAIN, 2),               ENTRANCE(SNOWHEAD, 2), true),
         },
         .connections = {
-            CONNECTION(RR_SNOWHEAD_NEAR_PATH, true),
+            CONNECTION(RR_SNOWHEAD_NEAR_TEMPLE, CanAccessDungeon(DUNGEON_INDEX_SNOWHEAD_TEMPLE)),
+            // CONNECTION(RR_SNOWHEAD_NEAR_PATH, true), // can void out to this RR
+        },
+    };
+    Regions[RR_SNOWHEAD_OUTSIDE_TEMPLE_ENTRANCE] = RandoRegion{ .sceneId = SCENE_12HAKUGINMAE,
+        .exits = { //     TO                                         FROM
+            EXIT(ENTRANCE(SNOWHEAD_TEMPLE, 0),              ENTRANCE(SNOWHEAD, 1), true),
+        },
+        .connections = {
+            CONNECTION(RR_SNOWHEAD_NEAR_TEMPLE, CanAccessDungeon(DUNGEON_INDEX_SNOWHEAD_TEMPLE)),
+            // CONNECTION(RR_SNOWHEAD_NEAR_PATH, true), // can void out to this RR
         },
     };
 }, {});
