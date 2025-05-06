@@ -1,10 +1,15 @@
 #include "2s2h/BenGui/UIWidgets.hpp"
 #include "CosmeticEditor.h"
-#include "macros.h"
+#include "2s2h/ShipInit.hpp"
 
 std::vector<const char*> cosmeticEditorParentElements;
 
 extern "C" {
+#include "macros.h"
+
+void ResourceMgr_PatchGfxByName(const char* path, const char* patchName, int index, Gfx instruction);
+void ResourceMgr_UnpatchGfxByName(const char* path, const char* patchName);
+Gfx* ResourceMgr_LoadGfxByName(const char* path);
 Gfx* Gfx_DrawTexRectIA8_DropShadow(Gfx* gfx, TexturePtr texture, s16 textureWidth, s16 textureHeight, s16 rectLeft,
                                    s16 rectTop, s16 rectWidth, s16 rectHeight, u16 dsdx, u16 dtdy, s16 r, s16 g, s16 b,
                                    s16 a);
@@ -16,57 +21,158 @@ Gfx* Gfx_DrawTexRectIA16_DropShadow(Gfx* gfx, TexturePtr texture, s16 textureWid
 Gfx* Gfx_DrawTexRectIA8_DropShadowOffset(Gfx* gfx, TexturePtr texture, s16 textureWidth, s16 textureHeight,
                                          s16 rectLeft, s16 rectTop, s16 rectWidth, s16 rectHeight, u16 dsdx, u16 dtdy,
                                          s16 r, s16 g, s16 b, s16 a, s32 masks, s32 rects);
+void gfx_texture_cache_clear();
 }
 
+// clang-format off
 CosmeticEditorElement cosmeticEditorElements[COSMETIC_ELEMENT_MAX] = {
-    COSMETIC_EDITOR_ELEMENT(COSMETIC_ELEMENT_HEART_NORMAL, "Hearts", "Normal", "Hearts.Normal", 255, 70, 50, 255),
-    COSMETIC_EDITOR_ELEMENT(COSMETIC_ELEMENT_HEART_NORMAL_BEATING, "Hearts", "Beating", "Hearts.Beating", 255, 70, 50,
-                            255),
-    COSMETIC_EDITOR_ELEMENT(COSMETIC_ELEMENT_HEART_BORDER, "Hearts", "Border", "Hearts.Border", 50, 40, 60, 255),
-    COSMETIC_EDITOR_ELEMENT(COSMETIC_ELEMENT_HEART_DD, "Hearts", "DD", "Hearts.DD", 200, 0, 0, 255),
-    COSMETIC_EDITOR_ELEMENT(COSMETIC_ELEMENT_HEART_DD_BEATING, "Hearts", "DD Beating", "Hearts.DDBeating", 200, 0, 0,
-                            255),
-    COSMETIC_EDITOR_ELEMENT(COSMETIC_ELEMENT_HEART_DD_BORDER, "Hearts", "DD Border", "Hearts.DDBorder", 255, 255, 255,
-                            255),
-    COSMETIC_EDITOR_ELEMENT(COSMETIC_ELEMENT_MAGIC_NORMAL, "Magic Meter", "Normal", "Magic.Normal", 0, 200, 0, 255),
-    COSMETIC_EDITOR_ELEMENT(COSMETIC_ELEMENT_MAGIC_CHATEAU, "Magic Meter", "Chateau", "Magic.Chateau", 0, 0, 200, 255),
-    COSMETIC_EDITOR_ELEMENT(COSMETIC_ELEMENT_MAGIC_CONSUMED, "Magic Meter", "Active", "Magic.Active", 250, 250, 0, 255),
-    COSMETIC_EDITOR_ELEMENT(COSMETIC_ELEMENT_MAGIC_BORDER, "Magic Meter", "Border", "Magic.Border", 255, 255, 255, 255),
-    COSMETIC_EDITOR_ELEMENT(COSMETIC_ELEMENT_SMALL_KEY, "HUD", "Small Key", "HUD.SmallKey", 0, 200, 230, 255),
-    COSMETIC_EDITOR_ELEMENT(COSMETIC_ELEMENT_RUPEE_ICON, "HUD", "Rupee Icon", "HUD.RupeeIcon", 200, 255, 100, 255),
-    COSMETIC_EDITOR_ELEMENT(COSMETIC_ELEMENT_MINIMAP, "HUD", "Minimap", "HUD.Minimap", 0, 255, 255, 160),
-    COSMETIC_EDITOR_ELEMENT(COSMETIC_ELEMENT_SPIN_SLASH_CHARGE, "Effects", "Spin Slash Charge",
-                            "Effects.SpinSlashCharge", 170, 255, 255, 255),
-    COSMETIC_EDITOR_ELEMENT(COSMETIC_ELEMENT_SPIN_SLASH_BURST, "Effects", "Spin Slash Burst", "Effects.SpinSlashBurst",
-                            170, 255, 255, 255),
-    COSMETIC_EDITOR_ELEMENT(COSMETIC_ELEMENT_GREAT_SPIN_CHARGE, "Effects", "Great Spin Charge",
-                            "Effects.GreatSpinCharge", 255, 255, 170, 255),
-    COSMETIC_EDITOR_ELEMENT(COSMETIC_ELEMENT_GREAT_SPIN_BURST, "Effects", "Great Spin Burst", "Effects.GreatSpinBurst",
-                            255, 255, 170, 255),
-    COSMETIC_EDITOR_ELEMENT(COSMETIC_ELEMENT_FIRE_ARROW_PRIMARY, "Effects", "Fire Arrow Primary",
-                            "Effects.FireArrowPrim", 255, 200, 0, 255),
-    COSMETIC_EDITOR_ELEMENT(COSMETIC_ELEMENT_FIRE_ARROW_SECONDARY, "Effects", "Fire Arrow Secondary",
-                            "Effects.FireArrowSec", 255, 0, 0, 128),
-    COSMETIC_EDITOR_ELEMENT(COSMETIC_ELEMENT_ICE_ARROW_PRIMARY, "Effects", "Ice Arrow Primary", "Effects.IceArrowPrim",
-                            170, 255, 255, 255),
-    COSMETIC_EDITOR_ELEMENT(COSMETIC_ELEMENT_ICE_ARROW_SECONDARY, "Effects", "Ice Arrow Secondary",
-                            "Effects.IceArrowSec", 0, 0, 255, 128),
-    COSMETIC_EDITOR_ELEMENT(COSMETIC_ELEMENT_LIGHT_ARROW_PRIMARY, "Effects", "Light Arrow Primary",
-                            "Effects.LightArrowPrim", 255, 255, 170, 255),
-    COSMETIC_EDITOR_ELEMENT(COSMETIC_ELEMENT_LIGHT_ARROW_SECONDARY, "Effects", "Light Arrow Secondary",
-                            "Effects.LightArrowSec", 255, 255, 0, 128),
-    COSMETIC_EDITOR_ELEMENT(COSMETIC_ELEMENT_B_BUTTON, "Buttons", "B", "Buttons.B", 100, 255, 120, 255),
-    COSMETIC_EDITOR_ELEMENT(COSMETIC_ELEMENT_A_BUTTON, "Buttons", "A", "Buttons.A", 100, 200, 255, 255),
-    COSMETIC_EDITOR_ELEMENT(COSMETIC_ELEMENT_C_LEFT_BUTTON, "Buttons", "C Left", "Buttons.CLeft", 255, 240, 0, 255),
-    COSMETIC_EDITOR_ELEMENT(COSMETIC_ELEMENT_C_DOWN_BUTTON, "Buttons", "C Down", "Buttons.CDown", 255, 240, 0, 255),
-    COSMETIC_EDITOR_ELEMENT(COSMETIC_ELEMENT_C_RIGHT_BUTTON, "Buttons", "C Right", "Buttons.CRight", 255, 240, 0, 255),
-    COSMETIC_EDITOR_ELEMENT(COSMETIC_ELEMENT_D_PAD_BUTTON, "Buttons", "D Pad", "Buttons.DPad", 255, 255, 255, 255),
-    COSMETIC_EDITOR_ELEMENT(COSMETIC_ELEMENT_START_BUTTON, "Buttons", "Start", "Buttons.Start", 0xFF, 0x82, 0x3C, 255),
-    COSMETIC_EDITOR_ELEMENT(COSMETIC_ELEMENT_FILE_SELECT_MENU, "Menus", "File Select Window", "Menus.FileWindow", 100,
-                            150, 255, 255),
-    COSMETIC_EDITOR_ELEMENT(COSMETIC_ELEMENT_FILE_SELECT_PLATES, "Menus", "File Select Plates", "Menus.FilePlates", 100,
-                            150, 255, 255)
+    COSMETIC_EDITOR_ELEMENT(COSMETIC_ELEMENT_HEART_NORMAL,              "Hearts",           "Normal",                     "Hearts.Normal",                255, 70,  50,  255),
+    COSMETIC_EDITOR_ELEMENT(COSMETIC_ELEMENT_HEART_NORMAL_BEATING,      "Hearts",           "Beating",                    "Hearts.Beating",               255, 70,  50,  255),
+    COSMETIC_EDITOR_ELEMENT(COSMETIC_ELEMENT_HEART_BORDER,              "Hearts",           "Border",                     "Hearts.Border",                50,  40,  60,  255),
+    COSMETIC_EDITOR_ELEMENT(COSMETIC_ELEMENT_HEART_DD,                  "Hearts",           "DD",                         "Hearts.DD",                    200, 0,   0,   255),
+    COSMETIC_EDITOR_ELEMENT(COSMETIC_ELEMENT_HEART_DD_BEATING,          "Hearts",           "DD Beating",                 "Hearts.DDBeating",             200, 0,   0,   255),
+    COSMETIC_EDITOR_ELEMENT(COSMETIC_ELEMENT_HEART_DD_BORDER,           "Hearts",           "DD Border",                  "Hearts.DDBorder",              255, 255, 255, 255),
+    COSMETIC_EDITOR_ELEMENT(COSMETIC_ELEMENT_MAGIC_NORMAL,              "Magic Meter",      "Normal",                     "Magic.Normal",                 0,   200, 0,   255),
+    COSMETIC_EDITOR_ELEMENT(COSMETIC_ELEMENT_MAGIC_CHATEAU,             "Magic Meter",      "Chateau",                    "Magic.Chateau",                0,   0,   200, 255),
+    COSMETIC_EDITOR_ELEMENT(COSMETIC_ELEMENT_MAGIC_CONSUMED,            "Magic Meter",      "Active",                     "Magic.Active",                 250, 250, 0,   255),
+    COSMETIC_EDITOR_ELEMENT(COSMETIC_ELEMENT_MAGIC_BORDER,              "Magic Meter",      "Border",                     "Magic.Border",                 255, 255, 255, 255),
+    COSMETIC_EDITOR_ELEMENT(COSMETIC_ELEMENT_SMALL_KEY,                 "HUD",              "Small Key",                  "HUD.SmallKey",                 0,   200, 230, 255),
+    COSMETIC_EDITOR_ELEMENT(COSMETIC_ELEMENT_RUPEE_ICON,                "HUD",              "Rupee Icon",                 "HUD.RupeeIcon",                200, 255, 100, 255),
+    COSMETIC_EDITOR_ELEMENT(COSMETIC_ELEMENT_MINIMAP,                   "HUD",              "Minimap",                    "HUD.Minimap",                  0,   255, 255, 160),
+    COSMETIC_EDITOR_ELEMENT(COSMETIC_ELEMENT_SPIN_SLASH_CHARGE,         "Effects",          "Spin Slash Charge",          "Effects.SpinSlashCharge",      170, 255, 255, 255),
+    COSMETIC_EDITOR_ELEMENT(COSMETIC_ELEMENT_SPIN_SLASH_BURST,          "Effects",          "Spin Slash Burst",           "Effects.SpinSlashBurst",       170, 255, 255, 255),
+    COSMETIC_EDITOR_ELEMENT(COSMETIC_ELEMENT_GREAT_SPIN_CHARGE,         "Effects",          "Great Spin Charge",          "Effects.GreatSpinCharge",      255, 255, 170, 255),
+    COSMETIC_EDITOR_ELEMENT(COSMETIC_ELEMENT_GREAT_SPIN_BURST,          "Effects",          "Great Spin Burst",           "Effects.GreatSpinBurst",       255, 255, 170, 255),
+    COSMETIC_EDITOR_ELEMENT(COSMETIC_ELEMENT_FIRE_ARROW_PRIMARY,        "Effects",          "Fire Arrow Primary",         "Effects.FireArrowPrim",        255, 200, 0,   255),
+    COSMETIC_EDITOR_ELEMENT(COSMETIC_ELEMENT_FIRE_ARROW_SECONDARY,      "Effects",          "Fire Arrow Secondary",       "Effects.FireArrowSec",         255, 0,   0,   128),
+    COSMETIC_EDITOR_ELEMENT(COSMETIC_ELEMENT_ICE_ARROW_PRIMARY,         "Effects",          "Ice Arrow Primary",          "Effects.IceArrowPrim",         170, 255, 255, 255),
+    COSMETIC_EDITOR_ELEMENT(COSMETIC_ELEMENT_ICE_ARROW_SECONDARY,       "Effects",          "Ice Arrow Secondary",        "Effects.IceArrowSec",          0,   0,   255, 128),
+    COSMETIC_EDITOR_ELEMENT(COSMETIC_ELEMENT_LIGHT_ARROW_PRIMARY,       "Effects",          "Light Arrow Primary",        "Effects.LightArrowPrim",       255, 255, 170, 255),
+    COSMETIC_EDITOR_ELEMENT(COSMETIC_ELEMENT_LIGHT_ARROW_SECONDARY,     "Effects",          "Light Arrow Secondary",      "Effects.LightArrowSec",        255, 255, 0,   128),
+    COSMETIC_EDITOR_ELEMENT(COSMETIC_ELEMENT_B_BUTTON,                  "Buttons",          "B",                          "Buttons.B",                    100, 255, 120, 255),
+    COSMETIC_EDITOR_ELEMENT(COSMETIC_ELEMENT_A_BUTTON,                  "Buttons",          "A",                          "Buttons.A",                    100, 200, 255, 255),
+    COSMETIC_EDITOR_ELEMENT(COSMETIC_ELEMENT_C_LEFT_BUTTON,             "Buttons",          "C Left",                     "Buttons.CLeft",                255, 240, 0,   255),
+    COSMETIC_EDITOR_ELEMENT(COSMETIC_ELEMENT_C_DOWN_BUTTON,             "Buttons",          "C Down",                     "Buttons.CDown",                255, 240, 0,   255),
+    COSMETIC_EDITOR_ELEMENT(COSMETIC_ELEMENT_C_RIGHT_BUTTON,            "Buttons",          "C Right",                    "Buttons.CRight",               255, 240, 0,   255),
+    COSMETIC_EDITOR_ELEMENT(COSMETIC_ELEMENT_D_PAD_BUTTON,              "Buttons",          "D Pad",                      "Buttons.DPad",                 255, 255, 255, 255),
+    COSMETIC_EDITOR_ELEMENT(COSMETIC_ELEMENT_START_BUTTON,              "Buttons",          "Start",                      "Buttons.Start",                255, 130, 60,  255),
+    COSMETIC_EDITOR_ELEMENT(COSMETIC_ELEMENT_FILE_SELECT_MENU,          "Menus",            "File Select Window",         "Menus.FileWindow",             100, 150, 255, 255),
+    COSMETIC_EDITOR_ELEMENT(COSMETIC_ELEMENT_FILE_SELECT_PLATES,        "Menus",            "File Select Plates",         "Menus.FilePlates",             100, 150, 255, 255),
+    COSMETIC_EDITOR_ELEMENT(COSMETIC_ELEMENT_HUMAN_TUNIC,               "Player",           "Human Tunic",                "Player.HumanTunic",            30, 105,  27, 255),
+    COSMETIC_EDITOR_ELEMENT(COSMETIC_ELEMENT_HUMAN_HAIR,                "Player",           "Human Hair",                 "Player.HumanHair",             30, 105,  27, 255),
+    COSMETIC_EDITOR_ELEMENT(COSMETIC_ELEMENT_DEKU_TUNIC,                "Player",           "Deku Tunic",                 "Player.DekuTunic",             30, 105,  27, 255),
+    COSMETIC_EDITOR_ELEMENT(COSMETIC_ELEMENT_DEKU_HAIR,                 "Player",           "Deku Hair",                  "Player.DekuHair",              30, 105,  27, 255),
+    COSMETIC_EDITOR_ELEMENT(COSMETIC_ELEMENT_GORON_TUNIC,               "Player",           "Goron Tunic",                "Player.GoronTunic",            30, 105,  27, 255),
+    COSMETIC_EDITOR_ELEMENT(COSMETIC_ELEMENT_ZORA_TUNIC,                "Player",           "Zora Tunic",                 "Player.ZoraTunic",             30, 105,  27, 255),
+    COSMETIC_EDITOR_ELEMENT(COSMETIC_ELEMENT_KAFEI_HAIR,                "Player",           "Kafei Hair",                 "Player.KafeiHair",             30, 105,  27, 255),
 };
+// clang-format on
+
+typedef struct {
+    uint16_t data1;
+    uint16_t data2;
+} OriginalRGB;
+
+std::unordered_map<std::string, std::unordered_map<int, OriginalRGB>> originalRGB;
+
+void PatchPalette(const char* path, int index, uint8_t r, uint8_t g, uint8_t b) {
+    auto res = Ship::Context::GetInstance()->GetResourceManager()->LoadResource(path);
+    auto data = (uint8_t*)res->GetRawPointer();
+
+    if (!originalRGB.contains(path) || !originalRGB[path].contains(index)) {
+        originalRGB[path][index] = {
+            data[index * 2],
+            data[index * 2 + 1],
+        };
+    }
+
+    uint16_t col16 = (r << 11) | (g << 6) | (b << 1) | 1;
+    data[index * 2] = col16 >> 8;
+    data[index * 2 + 1] = col16 & 0xff;
+}
+
+void UnpatchPalette(const char* path, int index) {
+    if (!originalRGB.contains(path) || !originalRGB[path].contains(index)) {
+        return;
+    }
+
+    auto res = Ship::Context::GetInstance()->GetResourceManager()->LoadResource(path);
+    auto data = (uint8_t*)res->GetRawPointer();
+
+    data[index * 2] = originalRGB[path][index].data1;
+    data[index * 2 + 1] = originalRGB[path][index].data2;
+}
+
+enum SHADE_MODE {
+    MODE_REVERT,
+    MODE_AVG,
+    MODE_MIN,
+    MODE_MAX,
+};
+
+Gfx backToWhite[] = {
+    gsDPSetPrimColor(0, 0x80, 255, 255, 255, 255),
+    gsDPPipeSync(),
+    gsSPEndDisplayList(),
+};
+
+// First, it pulls all colors from the palette. Then it finds the average color across the range, and calculates the
+// difference between the average color and the target color. It then colors the range a bright shade of off-white,
+// and shades it lighter or darker based on the difference between the average color and the target color.
+void ShadePaletteWhite(const char* path, uint32_t begin, uint32_t end, SHADE_MODE mode) {
+    auto res = Ship::Context::GetInstance()->GetResourceManager()->LoadResource(path);
+    auto data = (uint8_t*)res->GetRawPointer();
+
+    uint32_t maxR = 0;
+    uint32_t maxG = 0;
+    uint32_t maxB = 0;
+
+    for (int i = begin; i <= end; i++) {
+        UnpatchPalette(path, i);
+
+        uint16_t col16 = (data[i * 2] << 8) | data[i * 2 + 1];
+        uint8_t a = col16 & 1;
+        uint8_t r = col16 >> 11;
+        uint8_t g = (col16 >> 6) & 0x1f;
+        uint8_t b = (col16 >> 1) & 0x1f;
+
+        maxR = MAX(maxR, r);
+        maxG = MAX(maxG, g);
+        maxB = MAX(maxB, b);
+    }
+
+    if (mode == MODE_REVERT) {
+        return;
+    }
+
+    for (int i = begin; i <= end; i++) {
+        uint16_t col16 = (data[i * 2] << 8) | data[i * 2 + 1];
+        uint8_t a = col16 & 1;
+        uint8_t r = col16 >> 11;
+        uint8_t g = (col16 >> 6) & 0x1f;
+        uint8_t b = (col16 >> 1) & 0x1f;
+
+        int8_t diffR = maxR - r;
+        int8_t diffG = maxG - g;
+        int8_t diffB = maxB - b;
+
+        int8_t diff = 0;
+
+        if (mode == MODE_AVG) {
+            diff = (diffR + diffG + diffB) / 3;
+        } else if (mode == MODE_MIN) {
+            diff = MIN(MIN(diffR, diffG), diffB);
+        } else if (mode == MODE_MAX) {
+            diff = MAX(MAX(diffR, diffG), diffB);
+        }
+
+        r = MIN(MAX(31 - diff, 0), 31);
+        g = MIN(MAX(31 - diff, 0), 31);
+        b = MIN(MAX(31 - diff, 0), 31);
+
+        PatchPalette(path, i, r, g, b);
+    }
+}
 
 void CopyFloatArray(CosmeticEditorElementID id, float currentColor[4], bool isChanged) {
     if (isChanged) {
@@ -155,6 +261,8 @@ void CosmeticEditorRandomizeElement(CosmeticEditorElement element) {
 
     CVarSetColor(element.colorCvar, colorSelected);
     CVarSetInteger(element.colorChangedCvar, true);
+    ShipInit::Init(element.colorCvar);
+    ShipInit::Init(element.colorChangedCvar);
     Ship::Context::GetInstance()->GetWindow()->GetGui()->SaveConsoleVariablesNextFrame();
 }
 
@@ -168,6 +276,8 @@ void CosmeticEditorResetAllElements() {
     for (auto& element : cosmeticEditorElements) {
         CVarClear(element.colorCvar);
         CVarClear(element.colorChangedCvar);
+        ShipInit::Init(element.colorCvar);
+        ShipInit::Init(element.colorChangedCvar);
     }
 }
 
@@ -217,12 +327,16 @@ void CosmeticEditorDrawColorTab() {
 
                 CVarSetColor(entry.colorCvar, colorSelected);
                 CVarSetInteger(entry.colorChangedCvar, true);
+                ShipInit::Init(entry.colorCvar);
+                ShipInit::Init(entry.colorChangedCvar);
                 Ship::Context::GetInstance()->GetWindow()->GetGui()->SaveConsoleVariablesNextFrame();
             }
             ImGui::SameLine();
             if (ImGui::Button(ICON_FA_UNDO, ImVec2(27.0f, 27.0f))) {
                 CVarClear(entry.colorCvar);
                 CVarClear(entry.colorChangedCvar);
+                ShipInit::Init(entry.colorCvar);
+                ShipInit::Init(entry.colorChangedCvar);
                 Ship::Context::GetInstance()->GetWindow()->GetGui()->SaveConsoleVariablesNextFrame();
             }
             ImGui::SameLine();
@@ -265,3 +379,304 @@ void CosmeticEditorWindow::InitElement() {
         cosmeticEditorParentElements.push_back(element.parentName);
     }
 }
+
+// COSMETIC_ELEMENT_HUMAN_TUNIC
+
+Gfx humanTunic[] = {
+    gsDPSetPrimColor(0, 0, 0, 0, 0, 0),
+    gsDPPipeSync(),
+    gsSPEndDisplayList(),
+};
+
+static RegisterShipInitFunc humanTunicPatch(
+    []() {
+        if (CVarGetInteger(cosmeticEditorElements[COSMETIC_ELEMENT_HUMAN_TUNIC].colorChangedCvar, 0)) {
+            ResourceMgr_PatchGfxByName("objects/object_link_child/gLinkHumanWaistDL", "setPrim", 5,
+                                       gsSPDisplayList(humanTunic));
+            ResourceMgr_PatchGfxByName("objects/object_link_child/gLinkHumanRightThighDL", "setPrim", 10,
+                                       gsSPDisplayList(humanTunic));
+            ResourceMgr_PatchGfxByName("objects/object_link_child/gLinkHumanLeftThighDL", "setPrim", 10,
+                                       gsSPDisplayList(humanTunic));
+            ResourceMgr_PatchGfxByName("objects/object_link_child/gLinkHumanHeadDL", "setPrim", 92,
+                                       gsSPDisplayList(humanTunic));
+            ResourceMgr_PatchGfxByName("objects/object_link_child/gLinkHumanHatDL", "setPrim", 10,
+                                       gsSPDisplayList(humanTunic));
+            ResourceMgr_PatchGfxByName("objects/object_link_child/gLinkHumanCollarDL", "setPrim", 5,
+                                       gsSPDisplayList(humanTunic));
+            ResourceMgr_PatchGfxByName("objects/object_link_child/gLinkHumanLeftShoulderDL", "setPrim1", 10,
+                                       gsSPDisplayList(humanTunic));
+            ResourceMgr_PatchGfxByName("objects/object_link_child/gLinkHumanLeftShoulderDL", "setPrim2", 65,
+                                       gsSPDisplayList(humanTunic));
+            ResourceMgr_PatchGfxByName("objects/object_link_child/gLinkHumanRightShoulderDL", "setPrim1", 10,
+                                       gsSPDisplayList(humanTunic));
+            ResourceMgr_PatchGfxByName("objects/object_link_child/gLinkHumanRightShoulderDL", "setPrim2", 65,
+                                       gsSPDisplayList(humanTunic));
+            ResourceMgr_PatchGfxByName("objects/object_link_child/gLinkHumanTorsoDL", "setPrim", 5,
+                                       gsSPDisplayList(humanTunic));
+        } else {
+            ResourceMgr_UnpatchGfxByName("objects/object_link_child/gLinkHumanWaistDL", "setPrim");
+            ResourceMgr_UnpatchGfxByName("objects/object_link_child/gLinkHumanRightThighDL", "setPrim");
+            ResourceMgr_UnpatchGfxByName("objects/object_link_child/gLinkHumanLeftThighDL", "setPrim");
+            ResourceMgr_UnpatchGfxByName("objects/object_link_child/gLinkHumanHeadDL", "setPrim");
+            ResourceMgr_UnpatchGfxByName("objects/object_link_child/gLinkHumanHatDL", "setPrim");
+            ResourceMgr_UnpatchGfxByName("objects/object_link_child/gLinkHumanCollarDL", "setPrim");
+            ResourceMgr_UnpatchGfxByName("objects/object_link_child/gLinkHumanLeftShoulderDL", "setPrim1");
+            ResourceMgr_UnpatchGfxByName("objects/object_link_child/gLinkHumanLeftShoulderDL", "setPrim2");
+            ResourceMgr_UnpatchGfxByName("objects/object_link_child/gLinkHumanRightShoulderDL", "setPrim1");
+            ResourceMgr_UnpatchGfxByName("objects/object_link_child/gLinkHumanRightShoulderDL", "setPrim2");
+            ResourceMgr_UnpatchGfxByName("objects/object_link_child/gLinkHumanTorsoDL", "setPrim");
+        }
+    },
+    { cosmeticEditorElements[COSMETIC_ELEMENT_HUMAN_TUNIC].colorChangedCvar });
+
+static RegisterShipInitFunc humanTunicColor(
+    []() {
+        Color_RGBA8 changedColor = CVarGetColor(cosmeticEditorElements[COSMETIC_ELEMENT_HUMAN_TUNIC].colorCvar, {});
+        humanTunic[0] = gsDPSetPrimColor(0, 0, changedColor.r, changedColor.g, changedColor.b, 255);
+    },
+    { cosmeticEditorElements[COSMETIC_ELEMENT_HUMAN_TUNIC].colorCvar });
+
+// COSMETIC_ELEMENT_HUMAN_HAIR
+
+Gfx humanHair[] = {
+    gsDPSetPrimColor(0, 0, 0, 0, 0, 0),
+    gsDPPipeSync(),
+    gsSPEndDisplayList(),
+};
+
+static RegisterShipInitFunc humanHairPatch(
+    []() {
+        if (CVarGetInteger(cosmeticEditorElements[COSMETIC_ELEMENT_HUMAN_HAIR].colorChangedCvar, 0)) {
+            ResourceMgr_PatchGfxByName("objects/object_link_child/gLinkHumanHeadDL", "setPrim1", 162,
+                                       gsSPDisplayList(humanHair));
+            ResourceMgr_PatchGfxByName("objects/object_link_child/gLinkHumanHeadDL", "setPrim2", 201,
+                                       gsSPDisplayList(backToWhite));
+
+            ShadePaletteWhite("objects/object_link_child/object_link_child_Tex_005400", 0, 127, MODE_AVG);
+        } else {
+            ResourceMgr_UnpatchGfxByName("objects/object_link_child/gLinkHumanHeadDL", "setPrim1");
+            ResourceMgr_UnpatchGfxByName("objects/object_link_child/gLinkHumanHeadDL", "setPrim2");
+
+            ShadePaletteWhite("objects/object_link_child/object_link_child_Tex_005400", 0, 127, MODE_REVERT);
+        }
+        gfx_texture_cache_clear();
+    },
+    { cosmeticEditorElements[COSMETIC_ELEMENT_HUMAN_HAIR].colorChangedCvar });
+
+static RegisterShipInitFunc humanHairColor(
+    []() {
+        Color_RGBA8 changedColor = CVarGetColor(cosmeticEditorElements[COSMETIC_ELEMENT_HUMAN_HAIR].colorCvar, {});
+        humanHair[0] = gsDPSetPrimColor(0, 0, changedColor.r, changedColor.g, changedColor.b, 255);
+    },
+    { cosmeticEditorElements[COSMETIC_ELEMENT_HUMAN_HAIR].colorCvar });
+
+// COSMETIC_ELEMENT_DEKU_TUNIC
+
+Gfx dekuTunic[] = {
+    gsDPSetPrimColor(0, 0, 0, 0, 0, 0),
+    gsDPPipeSync(),
+    gsSPEndDisplayList(),
+};
+
+static RegisterShipInitFunc dekuTunicPatch(
+    []() {
+        if (CVarGetInteger(cosmeticEditorElements[COSMETIC_ELEMENT_DEKU_TUNIC].colorChangedCvar, 0)) {
+            ResourceMgr_PatchGfxByName("objects/object_link_nuts/gLinkDekuWaistDL", "setPrim", 22,
+                                       gsSPDisplayList(dekuTunic));
+            ResourceMgr_PatchGfxByName("objects/object_link_nuts/gLinkDekuHeadDL", "setPrim1", 55,
+                                       gsSPDisplayList(dekuTunic));
+            ResourceMgr_PatchGfxByName("objects/object_link_nuts/gLinkDekuHeadDL", "setPrim2", 76,
+                                       gsSPDisplayList(backToWhite));
+            ResourceMgr_PatchGfxByName("objects/object_link_nuts/gLinkDekuHatDL", "setPrim", 29,
+                                       gsSPDisplayList(dekuTunic));
+
+            ShadePaletteWhite("objects/object_link_nuts/object_link_nuts_TLUT_003EB0", 243, 254, MODE_MAX);
+        } else {
+            ResourceMgr_UnpatchGfxByName("objects/object_link_nuts/gLinkDekuWaistDL", "setPrim");
+            ResourceMgr_UnpatchGfxByName("objects/object_link_nuts/gLinkDekuHeadDL", "setPrim1");
+            ResourceMgr_UnpatchGfxByName("objects/object_link_nuts/gLinkDekuHeadDL", "setPrim2");
+            ResourceMgr_UnpatchGfxByName("objects/object_link_nuts/gLinkDekuHatDL", "setPrim");
+
+            ShadePaletteWhite("objects/object_link_nuts/object_link_nuts_TLUT_003EB0", 243, 254, MODE_REVERT);
+        }
+        gfx_texture_cache_clear();
+    },
+    { cosmeticEditorElements[COSMETIC_ELEMENT_DEKU_TUNIC].colorChangedCvar });
+
+static RegisterShipInitFunc dekuTunicColor(
+    []() {
+        Color_RGBA8 changedColor = CVarGetColor(cosmeticEditorElements[COSMETIC_ELEMENT_DEKU_TUNIC].colorCvar, {});
+        dekuTunic[0] = gsDPSetPrimColor(0, 0, changedColor.r, changedColor.g, changedColor.b, 255);
+    },
+    { cosmeticEditorElements[COSMETIC_ELEMENT_DEKU_TUNIC].colorCvar });
+
+// COSMETIC_ELEMENT_DEKU_HAIR
+
+Gfx dekuHair[] = {
+    gsDPSetPrimColor(0, 0, 0, 0, 0, 0),
+    gsDPPipeSync(),
+    gsSPEndDisplayList(),
+};
+
+static RegisterShipInitFunc dekuHairPatch(
+    []() {
+        if (CVarGetInteger(cosmeticEditorElements[COSMETIC_ELEMENT_DEKU_HAIR].colorChangedCvar, 0)) {
+            ResourceMgr_PatchGfxByName("objects/object_link_nuts/gLinkDekuHeadDL", "setPrim3", 22,
+                                       gsSPDisplayList(dekuHair));
+            ResourceMgr_PatchGfxByName("objects/object_link_nuts/gLinkDekuHeadDL", "setPrim4", 42,
+                                       gsSPDisplayList(backToWhite));
+
+            ShadePaletteWhite("objects/object_link_nuts/object_link_nuts_TLUT_003EB0", 109, 122, MODE_MAX);
+            ShadePaletteWhite("objects/object_link_nuts/object_link_nuts_TLUT_003EB0", 124, 242, MODE_MAX);
+        } else {
+            ResourceMgr_UnpatchGfxByName("objects/object_link_nuts/gLinkDekuHeadDL", "setPrim3");
+            ResourceMgr_UnpatchGfxByName("objects/object_link_nuts/gLinkDekuHeadDL", "setPrim4");
+
+            ShadePaletteWhite("objects/object_link_nuts/object_link_nuts_TLUT_003EB0", 109, 122, MODE_REVERT);
+            ShadePaletteWhite("objects/object_link_nuts/object_link_nuts_TLUT_003EB0", 124, 242, MODE_REVERT);
+        }
+        gfx_texture_cache_clear();
+    },
+    { cosmeticEditorElements[COSMETIC_ELEMENT_DEKU_HAIR].colorChangedCvar });
+
+static RegisterShipInitFunc dekuHairColor(
+    []() {
+        Color_RGBA8 changedColor = CVarGetColor(cosmeticEditorElements[COSMETIC_ELEMENT_DEKU_HAIR].colorCvar, {});
+        dekuHair[0] = gsDPSetPrimColor(0, 0, changedColor.r, changedColor.g, changedColor.b, 255);
+    },
+    { cosmeticEditorElements[COSMETIC_ELEMENT_DEKU_HAIR].colorCvar });
+
+// COSMETIC_ELEMENT_KAFEI_HAIR
+
+Gfx kafeiHair[] = {
+    gsDPSetPrimColor(0, 0, 0, 0, 0, 0),
+    gsDPPipeSync(),
+    gsSPEndDisplayList(),
+};
+
+static RegisterShipInitFunc kafeiHairPatch(
+    []() {
+        if (CVarGetInteger(cosmeticEditorElements[COSMETIC_ELEMENT_KAFEI_HAIR].colorChangedCvar, 0)) {
+            ResourceMgr_PatchGfxByName("objects/object_test3/gKafeiHeadDL", "setPrim1", 101,
+                                       gsSPDisplayList(kafeiHair));
+            ResourceMgr_PatchGfxByName("objects/object_test3/gKafeiHeadDL", "setPrim2", 163,
+                                       gsSPDisplayList(backToWhite));
+            ResourceMgr_PatchGfxByName("objects/object_test3/gKafeiHeadDL", "setPrim3", 200,
+                                       gsSPDisplayList(kafeiHair));
+            ResourceMgr_PatchGfxByName("objects/object_test3/gKafeiHeadDL", "setPrim4", 236,
+                                       gsSPDisplayList(backToWhite));
+
+            ShadePaletteWhite("objects/object_test3/gKafeiBody2TLUT", 1, 3, MODE_MIN);
+            ShadePaletteWhite("objects/object_test3/gKafeiBody2TLUT", 8, 255, MODE_MIN);
+        } else {
+            ResourceMgr_UnpatchGfxByName("objects/object_test3/gKafeiHeadDL", "setPrim1");
+            ResourceMgr_UnpatchGfxByName("objects/object_test3/gKafeiHeadDL", "setPrim2");
+            ResourceMgr_UnpatchGfxByName("objects/object_test3/gKafeiHeadDL", "setPrim3");
+            ResourceMgr_UnpatchGfxByName("objects/object_test3/gKafeiHeadDL", "setPrim4");
+
+            ShadePaletteWhite("objects/object_test3/gKafeiBody2TLUT", 1, 3, MODE_REVERT);
+            ShadePaletteWhite("objects/object_test3/gKafeiBody2TLUT", 8, 255, MODE_REVERT);
+        }
+        gfx_texture_cache_clear();
+    },
+    { cosmeticEditorElements[COSMETIC_ELEMENT_KAFEI_HAIR].colorChangedCvar });
+
+static RegisterShipInitFunc kafeiHairColor(
+    []() {
+        Color_RGBA8 changedColor = CVarGetColor(cosmeticEditorElements[COSMETIC_ELEMENT_KAFEI_HAIR].colorCvar, {});
+        kafeiHair[0] = gsDPSetPrimColor(0, 0, changedColor.r, changedColor.g, changedColor.b, 255);
+    },
+    { cosmeticEditorElements[COSMETIC_ELEMENT_KAFEI_HAIR].colorCvar });
+
+// COSMETIC_ELEMENT_GORON_TUNIC
+
+Gfx goronTunic[] = {
+    gsDPSetPrimColor(0, 0, 0, 0, 0, 0),
+    gsDPPipeSync(),
+    gsSPEndDisplayList(),
+};
+
+static RegisterShipInitFunc goronTunicPatch(
+    []() {
+        if (CVarGetInteger(cosmeticEditorElements[COSMETIC_ELEMENT_GORON_TUNIC].colorChangedCvar, 0)) {
+            ResourceMgr_PatchGfxByName("objects/object_link_goron/gLinkGoronWaistDL", "setPrim", 16,
+                                       gsSPDisplayList(goronTunic));
+            ResourceMgr_PatchGfxByName("objects/object_link_goron/gLinkGoronHatDL", "setPrim", 17,
+                                       gsSPDisplayList(goronTunic));
+
+            ShadePaletteWhite("objects/object_link_goron/object_link_goron_Tex_002780", 0, 127, MODE_MAX);
+        } else {
+            ResourceMgr_UnpatchGfxByName("objects/object_link_goron/gLinkGoronWaistDL", "setPrim");
+            ResourceMgr_UnpatchGfxByName("objects/object_link_goron/gLinkGoronHatDL", "setPrim");
+
+            ShadePaletteWhite("objects/object_link_goron/object_link_goron_Tex_002780", 0, 127, MODE_REVERT);
+        }
+        gfx_texture_cache_clear();
+    },
+    { cosmeticEditorElements[COSMETIC_ELEMENT_GORON_TUNIC].colorChangedCvar });
+
+static RegisterShipInitFunc goronTunicColor(
+    []() {
+        Color_RGBA8 changedColor = CVarGetColor(cosmeticEditorElements[COSMETIC_ELEMENT_GORON_TUNIC].colorCvar, {});
+        goronTunic[0] = gsDPSetPrimColor(0, 0, changedColor.r, changedColor.g, changedColor.b, 255);
+    },
+    { cosmeticEditorElements[COSMETIC_ELEMENT_GORON_TUNIC].colorCvar });
+
+// COSMETIC_ELEMENT_ZORA_TUNIC
+Gfx zoraTunic[] = {
+    gsDPSetPrimColor(0, 0, 0, 0, 0, 0),
+    gsDPPipeSync(),
+    gsSPEndDisplayList(),
+};
+
+static RegisterShipInitFunc zoraTunicPatch(
+    []() {
+        if (CVarGetInteger(cosmeticEditorElements[COSMETIC_ELEMENT_ZORA_TUNIC].colorChangedCvar, 0)) {
+            ResourceMgr_PatchGfxByName("objects/object_link_zora/gLinkZoraHatDL", "setPrim", 28,
+                                       gsSPDisplayList(zoraTunic));
+            ResourceMgr_PatchGfxByName("objects/object_link_zora/gLinkZoraWaistDL", "setPrim", 46,
+                                       gsSPDisplayList(zoraTunic));
+            ResourceMgr_PatchGfxByName("objects/object_link_zora/gLinkZoraRightThighDL", "setPrim1", 31,
+                                       gsSPDisplayList(zoraTunic));
+            ResourceMgr_PatchGfxByName("objects/object_link_zora/gLinkZoraRightThighDL", "setPrim2", 85,
+                                       gsSPDisplayList(zoraTunic));
+            ResourceMgr_PatchGfxByName("objects/object_link_zora/gLinkZoraRightThighDL", "setPrim3", 97,
+                                       gsSPDisplayList(backToWhite));
+            ResourceMgr_PatchGfxByName("objects/object_link_zora/gLinkZoraLeftThighDL", "setPrim1", 31,
+                                       gsSPDisplayList(zoraTunic));
+            ResourceMgr_PatchGfxByName("objects/object_link_zora/gLinkZoraLeftThighDL", "setPrim2", 85,
+                                       gsSPDisplayList(zoraTunic));
+            ResourceMgr_PatchGfxByName("objects/object_link_zora/gLinkZoraLeftThighDL", "setPrim3", 97,
+                                       gsSPDisplayList(backToWhite));
+            ResourceMgr_PatchGfxByName("objects/object_link_zora/object_link_zora_DL_00CC38", "setPrim", 43,
+                                       gsSPDisplayList(zoraTunic)); // left arm
+            ResourceMgr_PatchGfxByName("objects/object_link_zora/object_link_zora_DL_00CDA0", "setPrim", 43,
+                                       gsSPDisplayList(zoraTunic)); // right arm
+
+            ShadePaletteWhite("objects/object_link_zora/object_link_zora_TLUT_00C578", 151, 177, MODE_MIN);
+            ShadePaletteWhite("objects/object_link_zora/object_link_zora_TLUT_005000", 151, 177, MODE_MIN);
+        } else {
+            ResourceMgr_UnpatchGfxByName("objects/object_link_zora/gLinkZoraHatDL", "setPrim");
+            ResourceMgr_UnpatchGfxByName("objects/object_link_zora/gLinkZoraWaistDL", "setPrim");
+            ResourceMgr_UnpatchGfxByName("objects/object_link_zora/gLinkZoraRightThighDL", "setPrim1");
+            ResourceMgr_UnpatchGfxByName("objects/object_link_zora/gLinkZoraRightThighDL", "setPrim2");
+            ResourceMgr_UnpatchGfxByName("objects/object_link_zora/gLinkZoraRightThighDL", "setPrim3");
+            ResourceMgr_UnpatchGfxByName("objects/object_link_zora/gLinkZoraLeftThighDL", "setPrim1");
+            ResourceMgr_UnpatchGfxByName("objects/object_link_zora/gLinkZoraLeftThighDL", "setPrim2");
+            ResourceMgr_UnpatchGfxByName("objects/object_link_zora/gLinkZoraLeftThighDL", "setPrim3");
+            ResourceMgr_UnpatchGfxByName("objects/object_link_zora/object_link_zora_DL_00CC38", "setPrim");
+            ResourceMgr_UnpatchGfxByName("objects/object_link_zora/object_link_zora_DL_00CDA0", "setPrim");
+
+            ShadePaletteWhite("objects/object_link_zora/object_link_zora_TLUT_00C578", 151, 177, MODE_REVERT);
+            ShadePaletteWhite("objects/object_link_zora/object_link_zora_TLUT_005000", 151, 177, MODE_REVERT);
+        }
+        gfx_texture_cache_clear();
+    },
+    { cosmeticEditorElements[COSMETIC_ELEMENT_ZORA_TUNIC].colorChangedCvar });
+
+static RegisterShipInitFunc zoraTunicColor(
+    []() {
+        Color_RGBA8 changedColor = CVarGetColor(cosmeticEditorElements[COSMETIC_ELEMENT_ZORA_TUNIC].colorCvar, {});
+        zoraTunic[0] = gsDPSetPrimColor(0, 0, changedColor.r, changedColor.g, changedColor.b, 255);
+    },
+    { cosmeticEditorElements[COSMETIC_ELEMENT_ZORA_TUNIC].colorCvar });
