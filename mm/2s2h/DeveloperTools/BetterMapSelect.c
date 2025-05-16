@@ -46,6 +46,7 @@ static BetterMapSelectInfoEntry sBetterMapSelectInfo[102] = {
 #define STAGE_CURRENT_TIME 0x9000
 
 extern SceneSelectEntry sScenes[143];
+extern SceneEntranceTableEntry sSceneEntranceTable[ENTR_SCENE_MAX];
 
 static bool sIsBetterMapSelectEnabled = false;
 
@@ -273,18 +274,34 @@ void BetterMapSelect_Update(MapSelectState* mapSelectState) {
         BetterMapSelect_Init(mapSelectState);
     }
 
-    static s32 sScene = -1;
-    Input* controller1 = CONTROLLER1(&mapSelectState->state);
-
-    if (sScene == -1) {
-        sScene = CVarGetInteger("gDeveloperTools.BetterMapSelect.CurrentScene", 0);
+    if (!sIsBetterMapSelectEnabled) {
+        return;
     }
 
-    mapSelectState->opt = CLAMP_MIN(mapSelectState->opt, 0);
+    static s32 sPrevScene = -1;
+    Input* controller1 = CONTROLLER1(&mapSelectState->state);
 
-    // Reset entrance value when scene changes
-    if (sScene != mapSelectState->currentScene) {
-        sScene = mapSelectState->currentScene;
+    // Clamp and wrap around the spawn value based on the supported entrances for that scene
+    if (mapSelectState->currentScene < ARRAY_COUNT(sBetterMapSelectInfo)) {
+        // Scenes from scene_table.h can be checked directly against `sSceneEntranceTable`
+        s32 entrSceneId = sBetterScenes[mapSelectState->currentScene].entrance >> 9;
+        SceneEntranceTableEntry entry = sSceneEntranceTable[entrSceneId];
+
+        if (mapSelectState->opt >= entry.tableCount) {
+            mapSelectState->opt = 0;
+        } else if (mapSelectState->opt < 0) {
+            mapSelectState->opt = entry.tableCount - 1;
+        }
+    } else if (mapSelectState->currentScene == 102 || mapSelectState->currentScene == 103) {
+        // Cheset/Cow special entries
+        s32 count = mapSelectState->currentScene == 102 ? ARRAY_COUNT(sBetterMapSelectChestGrottoInfo)
+                                                        : ARRAY_COUNT(sBetterMapSelectCowGrottoInfo);
+        if (mapSelectState->opt >= count) {
+            mapSelectState->opt = 0;
+        } else if (mapSelectState->opt < 0) {
+            mapSelectState->opt = count - 1;
+        }
+    } else { // File Select/Title Screen
         mapSelectState->opt = 0;
     }
 
