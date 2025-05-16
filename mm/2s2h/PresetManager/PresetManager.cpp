@@ -105,6 +105,7 @@ nlohmann::json curatedPresetJ = R"(
                 "BowReticle": 1,
                 "ClockType": 1,
                 "DisableSceneGeometryDistanceCheck": 1,
+                "FixSceneGeometrySeams": 1,
                 "IncreaseActorDrawDistance": 5
             },
             "Masks": {

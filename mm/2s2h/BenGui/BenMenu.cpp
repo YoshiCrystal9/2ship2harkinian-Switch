@@ -987,7 +987,9 @@ void BenMenu::AddEnhancements() {
     AddWidget(path, "Enemy Health Bars", WIDGET_CVAR_CHECKBOX)
         .CVar("gEnhancements.Graphics.EnemyHealthBars")
         .Options(CheckboxOptions().Tooltip("Renders a health bar for enemies and bosses when Z-targeted."));
-    AddWidget(path, "Unstable", WIDGET_SEPARATOR_TEXT).Options(WidgetOptions{ .color = Colors::Orange });
+    AddWidget(path, "Fix Scene Geometry Seams", WIDGET_CVAR_CHECKBOX)
+        .CVar("gEnhancements.Graphics.FixSceneGeometrySeams")
+        .Callback([](WidgetInfo& info) { GfxPatcher_ApplyGeometryIssuePatches(); });
     AddWidget(path, "Disable Scene Geometry Distance Check", WIDGET_CVAR_CHECKBOX)
         .CVar("gEnhancements.Graphics.DisableSceneGeometryDistanceCheck")
         .Callback([](WidgetInfo& info) { GfxPatcher_ApplyGeometryIssuePatches(); })
