@@ -5,7 +5,7 @@
 #include "Menu.h"
 #include "2s2h/Enhancements/Enhancements.h"
 #include "2s2h/DeveloperTools/DeveloperTools.h"
-#include "graphic/Fast3D/gfx_rendering_api.h"
+#include "graphic/Fast3D/backends/gfx_rendering_api.h"
 
 namespace BenGui {
 
@@ -51,9 +51,9 @@ static const std::unordered_map<int32_t, const char*> clockTypeOptions = {
 };
 
 static const std::unordered_map<int32_t, const char*> textureFilteringMap = {
-    { FILTER_THREE_POINT, "Three-Point" },
-    { FILTER_LINEAR, "Linear" },
-    { FILTER_NONE, "None" },
+    { Fast::FILTER_THREE_POINT, "Three-Point" },
+    { Fast::FILTER_LINEAR, "Linear" },
+    { Fast::FILTER_NONE, "None" },
 };
 
 static const std::unordered_map<int32_t, const char*> motionBlurOptions = {

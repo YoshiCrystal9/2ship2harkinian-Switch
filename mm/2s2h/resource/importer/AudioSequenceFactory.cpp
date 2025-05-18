@@ -4,7 +4,10 @@
 #include "Context.h"
 #include "resource/archive/Archive.h"
 #include "BinaryWriter.h"
+#include "ResourceManager.h"
+
 #include <type_traits>
+#include <tinyxml2.h>
 
 namespace SOH {
 std::shared_ptr<Ship::IResource>

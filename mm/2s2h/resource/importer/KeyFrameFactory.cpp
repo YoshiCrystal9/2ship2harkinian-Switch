@@ -1,6 +1,7 @@
 #include "2s2h/resource/importer/KeyFrameFactory.h"
 #include "2s2h/resource/type/KeyFrame.h"
 #include "Context.h"
+#include "ResourceManager.h"
 
 namespace SOH {
 std::shared_ptr<Ship::IResource>

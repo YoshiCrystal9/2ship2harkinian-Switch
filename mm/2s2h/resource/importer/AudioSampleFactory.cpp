@@ -4,6 +4,9 @@
 #include "audio/soundfont.h"
 #include "Context.h"
 #include "resource/archive/Archive.h"
+#include <tinyxml2.h>
+#include <thread>
+
 #define DR_WAV_IMPLEMENTATION
 #include <dr_wav.h>
 
@@ -11,6 +14,8 @@
 #include <dr_mp3.h>
 
 #define DR_FLAC_IMPLEMENTATION
+#include "ResourceManager.h"
+
 #include <dr_flac.h>
 
 #include <ogg/ogg.h>

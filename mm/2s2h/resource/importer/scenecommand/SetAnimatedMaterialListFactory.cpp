@@ -2,6 +2,7 @@
 #include "2s2h/resource/type/scenecommand/SetAnimatedMaterialList.h"
 #include "2s2h/resource/type/TextureAnimation.h"
 #include "Context.h"
+#include "ResourceManager.h"
 
 namespace SOH {
 

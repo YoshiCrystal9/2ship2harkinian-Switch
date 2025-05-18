@@ -3,6 +3,7 @@
 #include <spdlog/fmt/fmt.h>
 #include "public/bridge/consolevariablebridge.h"
 #include "Context.h"
+#include "Window.h"
 
 extern "C" {
 #include "variables.h"

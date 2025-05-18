@@ -13,6 +13,7 @@
 #include "GuiWindow.h"
 #include "Context.h"
 #include "public/bridge/consolevariablebridge.h"
+#include "Window.h"
 
 namespace UIWidgets {
 

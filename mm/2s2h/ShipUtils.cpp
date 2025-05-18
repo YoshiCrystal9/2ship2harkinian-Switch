@@ -8,6 +8,7 @@
 #include <boost_custom/container_hash/hash_32.hpp>
 #include "public/bridge/consolevariablebridge.h"
 #include "Context.h"
+#include "Window.h"
 // Image Icons
 #include "assets/interface/parameter_static/parameter_static.h"
 #include "assets/archives/icon_item_24_static/icon_item_24_static_yar.h"

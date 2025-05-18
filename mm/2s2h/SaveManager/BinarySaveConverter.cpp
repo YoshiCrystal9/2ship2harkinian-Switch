@@ -7,6 +7,7 @@
 #include <string>
 #include "spdlog/spdlog.h"
 #include "Context.h"
+#include "Window.h"
 
 extern "C" {
 #include "z64math.h"
@@ -639,7 +640,7 @@ void BinarySaveConverter_ReadBufferToSave(Legacy_SaveContext* saveContext, std::
     saveContext->save.saveInfo.checksum = 1;
 }
 
-bool BinarySaveConverter_HandleFileDropped(std::string filePath) {
+bool BinarySaveConverter_HandleFileDropped(const std::string& filePath) {
     try {
         std::ifstream fileStream(filePath, std::ios::binary | std::ios::ate);
 

@@ -384,7 +384,7 @@ void PresetManager_CreatePreset(std::string presetName) {
     } catch (...) { Notification::Emit({ .suffix = "Failed to create preset" }); }
 }
 
-bool PresetManager_HandleFileDropped(std::string filePath) {
+bool PresetManager_HandleFileDropped(const std::string& filePath) {
     try {
         std::ifstream fileStream(filePath);
 

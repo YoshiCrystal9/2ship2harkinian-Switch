@@ -1,4 +1,5 @@
 #include "BenPort.h"
+#include "ResourceManager.h"
 #include "2s2h/resource/type/Scene.h"
 #include <utils/StringHelper.h>
 #include "2s2h/resource/type/TextMM.h"

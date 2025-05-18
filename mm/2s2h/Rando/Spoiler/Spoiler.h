@@ -12,10 +12,10 @@ namespace Spoiler {
 extern std::vector<std::string> spoilerOptions;
 void RefreshOptions();
 nlohmann::json GenerateFromSaveContext();
-void SaveToFile(std::string fileName, nlohmann::json spoiler);
-nlohmann::json LoadFromFile(std::string filePath);
+void SaveToFile(const std::string& fileName, nlohmann::json spoiler);
+nlohmann::json LoadFromFile(const std::string& filePath);
 void ApplyToSaveContext(nlohmann::json spoiler);
-bool HandleFileDropped(std::string filePath);
+bool HandleFileDropped(const std::string& path);
 
 } // namespace Spoiler
 

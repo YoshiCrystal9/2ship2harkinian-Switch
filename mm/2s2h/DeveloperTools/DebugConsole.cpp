@@ -1,6 +1,8 @@
 #include "DebugConsole.h"
 
 #include "public/bridge/consolevariablebridge.h"
+#include "Window.h"
+#include "ConsoleWindow.h"
 #include "2s2h/BenPort.h"
 #include <vector>
 #include <string>

@@ -1,6 +1,7 @@
 #include "2s2h/resource/importer/scenecommand/SetCutscenesFactory.h"
 #include "2s2h/resource/type/scenecommand/SetCutscenes.h"
 #include "Context.h"
+#include "ResourceManager.h"
 
 namespace SOH {
 std::shared_ptr<Ship::IResource> SetCutsceneFactoryMM::ReadResource(std::shared_ptr<Ship::ResourceInitData> initData,

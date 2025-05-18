@@ -2,6 +2,7 @@
 #include "2s2h/resource/type/Scene.h"
 #include <utils/StringHelper.h>
 #include "2s2h/GameInteractor/GameInteractor.h"
+#include "ResourceManager.h"
 
 extern "C" {
 #include "global.h"
@@ -17,14 +18,14 @@ s32 OTRScene_ExecuteCommands(PlayState* play, SOH::Scene* scene);
 
 extern "C" void OTRPlay_InitScene(PlayState* play, s32 spawn) {
     play->curSpawn = spawn;
-    play->linkActorEntry = NULL;
-    play->actorCsCamList = NULL;
-    play->setupEntranceList = NULL;
-    play->setupExitList = NULL;
-    play->naviQuestHints = NULL;
-    play->setupPathList = NULL;
-    play->sceneMaterialAnims = NULL;
-    play->roomCtx.unk74 = NULL;
+    play->linkActorEntry = nullptr;
+    play->actorCsCamList = nullptr;
+    play->setupEntranceList = nullptr;
+    play->setupExitList = nullptr;
+    play->naviQuestHints = nullptr;
+    play->setupPathList = nullptr;
+    play->sceneMaterialAnims = nullptr;
+    play->roomCtx.unk74 = nullptr;
     play->numSetupActors = 0;
     Object_InitContext(&play->state, &play->objectCtx);
     LightContext_Init(play, &play->lightCtx);
@@ -54,7 +55,7 @@ extern "C" void OTRPlay_SpawnScene(PlayState* play, s32 sceneId, s32 spawn) {
 
 extern "C" s32 OTRfunc_800973FC(PlayState* play, RoomContext* roomCtx) {
     if (roomCtx->status == 1) {
-        // if (!osRecvMesg(&roomCtx->loadQueue, NULL, OS_MESG_NOBLOCK)) {
+        // if (!osRecvMesg(&roomCtx->loadQueue, nullptr, OS_MESG_NOBLOCK)) {
         if (1) {
             roomCtx->status = 0;
             roomCtx->curRoom.segment = roomCtx->activeRoomVram;

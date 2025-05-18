@@ -2,6 +2,7 @@
 #include "sequence.h"
 #include <utils/StringHelper.h>
 #include "public/bridge/consolevariablebridge.h"
+#include "Window.h"
 #include <2s2h/BenPort.h>
 #include <locale>
 #include <filesystem>
