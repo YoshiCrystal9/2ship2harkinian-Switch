@@ -239,6 +239,7 @@ typedef enum {
     VB_START_JUMPSLASH,
     VB_SETUP_TRANSITION,
     VB_BE_NEAR_DOOR,
+    VB_LOAD_PLAYER_ANIMATION_FRAME,
 } GIVanillaBehavior;
 
 typedef enum {
