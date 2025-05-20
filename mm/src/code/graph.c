@@ -336,10 +336,15 @@ void Graph_ExecuteAndDraw(GraphicsContext* gfxCtx, GameState* gameState) {
 
         gRSPGfxTimeTotal = gRSPGfxTimeAcc;
         gRSPAudioTimeTotal = gRSPAudioTimeAcc;
-        gRDPTimeTotal = gRDPTimeAcc;
+        // #region @2S2H [Port] gRDPTimeAcc is usually set in Sched_HandleRDPDone, which
+        // is currently never called and stubbed out in the port. For now we're
+        // just opting to set this to the time per frame / 10 instead, no idea
+        // how bad of an idea this is. :)
+        gRDPTimeTotal = (time - gRDPTimeAcc) / 10;
         gRSPGfxTimeAcc = 0;
         gRSPAudioTimeAcc = 0;
-        gRDPTimeAcc = 0;
+        gRDPTimeAcc = time;
+        // #endregion
 
         if (sGraphPrevUpdateEndTime != 0) {
             gGraphUpdatePeriod = time - sGraphPrevUpdateEndTime;

@@ -732,6 +732,10 @@ extern "C" void InitOTR() {
     OTRAudio_Init();
     OTRExtScanner();
 
+    // Just came up with arbitrary numbers that seemed to work, this is
+    // usually set once(?) in currently stubbed out areas of code.
+    gIrqMgrRetraceTime = Ship_Random(700000, 850000);
+
     GameInteractor::Instance->RegisterGameHook<GameInteractor::OnFileDropped>(Ben_ProcessDroppedFiles);
 
     time_t now = time(NULL);
