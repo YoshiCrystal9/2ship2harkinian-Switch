@@ -1889,109 +1889,136 @@ Gfx gCullFrontDList[] = {
     gsSPEndDisplayList(),
 };
 
-TexturePtr sPlayerEyesTextures[PLAYER_FORM_MAX][PLAYER_EYES_MAX] = {
+/**
+ * Link's eyes and mouth textures are placed at the exact same place in all player form's respective object files.
+ * This allows the array to only contain the symbols for one file and have it apply to all of them. This is a problem
+ * for shiftability, and changes will need to be made in the code to account for this in a modding scenario. The symbols
+ * from human Link's object are used here.
+ *
+ * Note that some player forms do not use the eyes and mouth textures loaded into segments 0x08 and 0x09 respectively.
+ * Therefore, the segment will point at garbage data, but this does not cause issues as the data is not read from.
+ */
+static TexturePtr sEyeTextures[PLAYER_FORM_MAX][PLAYER_EYES_MAX] = {
+    // PLAYER_FORM_FIERCE_DEITY
     {
-        // It doesn't seem to matter since it always has the same eyes
-        gLinkFierceDeityEyesTex,
-        gLinkFierceDeityEyesTex,
-        gLinkFierceDeityEyesTex,
-        gLinkFierceDeityEyesTex,
-        gLinkFierceDeityEyesTex,
-        gLinkFierceDeityEyesTex,
-        gLinkFierceDeityEyesTex,
+        NULL, // PLAYER_EYES_OPEN
+        NULL, // PLAYER_EYES_HALF
+        NULL, // PLAYER_EYES_CLOSED
+        NULL, // PLAYER_EYES_RIGHT
+        NULL, // PLAYER_EYES_LEFT
+        NULL, // PLAYER_EYES_UP
+        NULL, // PLAYER_EYES_DOWN
+        NULL, // PLAYER_EYES_WINCING
     },
+    // PLAYER_FORM_GORON
+    // Note: use PLAYER_EYES_WINCING to access `gLinkGoronEyesSurprisedTex`. See `Player_DrawImpl`.
     {
-        gLinkGoronEyesOpenTex,
-        gLinkGoronEyesHalfTex,
-        gLinkGoronEyesClosedTex,
-        gLinkGoronEyesSurprisedTex,
-        NULL,
-        NULL,
-        NULL,
-        NULL,
+        gLinkGoronEyesOpenTex,      // PLAYER_EYES_OPEN
+        gLinkGoronEyesHalfTex,      // PLAYER_EYES_HALF
+        gLinkGoronEyesClosedTex,    // PLAYER_EYES_CLOSED
+        gLinkGoronEyesSurprisedTex, // PLAYER_EYES_RIGHT
+        NULL,                       // PLAYER_EYES_LEFT
+        NULL,                       // PLAYER_EYES_UP
+        NULL,                       // PLAYER_EYES_DOWN
+        NULL,                       // PLAYER_EYES_WINCING
     },
+    // PLAYER_FORM_ZORA
     {
-        gLinkZoraEyesOpenTex,
-        gLinkZoraEyesHalfTex,
-        gLinkZoraEyesClosedTex,
-        gLinkZoraEyesRollRightTex,
-        gLinkZoraEyesRollLeftTex,
-        gLinkZoraEyesRollUpTex,
-        gLinkZoraEyesRollDownTex,
-        object_link_zora_Tex_003800,
+        gLinkZoraEyesOpenTex,    // PLAYER_EYES_OPEN
+        gLinkZoraEyesHalfTex,    // PLAYER_EYES_HALF
+        gLinkZoraEyesClosedTex,  // PLAYER_EYES_CLOSED
+        gLinkZoraEyesRightTex,   // PLAYER_EYES_RIGHT
+        gLinkZoraEyesLeftTex,    // PLAYER_EYES_LEFT
+        gLinkZoraEyesUpTex,      // PLAYER_EYES_UP
+        gLinkZoraEyesDownTex,    // PLAYER_EYES_DOWN
+        gLinkZoraEyesWincingTex, // PLAYER_EYES_WINCING
     },
+    // PLAYER_FORM_DEKU
     {
-        object_link_nuts_Tex_0048B0,
-        object_link_nuts_Tex_0048B0,
-        object_link_nuts_Tex_0048B0,
-        object_link_nuts_Tex_0048B0,
-        object_link_nuts_Tex_0048B0,
-        object_link_nuts_Tex_0048B0,
-        object_link_nuts_Tex_0048B0,
-        object_link_nuts_Tex_0048B0,
+        NULL, // PLAYER_EYES_OPEN
+        NULL, // PLAYER_EYES_HALF
+        NULL, // PLAYER_EYES_CLOSED
+        NULL, // PLAYER_EYES_RIGHT
+        NULL, // PLAYER_EYES_LEFT
+        NULL, // PLAYER_EYES_UP
+        NULL, // PLAYER_EYES_DOWN
+        NULL, // PLAYER_EYES_WINCING
     },
+    // PLAYER_FORM_HUMAN
     {
-        gLinkHumanEyesOpenTex,        // PLAYER_EYES_OPEN
-        gLinkHumanEyesHalfTex,        // PLAYER_EYES_HALF
-        gLinkHumanEyesClosedTex,      // PLAYER_EYES_CLOSED
-        gLinkHumanEyesRollRightTex,   // PLAYER_EYES_ROLL_RIGHT
-        gLinkHumanEyesRollLeftTex,    // PLAYER_EYES_ROLL_LEFT
-        gLinkHumanEyesRollUpTex,      // PLAYER_EYES_ROLL_UP
-        gLinkHumanEyesRollDownTex,    // PLAYER_EYES_ROLL_DOWN
-        object_link_child_Tex_003800, // PLAYER_EYES_7
+        gLinkHumanEyesOpenTex,    // PLAYER_EYES_OPEN
+        gLinkHumanEyesHalfTex,    // PLAYER_EYES_HALF
+        gLinkHumanEyesClosedTex,  // PLAYER_EYES_CLOSED
+        gLinkHumanEyesRightTex,   // PLAYER_EYES_RIGHT
+        gLinkHumanEyesLeftTex,    // PLAYER_EYES_LEFT
+        gLinkHumanEyesUpTex,      // PLAYER_EYES_UP
+        gLinkHumanEyesDownTex,    // PLAYER_EYES_DOWN
+        gLinkHumanEyesWincingTex, // PLAYER_EYES_WINCING
     },
 };
 
-TexturePtr sPlayerMouthTextures[PLAYER_FORM_MAX][PLAYER_MOUTH_MAX] = {
+static TexturePtr sMouthTextures[PLAYER_FORM_MAX][PLAYER_MOUTH_MAX] = {
+    // PLAYER_FORM_FIERCE_DEITY
     {
-        gLinkFierceDeityMouthTex,
-        gLinkFierceDeityMouthTex,
-        gLinkFierceDeityMouthTex,
-        gLinkFierceDeityMouthTex,
+        NULL, // PLAYER_MOUTH_CLOSED
+        NULL, // PLAYER_MOUTH_HALF
+        NULL, // PLAYER_MOUTH_OPEN
+        NULL, // PLAYER_MOUTH_SMILE
     },
+    // PLAYER_FORM_GORON
     {
-        NULL,
-        NULL,
-        NULL,
-        NULL,
+        NULL, // PLAYER_MOUTH_CLOSED
+        NULL, // PLAYER_MOUTH_HALF
+        NULL, // PLAYER_MOUTH_OPEN
+        NULL, // PLAYER_MOUTH_SMILE
     },
+    // PLAYER_FORM_ZORA
     {
-        gLinkZoraMouthClosedTex,
-        object_link_zora_Tex_004400,
-        gLinkZoraMouthAngryTex,
-        gLinkZoraMouthHappyTex,
+        gLinkZoraMouthClosedTex, // PLAYER_MOUTH_CLOSED
+        gLinkZoraMouthHalfTex,   // PLAYER_MOUTH_HALF
+        gLinkZoraMouthOpenTex,   // PLAYER_MOUTH_OPEN
+        gLinkZoraMouthSmileTex,  // PLAYER_MOUTH_SMILE
     },
-    { NULL, NULL, NULL, NULL },
+    // PLAYER_FORM_DEKU
+    {
+        NULL, // PLAYER_MOUTH_CLOSED
+        NULL, // PLAYER_MOUTH_HALF
+        NULL, // PLAYER_MOUTH_OPEN
+        NULL, // PLAYER_MOUTH_SMILE
+    },
+    // PLAYER_FORM_HUMAN
     {
         gLinkHumanMouthClosedTex, // PLAYER_MOUTH_CLOSED
-        gLinkHumanMouthTeethTex,  // PLAYER_MOUTH_TEETH
-        gLinkHumanMouthAngryTex,  // PLAYER_MOUTH_ANGRY
-        gLinkHumanMouthHappyTex,  // PLAYER_MOUTH_HAPPY
+        gLinkHumanMouthHalfTex,   // PLAYER_MOUTH_HALF
+        gLinkHumanMouthOpenTex,   // PLAYER_MOUTH_OPEN
+        gLinkHumanMouthSmileTex,  // PLAYER_MOUTH_SMILE
     },
 };
 
-typedef struct PlayerFaceIndices {
-    /* 0x0 */ u8 eyeIndex;
-    /* 0x1 */ u8 mouthIndex;
-} PlayerFaceIndices; // size = 0x2
+PlayerFaceIndices sPlayerFaces[PLAYER_FACE_MAX] = {
+    // The first 6 faces defined must be default blinking faces. See relevant code in `Player_UpdateCommon`.
+    { PLAYER_EYES_OPEN, PLAYER_MOUTH_CLOSED },   // PLAYER_FACE_NEUTRAL
+    { PLAYER_EYES_HALF, PLAYER_MOUTH_CLOSED },   // PLAYER_FACE_NEUTRAL_BLINKING_HALF
+    { PLAYER_EYES_CLOSED, PLAYER_MOUTH_CLOSED }, // PLAYER_FACE_NEUTRAL_BLINKING_CLOSED
 
-PlayerFaceIndices sPlayerFaces[] = {
-    { PLAYER_EYES_OPEN, PLAYER_MOUTH_CLOSED },       // PLAYER_FACE_0
-    { PLAYER_EYES_HALF, PLAYER_MOUTH_CLOSED },       // PLAYER_FACE_1
-    { PLAYER_EYES_CLOSED, PLAYER_MOUTH_CLOSED },     // PLAYER_FACE_2
-    { PLAYER_EYES_OPEN, PLAYER_MOUTH_CLOSED },       // PLAYER_FACE_3
-    { PLAYER_EYES_HALF, PLAYER_MOUTH_CLOSED },       // PLAYER_FACE_4
-    { PLAYER_EYES_CLOSED, PLAYER_MOUTH_CLOSED },     // PLAYER_FACE_5
-    { PLAYER_EYES_ROLL_LEFT, PLAYER_MOUTH_CLOSED },  // PLAYER_FACE_6
-    { PLAYER_EYES_ROLL_UP, PLAYER_MOUTH_TEETH },     // PLAYER_FACE_7
-    { PLAYER_EYES_7, PLAYER_MOUTH_ANGRY },           // PLAYER_FACE_8
-    { PLAYER_EYES_OPEN, PLAYER_MOUTH_ANGRY },        // PLAYER_FACE_9
-    { PLAYER_EYES_ROLL_RIGHT, PLAYER_MOUTH_CLOSED }, // PLAYER_FACE_10
-    { PLAYER_EYES_ROLL_LEFT, PLAYER_MOUTH_CLOSED },  // PLAYER_FACE_11
-    { PLAYER_EYES_CLOSED, PLAYER_MOUTH_ANGRY },      // PLAYER_FACE_12
-    { PLAYER_EYES_HALF, PLAYER_MOUTH_TEETH },        // PLAYER_FACE_13
-    { PLAYER_EYES_OPEN, PLAYER_MOUTH_ANGRY },        // PLAYER_FACE_14
-    { PLAYER_EYES_OPEN, PLAYER_MOUTH_HAPPY },        // PLAYER_FACE_15
+    // This duplicate set of blinking faces is defined because Player will choose between the first and second set
+    // based on gameplayFrames. See relevant code in `Player_UpdateCommon`.
+    // This, in theory, allows for psuedo-random variance in the faces used. But in practice, duplicate faces are used.
+    { PLAYER_EYES_OPEN, PLAYER_MOUTH_CLOSED },   // PLAYER_FACE_NEUTRAL_2
+    { PLAYER_EYES_HALF, PLAYER_MOUTH_CLOSED },   // PLAYER_FACE_NEUTRAL_BLINKING_HALF_2
+    { PLAYER_EYES_CLOSED, PLAYER_MOUTH_CLOSED }, // PLAYER_FACE_NEUTRAL_BLINKING_CLOSED_2
+
+    // Additional faces. Most faces are encoded within animations.
+    { PLAYER_EYES_LEFT, PLAYER_MOUTH_CLOSED },  // PLAYER_FACE_LOOK_LEFT
+    { PLAYER_EYES_UP, PLAYER_MOUTH_HALF },      // PLAYER_FACE_SURPRISED
+    { PLAYER_EYES_WINCING, PLAYER_MOUTH_OPEN }, // PLAYER_FACE_HURT
+    { PLAYER_EYES_OPEN, PLAYER_MOUTH_OPEN },    // PLAYER_FACE_GASP
+    { PLAYER_EYES_RIGHT, PLAYER_MOUTH_CLOSED }, // PLAYER_FACE_LOOK_RIGHT
+    { PLAYER_EYES_LEFT, PLAYER_MOUTH_CLOSED },  // PLAYER_FACE_LOOK_LEFT_2
+    { PLAYER_EYES_CLOSED, PLAYER_MOUTH_OPEN },  // PLAYER_FACE_EYES_CLOSED_MOUTH_OPEN
+    { PLAYER_EYES_HALF, PLAYER_MOUTH_HALF },    // PLAYER_FACE_OPENING
+    { PLAYER_EYES_OPEN, PLAYER_MOUTH_OPEN },    // PLAYER_FACE_EYES_AND_MOUTH_OPEN
+    { PLAYER_EYES_OPEN, PLAYER_MOUTH_SMILE },   // PLAYER_FACE_SMILE
 };
 
 // Note the correct pointer to pass as the jointTable is the jointTable pointer from the SkelAnime struct, not the
@@ -2013,19 +2040,24 @@ void Player_DrawImpl(PlayState* play, void** skeleton, Vec3s* jointTable, s32 dL
         eyeIndex = 0;
     }
 
+    // If the eyes index provided by the animation is negative, use the value provided by the `face` argument instead
     if (eyeIndex < 0) {
         eyeIndex = sPlayerFaces[face].eyeIndex;
     }
 
     if (playerForm == PLAYER_FORM_GORON) {
-        if ((eyeIndex >= PLAYER_EYES_ROLL_RIGHT) && (eyeIndex <= PLAYER_EYES_ROLL_DOWN)) {
+        // Goron does not have the eye textures to look in different directions
+        if ((eyeIndex >= PLAYER_EYES_RIGHT) && (eyeIndex <= PLAYER_EYES_DOWN)) {
             eyeIndex = PLAYER_EYES_OPEN;
-        } else if (eyeIndex == PLAYER_EYES_7) {
-            eyeIndex = PLAYER_EYES_ROLL_RIGHT;
+        } else if (eyeIndex == PLAYER_EYES_WINCING) {
+            // Goron form puts a surpised expression where the eyes-right normally goes
+            eyeIndex = PLAYER_EYES_RIGHT;
         }
     }
 
-    gSPSegment(&gfx[0], 0x08, Lib_SegmentedToVirtual(sPlayerEyesTextures[playerForm][eyeIndex]));
+    // Only Human, Zora, and Goron will read the eye textures in the head limb display list.
+    // Fierce Deity and Deku will point this segment to garbage data, but it will be unread from.
+    gSPSegment(&gfx[0], 0x08, Lib_SegmentedToVirtual(sEyeTextures[eyeIndex]));
 
     // 2S2H [Port] Hess crash fix
     if (mouthIndex >= PLAYER_MOUTH_MAX) {
@@ -2033,11 +2065,14 @@ void Player_DrawImpl(PlayState* play, void** skeleton, Vec3s* jointTable, s32 dL
         mouthIndex = 0;
     }
 
+    // If the mouth index provided by the animation is negative, use the value provided by the `face` argument instead
     if (mouthIndex < 0) {
         mouthIndex = sPlayerFaces[face].mouthIndex;
     }
 
-    gSPSegment(&gfx[1], 0x09, Lib_SegmentedToVirtual(sPlayerMouthTextures[playerForm][mouthIndex]));
+    // Only Human and Zora will read the mouth textures in the head limb display list.
+    // Goron, Fierce Deity, and Deku will point this segment to garbage data, but it will be unread from.
+    gSPSegment(&gfx[1], 0x09, Lib_SegmentedToVirtual(sMouthTextures[mouthIndex]));
 
     POLY_OPA_DISP = &gfx[2];
 

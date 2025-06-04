@@ -28,6 +28,8 @@
 #include "2s2h/Enhancements/Songs/Songs.h"
 #include "public/bridge/consolevariablebridge.h"
 
+#pragma increment_block_number "n64-us:128"
+
 // Page Textures (Background of Page):
 // Broken up into multiple textures.
 // Numbered by column/row.
