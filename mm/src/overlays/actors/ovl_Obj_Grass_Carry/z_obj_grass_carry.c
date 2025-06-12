@@ -214,7 +214,9 @@ void ObjGrassCarry_Main(ObjGrassCarry* this, PlayState* play) {
         if (this->grassElem != NULL) {
             this->grassElem->flags |= OBJ_GRASS_ELEM_REMOVED;
         }
-        thisx->draw = ObjGrassCarry_Draw;
+        if (GameInteractor_Should(VB_CARRY_GRASS_DRAW_BE_OVERRIDDEN, true, this)) {
+            thisx->draw = ObjGrassCarry_Draw;
+        }
         thisx->shape.shadowDraw = ActorShadow_DrawCircle;
         thisx->shape.shadowAlpha = 60;
         thisx->shape.shadowScale = 1.0f;

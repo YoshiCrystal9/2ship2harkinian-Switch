@@ -4,7 +4,9 @@
 #include "2s2h/CustomItem/CustomItem.h"
 #include "2s2h/Rando/Rando.h"
 #include "2s2h/ShipInit.hpp"
+#include "2s2h/Enhancements/FrameInterpolation/FrameInterpolation.h"
 #include "assets/2s2h_assets.h"
+#include "assets/overlays/ovl_Obj_Grass/ovl_Obj_Grass.h"
 
 extern "C" {
 #include "variables.h"
@@ -12,7 +14,7 @@ extern "C" {
 #include "overlays/actors/ovl_En_Kusa/z_en_kusa.h"
 #include "overlays/actors/ovl_Obj_Grass_Carry/z_obj_grass_carry.h"
 
-void ObjGrass_Draw(Actor* actor, PlayState* play);
+void ObjGrass_OverrideMatrixCurrent(MtxF* matrix);
 }
 
 // clang-format off
@@ -981,6 +983,8 @@ std::map<int16_t, std::map<std::pair<float, float>, RandoCheckId>> grottoGrassMa
 };
 // clang-format on
 
+#define ENKUSA_RC (actor->home.rot.x)
+
 float roundToWholeNumber(float value) {
     int rounded = std::round(value);
     float fnum = static_cast<float>(rounded);
@@ -1034,7 +1038,151 @@ void SpawnGrassDrop(Vec3f pos, RandoCheckId randoCheckId) {
         });
 }
 
+void EnKusaBush_RandoDraw(Actor* actor, PlayState* play) {
+    if (!CVarGetInteger("gRando.CSMC", 0)) {
+        Gfx_DrawDListOpa(play, (Gfx*)gRandoBushDL);
+        return;
+    }
+
+    RandoItemId randoItemId = Rando::ConvertItem(RANDO_SAVE_CHECKS[ENKUSA_RC].randoItemId, (RandoCheckId)ENKUSA_RC);
+    RandoItemType randoItemType = Rando::StaticData::Items[randoItemId].randoItemType;
+
+    switch (randoItemType) {
+        case RITYPE_BOSS_KEY:
+            Gfx_DrawDListOpa(play, (Gfx*)gRandoBushBossKeyDL);
+            break;
+        case RITYPE_HEALTH:
+            Gfx_DrawDListOpa(play, (Gfx*)gRandoBushHeartDL);
+            break;
+        case RITYPE_LESSER:
+            Gfx_DrawDListOpa(play, (Gfx*)gRandoBushMinorDL);
+            break;
+        case RITYPE_MAJOR:
+            Gfx_DrawDListOpa(play, (Gfx*)gRandoBushMajorDL);
+            break;
+        case RITYPE_MASK:
+            Gfx_DrawDListOpa(play, (Gfx*)gRandoBushMaskDL);
+            break;
+        case RITYPE_SKULLTULA_TOKEN:
+            Gfx_DrawDListOpa(play, (Gfx*)gRandoBushTokenDL);
+            break;
+        case RITYPE_SMALL_KEY:
+            Gfx_DrawDListOpa(play, (Gfx*)gRandoBushSmallKeyDL);
+            break;
+        case RITYPE_STRAY_FAIRY:
+            Gfx_DrawDListOpa(play, (Gfx*)gRandoBushFairyDL);
+            break;
+        case RITYPE_JUNK:
+            Gfx_DrawDListOpa(play, (Gfx*)gRandoBushJunkDL);
+            break;
+        default:
+            Gfx_DrawDListOpa(play, (Gfx*)gRandoBushDL);
+            break;
+    }
+}
+
+Gfx* GetObjGrassDList(RandoCheckId randoCheckId) {
+    if (!CVarGetInteger("gRando.CSMC", 0)) {
+        return (Gfx*)gRandoBushDL;
+    }
+
+    RandoItemId randoItemId = Rando::ConvertItem(RANDO_SAVE_CHECKS[randoCheckId].randoItemId, randoCheckId);
+    RandoItemType randoItemType = Rando::StaticData::Items[randoItemId].randoItemType;
+
+    switch (randoItemType) {
+        case RITYPE_BOSS_KEY:
+            return (Gfx*)gRandoBushBossKeyDL;
+            break;
+        case RITYPE_HEALTH:
+            return (Gfx*)gRandoBushHeartDL;
+            break;
+        case RITYPE_LESSER:
+            return (Gfx*)gRandoBushMinorDL;
+            break;
+        case RITYPE_MAJOR:
+            return (Gfx*)gRandoBushMajorDL;
+            break;
+        case RITYPE_MASK:
+            return (Gfx*)gRandoBushMaskDL;
+            break;
+        case RITYPE_SKULLTULA_TOKEN:
+            return (Gfx*)gRandoBushTokenDL;
+            break;
+        case RITYPE_SMALL_KEY:
+            return (Gfx*)gRandoBushSmallKeyDL;
+            break;
+        case RITYPE_STRAY_FAIRY:
+            return (Gfx*)gRandoBushFairyDL;
+            break;
+        case RITYPE_JUNK:
+            return (Gfx*)gRandoBushJunkDL;
+            break;
+        default:
+            return (Gfx*)gRandoBushDL;
+            break;
+    }
+}
+
+void ObjGrass_RandoDraw(ObjGrass* objGrass, ObjGrassElement* grassElem, s32 j, RandoCheckId randoCheckId) {
+    Vec3s rot = { 0, 0, 0 };
+    OPEN_DISPS(gPlayState->state.gfxCtx);
+    rot.y = grassElem->rotY;
+    Matrix_SetTranslateRotateYXZ(grassElem->pos.x, grassElem->pos.y, grassElem->pos.z, &rot);
+    Matrix_Scale(objGrass->actor.scale.x, objGrass->actor.scale.y, objGrass->actor.scale.z, MTXMODE_APPLY);
+    if (grassElem->flags & OBJ_GRASS_ELEM_ANIM) {
+        ObjGrass_OverrideMatrixCurrent(&objGrass->distortionMtx[j]);
+    }
+
+    gSPMatrix(POLY_OPA_DISP++, Matrix_NewMtx(gPlayState->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    gSPDisplayList(POLY_OPA_DISP++, GetObjGrassDList(randoCheckId));
+    gSPDisplayList(POLY_OPA_DISP++, (Gfx*)gObjGrass_D_809AA9F0);
+    CLOSE_DISPS(gPlayState->state.gfxCtx);
+}
+
 void Rando::ActorBehavior::InitObjGrassBehavior() {
+    COND_ID_HOOK(OnActorInit, ACTOR_EN_KUSA, IS_RANDO, [](Actor* actor) {
+        RandoCheckId randoCheckId = IdentifyGrass(actor->home.pos);
+        if (randoCheckId == RC_UNKNOWN) {
+            return;
+        }
+
+        if (!RANDO_SAVE_CHECKS[randoCheckId].shuffled || RANDO_SAVE_CHECKS[randoCheckId].cycleObtained) {
+            return;
+        }
+
+        ENKUSA_RC = randoCheckId;
+    });
+
+    COND_VB_SHOULD(VB_KUSA_BUSH_DRAW_BE_OVERRIDDEN, IS_RANDO, {
+        Actor* actor = va_arg(args, Actor*);
+        if (ENKUSA_RC != RC_UNKNOWN) {
+            *should = false;
+            actor->draw = EnKusaBush_RandoDraw;
+        }
+    });
+
+    COND_VB_SHOULD(VB_OBJGRASS_DRAW_BE_OVERRIDDEN, IS_RANDO, {
+        ObjGrass* objGrass = va_arg(args, ObjGrass*);
+        ObjGrassElement* grassElem = va_arg(args, ObjGrassElement*);
+        s32 j = va_arg(args, s32);
+        RandoCheckId randoCheckId = IdentifyGrass(grassElem->pos);
+        if (randoCheckId != RC_UNKNOWN) {
+            *should = false;
+            ObjGrass_RandoDraw(objGrass, grassElem, j, randoCheckId);
+        }
+    });
+
+    COND_VB_SHOULD(VB_CARRY_GRASS_DRAW_BE_OVERRIDDEN, IS_RANDO, {
+        ObjGrassCarry* grassCarryActor = va_arg(args, ObjGrassCarry*);
+        Actor* actor = &grassCarryActor->actor;
+        RandoCheckId randoCheckId = IdentifyGrass(grassCarryActor->grassElem->pos);
+        ENKUSA_RC = randoCheckId;
+        if (randoCheckId != RC_UNKNOWN) {
+            *should = false;
+            grassCarryActor->actor.draw = EnKusaBush_RandoDraw;
+        }
+    });
+
     COND_VB_SHOULD(VB_GRASS_DROP_COLLECTIBLE, IS_RANDO, {
         auto actorId = static_cast<ActorId>(va_arg(args, int32_t));
         ObjGrassElement* grassElemActor;

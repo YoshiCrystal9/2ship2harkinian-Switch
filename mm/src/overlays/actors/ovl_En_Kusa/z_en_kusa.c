@@ -442,7 +442,9 @@ void EnKusa_WaitObject(EnKusa* this, PlayState* play) {
             EnKusa_SetupInteract(this);
         }
         if (kusaType == ENKUSA_TYPE_BUSH) {
-            this->actor.draw = EnKusa_DrawBush;
+            if (GameInteractor_Should(VB_KUSA_BUSH_DRAW_BE_OVERRIDDEN, true, this)) {
+                this->actor.draw = EnKusa_DrawBush;
+            }
         } else {
             this->actor.draw = EnKusa_DrawGrass;
         }
