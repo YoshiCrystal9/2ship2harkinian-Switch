@@ -4,6 +4,3 @@
 [submodule "OTRExporter"]
 	path = OTRExporter
 	url = https://github.com/YoshiCrystal9/OTRExporter-Switch.git
-[submodule "libultraship"]
-	path = libultraship
-	url = https://github.com/Net64DD/libultraship.git
