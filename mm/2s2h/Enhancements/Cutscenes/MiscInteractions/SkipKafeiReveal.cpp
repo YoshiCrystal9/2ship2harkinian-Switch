@@ -1,6 +1,7 @@
-#include <libultraship/bridge.h>
+#include "public/bridge/consolevariablebridge.h"
 #include "2s2h/GameInteractor/GameInteractor.h"
 #include "2s2h/CustomItem/CustomItem.h"
+#include "2s2h/CustomMessage/CustomMessage.h"
 #include "2s2h/ShipInit.hpp"
 
 extern "C" {
@@ -27,8 +28,8 @@ void RegisterSkipKafeiReveal() {
         // Set flags that are normally set in the experience that this skips
         SET_WEEKEVENTREG(WEEKEVENTREG_RECEIVED_PENDANT_OF_MEMORIES);
         SET_WEEKEVENTREG(WEEKEVENTREG_51_08);
-        SET_WEEKEVENTREG(WEEKEVENTREG_BOMBERS_NOTEBOOK_EVENT_MET_KAFEI);
-        SET_WEEKEVENTREG(WEEKEVENTREG_BOMBERS_NOTEBOOK_EVENT_RECEIVED_PENDANT_OF_MEMORIES);
+        Message_BombersNotebookQueueEvent(gPlayState, BOMBERS_NOTEBOOK_EVENT_MET_KAFEI);
+        Message_BombersNotebookQueueEvent(gPlayState, BOMBERS_NOTEBOOK_EVENT_RECEIVED_PENDANT_OF_MEMORIES);
 
         if (GameInteractor_Should(VB_GIVE_PENDANT_OF_MEMORIES_FROM_KAFEI, true)) {
             GameInteractor::Instance->events.emplace_back(

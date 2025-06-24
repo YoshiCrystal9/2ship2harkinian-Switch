@@ -1,7 +1,7 @@
 #include "GameInteractor.h"
 #include <variant>
 #include "spdlog/spdlog.h"
-#include <libultraship/bridge.h>
+#include "public/bridge/consolevariablebridge.h"
 #include "2s2h/CustomItem/CustomItem.h"
 #include "2s2h/CustomMessage/CustomMessage.h"
 
@@ -321,6 +321,11 @@ int GameInteractor_InvertControl(GIInvertType type) {
             break;
         case GI_INVERT_FIRST_PERSON_RIGHT_STICK_Y:
             if (CVarGetInteger("gEnhancements.Camera.FirstPerson.RightStickInvertY", 1)) {
+                result *= -1;
+            }
+            break;
+        case GI_INVERT_SHIELD_Y:
+            if (CVarGetInteger("gEnhancements.Equipment.InvertShieldY", 0)) {
                 result *= -1;
             }
             break;

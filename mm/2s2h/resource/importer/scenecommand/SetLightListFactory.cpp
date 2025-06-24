@@ -1,6 +1,5 @@
 #include "2s2h/resource/importer/scenecommand/SetLightListFactory.h"
 #include "2s2h/resource/type/scenecommand/SetLightList.h"
-#include "spdlog/spdlog.h"
 
 namespace SOH {
 std::shared_ptr<Ship::IResource> SetLightListFactory::ReadResource(std::shared_ptr<Ship::ResourceInitData> initData,

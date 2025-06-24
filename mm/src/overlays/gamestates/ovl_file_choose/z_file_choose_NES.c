@@ -18,6 +18,7 @@
 #include <string.h>
 #include "BenPort.h"
 #include "2s2h/BenGui/CosmeticEditor.h"
+#include "public/bridge/consolevariablebridge.h"
 
 s32 D_808144F10 = 100;
 f32 D_808144F14 = 8.0f;

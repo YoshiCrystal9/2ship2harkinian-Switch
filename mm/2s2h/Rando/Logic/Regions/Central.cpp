@@ -1,4 +1,3 @@
-#include <libultraship/libultraship.h>
 #include "2s2h/GameInteractor/GameInteractor.h"
 #include "2s2h/ShipInit.hpp"
 
@@ -80,7 +79,7 @@ static RegisterShipInitFunc initFunc([]() {
             CHECK(RC_CLOCK_TOWER_ROOF_POT_04, true),
         },
         .exits = { //     TO                                         FROM
-            EXIT(ENTRANCE(THE_MOON, 0),                              ONE_WAY_EXIT, MeetsMoonRequirements()),
+            EXIT(ENTRANCE(THE_MOON, 0),                              ONE_WAY_EXIT, CAN_PLAY_SONG(OATH) && MeetsMoonRequirements()),
         },
         .oneWayEntrances = {
             ENTRANCE(CLOCK_TOWER_ROOFTOP, 0), // From clock tower platform
@@ -126,6 +125,9 @@ static RegisterShipInitFunc initFunc([]() {
             CHECK(RC_CLOCK_TOWN_LAUNDRY_FREESTANDING_RUPEE_03,  true),
             CHECK(RC_CLOCK_TOWN_LAUNDRY_GURU_GURU,              true),
             CHECK(RC_CLOCK_TOWN_LAUNDRY_SMALL_CRATE,            true),
+            CHECK(RC_CLOCK_TOWN_LAUNDRY_POOL_GRASS_01, true),
+            CHECK(RC_CLOCK_TOWN_LAUNDRY_POOL_GRASS_02, true),
+            CHECK(RC_CLOCK_TOWN_LAUNDRY_POOL_GRASS_03, true),
         },
         .exits = { //     TO                                         FROM
             EXIT(ENTRANCE(SOUTH_CLOCK_TOWN, 6),             ENTRANCE(LAUNDRY_POOL, 0), true),
@@ -309,171 +311,6 @@ static RegisterShipInitFunc initFunc([]() {
             EXIT(ENTRANCE(WEST_CLOCK_TOWN, 3),              ENTRANCE(SWORDMANS_SCHOOL, 0), true),
         },
     };
-    Regions[RR_TERMINA_FIELD_BEFORE_GREAT_BAY_COAST] = RandoRegion{ .name = "Before Great Bay Coast", .sceneId = SCENE_00KEIKOKU,
-        .exits = { //     TO                                         FROM
-            EXIT(ENTRANCE(GREAT_BAY_COAST, 0),              ENTRANCE(TERMINA_FIELD, 2), true),
-        },
-        .connections = {
-            CONNECTION(RR_TERMINA_FIELD, CAN_PLAY_SONG(EPONA)),
-        },
-    };
-    Regions[RR_TERMINA_FIELD_BEFORE_PATH_TO_MOUNTAIN_VILLAGE] = RandoRegion{ .sceneId = SCENE_00KEIKOKU,
-        .exits = { //     TO                                         FROM
-            EXIT(ENTRANCE(PATH_TO_MOUNTAIN_VILLAGE, 0),     ENTRANCE(TERMINA_FIELD, 3), true),
-        },
-        .connections = {
-            CONNECTION(RR_TERMINA_FIELD, HAS_ITEM(ITEM_BOW)),
-        },
-    };
-    Regions[RR_TERMINA_FIELD_BIO_BABA_GROTTO] = RandoRegion{ .name = "Termina Field Bio Baba", .sceneId = SCENE_KAKUSIANA,
-        .checks = {
-            CHECK(RC_TERMINA_FIELD_BIO_BABA_GROTTO, CAN_BE_ZORA),
-        },
-        .exits = { //     TO                                         FROM
-            EXIT(ENTRANCE(TERMINA_FIELD, 0),                ENTRANCE(GROTTOS, 11), true), // TODO: Grotto mapping
-        },
-    };
-    Regions[RR_TERMINA_FIELD_COW_GROTTO] = RandoRegion{ .name = "Termina Field Cow", .sceneId = SCENE_KAKUSIANA,
-        .checks = {
-            CHECK(RC_TERMINA_FIELD_COW_BACK, CAN_PLAY_SONG(EPONA)),
-            CHECK(RC_TERMINA_FIELD_COW_FRONT, CAN_PLAY_SONG(EPONA)),
-        },
-        .connections = {
-            CONNECTION(RR_TERMINA_FIELD, true), // TODO: Grotto mapping
-        },
-    };
-    Regions[RR_TERMINA_FIELD_DODONGO_GROTTO] = RandoRegion{ .name = "Termina Field Dodongo", .sceneId = SCENE_KAKUSIANA,
-        .checks = {
-            CHECK(RC_TERMINA_FIELD_DODONGO_GROTTO_CHEST, CAN_USE_SWORD || CAN_BE_ZORA || CAN_BE_GORON),
-        },
-        .exits = { //     TO                                         FROM
-            EXIT(ENTRANCE(TERMINA_FIELD, 0),                ENTRANCE(GROTTOS, 7), true), // TODO: Grotto mapping
-        },
-    };
-    Regions[RR_TERMINA_FIELD_GOSSIP_STONE_GROTTO_1] = RandoRegion{ .name = "Termina Field Gossip Stone #1", .sceneId = SCENE_KAKUSIANA,
-        .exits = { //     TO                                         FROM
-            EXIT(ENTRANCE(TERMINA_FIELD, 0),                ENTRANCE(GROTTOS, 1), true), // TODO: Grotto mapping
-        },
-        .events = {
-            // TODO: gSaveContext.save.saveInfo.unk_EA0 for gossip stone check
-        },
-    };
-    Regions[RR_TERMINA_FIELD_GOSSIP_STONE_GROTTO_2] = RandoRegion{ .name = "Termina Field Gossip Stone #2", .sceneId = SCENE_KAKUSIANA,
-        .exits = { //     TO                                         FROM
-            EXIT(ENTRANCE(TERMINA_FIELD, 0),                ENTRANCE(GROTTOS, 3), true), // TODO: Grotto mapping
-        },
-        .events = {
-            // TODO: gSaveContext.save.saveInfo.unk_EA0 for gossip stone check
-        },
-    };
-    Regions[RR_TERMINA_FIELD_GOSSIP_STONE_GROTTO_3] = RandoRegion{ .name = "Termina Field Gossip Stone #3", .sceneId = SCENE_KAKUSIANA,
-        .checks = {
-            CHECK(RC_TERMINA_FIELD_GOSSIP_STONE_GROTTO, (CAN_BE_DEKU && CAN_PLAY_SONG(SONATA)) || (CAN_BE_GORON && CAN_PLAY_SONG(LULLABY)) || (CAN_BE_ZORA && CAN_PLAY_SONG(BOSSA_NOVA))),
-        },
-        .exits = { //     TO                                         FROM
-            EXIT(ENTRANCE(TERMINA_FIELD, 0),                ENTRANCE(GROTTOS, 0), true), // TODO: Grotto mapping
-        },
-        .events = {
-            // TODO: gSaveContext.save.saveInfo.unk_EA0 for gossip stone check
-        },
-    };
-    Regions[RR_TERMINA_FIELD_GOSSIP_STONE_GROTTO_4] = RandoRegion{ .name = "Termina Field Gossip Stone #4", .sceneId = SCENE_KAKUSIANA,
-        .exits = { //     TO                                         FROM
-            EXIT(ENTRANCE(TERMINA_FIELD, 0),                ENTRANCE(GROTTOS, 2), true), // TODO: Grotto mapping
-        },
-        .events = {
-            // TODO: gSaveContext.save.saveInfo.unk_EA0 for gossip stone check
-        },
-    };
-    Regions[RR_TERMINA_FIELD_PEAHAT_GROTTO] = RandoRegion{ .name = "Termina Field Peahat", .sceneId = SCENE_KAKUSIANA,
-        .checks = {
-            CHECK(RC_TERMINA_FIELD_PEAHAT_GROTTO_CHEST, CAN_USE_SWORD || CAN_BE_ZORA || CAN_BE_GORON),
-        },
-        .exits = { //     TO                                         FROM
-            EXIT(ENTRANCE(TERMINA_FIELD, 0),                ENTRANCE(GROTTOS, 13), true), // TODO: Grotto mapping
-        },
-    };
-    Regions[RR_TERMINA_FIELD_PILLAR_GROTTO] = RandoRegion{ .name = "Termina Field Pillar", .sceneId = SCENE_KAKUSIANA,
-        .checks = {
-            CHECK(RC_TERMINA_FIELD_PILLAR_GROTTO_CHEST, true),
-        },
-        .connections = {
-            CONNECTION(RR_TERMINA_FIELD, true), // TODO: Grotto mapping
-        },
-    };
-    Regions[RR_TERMINA_FIELD_SCRUB_GROTTO] = RandoRegion{ .name = "Termina Field Scrub", .sceneId = SCENE_KAKUSIANA,
-        .checks = {
-            CHECK(RC_TERMINA_FIELD_GROTTO_SCRUB, CUR_UPG_VALUE(UPG_WALLET) >= 1 && RANDO_EVENTS[RE_TERMINA_FIELD_SCRUB_ENTERED_GROTTO]),
-            CHECK(RC_TERMINA_FIELD_SCRUB_LARGE_CRATE, true),
-            CHECK(RC_TERMINA_FIELD_SCRUB_POT,         true),
-        },
-        .exits = { //     TO                                         FROM
-            EXIT(ENTRANCE(TERMINA_FIELD, 0),                ENTRANCE(GROTTOS, 9), true), // TODO: Grotto mapping
-        },
-    };
-    Regions[RR_TERMINA_FIELD_TALL_GRASS_GROTTO] = RandoRegion{ .name = "Termina Field Tall Grass", .sceneId = SCENE_KAKUSIANA,
-        .checks = {
-            CHECK(RC_TERMINA_FIELD_TALL_GRASS_GROTTO_CHEST, true),
-        },
-        .connections = {
-            CONNECTION(RR_TERMINA_FIELD, true), // TODO: Grotto mapping
-        },
-    };
-    Regions[RR_TERMINA_FIELD] = RandoRegion{ .sceneId = SCENE_00KEIKOKU,
-        .checks = {
-            CHECK(RC_TERMINA_FIELD_KAMARO_MASK, CAN_PLAY_SONG(HEALING)),
-            CHECK(RC_TERMINA_FIELD_POT, CAN_GROW_BEAN_PLANT),
-            CHECK(RC_TERMINA_FIELD_TALL_GRASS_CHEST, true),
-            CHECK(RC_TERMINA_FIELD_TREE_STUMP_CHEST, CAN_GROW_BEAN_PLANT || HAS_ITEM(ITEM_HOOKSHOT)),
-            CHECK(RC_TERMINA_FIELD_WATER_CHEST, CAN_BE_ZORA),
-            CHECK(RC_TERMINA_FIELD_FREESTANDING_RUPEE_01, true), // TODO: Fix duplicate item get...
-            CHECK(RC_TERMINA_FIELD_GUAY_RUPEE_DROP_01, CAN_PLAY_SONG(SONATA) || CAN_PLAY_SONG(LULLABY) || CAN_PLAY_SONG(BOSSA_NOVA)),
-            CHECK(RC_TERMINA_FIELD_GUAY_RUPEE_DROP_02, CAN_PLAY_SONG(SONATA) || CAN_PLAY_SONG(LULLABY) || CAN_PLAY_SONG(BOSSA_NOVA)),
-            CHECK(RC_TERMINA_FIELD_GUAY_RUPEE_DROP_03, CAN_PLAY_SONG(SONATA) || CAN_PLAY_SONG(LULLABY) || CAN_PLAY_SONG(BOSSA_NOVA)),
-            CHECK(RC_TERMINA_FIELD_GUAY_RUPEE_DROP_04, CAN_PLAY_SONG(SONATA) || CAN_PLAY_SONG(LULLABY) || CAN_PLAY_SONG(BOSSA_NOVA)),
-            CHECK(RC_TERMINA_FIELD_GUAY_RUPEE_DROP_05, CAN_PLAY_SONG(SONATA) || CAN_PLAY_SONG(LULLABY) || CAN_PLAY_SONG(BOSSA_NOVA)),
-            CHECK(RC_TERMINA_FIELD_GUAY_RUPEE_DROP_06, CAN_PLAY_SONG(SONATA) || CAN_PLAY_SONG(LULLABY) || CAN_PLAY_SONG(BOSSA_NOVA)),
-            CHECK(RC_TERMINA_FIELD_GUAY_RUPEE_DROP_07, CAN_PLAY_SONG(SONATA) || CAN_PLAY_SONG(LULLABY) || CAN_PLAY_SONG(BOSSA_NOVA)),
-            CHECK(RC_TERMINA_FIELD_GUAY_RUPEE_DROP_08, CAN_PLAY_SONG(SONATA) || CAN_PLAY_SONG(LULLABY) || CAN_PLAY_SONG(BOSSA_NOVA)),
-            CHECK(RC_TERMINA_FIELD_GUAY_RUPEE_DROP_09, CAN_PLAY_SONG(SONATA) || CAN_PLAY_SONG(LULLABY) || CAN_PLAY_SONG(BOSSA_NOVA)),
-            CHECK(RC_TERMINA_FIELD_GUAY_RUPEE_DROP_10, CAN_PLAY_SONG(SONATA) || CAN_PLAY_SONG(LULLABY) || CAN_PLAY_SONG(BOSSA_NOVA)),
-            CHECK(RC_TERMINA_FIELD_GUAY_RUPEE_DROP_11, CAN_PLAY_SONG(SONATA) || CAN_PLAY_SONG(LULLABY) || CAN_PLAY_SONG(BOSSA_NOVA)),
-            CHECK(RC_TERMINA_FIELD_GUAY_RUPEE_DROP_12, CAN_PLAY_SONG(SONATA) || CAN_PLAY_SONG(LULLABY) || CAN_PLAY_SONG(BOSSA_NOVA)),
-            CHECK(RC_TERMINA_FIELD_GUAY_RUPEE_DROP_13, CAN_PLAY_SONG(SONATA) || CAN_PLAY_SONG(LULLABY) || CAN_PLAY_SONG(BOSSA_NOVA)),
-            CHECK(RC_TERMINA_FIELD_GUAY_RUPEE_DROP_14, CAN_PLAY_SONG(SONATA) || CAN_PLAY_SONG(LULLABY) || CAN_PLAY_SONG(BOSSA_NOVA)),
-            CHECK(RC_TERMINA_FIELD_GUAY_RUPEE_DROP_15, CAN_PLAY_SONG(SONATA) || CAN_PLAY_SONG(LULLABY) || CAN_PLAY_SONG(BOSSA_NOVA)),
-            CHECK(RC_TERMINA_FIELD_GUAY_RUPEE_DROP_16, CAN_PLAY_SONG(SONATA) || CAN_PLAY_SONG(LULLABY) || CAN_PLAY_SONG(BOSSA_NOVA)),
-            CHECK(RC_TERMINA_FIELD_GUAY_RUPEE_DROP_17, CAN_PLAY_SONG(SONATA) || CAN_PLAY_SONG(LULLABY) || CAN_PLAY_SONG(BOSSA_NOVA)),
-            CHECK(RC_TERMINA_FIELD_GUAY_RUPEE_DROP_18, CAN_PLAY_SONG(SONATA) || CAN_PLAY_SONG(LULLABY) || CAN_PLAY_SONG(BOSSA_NOVA)),
-            CHECK(RC_TERMINA_FIELD_GUAY_RUPEE_DROP_19, CAN_PLAY_SONG(SONATA) || CAN_PLAY_SONG(LULLABY) || CAN_PLAY_SONG(BOSSA_NOVA)),
-            CHECK(RC_TERMINA_FIELD_GUAY_RUPEE_DROP_20, CAN_PLAY_SONG(SONATA) || CAN_PLAY_SONG(LULLABY) || CAN_PLAY_SONG(BOSSA_NOVA)),
-        },
-        .exits = { //     TO                                         FROM
-            EXIT(ENTRANCE(GROTTOS, 0),                      ENTRANCE(TERMINA_FIELD, 0), CAN_USE_EXPLOSIVE || CAN_BE_GORON), // TODO: Grotto mapping Gossip Stone #3
-            EXIT(ENTRANCE(GROTTOS, 1),                      ENTRANCE(TERMINA_FIELD, 0), true), // TODO: Grotto mapping Gossip Stone #1
-            EXIT(ENTRANCE(GROTTOS, 2),                      ENTRANCE(TERMINA_FIELD, 0), true), // TODO: Grotto mapping Gossip Stone #4
-            EXIT(ENTRANCE(GROTTOS, 3),                      ENTRANCE(TERMINA_FIELD, 0), true), // TODO: Grotto mapping Gossip Stone #2
-            EXIT(ENTRANCE(GROTTOS, 7),                      ENTRANCE(TERMINA_FIELD, 0), true), // TODO: Grotto mapping Dodongo
-            EXIT(ENTRANCE(GROTTOS, 9),                      ENTRANCE(TERMINA_FIELD, 0), true), // TODO: Grotto mapping Scrub
-            EXIT(ENTRANCE(GROTTOS, 11),                     ENTRANCE(TERMINA_FIELD, 0), CAN_USE_EXPLOSIVE || CAN_BE_GORON), // TODO: Grotto mapping bio baba grotto
-            EXIT(ENTRANCE(GROTTOS, 13),                     ENTRANCE(TERMINA_FIELD, 0), true), // TODO: Grotto mapping peahat grotto
-            EXIT(ENTRANCE(WEST_CLOCK_TOWN, 0),              ENTRANCE(TERMINA_FIELD, 0), true),
-            EXIT(ENTRANCE(ROAD_TO_SOUTHERN_SWAMP, 0),       ENTRANCE(TERMINA_FIELD, 1), true),
-            EXIT(ENTRANCE(ROAD_TO_IKANA, 0),                ENTRANCE(TERMINA_FIELD, 4), true),
-            EXIT(ENTRANCE(MILK_ROAD, 0),                    ENTRANCE(TERMINA_FIELD, 5), true),
-            EXIT(ENTRANCE(SOUTH_CLOCK_TOWN, 1),             ENTRANCE(TERMINA_FIELD, 6), true),
-            EXIT(ENTRANCE(EAST_CLOCK_TOWN, 0),              ENTRANCE(TERMINA_FIELD, 7), true),
-            EXIT(ENTRANCE(NORTH_CLOCK_TOWN, 0),             ENTRANCE(TERMINA_FIELD, 8), true),
-        },
-        .connections = {
-            CONNECTION(RR_TERMINA_FIELD_BEFORE_PATH_TO_MOUNTAIN_VILLAGE, HAS_ITEM(ITEM_BOW)),
-            CONNECTION(RR_TERMINA_FIELD_BEFORE_GREAT_BAY_COAST, CAN_PLAY_SONG(EPONA)),
-            CONNECTION(RR_ASTRAL_OBSERVATORY_OUTSIDE, CAN_BE_DEKU),
-            CONNECTION(RR_TERMINA_FIELD_COW_GROTTO, CAN_USE_EXPLOSIVE), // TODO: Grotto mapping
-            CONNECTION(RR_TERMINA_FIELD_PILLAR_GROTTO, true), // TODO: Grotto mapping
-            CONNECTION(RR_TERMINA_FIELD_TALL_GRASS_GROTTO, true), // TODO: Grotto mapping
-        },
-    };
     Regions[RR_TOWN_DEKU_PLAYGROUND] = RandoRegion{ .sceneId = SCENE_DEKUTES,
         .checks = {
             CHECK(RC_DEKU_PLAYGROUND_ALL_DAYS, CAN_BE_DEKU),
@@ -529,7 +366,10 @@ static RegisterShipInitFunc initFunc([]() {
     };
     Regions[RR_TREASURE_SHOP] = RandoRegion{ .sceneId = SCENE_TAKARAYA,
         .checks = {
-            // TODO : Add check for each form(minus FD)
+            CHECK(RC_CLOCK_TOWN_EAST_TREASURE_CHEST_GAME_DEKU,  CAN_BE_DEKU),
+            CHECK(RC_CLOCK_TOWN_EAST_TREASURE_CHEST_GAME_GORON, CAN_BE_GORON),
+            CHECK(RC_CLOCK_TOWN_EAST_TREASURE_CHEST_GAME_HUMAN, true), // can be human
+            CHECK(RC_CLOCK_TOWN_EAST_TREASURE_CHEST_GAME_ZORA,  CAN_BE_ZORA),
         },
         .exits = { //     TO                                         FROM
             EXIT(ENTRANCE(EAST_CLOCK_TOWN, 4),              ENTRANCE(TREASURE_CHEST_SHOP, 0), true),

@@ -17,6 +17,8 @@
 
 #include <vector>
 
+struct ImFont;
+
 const std::string customMessageTableID = "BaseGameOverrides";
 const std::string appShortName = "2ship";
 

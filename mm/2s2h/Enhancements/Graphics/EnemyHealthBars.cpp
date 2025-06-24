@@ -4,6 +4,8 @@
 #include "2s2h/Enhancements/FrameInterpolation/FrameInterpolation.h"
 #include "2s2h/ShipInit.hpp"
 #include "2s2h/ShipUtils.h"
+#include "public/bridge/consolevariablebridge.h"
+#include <cassert>
 
 extern "C" {
 #include "assets/interface/parameter_static/parameter_static.h"
@@ -191,6 +193,7 @@ static RegisterShipInitFunc initFunc(
                 u8* maxHealth = (u8*)ActorExtension_Get(actor, actorEnemyHealthExtId);
                 if (maxHealth == NULL) {
                     assert(false && "Actor Extension memory not valid");
+                    return;
                 }
 
                 *maxHealth = actor->colChkInfo.health;

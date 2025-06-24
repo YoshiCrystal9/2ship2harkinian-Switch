@@ -2,7 +2,7 @@
 
 #include "GameInteractor/GameInteractor.h"
 #include "2s2h/Enhancements/Audio/AudioEditor.h"
-#include "2s2h/GameInteractor/GameInteractor.h"
+#include "public/bridge/consolevariablebridge.h"
 
 typedef struct {
     /* 0x0 */ s8 x;

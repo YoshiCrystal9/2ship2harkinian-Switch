@@ -1,5 +1,4 @@
 #include "Rando/Rando.h"
-#include <libultraship/libultraship.h>
 #include "2s2h/Enhancements/FrameInterpolation/FrameInterpolation.h"
 #include "2s2h/ShipInit.hpp"
 #include "2s2h/Rando/DrawFuncs.h"

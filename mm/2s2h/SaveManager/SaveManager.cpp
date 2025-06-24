@@ -3,10 +3,10 @@
 #include <fstream>
 #include <filesystem>
 #include <nlohmann/json.hpp>
-#include <libultraship/libultraship.h>
 
 #include "BenJsonConversions.hpp"
 #include "BenPort.h"
+#include "Window.h"
 
 extern "C" {
 #include "z64save.h"
@@ -102,7 +102,7 @@ int SaveManager_MigrateSave(nlohmann::json& j) {
     }
 }
 
-void SaveManager_WriteSaveFile(std::filesystem::path fileName, nlohmann::json j) {
+void SaveManager_WriteSaveFile(const std::filesystem::path& fileName, nlohmann::json j) {
     const std::filesystem::path filePath = savesFolderPath / fileName;
 
     if (!std::filesystem::exists(savesFolderPath)) {
@@ -123,7 +123,7 @@ void SaveManager_WriteSaveFile(std::filesystem::path fileName, nlohmann::json j)
     } catch (...) { SPDLOG_ERROR("Failed to write save file"); }
 }
 
-void SaveManager_DeleteSaveFile(std::filesystem::path fileName) {
+void SaveManager_DeleteSaveFile(const std::filesystem::path& fileName) {
     const std::filesystem::path filePath = savesFolderPath / fileName;
 
     try {
@@ -133,7 +133,7 @@ void SaveManager_DeleteSaveFile(std::filesystem::path fileName) {
     } catch (...) { SPDLOG_ERROR("Failed to delete save file"); }
 }
 
-int SaveManager_ReadSaveFile(std::filesystem::path fileName, nlohmann::json& j) {
+int SaveManager_ReadSaveFile(const std::filesystem::path& fileName, nlohmann::json& j) {
     const std::filesystem::path filePath = savesFolderPath / fileName;
 
     if (!std::filesystem::exists(filePath)) {
@@ -151,7 +151,7 @@ int SaveManager_ReadSaveFile(std::filesystem::path fileName, nlohmann::json& j) 
     }
 }
 
-void SaveManager_MoveInvalidSaveFile(std::filesystem::path fileName, std::string message) {
+void SaveManager_MoveInvalidSaveFile(const std::filesystem::path& fileName, const std::string& message) {
     const std::filesystem::path filePath = savesFolderPath / fileName;
     const std::filesystem::path backupFilePath =
         savesFolderPath / (fileName.stem().string() + "_invalid_" + std::to_string(std::time(nullptr)) + ".json");
@@ -249,7 +249,7 @@ std::string SaveManager_GetFileNameFromFlashSave(FlashSave flashSave) {
     return "file" + std::to_string(fileNum) + (isBackup ? "backup" : "") + ".json";
 }
 
-bool SaveManager_HandleFileDropped(std::string filePath) {
+bool SaveManager_HandleFileDropped(const std::string& filePath) {
     try {
         std::ifstream fileStream(filePath);
 

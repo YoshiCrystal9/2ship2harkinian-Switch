@@ -1,4 +1,4 @@
-#include "spdlog/spdlog.h"
+
 #include "2s2h/resource/type/2shResourceType.h"
 #include "2s2h/resource/importer/SceneFactory.h"
 #include "2s2h/resource/type/Scene.h"
@@ -32,6 +32,7 @@
 #include "2s2h/resource/importer/scenecommand/SetMinimapListFactory.h"
 #include "2s2h/resource/importer/scenecommand/SetMinimapChestsFactory.h"
 #include "2s2h/resource/importer/scenecommand/SetActorCutsceneListFactory.h"
+#include "spdlog/spdlog.h"
 
 namespace SOH {
 ResourceFactoryBinarySceneV0::ResourceFactoryBinarySceneV0() {
@@ -106,12 +107,14 @@ ResourceFactoryBinarySceneV0::ParseSceneCommand(std::shared_ptr<Scene> scene,
     return result;
 }
 
-std::shared_ptr<Ship::IResource> ResourceFactoryBinarySceneV0::ReadResource(std::shared_ptr<Ship::File> file) {
-    if (!FileHasValidFormatAndReader(file)) {
+std::shared_ptr<Ship::IResource>
+ResourceFactoryBinarySceneV0::ReadResource(std::shared_ptr<Ship::File> file,
+                                           std::shared_ptr<Ship::ResourceInitData> initData) {
+    if (!FileHasValidFormatAndReader(file, initData)) {
         return nullptr;
     }
 
-    auto scene = std::make_shared<Scene>(file->InitData);
+    auto scene = std::make_shared<Scene>(initData);
     auto reader = std::get<std::shared_ptr<Ship::BinaryReader>>(file->Reader);
 
     ParseSceneCommands(scene, reader);

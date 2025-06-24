@@ -1,8 +1,8 @@
-#include <libultraship/bridge.h>
+#include "public/bridge/consolevariablebridge.h"
 #include "2s2h/ShipInit.hpp"
 
 extern "C" {
-#include "variables.h";
+#include "variables.h"
 extern f32 D_8085D958[2];
 }
 

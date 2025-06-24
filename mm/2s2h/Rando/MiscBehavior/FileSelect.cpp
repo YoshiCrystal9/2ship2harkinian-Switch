@@ -1,5 +1,4 @@
 #include "MiscBehavior.h"
-#include <libultraship/libultraship.h>
 #include "Enhancements/FrameInterpolation/FrameInterpolation.h"
 #include "2s2h_assets.h"
 

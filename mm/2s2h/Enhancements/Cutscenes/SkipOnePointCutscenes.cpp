@@ -1,4 +1,4 @@
-#include <libultraship/libultraship.h>
+#include "public/bridge/consolevariablebridge.h"
 #include "2s2h/GameInteractor/GameInteractor.h"
 #include "2s2h/ShipInit.hpp"
 
@@ -32,12 +32,15 @@ void RegisterSkipOnePointCutscenes() {
 
         switch (actor->id) {
             case ACTOR_OBJ_SYOKUDAI: { // Torch
-                if (gPlayState->sceneId == SCENE_33ZORACITY) {
-                    // Currently this softlocks you, making you unable to interact with any actors
-                    break;
+                ObjSyokudai* torch = (ObjSyokudai*)actor;
+                s32 switchFlag = OBJ_SYOKUDAI_GET_SWITCH_FLAG(actor);
+
+                // Set the flag if needed
+                if (torch->pendingAction >= OBJ_SYOKUDAI_PENDING_ACTION_CUTSCENE_AND_SWITCH) {
+                    Flags_SetSwitch(gPlayState, switchFlag);
                 }
 
-                ObjSyokudai* torch = (ObjSyokudai*)actor;
+                torch->pendingAction = OBJ_SYOKUDAI_PENDING_ACTION_NONE;
                 torch->snuffTimer = OBJ_SYOKUDAI_SNUFF_NEVER;
                 *should = false;
                 break;
@@ -80,6 +83,7 @@ void RegisterSkipOnePointCutscenes() {
             case ACTOR_OBJ_LIGHTBLOCK:
             case ACTOR_OBJ_LIGHTSWITCH:
             case ACTOR_BG_IKANA_BOMBWALL:
+            case ACTOR_BG_IKANA_BLOCK:
             case ACTOR_BG_HAKUGIN_BOMBWALL:
             case ACTOR_EN_SW:
             case ACTOR_OBJ_CHAN:

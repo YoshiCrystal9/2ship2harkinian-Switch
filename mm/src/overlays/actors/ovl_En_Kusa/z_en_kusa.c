@@ -11,6 +11,7 @@
 #include "overlays/actors/ovl_En_Insect/z_en_insect.h"
 
 #include "2s2h/ShipUtils.h"
+#include "GameInteractor/GameInteractor.h"
 
 #define FLAGS (ACTOR_FLAG_10 | ACTOR_FLAG_800000)
 
@@ -248,8 +249,10 @@ void EnKusa_DropCollectible(EnKusa* this, PlayState* play) {
 
     if ((KUSA_GET_TYPE(&this->actor) == ENKUSA_TYPE_GRASS) || (KUSA_GET_TYPE(&this->actor) == ENKUSA_TYPE_BUSH)) {
         if (!KUSA_GET_PARAM_0C(&this->actor)) {
-            Item_DropCollectibleRandom(play, NULL, &this->actor.world.pos,
-                                       KUSA_GET_RAND_COLLECTIBLE_ID(&this->actor) * 0x10);
+            if (GameInteractor_Should(VB_GRASS_DROP_COLLECTIBLE, true, ACTOR_EN_KUSA, this)) {
+                Item_DropCollectibleRandom(play, NULL, &this->actor.world.pos,
+                                           KUSA_GET_RAND_COLLECTIBLE_ID(&this->actor) * 0x10);
+            }
         }
     } else if (KUSA_GET_TYPE(&this->actor) == ENKUSA_TYPE_REGROWING_GRASS) {
         Item_DropCollectible(play, &this->actor.world.pos, 3);
@@ -439,7 +442,9 @@ void EnKusa_WaitObject(EnKusa* this, PlayState* play) {
             EnKusa_SetupInteract(this);
         }
         if (kusaType == ENKUSA_TYPE_BUSH) {
-            this->actor.draw = EnKusa_DrawBush;
+            if (GameInteractor_Should(VB_KUSA_BUSH_DRAW_BE_OVERRIDDEN, true, this)) {
+                this->actor.draw = EnKusa_DrawBush;
+            }
         } else {
             this->actor.draw = EnKusa_DrawGrass;
         }

@@ -185,6 +185,9 @@ typedef enum {
     VB_ITEM_GIVE_SWORD_SET_FORM_EQUIP,
     VB_POT_DRAW_BE_OVERRIDDEN,
     VB_CRATE_DRAW_BE_OVERRIDDEN,
+    VB_KUSA_BUSH_DRAW_BE_OVERRIDDEN,
+    VB_OBJGRASS_DRAW_BE_OVERRIDDEN,
+    VB_CARRY_GRASS_DRAW_BE_OVERRIDDEN,
     VB_HAVE_MAGIC_FOR_TINGLE,
     VB_GIVE_KEATON_MASK,
     VB_GIVE_LETTER_TO_MAMA,
@@ -219,6 +222,7 @@ typedef enum {
     VB_GIBDO_TRADE_SEQUENCE_TAKE_MORE_THAN_ONE_ITEM,
     VB_GIBDO_TRADE_SEQUENCE_DO_TRADE,
     VB_GET_ITEM_ACTION_FROM_MASK,
+    VB_GRASS_DROP_COLLECTIBLE,
     VB_GRANT_MAGIC_UPON_REQUEST,
     VB_SCOPENUTS_CONSIDER_FIRST_CYCLE,
     VB_JS_OVERRIDE_MASK_CHECK,
@@ -236,6 +240,9 @@ typedef enum {
     VB_SNOWBALL_DROP_COLLECTIBLE,
     VB_SNOWBALL_SET_FLAG,
     VB_START_JUMPSLASH,
+    VB_SETUP_TRANSITION,
+    VB_BE_NEAR_DOOR,
+    VB_LOAD_PLAYER_ANIMATION_FRAME,
 } GIVanillaBehavior;
 
 typedef enum {
@@ -243,6 +250,7 @@ typedef enum {
     GI_INVERT_CAMERA_RIGHT_STICK_Y,
     GI_INVERT_MOVEMENT_X,
     GI_INVERT_SHIELD_X,
+    GI_INVERT_SHIELD_Y,
     GI_INVERT_SHOP_X,
     GI_INVERT_HORSE_X,
     GI_INVERT_ZORA_SWIM_X,
@@ -271,14 +279,12 @@ typedef enum {
 
 #ifdef __cplusplus
 
-#include "2s2h/CustomMessage/CustomMessage.h"
 #include <vector>
 #include <functional>
 #include <map>
 #include <unordered_map>
 #include <cstdint>
 #include <algorithm>
-#include <variant>
 
 #include <version>
 #ifdef __cpp_lib_source_location

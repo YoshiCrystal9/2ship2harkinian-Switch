@@ -9,6 +9,7 @@
 #include "overlays/actors/ovl_En_Elf/z_en_elf.h"
 #include <string.h>
 #include "2s2h/GameInteractor/GameInteractor.h"
+#include "luslog.h"
 
 s16 sCutsceneQuakeIndex;
 struct CutsceneCamera sCutsceneCameraInfo;

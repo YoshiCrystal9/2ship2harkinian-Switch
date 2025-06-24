@@ -1,6 +1,10 @@
 #ifndef PR_RCP_H
 #define PR_RCP_H
 
+#include <libultraship/libultra/rcp.h>
+//#include <libultraship/libultra/rsp.h>
+
+#if 0
 /**
  * PIF Physical memory map (total size = 2 KB)
  *
@@ -269,5 +273,5 @@
 
 #define IO_READ(addr)       (*(vu32*)PHYS_TO_K1(addr))
 #define IO_WRITE(addr,data) (*(vu32*)PHYS_TO_K1(addr)=(u32)(data))
-
+#endif
 #endif

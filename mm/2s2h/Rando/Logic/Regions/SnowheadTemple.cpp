@@ -1,4 +1,3 @@
-#include <libultraship/libultraship.h>
 #include "2s2h/GameInteractor/GameInteractor.h"
 #include "2s2h/ShipInit.hpp"
 
@@ -176,7 +175,7 @@ static RegisterShipInitFunc initFunc([]() {
     Regions[RR_SNOWHEAD_TEMPLE_COMPASS_ROOM] = RandoRegion{ .sceneId = SCENE_HAKUGIN,
         .checks = {
             CHECK(RC_SNOWHEAD_TEMPLE_COMPASS_CHEST, true),
-            CHECK(RC_SNOWHEAD_TEMPLE_COMPASS_ROOM_LEDGE_CHEST, (HAS_ITEM(ITEM_HOOKSHOT) || CAN_USE_MAGIC_ARROW(FIRE))),
+            CHECK(RC_SNOWHEAD_TEMPLE_COMPASS_ROOM_LEDGE_CHEST, CAN_USE_MAGIC_ARROW(FIRE)),
             CHECK(RC_SNOWHEAD_TEMPLE_COMPASS_ROOM_POT_01, true),
             CHECK(RC_SNOWHEAD_TEMPLE_COMPASS_ROOM_POT_02, true),
             CHECK(RC_SNOWHEAD_TEMPLE_COMPASS_ROOM_POT_03, true),

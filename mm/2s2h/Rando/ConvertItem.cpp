@@ -1,6 +1,6 @@
 #include "Rando/Rando.h"
-#include <libultraship/libultraship.h>
 #include "2s2h/ShipUtils.h"
+#include <cassert>
 
 // Copied from z_player.c, we could instead move this to a header file, idk
 typedef struct GetItemEntry {

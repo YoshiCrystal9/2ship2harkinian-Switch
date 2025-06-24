@@ -48,6 +48,7 @@
 #include "2s2h/BenPort.h"
 #include "2s2h/GameInteractor/GameInteractor.h"
 #include "2s2h/CustomMessage/CustomMessage.h"
+#include "public/bridge/consolevariablebridge.h"
 
 #define THIS ((Player*)thisx)
 
@@ -13041,7 +13042,8 @@ s32 Ship_HandleFirstPersonAiming(PlayState* play, Player* this, s32 arg2) {
     float gyroX = 0.0f;
     float gyroY = 0.0f;
 
-    if (!CVarGetInteger("gEnhancements.Camera.FirstPerson.MoveInFirstPerson", 0)) {
+    if (!(CVarGetInteger("gEnhancements.Camera.FirstPerson.MoveInFirstPerson", 0) &&
+          CVarGetInteger("gEnhancements.Camera.FirstPerson.RightStickEnabled", 0))) {
         s32 leftStickX = sPlayerControlInput->rel.stick_x; // -60 to 60
         s32 leftStickY = sPlayerControlInput->rel.stick_y; // -60 to 60
 
@@ -14793,6 +14795,7 @@ void Player_Action_18(Player* this, PlayState* play) {
         s16 var_a3;
 
         xStick *= GameInteractor_InvertControl(GI_INVERT_SHIELD_X);
+        yStick *= GameInteractor_InvertControl(GI_INVERT_SHIELD_Y);
         var_a1 = (yStick * Math_CosS(temp_a0)) + (Math_SinS(temp_a0) * xStick);
         temp_ft5 = (xStick * Math_CosS(temp_a0)) - (Math_SinS(temp_a0) * yStick);
 

@@ -1,7 +1,6 @@
 #ifndef MENUTYPES_H
 #define MENUTYPES_H
 
-#include <libultraship/libultraship.h>
 #include "UIWidgets.hpp"
 
 typedef enum {
@@ -25,7 +24,6 @@ typedef enum {
     DISABLE_FOR_MOTION_BLUR_MODE,
     DISABLE_FOR_MOTION_BLUR_OFF,
     DISABLE_FOR_FRAME_ADVANCE_OFF,
-    DISABLE_FOR_WARP_POINT_NOT_SET,
     DISABLE_FOR_INTRO_SKIP_OFF,
     DISABLE_FOR_ADVANCED_RESOLUTION_ON,
     DISABLE_FOR_VERTICAL_RES_TOGGLE_ON,
@@ -60,6 +58,12 @@ typedef enum {
     WIDGET_VIDEO_BACKEND, // same as above
     WIDGET_CUSTOM,
 } WidgetType;
+
+typedef enum {
+    SECTION_COLUMN_1,
+    SECTION_COLUMN_2,
+    SECTION_COLUMN_3,
+} SectionColumns;
 
 typedef enum {
     MOTION_BLUR_DYNAMIC,
@@ -200,7 +204,7 @@ struct WidgetInfo {
 struct WidgetPath {
     std::string sectionName;
     std::string sidebarName;
-    uint8_t column;
+    SectionColumns column;
 };
 
 // `disabledInfo` holds information on reasons for hiding or disabling a widget, as well as an evaluation lambda that
@@ -252,9 +256,9 @@ struct SidebarEntry {
 // the last viewed for that header.
 struct MainMenuEntry {
     std::string label;
-    std::unordered_map<std::string, SidebarEntry> sidebars;
     const char* sidebarCvar;
-    std::vector<std::string> sidebarOrder;
+    std::unordered_map<std::string, SidebarEntry> sidebars = {};
+    std::vector<std::string> sidebarOrder = {};
 };
 
 static const std::unordered_map<Ship::AudioBackend, const char*> audioBackendsMap = {
@@ -266,6 +270,43 @@ static const std::unordered_map<Ship::WindowBackend, const char*> windowBackends
     { Ship::WindowBackend::FAST3D_DXGI_DX11, "DirectX" },
     { Ship::WindowBackend::FAST3D_SDL_OPENGL, "OpenGL" },
     { Ship::WindowBackend::FAST3D_SDL_METAL, "Metal" },
+};
+
+struct MenuInit {
+    static std::vector<std::function<void()>>& GetInitFuncs() {
+        static std::vector<std::function<void()>> menuInitFuncs;
+        return menuInitFuncs;
+    }
+
+    static std::unordered_map<std::string, std::unordered_map<std::string, std::vector<std::function<void()>>>>&
+    GetUpdateFuncs() {
+        static std::unordered_map<std::string, std::unordered_map<std::string, std::vector<std::function<void()>>>>
+            menuUpdateFuncs;
+        return menuUpdateFuncs;
+    }
+
+    static void InitAll() {
+        auto& menuInitFuncs = MenuInit::GetInitFuncs();
+        for (const auto& initFunc : menuInitFuncs) {
+            initFunc();
+        }
+    }
+};
+
+struct RegisterMenuInitFunc {
+    RegisterMenuInitFunc(std::function<void()> initFunc) {
+        auto& menuInitFuncs = MenuInit::GetInitFuncs();
+
+        menuInitFuncs.push_back(initFunc);
+    }
+};
+
+struct RegisterMenuUpdateFunc {
+    RegisterMenuUpdateFunc(std::function<void()> updateFunc, std::string sectionName, std::string sidebarName) {
+        auto& menuUpdateFuncs = MenuInit::GetUpdateFuncs();
+
+        menuUpdateFuncs[sectionName][sidebarName].push_back(updateFunc);
+    }
 };
 
 #endif // MENUTYPES_H

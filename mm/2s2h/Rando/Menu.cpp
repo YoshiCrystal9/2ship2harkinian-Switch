@@ -1,9 +1,7 @@
 #include "Rando/Rando.h"
 #include "Rando/Spoiler/Spoiler.h"
-#include <libultraship/libultraship.h>
 #include "2s2h/BenGui/UIWidgets.hpp"
 #include "Rando/CheckTracker/CheckTracker.h"
-#include "BenPort.h"
 #include "build.h"
 #include "2s2h/BenGui/BenMenu.h"
 
@@ -79,7 +77,7 @@ static void DrawGeneralTab() {
     ImGui::SeparatorText("Enhancements");
     UIWidgets::CVarCheckbox("Container Style Matches Contents", "gRando.CSMC");
     UIWidgets::Tooltip("This will make the contents of a container match the container itself. This currently only "
-                       "applies to chests and pots");
+                       "applies to chests and pots.");
     UIWidgets::WindowButton("Check Tracker", "gWindows.CheckTracker", BenGui::mRandoCheckTrackerWindow,
                             { .size = ImVec2((ImGui::GetContentRegionAvail().x - 48.0f), 40.0f) });
     ImGui::SameLine();
@@ -100,24 +98,9 @@ static void DrawGeneralTab() {
     ImGui::SeparatorText("Disclaimer");
     ImGui::PopStyleColor();
     ImGui::TextWrapped(
-        "This is an Alpha. Please make note of any odd or unexpected behavior while you are playing. While we are in "
-        "the earlier phases of this project, some things you may encounter are:\n- X Check is not shuffled\n- X "
-        "Cutscene is not skipped\n- Soft lock when interacting with X\n- Unbeatable seed (glitchless logic)\n\nWe are "
-        "aware of some of these, but likely not all. Please compare your findings to our list of known issues, which "
-        "is available in the pins of the Rando Alpha Discord thread, or on the Github Issue #211, and let us know if "
-        "you encounter any new issues.\n\nExplore the menus for various enhancements and time savers, they are not "
-        "enabled by default in Rando.\n\n");
-    ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.5f, 0.5f, 1.0f));
-    ImGui::SeparatorText("Thank You");
-    ImGui::PopStyleColor();
-    ImGui::TextWrapped("Special thanks to BalloonDude, Eblo, Caladius, Sitton, Dana, our playtesters, everyone who "
-                       "contributed to the SoH randomizer, and the creators of the various other randomizer "
-                       "implementations that inspired this project. I hope you enjoy it.\n\n");
-    ImTextureID swordTextureId = Ship::Context::GetInstance()->GetWindow()->GetGui()->GetTextureByName(
-        (const char*)gQuestIconHeartContainer2Tex);
-    ImGui::Image(swordTextureId, ImVec2(25.0f, 25.0f));
-    ImGui::SameLine();
-    ImGui::Text("ProxySaw");
+        "This is a Beta. Please make note of any odd or unexpected behavior while you are playing, and report it "
+        "in our [Playtest] Rando Beta thread on Discord under #2s2h-threads.\n\n"
+        "Explore the menus for various enhancements and time savers, they are not enabled by default in Rando.\n\n");
     ImGui::EndChild();
 }
 
@@ -128,13 +111,13 @@ static void DrawLogicConditionsTab() {
     UIWidgets::CVarCombobox("Logic", Rando::StaticData::Options[RO_LOGIC].cvar, logicOptions);
     UIWidgets::Tooltip(
         "Glitchless - The items are shuffled in a way that guarantees the seed is beatable without "
-        "glitches\n\n"
+        "glitches.\n\n"
         "No Logic - The items are shuffled completely randomly, this can result in unbeatable seeds, and "
-        "will require heavy use of glitches\n\n"
+        "will require heavy use of glitches.\n\n"
         "Nearly No Logic - The items are shuffled completely randomly, with the following exceptions:\n"
-        "- Oath to Order and Remains cannot be placed on the Moon\n"
+        "- Oath to Order and Remains cannot be placed on the Moon.\n"
         "- Deku Mask, Zora Mask, Sonata, and Bossa Nova cannot be placed in their respective Temples or on "
-        "the Moon\n\n"
+        "the Moon.\n\n"
         "French Vanilla - This is an alternative variant to Glitchless, but the items are biased to be "
         "closer to their vanilla locations. Tends to be an more beginner friendly experience.\n\n"
         "Vanilla - The items are not shuffled.");
@@ -186,6 +169,7 @@ static void DrawLocationsTab() {
     CVarCheckbox("Shuffle Crate Drops", Rando::StaticData::Options[RO_SHUFFLE_CRATE_DROPS].cvar);
     CVarCheckbox("Shuffle Barrel Drops", Rando::StaticData::Options[RO_SHUFFLE_BARREL_DROPS].cvar);
     CVarCheckbox("Shuffle Snowball Drops", Rando::StaticData::Options[RO_SHUFFLE_SNOWBALL_DROPS].cvar);
+    CVarCheckbox("Shuffle Grass Drops", Rando::StaticData::Options[RO_SHUFFLE_GRASS_DROPS].cvar);
     CVarCheckbox("Shuffle Hive Drops", "gPlaceholderBool",
                  CheckboxOptions({ { .disabled = true, .disabledTooltip = "Coming Soon" } }));
     CVarCheckbox("Shuffle Freestanding Items", Rando::StaticData::Options[RO_SHUFFLE_FREESTANDING_ITEMS].cvar);
@@ -197,7 +181,7 @@ static void DrawLocationsTab() {
     ImGui::EndChild();
     ImGui::BeginChild("randoLocationsExclusions", ImVec2(0, 0));
     ImGui::SeparatorText("Exclusions");
-    ImGui::TextWrapped("These checks will be gauranteed junk items, and marked as skipped in the check tracker.");
+    ImGui::TextWrapped("These checks will be guaranteed junk items, and marked as skipped in the check tracker.");
     ImGui::EndChild();
 }
 
@@ -362,14 +346,14 @@ static void DrawHintsTab() {
         "Gossip Stone Purchaseable", Rando::StaticData::Options[RO_HINTS_PURCHASEABLE].cvar,
         CheckboxOptions({ { .tooltip = "Gossip stones will offer a hint for a scaling rupee cost. This cost ranges "
                                        "from 10-250 rupees depending on how many checks are remaining in your seed. "
-                                       "The hint will gauranteed be a check you have not obtained yet." } }));
+                                       "The hint will guaranteed be a check you have not obtained yet." } }));
     CVarCheckbox(
         "Boss Remains", Rando::StaticData::Options[RO_HINTS_BOSS_REMAINS].cvar,
         CheckboxOptions(
             { { .tooltip =
                     "Lists the location of the Boss remains on the guard recruitment posters around Clock Town" } }));
     CVarCheckbox("Oath to Order", Rando::StaticData::Options[RO_HINTS_OATH_TO_ORDER].cvar,
-                 CheckboxOptions({ { .tooltip = "Once you have the Moon Access Requirments, talking to Skull Kid on "
+                 CheckboxOptions({ { .tooltip = "Once you have the Moon Access Requirements, talking to Skull Kid on "
                                                 "the Clock Tower Rooftop will hint the location of Oath to Order" } }));
     CVarCheckbox(
         "General Actor Hints", "gPlaceholderBool",
@@ -390,8 +374,9 @@ static void DrawHintsTab() {
 }
 
 void Rando::RegisterMenu() {
+    mBenMenu->AddMenuEntry("Rando", "gSettings.Menu.RandoSidebarSection");
     mBenMenu->AddSidebarEntry("Rando", "General", 1);
-    WidgetPath path = { "Rando", "General", 1 };
+    WidgetPath path = { "Rando", "General", SECTION_COLUMN_1 };
     mBenMenu->AddWidget(path, "General", WIDGET_CUSTOM).CustomFunction([](WidgetInfo& info) { DrawGeneralTab(); });
     mBenMenu->AddSidebarEntry("Rando", "Logic/Conditions", 1);
     path.sidebarName = "Logic/Conditions";
@@ -408,3 +393,5 @@ void Rando::RegisterMenu() {
     path.sidebarName = "Hints";
     mBenMenu->AddWidget(path, "Hints", WIDGET_CUSTOM).CustomFunction([](WidgetInfo& info) { DrawHintsTab(); });
 }
+
+static RegisterMenuInitFunc initFunc(Rando::RegisterMenu);

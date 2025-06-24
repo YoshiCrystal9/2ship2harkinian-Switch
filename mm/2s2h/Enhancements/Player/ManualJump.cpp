@@ -1,8 +1,9 @@
-#include <libultraship/bridge.h>
+#include "public/bridge/consolevariablebridge.h"
 #include "2s2h/GameInteractor/GameInteractor.h"
 #include "2s2h/ShipInit.hpp"
 
 extern "C" {
+#include "variables.h"
 #include "assets/objects/gameplay_keep/gameplay_keep.h"
 void func_80834DB8(Player* player, PlayerAnimationHeader* anim, f32 speed, PlayState* play);
 void func_80834D50(PlayState* play, Player* player, PlayerAnimationHeader* anim, f32 speed, u16 sfxId);

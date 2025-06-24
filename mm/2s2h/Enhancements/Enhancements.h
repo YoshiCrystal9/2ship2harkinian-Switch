@@ -39,6 +39,13 @@ enum DekuGuardSearchBallsOptions {
     DEKU_GUARD_SEARCH_BALLS_ALWAYS,
 };
 
+enum HiddenGrottosVisibilityOptions {
+    HIDDEN_GROTTOS_VISIBLITY_OFF,
+    HIDDEN_GROTTOS_VISIBLITY_WEAR_MASK_OF_TRUTH,
+    HIDDEN_GROTTOS_VISIBLITY_HAVE_MASK_OF_TRUTH,
+    HIDDEN_GROTTOS_VISIBLITY_ALWAYS,
+};
+
 // Old Entry Point
 void InitEnhancements();
 

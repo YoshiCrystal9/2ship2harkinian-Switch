@@ -3,15 +3,19 @@
 #include "audio/soundfont.h"
 #include "audio/load.h"
 #include "Context.h"
+#include "ResourceManager.h"
 #include "resource/archive/Archive.h"
+#include <tinyxml2.h>
 
 namespace SOH {
-std::shared_ptr<Ship::IResource> ResourceFactoryBinaryAudioSoundFontV2::ReadResource(std::shared_ptr<Ship::File> file) {
-    if (!FileHasValidFormatAndReader(file)) {
+std::shared_ptr<Ship::IResource>
+ResourceFactoryBinaryAudioSoundFontV2::ReadResource(std::shared_ptr<Ship::File> file,
+                                                    std::shared_ptr<Ship::ResourceInitData> initData) {
+    if (!FileHasValidFormatAndReader(file, initData)) {
         return nullptr;
     }
 
-    auto audioSoundFont = std::make_shared<AudioSoundFont>(file->InitData);
+    auto audioSoundFont = std::make_shared<AudioSoundFont>(initData);
     auto reader = std::get<std::shared_ptr<Ship::BinaryReader>>(file->Reader);
 
     audioSoundFont->soundFont.fntIndex = reader->ReadInt32();
@@ -413,8 +417,10 @@ std::vector<AdsrEnvelope> SOH::ResourceFactoryXMLSoundFontV0::ParseEnvelopes(Aud
     return envelopes;
 }
 
-std::shared_ptr<Ship::IResource> ResourceFactoryXMLSoundFontV0::ReadResource(std::shared_ptr<Ship::File> file) {
-    if (!FileHasValidFormatAndReader(file)) {
+std::shared_ptr<Ship::IResource>
+ResourceFactoryXMLSoundFontV0::ReadResource(std::shared_ptr<Ship::File> file,
+                                            std::shared_ptr<Ship::ResourceInitData> initData) {
+    if (!FileHasValidFormatAndReader(file, initData)) {
         return nullptr;
     }
 
@@ -429,17 +435,17 @@ std::shared_ptr<Ship::IResource> ResourceFactoryXMLSoundFontV0::ReadResource(std
         audioSoundFont = dynamic_pointer_cast<AudioSoundFont>(
             Ship::Context::GetInstance()->GetResourceManager()->LoadResourceProcess(origName));
     } else {
-        audioSoundFont = std::make_shared<AudioSoundFont>(file->InitData);
+        audioSoundFont = std::make_shared<AudioSoundFont>(initData);
         memset(&audioSoundFont->soundFont, 0, sizeof(audioSoundFont->soundFont));
     }
     // Header data
     audioSoundFont->soundFont.fntIndex = child->IntAttribute("Num", 0);
 
     const char* mediumStr = child->Attribute("Medium");
-    audioSoundFont->medium = MediumStrToInt(mediumStr, file->InitData->Path.c_str());
+    audioSoundFont->medium = MediumStrToInt(mediumStr, initData->Path.c_str());
 
     const char* cachePolicyStr = child->Attribute("CachePolicy");
-    audioSoundFont->cachePolicy = CachePolicyToInt(cachePolicyStr, file->InitData->Path.c_str());
+    audioSoundFont->cachePolicy = CachePolicyToInt(cachePolicyStr, initData->Path.c_str());
 
     audioSoundFont->data1 = child->IntAttribute("Data1");
     audioSoundFont->data2 = child->IntAttribute("Data2");

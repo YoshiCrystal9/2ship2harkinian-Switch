@@ -1,5 +1,4 @@
 #include "DrawFuncs.h"
-#include <libultraship/libultraship.h>
 #include "2s2h/Enhancements/FrameInterpolation/FrameInterpolation.h"
 #include "BenPort.h"
 

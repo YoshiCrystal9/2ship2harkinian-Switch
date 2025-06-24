@@ -1,7 +1,6 @@
 #include "resource/ResourceManager.h"
 #include "Skeleton.h"
 #include "2s2h/BenPort.h"
-#include "libultraship/libultraship.h"
 
 namespace SOH {
 SkeletonData* Skeleton::GetPointer() {
@@ -48,7 +47,7 @@ void SkeletonPatcher::RegisterSkeleton(std::string& path, SkelAnime* skelAnime) 
 void SkeletonPatcher::UnregisterSkeleton(SkelAnime* skelAnime) {
 
     // TODO: Should probably just use a dictionary here...
-    for (int i = 0; i < skeletons.size(); i++) {
+    for (size_t i = 0; i < skeletons.size(); i++) {
         auto skel = skeletons[i];
 
         if (skel.skelAnime == skelAnime) {

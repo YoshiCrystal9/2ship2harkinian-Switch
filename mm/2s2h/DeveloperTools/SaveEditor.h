@@ -1,6 +1,6 @@
 #pragma once
 
-#include <libultraship/libultraship.h>
+#include <GuiWindow.h>
 
 class SaveEditorWindow : public Ship::GuiWindow {
   public:

@@ -1,5 +1,5 @@
 #include "PresetManager.h"
-#include <libultraship/libultraship.h>
+#include "public/bridge/consolevariablebridge.h"
 #include <filesystem>
 #include <fstream>
 #include <set>
@@ -105,6 +105,7 @@ nlohmann::json curatedPresetJ = R"(
                 "BowReticle": 1,
                 "ClockType": 1,
                 "DisableSceneGeometryDistanceCheck": 1,
+                "FixSceneGeometrySeams": 1,
                 "IncreaseActorDrawDistance": 5
             },
             "Masks": {
@@ -383,7 +384,7 @@ void PresetManager_CreatePreset(std::string presetName) {
     } catch (...) { Notification::Emit({ .suffix = "Failed to create preset" }); }
 }
 
-bool PresetManager_HandleFileDropped(std::string filePath) {
+bool PresetManager_HandleFileDropped(const std::string& filePath) {
     try {
         std::ifstream fileStream(filePath);
 

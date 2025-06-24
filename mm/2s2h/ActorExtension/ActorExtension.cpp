@@ -1,5 +1,6 @@
 
 #include "ActorExtension.h"
+#include <unordered_map>
 
 ActorExtensionId sNextActorExtensionId = 0;
 

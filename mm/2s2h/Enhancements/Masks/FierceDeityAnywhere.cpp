@@ -1,4 +1,5 @@
-#include <libultraship/bridge.h>
+#include "2s2h/ActorExtension/ActorExtension.h"
+#include "public/bridge/consolevariablebridge.h"
 #include "2s2h/GameInteractor/GameInteractor.h"
 #include "2s2h/ShipInit.hpp"
 
@@ -13,13 +14,32 @@ extern "C" {
 #include "overlays/actors/ovl_En_Neo_Reeba/z_en_neo_reeba.h"
 }
 
-#define HIT_BY_SWORD_BEAM 1
-#define NOT_HIT_BY_SWORD_BEAM 0
+ActorExtensionId actorHitBySwordBeamExtId = 0;
 
 #define CVAR_NAME "gEnhancements.Masks.FierceDeitysAnywhere"
 #define CVAR CVarGetInteger(CVAR_NAME, 0)
 
+bool GetActorHitBySwordBeam(Actor* actor) {
+    bool* swordBeamCollisionFlag = (bool*)ActorExtension_Get(actor, actorHitBySwordBeamExtId);
+    if (swordBeamCollisionFlag == NULL) {
+        return false;
+    }
+
+    return *swordBeamCollisionFlag;
+}
+
+void SetActorHitBySwordBeam(Actor* actor, bool flag) {
+    bool* swordBeamCollisionFlag = (bool*)ActorExtension_Get(actor, actorHitBySwordBeamExtId);
+    if (swordBeamCollisionFlag != NULL) {
+        *swordBeamCollisionFlag = flag;
+    }
+}
+
 void RegisterFierceDeityAnywhere() {
+    if (actorHitBySwordBeamExtId == 0) {
+        actorHitBySwordBeamExtId = ActorExtension_CreateForAll(sizeof(bool));
+    }
+
     COND_VB_SHOULD(VB_DISABLE_FD_MASK, CVAR, { *should = false; });
 
     COND_VB_SHOULD(VB_DAMAGE_MULTIPLIER, CVAR, {
@@ -61,19 +81,14 @@ void RegisterFierceDeityAnywhere() {
             } else {
                 *effect = defaultEffect;
             }
-            /*
-             * shape.face is unused for any actor besides the player. We are hijacking this because we need to have
-             * some variable connected to the specific actor to indicate that the damage they received comes from a
-             * sword beam. Each stage of the pipeline (update, draw) goes through all actors in a batch.
-             */
-            actor->shape.face = HIT_BY_SWORD_BEAM;
+            SetActorHitBySwordBeam(actor, true);
         } else if (index != 9) {
             /*
              * 9 is the index of the sword damage effect. With how FD plays, it is possible for the sword to connect
              * after sword beams have dealt damage. Without this check, the damage effect would revert back to the
              * light arrows effect upon sword collision.
              */
-            actor->shape.face = NOT_HIT_BY_SWORD_BEAM;
+            SetActorHitBySwordBeam(actor, false);
         }
     });
 
@@ -86,7 +101,7 @@ void RegisterFierceDeityAnywhere() {
     COND_VB_SHOULD(VB_USE_NULL_FOR_DRAW_DAMAGE_EFFECTS, CVAR, {
         Actor* actor = va_arg(args, Actor*);
         // Only change the call if there is a sword beam collision
-        if (actor->shape.face & HIT_BY_SWORD_BEAM) {
+        if (GetActorHitBySwordBeam(actor)) {
             *should = false;
             Vec3f* bodyPartsPos = va_arg(args, Vec3f*);
             int bodyPartsCount = va_arg(args, int);
@@ -114,7 +129,7 @@ void RegisterFierceDeityAnywhere() {
      */
     COND_VB_SHOULD(VB_DRAW_DAMAGE_EFFECT, CVAR, {
         Actor* actor = va_arg(args, Actor*);
-        if (actor != nullptr && actor->shape.face & HIT_BY_SWORD_BEAM) {
+        if (actor != nullptr && GetActorHitBySwordBeam(actor)) {
             u8* type = va_arg(args, u8*);
             if (*type == ACTOR_DRAW_DMGEFF_LIGHT_ORBS) {
                 *type = ACTOR_DRAW_DMGEFF_BLUE_LIGHT_ORBS;
@@ -128,9 +143,7 @@ void RegisterFierceDeityAnywhere() {
      */
     COND_VB_SHOULD(VB_CHECK_BUMPER_COLLISION, CVAR, {
         ColliderInfo* toucher = va_arg(args, ColliderInfo*);
-        ColliderInfo* bumper = va_arg(args, ColliderInfo*);
         if (toucher->toucher.dmgFlags & DMG_SWORD_BEAM) {
-            bumper->bumper.dmgFlags |= DMG_SWORD_BEAM;
             *should = false;
         }
     });
@@ -142,12 +155,16 @@ void RegisterFierceDeityAnywhere() {
     COND_VB_SHOULD(VB_PERFORM_AC_COLLISION, CVAR, {
         Collider* at = va_arg(args, Collider*);
         Collider* ac = va_arg(args, Collider*);
+        ColliderInfo* atInfo = va_arg(args, ColliderInfo*);
+        ColliderInfo* acInfo = va_arg(args, ColliderInfo*);
         /*
          * If the AT actor is EnMThunder with a subtype > ENMTHUNDER_SUBTYPE_SPIN_REGULAR, it is a sword beam. If the AC
-         * actor is not an enemy/boss, then do not handle the sword beam collision.
+         * actor is not an enemy/boss and does not normally collide with sword beams, then do not handle the sword beam
+         * collision.
          */
         if (at->actor->id == ACTOR_EN_M_THUNDER && ((EnMThunder*)at->actor)->subtype > 1 &&
-            ac->actor->category != ACTORCAT_ENEMY && ac->actor->category != ACTORCAT_BOSS) {
+            ac->actor->category != ACTORCAT_ENEMY && ac->actor->category != ACTORCAT_BOSS &&
+            !(acInfo->bumper.dmgFlags & DMG_SWORD_BEAM)) {
             *should = false;
         }
     });
@@ -178,6 +195,15 @@ void RegisterFierceDeityAnywhere() {
         if ((actor->params == CLEAR_TAG_SMALL_LIGHT_RAYS || actor->params == CLEAR_TAG_LARGE_LIGHT_RAYS) &&
             actor->world.rot.z == 0 && GET_PLAYER(gPlayState)->transformation == PLAYER_FORM_FIERCE_DEITY) {
             actor->world.rot.z = 3;
+        }
+    });
+
+    // Allow FD to open doors
+    COND_VB_SHOULD(VB_BE_NEAR_DOOR, CVAR, {
+        f32 playerZPosRelToDoor = *va_arg(args, f32*);
+        // Vanilla proximity is 50.0f, but FD cannot get that close to some doors
+        if (GET_PLAYER_FORM == PLAYER_FORM_FIERCE_DEITY && fabsf(playerZPosRelToDoor) < 60.0f) {
+            *should = true;
         }
     });
 }

@@ -6,6 +6,7 @@
 
 #include "z_en_wood02.h"
 #include "objects/object_wood02/object_wood02.h"
+#include "public/bridge/consolevariablebridge.h"
 
 #define FLAGS 0x00000000
 

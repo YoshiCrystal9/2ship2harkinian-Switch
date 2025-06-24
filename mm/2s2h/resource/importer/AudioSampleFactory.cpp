@@ -4,6 +4,9 @@
 #include "audio/soundfont.h"
 #include "Context.h"
 #include "resource/archive/Archive.h"
+#include <tinyxml2.h>
+#include <thread>
+
 #define DR_WAV_IMPLEMENTATION
 #include <dr_wav.h>
 
@@ -11,12 +14,13 @@
 #include <dr_mp3.h>
 
 #define DR_FLAC_IMPLEMENTATION
+#include "ResourceManager.h"
+
 #include <dr_flac.h>
 
 #include <ogg/ogg.h>
 #include <vorbis/codec.h>
 #include "vorbis/vorbisfile.h"
-#include <opus/opus.h>
 
 struct OggFileData {
     void* data;
@@ -135,7 +139,8 @@ static void FlacDecoderWorker(std::shared_ptr<SOH::AudioSample> audioSample, std
     drflac_close(flac);
 }
 
-static void OggDecoderWorker(std::shared_ptr<SOH::AudioSample> audioSample, std::shared_ptr<Ship::File> sampleFile) {
+static void OggDecoderWorker(std::shared_ptr<SOH::AudioSample> audioSample, std::shared_ptr<Ship::File> sampleFile,
+                             std::shared_ptr<Ship::ResourceInitData> initData) {
     OggVorbis_File vf;
     char dataBuff[4096];
     long read = 0;
@@ -178,7 +183,7 @@ static void OggDecoderWorker(std::shared_ptr<SOH::AudioSample> audioSample, std:
         }
         case OggType::None: {
             char buff[2048];
-            snprintf(buff, 2048, "Ogg file %s is not Vorbis or OPUS", sampleFile->InitData->Path.c_str());
+            snprintf(buff, 2048, "Ogg file %s is not Vorbis or OPUS", initData->Path.c_str());
             throw std::runtime_error(buff);
             break;
         }
@@ -186,12 +191,14 @@ static void OggDecoderWorker(std::shared_ptr<SOH::AudioSample> audioSample, std:
 }
 
 namespace SOH {
-std::shared_ptr<Ship::IResource> ResourceFactoryBinaryAudioSampleV2::ReadResource(std::shared_ptr<Ship::File> file) {
-    if (!FileHasValidFormatAndReader(file)) {
+std::shared_ptr<Ship::IResource>
+ResourceFactoryBinaryAudioSampleV2::ReadResource(std::shared_ptr<Ship::File> file,
+                                                 std::shared_ptr<Ship::ResourceInitData> initData) {
+    if (!FileHasValidFormatAndReader(file, initData)) {
         return nullptr;
     }
 
-    auto audioSample = std::make_shared<AudioSample>(file->InitData);
+    auto audioSample = std::make_shared<AudioSample>(initData);
     auto reader = std::get<std::shared_ptr<Ship::BinaryReader>>(file->Reader);
 
     audioSample->sample.codec = reader->ReadUByte();
@@ -233,20 +240,21 @@ std::shared_ptr<Ship::IResource> ResourceFactoryBinaryAudioSampleV2::ReadResourc
     return audioSample;
 }
 
-std::shared_ptr<Ship::IResource> ResourceFactoryXMLAudioSampleV0::ReadResource(std::shared_ptr<Ship::File> file) {
-    if (!FileHasValidFormatAndReader(file)) {
+std::shared_ptr<Ship::IResource>
+ResourceFactoryXMLAudioSampleV0::ReadResource(std::shared_ptr<Ship::File> file,
+                                              std::shared_ptr<Ship::ResourceInitData> initData) {
+    if (!FileHasValidFormatAndReader(file, initData)) {
         return nullptr;
     }
 
-    auto audioSample = std::make_shared<AudioSample>(file->InitData);
+    auto audioSample = std::make_shared<AudioSample>(initData);
     auto child = std::get<std::shared_ptr<tinyxml2::XMLDocument>>(file->Reader)->FirstChildElement();
-    std::shared_ptr<Ship::ResourceInitData> initData = std::make_shared<Ship::ResourceInitData>();
     const char* customFormatStr = child->Attribute("CustomFormat");
     memset(&audioSample->sample, 0, sizeof(audioSample->sample));
     audioSample->sample.isRelocated = 0;
-    audioSample->sample.codec = CodecStrToInt(child->Attribute("Codec"), file->InitData->Path.c_str());
+    audioSample->sample.codec = CodecStrToInt(child->Attribute("Codec"), initData->Path.c_str());
     audioSample->sample.medium =
-        ResourceFactoryXMLSoundFontV0::MediumStrToInt(child->Attribute("Medium"), file->InitData->Path.c_str());
+        ResourceFactoryXMLSoundFontV0::MediumStrToInt(child->Attribute("Medium"), initData->Path.c_str());
     audioSample->sample.unk_bit26 = child->IntAttribute("bit26");
 
     tinyxml2::XMLElement* loopRoot = child->FirstChildElement("ADPCMLoop");
@@ -282,10 +290,8 @@ std::shared_ptr<Ship::IResource> ResourceFactoryXMLAudioSampleV0::ReadResource(s
     audioSample->sample.size = size;
 
     const char* path = child->Attribute("Path");
-    initData->Path = path;
-    initData->IsCustom = false;
-    initData->ByteOrder = Ship::Endianness::Native;
-    auto sampleFile = Ship::Context::GetInstance()->GetResourceManager()->GetArchiveManager()->LoadFile(path, initData);
+
+    auto sampleFile = Ship::Context::GetInstance()->GetResourceManager()->GetArchiveManager()->LoadFile(path);
     audioSample->sample.fileSize = sampleFile->Buffer.get()->size();
     if (customFormatStr != nullptr) {
         // Compressed files can take a really long time to decode (~250ms per).
@@ -309,7 +315,7 @@ std::shared_ptr<Ship::IResource> ResourceFactoryXMLAudioSampleV0::ReadResource(s
             fileDecoderThread.detach();
             return audioSample;
         } else if (strcmp(customFormatStr, "ogg") == 0) {
-            std::thread fileDecoderThread = std::thread(OggDecoderWorker, audioSample, sampleFile);
+            std::thread fileDecoderThread = std::thread(OggDecoderWorker, audioSample, sampleFile, initData);
             fileDecoderThread.detach();
             return audioSample;
         } else if (strcmp(customFormatStr, "flac") == 0) {

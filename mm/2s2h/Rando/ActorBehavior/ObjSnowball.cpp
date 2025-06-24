@@ -1,5 +1,5 @@
 #include "ActorBehavior.h"
-#include <libultraship/libultraship.h>
+#include "public/bridge/consolevariablebridge.h"
 #include "2s2h/CustomItem/CustomItem.h"
 #include "assets/2s2h_assets.h"
 #include "2s2h/ActorExtension/ActorListIndex.h"
@@ -139,18 +139,23 @@ std::map<std::pair<float, float>, RandoCheckId> snowballCoordsMap = {
 // snowballs is inconsistent based on the day, so we fallback to the coords which are consistent
 void IdentifySnowball(Actor* actor, bool* should) {
     s16 actorListIndex = GetActorListIndex(actor);
+    RandoCheckId randoCheckId = RC_UNKNOWN;
 
     auto it = snowballActorIdMap.find({ gPlayState->sceneId, gPlayState->roomCtx.curRoom.num, actorListIndex });
     if (it != snowballActorIdMap.end()) {
-        Rando::ActorBehavior::SetActorRandoCheckId(actor, it->second);
+        randoCheckId = it->second;
+    } else {
+        auto it2 = snowballCoordsMap.find({ actor->home.pos.x, actor->home.pos.z });
+        if (it2 != snowballCoordsMap.end()) {
+            randoCheckId = it2->second;
+        }
+    }
+
+    if (!RANDO_SAVE_CHECKS[randoCheckId].shuffled || RANDO_SAVE_CHECKS[randoCheckId].cycleObtained) {
         return;
     }
 
-    auto it2 = snowballCoordsMap.find({ actor->home.pos.x, actor->home.pos.z });
-    if (it2 != snowballCoordsMap.end()) {
-        Rando::ActorBehavior::SetActorRandoCheckId(actor, it2->second);
-        return;
-    }
+    Rando::ActorBehavior::SetActorRandoCheckId(actor, randoCheckId);
 }
 
 void SpawnSnowballDrop(Vec3f pos, RandoCheckId randoCheckId) {

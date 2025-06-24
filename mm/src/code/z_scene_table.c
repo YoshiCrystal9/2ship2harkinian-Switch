@@ -2573,7 +2573,8 @@ static EntranceTableEntry* sCutsceneEntranceTable[] = {
 #define SCENE_ENTRANCE_NONE() \
     { 0, NULL, NULL }
 
-static SceneEntranceTableEntry sSceneEntranceTable[] = {
+// 2Ship [Enhancement] removing the static keyword so that `sSceneEntranceTable` can be externed for BetterWarp menu
+SceneEntranceTableEntry sSceneEntranceTable[] = {
     /* 0x00 */ SCENE_ENTRANCE(sMayorsResidenceEntranceTable, "Z2_SONCHONOIE"),
     /* 0x01 */ SCENE_ENTRANCE(sMajorasLairEntranceTable, "Z2_LAST_BS"),
     /* 0x02 */ SCENE_ENTRANCE(sMagicHagsPotionShopEntranceTable, "Z2_WITCH_SHOP"),

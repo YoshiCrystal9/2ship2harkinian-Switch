@@ -1,9 +1,7 @@
 #pragma once
 
-#include <cstdint>
 #include <memory>
 #include <string>
-#include "Resource.h"
 #include "2s2h/resource/type/scenecommand/SceneCommand.h"
 #include "2s2h/resource/type/CollisionHeader.h"
 

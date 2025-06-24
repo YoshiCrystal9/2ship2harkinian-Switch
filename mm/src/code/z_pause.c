@@ -23,7 +23,7 @@
 #include "libc/stdbool.h"
 #include "padutils.h"
 #include "macros.h"
-#include <libultraship/bridge.h>
+#include "public/bridge/consolevariablebridge.h"
 
 void FrameAdvance_Init(FrameAdvanceContext* frameAdvCtx) {
     frameAdvCtx->timer = 0;

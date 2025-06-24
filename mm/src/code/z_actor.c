@@ -27,6 +27,7 @@
 #include "2s2h/ShipUtils.h"
 #include "2s2h/ActorExtension/ActorExtension.h"
 #include "2s2h/ActorExtension/ActorListIndex.h"
+#include "public/bridge/consolevariablebridge.h"
 
 // bss
 // FaultClient sActorFaultClient; // 2 funcs
@@ -4334,7 +4335,7 @@ void Actor_DrawDoorLock(PlayState* play, s32 frame, s32 type) {
         if ((i % 2) != 0) {
             rotZStep = 2.0f * entry->chainAngle;
         } else {
-            rotZStep = M_PI - (2.0f * entry->chainAngle);
+            rotZStep = M_PIf - (2.0f * entry->chainAngle);
         }
 
         chainRotZ += rotZStep;
@@ -5215,11 +5216,11 @@ void Actor_DrawDamageEffects(PlayState* play, Actor* actor, Vec3f bodyPartsPos[]
                     Matrix_Scale(frozenScale, frozenScale, frozenScale, MTXMODE_APPLY);
 
                     if (bodyPartIndex & 1) {
-                        Matrix_RotateYF(M_PI, MTXMODE_APPLY);
+                        Matrix_RotateYF(M_PIf, MTXMODE_APPLY);
                     }
 
                     if (bodyPartIndex & 2) {
-                        Matrix_RotateZF(M_PI, MTXMODE_APPLY);
+                        Matrix_RotateZF(M_PIf, MTXMODE_APPLY);
                     }
 
                     gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(play->state.gfxCtx),
@@ -5301,7 +5302,7 @@ void Actor_DrawDamageEffects(PlayState* play, Actor* actor, Vec3f bodyPartsPos[]
                                Gfx_TwoTexScroll(play->state.gfxCtx, 0, 0, 0, 32, 64, 1, 0,
                                                 ((bodyPartIndex * 10 + gameplayFrames) * -20) & 0x1FF, 32, 128));
 
-                    Matrix_RotateYF(M_PI, MTXMODE_APPLY);
+                    Matrix_RotateYF(M_PIf, MTXMODE_APPLY);
                     currentMatrix->mf[3][0] = bodyPartsPos->x;
                     currentMatrix->mf[3][1] = bodyPartsPos->y;
                     currentMatrix->mf[3][2] = bodyPartsPos->z;
@@ -5345,7 +5346,7 @@ void Actor_DrawDamageEffects(PlayState* play, Actor* actor, Vec3f bodyPartsPos[]
                 // Apply and draw a light orb over each body part of frozen actor
                 for (bodyPartIndex = 0; bodyPartIndex < bodyPartsCount; bodyPartIndex++, bodyPartsPos++) {
                     FrameInterpolation_RecordOpenChild(bodyPartsPos, type);
-                    Matrix_RotateZF(Rand_CenteredFloat(2 * M_PI), MTXMODE_APPLY);
+                    Matrix_RotateZF(Rand_CenteredFloat(2 * M_PIf), MTXMODE_APPLY);
                     currentMatrix->mf[3][0] = bodyPartsPos->x;
                     currentMatrix->mf[3][1] = bodyPartsPos->y;
                     currentMatrix->mf[3][2] = bodyPartsPos->z;
@@ -5386,8 +5387,8 @@ void Actor_DrawDamageEffects(PlayState* play, Actor* actor, Vec3f bodyPartsPos[]
                 for (bodyPartIndex = 0; bodyPartIndex < bodyPartsCount; bodyPartIndex++, bodyPartsPos++) {
                     FrameInterpolation_RecordOpenChild(bodyPartsPos, type);
                     // first electric spark
-                    Matrix_RotateXFApply(Rand_ZeroFloat(2 * M_PI));
-                    Matrix_RotateZF(Rand_ZeroFloat(2 * M_PI), MTXMODE_APPLY);
+                    Matrix_RotateXFApply(Rand_ZeroFloat(2 * M_PIf));
+                    Matrix_RotateZF(Rand_ZeroFloat(2 * M_PIf), MTXMODE_APPLY);
                     currentMatrix->mf[3][0] = Rand_CenteredFloat((f32)sREG(24) + 30.0f) + bodyPartsPos->x;
                     currentMatrix->mf[3][1] = Rand_CenteredFloat((f32)sREG(24) + 30.0f) + bodyPartsPos->y;
                     currentMatrix->mf[3][2] = Rand_CenteredFloat((f32)sREG(24) + 30.0f) + bodyPartsPos->z;
@@ -5398,8 +5399,8 @@ void Actor_DrawDamageEffects(PlayState* play, Actor* actor, Vec3f bodyPartsPos[]
                     gSPDisplayList(POLY_XLU_DISP++, gElectricSparkModelDL);
 
                     // second electric spark
-                    Matrix_RotateXFApply(Rand_ZeroFloat(2 * M_PI));
-                    Matrix_RotateZF(Rand_ZeroFloat(2 * M_PI), MTXMODE_APPLY);
+                    Matrix_RotateXFApply(Rand_ZeroFloat(2 * M_PIf));
+                    Matrix_RotateZF(Rand_ZeroFloat(2 * M_PIf), MTXMODE_APPLY);
                     currentMatrix->mf[3][0] = Rand_CenteredFloat((f32)sREG(24) + 30.0f) + bodyPartsPos->x;
                     currentMatrix->mf[3][1] = Rand_CenteredFloat((f32)sREG(24) + 30.0f) + bodyPartsPos->y;
                     currentMatrix->mf[3][2] = Rand_CenteredFloat((f32)sREG(24) + 30.0f) + bodyPartsPos->z;

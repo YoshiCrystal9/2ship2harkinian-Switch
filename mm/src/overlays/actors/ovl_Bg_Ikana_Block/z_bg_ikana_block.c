@@ -7,6 +7,8 @@
 #include "z_bg_ikana_block.h"
 #include "objects/gameplay_dangeon_keep/gameplay_dangeon_keep.h"
 
+#include "2s2h/GameInteractor/GameInteractor.h"
+
 #define FLAGS (ACTOR_FLAG_10)
 
 #define THIS ((BgIkanaBlock*)thisx)
@@ -70,8 +72,10 @@ void func_80B7EA60(BgIkanaBlock* this) {
 
 void func_80B7EB30(BgIkanaBlock* this) {
     if (this->unk_17A & (0x8 | 0x4 | 0x2 | 0x1)) {
-        if (this->unk_17B < 127) {
-            this->unk_17B++;
+        if (GameInteractor_Should(VB_PUSH_BLOCK_SET_TIMER, true, this)) {
+            if (this->unk_17B < 127) {
+                this->unk_17B++;
+            }
         }
     } else {
         this->unk_17B = 0;
@@ -290,7 +294,8 @@ void func_80B7F290(BgIkanaBlock* this, PlayState* play) {
 
     Math_StepToF(&this->unk_16C, 2.0f, 0.4f);
 
-    if (Math_StepToF(this->unk_164, this->unk_168, this->unk_16C)) {
+    if (GameInteractor_Should(VB_BLOCK_BE_FINISHED_PULLING, Math_StepToF(this->unk_164, this->unk_168, this->unk_16C),
+                              this->unk_164, this->unk_168, this->unk_16C, this->unk_16C)) {
         Player* player = GET_PLAYER(play);
 
         if (!func_80B7EB94(this, play)) {

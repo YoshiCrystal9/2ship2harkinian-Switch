@@ -1,6 +1,5 @@
 #include "2s2h/resource/importer/scenecommand/SetTimeSettingsFactory.h"
 #include "2s2h/resource/type/scenecommand/SetTimeSettings.h"
-#include "spdlog/spdlog.h"
 
 namespace SOH {
 std::shared_ptr<Ship::IResource> SetTimeSettingsFactory::ReadResource(std::shared_ptr<Ship::ResourceInitData> initData,

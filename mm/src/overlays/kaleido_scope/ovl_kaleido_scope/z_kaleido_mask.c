@@ -9,6 +9,7 @@
 
 #include "2s2h/BenGui/HudEditor.h"
 #include "2s2h/GameInteractor/GameInteractor.h"
+#include "public/bridge/consolevariablebridge.h"
 
 s16 sMaskEquipState = EQUIP_STATE_MAGIC_ARROW_GROW_ORB;
 

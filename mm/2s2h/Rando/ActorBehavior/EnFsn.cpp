@@ -1,5 +1,5 @@
 #include "ActorBehavior.h"
-#include <libultraship/libultraship.h>
+#include "public/bridge/consolevariablebridge.h"
 
 extern "C" {
 #include "variables.h"
@@ -75,6 +75,7 @@ void Rando::ActorBehavior::InitEnFsnBehavior() {
         EnFsn* enFsn = va_arg(args, EnFsn*);
         RANDO_SAVE_CHECKS[RC_KAFEIS_HIDEOUT_LETTER_TO_MAMA].eligible = true;
         enFsn->flags |= ENFSN_END_CONVERSATION;
+        enFsn->flags |= ENFSN_GAVE_LETTER_TO_MAMA;
         enFsn->textId = 0x29E4;
         enFsn->actionFunc = EnFsn_ResumeInteraction;
         SET_WEEKEVENTREG(WEEKEVENTREG_RECEIVED_PRIORITY_MAIL);

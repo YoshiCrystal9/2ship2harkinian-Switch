@@ -1,4 +1,3 @@
-#include <libultraship/libultraship.h>
 #include "MiscBehavior.h"
 #include "2s2h/Rando/Logic/Logic.h"
 
@@ -39,9 +38,11 @@ void Rando::MiscBehavior::OnFileLoad() {
     // In the case of receiving a sword, we only want to equip it to the Human's B button. Vanilla avoids this issue by
     // never letting you be other forms when you get a sword from the smithy or curiosity shop.
     COND_VB_SHOULD(VB_ITEM_GIVE_SWORD_SET_FORM_EQUIP, IS_RANDO, {
-        u8* item = va_arg(args, u8*);
         *should = false;
-        BUTTON_ITEM_EQUIP(0, EQUIP_SLOT_B) = *item;
+        if (GET_PLAYER_FORM == PLAYER_FORM_HUMAN) {
+            u8* item = va_arg(args, u8*);
+            BUTTON_ITEM_EQUIP(0, EQUIP_SLOT_B) = *item;
+        }
     });
 
     // Fix vanilla bug where the player can often use magic before it's acquired.

@@ -1,4 +1,7 @@
-#include <libultraship/libultraship.h>
+#include "public/bridge/consolevariablebridge.h"
+#include "ConsoleWindow.h"
+#include "Context.h"
+#include "Window.h"
 #include "2s2h/GameInteractor/GameInteractor.h"
 #include "2s2h/ShipInit.hpp"
 
@@ -9,7 +12,7 @@ extern "C" {
 #define CVAR_NAME "gEnhancements.DifficultyOptions.DeleteFileOnDeath"
 #define CVAR CVarGetInteger(CVAR_NAME, 0)
 
-void SaveManager_DeleteSaveFile(std::filesystem::path fileName);
+void SaveManager_DeleteSaveFile(const std::filesystem::path& fileName);
 std::string SaveManager_GetFileName(int fileNum, bool isBackup);
 
 void RegisterDeleteFileOnDeath() {

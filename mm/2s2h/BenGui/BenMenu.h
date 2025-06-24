@@ -1,16 +1,11 @@
 #ifndef BENMENU_H
-#define BENMNEU_H
+#define BENMENU_H
 
-#include <libultraship/libultraship.h>
 #include "UIWidgets.hpp"
 #include "Menu.h"
 #include "2s2h/Enhancements/Enhancements.h"
-#include "graphic/Fast3D/gfx_rendering_api.h"
 #include "2s2h/DeveloperTools/DeveloperTools.h"
-
-#ifdef __SWITCH__
-#include <port/switch/SwitchImpl.h>
-#endif
+#include "graphic/Fast3D/backends/gfx_rendering_api.h"
 
 namespace BenGui {
 
@@ -56,9 +51,9 @@ static const std::unordered_map<int32_t, const char*> clockTypeOptions = {
 };
 
 static const std::unordered_map<int32_t, const char*> textureFilteringMap = {
-    { FILTER_THREE_POINT, "Three-Point" },
-    { FILTER_LINEAR, "Linear" },
-    { FILTER_NONE, "None" },
+    { Fast::FILTER_THREE_POINT, "Three-Point" },
+    { Fast::FILTER_LINEAR, "Linear" },
+    { Fast::FILTER_NONE, "None" },
 };
 
 static const std::unordered_map<int32_t, const char*> motionBlurOptions = {
@@ -108,17 +103,12 @@ static const std::unordered_map<int32_t, const char*> powerCrouchStabOptions = {
     { 2, "Unpatched (OoT)" },
 };
 
-#if defined(__SWITCH__)
-static const std::unordered_map<int32_t, const char*> SwitchOCProfiles = {
-    { Ship::MAXIMUM, "MAXIMUM" },
-    { Ship::HIGH, "HIGH" },
-    { Ship::BOOST, "BOOST" },
-    { Ship::STOCK, "STOCK" },
-    { Ship::POWERSAVINGM1, "POWERSAVINGM1" },
-    { Ship::POWERSAVINGM2, "POWERSAVINGM2" },
-    { Ship::POWERSAVINGM3, "POWERSAVINGM3" },
+static const std::unordered_map<int32_t, const char*> maskOfTruthGrottoOptions = {
+    { HIDDEN_GROTTOS_VISIBLITY_OFF, "Off" },
+    { HIDDEN_GROTTOS_VISIBLITY_WEAR_MASK_OF_TRUTH, "Wear Mask of Truth" },
+    { HIDDEN_GROTTOS_VISIBLITY_HAVE_MASK_OF_TRUTH, "Have Mask of Truth" },
+    { HIDDEN_GROTTOS_VISIBLITY_ALWAYS, "Always" },
 };
-#endif
 
 static const std::unordered_map<int32_t, const char*> damageMultiplierOptions = {
     { 0, "1x" }, { 1, "2x" }, { 2, "4x" }, { 3, "8x" }, { 4, "16x" }, { 10, "1 Hit KO" },
@@ -138,16 +128,6 @@ class BenMenu : public Ship::Menu {
     void AddSettings();
     void AddEnhancements();
     void AddDevTools();
-
-  protected:
-    std::unordered_map<std::string, SidebarEntry> settingsSidebar;
-    std::vector<std::string> settingsOrder;
-    std::unordered_map<std::string, SidebarEntry> enhancementsSidebar;
-    std::vector<std::string> enhancementsOrder;
-    std::unordered_map<std::string, SidebarEntry> devToolsSidebar;
-    std::vector<std::string> devToolsOrder;
-    std::unordered_map<std::string, SidebarEntry> randoSidebar;
-    std::vector<std::string> randoOrder;
 };
 } // namespace BenGui
 

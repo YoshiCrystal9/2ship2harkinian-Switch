@@ -25,7 +25,7 @@ void Rando::ActorBehavior::InitDmHinaBehavior() {
         auto randoSaveCheck = RANDO_SAVE_CHECKS[checkId];
         // Do not display if already obtained (i.e. for repeat visits)
         if (!randoSaveCheck.obtained) {
-            Rando::DrawItem(Rando::ConvertItem(randoSaveCheck.randoItemId, checkId));
+            Rando::DrawItem(Rando::ConvertItem(randoSaveCheck.randoItemId, checkId), actor);
         }
     });
 }

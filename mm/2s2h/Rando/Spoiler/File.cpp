@@ -1,5 +1,4 @@
 #include "Spoiler.h"
-#include <libultraship/libultraship.h>
 #include <fstream>
 #include "BenPort.h"
 
@@ -7,7 +6,7 @@ namespace Rando {
 
 namespace Spoiler {
 
-void SaveToFile(std::string fileName, nlohmann::json spoiler) {
+void SaveToFile(const std::string& fileName, nlohmann::json spoiler) {
     std::string filePath = Ship::Context::GetPathRelativeToAppDirectory("randomizer/" + fileName, appShortName);
     std::ofstream fileStream(filePath);
     if (!fileStream.is_open()) {
@@ -17,7 +16,7 @@ void SaveToFile(std::string fileName, nlohmann::json spoiler) {
     fileStream << spoiler.dump(4);
 }
 
-nlohmann::json LoadFromFile(std::string fileName) {
+nlohmann::json LoadFromFile(const std::string& fileName) {
     std::string spoilerFilePath = Ship::Context::GetPathRelativeToAppDirectory("randomizer/" + fileName, appShortName);
     std::ifstream fileStream(spoilerFilePath);
     if (!fileStream.is_open()) {

@@ -1,4 +1,4 @@
-#include <libultraship/bridge.h>
+#include "public/bridge/consolevariablebridge.h"
 #include "2s2h/GameInteractor/GameInteractor.h"
 #include "2s2h/ShipInit.hpp"
 
@@ -49,6 +49,9 @@ void OnEnGinkoManUpdate(Actor* actor) {
                     maxWallet = (99 - currentRupees);
                     break;
             }
+
+            maxWallet = MIN(maxWallet, HS_GET_BANK_RUPEES());
+
             if (maxWallet != 0 && gPlayState->msgCtx.bankRupeesSelected != maxWallet) {
                 char firstChar = (maxWallet / 100) + '0';
                 char secondChar = ((maxWallet / 10) % 10) + '0';

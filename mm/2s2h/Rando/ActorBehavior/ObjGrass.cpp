@@ -1,0 +1,1216 @@
+#include "ActorBehavior.h"
+#include "public/bridge/consolevariablebridge.h"
+
+#include "2s2h/CustomItem/CustomItem.h"
+#include "2s2h/Rando/Rando.h"
+#include "2s2h/ShipInit.hpp"
+#include "2s2h/Enhancements/FrameInterpolation/FrameInterpolation.h"
+#include "assets/2s2h_assets.h"
+#include "assets/overlays/ovl_Obj_Grass/ovl_Obj_Grass.h"
+
+extern "C" {
+#include "variables.h"
+#include "overlays/actors/ovl_Obj_Grass/z_obj_grass.h"
+#include "overlays/actors/ovl_En_Kusa/z_en_kusa.h"
+#include "overlays/actors/ovl_Obj_Grass_Carry/z_obj_grass_carry.h"
+
+void ObjGrass_OverrideMatrixCurrent(MtxF* matrix);
+}
+
+// clang-format off
+std::map<int16_t, std::map<std::pair<float, float>, RandoCheckId>> overworldGrassMap = {
+    // Termina Field //
+    { SCENE_00KEIKOKU,
+      {
+          { { -3932.00f, 2092.00f }, RC_TERMINA_FIELD_GRASS_01 },
+          { { -3954.00f, 2122.00f }, RC_TERMINA_FIELD_GRASS_02 },
+          { { -3996.00f, 2118.00f }, RC_TERMINA_FIELD_GRASS_03 },
+          { { -4012.00f, 2080.00f }, RC_TERMINA_FIELD_GRASS_04 },
+          { { -3972.00f, 2066.00f }, RC_TERMINA_FIELD_GRASS_05 },
+          { { -3901.00f, 2122.00f }, RC_TERMINA_FIELD_GRASS_06 },
+          { { -3972.00f, 2166.00f }, RC_TERMINA_FIELD_GRASS_07 },
+          { { -4043.00f, 2122.00f }, RC_TERMINA_FIELD_GRASS_08 },
+          { { -4043.00f, 2050.00f }, RC_TERMINA_FIELD_GRASS_09 },
+          { { -4008.00f, 2015.00f }, RC_TERMINA_FIELD_GRASS_10 },
+          { { -3960.00f, 2007.00f }, RC_TERMINA_FIELD_GRASS_11 },
+          { { -3930.00f, 2044.00f }, RC_TERMINA_FIELD_GRASS_12 },
+          { { -3036.00f, 2613.00f }, RC_TERMINA_FIELD_GRASS_13 },
+          { { -3058.00f, 2643.00f }, RC_TERMINA_FIELD_GRASS_14 },
+          { { -3100.00f, 2639.00f }, RC_TERMINA_FIELD_GRASS_15 },
+          { { -3116.00f, 2601.00f }, RC_TERMINA_FIELD_GRASS_16 },
+          { { -3076.00f, 2587.00f }, RC_TERMINA_FIELD_GRASS_17 },
+          { { -3005.00f, 2643.00f }, RC_TERMINA_FIELD_GRASS_18 },
+          { { -3076.00f, 2687.00f }, RC_TERMINA_FIELD_GRASS_19 },
+          { { -3147.00f, 2643.00f }, RC_TERMINA_FIELD_GRASS_20 },
+          { { -3147.00f, 2571.00f }, RC_TERMINA_FIELD_GRASS_21 },
+          { { -3112.00f, 2536.00f }, RC_TERMINA_FIELD_GRASS_22 },
+          { { -3064.00f, 2528.00f }, RC_TERMINA_FIELD_GRASS_23 },
+          { { -3034.00f, 2565.00f }, RC_TERMINA_FIELD_GRASS_24 },
+          { { -2852.00f, 1585.00f }, RC_TERMINA_FIELD_GRASS_25 },
+          { { -2874.00f, 1615.00f }, RC_TERMINA_FIELD_GRASS_26 },
+          { { -2916.00f, 1611.00f }, RC_TERMINA_FIELD_GRASS_27 },
+          { { -2932.00f, 1573.00f }, RC_TERMINA_FIELD_GRASS_28 },
+          { { -2892.00f, 1559.00f }, RC_TERMINA_FIELD_GRASS_29 },
+          { { -2821.00f, 1615.00f }, RC_TERMINA_FIELD_GRASS_30 },
+          { { -2892.00f, 1659.00f }, RC_TERMINA_FIELD_GRASS_31 },
+          { { -2963.00f, 1615.00f }, RC_TERMINA_FIELD_GRASS_32 },
+          { { -2963.00f, 1543.00f }, RC_TERMINA_FIELD_GRASS_33 },
+          { { -2928.00f, 1508.00f }, RC_TERMINA_FIELD_GRASS_34 },
+          { { -2880.00f, 1500.00f }, RC_TERMINA_FIELD_GRASS_35 },
+          { { -2850.00f, 1537.00f }, RC_TERMINA_FIELD_GRASS_36 },
+          { { -2676.00f, -1137.00f }, RC_TERMINA_FIELD_GRASS_37 },
+          { { -2698.00f, -1107.00f }, RC_TERMINA_FIELD_GRASS_38 },
+          { { -2740.00f, -1111.00f }, RC_TERMINA_FIELD_GRASS_39 },
+          { { -2756.00f, -1149.00f }, RC_TERMINA_FIELD_GRASS_40 },
+          { { -2716.00f, -1163.00f }, RC_TERMINA_FIELD_GRASS_41 },
+          { { -2645.00f, -1107.00f }, RC_TERMINA_FIELD_GRASS_42 },
+          { { -2716.00f, -1063.00f }, RC_TERMINA_FIELD_GRASS_43 },
+          { { -2787.00f, -1107.00f }, RC_TERMINA_FIELD_GRASS_44 },
+          { { -2787.00f, -1179.00f }, RC_TERMINA_FIELD_GRASS_45 },
+          { { -2752.00f, -1214.00f }, RC_TERMINA_FIELD_GRASS_46 },
+          { { -2704.00f, -1222.00f }, RC_TERMINA_FIELD_GRASS_47 },
+          { { -2674.00f, -1185.00f }, RC_TERMINA_FIELD_GRASS_48 },
+          { { -2645.00f, 4303.00f }, RC_TERMINA_FIELD_GRASS_49 },
+          { { -2667.00f, 4333.00f }, RC_TERMINA_FIELD_GRASS_50 },
+          { { -2709.00f, 4329.00f }, RC_TERMINA_FIELD_GRASS_51 },
+          { { -2725.00f, 4291.00f }, RC_TERMINA_FIELD_GRASS_52 },
+          { { -2685.00f, 4277.00f }, RC_TERMINA_FIELD_GRASS_53 },
+          { { -2614.00f, 4333.00f }, RC_TERMINA_FIELD_GRASS_54 },
+          { { -2685.00f, 4377.00f }, RC_TERMINA_FIELD_GRASS_55 },
+          { { -2756.00f, 4333.00f }, RC_TERMINA_FIELD_GRASS_56 },
+          { { -2756.00f, 4261.00f }, RC_TERMINA_FIELD_GRASS_57 },
+          { { -2721.00f, 4226.00f }, RC_TERMINA_FIELD_GRASS_58 },
+          { { -2673.00f, 4218.00f }, RC_TERMINA_FIELD_GRASS_59 },
+          { { -2643.00f, 4255.00f }, RC_TERMINA_FIELD_GRASS_60 },
+          { { -1418.00f, -2600.00f }, RC_TERMINA_FIELD_GRASS_61 },
+          { { -1440.00f, -2570.00f }, RC_TERMINA_FIELD_GRASS_62 },
+          { { -1482.00f, -2574.00f }, RC_TERMINA_FIELD_GRASS_63 },
+          { { -1498.00f, -2612.00f }, RC_TERMINA_FIELD_GRASS_64 },
+          { { -1458.00f, -2626.00f }, RC_TERMINA_FIELD_GRASS_65 },
+          { { -1387.00f, -2570.00f }, RC_TERMINA_FIELD_GRASS_66 },
+          { { -1458.00f, -2526.00f }, RC_TERMINA_FIELD_GRASS_67 },
+          { { -1529.00f, -2570.00f }, RC_TERMINA_FIELD_GRASS_68 },
+          { { -1529.00f, -2642.00f }, RC_TERMINA_FIELD_GRASS_69 },
+          { { -1494.00f, -2677.00f }, RC_TERMINA_FIELD_GRASS_70 },
+          { { -1446.00f, -2685.00f }, RC_TERMINA_FIELD_GRASS_71 },
+          { { -1416.00f, -2648.00f }, RC_TERMINA_FIELD_GRASS_72 },
+          { { -1383.00f, 3960.00f }, RC_TERMINA_FIELD_GRASS_73 },
+          { { -1405.00f, 3990.00f }, RC_TERMINA_FIELD_GRASS_74 },
+          { { -1447.00f, 3986.00f }, RC_TERMINA_FIELD_GRASS_75 },
+          { { -1463.00f, 3948.00f }, RC_TERMINA_FIELD_GRASS_76 },
+          { { -1423.00f, 3934.00f }, RC_TERMINA_FIELD_GRASS_77 },
+          { { -1352.00f, 3990.00f }, RC_TERMINA_FIELD_GRASS_78 },
+          { { -1423.00f, 4034.00f }, RC_TERMINA_FIELD_GRASS_79 },
+          { { -1494.00f, 3990.00f }, RC_TERMINA_FIELD_GRASS_80 },
+          { { -1494.00f, 3918.00f }, RC_TERMINA_FIELD_GRASS_81 },
+          { { -1459.00f, 3883.00f }, RC_TERMINA_FIELD_GRASS_82 },
+          { { -1411.00f, 3875.00f }, RC_TERMINA_FIELD_GRASS_83 },
+          { { -1381.00f, 3912.00f }, RC_TERMINA_FIELD_GRASS_84 },
+          { { -271.00f, 3243.00f }, RC_TERMINA_FIELD_GRASS_85 },
+          { { -293.00f, 3273.00f }, RC_TERMINA_FIELD_GRASS_86 },
+          { { -335.00f, 3269.00f }, RC_TERMINA_FIELD_GRASS_87 },
+          { { -351.00f, 3231.00f }, RC_TERMINA_FIELD_GRASS_88 },
+          { { -311.00f, 3217.00f }, RC_TERMINA_FIELD_GRASS_89 },
+          { { -240.00f, 3273.00f }, RC_TERMINA_FIELD_GRASS_90 },
+          { { -311.00f, 3317.00f }, RC_TERMINA_FIELD_GRASS_91 },
+          { { -382.00f, 3273.00f }, RC_TERMINA_FIELD_GRASS_92 },
+          { { -382.00f, 3201.00f }, RC_TERMINA_FIELD_GRASS_93 },
+          { { -347.00f, 3166.00f }, RC_TERMINA_FIELD_GRASS_94 },
+          { { -299.00f, 3158.00f }, RC_TERMINA_FIELD_GRASS_95 },
+          { { -269.00f, 3195.00f }, RC_TERMINA_FIELD_GRASS_96 },
+          { { 954.00f, -2549.00f }, RC_TERMINA_FIELD_GRASS_97 },
+          { { 932.00f, -2519.00f }, RC_TERMINA_FIELD_GRASS_98 },
+          { { 890.00f, -2523.00f }, RC_TERMINA_FIELD_GRASS_99 },
+          { { 874.00f, -2561.00f }, RC_TERMINA_FIELD_GRASS_100 },
+          { { 914.00f, -2575.00f }, RC_TERMINA_FIELD_GRASS_101 },
+          { { 985.00f, -2519.00f }, RC_TERMINA_FIELD_GRASS_102 },
+          { { 914.00f, -2475.00f }, RC_TERMINA_FIELD_GRASS_103 },
+          { { 843.00f, -2519.00f }, RC_TERMINA_FIELD_GRASS_104 },
+          { { 843.00f, -2591.00f }, RC_TERMINA_FIELD_GRASS_105 },
+          { { 878.00f, -2626.00f }, RC_TERMINA_FIELD_GRASS_106 },
+          { { 926.00f, -2634.00f }, RC_TERMINA_FIELD_GRASS_107 },
+          { { 956.00f, -2597.00f }, RC_TERMINA_FIELD_GRASS_108 },
+          { { 1286.00f, 3183.00f }, RC_TERMINA_FIELD_GRASS_109 },
+          { { 1264.00f, 3213.00f }, RC_TERMINA_FIELD_GRASS_110 },
+          { { 1222.00f, 3209.00f }, RC_TERMINA_FIELD_GRASS_111 },
+          { { 1206.00f, 3171.00f }, RC_TERMINA_FIELD_GRASS_112 },
+          { { 1246.00f, 3157.00f }, RC_TERMINA_FIELD_GRASS_113 },
+          { { 1317.00f, 3213.00f }, RC_TERMINA_FIELD_GRASS_114 },
+          { { 1246.00f, 3257.00f }, RC_TERMINA_FIELD_GRASS_115 },
+          { { 1175.00f, 3213.00f }, RC_TERMINA_FIELD_GRASS_116 },
+          { { 1175.00f, 3141.00f }, RC_TERMINA_FIELD_GRASS_117 },
+          { { 1210.00f, 3106.00f }, RC_TERMINA_FIELD_GRASS_118 },
+          { { 1258.00f, 3098.00f }, RC_TERMINA_FIELD_GRASS_119 },
+          { { 1288.00f, 3135.00f }, RC_TERMINA_FIELD_GRASS_120 },
+          { { 1554.00f, 2053.00f }, RC_TERMINA_FIELD_GRASS_121 },
+          { { 1532.00f, 2083.00f }, RC_TERMINA_FIELD_GRASS_122 },
+          { { 1490.00f, 2079.00f }, RC_TERMINA_FIELD_GRASS_123 },
+          { { 1474.00f, 2041.00f }, RC_TERMINA_FIELD_GRASS_124 },
+          { { 1514.00f, 2027.00f }, RC_TERMINA_FIELD_GRASS_125 },
+          { { 1585.00f, 2083.00f }, RC_TERMINA_FIELD_GRASS_126 },
+          { { 1514.00f, 2127.00f }, RC_TERMINA_FIELD_GRASS_127 },
+          { { 1443.00f, 2083.00f }, RC_TERMINA_FIELD_GRASS_128 },
+          { { 1443.00f, 2011.00f }, RC_TERMINA_FIELD_GRASS_129 },
+          { { 1478.00f, 1976.00f }, RC_TERMINA_FIELD_GRASS_130 },
+          { { 1526.00f, 1968.00f }, RC_TERMINA_FIELD_GRASS_131 },
+          { { 1556.00f, 2005.00f }, RC_TERMINA_FIELD_GRASS_132 },
+          { { 1770.00f, 2736.00f }, RC_TERMINA_FIELD_GRASS_133 },
+          { { 1748.00f, 2766.00f }, RC_TERMINA_FIELD_GRASS_134 },
+          { { 1706.00f, 2762.00f }, RC_TERMINA_FIELD_GRASS_135 },
+          { { 1690.00f, 2724.00f }, RC_TERMINA_FIELD_GRASS_136 },
+          { { 1730.00f, 2710.00f }, RC_TERMINA_FIELD_GRASS_137 },
+          { { 1801.00f, 2766.00f }, RC_TERMINA_FIELD_GRASS_138 },
+          { { 1730.00f, 2810.00f }, RC_TERMINA_FIELD_GRASS_139 },
+          { { 1659.00f, 2766.00f }, RC_TERMINA_FIELD_GRASS_140 },
+          { { 1659.00f, 2694.00f }, RC_TERMINA_FIELD_GRASS_141 },
+          { { 1694.00f, 2659.00f }, RC_TERMINA_FIELD_GRASS_142 },
+          { { 1742.00f, 2651.00f }, RC_TERMINA_FIELD_GRASS_143 },
+          { { 1772.00f, 2688.00f }, RC_TERMINA_FIELD_GRASS_144 },
+          { { 2007.00f, -1295.00f }, RC_TERMINA_FIELD_GRASS_145 },
+          { { 1985.00f, -1265.00f }, RC_TERMINA_FIELD_GRASS_146 },
+          { { 1943.00f, -1269.00f }, RC_TERMINA_FIELD_GRASS_147 },
+          { { 1927.00f, -1307.00f }, RC_TERMINA_FIELD_GRASS_148 },
+          { { 1967.00f, -1321.00f }, RC_TERMINA_FIELD_GRASS_149 },
+          { { 2038.00f, -1265.00f }, RC_TERMINA_FIELD_GRASS_150 },
+          { { 1967.00f, -1221.00f }, RC_TERMINA_FIELD_GRASS_151 },
+          { { 1896.00f, -1265.00f }, RC_TERMINA_FIELD_GRASS_152 },
+          { { 1896.00f, -1337.00f }, RC_TERMINA_FIELD_GRASS_153 },
+          { { 1931.00f, -1372.00f }, RC_TERMINA_FIELD_GRASS_154 },
+          { { 1979.00f, -1380.00f }, RC_TERMINA_FIELD_GRASS_155 },
+          { { 2009.00f, -1343.00f }, RC_TERMINA_FIELD_GRASS_156 },
+          { { 2637.00f, 565.00f }, RC_TERMINA_FIELD_GRASS_157 },
+          { { 2615.00f, 595.00f }, RC_TERMINA_FIELD_GRASS_158 },
+          { { 2573.00f, 591.00f }, RC_TERMINA_FIELD_GRASS_159 },
+          { { 2557.00f, 553.00f }, RC_TERMINA_FIELD_GRASS_160 },
+          { { 2597.00f, 539.00f }, RC_TERMINA_FIELD_GRASS_161 },
+          { { 2668.00f, 595.00f }, RC_TERMINA_FIELD_GRASS_162 },
+          { { 2597.00f, 639.00f }, RC_TERMINA_FIELD_GRASS_163 },
+          { { 2526.00f, 595.00f }, RC_TERMINA_FIELD_GRASS_164 },
+          { { 2526.00f, 523.00f }, RC_TERMINA_FIELD_GRASS_165 },
+          { { 2561.00f, 488.00f }, RC_TERMINA_FIELD_GRASS_166 },
+          { { 2609.00f, 480.00f }, RC_TERMINA_FIELD_GRASS_167 },
+          { { 2639.00f, 517.00f }, RC_TERMINA_FIELD_GRASS_168 },
+          { { 2718.00f, 2414.00f }, RC_TERMINA_FIELD_GRASS_169 },
+          { { 2696.00f, 2444.00f }, RC_TERMINA_FIELD_GRASS_170 },
+          { { 2654.00f, 2440.00f }, RC_TERMINA_FIELD_GRASS_171 },
+          { { 2638.00f, 2402.00f }, RC_TERMINA_FIELD_GRASS_172 },
+          { { 2678.00f, 2388.00f }, RC_TERMINA_FIELD_GRASS_173 },
+          { { 2749.00f, 2444.00f }, RC_TERMINA_FIELD_GRASS_174 },
+          { { 2678.00f, 2488.00f }, RC_TERMINA_FIELD_GRASS_175 },
+          { { 2607.00f, 2444.00f }, RC_TERMINA_FIELD_GRASS_176 },
+          { { 2607.00f, 2372.00f }, RC_TERMINA_FIELD_GRASS_177 },
+          { { 2642.00f, 2337.00f }, RC_TERMINA_FIELD_GRASS_178 },
+          { { 2690.00f, 2329.00f }, RC_TERMINA_FIELD_GRASS_179 },
+          { { 2720.00f, 2366.00f }, RC_TERMINA_FIELD_GRASS_180 },
+          { { 2933.00f, 1832.00f }, RC_TERMINA_FIELD_GRASS_181 },
+          { { 2911.00f, 1862.00f }, RC_TERMINA_FIELD_GRASS_182 },
+          { { 2869.00f, 1858.00f }, RC_TERMINA_FIELD_GRASS_183 },
+          { { 2853.00f, 1820.00f }, RC_TERMINA_FIELD_GRASS_184 },
+          { { 2893.00f, 1806.00f }, RC_TERMINA_FIELD_GRASS_185 },
+          { { 2964.00f, 1862.00f }, RC_TERMINA_FIELD_GRASS_186 },
+          { { 2893.00f, 1906.00f }, RC_TERMINA_FIELD_GRASS_187 },
+          { { 2822.00f, 1862.00f }, RC_TERMINA_FIELD_GRASS_188 },
+          { { 2822.00f, 1790.00f }, RC_TERMINA_FIELD_GRASS_189 },
+          { { 2857.00f, 1755.00f }, RC_TERMINA_FIELD_GRASS_190 },
+          { { 2905.00f, 1747.00f }, RC_TERMINA_FIELD_GRASS_191 },
+          { { 2935.00f, 1784.00f }, RC_TERMINA_FIELD_GRASS_192 },
+          { { 3847.00f, 742.00f }, RC_TERMINA_FIELD_GRASS_193 },
+          { { 3825.00f, 772.00f }, RC_TERMINA_FIELD_GRASS_194 },
+          { { 3783.00f, 768.00f }, RC_TERMINA_FIELD_GRASS_195 },
+          { { 3767.00f, 730.00f }, RC_TERMINA_FIELD_GRASS_196 },
+          { { 3807.00f, 716.00f }, RC_TERMINA_FIELD_GRASS_197 },
+          { { 3878.00f, 772.00f }, RC_TERMINA_FIELD_GRASS_198 },
+          { { 3807.00f, 816.00f }, RC_TERMINA_FIELD_GRASS_199 },
+          { { 3736.00f, 772.00f }, RC_TERMINA_FIELD_GRASS_200 },
+          { { 3736.00f, 700.00f }, RC_TERMINA_FIELD_GRASS_201 },
+          { { 3771.00f, 665.00f }, RC_TERMINA_FIELD_GRASS_202 },
+          { { 3819.00f, 657.00f }, RC_TERMINA_FIELD_GRASS_203 },
+          { { 3849.00f, 694.00f }, RC_TERMINA_FIELD_GRASS_204 },
+          { { 4455.00f, 418.00f }, RC_TERMINA_FIELD_GRASS_205 },
+          { { 4433.00f, 448.00f }, RC_TERMINA_FIELD_GRASS_206 },
+          { { 4391.00f, 444.00f }, RC_TERMINA_FIELD_GRASS_207 },
+          { { 4375.00f, 406.00f }, RC_TERMINA_FIELD_GRASS_208 },
+          { { 4415.00f, 392.00f }, RC_TERMINA_FIELD_GRASS_209 },
+          { { 4486.00f, 448.00f }, RC_TERMINA_FIELD_GRASS_210 },
+          { { 4415.00f, 492.00f }, RC_TERMINA_FIELD_GRASS_211 },
+          { { 4344.00f, 448.00f }, RC_TERMINA_FIELD_GRASS_212 },
+          { { 4344.00f, 376.00f }, RC_TERMINA_FIELD_GRASS_213 },
+          { { 4379.00f, 341.00f }, RC_TERMINA_FIELD_GRASS_214 },
+          { { 4427.00f, 333.00f }, RC_TERMINA_FIELD_GRASS_215 },
+          { { 4457.00f, 370.00f }, RC_TERMINA_FIELD_GRASS_216 },
+      } },
+    // Great Bay Coast
+    { SCENE_30GYOSON,
+      {
+          { { 863.00f, 4646.00f }, RC_GREAT_BAY_COAST_GRASS_01 },
+          { { 769.00f, 4647.00f }, RC_GREAT_BAY_COAST_GRASS_02 },
+          { { 885.00f, 4881.00f }, RC_GREAT_BAY_COAST_GRASS_03 },
+          { { 793.00f, 4880.00f }, RC_GREAT_BAY_COAST_GRASS_04 },
+          { { 782.00f, 4766.00f }, RC_GREAT_BAY_COAST_GRASS_05 },
+      } },
+    // Clock Town
+    { SCENE_ALLEY,
+      {
+          { { -1900.00f, 316.00f }, RC_CLOCK_TOWN_LAUNDRY_POOL_GRASS_01 },
+          { { -1921.00f, 228.00f }, RC_CLOCK_TOWN_LAUNDRY_POOL_GRASS_02 },
+          { { -1864.00f, 216.00f }, RC_CLOCK_TOWN_LAUNDRY_POOL_GRASS_03 },
+      } },
+    // Romani Ranch
+    { SCENE_F01,
+      {
+          { { -135.00f, 1834.00f }, RC_ROMANI_RANCH_GRASS_01 },
+          { { -157.00f, 1864.00f }, RC_ROMANI_RANCH_GRASS_02 },
+          { { -199.00f, 1860.00f }, RC_ROMANI_RANCH_GRASS_03 },
+          { { -215.00f, 1822.00f }, RC_ROMANI_RANCH_GRASS_04 },
+          { { -175.00f, 1808.00f }, RC_ROMANI_RANCH_GRASS_05 },
+          { { -104.00f, 1864.00f }, RC_ROMANI_RANCH_GRASS_06 },
+          { { -175.00f, 1908.00f }, RC_ROMANI_RANCH_GRASS_07 },
+          { { -246.00f, 1864.00f }, RC_ROMANI_RANCH_GRASS_08 },
+          { { -246.00f, 1792.00f }, RC_ROMANI_RANCH_GRASS_09 },
+          { { -211.00f, 1757.00f }, RC_ROMANI_RANCH_GRASS_10 },
+          { { -163.00f, 1749.00f }, RC_ROMANI_RANCH_GRASS_11 },
+          { { -133.00f, 1786.00f }, RC_ROMANI_RANCH_GRASS_12 },
+          { { -1529.00f, 1630.00f }, RC_ROMANI_RANCH_GRASS_13 },
+          { { -1551.00f, 1660.00f }, RC_ROMANI_RANCH_GRASS_14 },
+          { { -1593.00f, 1656.00f }, RC_ROMANI_RANCH_GRASS_15 },
+          { { -1609.00f, 1618.00f }, RC_ROMANI_RANCH_GRASS_16 },
+          { { -1569.00f, 1604.00f }, RC_ROMANI_RANCH_GRASS_17 },
+          { { -1498.00f, 1660.00f }, RC_ROMANI_RANCH_GRASS_18 },
+          { { -1569.00f, 1704.00f }, RC_ROMANI_RANCH_GRASS_19 },
+          { { -1640.00f, 1660.00f }, RC_ROMANI_RANCH_GRASS_20 },
+          { { -1640.00f, 1588.00f }, RC_ROMANI_RANCH_GRASS_21 },
+          { { -1605.00f, 1553.00f }, RC_ROMANI_RANCH_GRASS_22 },
+          { { -1557.00f, 1545.00f }, RC_ROMANI_RANCH_GRASS_23 },
+          { { -1527.00f, 1582.00f }, RC_ROMANI_RANCH_GRASS_24 },
+          { { 1874.00f, 1167.00f }, RC_ROMANI_RANCH_GRASS_25 },
+          { { 1852.00f, 1197.00f }, RC_ROMANI_RANCH_GRASS_26 },
+          { { 1810.00f, 1193.00f }, RC_ROMANI_RANCH_GRASS_27 },
+          { { 1794.00f, 1155.00f }, RC_ROMANI_RANCH_GRASS_28 },
+          { { 1834.00f, 1141.00f }, RC_ROMANI_RANCH_GRASS_29 },
+          { { 1905.00f, 1197.00f }, RC_ROMANI_RANCH_GRASS_30 },
+          { { 1834.00f, 1241.00f }, RC_ROMANI_RANCH_GRASS_31 },
+          { { 1763.00f, 1197.00f }, RC_ROMANI_RANCH_GRASS_32 },
+          { { 1763.00f, 1125.00f }, RC_ROMANI_RANCH_GRASS_33 },
+          { { 1798.00f, 1090.00f }, RC_ROMANI_RANCH_GRASS_34 },
+          { { 1846.00f, 1082.00f }, RC_ROMANI_RANCH_GRASS_35 },
+          { { 1876.00f, 1119.00f }, RC_ROMANI_RANCH_GRASS_36 },
+          { { 1203.00f, -1379.00f }, RC_ROMANI_RANCH_GRASS_37 },
+          { { 1181.00f, -1349.00f }, RC_ROMANI_RANCH_GRASS_38 },
+          { { 1139.00f, -1353.00f }, RC_ROMANI_RANCH_GRASS_39 },
+          { { 1123.00f, -1391.00f }, RC_ROMANI_RANCH_GRASS_40 },
+          { { 1163.00f, -1405.00f }, RC_ROMANI_RANCH_GRASS_41 },
+          { { 1234.00f, -1349.00f }, RC_ROMANI_RANCH_GRASS_42 },
+          { { 1163.00f, -1305.00f }, RC_ROMANI_RANCH_GRASS_43 },
+          { { 1092.00f, -1349.00f }, RC_ROMANI_RANCH_GRASS_44 },
+          { { 1092.00f, -1421.00f }, RC_ROMANI_RANCH_GRASS_45 },
+          { { 1127.00f, -1456.00f }, RC_ROMANI_RANCH_GRASS_46 },
+          { { 1175.00f, -1464.00f }, RC_ROMANI_RANCH_GRASS_47 },
+          { { 1205.00f, -1427.00f }, RC_ROMANI_RANCH_GRASS_48 },
+          { { -223.00f, -2271.00f }, RC_ROMANI_RANCH_GRASS_49 },
+          { { -143.00f, -2271.00f }, RC_ROMANI_RANCH_GRASS_50 },
+          { { -166.00f, -2214.00f }, RC_ROMANI_RANCH_GRASS_51 },
+          { { -223.00f, -2191.00f }, RC_ROMANI_RANCH_GRASS_52 },
+          { { -280.00f, -2214.00f }, RC_ROMANI_RANCH_GRASS_53 },
+          { { -303.00f, -2271.00f }, RC_ROMANI_RANCH_GRASS_54 },
+          { { -280.00f, -2328.00f }, RC_ROMANI_RANCH_GRASS_55 },
+          { { -223.00f, -2351.00f }, RC_ROMANI_RANCH_GRASS_56 },
+          { { -166.00f, -2328.00f }, RC_ROMANI_RANCH_GRASS_57 },
+      } },
+    // Southern Swamp(Cleaned)
+    { SCENE_20SICHITAI2,
+      {
+          { { 115.00f, -977.00f }, RC_SOUTHERN_SWAMP_CLEARED_GRASS_01 },
+          { { 93.00f, -947.00f }, RC_SOUTHERN_SWAMP_CLEARED_GRASS_02 },
+          { { 51.00f, -951.00f }, RC_SOUTHERN_SWAMP_CLEARED_GRASS_03 },
+          { { 35.00f, -989.00f }, RC_SOUTHERN_SWAMP_CLEARED_GRASS_04 },
+          { { 75.00f, -1003.00f }, RC_SOUTHERN_SWAMP_CLEARED_GRASS_05 },
+          { { 146.00f, -947.00f }, RC_SOUTHERN_SWAMP_CLEARED_GRASS_06 },
+          { { 75.00f, -903.00f }, RC_SOUTHERN_SWAMP_CLEARED_GRASS_07 },
+          { { 4.00f, -947.00f }, RC_SOUTHERN_SWAMP_CLEARED_GRASS_08 },
+          { { 4.00f, -1019.00f }, RC_SOUTHERN_SWAMP_CLEARED_GRASS_09 },
+          { { 39.00f, -1054.00f }, RC_SOUTHERN_SWAMP_CLEARED_GRASS_10 },
+          { { 87.00f, -1062.00f }, RC_SOUTHERN_SWAMP_CLEARED_GRASS_11 },
+          { { 117.00f, -1025.00f  }, RC_SOUTHERN_SWAMP_CLEARED_GRASS_12 },
+          { { 3013.00f, -896.00f }, RC_SOUTHERN_SWAMP_CLEARED_GRASS_13 },
+          { { 3093.00f, -896.00f }, RC_SOUTHERN_SWAMP_CLEARED_GRASS_14 },
+          { { 3070.00f, -839.00f }, RC_SOUTHERN_SWAMP_CLEARED_GRASS_15 },
+          { { 3013.00f, -816.00f }, RC_SOUTHERN_SWAMP_CLEARED_GRASS_16 },
+          { { 2956.00f, -839.00f }, RC_SOUTHERN_SWAMP_CLEARED_GRASS_17 },
+          { { 2933.00f, -896.00f }, RC_SOUTHERN_SWAMP_CLEARED_GRASS_18 },
+          { { 2956.00f, -953.00f }, RC_SOUTHERN_SWAMP_CLEARED_GRASS_19 },
+          { { 3013.00f, -976.00f }, RC_SOUTHERN_SWAMP_CLEARED_GRASS_20 },
+          { { 3070.00f, -953.00f }, RC_SOUTHERN_SWAMP_CLEARED_GRASS_21 },
+          { { 2982.00f, -1255.00f }, RC_SOUTHERN_SWAMP_CLEARED_GRASS_22 },
+          { { 3062.00f, -1255.00f }, RC_SOUTHERN_SWAMP_CLEARED_GRASS_23 },
+          { { 3039.00f, -1198.00f }, RC_SOUTHERN_SWAMP_CLEARED_GRASS_24 },
+          { { 2982.00f, -1175.00f }, RC_SOUTHERN_SWAMP_CLEARED_GRASS_25 },
+          { { 2925.00f, -1198.00f }, RC_SOUTHERN_SWAMP_CLEARED_GRASS_26 },
+          { { 2902.00f, -1255.00f }, RC_SOUTHERN_SWAMP_CLEARED_GRASS_27 },
+          { { 2925.00f, -1312.00f }, RC_SOUTHERN_SWAMP_CLEARED_GRASS_28 },
+          { { 2982.00f, -1335.00f }, RC_SOUTHERN_SWAMP_CLEARED_GRASS_29 },
+          { { 3039.00f, -1312.00f }, RC_SOUTHERN_SWAMP_CLEARED_GRASS_30 },
+      } },
+    // Southern Swamp(Poisoned)
+    { SCENE_20SICHITAI,
+      {
+          { { 115.00f, -977.00f }, RC_SOUTHERN_SWAMP_POISON_GRASS_01 },
+          { { 93.00f, -947.00f }, RC_SOUTHERN_SWAMP_POISON_GRASS_02 },
+          { { 51.00f, -951.00f }, RC_SOUTHERN_SWAMP_POISON_GRASS_03 },
+          { { 35.00f, -989.00f }, RC_SOUTHERN_SWAMP_POISON_GRASS_04 },
+          { { 75.00f, -1003.00f }, RC_SOUTHERN_SWAMP_POISON_GRASS_05 },
+          { { 146.00f, -947.00f }, RC_SOUTHERN_SWAMP_POISON_GRASS_06 },
+          { { 75.00f, -903.00f }, RC_SOUTHERN_SWAMP_POISON_GRASS_07 },
+          { { 4.00f, -947.00f }, RC_SOUTHERN_SWAMP_POISON_GRASS_08 },
+          { { 4.00f, -1019.00f }, RC_SOUTHERN_SWAMP_POISON_GRASS_09 },
+          { { 39.00f, -1054.00f }, RC_SOUTHERN_SWAMP_POISON_GRASS_10 },
+          { { 87.00f, -1062.00f }, RC_SOUTHERN_SWAMP_POISON_GRASS_11 },
+          { { 117.00f, -1025.00f }, RC_SOUTHERN_SWAMP_POISON_GRASS_12 },
+          { { 3013.00f, -896.00f }, RC_SOUTHERN_SWAMP_POISON_GRASS_13 },
+          { { 3093.00f, -896.00f }, RC_SOUTHERN_SWAMP_POISON_GRASS_14 },
+          { { 3070.00f, -839.00f }, RC_SOUTHERN_SWAMP_POISON_GRASS_15 },
+          { { 3013.00f, -816.00f }, RC_SOUTHERN_SWAMP_POISON_GRASS_16 },
+          { { 2956.00f, -839.00f }, RC_SOUTHERN_SWAMP_POISON_GRASS_17 },
+          { { 2933.00f, -896.00f }, RC_SOUTHERN_SWAMP_POISON_GRASS_18 },
+          { { 2956.00f, -953.00f }, RC_SOUTHERN_SWAMP_POISON_GRASS_19 },
+          { { 3013.00f, -976.00f }, RC_SOUTHERN_SWAMP_POISON_GRASS_20 },
+          { { 3070.00f, -953.00f }, RC_SOUTHERN_SWAMP_POISON_GRASS_21 },
+          { { 2982.00f, -1255.00f }, RC_SOUTHERN_SWAMP_POISON_GRASS_22 },
+          { { 3062.00f, -1255.00f }, RC_SOUTHERN_SWAMP_POISON_GRASS_23 },
+          { { 3039.00f, -1198.00f }, RC_SOUTHERN_SWAMP_POISON_GRASS_24 },
+          { { 2982.00f, -1175.00f }, RC_SOUTHERN_SWAMP_POISON_GRASS_25 },
+          { { 2925.00f, -1198.00f }, RC_SOUTHERN_SWAMP_POISON_GRASS_26 },
+          { { 2902.00f, -1255.00f }, RC_SOUTHERN_SWAMP_POISON_GRASS_27 },
+          { { 2925.00f, -1312.00f }, RC_SOUTHERN_SWAMP_POISON_GRASS_28 },
+          { { 2982.00f, -1335.00f }, RC_SOUTHERN_SWAMP_POISON_GRASS_29 },
+          { { 3039.00f, -1312.00f }, RC_SOUTHERN_SWAMP_POISON_GRASS_30 },
+      } },
+    // Road to Southern Swamp
+    { SCENE_24KEMONOMITI,
+      {
+          { { 2734.00f, 3399.00f }, RC_ROAD_TO_SOUTHERN_SWAMP_GRASS_01 },
+          { { 2757.00f, 3443.00f }, RC_ROAD_TO_SOUTHERN_SWAMP_GRASS_02 },
+          { { 127.00f, 1839.00f }, RC_ROAD_TO_SOUTHERN_SWAMP_GRASS_03 },
+          { { 47.00f, 1839.00f }, RC_ROAD_TO_SOUTHERN_SWAMP_GRASS_04 },
+          { { 70.00f, 1782.00f }, RC_ROAD_TO_SOUTHERN_SWAMP_GRASS_05 },
+          { { 127.00f, 1759.00f }, RC_ROAD_TO_SOUTHERN_SWAMP_GRASS_06 },
+          { { 184.00f, 1782.00f }, RC_ROAD_TO_SOUTHERN_SWAMP_GRASS_07 },
+          { { 207.00f, 1839.00f }, RC_ROAD_TO_SOUTHERN_SWAMP_GRASS_08 },
+          { { 184.00f, 1896.00f }, RC_ROAD_TO_SOUTHERN_SWAMP_GRASS_09 },
+          { { 127.00f, 1919.00f }, RC_ROAD_TO_SOUTHERN_SWAMP_GRASS_10 },
+          { { 70.00f, 1896.00f }, RC_ROAD_TO_SOUTHERN_SWAMP_GRASS_11 },
+          { { 321.00f, 1647.00f }, RC_ROAD_TO_SOUTHERN_SWAMP_GRASS_12 },
+          { { 241.00f, 1647.00f }, RC_ROAD_TO_SOUTHERN_SWAMP_GRASS_13 },
+          { { 264.00f, 1590.00f }, RC_ROAD_TO_SOUTHERN_SWAMP_GRASS_14 },
+          { { 321.00f, 1567.00f }, RC_ROAD_TO_SOUTHERN_SWAMP_GRASS_15 },
+          { { 378.00f, 1590.00f }, RC_ROAD_TO_SOUTHERN_SWAMP_GRASS_16 },
+          { { 401.00f, 1647.00f }, RC_ROAD_TO_SOUTHERN_SWAMP_GRASS_17 },
+          { { 378.00f, 1704.00f }, RC_ROAD_TO_SOUTHERN_SWAMP_GRASS_18 },
+          { { 321.00f, 1727.00f }, RC_ROAD_TO_SOUTHERN_SWAMP_GRASS_19 },
+          { { 264.00f, 1704.00f }, RC_ROAD_TO_SOUTHERN_SWAMP_GRASS_20 },
+      } },
+    { SCENE_10YUKIYAMANOMURA2,
+      {
+          { { -279.00f, 1379.00f }, RC_MOUNTAIN_VILLAGE_SPRING_GRASS_01 },
+          { { -203.00f, 1155.00f }, RC_MOUNTAIN_VILLAGE_SPRING_GRASS_02 },
+          { { -545.00f, 1069.00f }, RC_MOUNTAIN_VILLAGE_SPRING_GRASS_03 },
+          { { 267.00f, 402.00f }, RC_MOUNTAIN_VILLAGE_SPRING_GRASS_04 },
+          { { 267.00f, 482.00f }, RC_MOUNTAIN_VILLAGE_SPRING_GRASS_05 },
+          { { 324.00f, 459.00f }, RC_MOUNTAIN_VILLAGE_SPRING_GRASS_06 },
+          { { 347.00f, 402.00f }, RC_MOUNTAIN_VILLAGE_SPRING_GRASS_07 },
+          { { 324.00f, 345.00f }, RC_MOUNTAIN_VILLAGE_SPRING_GRASS_08 },
+          { { 267.00f, 322.00f }, RC_MOUNTAIN_VILLAGE_SPRING_GRASS_09 },
+          { { 210.00f, 345.00f }, RC_MOUNTAIN_VILLAGE_SPRING_GRASS_10 },
+          { { 187.00f, 402.00f }, RC_MOUNTAIN_VILLAGE_SPRING_GRASS_11 },
+          { { 210.00f, 459.00f }, RC_MOUNTAIN_VILLAGE_SPRING_GRASS_12 },
+          { { 86.00f, 145.00f }, RC_MOUNTAIN_VILLAGE_SPRING_GRASS_13 },
+          { { 86.00f, 225.00f }, RC_MOUNTAIN_VILLAGE_SPRING_GRASS_14 },
+          { { 143.00f, 202.00f }, RC_MOUNTAIN_VILLAGE_SPRING_GRASS_15 },
+          { { 166.00f, 145.00f }, RC_MOUNTAIN_VILLAGE_SPRING_GRASS_16 },
+          { { 143.00f, 88.00f }, RC_MOUNTAIN_VILLAGE_SPRING_GRASS_17 },
+          { { 86.00f, 65.00f }, RC_MOUNTAIN_VILLAGE_SPRING_GRASS_18 },
+          { { 29.00f, 88.00f }, RC_MOUNTAIN_VILLAGE_SPRING_GRASS_19 },
+          { { 6.00f, 145.00f }, RC_MOUNTAIN_VILLAGE_SPRING_GRASS_20 },
+          { { 29.00f, 202.00f }, RC_MOUNTAIN_VILLAGE_SPRING_GRASS_21 },
+          { { 365.00f, 165.00f }, RC_MOUNTAIN_VILLAGE_SPRING_GRASS_22 },
+          { { 365.00f, 245.00f }, RC_MOUNTAIN_VILLAGE_SPRING_GRASS_23 },
+          { { 422.00f, 222.00f }, RC_MOUNTAIN_VILLAGE_SPRING_GRASS_24 },
+          { { 445.00f, 165.00f }, RC_MOUNTAIN_VILLAGE_SPRING_GRASS_25 },
+          { { 422.00f, 108.00f }, RC_MOUNTAIN_VILLAGE_SPRING_GRASS_26 },
+          { { 365.00f, 85.00f }, RC_MOUNTAIN_VILLAGE_SPRING_GRASS_27 },
+          { { 308.00f, 108.00f }, RC_MOUNTAIN_VILLAGE_SPRING_GRASS_28 },
+          { { 285.00f, 165.00f }, RC_MOUNTAIN_VILLAGE_SPRING_GRASS_29 },
+          { { 308.00f, 222.00f }, RC_MOUNTAIN_VILLAGE_SPRING_GRASS_30 },
+      } },
+    { SCENE_17SETUGEN2, 
+      {
+          { { -1383.00f, 1049.00f }, RC_TWIN_ISLANDS_SPRING_GRASS_01 },
+          { { -1405.00f, 1079.00f }, RC_TWIN_ISLANDS_SPRING_GRASS_02 },
+          { { -1447.00f, 1075.00f }, RC_TWIN_ISLANDS_SPRING_GRASS_03 },
+          { { -1463.00f, 1037.00f }, RC_TWIN_ISLANDS_SPRING_GRASS_04 },
+          { { -1423.00f, 1023.00f }, RC_TWIN_ISLANDS_SPRING_GRASS_05 },
+          { { -1352.00f, 1079.00f }, RC_TWIN_ISLANDS_SPRING_GRASS_06 },
+          { { -1423.00f, 1123.00f }, RC_TWIN_ISLANDS_SPRING_GRASS_07 },
+          { { -1494.00f, 1079.00f }, RC_TWIN_ISLANDS_SPRING_GRASS_08 },
+          { { -1494.00f, 1007.00f }, RC_TWIN_ISLANDS_SPRING_GRASS_09 },
+          { { -1459.00f, 972.00f }, RC_TWIN_ISLANDS_SPRING_GRASS_10 },
+          { { -1411.00f, 964.00f }, RC_TWIN_ISLANDS_SPRING_GRASS_11 },
+          { { -1381.00f, 1001.00f }, RC_TWIN_ISLANDS_SPRING_GRASS_12 },
+      } },
+    { SCENE_BOTI,
+      {
+          { { -597.00f, -1943.00f }, RC_IKANA_GRAVEYARD_GRASS_01 },
+          { { -597.00f, -1863.00f }, RC_IKANA_GRAVEYARD_GRASS_02 },
+          { { -540.00f, -1886.00f }, RC_IKANA_GRAVEYARD_GRASS_03 },
+          { { -517.00f, -1943.00f }, RC_IKANA_GRAVEYARD_GRASS_04 },
+          { { -540.00f, -2000.00f }, RC_IKANA_GRAVEYARD_GRASS_05 },
+          { { -597.00f, -2023.00f }, RC_IKANA_GRAVEYARD_GRASS_06 },
+          { { -654.00f, -2000.00f }, RC_IKANA_GRAVEYARD_GRASS_07 },
+          { { -677.00f, -1943.00f }, RC_IKANA_GRAVEYARD_GRASS_08 },
+          { { -654.00f, -1886.00f }, RC_IKANA_GRAVEYARD_GRASS_09 },
+      } },
+    { SCENE_KOEPONARACE,
+      {
+          { { 2810.00f, 446.00f }, RC_GORMAN_TRACK_GRASS_01 },
+          { { 2788.00f, 476.00f }, RC_GORMAN_TRACK_GRASS_02 },
+          { { 2746.00f, 472.00f }, RC_GORMAN_TRACK_GRASS_03 },
+          { { 2730.00f, 434.00f }, RC_GORMAN_TRACK_GRASS_04 },
+          { { 2770.00f, 420.00f }, RC_GORMAN_TRACK_GRASS_05 },
+          { { 2841.00f, 476.00f }, RC_GORMAN_TRACK_GRASS_06 },
+          { { 2770.00f, 520.00f }, RC_GORMAN_TRACK_GRASS_07 },
+          { { 2699.00f, 476.00f }, RC_GORMAN_TRACK_GRASS_08 },
+          { { 2699.00f, 404.00f }, RC_GORMAN_TRACK_GRASS_09 },
+          { { 2734.00f, 369.00f }, RC_GORMAN_TRACK_GRASS_10 },
+          { { 2782.00f, 361.00f }, RC_GORMAN_TRACK_GRASS_11 },
+          { { 2812.00f, 398.00f }, RC_GORMAN_TRACK_GRASS_12 },
+          { { 2502.00f, -353.00f }, RC_GORMAN_TRACK_GRASS_13 },
+          { { 2480.00f, -323.00f }, RC_GORMAN_TRACK_GRASS_14 },
+          { { 2438.00f, -327.00f }, RC_GORMAN_TRACK_GRASS_15 },
+          { { 2422.00f, -365.00f }, RC_GORMAN_TRACK_GRASS_16 },
+          { { 2462.00f, -379.00f }, RC_GORMAN_TRACK_GRASS_17 },
+          { { 2533.00f, -323.00f }, RC_GORMAN_TRACK_GRASS_18 },
+          { { 2462.00f, -279.00f }, RC_GORMAN_TRACK_GRASS_19 },
+          { { 2391.00f, -323.00f }, RC_GORMAN_TRACK_GRASS_20 },
+          { { 2391.00f, -395.00f }, RC_GORMAN_TRACK_GRASS_21 },
+          { { 2426.00f, -430.00f }, RC_GORMAN_TRACK_GRASS_22 },
+          { { 2474.00f, -438.00f }, RC_GORMAN_TRACK_GRASS_23 },
+          { { 2504.00f, -401.00f }, RC_GORMAN_TRACK_GRASS_24 },        
+      } },
+    { SCENE_26SARUNOMORI, 
+      { 
+          { { 81.00f, 85.00f }, RC_WOODS_OF_MYSTERY_GRASS_01 },
+          { { 44.00f, 125.00f }, RC_WOODS_OF_MYSTERY_GRASS_02 },
+          { { 91.00f, 137.00f }, RC_WOODS_OF_MYSTERY_GRASS_03 },
+          { { -77.00f, 779.00f }, RC_WOODS_OF_MYSTERY_GRASS_04 },
+          { { 6.00f, 988.00f }, RC_WOODS_OF_MYSTERY_GRASS_05 },
+          { { -796.00f, 793.00f }, RC_WOODS_OF_MYSTERY_GRASS_06 },
+          { { -946.00f, 1054.00f }, RC_WOODS_OF_MYSTERY_GRASS_07 },
+          { { -798.00f, 56.00f }, RC_WOODS_OF_MYSTERY_GRASS_08 },
+          { { -872.00f, -3.00f }, RC_WOODS_OF_MYSTERY_GRASS_09 },
+          { { -952.00f, 77.00f }, RC_WOODS_OF_MYSTERY_GRASS_10 },
+          { { -915.00f, -74.00f }, RC_WOODS_OF_MYSTERY_GRASS_11 },
+          { { -958.00f, -755.00f }, RC_WOODS_OF_MYSTERY_GRASS_12 },
+          { { -906.00f, -1034.00f }, RC_WOODS_OF_MYSTERY_GRASS_13 },
+          { { -1894.00f, -874.00f }, RC_WOODS_OF_MYSTERY_GRASS_14 },
+          { { -1876.00f, -821.00f }, RC_WOODS_OF_MYSTERY_GRASS_15 },
+          { { -1696.00f, -892.00f }, RC_WOODS_OF_MYSTERY_GRASS_16 },
+          { { -1690.00f, -1023.00f }, RC_WOODS_OF_MYSTERY_GRASS_17 },
+          { { -1631.00f, -727.00f }, RC_WOODS_OF_MYSTERY_GRASS_18 },
+          { { -1942.00f, 42.00f }, RC_WOODS_OF_MYSTERY_GRASS_19 },
+          { { -1702.00f, -24.00f }, RC_WOODS_OF_MYSTERY_GRASS_20 },
+          { { 100.00f, -970.00f }, RC_WOODS_OF_MYSTERY_GRASS_21 },
+      } },
+    { SCENE_21MITURINMAE,
+      {
+          { { -135.00f, -1401.00f }, RC_WOODFALL_GRASS_01 },
+          { { -200.00f, -1447.00f }, RC_WOODFALL_GRASS_02 },
+          { { -186.00f, -1379.00f }, RC_WOODFALL_GRASS_03 },
+          { { 70.00f, -1409.00f }, RC_WOODFALL_GRASS_04 },
+          { { 126.00f, -1455.00f }, RC_WOODFALL_GRASS_05 },
+          { { 114.00f, -1377.00f }, RC_WOODFALL_GRASS_06 },
+      } },
+};
+
+std::map<int16_t, std::map<std::pair<float, float>, RandoCheckId>> grottoGrassMap = {
+    { -1,
+      {
+          { { 2285.00f, 883.00f }, RC_GREAT_BAY_COAST_COW_GROTTO_GRASS_01 },
+          { { 2263.00f, 913.00f }, RC_GREAT_BAY_COAST_COW_GROTTO_GRASS_02 },
+          { { 2221.00f, 909.00f }, RC_GREAT_BAY_COAST_COW_GROTTO_GRASS_03 },
+          { { 2205.00f, 871.00f }, RC_GREAT_BAY_COAST_COW_GROTTO_GRASS_04 },
+          { { 2245.00f, 857.00f }, RC_GREAT_BAY_COAST_COW_GROTTO_GRASS_05 },
+          { { 2316.00f, 913.00f }, RC_GREAT_BAY_COAST_COW_GROTTO_GRASS_06 },
+          { { 2245.00f, 957.00f }, RC_GREAT_BAY_COAST_COW_GROTTO_GRASS_07 },
+          { { 2174.00f, 913.00f }, RC_GREAT_BAY_COAST_COW_GROTTO_GRASS_08 },
+          { { 2174.00f, 841.00f }, RC_GREAT_BAY_COAST_COW_GROTTO_GRASS_09 },
+          { { 2209.00f, 806.00f }, RC_GREAT_BAY_COAST_COW_GROTTO_GRASS_10 },
+          { { 2257.00f, 798.00f }, RC_GREAT_BAY_COAST_COW_GROTTO_GRASS_11 },
+          { { 2287.00f, 835.00f }, RC_GREAT_BAY_COAST_COW_GROTTO_GRASS_12 },
+          { { 2324.00f, 1073.00f }, RC_GREAT_BAY_COAST_COW_GROTTO_GRASS_13 },
+          { { 2302.00f, 1103.00f }, RC_GREAT_BAY_COAST_COW_GROTTO_GRASS_14 },
+          { { 2260.00f, 1099.00f }, RC_GREAT_BAY_COAST_COW_GROTTO_GRASS_15 },
+          { { 2244.00f, 1061.00f }, RC_GREAT_BAY_COAST_COW_GROTTO_GRASS_16 },
+          { { 2284.00f, 1047.00f }, RC_GREAT_BAY_COAST_COW_GROTTO_GRASS_17 },
+          { { 2355.00f, 1103.00f }, RC_GREAT_BAY_COAST_COW_GROTTO_GRASS_18 },
+          { { 2284.00f, 1147.00f }, RC_GREAT_BAY_COAST_COW_GROTTO_GRASS_19 },
+          { { 2213.00f, 1103.00f }, RC_GREAT_BAY_COAST_COW_GROTTO_GRASS_20 },
+          { { 2213.00f, 1031.00f }, RC_GREAT_BAY_COAST_COW_GROTTO_GRASS_21 },
+          { { 2248.00f, 996.00f }, RC_GREAT_BAY_COAST_COW_GROTTO_GRASS_22 },
+          { { 2296.00f, 988.00f }, RC_GREAT_BAY_COAST_COW_GROTTO_GRASS_23 },
+          { { 2326.00f, 1025.00f }, RC_GREAT_BAY_COAST_COW_GROTTO_GRASS_24 },
+          { { 2438.00f, 993.00f }, RC_GREAT_BAY_COAST_COW_GROTTO_GRASS_25 },
+          { { 2416.00f, 1023.00f }, RC_GREAT_BAY_COAST_COW_GROTTO_GRASS_26 },
+          { { 2374.00f, 1019.00f }, RC_GREAT_BAY_COAST_COW_GROTTO_GRASS_27 },
+          { { 2358.00f, 981.00f }, RC_GREAT_BAY_COAST_COW_GROTTO_GRASS_28 },
+          { { 2398.00f, 967.00f }, RC_GREAT_BAY_COAST_COW_GROTTO_GRASS_29 },
+          { { 2469.00f, 1023.00f }, RC_GREAT_BAY_COAST_COW_GROTTO_GRASS_30 },
+          { { 2398.00f, 1067.00f }, RC_GREAT_BAY_COAST_COW_GROTTO_GRASS_31 },
+          { { 2327.00f, 1023.00f }, RC_GREAT_BAY_COAST_COW_GROTTO_GRASS_32 },
+          { { 2327.00f, 951.00f }, RC_GREAT_BAY_COAST_COW_GROTTO_GRASS_33 },
+          { { 2362.00f, 916.00f }, RC_GREAT_BAY_COAST_COW_GROTTO_GRASS_34 },
+          { { 2410.00f, 908.00f }, RC_GREAT_BAY_COAST_COW_GROTTO_GRASS_35 },
+          { { 2440.00f, 945.00f }, RC_GREAT_BAY_COAST_COW_GROTTO_GRASS_36 },
+          { { 2466.00f, 747.00f }, RC_GREAT_BAY_COAST_COW_GROTTO_GRASS_37 },
+          { { 2444.00f, 777.00f }, RC_GREAT_BAY_COAST_COW_GROTTO_GRASS_38 },
+          { { 2402.00f, 773.00f }, RC_GREAT_BAY_COAST_COW_GROTTO_GRASS_39 },
+          { { 2386.00f, 735.00f }, RC_GREAT_BAY_COAST_COW_GROTTO_GRASS_40 },
+          { { 2426.00f, 721.00f }, RC_GREAT_BAY_COAST_COW_GROTTO_GRASS_41 },
+          { { 2497.00f, 777.00f }, RC_GREAT_BAY_COAST_COW_GROTTO_GRASS_42 },
+          { { 2426.00f, 821.00f }, RC_GREAT_BAY_COAST_COW_GROTTO_GRASS_43 },
+          { { 2355.00f, 777.00f }, RC_GREAT_BAY_COAST_COW_GROTTO_GRASS_44 },
+          { { 2355.00f, 705.00f }, RC_GREAT_BAY_COAST_COW_GROTTO_GRASS_45 },
+          { { 2390.00f, 670.00f }, RC_GREAT_BAY_COAST_COW_GROTTO_GRASS_46 },
+          { { 2438.00f, 662.00f }, RC_GREAT_BAY_COAST_COW_GROTTO_GRASS_47 },
+          { { 2468.00f, 699.00f }, RC_GREAT_BAY_COAST_COW_GROTTO_GRASS_48 },
+          { { 2576.00f, 842.00f }, RC_GREAT_BAY_COAST_COW_GROTTO_GRASS_49 },
+          { { 2554.00f, 872.00f }, RC_GREAT_BAY_COAST_COW_GROTTO_GRASS_50 },
+          { { 2512.00f, 868.00f }, RC_GREAT_BAY_COAST_COW_GROTTO_GRASS_51 },
+          { { 2496.00f, 830.00f }, RC_GREAT_BAY_COAST_COW_GROTTO_GRASS_52 },
+          { { 2536.00f, 816.00f }, RC_GREAT_BAY_COAST_COW_GROTTO_GRASS_53 },
+          { { 2607.00f, 872.00f }, RC_GREAT_BAY_COAST_COW_GROTTO_GRASS_54 },
+          { { 2536.00f, 916.00f }, RC_GREAT_BAY_COAST_COW_GROTTO_GRASS_55 },
+          { { 2465.00f, 872.00f }, RC_GREAT_BAY_COAST_COW_GROTTO_GRASS_56 },
+          { { 2465.00f, 800.00f }, RC_GREAT_BAY_COAST_COW_GROTTO_GRASS_57 },
+          { { 2500.00f, 765.00f }, RC_GREAT_BAY_COAST_COW_GROTTO_GRASS_58 },
+          { { 2548.00f, 757.00f }, RC_GREAT_BAY_COAST_COW_GROTTO_GRASS_59 },
+          { { 2578.00f, 794.00f }, RC_GREAT_BAY_COAST_COW_GROTTO_GRASS_60 },
+          { { 2593.00f, 1073.00f }, RC_GREAT_BAY_COAST_COW_GROTTO_GRASS_61 },
+          { { 2571.00f, 1103.00f }, RC_GREAT_BAY_COAST_COW_GROTTO_GRASS_62 },
+          { { 2529.00f, 1099.00f }, RC_GREAT_BAY_COAST_COW_GROTTO_GRASS_63 },
+          { { 2513.00f, 1061.00f }, RC_GREAT_BAY_COAST_COW_GROTTO_GRASS_64 },
+          { { 2553.00f, 1047.00f }, RC_GREAT_BAY_COAST_COW_GROTTO_GRASS_65 },
+          { { 2624.00f, 1103.00f }, RC_GREAT_BAY_COAST_COW_GROTTO_GRASS_66 },
+          { { 2553.00f, 1147.00f }, RC_GREAT_BAY_COAST_COW_GROTTO_GRASS_67 },
+          { { 2482.00f, 1103.00f }, RC_GREAT_BAY_COAST_COW_GROTTO_GRASS_68 },
+          { { 2482.00f, 1031.00f }, RC_GREAT_BAY_COAST_COW_GROTTO_GRASS_69 },
+          { { 2517.00f, 996.00f }, RC_GREAT_BAY_COAST_COW_GROTTO_GRASS_70 },
+          { { 2565.00f, 988.00f }, RC_GREAT_BAY_COAST_COW_GROTTO_GRASS_71 },
+          { { 2595.00f, 1025.00f }, RC_GREAT_BAY_COAST_COW_GROTTO_GRASS_72 },
+      } },
+    { ENTRANCE(GROTTOS, 16),
+      {
+          { { 4323.00f, -466.00f }, RC_LONE_PEAK_SHRINE_GRASS_01 },
+          { { 4301.00f, -436.00f }, RC_LONE_PEAK_SHRINE_GRASS_02 },
+          { { 4259.00f, -440.00f }, RC_LONE_PEAK_SHRINE_GRASS_03 },
+          { { 4243.00f, -478.00f }, RC_LONE_PEAK_SHRINE_GRASS_04 },
+          { { 4283.00f, -492.00f }, RC_LONE_PEAK_SHRINE_GRASS_05 },
+          { { 4354.00f, -436.00f }, RC_LONE_PEAK_SHRINE_GRASS_06 },
+          { { 4283.00f, -392.00f }, RC_LONE_PEAK_SHRINE_GRASS_07 },
+          { { 4212.00f, -436.00f }, RC_LONE_PEAK_SHRINE_GRASS_08 },
+          { { 4212.00f, -508.00f }, RC_LONE_PEAK_SHRINE_GRASS_09 },
+          { { 4247.00f, -543.00f }, RC_LONE_PEAK_SHRINE_GRASS_10 },
+          { { 4295.00f, -551.00f }, RC_LONE_PEAK_SHRINE_GRASS_11 },
+          { { 4325.00f, -514.00f }, RC_LONE_PEAK_SHRINE_GRASS_12 },
+          { { 4592.00f, -613.00f }, RC_LONE_PEAK_SHRINE_GRASS_13 },
+          { { 4570.00f, -583.00f }, RC_LONE_PEAK_SHRINE_GRASS_14 },
+          { { 4528.00f, -587.00f }, RC_LONE_PEAK_SHRINE_GRASS_15 },
+          { { 4512.00f, -625.00f }, RC_LONE_PEAK_SHRINE_GRASS_16 },
+          { { 4552.00f, -639.00f }, RC_LONE_PEAK_SHRINE_GRASS_17 },
+          { { 4623.00f, -583.00f }, RC_LONE_PEAK_SHRINE_GRASS_18 },
+          { { 4552.00f, -539.00f }, RC_LONE_PEAK_SHRINE_GRASS_19 },
+          { { 4481.00f, -583.00f }, RC_LONE_PEAK_SHRINE_GRASS_20 },
+          { { 4481.00f, -655.00f }, RC_LONE_PEAK_SHRINE_GRASS_21 },
+          { { 4516.00f, -690.00f }, RC_LONE_PEAK_SHRINE_GRASS_22 },
+          { { 4564.00f, -698.00f }, RC_LONE_PEAK_SHRINE_GRASS_23 },
+          { { 4594.00f, -661.00f }, RC_LONE_PEAK_SHRINE_GRASS_24 },
+      } },
+      { ENTRANCE(GROTTOS, 12), 
+        {
+          { { 4137.00f, 1073.00f }, RC_DEKU_PALACE_BEAN_SALESMAN_GROTTO_GRASS_01 },
+          { { 4115.00f, 1103.00f }, RC_DEKU_PALACE_BEAN_SALESMAN_GROTTO_GRASS_02 },
+          { { 4073.00f, 1099.00f }, RC_DEKU_PALACE_BEAN_SALESMAN_GROTTO_GRASS_03 },
+          { { 4057.00f, 1061.00f }, RC_DEKU_PALACE_BEAN_SALESMAN_GROTTO_GRASS_04 },
+          { { 4097.00f, 1047.00f }, RC_DEKU_PALACE_BEAN_SALESMAN_GROTTO_GRASS_05 },
+          { { 4168.00f, 1103.00f }, RC_DEKU_PALACE_BEAN_SALESMAN_GROTTO_GRASS_06 },
+          { { 4097.00f, 1147.00f }, RC_DEKU_PALACE_BEAN_SALESMAN_GROTTO_GRASS_07 },
+          { { 4026.00f, 1103.00f }, RC_DEKU_PALACE_BEAN_SALESMAN_GROTTO_GRASS_08 },
+          { { 4026.00f, 1031.00f }, RC_DEKU_PALACE_BEAN_SALESMAN_GROTTO_GRASS_09 },
+          { { 4061.00f, 996.00f }, RC_DEKU_PALACE_BEAN_SALESMAN_GROTTO_GRASS_10 },
+          { { 4109.00f, 988.00f }, RC_DEKU_PALACE_BEAN_SALESMAN_GROTTO_GRASS_11 },
+          { { 4139.00f, 1025.00f }, RC_DEKU_PALACE_BEAN_SALESMAN_GROTTO_GRASS_12 },
+        } },
+    { 31,
+      {
+          { { 2285.00f, 883.00f }, RC_TERMINA_FIELD_COW_GROTTO_GRASS_01 },
+          { { 2263.00f, 913.00f }, RC_TERMINA_FIELD_COW_GROTTO_GRASS_02 },
+          { { 2221.00f, 909.00f }, RC_TERMINA_FIELD_COW_GROTTO_GRASS_03 },
+          { { 2205.00f, 871.00f }, RC_TERMINA_FIELD_COW_GROTTO_GRASS_04 },
+          { { 2245.00f, 857.00f }, RC_TERMINA_FIELD_COW_GROTTO_GRASS_05 },
+          { { 2316.00f, 913.00f }, RC_TERMINA_FIELD_COW_GROTTO_GRASS_06 },
+          { { 2245.00f, 957.00f }, RC_TERMINA_FIELD_COW_GROTTO_GRASS_07 },
+          { { 2174.00f, 913.00f }, RC_TERMINA_FIELD_COW_GROTTO_GRASS_08 },
+          { { 2174.00f, 841.00f }, RC_TERMINA_FIELD_COW_GROTTO_GRASS_09 },
+          { { 2209.00f, 806.00f }, RC_TERMINA_FIELD_COW_GROTTO_GRASS_10 },
+          { { 2257.00f, 798.00f }, RC_TERMINA_FIELD_COW_GROTTO_GRASS_11 },
+          { { 2287.00f, 835.00f }, RC_TERMINA_FIELD_COW_GROTTO_GRASS_12 },
+          { { 2324.00f, 1073.00f }, RC_TERMINA_FIELD_COW_GROTTO_GRASS_13 },
+          { { 2302.00f, 1103.00f }, RC_TERMINA_FIELD_COW_GROTTO_GRASS_14 },
+          { { 2260.00f, 1099.00f }, RC_TERMINA_FIELD_COW_GROTTO_GRASS_15 },
+          { { 2244.00f, 1061.00f }, RC_TERMINA_FIELD_COW_GROTTO_GRASS_16 },
+          { { 2284.00f, 1047.00f }, RC_TERMINA_FIELD_COW_GROTTO_GRASS_17 },
+          { { 2355.00f, 1103.00f }, RC_TERMINA_FIELD_COW_GROTTO_GRASS_18 },
+          { { 2284.00f, 1147.00f }, RC_TERMINA_FIELD_COW_GROTTO_GRASS_19 },
+          { { 2213.00f, 1103.00f }, RC_TERMINA_FIELD_COW_GROTTO_GRASS_20 },
+          { { 2213.00f, 1031.00f }, RC_TERMINA_FIELD_COW_GROTTO_GRASS_21 },
+          { { 2248.00f, 996.00f }, RC_TERMINA_FIELD_COW_GROTTO_GRASS_22 },
+          { { 2296.00f, 988.00f }, RC_TERMINA_FIELD_COW_GROTTO_GRASS_23 },
+          { { 2326.00f, 1025.00f }, RC_TERMINA_FIELD_COW_GROTTO_GRASS_24 },
+          { { 2438.00f, 993.00f }, RC_TERMINA_FIELD_COW_GROTTO_GRASS_25 },
+          { { 2416.00f, 1023.00f }, RC_TERMINA_FIELD_COW_GROTTO_GRASS_26 },
+          { { 2374.00f, 1019.00f }, RC_TERMINA_FIELD_COW_GROTTO_GRASS_27 },
+          { { 2358.00f, 981.00f }, RC_TERMINA_FIELD_COW_GROTTO_GRASS_28 },
+          { { 2398.00f, 967.00f }, RC_TERMINA_FIELD_COW_GROTTO_GRASS_29 },
+          { { 2469.00f, 1023.00f }, RC_TERMINA_FIELD_COW_GROTTO_GRASS_30 },
+          { { 2398.00f, 1067.00f }, RC_TERMINA_FIELD_COW_GROTTO_GRASS_31 },
+          { { 2327.00f, 1023.00f }, RC_TERMINA_FIELD_COW_GROTTO_GRASS_32 },
+          { { 2327.00f, 951.00f }, RC_TERMINA_FIELD_COW_GROTTO_GRASS_33 },
+          { { 2362.00f, 916.00f }, RC_TERMINA_FIELD_COW_GROTTO_GRASS_34 },
+          { { 2410.00f, 908.00f }, RC_TERMINA_FIELD_COW_GROTTO_GRASS_35 },
+          { { 2440.00f, 945.00f }, RC_TERMINA_FIELD_COW_GROTTO_GRASS_36 },
+          { { 2466.00f, 747.00f }, RC_TERMINA_FIELD_COW_GROTTO_GRASS_37 },
+          { { 2444.00f, 777.00f }, RC_TERMINA_FIELD_COW_GROTTO_GRASS_38 },
+          { { 2402.00f, 773.00f }, RC_TERMINA_FIELD_COW_GROTTO_GRASS_39 },
+          { { 2386.00f, 735.00f }, RC_TERMINA_FIELD_COW_GROTTO_GRASS_40 },
+          { { 2426.00f, 721.00f }, RC_TERMINA_FIELD_COW_GROTTO_GRASS_41 },
+          { { 2497.00f, 777.00f }, RC_TERMINA_FIELD_COW_GROTTO_GRASS_42 },
+          { { 2426.00f, 821.00f }, RC_TERMINA_FIELD_COW_GROTTO_GRASS_43 },
+          { { 2355.00f, 777.00f }, RC_TERMINA_FIELD_COW_GROTTO_GRASS_44 },
+          { { 2355.00f, 705.00f }, RC_TERMINA_FIELD_COW_GROTTO_GRASS_45 },
+          { { 2390.00f, 670.00f }, RC_TERMINA_FIELD_COW_GROTTO_GRASS_46 },
+          { { 2438.00f, 662.00f }, RC_TERMINA_FIELD_COW_GROTTO_GRASS_47 },
+          { { 2468.00f, 699.00f }, RC_TERMINA_FIELD_COW_GROTTO_GRASS_48 },
+          { { 2576.00f, 842.00f }, RC_TERMINA_FIELD_COW_GROTTO_GRASS_49 },
+          { { 2554.00f, 872.00f }, RC_TERMINA_FIELD_COW_GROTTO_GRASS_50 },
+          { { 2512.00f, 868.00f }, RC_TERMINA_FIELD_COW_GROTTO_GRASS_51 },
+          { { 2496.00f, 830.00f }, RC_TERMINA_FIELD_COW_GROTTO_GRASS_52 },
+          { { 2536.00f, 816.00f }, RC_TERMINA_FIELD_COW_GROTTO_GRASS_53 },
+          { { 2607.00f, 872.00f }, RC_TERMINA_FIELD_COW_GROTTO_GRASS_54 },
+          { { 2536.00f, 916.00f }, RC_TERMINA_FIELD_COW_GROTTO_GRASS_55 },
+          { { 2465.00f, 872.00f }, RC_TERMINA_FIELD_COW_GROTTO_GRASS_56 },
+          { { 2465.00f, 800.00f }, RC_TERMINA_FIELD_COW_GROTTO_GRASS_57 },
+          { { 2500.00f, 765.00f }, RC_TERMINA_FIELD_COW_GROTTO_GRASS_58 },
+          { { 2548.00f, 757.00f }, RC_TERMINA_FIELD_COW_GROTTO_GRASS_59 },
+          { { 2578.00f, 794.00f }, RC_TERMINA_FIELD_COW_GROTTO_GRASS_60 },
+          { { 2593.00f, 1073.00f }, RC_TERMINA_FIELD_COW_GROTTO_GRASS_61 },
+          { { 2571.00f, 1103.00f }, RC_TERMINA_FIELD_COW_GROTTO_GRASS_62 },
+          { { 2529.00f, 1099.00f }, RC_TERMINA_FIELD_COW_GROTTO_GRASS_63 },
+          { { 2513.00f, 1061.00f }, RC_TERMINA_FIELD_COW_GROTTO_GRASS_64 },
+          { { 2553.00f, 1047.00f }, RC_TERMINA_FIELD_COW_GROTTO_GRASS_65 },
+          { { 2624.00f, 1103.00f }, RC_TERMINA_FIELD_COW_GROTTO_GRASS_66 },
+          { { 2553.00f, 1147.00f }, RC_TERMINA_FIELD_COW_GROTTO_GRASS_67 },
+          { { 2482.00f, 1103.00f }, RC_TERMINA_FIELD_COW_GROTTO_GRASS_68 },
+          { { 2482.00f, 1031.00f }, RC_TERMINA_FIELD_COW_GROTTO_GRASS_69 },
+          { { 2517.00f, 996.00f }, RC_TERMINA_FIELD_COW_GROTTO_GRASS_70 },
+          { { 2565.00f, 988.00f }, RC_TERMINA_FIELD_COW_GROTTO_GRASS_71 },
+          { { 2595.00f, 1025.00f }, RC_TERMINA_FIELD_COW_GROTTO_GRASS_72 },
+      } },
+      { ENTRANCE(GROTTOS, 11), 
+        {
+          { { 2927.00f, 1308.00f }, RC_TERMINA_FIELD_BIO_BABA_GROTTO_GRASS_01 },
+          { { 2966.00f, 1409.00f }, RC_TERMINA_FIELD_BIO_BABA_GROTTO_GRASS_02 },
+        } },
+      { ENTRANCE(GROTTOS, 13), 
+        {
+          { { 5415.00f, 454.00f }, RC_TERMINA_FIELD_PEAHAT_GROTTO_GRASS_01 },
+          { { 5393.00f, 484.00f }, RC_TERMINA_FIELD_PEAHAT_GROTTO_GRASS_02 },
+          { { 5351.00f, 480.00f }, RC_TERMINA_FIELD_PEAHAT_GROTTO_GRASS_03 },
+          { { 5335.00f, 442.00f }, RC_TERMINA_FIELD_PEAHAT_GROTTO_GRASS_04 },
+          { { 5375.00f, 428.00f }, RC_TERMINA_FIELD_PEAHAT_GROTTO_GRASS_05 },
+          { { 5446.00f, 484.00f }, RC_TERMINA_FIELD_PEAHAT_GROTTO_GRASS_06 },
+          { { 5375.00f, 528.00f }, RC_TERMINA_FIELD_PEAHAT_GROTTO_GRASS_07 },
+          { { 5304.00f, 484.00f }, RC_TERMINA_FIELD_PEAHAT_GROTTO_GRASS_08 },
+          { { 5304.00f, 412.00f }, RC_TERMINA_FIELD_PEAHAT_GROTTO_GRASS_09 },
+          { { 5339.00f, 377.00f }, RC_TERMINA_FIELD_PEAHAT_GROTTO_GRASS_10 },
+          { { 5387.00f, 369.00f }, RC_TERMINA_FIELD_PEAHAT_GROTTO_GRASS_11 },
+          { { 5417.00f, 406.00f }, RC_TERMINA_FIELD_PEAHAT_GROTTO_GRASS_12 },
+        } },
+      { ENTRANCE(GROTTOS, 2), 
+        {
+          { { 1153.00f, 218.00f }, RC_TERMINA_FIELD_GOSSIP_STONE_GROTTO_4_GRASS_01 },
+          { { 1199.00f, -365.00f }, RC_TERMINA_FIELD_GOSSIP_STONE_GROTTO_4_GRASS_02 },
+          { { 1252.00f, -372.00f }, RC_TERMINA_FIELD_GOSSIP_STONE_GROTTO_4_GRASS_03 },
+          { { 1295.00f, 27.00f }, RC_TERMINA_FIELD_GOSSIP_STONE_GROTTO_4_GRASS_04 },
+          { { 1321.00f, 113.00f }, RC_TERMINA_FIELD_GOSSIP_STONE_GROTTO_4_GRASS_05 },
+        } },
+      { ENTRANCE(GROTTOS, 0), 
+        {
+          { { -42.00f, -3.00f }, RC_TERMINA_FIELD_GOSSIP_STONE_GROTTO_3_GRASS_01 },
+          { { 87.00f, -26.00f }, RC_TERMINA_FIELD_GOSSIP_STONE_GROTTO_3_GRASS_02 },
+          { { 103.00f, -112.00f }, RC_TERMINA_FIELD_GOSSIP_STONE_GROTTO_3_GRASS_03 },
+          { { 113.00f, 43.00f }, RC_TERMINA_FIELD_GOSSIP_STONE_GROTTO_3_GRASS_04 },
+          { { 137.00f, 93.00f }, RC_TERMINA_FIELD_GOSSIP_STONE_GROTTO_3_GRASS_05 },
+        } },
+    { 51,
+      {
+          { { 2339.00f, 129.00f }, RC_PATH_TO_SNOWHEAD_GROTTO_GRASS_01 },
+          { { 2345.00f, -174.00f }, RC_PATH_TO_SNOWHEAD_GROTTO_GRASS_02 },
+          { { 2355.00f, -310.00f }, RC_PATH_TO_SNOWHEAD_GROTTO_GRASS_03 },
+          { { 2355.00f, -225.00f }, RC_PATH_TO_SNOWHEAD_GROTTO_GRASS_04 },
+          { { 2391.00f, -313.00f }, RC_PATH_TO_SNOWHEAD_GROTTO_GRASS_05 },
+          { { 2403.00f, -360.00f }, RC_PATH_TO_SNOWHEAD_GROTTO_GRASS_06 },
+          { { 2460.00f, 215.00f }, RC_PATH_TO_SNOWHEAD_GROTTO_GRASS_07 },
+          { { 2484.00f, -213.00f }, RC_PATH_TO_SNOWHEAD_GROTTO_GRASS_08 },
+          { { 2500.00f, 26.00f }, RC_PATH_TO_SNOWHEAD_GROTTO_GRASS_09 },
+          { { 2508.00f, 152.00f }, RC_PATH_TO_SNOWHEAD_GROTTO_GRASS_10 },
+          { { 2520.00f, -463.00f }, RC_PATH_TO_SNOWHEAD_GROTTO_GRASS_11 },
+          { { 2522.00f, -243.00f }, RC_PATH_TO_SNOWHEAD_GROTTO_GRASS_12 },
+          { { 2524.00f, 58.00f }, RC_PATH_TO_SNOWHEAD_GROTTO_GRASS_13 },
+          { { 2534.00f, -190.00f }, RC_PATH_TO_SNOWHEAD_GROTTO_GRASS_14 },
+      } },
+    { 55,
+      {
+          { { 2339.00f, 129.00f }, RC_GREAT_BAY_COAST_FISHERMAN_GROTTO_GRASS_01 },
+          { { 2345.00f, -174.00f }, RC_GREAT_BAY_COAST_FISHERMAN_GROTTO_GRASS_02 },
+          { { 2355.00f, -310.00f }, RC_GREAT_BAY_COAST_FISHERMAN_GROTTO_GRASS_03 },
+          { { 2355.00f, -225.00f }, RC_GREAT_BAY_COAST_FISHERMAN_GROTTO_GRASS_04 },
+          { { 2391.00f, -313.00f }, RC_GREAT_BAY_COAST_FISHERMAN_GROTTO_GRASS_05 },
+          { { 2403.00f, -360.00f }, RC_GREAT_BAY_COAST_FISHERMAN_GROTTO_GRASS_06 },
+          { { 2460.00f, 215.00f }, RC_GREAT_BAY_COAST_FISHERMAN_GROTTO_GRASS_07 },
+          { { 2484.00f, -213.00f }, RC_GREAT_BAY_COAST_FISHERMAN_GROTTO_GRASS_08 },
+          { { 2500.00f, 26.00f }, RC_GREAT_BAY_COAST_FISHERMAN_GROTTO_GRASS_09 },
+          { { 2508.00f, 152.00f }, RC_GREAT_BAY_COAST_FISHERMAN_GROTTO_GRASS_10 },
+          { { 2520.00f, -463.00f }, RC_GREAT_BAY_COAST_FISHERMAN_GROTTO_GRASS_11 },
+          { { 2522.00f, -243.00f }, RC_GREAT_BAY_COAST_FISHERMAN_GROTTO_GRASS_12 },
+          { { 2524.00f, 58.00f }, RC_GREAT_BAY_COAST_FISHERMAN_GROTTO_GRASS_13 },
+          { { 2534.00f, -190.00f }, RC_GREAT_BAY_COAST_FISHERMAN_GROTTO_GRASS_14 },
+      } },
+    { 59,
+      {
+          { { 2339.00f, 129.00f }, RC_MOUNTAIN_VILLAGE_TUNNEL_GROTTO_GRASS_01 },
+          { { 2345.00f, -174.00f }, RC_MOUNTAIN_VILLAGE_TUNNEL_GROTTO_GRASS_02 },
+          { { 2355.00f, -310.00f }, RC_MOUNTAIN_VILLAGE_TUNNEL_GROTTO_GRASS_03 },
+          { { 2355.00f, -225.00f }, RC_MOUNTAIN_VILLAGE_TUNNEL_GROTTO_GRASS_04 },
+          { { 2391.00f, -313.00f }, RC_MOUNTAIN_VILLAGE_TUNNEL_GROTTO_GRASS_05 },
+          { { 2403.00f, -360.00f }, RC_MOUNTAIN_VILLAGE_TUNNEL_GROTTO_GRASS_06 },
+          { { 2460.00f, 215.00f }, RC_MOUNTAIN_VILLAGE_TUNNEL_GROTTO_GRASS_07 },
+          { { 2484.00f, -213.00f }, RC_MOUNTAIN_VILLAGE_TUNNEL_GROTTO_GRASS_08 },
+          { { 2500.00f, 26.00f }, RC_MOUNTAIN_VILLAGE_TUNNEL_GROTTO_GRASS_09 },
+          { { 2508.00f, 152.00f }, RC_MOUNTAIN_VILLAGE_TUNNEL_GROTTO_GRASS_10 },
+          { { 2520.00f, -463.00f }, RC_MOUNTAIN_VILLAGE_TUNNEL_GROTTO_GRASS_11 },
+          { { 2522.00f, -243.00f }, RC_MOUNTAIN_VILLAGE_TUNNEL_GROTTO_GRASS_12 },
+          { { 2524.00f, 58.00f }, RC_MOUNTAIN_VILLAGE_TUNNEL_GROTTO_GRASS_13 },
+          { { 2534.00f, -190.00f }, RC_MOUNTAIN_VILLAGE_TUNNEL_GROTTO_GRASS_14 },
+      } },
+    { 61,
+      {
+          { { 2339.00f, 129.00f }, RC_SOUTHERN_SWAMP_GROTTO_GRASS_01 },
+          { { 2345.00f, -174.00f }, RC_SOUTHERN_SWAMP_GROTTO_GRASS_02 },
+          { { 2355.00f, -310.00f }, RC_SOUTHERN_SWAMP_GROTTO_GRASS_03 },
+          { { 2355.00f, -225.00f }, RC_SOUTHERN_SWAMP_GROTTO_GRASS_04 },
+          { { 2391.00f, -313.00f }, RC_SOUTHERN_SWAMP_GROTTO_GRASS_05 },
+          { { 2403.00f, -360.00f }, RC_SOUTHERN_SWAMP_GROTTO_GRASS_06 },
+          { { 2460.00f, 215.00f }, RC_SOUTHERN_SWAMP_GROTTO_GRASS_07 },
+          { { 2484.00f, -213.00f }, RC_SOUTHERN_SWAMP_GROTTO_GRASS_08 },
+          { { 2500.00f, 26.00f }, RC_SOUTHERN_SWAMP_GROTTO_GRASS_09 },
+          { { 2508.00f, 152.00f }, RC_SOUTHERN_SWAMP_GROTTO_GRASS_10 },
+          { { 2520.00f, -463.00f }, RC_SOUTHERN_SWAMP_GROTTO_GRASS_11 },
+          { { 2522.00f, -243.00f }, RC_SOUTHERN_SWAMP_GROTTO_GRASS_12 },
+          { { 2524.00f, 58.00f }, RC_SOUTHERN_SWAMP_GROTTO_GRASS_13 },
+          { { 2534.00f, -190.00f }, RC_SOUTHERN_SWAMP_GROTTO_GRASS_14 },
+      } },
+    { 62,
+      {
+          { { 2339.00f, 129.00f }, RC_ROAD_TO_SOUTHERN_SWAMP_GROTTO_GRASS_01 },
+          { { 2345.00f, -174.00f }, RC_ROAD_TO_SOUTHERN_SWAMP_GROTTO_GRASS_02 },
+          { { 2355.00f, -310.00f }, RC_ROAD_TO_SOUTHERN_SWAMP_GROTTO_GRASS_03 },
+          { { 2355.00f, -225.00f }, RC_ROAD_TO_SOUTHERN_SWAMP_GROTTO_GRASS_04 },
+          { { 2391.00f, -313.00f }, RC_ROAD_TO_SOUTHERN_SWAMP_GROTTO_GRASS_05 },
+          { { 2403.00f, -360.00f }, RC_ROAD_TO_SOUTHERN_SWAMP_GROTTO_GRASS_06 },
+          { { 2460.00f, 215.00f }, RC_ROAD_TO_SOUTHERN_SWAMP_GROTTO_GRASS_07 },
+          { { 2484.00f, -213.00f }, RC_ROAD_TO_SOUTHERN_SWAMP_GROTTO_GRASS_08 },
+          { { 2500.00f, 26.00f }, RC_ROAD_TO_SOUTHERN_SWAMP_GROTTO_GRASS_09 },
+          { { 2508.00f, 152.00f }, RC_ROAD_TO_SOUTHERN_SWAMP_GROTTO_GRASS_10 },
+          { { 2520.00f, -463.00f }, RC_ROAD_TO_SOUTHERN_SWAMP_GROTTO_GRASS_11 },
+          { { 2522.00f, -243.00f }, RC_ROAD_TO_SOUTHERN_SWAMP_GROTTO_GRASS_12 },
+          { { 2524.00f, 58.00f }, RC_ROAD_TO_SOUTHERN_SWAMP_GROTTO_GRASS_13 },
+          { { 2534.00f, -190.00f }, RC_ROAD_TO_SOUTHERN_SWAMP_GROTTO_GRASS_14 },
+      } },
+    { 63, 
+      {
+          { { 2339.00f, 129.00f }, RC_TERMINA_FIELD_TALL_GRASS_GROTTO_GRASS_01 },
+          { { 2345.00f, -174.00f }, RC_TERMINA_FIELD_TALL_GRASS_GROTTO_GRASS_02 },
+          { { 2355.00f, -310.00f }, RC_TERMINA_FIELD_TALL_GRASS_GROTTO_GRASS_03 },
+          { { 2355.00f, -225.00f }, RC_TERMINA_FIELD_TALL_GRASS_GROTTO_GRASS_04 },
+          { { 2391.00f, -313.00f }, RC_TERMINA_FIELD_TALL_GRASS_GROTTO_GRASS_05 },
+          { { 2403.00f, -360.00f }, RC_TERMINA_FIELD_TALL_GRASS_GROTTO_GRASS_06 },
+          { { 2460.00f, 215.00f }, RC_TERMINA_FIELD_TALL_GRASS_GROTTO_GRASS_07 },
+          { { 2484.00f, -213.00f }, RC_TERMINA_FIELD_TALL_GRASS_GROTTO_GRASS_08 },
+          { { 2500.00f, 26.00f }, RC_TERMINA_FIELD_TALL_GRASS_GROTTO_GRASS_09 },
+          { { 2508.00f, 152.00f }, RC_TERMINA_FIELD_TALL_GRASS_GROTTO_GRASS_10 },
+          { { 2520.00f, -463.00f }, RC_TERMINA_FIELD_TALL_GRASS_GROTTO_GRASS_11 },
+          { { 2522.00f, -243.00f }, RC_TERMINA_FIELD_TALL_GRASS_GROTTO_GRASS_12 },
+          { { 2524.00f, 58.00f }, RC_TERMINA_FIELD_TALL_GRASS_GROTTO_GRASS_13 },
+          { { 2534.00f, -190.00f }, RC_TERMINA_FIELD_TALL_GRASS_GROTTO_GRASS_14 },
+      } },
+    { -72, 
+      {
+          { { 2339.00f, 129.00f }, RC_IKANA_GRAVEYARD_GROTTO_GRASS_01 },
+          { { 2345.00f, -174.00f }, RC_IKANA_GRAVEYARD_GROTTO_GRASS_02 },
+          { { 2355.00f, -310.00f }, RC_IKANA_GRAVEYARD_GROTTO_GRASS_03 },
+          { { 2355.00f, -225.00f }, RC_IKANA_GRAVEYARD_GROTTO_GRASS_04 },
+          { { 2391.00f, -313.00f }, RC_IKANA_GRAVEYARD_GROTTO_GRASS_05 },
+          { { 2403.00f, -360.00f }, RC_IKANA_GRAVEYARD_GROTTO_GRASS_06 },
+          { { 2460.00f, 215.00f }, RC_IKANA_GRAVEYARD_GROTTO_GRASS_07 },
+          { { 2484.00f, -213.00f }, RC_IKANA_GRAVEYARD_GROTTO_GRASS_08 },
+          { { 2500.00f, 26.00f }, RC_IKANA_GRAVEYARD_GROTTO_GRASS_09 },
+          { { 2508.00f, 152.00f }, RC_IKANA_GRAVEYARD_GROTTO_GRASS_10 },
+          { { 2520.00f, -463.00f }, RC_IKANA_GRAVEYARD_GROTTO_GRASS_11 },
+          { { 2522.00f, -243.00f }, RC_IKANA_GRAVEYARD_GROTTO_GRASS_12 },
+          { { 2524.00f, 58.00f }, RC_IKANA_GRAVEYARD_GROTTO_GRASS_13 },
+          { { 2534.00f, -190.00f }, RC_IKANA_GRAVEYARD_GROTTO_GRASS_14 },
+      } },
+    { -76, 
+      {
+          { { 2339.00f, 129.00f }, RC_IKANA_CANYON_GROTTO_GRASS_01 },
+          { { 2345.00f, -174.00f }, RC_IKANA_CANYON_GROTTO_GRASS_02 },
+          { { 2355.00f, -310.00f }, RC_IKANA_CANYON_GROTTO_GRASS_03 },
+          { { 2355.00f, -225.00f }, RC_IKANA_CANYON_GROTTO_GRASS_04 },
+          { { 2391.00f, -313.00f }, RC_IKANA_CANYON_GROTTO_GRASS_05 },
+          { { 2403.00f, -360.00f }, RC_IKANA_CANYON_GROTTO_GRASS_06 },
+          { { 2460.00f, 215.00f }, RC_IKANA_CANYON_GROTTO_GRASS_07 },
+          { { 2484.00f, -213.00f }, RC_IKANA_CANYON_GROTTO_GRASS_08 },
+          { { 2500.00f, 26.00f }, RC_IKANA_CANYON_GROTTO_GRASS_09 },
+          { { 2508.00f, 152.00f }, RC_IKANA_CANYON_GROTTO_GRASS_10 },
+          { { 2520.00f, -463.00f }, RC_IKANA_CANYON_GROTTO_GRASS_11 },
+          { { 2522.00f, -243.00f }, RC_IKANA_CANYON_GROTTO_GRASS_12 },
+          { { 2524.00f, 58.00f }, RC_IKANA_CANYON_GROTTO_GRASS_13 },
+          { { 2534.00f, -190.00f }, RC_IKANA_CANYON_GROTTO_GRASS_14 },
+      } },
+    { 92,
+      {
+          { { 2339.00f, 129.00f }, RC_WOODS_OF_MYSTERY_GROTTO_GRASS_01 },
+          { { 2345.00f, -174.00f }, RC_WOODS_OF_MYSTERY_GROTTO_GRASS_02 },
+          { { 2355.00f, -310.00f }, RC_WOODS_OF_MYSTERY_GROTTO_GRASS_03 },
+          { { 2355.00f, -225.00f }, RC_WOODS_OF_MYSTERY_GROTTO_GRASS_04 },
+          { { 2391.00f, -313.00f }, RC_WOODS_OF_MYSTERY_GROTTO_GRASS_05 },
+          { { 2403.00f, -360.00f }, RC_WOODS_OF_MYSTERY_GROTTO_GRASS_06 },
+          { { 2460.00f, 215.00f }, RC_WOODS_OF_MYSTERY_GROTTO_GRASS_07 },
+          { { 2484.00f, -213.00f }, RC_WOODS_OF_MYSTERY_GROTTO_GRASS_08 },
+          { { 2500.00f, 26.00f }, RC_WOODS_OF_MYSTERY_GROTTO_GRASS_09 },
+          { { 2508.00f, 152.00f }, RC_WOODS_OF_MYSTERY_GROTTO_GRASS_10 },
+          { { 2520.00f, -463.00f }, RC_WOODS_OF_MYSTERY_GROTTO_GRASS_11 },
+          { { 2522.00f, -243.00f }, RC_WOODS_OF_MYSTERY_GROTTO_GRASS_12 },
+          { { 2524.00f, 58.00f }, RC_WOODS_OF_MYSTERY_GROTTO_GRASS_13 },
+          { { 2534.00f, -190.00f }, RC_WOODS_OF_MYSTERY_GROTTO_GRASS_14 },
+      } },
+    { -102, 
+      {
+          { { 2339.00f, 129.00f }, RC_TERMINA_FIELD_PILLAR_GROTTO_GRASS_01 },
+          { { 2345.00f, -174.00f }, RC_TERMINA_FIELD_PILLAR_GROTTO_GRASS_02 },
+          { { 2355.00f, -310.00f }, RC_TERMINA_FIELD_PILLAR_GROTTO_GRASS_03 },
+          { { 2355.00f, -225.00f }, RC_TERMINA_FIELD_PILLAR_GROTTO_GRASS_04 },
+          { { 2391.00f, -313.00f }, RC_TERMINA_FIELD_PILLAR_GROTTO_GRASS_05 },
+          { { 2403.00f, -360.00f }, RC_TERMINA_FIELD_PILLAR_GROTTO_GRASS_06 },
+          { { 2460.00f, 215.00f }, RC_TERMINA_FIELD_PILLAR_GROTTO_GRASS_07 },
+          { { 2484.00f, -213.00f }, RC_TERMINA_FIELD_PILLAR_GROTTO_GRASS_08 },
+          { { 2500.00f, 26.00f }, RC_TERMINA_FIELD_PILLAR_GROTTO_GRASS_09 },
+          { { 2508.00f, 152.00f }, RC_TERMINA_FIELD_PILLAR_GROTTO_GRASS_10 },
+          { { 2520.00f, -463.00f }, RC_TERMINA_FIELD_PILLAR_GROTTO_GRASS_11 },
+          { { 2522.00f, -243.00f }, RC_TERMINA_FIELD_PILLAR_GROTTO_GRASS_12 },
+          { { 2524.00f, 58.00f }, RC_TERMINA_FIELD_PILLAR_GROTTO_GRASS_13 },
+          { { 2534.00f, -190.00f }, RC_TERMINA_FIELD_PILLAR_GROTTO_GRASS_14 },
+      } },
+    { -103, 
+      {
+          { { 2339.00f, 129.00f }, RC_TWIN_ISLANDS_RAMP_GROTTO_GRASS_01 },
+          { { 2345.00f, -174.00f }, RC_TWIN_ISLANDS_RAMP_GROTTO_GRASS_02 },
+          { { 2355.00f, -310.00f }, RC_TWIN_ISLANDS_RAMP_GROTTO_GRASS_03 },
+          { { 2355.00f, -225.00f }, RC_TWIN_ISLANDS_RAMP_GROTTO_GRASS_04 },
+          { { 2391.00f, -313.00f }, RC_TWIN_ISLANDS_RAMP_GROTTO_GRASS_05 },
+          { { 2403.00f, -360.00f }, RC_TWIN_ISLANDS_RAMP_GROTTO_GRASS_06 },
+          { { 2460.00f, 215.00f }, RC_TWIN_ISLANDS_RAMP_GROTTO_GRASS_07 },
+          { { 2484.00f, -213.00f }, RC_TWIN_ISLANDS_RAMP_GROTTO_GRASS_08 },
+          { { 2500.00f, 26.00f }, RC_TWIN_ISLANDS_RAMP_GROTTO_GRASS_09 },
+          { { 2508.00f, 152.00f }, RC_TWIN_ISLANDS_RAMP_GROTTO_GRASS_10 },
+          { { 2520.00f, -463.00f }, RC_TWIN_ISLANDS_RAMP_GROTTO_GRASS_11 },
+          { { 2522.00f, -243.00f }, RC_TWIN_ISLANDS_RAMP_GROTTO_GRASS_12 },
+          { { 2524.00f, 58.00f }, RC_TWIN_ISLANDS_RAMP_GROTTO_GRASS_13 },
+          { { 2534.00f, -190.00f }, RC_TWIN_ISLANDS_RAMP_GROTTO_GRASS_14 },
+      } },
+    { -106, 
+      { 
+          { { 2339.00f, 129.00f }, RC_ROAD_TO_IKANA_GROTTO_GRASS_01 },
+          { { 2345.00f, -174.00f }, RC_ROAD_TO_IKANA_GROTTO_GRASS_02 },
+          { { 2355.00f, -310.00f }, RC_ROAD_TO_IKANA_GROTTO_GRASS_03 },
+          { { 2355.00f, -225.00f }, RC_ROAD_TO_IKANA_GROTTO_GRASS_04 },
+          { { 2391.00f, -313.00f }, RC_ROAD_TO_IKANA_GROTTO_GRASS_05 },
+          { { 2403.00f, -360.00f }, RC_ROAD_TO_IKANA_GROTTO_GRASS_06 },
+          { { 2460.00f, 215.00f }, RC_ROAD_TO_IKANA_GROTTO_GRASS_07 },
+          { { 2484.00f, -213.00f }, RC_ROAD_TO_IKANA_GROTTO_GRASS_08 },
+          { { 2500.00f, 26.00f }, RC_ROAD_TO_IKANA_GROTTO_GRASS_09 },
+          { { 2508.00f, 152.00f }, RC_ROAD_TO_IKANA_GROTTO_GRASS_10 },
+          { { 2520.00f, -463.00f }, RC_ROAD_TO_IKANA_GROTTO_GRASS_11 },
+          { { 2522.00f, -243.00f }, RC_ROAD_TO_IKANA_GROTTO_GRASS_12 },
+          { { 2524.00f, 58.00f }, RC_ROAD_TO_IKANA_GROTTO_GRASS_13 },
+          { { 2534.00f, -190.00f }, RC_ROAD_TO_IKANA_GROTTO_GRASS_14 },
+      } },
+    { -107, 
+      {
+          { { 2339.00f, 129.00f }, RC_ZORA_CAPE_GROTTO_GRASS_01 },
+          { { 2345.00f, -174.00f }, RC_ZORA_CAPE_GROTTO_GRASS_02 },
+          { { 2355.00f, -310.00f }, RC_ZORA_CAPE_GROTTO_GRASS_03 },
+          { { 2355.00f, -225.00f }, RC_ZORA_CAPE_GROTTO_GRASS_04 },
+          { { 2391.00f, -313.00f }, RC_ZORA_CAPE_GROTTO_GRASS_05 },
+          { { 2403.00f, -360.00f }, RC_ZORA_CAPE_GROTTO_GRASS_06 },
+          { { 2460.00f, 215.00f }, RC_ZORA_CAPE_GROTTO_GRASS_07 },
+          { { 2484.00f, -213.00f }, RC_ZORA_CAPE_GROTTO_GRASS_08 },
+          { { 2500.00f, 26.00f }, RC_ZORA_CAPE_GROTTO_GRASS_09 },
+          { { 2508.00f, 152.00f }, RC_ZORA_CAPE_GROTTO_GRASS_10 },
+          { { 2520.00f, -463.00f }, RC_ZORA_CAPE_GROTTO_GRASS_11 },
+          { { 2522.00f, -243.00f }, RC_ZORA_CAPE_GROTTO_GRASS_12 },
+          { { 2524.00f, 58.00f }, RC_ZORA_CAPE_GROTTO_GRASS_13 },
+          { { 2534.00f, -190.00f }, RC_ZORA_CAPE_GROTTO_GRASS_14 },
+      } },
+};
+// clang-format on
+
+#define ENKUSA_RC (actor->home.rot.x)
+
+float roundToWholeNumber(float value) {
+    int rounded = std::round(value);
+    float fnum = static_cast<float>(rounded);
+
+    return fnum;
+}
+
+RandoCheckId IdentifyGrass(Vec3f pos) {
+    RandoCheckId randoCheckId = RC_UNKNOWN;
+    pos.x = roundToWholeNumber(pos.x);
+    pos.z = roundToWholeNumber(pos.z);
+
+    const auto& grassMap = (gPlayState->sceneId != SCENE_KAKUSIANA) ? overworldGrassMap : grottoGrassMap;
+    uint32_t key =
+        (gPlayState->sceneId != SCENE_KAKUSIANA) ? static_cast<uint16_t>(gPlayState->sceneId)
+        : (gSaveContext.save.entrance == ENTRANCE(GROTTOS, 4) || gSaveContext.save.entrance == ENTRANCE(GROTTOS, 10))
+            ? gSaveContext.respawn[RESPAWN_MODE_UNK_3].data
+            : gSaveContext.save.entrance;
+
+    auto it = grassMap.find(key);
+    if (it == grassMap.end()) {
+        return randoCheckId;
+    }
+
+    auto innerIt = it->second.find({ pos.x, pos.z });
+    if (innerIt == it->second.end()) {
+        return randoCheckId;
+    }
+
+    randoCheckId = innerIt->second;
+    if (!RANDO_SAVE_CHECKS[randoCheckId].shuffled || RANDO_SAVE_CHECKS[randoCheckId].cycleObtained) {
+        return RC_UNKNOWN;
+    }
+
+    return randoCheckId;
+}
+
+void SpawnGrassDrop(Vec3f pos, RandoCheckId randoCheckId) {
+    CustomItem::Spawn(
+        pos.x, pos.y, pos.z, 0, CustomItem::KILL_ON_TOUCH | CustomItem::TOSS_ON_SPAWN | CustomItem::ABLE_TO_ZORA_RANG,
+        randoCheckId,
+        [](Actor* actor, PlayState* play) {
+            RandoSaveCheck& randoSaveCheck = RANDO_SAVE_CHECKS[CUSTOM_ITEM_PARAM];
+            randoSaveCheck.eligible = true;
+        },
+        [](Actor* actor, PlayState* play) {
+            auto& randoSaveCheck = RANDO_SAVE_CHECKS[CUSTOM_ITEM_PARAM];
+            RandoItemId randoItemId = Rando::ConvertItem(randoSaveCheck.randoItemId);
+            Matrix_Scale(30.0f, 30.0f, 30.0f, MTXMODE_APPLY);
+            Rando::DrawItem(Rando::ConvertItem(randoSaveCheck.randoItemId, (RandoCheckId)CUSTOM_ITEM_PARAM), actor);
+        });
+}
+
+void EnKusaBush_RandoDraw(Actor* actor, PlayState* play) {
+    if (!CVarGetInteger("gRando.CSMC", 0)) {
+        Gfx_DrawDListOpa(play, (Gfx*)gRandoBushDL);
+        return;
+    }
+
+    RandoItemId randoItemId = Rando::ConvertItem(RANDO_SAVE_CHECKS[ENKUSA_RC].randoItemId, (RandoCheckId)ENKUSA_RC);
+    RandoItemType randoItemType = Rando::StaticData::Items[randoItemId].randoItemType;
+
+    switch (randoItemType) {
+        case RITYPE_BOSS_KEY:
+            Gfx_DrawDListOpa(play, (Gfx*)gRandoBushBossKeyDL);
+            break;
+        case RITYPE_HEALTH:
+            Gfx_DrawDListOpa(play, (Gfx*)gRandoBushHeartDL);
+            break;
+        case RITYPE_LESSER:
+            Gfx_DrawDListOpa(play, (Gfx*)gRandoBushMinorDL);
+            break;
+        case RITYPE_MAJOR:
+            Gfx_DrawDListOpa(play, (Gfx*)gRandoBushMajorDL);
+            break;
+        case RITYPE_MASK:
+            Gfx_DrawDListOpa(play, (Gfx*)gRandoBushMaskDL);
+            break;
+        case RITYPE_SKULLTULA_TOKEN:
+            Gfx_DrawDListOpa(play, (Gfx*)gRandoBushTokenDL);
+            break;
+        case RITYPE_SMALL_KEY:
+            Gfx_DrawDListOpa(play, (Gfx*)gRandoBushSmallKeyDL);
+            break;
+        case RITYPE_STRAY_FAIRY:
+            Gfx_DrawDListOpa(play, (Gfx*)gRandoBushFairyDL);
+            break;
+        case RITYPE_JUNK:
+            Gfx_DrawDListOpa(play, (Gfx*)gRandoBushJunkDL);
+            break;
+        default:
+            Gfx_DrawDListOpa(play, (Gfx*)gRandoBushDL);
+            break;
+    }
+}
+
+Gfx* GetObjGrassDList(RandoCheckId randoCheckId) {
+    if (!CVarGetInteger("gRando.CSMC", 0)) {
+        return (Gfx*)gRandoBushDL;
+    }
+
+    RandoItemId randoItemId = Rando::ConvertItem(RANDO_SAVE_CHECKS[randoCheckId].randoItemId, randoCheckId);
+    RandoItemType randoItemType = Rando::StaticData::Items[randoItemId].randoItemType;
+
+    switch (randoItemType) {
+        case RITYPE_BOSS_KEY:
+            return (Gfx*)gRandoBushBossKeyDL;
+            break;
+        case RITYPE_HEALTH:
+            return (Gfx*)gRandoBushHeartDL;
+            break;
+        case RITYPE_LESSER:
+            return (Gfx*)gRandoBushMinorDL;
+            break;
+        case RITYPE_MAJOR:
+            return (Gfx*)gRandoBushMajorDL;
+            break;
+        case RITYPE_MASK:
+            return (Gfx*)gRandoBushMaskDL;
+            break;
+        case RITYPE_SKULLTULA_TOKEN:
+            return (Gfx*)gRandoBushTokenDL;
+            break;
+        case RITYPE_SMALL_KEY:
+            return (Gfx*)gRandoBushSmallKeyDL;
+            break;
+        case RITYPE_STRAY_FAIRY:
+            return (Gfx*)gRandoBushFairyDL;
+            break;
+        case RITYPE_JUNK:
+            return (Gfx*)gRandoBushJunkDL;
+            break;
+        default:
+            return (Gfx*)gRandoBushDL;
+            break;
+    }
+}
+
+void ObjGrass_RandoDraw(ObjGrass* objGrass, ObjGrassElement* grassElem, s32 j, RandoCheckId randoCheckId) {
+    Vec3s rot = { 0, 0, 0 };
+    OPEN_DISPS(gPlayState->state.gfxCtx);
+    rot.y = grassElem->rotY;
+    Matrix_SetTranslateRotateYXZ(grassElem->pos.x, grassElem->pos.y, grassElem->pos.z, &rot);
+    Matrix_Scale(objGrass->actor.scale.x, objGrass->actor.scale.y, objGrass->actor.scale.z, MTXMODE_APPLY);
+    if (grassElem->flags & OBJ_GRASS_ELEM_ANIM) {
+        ObjGrass_OverrideMatrixCurrent(&objGrass->distortionMtx[j]);
+    }
+
+    gSPMatrix(POLY_OPA_DISP++, Matrix_NewMtx(gPlayState->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    gSPDisplayList(POLY_OPA_DISP++, GetObjGrassDList(randoCheckId));
+    gSPDisplayList(POLY_OPA_DISP++, (Gfx*)gObjGrass_D_809AA9F0);
+    CLOSE_DISPS(gPlayState->state.gfxCtx);
+}
+
+void Rando::ActorBehavior::InitObjGrassBehavior() {
+    COND_ID_HOOK(OnActorInit, ACTOR_EN_KUSA, IS_RANDO, [](Actor* actor) {
+        RandoCheckId randoCheckId = IdentifyGrass(actor->home.pos);
+        if (randoCheckId == RC_UNKNOWN) {
+            return;
+        }
+
+        if (!RANDO_SAVE_CHECKS[randoCheckId].shuffled || RANDO_SAVE_CHECKS[randoCheckId].cycleObtained) {
+            return;
+        }
+
+        ENKUSA_RC = randoCheckId;
+    });
+
+    COND_VB_SHOULD(VB_KUSA_BUSH_DRAW_BE_OVERRIDDEN, IS_RANDO, {
+        Actor* actor = va_arg(args, Actor*);
+        if (ENKUSA_RC != RC_UNKNOWN) {
+            *should = false;
+            actor->draw = EnKusaBush_RandoDraw;
+        }
+    });
+
+    COND_VB_SHOULD(VB_OBJGRASS_DRAW_BE_OVERRIDDEN, IS_RANDO, {
+        ObjGrass* objGrass = va_arg(args, ObjGrass*);
+        ObjGrassElement* grassElem = va_arg(args, ObjGrassElement*);
+        s32 j = va_arg(args, s32);
+        RandoCheckId randoCheckId = IdentifyGrass(grassElem->pos);
+        if (randoCheckId != RC_UNKNOWN) {
+            *should = false;
+            ObjGrass_RandoDraw(objGrass, grassElem, j, randoCheckId);
+        }
+    });
+
+    COND_VB_SHOULD(VB_CARRY_GRASS_DRAW_BE_OVERRIDDEN, IS_RANDO, {
+        ObjGrassCarry* grassCarryActor = va_arg(args, ObjGrassCarry*);
+        Actor* actor = &grassCarryActor->actor;
+        RandoCheckId randoCheckId = IdentifyGrass(grassCarryActor->grassElem->pos);
+        ENKUSA_RC = randoCheckId;
+        if (randoCheckId != RC_UNKNOWN) {
+            *should = false;
+            grassCarryActor->actor.draw = EnKusaBush_RandoDraw;
+        }
+    });
+
+    COND_VB_SHOULD(VB_GRASS_DROP_COLLECTIBLE, IS_RANDO, {
+        auto actorId = static_cast<ActorId>(va_arg(args, int32_t));
+        ObjGrassElement* grassElemActor;
+        EnKusa* kusaActor;
+        ObjGrassCarry* grassCarryActor;
+        Vec3f grassIdPos = gZeroVec3f;
+        Vec3f collectiblePos = gZeroVec3f;
+
+        if (actorId == ACTOR_OBJ_GRASS) {
+            grassElemActor = va_arg(args, ObjGrassElement*);
+            grassIdPos = grassElemActor->pos;
+            collectiblePos = grassIdPos;
+        } else if (actorId == ACTOR_EN_KUSA) {
+            kusaActor = va_arg(args, EnKusa*);
+            grassIdPos = kusaActor->actor.home.pos;
+            collectiblePos = kusaActor->actor.world.pos;
+        } else if (actorId == ACTOR_OBJ_GRASS_CARRY) {
+            grassCarryActor = va_arg(args, ObjGrassCarry*);
+            grassIdPos = grassCarryActor->grassElem->pos;
+            collectiblePos = grassCarryActor->actor.world.pos;
+        }
+
+        RandoCheckId randoCheckId = IdentifyGrass(grassIdPos);
+        if (randoCheckId == RC_UNKNOWN) {
+            return;
+        }
+
+        SpawnGrassDrop(collectiblePos, randoCheckId);
+        *should = false;
+    });
+}

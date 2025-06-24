@@ -19,6 +19,8 @@
 #include "objects/object_kaizoku_obj/object_kaizoku_obj.h"
 #include "objects/gameplay_field_keep/gameplay_field_keep.h"
 
+#include "2s2h/GameInteractor/GameInteractor.h"
+
 #define FLAGS (ACTOR_FLAG_10)
 
 #define THIS ((EnDoor*)thisx)
@@ -525,8 +527,9 @@ void func_80866B20(EnDoor* this, PlayState* play) {
         Vec3f playerPosRelToDoor;
 
         Actor_OffsetOfPointInActorCoords(&this->knobDoor.dyna.actor, &playerPosRelToDoor, &player->actor.world.pos);
-        if (D_80867BC0 || ((fabsf(playerPosRelToDoor.y) < 20.0f) && (fabsf(playerPosRelToDoor.x) < 20.0f) &&
-                           (fabsf(playerPosRelToDoor.z) < 50.0f))) {
+        if (D_80867BC0 ||
+            ((fabsf(playerPosRelToDoor.y) < 20.0f) && (fabsf(playerPosRelToDoor.x) < 20.0f) &&
+             GameInteractor_Should(VB_BE_NEAR_DOOR, fabsf(playerPosRelToDoor.z) < 50.0f, &playerPosRelToDoor.z))) {
             s16 yawDiff = player->actor.shape.rot.y - this->knobDoor.dyna.actor.shape.rot.y;
 
             if (playerPosRelToDoor.z > 0.0f) {

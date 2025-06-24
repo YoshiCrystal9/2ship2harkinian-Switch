@@ -1,4 +1,3 @@
-
 #include "HudEditor.h"
 #include "macros.h"
 

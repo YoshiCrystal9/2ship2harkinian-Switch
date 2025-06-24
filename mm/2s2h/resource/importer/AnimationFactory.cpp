@@ -1,16 +1,20 @@
 #include "2s2h/resource/importer/AnimationFactory.h"
 #include "2s2h/resource/type/Animation.h"
 #include "2s2h/resource/importer/PlayerAnimationFactory.h"
-#include <libultraship/libultraship.h>
-#include "spdlog/spdlog.h"
+#include "Context.h"
+#include "ResourceManager.h"
+
+#include <spdlog/spdlog.h>
 
 namespace SOH {
-std::shared_ptr<Ship::IResource> ResourceFactoryBinaryAnimationV0::ReadResource(std::shared_ptr<Ship::File> file) {
-    if (!FileHasValidFormatAndReader(file)) {
+std::shared_ptr<Ship::IResource>
+ResourceFactoryBinaryAnimationV0::ReadResource(std::shared_ptr<Ship::File> file,
+                                               std::shared_ptr<Ship::ResourceInitData> initData) {
+    if (!FileHasValidFormatAndReader(file, initData)) {
         return nullptr;
     }
 
-    auto animation = std::make_shared<Animation>(file->InitData);
+    auto animation = std::make_shared<Animation>(initData);
     auto reader = std::get<std::shared_ptr<Ship::BinaryReader>>(file->Reader);
 
     AnimationType animType = (AnimationType)reader->ReadUInt32();

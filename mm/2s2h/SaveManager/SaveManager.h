@@ -2,14 +2,15 @@
 #ifndef SAVE_MANAGER_H
 #define SAVE_MANAGER_H
 
-#include <libultraship/libultraship.h>
-
 #ifdef __cplusplus
+#include <string>
+#include <filesystem>
+#include <nlohmann/json.hpp>
 std::string SaveManager_GetFileName(int fileNum, bool isBackup = false);
-bool SaveManager_HandleFileDropped(std::string filePath);
-bool BinarySaveConverter_HandleFileDropped(std::string filePath);
+bool SaveManager_HandleFileDropped(const std::string& filePath);
+bool BinarySaveConverter_HandleFileDropped(const std::string& filePath);
 int SaveManager_GetOpenFileSlot();
-void SaveManager_WriteSaveFile(std::filesystem::path fileName, nlohmann::json j);
+void SaveManager_WriteSaveFile(const std::filesystem::path& fileName, nlohmann::json j);
 #else
 void SaveManager_SysFlashrom_WriteData(u8* addr, u32 pageNum, u32 pageCount);
 s32 SaveManager_SysFlashrom_ReadData(void* addr, u32 pageNum, u32 pageCount);

@@ -1,7 +1,6 @@
-
-
 #include "ActorBehavior.h"
-#include <libultraship/libultraship.h>
+#include "public/bridge/consolevariablebridge.h"
+#include "2s2h/CustomMessage/CustomMessage.h"
 
 extern "C" {
 #include "variables.h"

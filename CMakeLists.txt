@@ -4,7 +4,7 @@ set(CMAKE_SYSTEM_VERSION 10.0 CACHE STRING "" FORCE)
 set(CMAKE_CXX_STANDARD 20 CACHE STRING "The C++ standard to use")
 
 set(CMAKE_OSX_DEPLOYMENT_TARGET "10.15" CACHE STRING "Minimum OS X deployment version")
-
+set(GAME_STR "MM")
 project(2s2h VERSION 1.1.2 LANGUAGES C CXX)
 include(CMake/2ship-cvars.cmake)
 include(CMake/lus-cvars.cmake)
@@ -107,15 +107,20 @@ endif()
 # Global configuration types
 ################################################################################
 if (CMAKE_SYSTEM_NAME STREQUAL "NintendoSwitch")
-set(CMAKE_C_FLAGS_DEBUG "-g -ffast-math -DDEBUG")
-set(CMAKE_CXX_FLAGS_DEBUG "-g -ffast-math -DDEBUG")
-set(CMAKE_C_FLAGS_RELEASE "-O3 -ffast-math -DNDEBUG")
-set(CMAKE_CXX_FLAGS_RELEASE "-O3 -ffast-math -DNDEBUG")
+    set(CMAKE_C_FLAGS_DEBUG "-g -ffast-math -DDEBUG")
+    set(CMAKE_CXX_FLAGS_DEBUG "-g -ffast-math -DDEBUG")
+    set(CMAKE_C_FLAGS_RELEASE "-O3 -ffast-math -DNDEBUG")
+    set(CMAKE_CXX_FLAGS_RELEASE "-O3 -ffast-math -DNDEBUG")
+elseif(MSVC)
+    # We need to remove RTC1 as it is not compatible with O2, which we set for some files in DEBUG
+    string(REGEX REPLACE "/RTC(su|[1su])" "" CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG}")
+    string(REGEX REPLACE "/RTC(su|[1su])" "" CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG}")
+    set(CMAKE_C_FLAGS_RELEASE "/O2 /DNDEBUG")
+    set(CMAKE_CXX_FLAGS_RELEASE "/O2 /DNDEBUG")
 else()
-set(CMAKE_C_FLAGS_RELEASE "-O2 -DNDEBUG")
-set(CMAKE_C_FLAGS_DEBUG "-g")
-set(CMAKE_CXX_FLAGS_RELEASE "-O2 -DNDEBUG")
-set(CMAKE_OBJCXX_FLAGS_RELEASE "-O2 -DNDEBUG")
+    set(CMAKE_C_FLAGS_RELEASE "-O2 -DNDEBUG")
+    set(CMAKE_CXX_FLAGS_RELEASE "-O2 -DNDEBUG")
+    set(CMAKE_OBJCXX_FLAGS_RELEASE "-O2 -DNDEBUG")
 endif()
 
 if(NOT CMAKE_BUILD_TYPE )
@@ -160,21 +165,13 @@ if("${CMAKE_SYSTEM_NAME}" STREQUAL "Linux")
 install(PROGRAMS "${CMAKE_BINARY_DIR}/linux/2s2h.sh" DESTINATION . COMPONENT appimage)
 install(FILES "${CMAKE_BINARY_DIR}/mm/2ship.o2r" DESTINATION . COMPONENT ship)
 install(TARGETS ZAPD DESTINATION ./assets/extractor COMPONENT extractor)
-install(DIRECTORY "${CMAKE_SOURCE_DIR}/mm/assets/extractor/" DESTINATION ./assets/extractor COMPONENT extractor)
-install(DIRECTORY "${CMAKE_SOURCE_DIR}/mm/assets/xml/" DESTINATION ./assets/extractor/xmls COMPONENT extractor)
-install(DIRECTORY "${CMAKE_SOURCE_DIR}/OTRExporter/CFG/filelists/" DESTINATION ./assets/extractor/filelists COMPONENT extractor)
-install(FILES "${CMAKE_SOURCE_DIR}/OTRExporter/CFG/ActorList_MM.txt" DESTINATION ./assets/extractor/symbols COMPONENT extractor)
-install(FILES "${CMAKE_SOURCE_DIR}/OTRExporter/CFG/ObjectList_MM.txt" DESTINATION ./assets/extractor/symbols COMPONENT extractor)
-install(FILES "${CMAKE_SOURCE_DIR}/OTRExporter/CFG/SymbolMap_MM.txt" DESTINATION ./assets/extractor/symbols COMPONENT extractor)
+install(DIRECTORY "${CMAKE_SOURCE_DIR}/mm/assets/extractor/" DESTINATION ./assets/ COMPONENT extractor)
+install(DIRECTORY "${CMAKE_SOURCE_DIR}/mm/assets/xml/" DESTINATION ./assets/xml COMPONENT extractor)
 endif()
 
 if ("${CMAKE_SYSTEM_NAME}" STREQUAL "Windows")
-install(DIRECTORY "${CMAKE_SOURCE_DIR}/mm/assets/extractor/" DESTINATION ./assets/extractor COMPONENT 2s2h)
-install(DIRECTORY "${CMAKE_SOURCE_DIR}/mm/assets/xml/" DESTINATION ./assets/extractor/xmls COMPONENT 2s2h)
-install(DIRECTORY "${CMAKE_SOURCE_DIR}/OTRExporter/CFG/filelists/" DESTINATION ./assets/extractor/filelists COMPONENT 2s2h)
-install(FILES "${CMAKE_SOURCE_DIR}/OTRExporter/CFG/ActorList_MM.txt" DESTINATION ./assets/extractor/symbols COMPONENT 2s2h)
-install(FILES "${CMAKE_SOURCE_DIR}/OTRExporter/CFG/ObjectList_MM.txt" DESTINATION ./assets/extractor/symbols COMPONENT 2s2h)
-install(FILES "${CMAKE_SOURCE_DIR}/OTRExporter/CFG/SymbolMap_MM.txt" DESTINATION ./assets/extractor/symbols COMPONENT 2s2h)
+install(DIRECTORY "${CMAKE_SOURCE_DIR}/mm/assets/extractor/" DESTINATION ./assets/ COMPONENT 2s2h)
+install(DIRECTORY "${CMAKE_SOURCE_DIR}/mm/assets/xml/" DESTINATION ./assets/xml COMPONENT 2s2h)
 endif()
 
 find_package(Python3 COMPONENTS Interpreter)
@@ -186,17 +183,17 @@ add_custom_target(
     COMMAND ${CMAKE_COMMAND} -E $<IF:$<VERSION_LESS:${CMAKE_VERSION},3.17>,remove,rm> -f mm.zip 2ship.o2r
     COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/OTRExporter/extract_assets.py -z "$<TARGET_FILE:ZAPD>" --non-interactive --xml-root ../mm/assets/xml --custom-otr-file 2ship.o2r "--custom-assets-path" ${CMAKE_CURRENT_SOURCE_DIR}/mm/assets/custom --port-ver "${CMAKE_PROJECT_VERSION}"
     COMMAND ${CMAKE_COMMAND} -DSYSTEM_NAME=${CMAKE_SYSTEM_NAME} -DTARGET_DIR="$<TARGET_FILE_DIR:ZAPD>" -DSOURCE_DIR=${CMAKE_CURRENT_SOURCE_DIR} -DBINARY_DIR=${CMAKE_BINARY_DIR} -P ${CMAKE_CURRENT_SOURCE_DIR}/CMake/copy-existing-otrs.cmake
-    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/OTRExporter
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/mm
     COMMENT "Running asset extraction..."
     DEPENDS ZAPD
-    BYPRODUCTS mm.zip ${CMAKE_SOURCE_DIR}/mm.o2r ${CMAKE_SOURCE_DIR}/2ship.o2r
+    BYPRODUCTS mm.o2r ${CMAKE_SOURCE_DIR}/mm.o2r ${CMAKE_SOURCE_DIR}/2ship.o2r
 )
 
 # Target to generate headers
 add_custom_target(
     ExtractAssetHeaders
     COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/OTRExporter/extract_assets.py -z "$<TARGET_FILE:ZAPD>" --non-interactive --xml-root ../mm/assets/xml --gen-headers
-    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/OTRExporter
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/mm
     COMMENT "Generating asset headers..."
     DEPENDS ZAPD
 )
@@ -208,7 +205,7 @@ add_custom_target(
     COMMAND ${CMAKE_COMMAND} -E $<IF:$<VERSION_LESS:${CMAKE_VERSION},3.17>,remove,rm> -f 2ship.o2r
     COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/OTRExporter/extract_assets.py -z "$<TARGET_FILE:ZAPD>" --norom --custom-otr-file 2ship.o2r "--custom-assets-path" ${CMAKE_CURRENT_SOURCE_DIR}/mm/assets/custom --port-ver "${CMAKE_PROJECT_VERSION}"
     COMMAND ${CMAKE_COMMAND} -DSYSTEM_NAME=${CMAKE_SYSTEM_NAME} -DTARGET_DIR="$<TARGET_FILE_DIR:ZAPD>" -DSOURCE_DIR=${CMAKE_CURRENT_SOURCE_DIR} -DBINARY_DIR=${CMAKE_BINARY_DIR} -DONLY2SHIPOTR=On -P ${CMAKE_CURRENT_SOURCE_DIR}/CMake/copy-existing-otrs.cmake
-    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/OTRExporter
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/mm
     COMMENT "Generating 2ship.o2r..."
     DEPENDS ZAPD
 )
@@ -240,12 +237,8 @@ install(TARGETS ZAPD DESTINATION ${CMAKE_BINARY_DIR}/assets/extractor)
 
 set(PROGRAM_PERMISSIONS_EXECUTE OWNER_EXECUTE OWNER_WRITE OWNER_READ GROUP_EXECUTE GROUP_READ WORLD_EXECUTE WORLD_READ)
 
-install(DIRECTORY "${CMAKE_SOURCE_DIR}/mm/assets/extractor/" DESTINATION ./assets/extractor)
-install(DIRECTORY "${CMAKE_SOURCE_DIR}/mm/assets/xml/" DESTINATION ./assets/extractor/xmls)
-install(DIRECTORY "${CMAKE_SOURCE_DIR}/OTRExporter/CFG/filelists/" DESTINATION ./assets/extractor/filelists)
-install(FILES "${CMAKE_SOURCE_DIR}/OTRExporter/CFG/ActorList_MM.txt" DESTINATION ./assets/extractor/symbols)
-install(FILES "${CMAKE_SOURCE_DIR}/OTRExporter/CFG/ObjectList_MM.txt" DESTINATION ./assets/extractor/symbols)
-install(FILES "${CMAKE_SOURCE_DIR}/OTRExporter/CFG/SymbolMap_MM.txt" DESTINATION ./assets/extractor/symbols)
+install(DIRECTORY "${CMAKE_SOURCE_DIR}/mm/assets/extractor/" DESTINATION ./assets/)
+install(DIRECTORY "${CMAKE_SOURCE_DIR}/mm/assets/xml/" DESTINATION ./assets/xml)
 
 # install(DIRECTORY ${CMAKE_BINARY_DIR}/assets
 #         DESTINATION .

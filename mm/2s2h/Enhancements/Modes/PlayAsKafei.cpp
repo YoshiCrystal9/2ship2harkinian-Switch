@@ -1,4 +1,6 @@
-#include <libultraship/libultraship.h>
+#include "public/bridge/consolevariablebridge.h"
+#include "Context.h"
+#include "ResourceManager.h"
 #include "2s2h/GameInteractor/GameInteractor.h"
 #include "2s2h/ShipInit.hpp"
 

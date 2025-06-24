@@ -1,15 +1,14 @@
 ﻿#include "BenPort.h"
-#include <libultraship/libultraship.h>
 #include "global.h"
 #include <Blob.h>
 #include <memory>
 #include <cassert>
 #include <utils/StringHelper.h>
 #include <DisplayList.h>
+#include <public/bridge/resourcebridge.h>
 #include "2s2h/GameInteractor/GameInteractor.h"
 #include "2s2h/resource/type/Scene.h"
 #include "2s2h/resource/type/CollisionHeader.h"
-#include "2s2h/resource/type/Cutscene.h"
 #include "2s2h/resource/type/Path.h"
 #include "2s2h/resource/type/scenecommand/SetCameraSettings.h"
 #include "2s2h/resource/type/scenecommand/SetCutscenes.h"

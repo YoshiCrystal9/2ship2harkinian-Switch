@@ -1,5 +1,5 @@
 #include "ActorBehavior.h"
-#include <libultraship/libultraship.h>
+#include "public/bridge/consolevariablebridge.h"
 #include "2s2h/Enhancements/FrameInterpolation/FrameInterpolation.h"
 #include "2s2h/Rando/StaticData/StaticData.h"
 #include "2s2h/ShipInit.hpp"
@@ -28,6 +28,14 @@ static Gfx gBoxChestLidOrnateCopyDL[38];
 
 #define ENBOX_RC (actor->home.rot.x)
 #define ENBOX_SET_ITEM(thisx, newItem) ((thisx)->params = (((thisx)->params & ~(0x7F << 5)) | ((newItem & 0x7F) << 5)))
+
+std::vector<std::vector<RandoCheckId>> treasureGameMap = {
+    { RC_UNKNOWN, RC_UNKNOWN }, // FD
+    { RC_CLOCK_TOWN_EAST_TREASURE_CHEST_GAME_GORON, RC_UNKNOWN },
+    { RC_CLOCK_TOWN_EAST_TREASURE_CHEST_GAME_ZORA, RC_UNKNOWN },
+    { RC_CLOCK_TOWN_EAST_TREASURE_CHEST_GAME_DEKU, RC_UNKNOWN },
+    { RC_CLOCK_TOWN_EAST_TREASURE_CHEST_GAME_HUMAN, RC_UNKNOWN },
+};
 
 void Player_Action_65_override(Player* player, PlayState* play) {
     if (PlayerAnimation_Update(play, &player->skelAnime)) {
@@ -170,11 +178,17 @@ void Rando::ActorBehavior::InitEnBoxBehavior() {
                                                                     gPlayState->sceneId);
         RandoCheckId randoCheckId = randoStaticCheck.randoCheckId;
 
+        if (gPlayState->sceneId == SCENE_TAKARAYA) {
+            uint8_t transformation = GET_PLAYER(gPlayState)->transformation;
+            uint8_t gameNumber = Flags_GetSwitch(gPlayState, transformation) ? 1 : 0;
+            randoCheckId = treasureGameMap[transformation][gameNumber];
+        }
+
         if (randoCheckId == RC_UNKNOWN || !RANDO_SAVE_CHECKS[randoCheckId].shuffled) {
             return;
         }
 
-        ENBOX_RC = randoStaticCheck.randoCheckId;
+        ENBOX_RC = randoCheckId;
         actor->params = ((actor->params & ~(0x7F << 5)) | ((GI_RECOVERY_HEART & 0x7F) << 5));
 
         if (CVarGetInteger("gRando.CSMC", 0)) {

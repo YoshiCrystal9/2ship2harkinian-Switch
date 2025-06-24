@@ -1,9 +1,9 @@
 #include "Logic.h"
-#include <libultraship/libultraship.h>
 #include "2s2h/Rando/Types.h"
 
 #include <numeric>
 #include <iterator>
+#include <spdlog/spdlog.h>
 
 extern "C" {
 #include "variables.h"

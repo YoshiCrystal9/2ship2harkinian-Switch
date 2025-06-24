@@ -1,8 +1,9 @@
 #include "MiscBehavior.h"
-#include <libultraship/libultraship.h>
 #include "Rando/Spoiler/Spoiler.h"
 #include "Rando/Logic/Logic.h"
 #include <boost_custom/container_hash/hash_32.hpp>
+#include "public/bridge/consolevariablebridge.h"
+#include <spdlog/spdlog.h>
 
 extern "C" {
 #include "functions.h"
@@ -146,6 +147,11 @@ void Rando::MiscBehavior::OnFileCreate(s16 fileNum) {
 
                         if (randoStaticCheck.randoCheckType == RCTYPE_BARREL &&
                             RANDO_SAVE_OPTIONS[RO_SHUFFLE_BARREL_DROPS] == RO_GENERIC_NO) {
+                            continue;
+                        }
+
+                        if (randoStaticCheck.randoCheckType == RCTYPE_GRASS &&
+                            RANDO_SAVE_OPTIONS[RO_SHUFFLE_GRASS_DROPS] == RO_GENERIC_NO) {
                             continue;
                         }
 
@@ -345,9 +351,6 @@ void Rando::MiscBehavior::OnFileCreate(s16 fileNum) {
                                              std::to_string(RANDO_SAVE_OPTIONS[RO_LOGIC]));
                 }
 
-                RANDO_SAVE_CHECKS[RC_STARTING_ITEM_DEKU_MASK].eligible = true;
-                RANDO_SAVE_CHECKS[RC_STARTING_ITEM_SONG_OF_HEALING].eligible = true;
-
                 if (CVarGetInteger("gRando.GenerateSpoiler", 0)) {
                     nlohmann::json spoiler = Rando::Spoiler::GenerateFromSaveContext();
                     spoiler["inputSeed"] = inputSeed;
@@ -370,6 +373,10 @@ void Rando::MiscBehavior::OnFileCreate(s16 fileNum) {
 
                 Audio_PlaySfx(NA_SE_SY_ATTENTION_SOUND);
             }
+
+            RANDO_SAVE_CHECKS[RC_STARTING_ITEM_DEKU_MASK].eligible = true;
+            RANDO_SAVE_CHECKS[RC_STARTING_ITEM_SONG_OF_HEALING].eligible = true;
+
         } catch (const std::exception& e) {
             SPDLOG_ERROR("Error with randomizer save creation: {}", e.what());
             Audio_PlaySfx(NA_SE_SY_QUIZ_INCORRECT);

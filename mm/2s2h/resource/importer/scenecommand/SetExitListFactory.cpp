@@ -1,6 +1,5 @@
 #include "2s2h/resource/importer/scenecommand/SetExitListFactory.h"
 #include "2s2h/resource/type/scenecommand/SetExitList.h"
-#include "spdlog/spdlog.h"
 
 namespace SOH {
 std::shared_ptr<Ship::IResource> SetExitListFactory::ReadResource(std::shared_ptr<Ship::ResourceInitData> initData,

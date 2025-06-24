@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include "2s2h/BenPort.h"
 #include "2s2h/GameInteractor/GameInteractor.h"
+#include "public/bridge/consolevariablebridge.h"
 
 #define DYNA_RAYCAST_FLOORS 1
 #define DYNA_RAYCAST_WALLS 2

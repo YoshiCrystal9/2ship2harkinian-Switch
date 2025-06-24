@@ -7,6 +7,7 @@
 #include "build.h"
 
 #include "2s2h/GameInteractor/GameInteractor.h"
+#include "public/bridge/consolevariablebridge.h"
 
 void Sram_SyncWriteToFlash(SramContext* sramCtx, s32 curPage, s32 numPages);
 void func_80147414(SramContext* sramCtx, s32 fileNum, s32 arg2);

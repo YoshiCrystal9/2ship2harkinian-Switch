@@ -1,5 +1,4 @@
 #include "CustomItem.h"
-#include <libultraship/libultraship.h>
 #include "2s2h/CustomMessage/CustomMessage.h"
 #include "2s2h/GameInteractor/GameInteractor.h"
 

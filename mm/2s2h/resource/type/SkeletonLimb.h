@@ -1,8 +1,8 @@
 #pragma once
 
 #include "Resource.h"
-#include "libultraship/libultra.h"
 #include "z64math.h"
+#include "gbi.h"
 
 namespace SOH {
 enum class LimbType {

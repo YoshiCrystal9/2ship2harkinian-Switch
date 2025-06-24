@@ -4,7 +4,7 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-#include "z64actor.h"
+#include "color.h"
 #ifdef __cplusplus
 }
 #endif
@@ -22,6 +22,8 @@ void NameTag_RegisterHooks();
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+struct Actor;
 
 // Registers a name tag to an actor with additional options applied
 void NameTag_RegisterForActorWithOptions(Actor* actor, const char* text, NameTagOptions options);

@@ -1,6 +1,8 @@
 #include "Logic.h"
-#include <libultraship/libultraship.h>
 #include "2s2h/Rando/Types.h"
+
+#include <stdexcept>
+#include <spdlog/spdlog.h>
 
 extern "C" {
 #include "variables.h"

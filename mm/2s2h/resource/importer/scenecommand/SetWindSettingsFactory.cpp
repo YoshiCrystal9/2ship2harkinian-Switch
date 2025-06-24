@@ -1,6 +1,5 @@
 #include "2s2h/resource/importer/scenecommand/SetWindSettingsFactory.h"
 #include "2s2h/resource/type/scenecommand/SetWindSettings.h"
-#include "spdlog/spdlog.h"
 
 namespace SOH {
 std::shared_ptr<Ship::IResource> SetWindSettingsFactory::ReadResource(std::shared_ptr<Ship::ResourceInitData> initData,

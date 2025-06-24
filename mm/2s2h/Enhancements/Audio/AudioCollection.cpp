@@ -1,10 +1,8 @@
 #include "AudioCollection.h"
 #include "sequence.h"
-#include "sfx.h"
-#include <vector>
 #include <utils/StringHelper.h>
-#include <libultraship/bridge.h>
-#include <libultraship/classes.h>
+#include "public/bridge/consolevariablebridge.h"
+#include "Window.h"
 #include <2s2h/BenPort.h>
 #include <locale>
 #include <filesystem>
@@ -134,7 +132,7 @@ AudioCollection::AudioCollection() {
         SEQUENCE_MAP_ENTRY(NA_BGM_LEARNED_NEW_SONG, "Get Song", "NA_BGM_LEARNED_NEW_SONG", SEQ_FANFARE, true, true),
         SEQUENCE_MAP_ENTRY(NA_BGM_BREMEN_MARCH, "Bremen March", "NA_BGM_BREMEN_MARCH", SEQ_BGM_WORLD, true, true),
         SEQUENCE_MAP_ENTRY(NA_BGM_BALLAD_OF_THE_WIND_FISH, "Ballad Of The Wind Fish", "NA_BGM_BALLAD_OF_THE_WIND_FISH",
-                           SEQ_BGM_WORLD, true, true),
+                           SEQ_BGM_WORLD, false, false),
         SEQUENCE_MAP_ENTRY(NA_BGM_SONG_OF_SOARING, "Song Of Soaring", "NA_BGM_SONG_OF_SOARING", SEQ_BGM_SONGS, true,
                            true),
         SEQUENCE_MAP_ENTRY(NA_BGM_MILK_BAR_DUPLICATE, "Milk Bar Night", "NA_BGM_MILK_BAR_DUPLICATE", SEQ_BGM_WORLD,
@@ -144,7 +142,8 @@ AudioCollection::AudioCollection() {
                            true), // Looping instrument
         SEQUENCE_MAP_ENTRY(NA_BGM_MIKAU_FINALE, "Mikau Finale", "NA_BGM_MIKAU_FINALE", SEQ_BGM_SONGS, true,
                            true), // Instrument finale
-        SEQUENCE_MAP_ENTRY(NA_BGM_FROG_SONG, "Frog Song", "NA_BGM_FROG_SONG", SEQ_BGM_WORLD, true, true), // Looping BGM
+        SEQUENCE_MAP_ENTRY(NA_BGM_FROG_SONG, "Frog Song", "NA_BGM_FROG_SONG", SEQ_BGM_WORLD, false,
+                           false), // Looping BGM
         SEQUENCE_MAP_ENTRY(NA_BGM_OCARINA_SONATA, "Sonata Of Awakening (Ocarina)", "NA_BGM_OCARINA_SONATA", SEQ_OCARINA,
                            true, true),
         SEQUENCE_MAP_ENTRY(NA_BGM_OCARINA_LULLABY, "Goron Lullaby", "NA_BGM_OCARINA_LULLABY", SEQ_OCARINA, true, true),

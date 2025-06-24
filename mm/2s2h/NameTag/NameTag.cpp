@@ -1,5 +1,5 @@
 #include "NameTag.h"
-#include <libultraship/bridge.h>
+#include "public/bridge/consolevariablebridge.h"
 #include <vector>
 #include <algorithm>
 #include "2s2h/Enhancements/FrameInterpolation/FrameInterpolation.h"
@@ -7,7 +7,7 @@
 #include "2s2h/ShipUtils.h"
 
 extern "C" {
-#include "z64.h"
+#include "z64actor.h"
 #include "macros.h"
 #include "functions.h"
 #include "variables.h"
@@ -129,18 +129,16 @@ void DrawNameTag(PlayState* play, const NameTag* nameTag) {
             vtxGroup++;
         }
 
-        if (nameTag->processedText[i] != '\n') {
-            TexturePtr texture = Ship_GetCharFontTextureNES(nameTag->processedText[i]);
-            int16_t vertexStart = 4 * (i % 16);
+        TexturePtr texture = Ship_GetCharFontTextureNES(nameTag->processedText[i]);
+        int16_t vertexStart = 4 * (i % 16);
 
-            // Multi-instruction macro, need to insert all to the dl buffer
-            Gfx charTexture[] = { gsDPLoadTextureBlock_4b(
-                texture, G_IM_FMT_I, FONT_CHAR_TEX_WIDTH, FONT_CHAR_TEX_HEIGHT, 0, G_TX_NOMIRROR | G_TX_CLAMP,
-                G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD) };
-            nameTagDl.insert(nameTagDl.end(), std::begin(charTexture), std::end(charTexture));
+        // Multi-instruction macro, need to insert all to the dl buffer
+        Gfx charTexture[] = { gsDPLoadTextureBlock_4b(texture, G_IM_FMT_I, FONT_CHAR_TEX_WIDTH, FONT_CHAR_TEX_HEIGHT, 0,
+                                                      G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMIRROR | G_TX_CLAMP,
+                                                      G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD) };
+        nameTagDl.insert(nameTagDl.end(), std::begin(charTexture), std::end(charTexture));
 
-            nameTagDl.push_back(gsSP1Quadrangle(vertexStart, vertexStart + 2, vertexStart + 3, vertexStart + 1, 0));
-        }
+        nameTagDl.push_back(gsSP1Quadrangle(vertexStart, vertexStart + 2, vertexStart + 3, vertexStart + 1, 0));
     }
 
     nameTagDl.push_back(gsSPPopMatrix(G_MTX_MODELVIEW));

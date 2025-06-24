@@ -1,5 +1,9 @@
+
 #include "DisplayOverlay.h"
-#include <libultraship/libultraship.h>
+#include <spdlog/fmt/fmt.h>
+#include "public/bridge/consolevariablebridge.h"
+#include "Context.h"
+#include "Window.h"
 
 extern "C" {
 #include "variables.h"
@@ -27,20 +31,15 @@ std::string formatTimeDisplay(uint32_t value) {
 void DrawInGameTimer(uint32_t timer, ImVec4 color = ImVec4(1, 1, 1, 1)) {
     float windowScale = MAX(CVarGetFloat("gDisplayOverlay.Scale", 1.0f), 1.0f);
 
-    std::string timerStr = formatTimeDisplay(timer).c_str();
-    char* textToDecode = new char[timerStr.size() + 1];
-    textToDecode = std::strcpy(textToDecode, timerStr.c_str());
-    size_t textLength = timerStr.length();
+    std::string timerStr = formatTimeDisplay(timer);
     uint16_t textureIndex = 0;
-
-    for (size_t i = 0; i < textLength; i++) {
-        ImVec2 originalCursorPos = ImGui::GetCursorPos();
-        if (textToDecode[i] == ':' || textToDecode[i] == '.') {
+    for (const auto c : timerStr) {
+        if (c == ':' || c == '.') {
             textureIndex = 10;
         } else {
-            textureIndex = textToDecode[i] - '0';
+            textureIndex = c - '0';
         }
-        if (textToDecode[i] == '.') {
+        if (c == '.') {
             ImGui::SetCursorPosY(ImGui::GetCursorPosY() + (8.0f * windowScale));
             ImGui::Image(Ship::Context::GetInstance()->GetWindow()->GetGui()->GetTextureByName(digitList[textureIndex]),
                          ImVec2(8.0f * windowScale, 8.0f * windowScale), ImVec2(0, 0.5f), ImVec2(1, 1), color);

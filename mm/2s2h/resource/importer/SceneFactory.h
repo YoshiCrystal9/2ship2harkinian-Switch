@@ -5,13 +5,15 @@
 #include "2s2h/resource/importer/scenecommand/SceneCommandFactory.h"
 #include "Resource.h"
 #include "ResourceFactoryBinary.h"
+#include <unordered_map>
 
 namespace SOH {
 class ResourceFactoryBinarySceneV0 : public Ship::ResourceFactoryBinary {
   public:
     ResourceFactoryBinarySceneV0();
 
-    std::shared_ptr<Ship::IResource> ReadResource(std::shared_ptr<Ship::File> file) override;
+    std::shared_ptr<Ship::IResource> ReadResource(std::shared_ptr<Ship::File> file,
+                                                  std::shared_ptr<Ship::ResourceInitData> initData) override;
     void ParseSceneCommands(std::shared_ptr<Scene> scene, std::shared_ptr<Ship::BinaryReader> reader);
 
     // Doing something very similar to what we do on the ResourceLoader.

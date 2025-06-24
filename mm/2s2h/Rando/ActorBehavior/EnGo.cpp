@@ -1,5 +1,5 @@
 #include "ActorBehavior.h"
-#include <libultraship/libultraship.h>
+#include "2s2h/CustomMessage/CustomMessage.h"
 #include "2s2h/Rando/Logic/Logic.h"
 #include "2s2h/Rando/StaticData/StaticData.h"
 

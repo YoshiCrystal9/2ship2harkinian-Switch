@@ -1,9 +1,9 @@
 #include "ResolutionEditor.h"
 #include <imgui.h>
-#include <libultraship/libultraship.h>
 
 #include <BenGui/UIWidgets.hpp>
-#include <graphic/Fast3D/gfx_pc.h>
+#include <graphic/Fast3D/Fast3dWindow.h>
+#include <graphic/Fast3D/interpreter.h>
 #include "2s2h/BenPort.h"
 #include "2s2h/BenGui/BenMenu.h"
 
@@ -85,20 +85,30 @@ static bool disabled_pixelCount;
 
 using namespace UIWidgets;
 
+static std::weak_ptr<Fast::Interpreter> mInterpreter;
+
+std::shared_ptr<Fast::Interpreter> GetInterpreter() {
+    auto intP = mInterpreter.lock();
+    if (!intP) {
+        assert(false && "Lost reference to Fast::Interpreter");
+    }
+    return intP;
+}
+
 void RegisterResolutionWidgets() {
-    WidgetPath path = { "Settings", "Graphics", 2 };
-#ifdef __APPLE__
-    mBenMenu
-        ->AddWidget(path, ICON_FA_INFO_CIRCLE " These settings may behave incorrectly on Retina displays.", WIDGET_TEXT)
-        .Options(WidgetOptions().Color(Colors::Green));
-#endif
+    auto fastWnd = dynamic_pointer_cast<Fast::Fast3dWindow>(Ship::Context::GetInstance()->GetWindow());
+    mInterpreter = fastWnd->GetInterpreterWeak();
+
+    WidgetPath path = { "Settings", "Graphics", SECTION_COLUMN_2 };
 
     // Resolution visualiser
     mBenMenu->AddWidget(path, "Viewport dimensions: {} x {}", WIDGET_TEXT).PreFunc([](WidgetInfo& info) {
+        auto gfx_current_game_window_viewport = GetInterpreter().get()->mGameWindowViewport;
         info.name = fmt::format("Viewport dimensions: {} x {}", gfx_current_game_window_viewport.width,
                                 gfx_current_game_window_viewport.height);
     });
     mBenMenu->AddWidget(path, "Internal resolution: {} x {}", WIDGET_TEXT).PreFunc([](WidgetInfo& info) {
+        auto gfx_current_dimensions = GetInterpreter().get()->mCurDimensions;
         info.name =
             fmt::format("Internal resolution: {} x {}", gfx_current_dimensions.width, gfx_current_dimensions.height);
     });
@@ -159,6 +169,8 @@ void RegisterResolutionWidgets() {
         })
         .Options(ComboboxOptions().ComboMap(aspectRatioPresetLabels));
     mBenMenu->AddWidget(path, "AspectRationCustom", WIDGET_CUSTOM).CustomFunction([](WidgetInfo& info) {
+        auto gfx_current_dimensions = GetInterpreter().get()->mCurDimensions;
+
         // Hide aspect ratio input fields if using one of the presets.
         if (item_aspectRatio == default_aspectRatio && !showHorizontalResField) {
             // Declare input interaction bools outside of IF statement to prevent Y field from disappearing.
@@ -257,15 +269,15 @@ void RegisterResolutionWidgets() {
     //
     //    UIWidgets::Spacer(0);
     //
-    //    // Integer scaling settings group (Pixel-perfect Mode)
+    //    // Integer scaling settings group (Pixel Perfect Mode)
     //    static const ImGuiTreeNodeFlags IntegerScalingResolvedImGuiFlag =
     //        CVarGetInteger(CVAR_PREFIX_ADVANCED_RESOLUTION ".PixelPerfectMode", 0) ? ImGuiTreeNodeFlags_DefaultOpen
     //                                                                    : ImGuiTreeNodeFlags_None;
     //    if (ImGui::CollapsingHeader("Integer Scaling Settings", IntegerScalingResolvedImGuiFlag)) {
     //        const bool disabled_pixelPerfectMode =
     //            !CVarGetInteger(CVAR_PREFIX_ADVANCED_RESOLUTION ".PixelPerfectMode", 0) || disabled_everything;
-    //        // Pixel-perfect Mode
-    //        UIWidgets::PaddedEnhancementCheckbox("Pixel-perfect Mode", CVAR_PREFIX_ADVANCED_RESOLUTION
+    //        // Pixel Perfect Mode
+    //        UIWidgets::PaddedEnhancementCheckbox("Pixel Perfect Mode", CVAR_PREFIX_ADVANCED_RESOLUTION
     //        ".PixelPerfectMode", true,
     //                                                true, disabled_pixelCount || disabled_everything, "",
     //                                                UIWidgets::CheckboxGraphics::Cross, false);
@@ -280,7 +292,7 @@ void RegisterResolutionWidgets() {
     //            "Integer scale factor: %d", "##ARSIntScale", CVAR_PREFIX_ADVANCED_RESOLUTION ".IntegerScale.Factor",
     //            1, max_integerScaleFactor, "%d", 1, true, disabled_pixelPerfectMode ||
     //            CVarGetInteger(CVAR_PREFIX_ADVANCED_RESOLUTION ".IntegerScale.FitAutomatically", 0));
-    //        UIWidgets::Tooltip("Integer scales the image. Only available in pixel-perfect mode.");
+    //        UIWidgets::Tooltip("Integer scales the image. Only available in Pixel Perfect Mode.");
     //        // Display warning if size is being clamped or if framebuffer is larger than viewport.
     //        if (!disabled_pixelPerfectMode &&
     //            (CVarGetInteger(CVAR_PREFIX_ADVANCED_RESOLUTION ".IntegerScale.NeverExceedBounds", 1) &&
@@ -294,8 +306,8 @@ void RegisterResolutionWidgets() {
     //            "Automatically scale image to fit viewport", CVAR_PREFIX_ADVANCED_RESOLUTION
     //            ".IntegerScale.FitAutomatically", true, true, disabled_pixelPerfectMode, "",
     //            UIWidgets::CheckboxGraphics::Cross, false);
-    //        UIWidgets::Tooltip("Automatically sets scale factor to fit window. Only available in pixel-perfect
-    //        mode."); if (CVarGetInteger(CVAR_PREFIX_ADVANCED_RESOLUTION ".IntegerScale.FitAutomatically", 0)) {
+    //        UIWidgets::Tooltip("Automatically sets scale factor to fit window. Only available in Pixel Perfect
+    //        Mode."); if (CVarGetInteger(CVAR_PREFIX_ADVANCED_RESOLUTION ".IntegerScale.FitAutomatically", 0)) {
     //            // This is just here to update the value shown on the slider.
     //            // The function in LUS to handle this setting will ignore IntegerScaleFactor while active.
     //            CVarSetInteger(CVAR_PREFIX_ADVANCED_RESOLUTION ".IntegerScale.Factor", integerScale_maximumBounds);
@@ -457,6 +469,9 @@ void RegisterResolutionWidgets() {
 }
 
 void UpdateResolutionVars() {
+    auto gfx_current_game_window_viewport = GetInterpreter().get()->mGameWindowViewport;
+    auto gfx_current_dimensions = GetInterpreter().get()->mCurDimensions;
+
     // Clamp and update the cvars that don't use UIWidgets
     if (update[UPDATE_aspectRatioX] || update[UPDATE_aspectRatioY] || update[UPDATE_verticalPixelCount]) {
         if (update[UPDATE_aspectRatioX]) {
@@ -535,4 +550,8 @@ bool IsDroppingFrames() {
     const float threshold = targetFPS / 20.0f + 4.1f;
     return ImGui::GetIO().Framerate < targetFPS - threshold;
 }
+
+// static RegisterMenuUpdateFunc updateFunc(UpdateResolutionVars, "Settings", "Graphics");
+// static RegisterMenuInitFunc initFunc(RegisterResolutionWidgets);
+
 } // namespace BenGui

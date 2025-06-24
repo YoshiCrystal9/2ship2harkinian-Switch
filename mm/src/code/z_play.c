@@ -3,6 +3,7 @@
 #include "functions.h"
 #include "z64vismono.h"
 #include "z64visfbuf.h"
+#include "public/bridge/consolevariablebridge.h"
 
 // Variables are put before most headers as a hacky way to bypass bss reordering
 s16 sTransitionFillTimer;
@@ -649,7 +650,7 @@ void Play_UpdateTransition(PlayState* this) {
                 }
             }
 
-            if (!D_801D0D54) {
+            if (!D_801D0D54 && GameInteractor_Should(VB_SETUP_TRANSITION, true)) {
                 Play_SetupTransition(this, Play_ChooseDynamicTransition(this, this->transitionType));
             }
 

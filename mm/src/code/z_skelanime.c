@@ -3,6 +3,8 @@
 #include <string.h>
 #include <stdio.h>
 
+#include "2s2h/GameInteractor/GameInteractor.h"
+
 #define ANIM_INTERP 1
 
 s32 PlayerAnimation_Loop(PlayState* play, SkelAnime* skelAnime);
@@ -1017,7 +1019,8 @@ void AnimationContext_SetLoadFrame(PlayState* play, PlayerAnimationHeader* anima
                                    Vec3s* frameTable) {
     AnimationEntry* entry = AnimationContext_AddEntry(&play->animationCtx, ANIMATION_LINKANIMETION);
 
-    if (entry != NULL) {
+    if (GameInteractor_Should(VB_LOAD_PLAYER_ANIMATION_FRAME, entry != NULL, entry, animation, frame, limbCount,
+                              frameTable)) {
         if (ResourceMgr_OTRSigCheck(animation) != 0)
             animation = ResourceMgr_LoadAnimByName(animation);
 

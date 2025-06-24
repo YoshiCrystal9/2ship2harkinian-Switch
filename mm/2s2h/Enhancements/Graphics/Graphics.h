@@ -4,7 +4,6 @@
 void MotionBlur_RenderMenuOptions();
 
 #ifdef __cplusplus
-#include <libultraship/libultraship.h>
 
 extern "C" {
 #endif

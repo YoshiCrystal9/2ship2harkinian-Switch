@@ -2,7 +2,6 @@
 #include "2s2h/GameInteractor/GameInteractor.h"
 #include "2s2h/BenGui/UIWidgets.hpp"
 #include <string>
-#include <version>
 
 static std::map<const char*, std::map<HOOK_ID, HookInfo>*> hookData;
 

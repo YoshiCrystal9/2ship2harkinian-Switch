@@ -1,4 +1,3 @@
-#include <libultraship/libultraship.h>
 #include "2s2h/GameInteractor/GameInteractor.h"
 #include "2s2h/ShipInit.hpp"
 
@@ -14,7 +13,7 @@ static RegisterShipInitFunc initFunc([]() {
             CHECK(RC_STONE_TOWER_TEMPLE_ENTRANCE_CHEST, HAS_ITEM(ITEM_BOW)),
             CHECK(RC_STONE_TOWER_TEMPLE_ENTRANCE_SMALL_CRATE_01, true),
             CHECK(RC_STONE_TOWER_TEMPLE_ENTRANCE_SMALL_CRATE_02, true),
-            CHECK(RC_STONE_TOWER_TEMPLE_ENTRANCE_SWITCH_CHEST, true),
+            CHECK(RC_STONE_TOWER_TEMPLE_ENTRANCE_SWITCH_CHEST, RANDO_EVENTS[RE_STONE_TOWER_TEMPLE_ENTRANCE_SWITCH_CHEST]),
             CHECK(RC_STONE_TOWER_TEMPLE_ENTRANCE_POT_01, true),
             CHECK(RC_STONE_TOWER_TEMPLE_ENTRANCE_POT_02, true),
         },
@@ -208,7 +207,7 @@ static RegisterShipInitFunc initFunc([]() {
         },
         .connections = {
             CONNECTION(RR_STONE_TOWER_TEMPLE_INVERTED_WIND_ROOM, CAN_USE_MAGIC_ARROW(LIGHT)),
-            CONNECTION(RR_STONE_TOWER_TEMPLE_INVERTED_ENTRANCE_TOP, HAS_ITEM(ITEM_HOOKSHOT))
+            CONNECTION(RR_STONE_TOWER_TEMPLE_INVERTED_ENTRANCE_TOP, HAS_ITEM(ITEM_HOOKSHOT) && RANDO_EVENTS[RE_STONE_TOWER_TEMPLE_ENTRANCE_SWITCH_CHEST])
         }
     };
     Regions[RR_STONE_TOWER_TEMPLE_INVERTED_WIND_ROOM] = RandoRegion{ .name = "Wind Room", .sceneId = SCENE_INISIE_R,
@@ -305,12 +304,15 @@ static RegisterShipInitFunc initFunc([]() {
             CONNECTION(RR_STONE_TOWER_TEMPLE_INVERTED_PATH_TO_GOMESS, true),
         }
     };
-    Regions[RR_STONE_TOWER_TEMPLE_INVERTED_SIDE_OF_ENTRANCE] = RandoRegion{ .name = "Side of Entrance",.sceneId = SCENE_INISIE_R,
+    Regions[RR_STONE_TOWER_TEMPLE_INVERTED_SIDE_OF_ENTRANCE] = RandoRegion{ .name = "Side of Entrance", .sceneId = SCENE_INISIE_R,
         .connections = {
             CONNECTION(RR_STONE_TOWER_TEMPLE_INVERTED_UNDER_BRIDGE, true),
             CONNECTION(RR_STONE_TOWER_TEMPLE_INVERTED_ENTRANCE, true),
-            CONNECTION(RR_STONE_TOWER_TEMPLE_INVERTED_ENTRANCE_TOP, HAS_ITEM(ITEM_HOOKSHOT))
+            CONNECTION(RR_STONE_TOWER_TEMPLE_INVERTED_ENTRANCE_TOP, HAS_ITEM(ITEM_HOOKSHOT) && RANDO_EVENTS[RE_STONE_TOWER_TEMPLE_ENTRANCE_SWITCH_CHEST])
         },
+        .events = {
+            EVENT(RE_STONE_TOWER_TEMPLE_ENTRANCE_SWITCH_CHEST, true),
+        }
     };
     Regions[RR_STONE_TOWER_TEMPLE_INVERTED_ENTRANCE_TOP] = RandoRegion{ .name = "Top of Entrance", .sceneId = SCENE_INISIE_R,
         .connections = {

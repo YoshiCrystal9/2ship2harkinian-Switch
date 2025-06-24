@@ -2,6 +2,7 @@
 #include "ActorListIndex.h"
 #include "2s2h/ShipInit.hpp"
 #include "2s2h/GameInteractor/GameInteractor.h"
+#include <cassert>
 
 ActorExtensionId actorListIndexActorExt = 0;
 s16 currentActorListIndex = -1;

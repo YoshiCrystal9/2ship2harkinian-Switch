@@ -1,6 +1,5 @@
 #include "2s2h/resource/importer/scenecommand/SetRoomBehaviorFactory.h"
 #include "2s2h/resource/type/scenecommand/SetRoomBehavior.h"
-#include "spdlog/spdlog.h"
 
 namespace SOH {
 std::shared_ptr<Ship::IResource>

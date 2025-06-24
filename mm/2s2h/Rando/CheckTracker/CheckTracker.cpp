@@ -4,7 +4,6 @@
 #include "2s2h/ShipUtils.h"
 #include "2s2h/BenGui/UIWidgets.hpp"
 #include "2s2h/Rando/StaticData/StaticData.h"
-#include <sstream>
 #include <cstring>
 
 // Image Icons
@@ -15,6 +14,7 @@
 #include "assets/archives/icon_item_24_static/icon_item_24_static_yar.h"
 #include "assets/archives/schedule_dma_static/schedule_dma_static_yar.h"
 #include "assets/interface/icon_item_field_static/icon_item_field_static.h"
+#include "assets/objects/gameplay_keep/gameplay_keep.h"
 
 extern "C" {
 s16 Play_GetOriginalSceneId(s16 sceneId);
@@ -70,6 +70,7 @@ std::vector<const char*> checkTypeIconList = {
     /*RCTYPE_COW*/ gItemIconRomaniMaskTex,
     /*RCTYPE_CRATE*/ gCrateTrackerIcon,
     /*RCTYPE_FREESTANDING*/ gRupeeCounterIconTex,
+    /*RCTYPE_GRASS*/ gameplay_keep_Tex_053140,
     /*RCTYPE_HEART*/ gQuestIconPieceOfHeartTex,
     /*RCTYPE_MINIGAME*/ gArcheryScoreIconTex,
     /*RCTYPE_NPC*/ gItemIconBombersNotebookTex,

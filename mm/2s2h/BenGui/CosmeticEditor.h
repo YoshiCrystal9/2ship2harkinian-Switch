@@ -1,4 +1,5 @@
-#include <libultraship/libultraship.h>
+#ifndef COSMETIC_EDITOR_H
+#define COSMETIC_EDITOR_H
 
 #ifdef __cplusplus
 
@@ -63,6 +64,13 @@ typedef enum {
     COSMETIC_ELEMENT_START_BUTTON,
     COSMETIC_ELEMENT_FILE_SELECT_MENU,
     COSMETIC_ELEMENT_FILE_SELECT_PLATES,
+    COSMETIC_ELEMENT_HUMAN_TUNIC,
+    COSMETIC_ELEMENT_HUMAN_HAIR,
+    COSMETIC_ELEMENT_DEKU_TUNIC,
+    COSMETIC_ELEMENT_DEKU_HAIR,
+    COSMETIC_ELEMENT_GORON_TUNIC,
+    COSMETIC_ELEMENT_ZORA_TUNIC,
+    COSMETIC_ELEMENT_KAFEI_HAIR,
     COSMETIC_ELEMENT_MAX
 } CosmeticEditorElementID;
 
@@ -87,3 +95,5 @@ typedef struct {
 #ifdef __cplusplus
 }
 #endif //__cplusplus
+
+#endif
