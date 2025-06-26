@@ -258,7 +258,7 @@ jobs:
       image: devkitpro/devkita64:20241023
     steps:
     - uses: actions/checkout@v4
-        with:
+      with:
           submodules: recursive
     - name: Install dependencies
       run: |
