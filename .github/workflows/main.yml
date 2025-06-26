@@ -301,8 +301,9 @@ jobs:
           ${{ runner.os }}-switch-ccache-
     - name: Build 2ship
       run: |
-        cmake -H. -Bbuild-switch -GNinja -DCMAKE_TOOLCHAIN_FILE=/opt/devkitpro/cmake/Switch.cmake -DCMAKE_BUILD_TYPE:STRING=Release -DCMAKE_CXX_COMPILER_LAUNCHER=ccache -DCMAKE_C_COMPILER_LAUNCHER=ccache
-        cmake --build build-switch --target 2ship_nro -j3
+        cmake -H. -Bbuild-switch -GNinja -DCMAKE_TOOLCHAIN_FILE=/opt/devkitpro/cmake/Switch.cmake
+        cmake --build build-switch --target 2ship_nro --config Release -j3
+        wget -O gamecontrollerdb.txt https://raw.githubusercontent.com/mdqinc/SDL_GameControllerDB/master/gamecontrollerdb.txt
 
         mv build-switch/mm/*.nro 2ship.nro
         mv README.md readme.txt
@@ -318,6 +319,7 @@ jobs:
           2ship.nro
           2ship.o2r
           readme.txt
+          gamecontrollerdb.txt
   build-windows:
     needs: generate-2ship-otr
     runs-on: windows-latest
