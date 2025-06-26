@@ -8,7 +8,7 @@
 #include <spdlog/fmt/fmt.h>
 #include "variables.h"
 #include <tuple>
-#include "Config.h"
+#include "config/ConfigVersion.h"
 
 extern "C" {
 #include "z64.h"
