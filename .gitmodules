@@ -5,3 +5,6 @@
 	path = libultraship
 	url = https://github.com/Net64DD/libultraship.git
 	branch = main-nx
+[submodule "OTRExporter"]
+	path = OTRExporter
+	url = https://github.com/HarbourMasters/OTRExporter.git
