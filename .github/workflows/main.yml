@@ -255,8 +255,11 @@ jobs:
     needs: generate-2ship-otr
     runs-on: ${{ (vars.LINUX_RUNNER && fromJSON(vars.LINUX_RUNNER)) || 'ubuntu-latest' }}
     container:
-      image: devkitpro/devkita64:latest
+      image: devkitpro/devkita64:20241023
     steps:
+    - uses: actions/checkout@v4
+        with:
+          submodules: recursive
     - name: Install dependencies
       run: |
         sudo apt-get update
