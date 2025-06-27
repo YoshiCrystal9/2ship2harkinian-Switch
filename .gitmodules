@@ -1,6 +1,6 @@
 [submodule "ZAPDTR"]
 	path = ZAPDTR
-	url = https://github.com/louist103/ZAPDTR.git
+	url = https://github.com/HarbourMasters/ZAPDTR.git
 [submodule "libultraship"]
 	path = libultraship
 	url = https://github.com/YoshiCrystal9/libultraship.git
