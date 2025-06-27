@@ -5,7 +5,3 @@
 	path = libultraship
 	url = https://github.com/YoshiCrystal9/libultraship.git
 	branch = main-nx
-[submodule "OTRExporter"]
-	path = OTRExporter
-	url = https://github.com/HarbourMasters/OTRExporter.git
-	branch = 2ship-satoko
