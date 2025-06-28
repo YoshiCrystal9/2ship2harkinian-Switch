@@ -1315,12 +1315,10 @@ void BenMenu::AddEnhancements() {
             "with Deku Mask, Ocarina, Song of Time, and Song of Healing."));
     AddWidget(path, "Skip Story Cutscenes", WIDGET_CVAR_CHECKBOX)
         .CVar("gEnhancements.Cutscenes.SkipStoryCutscenes")
-        .Options(CheckboxOptions().Tooltip(
-            "Disclaimer: This doesn't do much yet, we will be progressively adding more skips over time."));
+        .Options(CheckboxOptions().Tooltip("This skips many of the cutscenes associated with the main story."));
     AddWidget(path, "Skip Misc Interactions", WIDGET_CVAR_CHECKBOX)
         .CVar("gEnhancements.Cutscenes.SkipMiscInteractions")
-        .Options(CheckboxOptions().Tooltip(
-            "Disclaimer: This doesn't do much yet, we will be progressively adding more skips over time."));
+        .Options(CheckboxOptions().Tooltip("This skips many minor cutscenes and interactions."));
     AddWidget(path, "Skip Item Get Cutscene", WIDGET_CVAR_COMBOBOX)
         .CVar("gEnhancements.Cutscenes.SkipGetItemCutscenes")
         .Options(ComboboxOptions()
