@@ -5478,6 +5478,10 @@ void Audio_StartMorningSceneSequence(u16 seqId) {
 }
 
 void Audio_PlaySceneSequence(u16 seqId, u8 dayMinusOne) {
+    if (GameInteractor_Should(VB_PLAY_SCENE_SEQUENCE, false, &sRequestedSceneSeqId, &sPrevMainBgmSeqId, &seqId)) {
+        return;
+    }
+
     if (sRequestedSceneSeqId != seqId) {
         if (seqId == NA_BGM_AMBIENCE) {
             Audio_PlayAmbience(AMBIENCE_ID_08);
