@@ -167,7 +167,7 @@ void RegisterResolutionWidgets() {
             CVarSetInteger(CVAR_PREFIX_ADVANCED_RESOLUTION ".UIComboItem.AspectRatio", item_aspectRatio);
             CVarSave();
         })
-        .Options(ComboboxOptions().ComboMap(aspectRatioPresetLabels));
+        .Options(ComboboxOptions().ComboMap(&aspectRatioPresetLabels));
     mBenMenu->AddWidget(path, "AspectRationCustom", WIDGET_CUSTOM).CustomFunction([](WidgetInfo& info) {
         auto gfx_current_dimensions = GetInterpreter().get()->mCurDimensions;
 

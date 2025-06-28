@@ -173,19 +173,26 @@ namespace UIWidgets {
             return *this;
         }
     };
-
+using ComboMap_t = std::unordered_map<int32_t, const char*>*;
+using ComboVec_t = std::vector<const char*>*;
     struct ComboboxOptions : WidgetOptions {
-        std::unordered_map<int32_t, const char*> comboMap = {};
+        std::variant<ComboMap_t, ComboVec_t> comboVariant;
         uint32_t defaultIndex = 0; // Only applicable to CVarCombobox
         ComponentAlignment alignment = ComponentAlignment::Left;
         LabelPosition labelPosition = LabelPosition::Above;
         ImGuiComboFlags flags = 0;
         Colors color = Colors::LightBlue;
 
-        ComboboxOptions& ComboMap(std::unordered_map<int32_t, const char*> comboMap_) {
-            comboMap = comboMap_;
+        ComboboxOptions& ComboMap(const std::unordered_map<int32_t, const char*>* comboMap_) {
+            comboVariant = const_cast<std::unordered_map<int32_t, const char*>*>(comboMap_);
             return *this;
         }
+
+        ComboboxOptions& ComboVec(const std::vector<const char*>* comboMap_) {
+            comboVariant = const_cast<std::vector<const char*>*>(comboMap_);
+            return *this;
+        }
+
         ComboboxOptions& DefaultIndex(uint32_t defaultIndex_) {
             defaultIndex = defaultIndex_;
             return *this;
@@ -362,13 +369,13 @@ namespace UIWidgets {
     void PopStyleCombobox();
 
     template <typename T>
-    bool Combobox(const char* label, T* value, const std::unordered_map<T, const char*>& comboMap, const ComboboxOptions& options = {}) {
+    bool Combobox(const char* label, T* value, const std::unordered_map<T, const char*>* comboMap, const ComboboxOptions& options = {}) {
         bool dirty = false;
         float startX = ImGui::GetCursorPosX();
         std::string invisibleLabelStr = "##" + std::string(label);
         const char* invisibleLabel = invisibleLabelStr.c_str();
-        if (!comboMap.contains(*value)) {
-            *value = comboMap.begin()->first;
+        if (!comboMap->contains(*value)) {
+            *value = comboMap->begin()->first;
         }
         ImGui::PushID(label);
         ImGui::BeginGroup();
@@ -381,7 +388,7 @@ namespace UIWidgets {
             } else if (options.labelPosition == LabelPosition::Near) {
                 ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x - ImGui::CalcTextSize(label).x - ImGui::GetStyle().ItemSpacing.x * 2);
             } else if (options.labelPosition == LabelPosition::Far || options.labelPosition == LabelPosition::None) {
-                ImGui::SetNextItemWidth(ImGui::CalcTextSize(comboMap.at(*value)).x + ImGui::GetStyle().FramePadding.x * 4 + ImGui::GetStyle().ItemSpacing.x);
+                ImGui::SetNextItemWidth(ImGui::CalcTextSize(comboMap->at(*value)).x + ImGui::GetStyle().FramePadding.x * 4 + ImGui::GetStyle().ItemSpacing.x);
             }
         } else if (options.alignment == ComponentAlignment::Right) {
             if (options.labelPosition == LabelPosition::Above) {
@@ -393,14 +400,14 @@ namespace UIWidgets {
                 ImGui::SameLine(ImGui::CalcTextSize(label).x + ImGui::GetStyle().ItemSpacing.x * 2);
                 ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
             } else if (options.labelPosition == LabelPosition::Far || options.labelPosition == LabelPosition::None) {
-                float width = ImGui::CalcTextSize(comboMap.at(*value)).x + ImGui::GetStyle().FramePadding.x * 4;
+                float width = ImGui::CalcTextSize(comboMap->at(*value)).x + ImGui::GetStyle().FramePadding.x * 4;
                 ImGui::SameLine(ImGui::GetContentRegionAvail().x - width);
                 ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
             }
         }
-        if (ImGui::BeginCombo(invisibleLabel, comboMap.at(*value), options.flags)) {
+        if (ImGui::BeginCombo(invisibleLabel, comboMap->at(*value), options.flags)) {
             ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(10.0f, 10.0f));
-            for (const auto& pair : comboMap) {
+            for (const auto& pair : *comboMap) {
                 if (strlen(pair.second) > 1) {
                     if (ImGui::Selectable(pair.second, pair.first == *value)) {
                         *value = pair.first;
@@ -453,7 +460,7 @@ namespace UIWidgets {
         PushStyleCombobox(options.color);
         if (options.alignment == ComponentAlignment::Left) {
             if (options.labelPosition == LabelPosition::Above) {
-                ImGui::Text(label);
+                ImGui::Text("%s",label);
                 ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
             } else if (options.labelPosition == LabelPosition::Near) {
                 ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x - ImGui::CalcTextSize(label).x - ImGui::GetStyle().ItemSpacing.x * 2);
@@ -464,7 +471,7 @@ namespace UIWidgets {
             if (options.labelPosition == LabelPosition::Above) {
                 ImGui::NewLine();
                 ImGui::SameLine(ImGui::GetContentRegionAvail().x - ImGui::CalcTextSize(label).x);
-                ImGui::Text(label);
+                ImGui::Text("%s",label);
                 ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
             } else if (options.labelPosition == LabelPosition::Near) {
                 ImGui::SameLine(ImGui::CalcTextSize(label).x + ImGui::GetStyle().ItemSpacing.x * 2);
@@ -492,15 +499,15 @@ namespace UIWidgets {
         if (options.alignment == ComponentAlignment::Left) {
             if (options.labelPosition == LabelPosition::Near) {
                 ImGui::SameLine();
-                ImGui::Text(label);
+                ImGui::Text("%s",label);
             } else if (options.labelPosition == LabelPosition::Far) {
                 ImGui::SameLine(ImGui::GetContentRegionAvail().x - ImGui::CalcTextSize(label).x);
-                ImGui::Text(label);
+                ImGui::Text("%s",label);
             }
         } else if (options.alignment == ComponentAlignment::Right) {
             if (options.labelPosition == LabelPosition::Near || options.labelPosition == LabelPosition::Far) {
                 ImGui::SameLine(startX);
-                ImGui::Text(label);
+                ImGui::Text("%s",label);
             }
         }
         PopStyleCombobox();
@@ -528,7 +535,7 @@ namespace UIWidgets {
         PushStyleCombobox(options.color);
         if (options.alignment == ComponentAlignment::Left) {
             if (options.labelPosition == LabelPosition::Above) {
-                ImGui::Text(label);
+                ImGui::Text("%s",label);
                 ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
             } else if (options.labelPosition == LabelPosition::Near) {
                 ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x - ImGui::CalcTextSize(label).x - ImGui::GetStyle().ItemSpacing.x * 2);
@@ -539,7 +546,7 @@ namespace UIWidgets {
             if (options.labelPosition == LabelPosition::Above) {
                 ImGui::NewLine();
                 ImGui::SameLine(ImGui::GetContentRegionAvail().x - ImGui::CalcTextSize(label).x);
-                ImGui::Text(label);
+                ImGui::Text("%s",label);
                 ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
             } else if (options.labelPosition == LabelPosition::Near) {
                 ImGui::SameLine(ImGui::CalcTextSize(label).x + ImGui::GetStyle().ItemSpacing.x * 2);
@@ -567,15 +574,15 @@ namespace UIWidgets {
         if (options.alignment == ComponentAlignment::Left) {
             if (options.labelPosition == LabelPosition::Near) {
                 ImGui::SameLine();
-                ImGui::Text(label);
+                ImGui::Text("%s",label);
             } else if (options.labelPosition == LabelPosition::Far) {
                 ImGui::SameLine(ImGui::GetContentRegionAvail().x - ImGui::CalcTextSize(label).x);
-                ImGui::Text(label);
+                ImGui::Text("%s",label);
             }
         } else if (options.alignment == ComponentAlignment::Right) {
             if (options.labelPosition == LabelPosition::Near || options.labelPosition == LabelPosition::Far) {
                 ImGui::SameLine(startX);
-                ImGui::Text(label);
+                ImGui::Text("%s", label);
             }
         }
         PopStyleCombobox();
@@ -669,7 +676,7 @@ namespace UIWidgets {
     }
 
     template <typename T = int32_t>
-    bool CVarCombobox(const char* label, const char* cvarName, const std::unordered_map<T, const char*>& comboMap, const ComboboxOptions& options = {}) {
+    bool CVarCombobox(const char* label, const char* cvarName, const std::unordered_map<T, const char*>* comboMap, const ComboboxOptions& options = {}) {
         bool dirty = false;
         int32_t value = CVarGetInteger(cvarName, options.defaultIndex);
         if (Combobox<T>(label, &value, comboMap, options)) {

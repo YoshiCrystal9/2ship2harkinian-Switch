@@ -108,7 +108,7 @@ static void DrawLogicConditionsTab() {
     f32 columnWidth = ImGui::GetContentRegionAvail().x / 3 - (ImGui::GetStyle().ItemSpacing.x * 2);
     f32 halfHeight = ImGui::GetContentRegionAvail().y / 2 - (ImGui::GetStyle().ItemSpacing.y * 2);
     ImGui::BeginChild("randoLogicColumn1", ImVec2(columnWidth, halfHeight));
-    UIWidgets::CVarCombobox("Logic", Rando::StaticData::Options[RO_LOGIC].cvar, logicOptions);
+    UIWidgets::CVarCombobox("Logic", Rando::StaticData::Options[RO_LOGIC].cvar, &logicOptions);
     UIWidgets::Tooltip(
         "Glitchless - The items are shuffled in a way that guarantees the seed is beatable without "
         "glitches.\n\n"
@@ -126,7 +126,7 @@ static void DrawLogicConditionsTab() {
     ImGui::BeginChild("randoLogicColumn2", ImVec2(columnWidth, halfHeight));
 
     UIWidgets::CVarCombobox("Dungeon Access", Rando::StaticData::Options[RO_ACCESS_DUNGEONS].cvar,
-                            accessDungeonOptions);
+                            &accessDungeonOptions);
     UIWidgets::Tooltip("Dungeon access requirements:\n\n"
                        "Requires Transformation & Song - Requires both the correct form and the song (Vanilla).\n\n"
                        "Requires Transformation or Song - Requires either the correct form or the song.\n\n"
@@ -139,7 +139,7 @@ static void DrawLogicConditionsTab() {
     UIWidgets::CVarSliderInt("Moon Access Remains Required",
                              Rando::StaticData::Options[RO_ACCESS_MOON_REMAINS_COUNT].cvar,
                              IntSliderOptions().Min(0).Max(4).DefaultValue(4));
-    UIWidgets::CVarCombobox("Trials Access", Rando::StaticData::Options[RO_ACCESS_TRIALS].cvar, accessTrialsOptions);
+    UIWidgets::CVarCombobox("Trials Access", Rando::StaticData::Options[RO_ACCESS_TRIALS].cvar, &accessTrialsOptions);
     ImGui::EndChild();
     ImGui::BeginChild("randoLogicTricks", ImVec2(0, 0));
     ImGui::SeparatorText("Tricks & Glitches");

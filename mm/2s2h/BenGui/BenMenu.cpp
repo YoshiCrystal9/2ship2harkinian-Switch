@@ -28,6 +28,114 @@ extern SaveContext gSaveContext;
 extern std::unordered_map<s16, const char*> warpPointSceneList;
 extern void Warp();
 
+static const std::unordered_map<int32_t, const char*> menuThemeOptions = {
+    { UIWidgets::Colors::Red, "Red" },
+    { UIWidgets::Colors::DarkRed, "Dark Red" },
+    { UIWidgets::Colors::Orange, "Orange" },
+    { UIWidgets::Colors::Green, "Green" },
+    { UIWidgets::Colors::DarkGreen, "Dark Green" },
+    { UIWidgets::Colors::LightBlue, "Light Blue" },
+    { UIWidgets::Colors::Blue, "Blue" },
+    { UIWidgets::Colors::DarkBlue, "Dark Blue" },
+    { UIWidgets::Colors::Indigo, "Indigo" },
+    { UIWidgets::Colors::Violet, "Violet" },
+    { UIWidgets::Colors::Purple, "Purple" },
+    { UIWidgets::Colors::Brown, "Brown" },
+    { UIWidgets::Colors::Gray, "Gray" },
+    { UIWidgets::Colors::DarkGray, "Dark Gray" },
+};
+
+static const std::vector<const char*> alwaysWinDoggyraceOptions = {
+    "Off",                       // ALWAYS_WIN_DOGGY_RACE_OFF
+    "When owning Mask of Truth", // ALWAYS_WIN_DOGGY_RACE_MASKOFTRUTH
+    "Always",                    // ALWAYS_WIN_DOGGY_RACE_ALWAYS
+};
+
+static const std::vector<const char*> cremiaRewardOptions = {
+    "Vanilla", // CREMIA_REWARD_RANDOM
+    "Hug",     // CREMIA_REWARD_ALWAYS_HUG
+    "Rupee",   // CREMIA_REWARD_ALWAYS_RUPEE
+};
+
+static const std::vector<const char*> gibdoTradeSequenceOptions = {
+    "Vanilla",  // GIBDO_TRADE_SEQUENCE_VANILLA
+    "MM3D",     // GIBDO_TRADE_SEQUENCE_MM3D
+    "No trade", // GIBDO_TRADE_SEQUENCE_NO_TRADE
+};
+
+static const std::vector<const char*> clockTypeOptions = {
+    "Original",   // CLOCK_TYPE_ORIGINAL
+    "MM3D style", // CLOCK_TYPE_3DS
+    "Text only",  // CLOCK_TYPE_TEXT_BASED
+};
+
+static const std::vector<const char*> textureFilteringOptions = {
+    "Three-Point", // Fast::FILTER_THREE_POINT,
+    "Linear",      // Fast::FILTER_LINEAR
+    "None",        // Fast::FILTER_NONE
+};
+
+static const std::vector<const char*> motionBlurOptions = {
+    "Dynamic (default)", // MOTION_BLUR_DYNAMIC
+    "Always Off",        // MOTION_BLUR_ALWAYS_OFF
+    "Always On",         // MOTION_BLUR_ALWAYS_ON
+};
+static const std::vector<const char*> debugSaveOptions = {
+    "100% save",          // DEBUG_SAVE_INFO_COMPLETE
+    "Vanilla debug save", // DEBUG_SAVE_INFO_VANILLA_DEBUG
+    "Empty save",         // DEBUG_SAVE_INFO_NONE
+};
+
+static const std::vector<const char*> logLevels = {
+    "Trace",    // DEBUG_LOG_TRACE
+    "Debug",    // DEBUG_LOG_DEBUG
+    "Info",     // DEBUG_LOG_INFO
+    "Warn",     // DEBUG_LOG_WARN
+    "Error",    // DEBUG_LOG_ERROR
+    "Critical", // DEBUG_LOG_CRITICAL
+    "Off",      // DEBUG_LOG_OFF
+};
+
+static const std::vector<const char*> timeStopOptions = {
+    "Off",                     // TIME_STOP_OFF
+    "Temples",                 // TIME_STOP_TEMPLES
+    "Temples + Mini Dungeons", // TIME_STOP_TEMPLES_DUNGEONS
+};
+
+static const std::vector<const char*> notificationPosition = {
+    "Top Left", "Top Right", "Bottom Left", "Bottom Right", "Hidden",
+};
+
+static const std::vector<const char*> dekuGuardSearchBallsOptions = {
+    "Never",      // DEKU_GUARD_SEARCH_BALLS_NEVER
+    "Night Only", // DEKU_GUARD_SEARCH_BALLS_NIGHT_ONLY
+    "Always",     // DEKU_GUARD_SEARCH_BALLS_ALWAYS
+};
+
+static const std::vector<const char*> skipGetItemCutscenesOptions = {
+    "Never",
+    "Junk Items Only",
+    "Everything But Major",
+    "Always",
+};
+
+static const std::vector<const char*> powerCrouchStabOptions = {
+    "Patched (US/EU)",
+    "Unpatched (JP)",
+    "Unpatched (OoT)",
+};
+
+static const std::vector<const char*> maskOfTruthGrottoOptions = {
+    "Off",                // HIDDEN_GROTTOS_VISIBLITY_OFF
+    "Wear Mask of Truth", // HIDDEN_GROTTOS_VISIBLITY_WEAR_MASK_OF_TRUTH
+    "Have Mask of Truth", // HIDDEN_GROTTOS_VISIBLITY_HAVE_MASK_OF_TRUTH
+    "Always",             // HIDDEN_GROTTOS_VISIBLITY_ALWAYS
+};
+
+static const std::unordered_map<int32_t, const char*> damageMultiplierOptions = {
+    { 0, "1x" }, { 1, "2x" }, { 2, "4x" }, { 3, "8x" }, { 4, "16x" }, { 10, "1 Hit KO" },
+};
+
 namespace BenGui {
 extern std::shared_ptr<BenMenu> mBenMenu;
 void FreeLookPitchMinMax() {
@@ -165,7 +273,7 @@ void BenMenu::AddSettings() {
         .CVar("gSettings.Menu.Theme")
         .Options(ComboboxOptions()
                      .Tooltip("Changes the Theme of the Menu Widgets.")
-                     .ComboMap(menuThemeOptions)
+                     .ComboMap(&menuThemeOptions)
                      .DefaultIndex(Colors::LightBlue));
 #if not defined(__SWITCH__) and not defined(__WIIU__)
     AddWidget(path, "Menu Controller Navigation", WIDGET_CVAR_CHECKBOX)
@@ -384,7 +492,7 @@ void BenMenu::AddSettings() {
             "Allows multiple windows to be opened at once. Requires a reload to take effect."));
     AddWidget(path, "Texture Filter (Needs reload)", WIDGET_CVAR_COMBOBOX)
         .CVar(CVAR_TEXTURE_FILTER)
-        .Options(ComboboxOptions().Tooltip("Sets the applied Texture Filtering.").ComboMap(textureFilteringMap));
+        .Options(ComboboxOptions().Tooltip("Sets the applied Texture Filtering.").ComboVec(&textureFilteringOptions));
 
     path.sidebarName = "Controls";
     AddSidebarEntry("Settings", "Controls", 1);
@@ -400,7 +508,7 @@ void BenMenu::AddSettings() {
         .CVar("gNotifications.Position")
         .Options(ComboboxOptions()
                      .Tooltip("Which corner of the screen notifications appear in.")
-                     .ComboMap(notificationPosition)
+                     .ComboVec(&notificationPosition)
                      .DefaultIndex(3));
     AddWidget(path, "Duration: %.0f seconds", WIDGET_CVAR_SLIDER_FLOAT)
         .CVar("gNotifications.Duration")
@@ -730,7 +838,7 @@ void BenMenu::AddEnhancements() {
                          "- Temples: Stops time in Woodfall, Snowhead, Great Bay, and Stone Tower Temples.\n"
                          "- Temples + Mini Dungeons: In addition to the above temples, stops time in both Spider "
                          "Houses, Pirate's Fortress, Beneath the Well, Ancient Castle of Ikana, and Secret Shrine.")
-                .ComboMap(timeStopOptions));
+                .ComboVec(&timeStopOptions));
 
     //// Gameplay Enhancements
     path = { "Enhancements", "Gameplay", SECTION_COLUMN_1 };
@@ -834,7 +942,7 @@ void BenMenu::AddEnhancements() {
     AddWidget(path, "Minigames", WIDGET_SEPARATOR_TEXT);
     AddWidget(path, "Always Win Doggy Race", WIDGET_CVAR_COMBOBOX)
         .CVar("gEnhancements.Minigames.AlwaysWinDoggyRace")
-        .Options(ComboboxOptions().Tooltip("Makes the Doggy Race easier to win.").ComboMap(alwaysWinDoggyraceOptions));
+        .Options(ComboboxOptions().Tooltip("Makes the Doggy Race easier to win.").ComboVec(&alwaysWinDoggyraceOptions));
     AddWidget(path, "Milk Run Reward Options", WIDGET_CVAR_COMBOBOX)
         .CVar("gEnhancements.Minigames.CremiaHugs")
         .Options(ComboboxOptions()
@@ -842,7 +950,7 @@ void BenMenu::AddEnhancements() {
                               "-Vanilla: Reward is Random\n"
                               "-Hug: Get the hugging cutscene\n"
                               "-Rupee: Get the rupee reward")
-                     .ComboMap(cremiaRewardOptions));
+                     .ComboVec(&cremiaRewardOptions));
     AddWidget(path, "Cucco Shack Cucco Count", WIDGET_CVAR_SLIDER_INT)
         .CVar("gEnhancements.Minigames.CuccoShackCuccoCount")
         .Options(IntSliderOptions()
@@ -1008,8 +1116,9 @@ void BenMenu::AddEnhancements() {
     AddWidget(path, "Clock", WIDGET_SEPARATOR_TEXT);
     AddWidget(path, "Clock Type", WIDGET_CVAR_COMBOBOX)
         .CVar("gEnhancements.Graphics.ClockType")
-        .Options(
-            ComboboxOptions().Tooltip("Swaps between Graphical and Text only Clock types.").ComboMap(clockTypeOptions));
+        .Options(ComboboxOptions()
+                     .Tooltip("Swaps between Graphical and Text only Clock types.")
+                     .ComboVec(&clockTypeOptions));
     AddWidget(path, "24 Hours Clock", WIDGET_CVAR_CHECKBOX)
         .CVar("gEnhancements.Graphics.24HoursClock")
         .Options(CheckboxOptions().Tooltip("Changes from a 12 Hour to a 24 Hour Clock."));
@@ -1025,7 +1134,7 @@ void BenMenu::AddEnhancements() {
         .Options(ComboboxOptions()
                      .Tooltip("Selects the Mode for Motion Blur.")
                      .LabelPosition(LabelPosition::None)
-                     .ComboMap(motionBlurOptions));
+                     .ComboVec(&motionBlurOptions));
     AddWidget(path, "Interpolate", WIDGET_CVAR_CHECKBOX)
         .CVar("gEnhancements.Graphics.MotionBlur.Interpolate")
         .PreFunc([](WidgetInfo& info) {
@@ -1216,7 +1325,7 @@ void BenMenu::AddEnhancements() {
         .CVar("gEnhancements.Cutscenes.SkipGetItemCutscenes")
         .Options(ComboboxOptions()
                      .Tooltip("Note: This only works in Randomizer currently.")
-                     .ComboMap(skipGetItemCutscenesOptions));
+                     .ComboVec(&skipGetItemCutscenesOptions));
 
     // Dialogue Enhancements
     path.column = SECTION_COLUMN_2;
@@ -1319,7 +1428,7 @@ void BenMenu::AddEnhancements() {
                          "  pots).\n"
                          "- Unpatched (OoT): Glitch restored, and your initial damage is 1 (a Kokiri Sword slash).")
                 .DefaultIndex(0)
-                .ComboMap(powerCrouchStabOptions));
+                .ComboVec(&powerCrouchStabOptions));
     AddWidget(path, "Side Rolls", WIDGET_CVAR_CHECKBOX)
         .CVar("gEnhancements.Restorations.SideRoll")
         .Options(CheckboxOptions().Tooltip("Restores side rolling from OoT."));
@@ -1367,7 +1476,7 @@ void BenMenu::AddEnhancements() {
                          "- Night Only: Only show the search balls at night. This matches original N64 behaviour.\n"
                          "- Always: Always show the search balls.")
                 .DefaultIndex(DekuGuardSearchBallsOptions::DEKU_GUARD_SEARCH_BALLS_NIGHT_ONLY)
-                .ComboMap(dekuGuardSearchBallsOptions));
+                .ComboVec(&dekuGuardSearchBallsOptions));
     AddWidget(path, "Lower Bank Reward Thresholds", WIDGET_CVAR_CHECKBOX)
         .CVar("gEnhancements.DifficultyOptions.LowerBankRewardThresholds")
         .Options(
@@ -1384,7 +1493,7 @@ void BenMenu::AddEnhancements() {
                          "  The Gibdo requesting a blue potion will also accept a red potion.\n"
                          "- No trade: Gibdos will vanish without taking items.")
                 .DefaultIndex(GibdoTradeSequenceOptions::GIBDO_TRADE_SEQUENCE_VANILLA)
-                .ComboMap(gibdoTradeSequenceOptions));
+                .ComboVec(&gibdoTradeSequenceOptions));
     AddWidget(path, "Hidden Grottos Visibility", WIDGET_CVAR_COMBOBOX)
         .CVar("gEnhancements.DifficultyOptions.HiddenGrottosVisibility")
         .Options(
@@ -1396,7 +1505,7 @@ void BenMenu::AddEnhancements() {
                     "- Have Mask of Truth: Hidden grottos are visible once the Mask of Truth is obtained.\n"
                     "- Always: Hidden grottos always have a visual marker.\n")
                 .DefaultIndex(HiddenGrottosVisibilityOptions::HIDDEN_GROTTOS_VISIBLITY_OFF)
-                .ComboMap(maskOfTruthGrottoOptions));
+                .ComboVec(&maskOfTruthGrottoOptions));
 
     path.column = SECTION_COLUMN_2;
     AddWidget(path, "Hyper Enemies", WIDGET_CVAR_CHECKBOX)
@@ -1406,7 +1515,7 @@ void BenMenu::AddEnhancements() {
         .CVar("gEnhancements.DifficultyOptions.DamageMultiplier")
         .Options(ComboboxOptions()
                      .Tooltip("Adjusts the amount of damage Link takes from all sources.")
-                     .ComboMap(damageMultiplierOptions));
+                     .ComboMap(&damageMultiplierOptions));
     AddWidget(path, "Permanent Heart Loss", WIDGET_CVAR_CHECKBOX)
         .CVar("gEnhancements.DifficultyOptions.PermanentHeartLoss")
         .Options(CheckboxOptions().Tooltip(
@@ -1487,7 +1596,7 @@ void BenMenu::AddDevTools() {
                               "- Empty Save: The default 3 heart save file in first cycle.\n"
                               "- Vanilla Debug Save: Uses the title screen save info (8 hearts, all items and masks).\n"
                               "- 100\% Save: All items, equipment, mask, quest status and Bombers' Notebook complete.")
-                     .ComboMap(debugSaveOptions))
+                     .ComboVec(&debugSaveOptions))
         .PreFunc([](WidgetInfo& info) { info.isHidden = mBenMenu->disabledMap.at(DISABLE_FOR_DEBUG_MODE_OFF).active; });
     AddWidget(path, "Prevent Actor Update", WIDGET_CVAR_CHECKBOX)
         .CVar("gDeveloperTools.PreventActorUpdate")
@@ -1510,7 +1619,7 @@ void BenMenu::AddDevTools() {
         .Options(ComboboxOptions()
                      .Tooltip("The log level determines which messages are printed to the "
                               "console. This does not affect the log file output.")
-                     .ComboMap(logLevels))
+                     .ComboVec(&logLevels))
         .Callback([](WidgetInfo& info) {
             Ship::Context::GetInstance()->GetLogger()->set_level(
                 (spdlog::level::level_enum)CVarGetInteger("gDeveloperTools.LogLevel", 1));

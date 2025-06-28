@@ -179,7 +179,7 @@ uint32_t Menu::DrawSearchResults(std::string& menuSearchText) {
         auto& menuEntry = menuEntries.at(menuLabel);
         for (auto& sidebarLabel : menuEntry.sidebarOrder) {
             auto& sidebar = menuEntry.sidebars[sidebarLabel];
-            for (int i = 0; i < sidebar.columnWidgets.size(); i++) {
+            for (size_t i = 0; i < sidebar.columnWidgets.size(); i++) {
                 auto& column = sidebar.columnWidgets.at(i);
                 for (auto& info : column) {
                     if (info.type == WIDGET_SEARCH || info.type == WIDGET_SEPARATOR ||
@@ -187,7 +187,7 @@ uint32_t Menu::DrawSearchResults(std::string& menuSearchText) {
                         continue;
                     }
                     const char* tooltip = info.options->tooltip;
-                    std::string widgetStr = std::string(info.name) + std::string(tooltip != NULL ? tooltip : "");
+                    std::string widgetStr = std::string(info.name) + std::string(tooltip != nullptr ? tooltip : "");
                     std::transform(menuSearchText.begin(), menuSearchText.end(), menuSearchText.begin(), ::tolower);
                     menuSearchText.erase(std::remove(menuSearchText.begin(), menuSearchText.end(), ' '),
                                          menuSearchText.end());
@@ -276,7 +276,7 @@ void Menu::MenuDrawItem(WidgetInfo& widget, uint32_t width, UIWidgets::Colors me
                 options.tooltip = "Sets the audio API used by the game. Requires a relaunch to take effect.";
                 options.disabled = Ship::Context::GetInstance()->GetAudio()->GetAvailableAudioBackends()->size() <= 1;
                 options.disabledTooltip = "Only one audio API is available on this platform.";
-                if (UIWidgets::Combobox("Audio API", &currentAudioBackend, audioBackendsMap, options)) {
+                if (UIWidgets::Combobox("Audio API", &currentAudioBackend, &audioBackendsMap, options)) {
                     Ship::Context::GetInstance()->GetAudio()->SetCurrentAudioBackend(currentAudioBackend);
                 }
             } break;
@@ -286,8 +286,8 @@ void Menu::MenuDrawItem(WidgetInfo& widget, uint32_t width, UIWidgets::Colors me
                 options.tooltip = "Sets the renderer API used by the game.";
                 options.disabled = availableWindowBackends->size() <= 1;
                 options.disabledTooltip = "Only one renderer API is available on this platform.";
-                if (UIWidgets::Combobox("Renderer API (Needs reload)", &configWindowBackend, availableWindowBackendsMap,
-                                        options)) {
+                if (UIWidgets::Combobox("Renderer API (Needs reload)", &configWindowBackend,
+                                        &availableWindowBackendsMap, options)) {
                     Ship::Context::GetInstance()->GetConfig()->SetInt("Window.Backend.Id",
                                                                       (int32_t)(configWindowBackend));
                     Ship::Context::GetInstance()->GetConfig()->SetString("Window.Backend.Name",
@@ -327,7 +327,15 @@ void Menu::MenuDrawItem(WidgetInfo& widget, uint32_t width, UIWidgets::Colors me
                 }
                 auto options = std::static_pointer_cast<UIWidgets::ComboboxOptions>(widget.options);
                 options->color = menuThemeIndex;
-                if (UIWidgets::Combobox(widget.name.c_str(), pointer, options->comboMap, *options)) {
+                bool result = false;
+                if (std::holds_alternative<UIWidgets::ComboVec_t>(options->comboVariant)) {
+                    result = UIWidgets::Combobox(widget.name.c_str(), pointer,
+                                                 *std::get<UIWidgets::ComboVec_t>(options->comboVariant), *options);
+                } else if (std::holds_alternative<UIWidgets::ComboMap_t>(options->comboVariant)) {
+                    result = UIWidgets::Combobox(widget.name.c_str(), pointer,
+                                                 std::get<UIWidgets::ComboMap_t>(options->comboVariant), *options);
+                }
+                if (result) {
                     if (widget.callback != nullptr) {
                         widget.callback(widget);
                     }
@@ -336,7 +344,15 @@ void Menu::MenuDrawItem(WidgetInfo& widget, uint32_t width, UIWidgets::Colors me
             case WIDGET_CVAR_COMBOBOX: {
                 auto options = std::static_pointer_cast<UIWidgets::ComboboxOptions>(widget.options);
                 options->color = menuThemeIndex;
-                if (UIWidgets::CVarCombobox(widget.name.c_str(), widget.cVar, options->comboMap, *options)) {
+                bool result = false;
+                if (std::holds_alternative<UIWidgets::ComboVec_t>(options->comboVariant)) {
+                    result = UIWidgets::CVarCombobox(widget.name.c_str(), widget.cVar,
+                                                     *std::get<UIWidgets::ComboVec_t>(options->comboVariant), *options);
+                } else if (std::holds_alternative<UIWidgets::ComboMap_t>(options->comboVariant)) {
+                    result = UIWidgets::CVarCombobox(widget.name.c_str(), widget.cVar,
+                                                     std::get<UIWidgets::ComboMap_t>(options->comboVariant), *options);
+                }
+                if (result) {
                     if (widget.callback != nullptr) {
                         widget.callback(widget);
                     }
@@ -769,7 +785,7 @@ void Menu::DrawElement() {
                 }
             }
         }
-        for (int i = 0; i < columnFuncs; i++) {
+        for (size_t i = 0; i < columnFuncs; i++) {
             std::string sectionId = fmt::format("{} Column {}", sectionMenuId, i);
             if (useColumns) {
                 ImGui::SetNextWindowSizeConstraints({ columnWidth, 0 }, { columnWidth, columnHeight });
