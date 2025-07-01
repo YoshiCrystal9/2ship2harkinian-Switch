@@ -8,7 +8,7 @@ extern "C" {
 #include "overlays/actors/ovl_En_Go/z_en_go.h"
 }
 
-#define CVAR_NAME "gEnhancements.Minigames.PowderKegCertification"
+#define CVAR_NAME "gEnhancements.Timesavers.PowderKegCertification"
 #define CVAR CVarGetInteger(CVAR_NAME, 0)
 
 void RegisterPowderKegCertification() {

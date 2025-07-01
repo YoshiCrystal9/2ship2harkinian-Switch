@@ -11,7 +11,7 @@ void EnMinifrog_SetupNextFrogInit(EnMinifrog* enMinifrog, PlayState* play);
 void EnMinifrog_UpdateMissingFrog(Actor* thisx, PlayState* play);
 }
 
-#define CVAR_NAME "gEnhancements.Minigames.FrogChoirCount"
+#define CVAR_NAME "gEnhancements.DifficultyOptions.FrogChoirCount"
 #define CVAR CVarGetInteger(CVAR_NAME, 5)
 
 u8 SavedFrogs() {
