@@ -1275,7 +1275,7 @@ void Cutscene_ProcessScript(PlayState* play, CutsceneContext* csCtx, u8* script)
 
                 for (j = 0; j < cmdEntries; j++) {
                     CutsceneCmd_StopSequence(play, csCtx, (CsCmdStopSeq*)script);
-                    script += sizeof(CsCmdStartSeq);
+                    script += sizeof(CsCmdStopSeq);
                 }
                 break;
 
