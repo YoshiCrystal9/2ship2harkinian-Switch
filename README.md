@@ -51,7 +51,13 @@ Congratulations, you are now sailing with 2 Ship 2 Harkinian! Have fun!
 | Ctrl+R | Reset |
 
 ### Graphics Backends
-Currently, there are three rendering APIs supported: DirectX11 (Windows), OpenGL (all platforms), and Metal (macOS). You can change which API to use in the `Settings` menu of the menubar, which requires a restart.  If you're having an issue with crashing, you can change the API in the `2ship2harkinian.json` file by finding the line `"Backend":{`... and changing the `id` value to `3` and set the `Name` to `OpenGL`. `DirectX 11` with id `2` is the default on Windows. `Metal` with id `4` is the default on macOS.
+Currently, there are three rendering APIs supported: DirectX 11 (Windows), OpenGL (all platforms), and Metal (macOS). You can change which API to use in the `Settings` menu of the menubar, which requires a restart.
+
+If you're having an issue with crashing, you can also change the API manually in the `2ship2harkinian.json` file by finding the `"Backend": {` section and updating the backend ID and name. Be sure to use one of the valid values:
+
+- `0` = DirectX 11 (default on Windows)
+- `1` = OpenGL
+- `2` = Metal (default on macOS)
 
 # Custom Assets
 
