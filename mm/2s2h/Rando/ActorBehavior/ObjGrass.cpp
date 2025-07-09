@@ -1123,7 +1123,49 @@ Gfx* GetObjGrassDList(RandoCheckId randoCheckId) {
     }
 }
 
-void ObjGrass_RandoDraw(ObjGrass* objGrass, ObjGrassElement* grassElem, s32 j, RandoCheckId randoCheckId) {
+Gfx* GetObjGrassXluDList(RandoCheckId randoCheckId) {
+    if (!CVarGetInteger("gRando.CSMC", 0)) {
+        return (Gfx*)gRandoBushXluDL;
+    }
+
+    RandoItemId randoItemId = Rando::ConvertItem(RANDO_SAVE_CHECKS[randoCheckId].randoItemId, randoCheckId);
+    RandoItemType randoItemType = Rando::StaticData::Items[randoItemId].randoItemType;
+
+    switch (randoItemType) {
+        case RITYPE_BOSS_KEY:
+            return (Gfx*)gRandoBushBossKeyXluDL;
+            break;
+        case RITYPE_HEALTH:
+            return (Gfx*)gRandoBushHeartXluDL;
+            break;
+        case RITYPE_LESSER:
+            return (Gfx*)gRandoBushMinorXluDL;
+            break;
+        case RITYPE_MAJOR:
+            return (Gfx*)gRandoBushMajorXluDL;
+            break;
+        case RITYPE_MASK:
+            return (Gfx*)gRandoBushMaskXluDL;
+            break;
+        case RITYPE_SKULLTULA_TOKEN:
+            return (Gfx*)gRandoBushTokenXluDL;
+            break;
+        case RITYPE_SMALL_KEY:
+            return (Gfx*)gRandoBushSmallKeyXluDL;
+            break;
+        case RITYPE_STRAY_FAIRY:
+            return (Gfx*)gRandoBushFairyXluDL;
+            break;
+        case RITYPE_JUNK:
+            return (Gfx*)gRandoBushJunkXluDL;
+            break;
+        default:
+            return (Gfx*)gRandoBushXluDL;
+            break;
+    }
+}
+
+void ObjGrass_RandoDrawOpa(ObjGrass* objGrass, ObjGrassElement* grassElem, s32 j, RandoCheckId randoCheckId) {
     Vec3s rot = { 0, 0, 0 };
     OPEN_DISPS(gPlayState->state.gfxCtx);
     rot.y = grassElem->rotY;
@@ -1136,6 +1178,20 @@ void ObjGrass_RandoDraw(ObjGrass* objGrass, ObjGrassElement* grassElem, s32 j, R
     gSPMatrix(POLY_OPA_DISP++, Matrix_NewMtx(gPlayState->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
     gSPDisplayList(POLY_OPA_DISP++, GetObjGrassDList(randoCheckId));
     gSPDisplayList(POLY_OPA_DISP++, (Gfx*)gObjGrass_D_809AA9F0);
+    CLOSE_DISPS(gPlayState->state.gfxCtx);
+}
+
+void ObjGrass_RandoDrawXlu(ObjGrass* objGrass, ObjGrassElement* grassElem, RandoCheckId randoCheckId) {
+    Vec3s rot = { 0, 0, 0 };
+    OPEN_DISPS(gPlayState->state.gfxCtx);
+    rot.y = grassElem->rotY;
+    Matrix_SetTranslateRotateYXZ(grassElem->pos.x, grassElem->pos.y, grassElem->pos.z, &rot);
+    Matrix_Scale(objGrass->actor.scale.x, objGrass->actor.scale.y, objGrass->actor.scale.z, MTXMODE_APPLY);
+
+    gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(gPlayState->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    gDPSetPrimColor(POLY_XLU_DISP++, 0, 0, 255, 255, 255, grassElem->alpha);
+    gSPDisplayList(POLY_XLU_DISP++, GetObjGrassXluDList(randoCheckId));
+    gSPDisplayList(POLY_XLU_DISP++, (Gfx*)gObjGrass_D_809AAA68);
     CLOSE_DISPS(gPlayState->state.gfxCtx);
 }
 
@@ -1161,14 +1217,24 @@ void Rando::ActorBehavior::InitObjGrassBehavior() {
         }
     });
 
-    COND_VB_SHOULD(VB_OBJGRASS_DRAW_BE_OVERRIDDEN, IS_RANDO, {
+    COND_VB_SHOULD(VB_OBJGRASS_OPA_DRAW_BE_OVERRIDDEN, IS_RANDO, {
         ObjGrass* objGrass = va_arg(args, ObjGrass*);
         ObjGrassElement* grassElem = va_arg(args, ObjGrassElement*);
         s32 j = va_arg(args, s32);
         RandoCheckId randoCheckId = IdentifyGrass(grassElem->pos);
         if (randoCheckId != RC_UNKNOWN) {
             *should = false;
-            ObjGrass_RandoDraw(objGrass, grassElem, j, randoCheckId);
+            ObjGrass_RandoDrawOpa(objGrass, grassElem, j, randoCheckId);
+        }
+    });
+
+    COND_VB_SHOULD(VB_OBJGRASS_XLU_DRAW_BE_OVERRIDDEN, IS_RANDO, {
+        ObjGrass* objGrass = va_arg(args, ObjGrass*);
+        ObjGrassElement* grassElem = va_arg(args, ObjGrassElement*);
+        RandoCheckId randoCheckId = IdentifyGrass(grassElem->pos);
+        if (randoCheckId != RC_UNKNOWN) {
+            *should = false;
+            ObjGrass_RandoDrawXlu(objGrass, grassElem, randoCheckId);
         }
     });
 

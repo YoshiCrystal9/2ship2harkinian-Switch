@@ -492,7 +492,7 @@ void ObjGrass_DrawOpa(Actor* thisx, PlayState* play2) {
 
                 if ((grassElem->flags & OBJ_GRASS_ELEM_DRAW) && (grassElem->alpha == 255)) {
                     FrameInterpolation_RecordOpenChild(grassElem, 0);
-                    if (GameInteractor_Should(VB_OBJGRASS_DRAW_BE_OVERRIDDEN, true, this, grassElem, j)) {
+                    if (GameInteractor_Should(VB_OBJGRASS_OPA_DRAW_BE_OVERRIDDEN, true, this, grassElem, j)) {
                         rot.y = grassElem->rotY;
                         Matrix_SetTranslateRotateYXZ(grassElem->pos.x, grassElem->pos.y, grassElem->pos.z, &rot);
                         Matrix_Scale(this->actor.scale.x, this->actor.scale.y, this->actor.scale.z, MTXMODE_APPLY);
@@ -536,14 +536,16 @@ void ObjGrass_DrawXlu(Actor* thisx, PlayState* play) {
 
                 if ((grassElem->flags & OBJ_GRASS_ELEM_DRAW) && (grassElem->alpha > 0) && (grassElem->alpha < 255)) {
                     FrameInterpolation_RecordOpenChild(grassElem, 0);
-                    rot.y = grassElem->rotY;
-                    Matrix_SetTranslateRotateYXZ(grassElem->pos.x, grassElem->pos.y, grassElem->pos.z, &rot);
-                    Matrix_Scale(this->actor.scale.x, this->actor.scale.y, this->actor.scale.z, MTXMODE_APPLY);
+                    if (GameInteractor_Should(VB_OBJGRASS_XLU_DRAW_BE_OVERRIDDEN, true, this, grassElem)) {
+                        rot.y = grassElem->rotY;
+                        Matrix_SetTranslateRotateYXZ(grassElem->pos.x, grassElem->pos.y, grassElem->pos.z, &rot);
+                        Matrix_Scale(this->actor.scale.x, this->actor.scale.y, this->actor.scale.z, MTXMODE_APPLY);
 
-                    gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(play->state.gfxCtx),
-                              G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
-                    gDPSetPrimColor(POLY_XLU_DISP++, 0, 0, 255, 255, 255, grassElem->alpha);
-                    gSPDisplayList(POLY_XLU_DISP++, gObjGrass_D_809AAAE0);
+                        gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(play->state.gfxCtx),
+                                  G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+                        gDPSetPrimColor(POLY_XLU_DISP++, 0, 0, 255, 255, 255, grassElem->alpha);
+                        gSPDisplayList(POLY_XLU_DISP++, gObjGrass_D_809AAAE0);
+                    }
                     FrameInterpolation_RecordCloseChild();
                 }
             }

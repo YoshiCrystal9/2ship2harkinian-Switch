@@ -302,32 +302,62 @@ static const ALIGN_ASSET(2) char gBarrelJunkDL[] = dgBarrelJunkDL;
 #define dgRandoBushDL "__OTR__objects/gameplay_field_keep/gFieldBushRandomDL"
 static const ALIGN_ASSET(2) char gRandoBushDL[] = dgRandoBushDL;
 
+#define dgRandoBushXluDL "__OTR__objects/gameplay_field_keep/gFieldBushRandomXluDL"
+static const ALIGN_ASSET(2) char gRandoBushXluDL[] = dgRandoBushXluDL;
+
 #define dgRandoBushMinorDL "__OTR__objects/gameplay_field_keep/gFieldBushMinorDL"
 static const ALIGN_ASSET(2) char gRandoBushMinorDL[] = dgRandoBushMinorDL;
+
+#define dgRandoBushMinorXluDL "__OTR__objects/gameplay_field_keep/gFieldBushMinorXluDL"
+static const ALIGN_ASSET(2) char gRandoBushMinorXluDL[] = dgRandoBushMinorXluDL;
 
 #define dgRandoBushMajorDL "__OTR__objects/gameplay_field_keep/gFieldBushMajorDL"
 static const ALIGN_ASSET(2) char gRandoBushMajorDL[] = dgRandoBushMajorDL;
 
+#define dgRandoBushMajorXluDL "__OTR__objects/gameplay_field_keep/gFieldBushMajorXluDL"
+static const ALIGN_ASSET(2) char gRandoBushMajorXluDL[] = dgRandoBushMajorXluDL;
+
 #define dgRandoBushSmallKeyDL "__OTR__objects/gameplay_field_keep/gFieldBushSmallKeyDL"
 static const ALIGN_ASSET(2) char gRandoBushSmallKeyDL[] = dgRandoBushSmallKeyDL;
+
+#define dgRandoBushSmallKeyXluDL "__OTR__objects/gameplay_field_keep/gFieldBushSmallKeyXluDL"
+static const ALIGN_ASSET(2) char gRandoBushSmallKeyXluDL[] = dgRandoBushSmallKeyXluDL;
 
 #define dgRandoBushBossKeyDL "__OTR__objects/gameplay_field_keep/gFieldBushBossKeyDL"
 static const ALIGN_ASSET(2) char gRandoBushBossKeyDL[] = dgRandoBushBossKeyDL;
 
+#define dgRandoBushBossKeyXluDL "__OTR__objects/gameplay_field_keep/gFieldBushBossKeyXluDL"
+static const ALIGN_ASSET(2) char gRandoBushBossKeyXluDL[] = dgRandoBushBossKeyXluDL;
+
 #define dgRandoBushTokenDL "__OTR__objects/gameplay_field_keep/gFieldBushTokenDL"
 static const ALIGN_ASSET(2) char gRandoBushTokenDL[] = dgRandoBushTokenDL;
+
+#define dgRandoBushTokenXluDL "__OTR__objects/gameplay_field_keep/gFieldBushTokenXluDL"
+static const ALIGN_ASSET(2) char gRandoBushTokenXluDL[] = dgRandoBushTokenXluDL;
 
 #define dgRandoBushMaskDL "__OTR__objects/gameplay_field_keep/gFieldBushMaskDL"
 static const ALIGN_ASSET(2) char gRandoBushMaskDL[] = dgRandoBushMaskDL;
 
+#define dgRandoBushMaskXluDL "__OTR__objects/gameplay_field_keep/gFieldBushMaskXluDL"
+static const ALIGN_ASSET(2) char gRandoBushMaskXluDL[] = dgRandoBushMaskXluDL;
+
 #define dgRandoBushFairyDL "__OTR__objects/gameplay_field_keep/gFieldBushFairyDL"
 static const ALIGN_ASSET(2) char gRandoBushFairyDL[] = dgRandoBushFairyDL;
+
+#define dgRandoBushFairyXluDL "__OTR__objects/gameplay_field_keep/gFieldBushFairyXluDL"
+static const ALIGN_ASSET(2) char gRandoBushFairyXluDL[] = dgRandoBushFairyXluDL;
 
 #define dgRandoBushHeartDL "__OTR__objects/gameplay_field_keep/gFieldBushHeartDL"
 static const ALIGN_ASSET(2) char gRandoBushHeartDL[] = dgRandoBushHeartDL;
 
+#define dgRandoBushHeartXluDL "__OTR__objects/gameplay_field_keep/gFieldBushHeartXluDL"
+static const ALIGN_ASSET(2) char gRandoBushHeartXluDL[] = dgRandoBushHeartXluDL;
+
 #define dgRandoBushJunkDL "__OTR__objects/gameplay_field_keep/gFieldBushJunkDL"
 static const ALIGN_ASSET(2) char gRandoBushJunkDL[] = dgRandoBushJunkDL;
+
+#define dgRandoBushJunkXluDL "__OTR__objects/gameplay_field_keep/gFieldBushJunkXluDL"
+static const ALIGN_ASSET(2) char gRandoBushJunkXluDL[] = dgRandoBushJunkXluDL;
 
 #define dgChestTrackerIcon "__OTR__textures/icons/gChestTrackerIcon"
 static const ALIGN_ASSET(2) char gChestTrackerIcon[] = dgChestTrackerIcon;
