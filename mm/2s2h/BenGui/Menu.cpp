@@ -105,6 +105,10 @@ void Menu::UpdateWindowBackendObjects() {
     }
 }
 
+UIWidgets::Colors Menu::GetMenuThemeColor() {
+    return menuThemeIndex;
+}
+
 Menu::Menu(const std::string& cVar, const std::string& name, uint8_t searchSidebarIndex_,
            UIWidgets::Colors defaultThemeIndex_)
     : GuiWindow(cVar, name), searchSidebarIndex(searchSidebarIndex_), defaultThemeIndex(defaultThemeIndex_) {
@@ -121,6 +125,7 @@ void Menu::InitElement() {
 }
 
 void Menu::UpdateElement() {
+    menuThemeIndex = static_cast<UIWidgets::Colors>(CVarGetInteger("gSettings.Menu.Theme", defaultThemeIndex));
 }
 
 bool ModernMenuSidebarEntry(std::string label) {
@@ -435,7 +440,7 @@ void Menu::MenuDrawItem(WidgetInfo& widget, uint32_t width, UIWidgets::Colors me
                     SPDLOG_ERROR(msg.c_str());
                     break;
                 }
-                auto options = std::static_pointer_cast<UIWidgets::ButtonOptions>(widget.options);
+                auto options = std::static_pointer_cast<UIWidgets::WindowButtonOptions>(widget.options);
                 options->color = menuThemeIndex;
                 UIWidgets::WindowButton(widget.name.c_str(), widget.cVar, window, *options);
                 if (!window->IsVisible()) {
@@ -571,7 +576,16 @@ void Menu::DrawElement() {
             headerWidth += style.ItemSpacing.x;
         }
     }
-    ImVec2 menuSize = { std::fminf(1280, windowWidth), std::fminf(800, windowHeight) };
+    // Full screen menu with widths below 1280, heights below 800.
+    // 5% of screen width/height padding on both sides above those resolutions.
+    // Menu width will never exceed a 16:9 aspect ratio.
+    ImVec2 menuSize = { windowWidth, windowHeight };
+    if (windowWidth > 1280) {
+        menuSize.x = std::fminf(windowWidth * 0.9f, (windowHeight * 1.77f));
+    }
+    if (windowHeight > 800) {
+        menuSize.y = windowHeight * 0.9f;
+    }
     pos += window->WorkRect.GetSize() / 2 - menuSize / 2;
     ImGui::SetNextWindowPos(pos);
     ImGui::BeginChild("Menu Block", menuSize,

@@ -57,6 +57,10 @@ std::shared_ptr<ItemTrackerWindow> mItemTrackerWindow;
 std::shared_ptr<ItemTrackerSettingsWindow> mItemTrackerSettingsWindow;
 std::shared_ptr<DisplayOverlayWindow> mDisplayOverlayWindow;
 
+UIWidgets::Colors GetMenuThemeColor() {
+    return mBenMenu->GetMenuThemeColor();
+}
+
 void SetupGuiElements() {
     auto gui = Ship::Context::GetInstance()->GetWindow()->GetGui();
 

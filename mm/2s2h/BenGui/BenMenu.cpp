@@ -405,7 +405,9 @@ void BenMenu::AddSettings() {
 
     // Graphics Settings
     path.sidebarName = "Graphics";
+    path.column = SECTION_COLUMN_1;
     AddSidebarEntry("Settings", "Graphics", 3);
+    AddWidget(path, "Graphics Options", WIDGET_SEPARATOR_TEXT);
     AddWidget(path, "Toggle Fullscreen", WIDGET_BUTTON)
         .Callback([](WidgetInfo& info) { Ship::Context::GetInstance()->GetWindow()->ToggleFullscreen(); })
         .Options(ButtonOptions().Tooltip("Toggles Fullscreen On/Off."));
@@ -493,6 +495,9 @@ void BenMenu::AddSettings() {
     AddWidget(path, "Texture Filter (Needs reload)", WIDGET_CVAR_COMBOBOX)
         .CVar(CVAR_TEXTURE_FILTER)
         .Options(ComboboxOptions().Tooltip("Sets the applied Texture Filtering.").ComboVec(&textureFilteringOptions));
+
+    path.column = SECTION_COLUMN_2;
+    AddWidget(path, "Advanced Graphics Options", WIDGET_SEPARATOR_TEXT);
 
     path.sidebarName = "Controls";
     AddSidebarEntry("Settings", "Controls", 1);
@@ -1110,6 +1115,10 @@ void BenMenu::AddEnhancements() {
                      .Min(1)
                      .Max(5)
                      .DefaultValue(1));
+    AddWidget(path, "N64 Mode", WIDGET_CVAR_CHECKBOX)
+        .CVar(CVAR_LOW_RES_MODE)
+        .Options(CheckboxOptions().Tooltip(
+            "Sets the aspect ratio to 4:3 and lowers resolution to 240p, the N64's native resolution."));
 
     path = { "Enhancements", "Items/Songs", SECTION_COLUMN_1 };
     AddSidebarEntry("Enhancements", "Items/Songs", 3);
@@ -1838,6 +1847,14 @@ void BenMenu::InitElement() {
             "Vertical Resolution Toggle Enabled" } },
         { DISABLE_FOR_LOW_RES_MODE_ON,
           { [](disabledInfo& info) -> bool { return CVarGetInteger(CVAR_LOW_RES_MODE, 0); }, "N64 Mode is enabled" } },
+        { DISABLE_FOR_ADVANCED_RESOLUTION_OFF,
+          { [](disabledInfo& info) -> bool { return !CVarGetInteger(CVAR_PREFIX_ADVANCED_RESOLUTION ".Enabled", 0); },
+            "Advanced Resolution is Disabled" } },
+        { DISABLE_FOR_VERTICAL_RESOLUTION_OFF,
+          { [](disabledInfo& info) -> bool {
+               return !CVarGetInteger(CVAR_PREFIX_ADVANCED_RESOLUTION ".VerticalResolutionToggle", 0);
+           },
+            "Vertical Resolution Toggle is Off" } },
     };
 }
 
