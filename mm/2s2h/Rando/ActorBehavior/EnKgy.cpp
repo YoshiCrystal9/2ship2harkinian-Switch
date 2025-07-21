@@ -13,7 +13,7 @@ void Rando::ActorBehavior::InitEnKgyBehavior() {
         RandoSaveCheck& randoGildedSwordSaveCheck = RANDO_SAVE_CHECKS[RC_MOUNTAIN_VILLAGE_SMITHY_GILDED_SWORD];
         RandoSaveCheck& randoRazorSwordSaveCheck = RANDO_SAVE_CHECKS[RC_MOUNTAIN_VILLAGE_SMITHY_RAZOR_SWORD];
 
-        if (randoRazorSwordSaveCheck.obtained) {
+        if (randoRazorSwordSaveCheck.cycleObtained) {
             randoGildedSwordSaveCheck.eligible = true;
 
             // Normally this bit is set to zero when you get your sword back. The DoNotResetRazorSword enhancement uses
@@ -30,12 +30,12 @@ void Rando::ActorBehavior::InitEnKgyBehavior() {
 
     COND_VB_SHOULD(VB_SMITHY_CHECK_FOR_RAZOR_SWORD, IS_RANDO, {
         RandoSaveCheck& randoRazorSwordSaveCheck = RANDO_SAVE_CHECKS[RC_MOUNTAIN_VILLAGE_SMITHY_RAZOR_SWORD];
-        *should = randoRazorSwordSaveCheck.obtained;
+        *should = randoRazorSwordSaveCheck.cycleObtained;
     });
 
     COND_VB_SHOULD(VB_SMITHY_CHECK_FOR_GILDED_SWORD, IS_RANDO, {
         RandoSaveCheck& randoGildedSwordSaveCheck = RANDO_SAVE_CHECKS[RC_MOUNTAIN_VILLAGE_SMITHY_GILDED_SWORD];
-        *should = randoGildedSwordSaveCheck.obtained;
+        *should = randoGildedSwordSaveCheck.cycleObtained;
     });
 
     // "If you want your sword sharpened..." (Razor Sword upgrade)
@@ -43,7 +43,7 @@ void Rando::ActorBehavior::InitEnKgyBehavior() {
         auto entry = CustomMessage::LoadVanillaMessageTableEntry(*textId);
 
         RandoSaveCheck& randoRazorSwordSaveCheck = RANDO_SAVE_CHECKS[RC_MOUNTAIN_VILLAGE_SMITHY_RAZOR_SWORD];
-        if (!randoRazorSwordSaveCheck.obtained) {
+        if (!randoRazorSwordSaveCheck.cycleObtained) {
             entry.msg = "\nIf you want %y{itemName}%w, it will cost you %p100 Rupees%w.\n\x10";
             entry.msg += "So, do we have a deal?\n\xC2%gI'll buy it\nNo thanks\xBF";
             CustomMessage::Replace(&entry.msg, "{itemName}",

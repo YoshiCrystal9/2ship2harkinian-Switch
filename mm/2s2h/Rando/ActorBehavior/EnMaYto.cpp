@@ -18,11 +18,11 @@ void Rando::ActorBehavior::InitEnMaYtoBehavior() {
         enMaYto->actionFunc = EnMaYto_PostMilkRunEnd;
     });
 
-    COND_VB_SHOULD(VB_HAVE_ROMANI_MASK, IS_RANDO, { *should = RANDO_SAVE_CHECKS[RC_CREMIA_ESCORT].obtained; });
+    COND_VB_SHOULD(VB_HAVE_ROMANI_MASK, IS_RANDO, { *should = RANDO_SAVE_CHECKS[RC_CREMIA_ESCORT].cycleObtained; });
 
     COND_VB_SHOULD(VB_PLAY_TRANSITION_CS, IS_RANDO, {
         if (gSaveContext.save.cutsceneIndex == 0x0 && gSaveContext.save.entrance == ENTRANCE(TERMINA_FIELD, 13) &&
-            !RANDO_SAVE_CHECKS[RC_CREMIA_ESCORT].obtained) {
+            !RANDO_SAVE_CHECKS[RC_CREMIA_ESCORT].cycleObtained) {
             RANDO_SAVE_CHECKS[RC_CREMIA_ESCORT].eligible = true;
             SET_WEEKEVENTREG(WEEKEVENTREG_14_01);
             Message_BombersNotebookQueueEvent(gPlayState, BOMBERS_NOTEBOOK_EVENT_RECEIVED_ROMANIS_MASK);

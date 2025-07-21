@@ -12,7 +12,7 @@ void Rando::ActorBehavior::InitEnJgameTsnBehavior() {
         GetItemId* getItemId = va_arg(args, GetItemId*);
         Actor* actor = va_arg(args, Actor*);
         if (actor->id == ACTOR_EN_JGAME_TSN &&
-            *getItemId == GI_HEART_PIECE) { // Leave repeat rupee reward as-is for now
+            !RANDO_SAVE_CHECKS[RC_GREAT_BAY_COAST_FISHERMAN_MINIGAME].cycleObtained) {
             *should = false;
             Player* player = GET_PLAYER(gPlayState);
             actor->parent = &player->actor;
@@ -30,10 +30,10 @@ void Rando::ActorBehavior::InitEnJgameTsnBehavior() {
         auto entry = CustomMessage::LoadVanillaMessageTableEntry(*textId);
         entry.msg =
             "Want to try my %rjumping game%w for %p20 Rupees%w? Win, and I'll give you %r{{itemName}}%w!\x19\xA8";
-        // The repeat reward is a purple Rupee
-        CustomMessage::Replace(&entry.msg, "{{itemName}}",
-                               randoSaveCheck.obtained ? "50 Rupees"
-                                                       : Rando::StaticData::GetItemName(randoSaveCheck.randoItemId));
+        // The same-cycle repeat reward is a purple Rupee
+        CustomMessage::Replace(
+            &entry.msg, "{{itemName}}",
+            randoSaveCheck.cycleObtained ? "50 Rupees" : Rando::StaticData::GetItemName(randoSaveCheck.randoItemId));
 
         CustomMessage::LoadCustomMessageIntoFont(entry);
         *loadFromMessageTable = false;

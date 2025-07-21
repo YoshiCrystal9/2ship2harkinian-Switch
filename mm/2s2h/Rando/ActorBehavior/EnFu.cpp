@@ -17,7 +17,7 @@ void Rando::ActorBehavior::InitEnFuBehavior() {
             return;
         }
 
-        if (!RANDO_SAVE_CHECKS[RC_CLOCK_TOWN_EAST_HONEY_DARLING_ANY_DAY].obtained) {
+        if (!RANDO_SAVE_CHECKS[RC_CLOCK_TOWN_EAST_HONEY_DARLING_ANY_DAY].cycleObtained) {
             RANDO_SAVE_CHECKS[RC_CLOCK_TOWN_EAST_HONEY_DARLING_ANY_DAY].eligible = true;
         }
 

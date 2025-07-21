@@ -14,7 +14,7 @@ void Rando::ActorBehavior::InitEnRuppecrowBehavior() {
 
         RandoCheckId randoCheckId = (RandoCheckId)(RC_TERMINA_FIELD_GUAY_RUPEE_DROP_01 + rupeeIndex);
 
-        if (RANDO_SAVE_CHECKS[randoCheckId].obtained || !RANDO_SAVE_CHECKS[randoCheckId].shuffled) {
+        if (RANDO_SAVE_CHECKS[randoCheckId].cycleObtained || !RANDO_SAVE_CHECKS[randoCheckId].shuffled) {
             return;
         }
 

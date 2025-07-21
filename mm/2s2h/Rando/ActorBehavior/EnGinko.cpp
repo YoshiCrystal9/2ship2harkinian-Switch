@@ -22,7 +22,7 @@ void Rando::ActorBehavior::InitEnGinkoBehavior() {
         if (GameInteractor_Should(VB_PASS_INTEREST_BANK_THRESHOLD,
                                   (HS_GET_BANK_RUPEES() >= 1000) && (enGinkoMan->previousBankValue < 1000),
                                   enGinkoMan) &&
-            !RANDO_SAVE_CHECKS[RC_CLOCK_TOWN_WEST_BANK_INTEREST].obtained) {
+            !RANDO_SAVE_CHECKS[RC_CLOCK_TOWN_WEST_BANK_INTEREST].cycleObtained) {
             RANDO_SAVE_CHECKS[RC_CLOCK_TOWN_WEST_BANK_INTEREST].eligible = true;
         }
 
