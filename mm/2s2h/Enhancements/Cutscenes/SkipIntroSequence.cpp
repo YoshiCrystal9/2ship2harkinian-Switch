@@ -60,6 +60,8 @@ void RegisterSkipIntroSequence() {
             SET_WEEKEVENTREG(WEEKEVENTREG_ENTERED_WEST_CLOCK_TOWN);
             SET_WEEKEVENTREG(WEEKEVENTREG_ENTERED_NORTH_CLOCK_TOWN);
         }
+        // Persist this modified state so moon crashes without saving keep it
+        Sram_SaveSpecialEnterClockTown(gPlayState);
     });
 }
 

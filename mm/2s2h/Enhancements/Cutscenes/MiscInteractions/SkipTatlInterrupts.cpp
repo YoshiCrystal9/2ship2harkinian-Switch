@@ -19,6 +19,7 @@ void RegisterSkipTatlInterrupts() {
         if (gSaveContext.save.entrance == ENTRANCE(SOUTH_CLOCK_TOWN, 0) && gSaveContext.save.cutsceneIndex == 0 &&
             !CHECK_WEEKEVENTREG(WEEKEVENTREG_59_04)) {
             Flags_SetWeekEventReg(WEEKEVENTREG_59_04);
+            Sram_SaveSpecialEnterClockTown(gPlayState);
         }
     });
 
