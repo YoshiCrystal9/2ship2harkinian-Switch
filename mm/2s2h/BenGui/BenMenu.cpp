@@ -261,6 +261,7 @@ std::vector<std::string> contributors = {
     "cplaster",
     "justawayofthesamurai",
     "verbes4",
+    "ammar sadaoui",
 };
 
 void BenMenu::AddSettings() {
@@ -329,21 +330,35 @@ void BenMenu::AddSettings() {
         ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.5f, 0.5f, 1.0f));
         ImGui::SeparatorText("Thank You");
         ImGui::PopStyleColor();
-
-        ImGui::TextWrapped("Special thanks to our contributors, playtesters, artists, moderators, helpers, and "
-                           "everyone in the larger decomp & N64 communities who make this project possible.\n\n");
+        ImGui::SameLine();
         ImTextureID heartTextureId = Ship::Context::GetInstance()->GetWindow()->GetGui()->GetTextureByName(
             (const char*)gQuestIconHeartContainer2Tex);
         ImGui::Image(heartTextureId, ImVec2(25.0f, 25.0f));
-        ImGui::SameLine();
+        ImGui::TextWrapped("Special thanks to our contributors, playtesters, artists, moderators, helpers, and "
+                           "everyone in the larger decomp & N64 communities who make this project possible.\n\n");
 
-        static u64 lastTime = 0;
-        static std::string contributor = "";
-        if (GetUnixTimestamp() - lastTime > 5000) {
-            lastTime = GetUnixTimestamp();
-            contributor = contributors[Ship_Random(0, contributors.size() - 1)];
+        // Draw auto scrolling list of contributors in columns
+        ImGui::SetNextWindowSize(ImVec2(0.0f, ImGui::GetMainViewport()->WorkSize.y / 3));
+        ImGui::BeginChild("contributors");
+        static double scrollSpeed = 1.5f * (ImGui::GetFontSize() / 1000.0f); // Lines to scroll per second
+        double scrollPosition = fmod(GetUnixTimestamp() * scrollSpeed, ImGui::GetScrollMaxY() + 1.0f);
+        ImGui::SetScrollY(scrollPosition);
+
+        ImGui::Dummy(ImVec2(0.0f, ImGui::GetFontSize()));
+        static int numColumns = 2; // Two columns seem to work best. Some names are too long for more on lower res
+        for (int column = 0; column < numColumns; column++) {
+            if (column > 0)
+                ImGui::SameLine();
+
+            ImGui::BeginGroup();
+            for (int i = column; i < contributors.size(); i += numColumns) {
+                ImGui::Text("%s", contributors.at(i).c_str());
+            }
+            ImGui::EndGroup();
         }
-        ImGui::Text("%s", contributor.c_str());
+        ImGui::Dummy(ImVec2(0.0f, ImGui::GetFontSize()));
+        ImGui::EndChild();
+
         ImGui::EndChild();
     });
 

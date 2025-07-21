@@ -95,7 +95,12 @@ bool IncompatibleWithLogicSetting(int32_t option) {
 }
 
 static void DrawGeneralTab() {
-    ImGui::BeginChild("randoSettings", ImVec2(ImGui::GetContentRegionAvail().x / 2, 0));
+    ImGui::BeginChild("randoSettings");
+    ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1, 1, 1, 0.5f));
+    ImGui::TextWrapped(
+        "Explore the menus for various enhancements and time savers; most are not enabled by default in Rando.");
+    ImGui::PopStyleColor();
+
     ImGui::SeparatorText("Seed Generation");
     UIWidgets::CVarCheckbox("Enable Rando (Randomizes new files upon creation)", "gRando.Enabled");
 
@@ -138,22 +143,6 @@ static void DrawGeneralTab() {
     }
     ImGui::EndChild();
     ImGui::SameLine();
-    ImGui::BeginChild("randoDisclaimer");
-    ImGui::PushStyleColor(ImGuiCol_Text, ColorValues.at(Colors::Gray));
-    if (gGitCommitTag[0] == 0) {
-        ImGui::Text("%s | %s", (char*)gGitBranch, (char*)gGitCommitHash);
-    } else {
-        ImGui::Text("%s", (char*)gBuildVersion);
-    }
-    ImGui::PopStyleColor();
-    ImGui::PushStyleColor(ImGuiCol_Text, ColorValues.at(Colors::Orange));
-    ImGui::SeparatorText("Disclaimer");
-    ImGui::PopStyleColor();
-    ImGui::TextWrapped(
-        "This is a Beta. Please make note of any odd or unexpected behavior while you are playing, and report it "
-        "in our [Playtest] Rando Beta thread on Discord under #2s2h-threads.\n\n"
-        "Explore the menus for various enhancements and time savers, they are not enabled by default in Rando.\n\n");
-    ImGui::EndChild();
 }
 
 static void DrawLogicConditionsTab() {
