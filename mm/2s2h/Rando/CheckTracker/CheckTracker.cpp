@@ -85,6 +85,8 @@ std::vector<const char*> checkTypeIconList = {
     /*RCTYPE_TINGLE_SHOP*/ gItemIconAdultsWalletTex,
 };
 
+static constexpr ImVec4 tintColor = {};
+
 std::string totalChecksFound() {
     std::string totalChecks;
     uint32_t collected = 0;
@@ -111,7 +113,7 @@ void DrawCheckTypeIcon(RandoCheckId randoCheckId) {
                  : checkType == RCTYPE_OWL ? ImVec2(18.0f * trackerScale, 9.0f * trackerScale)
                                            : ImVec2(18.0f * trackerScale, 18.0f * trackerScale),
                  ImVec2(0, 0), ImVec2(1, 1),
-                 checkType == RCTYPE_FREESTANDING ? ImVec4(0.78f, 1, 0.39f, 1) : ImVec4(1, 1, 1, 1));
+                 checkType == RCTYPE_FREESTANDING ? ImVec4(0.78f, 1, 0.39f, 1) : ImVec4(1, 1, 1, 1), tintColor);
 }
 
 void initializeSceneChecks() {

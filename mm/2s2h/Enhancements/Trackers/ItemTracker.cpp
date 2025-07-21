@@ -137,7 +137,7 @@ void EndFloatingWindows() {
 
 static constexpr ImVec4 opaqueTex = { 1.0f, 1.0f, 1.0f, 1.0f };
 static constexpr ImVec4 fadedTex = { 0.5f, 0.5f, 0.5f, 0.5f };
-
+static constexpr ImVec4 tintCol = {};
 void DrawItem(char* tex, bool drawFaded, float itemSize) {
     auto gui = Ship::Context::GetInstance()->GetWindow()->GetGui();
     if (!gui->HasTextureByName(tex)) {
@@ -145,7 +145,7 @@ void DrawItem(char* tex, bool drawFaded, float itemSize) {
     }
 
     ImGui::Image(gui->GetTextureByName(tex), ImVec2(itemSize, itemSize), ImVec2(0, 0), ImVec2(1, 1),
-                 drawFaded ? fadedTex : opaqueTex, {});
+                 drawFaded ? fadedTex : opaqueTex, tintCol);
 }
 
 void DrawItemTinted(char* tex, bool drawFaded, float itemSize, ImVec4 tintColor) {
@@ -157,7 +157,7 @@ void DrawItemTinted(char* tex, bool drawFaded, float itemSize, ImVec4 tintColor)
     ImVec4 opacityMix = drawFaded ? fadedTex : opaqueTex;
     ImVec4 color = ImVec4(opacityMix.x * tintColor.x, opacityMix.y * tintColor.y, opacityMix.z * tintColor.z,
                           opacityMix.w * tintColor.w);
-    ImGui::Image(gui->GetTextureByName(tex), ImVec2(itemSize, itemSize), ImVec2(0, 0), ImVec2(1, 1), color, {});
+    ImGui::Image(gui->GetTextureByName(tex), ImVec2(itemSize, itemSize), ImVec2(0, 0), ImVec2(1, 1), color, tintCol);
 }
 
 static constexpr std::array<ImVec4, 5> songInfo = {
@@ -190,7 +190,7 @@ void ItemTrackerWindow::DrawNote(size_t songIndex, bool drawFaded) {
         color.w *= 0.5f;
     }
     ImGui::Image(Ship::Context::GetInstance()->GetWindow()->GetGui()->GetTextureByName(gItemIconSongNoteTex),
-                 scaledNoteSize, ImVec2(0, 0), ImVec2(1, 1), color, {});
+                 scaledNoteSize, ImVec2(0, 0), ImVec2(1, 1), color, tintCol);
 }
 
 void ItemTrackerWindow::DrawOwlFace(bool drawFaded) {
@@ -202,7 +202,7 @@ void ItemTrackerWindow::DrawOwlFace(bool drawFaded) {
     const ImVec2 scaledOwlSize(owlToScale * 24.0f * iconScale, owlToScale * 12.0f * iconScale);
 
     ImGui::Image(Ship::Context::GetInstance()->GetWindow()->GetGui()->GetTextureByName(gWorldMapOwlFaceTex),
-                 scaledOwlSize, ImVec2(0, 0), ImVec2(1, 1), drawFaded ? fadedTex : opaqueTex, {});
+                 scaledOwlSize, ImVec2(0, 0), ImVec2(1, 1), drawFaded ? fadedTex : opaqueTex, tintCol);
 }
 
 extern "C" {
@@ -624,7 +624,7 @@ int ItemTrackerWindow::DrawStrayFairies(int columns, int prevDrawnColumns) {
             }
             ImGui::Image(
                 Ship::Context::GetInstance()->GetWindow()->GetGui()->GetTextureByName((char*)sStrayFairyTextures[0]),
-                ImVec2(mIconSize, mIconSize), ImVec2(0, 0), ImVec2(1, 1), color, {});
+                ImVec2(mIconSize, mIconSize), ImVec2(0, 0), ImVec2(1, 1), color, tintCol);
         } else {
             ImGui::BeginGroup();
             DrawItem((char*)sStrayFairyTextures[i - 1], gSaveContext.save.saveInfo.inventory.strayFairies[i - 1] == 0,
