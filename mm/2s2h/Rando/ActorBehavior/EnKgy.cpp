@@ -28,6 +28,9 @@ void Rando::ActorBehavior::InitEnKgyBehavior() {
         *should = false;
     });
 
+    // Allow player to get checks without a sword
+    COND_VB_SHOULD(VB_SMITHY_CHECK_FOR_SWORD, IS_RANDO, { *should = false; });
+
     COND_VB_SHOULD(VB_SMITHY_CHECK_FOR_RAZOR_SWORD, IS_RANDO, {
         RandoSaveCheck& randoRazorSwordSaveCheck = RANDO_SAVE_CHECKS[RC_MOUNTAIN_VILLAGE_SMITHY_RAZOR_SWORD];
         *should = randoRazorSwordSaveCheck.cycleObtained;
