@@ -279,9 +279,15 @@ static void DrawItemsTab() {
     ImGui::BeginChild("randoItemsStarting", ImVec2(0, 0));
     ImGui::BeginChild("randoStartingItemsColumn1", ImVec2(columnWidth, 0));
     ImGui::SeparatorText("Starting Options");
-    CVarCheckbox("Wallet Full", Rando::StaticData::Options[RO_STARTING_RUPEES].cvar);
+    CVarCheckbox("Wallet Full", Rando::StaticData::Options[RO_STARTING_RUPEES].cvar,
+                 CheckboxOptions({ {
+                     .tooltip = "Start with a full wallet",
+                 } }));
     CVarCheckbox("Consumables Full", Rando::StaticData::Options[RO_STARTING_CONSUMABLES].cvar);
-    CVarCheckbox("Maps and Compasses", Rando::StaticData::Options[RO_STARTING_MAPS_AND_COMPASSES].cvar);
+    CVarCheckbox("Maps and Compasses", Rando::StaticData::Options[RO_STARTING_MAPS_AND_COMPASSES].cvar,
+                 CheckboxOptions({ {
+                     .tooltip = "Enables maps and compasses everywhere",
+                 } }));
     CVarSliderInt("Health", Rando::StaticData::Options[RO_STARTING_HEALTH].cvar,
                   IntSliderOptions()
                       .Min(1)
