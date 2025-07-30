@@ -148,7 +148,8 @@ nlohmann::json curatedPresetJ = R"(
                 "FierceDeityPutaway": 1,
                 "InfiniteDekuHopping": 1,
                 "InstantPutaway": 1,
-                "PreventDiveOverWater": 1
+                "PreventDiveOverWater": 1,
+                "UnderwaterOcarina": 1
             },
             "PlayerActions": {
                 "ArrowCycle": 1,
