@@ -573,7 +573,7 @@ bool SliderInt(const char* label, int32_t* value, const IntSliderOptions& option
         if (options.labelPosition == LabelPosition::Near) {
             ImGui::SameLine();
             ImGui::Text(label, *value);
-        } else if (options.labelPosition == LabelPosition::Far || options.labelPosition == LabelPosition::None) {
+        } else if (options.labelPosition == LabelPosition::Far) {
             ImGui::SameLine(ImGui::GetContentRegionAvail().x - ImGui::CalcTextSize(label).x +
                             ImGui::GetStyle().ItemSpacing.x);
             ImGui::Text(label, *value);
@@ -716,7 +716,7 @@ bool SliderFloat(const char* label, float* value, const FloatSliderOptions& opti
         if (options.labelPosition == LabelPosition::Near) {
             ImGui::SameLine();
             ImGui::Text(label, *value);
-        } else if (options.labelPosition == LabelPosition::Far || options.labelPosition == LabelPosition::None) {
+        } else if (options.labelPosition == LabelPosition::Far) {
             ImGui::SameLine(ImGui::GetContentRegionAvail().x - labelSpacing);
             ImGui::Text(label, *value);
         }
