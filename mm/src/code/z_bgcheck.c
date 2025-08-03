@@ -4207,6 +4207,9 @@ WallType SurfaceType_GetWallType(CollisionContext* colCtx, CollisionPoly* poly, 
 }
 
 s32 SurfaceType_GetWallFlags(CollisionContext* colCtx, CollisionPoly* poly, s32 bgId) {
+    if (GameInteractor_Should(VB_BE_CLIMBABLE_SURFACE, false)) {
+        return sWallFlags[SurfaceType_GetWallType(colCtx, poly, bgId)] | WALL_FLAG_3;
+    }
     return sWallFlags[SurfaceType_GetWallType(colCtx, poly, bgId)];
 }
 

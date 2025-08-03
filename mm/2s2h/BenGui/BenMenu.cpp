@@ -856,6 +856,9 @@ void BenMenu::AddEnhancements() {
     AddWidget(path, "Elegy of Emptiness Anywhere", WIDGET_CVAR_CHECKBOX)
         .CVar("gCheats.ElegyAnywhere")
         .Options(CheckboxOptions().Tooltip("Allows Elegy of Emptiness outside of Ikana."));
+    AddWidget(path, "Climb Anywhere", WIDGET_CVAR_CHECKBOX)
+        .CVar("gCheats.ClimbAnywhere")
+        .Options(CheckboxOptions().Tooltip("Allows climbing on most walls regardless of vines."));
     AddWidget(path, "Stop Time in Dungeons", WIDGET_CVAR_COMBOBOX)
         .CVar("gCheats.TempleTimeStop")
         .Options(
