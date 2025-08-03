@@ -300,7 +300,8 @@ struct ComboboxOptions : WidgetOptions {
 };
 
 struct IntSliderOptions : WidgetOptions {
-    bool showButtons = true;
+    bool showAdjustmentButtons = true;
+    bool showResetButton = true;
     const char* format = "%d";
     int32_t step = 1;
     int32_t min = 1;
@@ -312,9 +313,14 @@ struct IntSliderOptions : WidgetOptions {
     Colors color = Colors::Gray;
     ImGuiSliderFlags flags = 0;
     ImVec2 size = { 0, 0 };
+    
+    IntSliderOptions& ShowAdjustmentButtons(bool showAdjustmentButtons_) {
+        showAdjustmentButtons = showAdjustmentButtons_;
+        return *this;
+    }
 
-    IntSliderOptions& ShowButtons(bool showButtons_) {
-        showButtons = showButtons_;
+    IntSliderOptions& ShowResetButton(bool showResetButton_) {
+        showResetButton = showResetButton_;
         return *this;
     }
 
@@ -375,7 +381,8 @@ struct IntSliderOptions : WidgetOptions {
 };
 
 struct FloatSliderOptions : WidgetOptions {
-    bool showButtons = true;
+    bool showAdjustmentButtons = true;
+    bool showResetButton = true;
     const char* format = "%f";
     float step = 0.01f;
     float min = 0.01f;
@@ -389,8 +396,12 @@ struct FloatSliderOptions : WidgetOptions {
     ImGuiSliderFlags flags = 0;
     ImVec2 size = { 0, 0 };
 
-    FloatSliderOptions& ShowButtons(bool showButtons_) {
-        showButtons = showButtons_;
+    FloatSliderOptions& ShowAdjustmentButtons(bool showAdjustmentButtons_) {
+        showAdjustmentButtons = showAdjustmentButtons_;
+        return *this;
+    }
+    FloatSliderOptions& ShowResetButton(bool showResetButton_) {
+        showResetButton = showResetButton_;
         return *this;
     }
 

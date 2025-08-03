@@ -519,7 +519,11 @@ bool SliderInt(const char* label, int32_t* value, const IntSliderOptions& option
             ImGui::Text(label, *value);
         }
     }
-    if (options.showButtons) {
+    float buttonsWidth = 0;
+    if (options.showResetButton) {
+        buttonsWidth = ImGui::CalcTextSize(ICON_FA_UNDO).x + (ImGui::GetStyle().FramePadding.x * 2) + 3;
+    }
+    if (options.showAdjustmentButtons) {
         if (Button("-", ButtonOptions{ .color = options.color }.Size(Sizes::Inline)) && *value > options.min) {
             *value -= options.step;
             if (options.clamp) {
@@ -530,10 +534,9 @@ bool SliderInt(const char* label, int32_t* value, const IntSliderOptions& option
             dirty = true;
         }
         ImGui::SameLine(0, 3.0f);
-        ImGui::SetNextItemWidth(width - (ImGui::CalcTextSize("+").x + ImGui::GetStyle().FramePadding.x * 2 + 3) * 2);
-    } else {
-        ImGui::SetNextItemWidth(width);
+        buttonsWidth += (ImGui::CalcTextSize("+").x + (ImGui::GetStyle().FramePadding.x * 2) + 3) * 2;
     }
+    ImGui::SetNextItemWidth(width - buttonsWidth);
     if (ImGui::SliderScalar(invisibleLabel, ImGuiDataType_S32, value, &options.min, &options.max, options.format,
                             options.flags)) {
         if (options.clamp) {
@@ -545,15 +548,23 @@ bool SliderInt(const char* label, int32_t* value, const IntSliderOptions& option
         }
         dirty = true;
     }
-    if (options.showButtons) {
+    if (options.showAdjustmentButtons) {
         ImGui::SameLine(0, 3.0f);
-        ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
+        ImGui::SetNextItemWidth(ImGui::CalcTextSize("+").x);
         if (Button("+", ButtonOptions{ .color = options.color }.Size(Sizes::Inline)) && *value < options.max) {
             *value += options.step;
             if (options.clamp) {
                 if (*value > options.max)
                     *value = options.max;
             }
+            dirty = true;
+        }
+    }
+    if (options.showResetButton) {
+        ImGui::SameLine(0, 3.0f);
+        ImGui::SetNextItemWidth(ImGui::CalcTextSize(ICON_FA_UNDO).x);
+        if (Button(ICON_FA_UNDO, ButtonOptions{ .color = options.color }.Size(Sizes::Inline))) {
+            *value = options.defaultValue;
             dirty = true;
         }
     }
@@ -575,7 +586,7 @@ bool SliderInt(const char* label, int32_t* value, const IntSliderOptions& option
         !Ship_IsCStringEmpty(options.disabledTooltip)) {
         ImGui::SetTooltip("%s", WrappedText(options.disabledTooltip).c_str());
     } else if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled) && !Ship_IsCStringEmpty(options.tooltip)) {
-        ImGui::SetTooltip("%s", WrappedText(options.tooltip).c_str());
+        ImGui::SetTooltip("%s\n%s", WrappedText(options.tooltip).c_str(), "Edit (Ctrl + Left Click)");
     }
     ImGui::PopID();
     return dirty;
@@ -657,7 +668,11 @@ bool SliderFloat(const char* label, float* value, const FloatSliderOptions& opti
             ImGui::Text(label, *value);
         }
     }
-    if (options.showButtons) {
+    float buttonsWidth = 0;
+    if (options.showResetButton) {
+        buttonsWidth = ImGui::CalcTextSize(ICON_FA_UNDO).x + (ImGui::GetStyle().FramePadding.x * 2) + 3;
+    }
+    if (options.showAdjustmentButtons) {
         if (Button("-", ButtonOptions{ .color = options.color }.Size(Sizes::Inline)) && *value > options.min) {
             *value -= options.step;
             if (options.clamp) {
@@ -666,10 +681,9 @@ bool SliderFloat(const char* label, float* value, const FloatSliderOptions& opti
             dirty = true;
         }
         ImGui::SameLine(0, 3.0f);
-        ImGui::SetNextItemWidth(width - (ImGui::CalcTextSize("+").x + ImGui::GetStyle().FramePadding.x * 2 + 3) * 2);
-    } else {
-        ImGui::SetNextItemWidth(width);
+        buttonsWidth += (ImGui::CalcTextSize("+").x + (ImGui::GetStyle().FramePadding.x * 2) + 3) * 2;
     }
+    ImGui::SetNextItemWidth(width - buttonsWidth);
     if (ImGui::SliderScalar(invisibleLabel, ImGuiDataType_Float, &valueToDisplay, &minToDisplay, &maxToDisplay,
                             options.format, options.flags)) {
         *value = options.isPercentage ? valueToDisplay / 100.0f : valueToDisplay;
@@ -678,14 +692,22 @@ bool SliderFloat(const char* label, float* value, const FloatSliderOptions& opti
         }
         dirty = true;
     }
-    if (options.showButtons) {
+    if (options.showAdjustmentButtons) {
         ImGui::SameLine(0, 3.0f);
-        ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
+        ImGui::SetNextItemWidth(ImGui::CalcTextSize("+").x);
         if (Button("+", ButtonOptions{ .color = options.color }.Size(Sizes::Inline)) && *value < options.max) {
             *value += options.step;
             if (options.clamp) {
                 ClampFloat(value, options.min, options.max, options.step);
             }
+            dirty = true;
+        }
+    }
+    if (options.showResetButton) {
+        ImGui::SameLine(0, 3.0f);
+        ImGui::SetNextItemWidth(ImGui::CalcTextSize(ICON_FA_UNDO).x);
+        if (Button(ICON_FA_UNDO, ButtonOptions{ .color = options.color }.Size(Sizes::Inline))) {
+            *value = options.defaultValue;
             dirty = true;
         }
     }
@@ -706,7 +728,7 @@ bool SliderFloat(const char* label, float* value, const FloatSliderOptions& opti
         !Ship_IsCStringEmpty(options.disabledTooltip)) {
         ImGui::SetTooltip("%s", WrappedText(options.disabledTooltip).c_str());
     } else if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled) && !Ship_IsCStringEmpty(options.tooltip)) {
-        ImGui::SetTooltip("%s", WrappedText(options.tooltip).c_str());
+        ImGui::SetTooltip("%s\n%s", WrappedText(options.tooltip).c_str(), "Edit (Ctrl + Left Click)");
     }
     ImGui::PopID();
     return dirty;

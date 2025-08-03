@@ -289,7 +289,7 @@ void HudEditorWindow::DrawElement() {
                 ImGui::TableNextColumn();
                 UIWidgets::CVarSliderInt("X", hudEditorElements[i].xCvar,
                                          {
-                                             .showButtons = false,
+                                             .showAdjustmentButtons = false,
                                              .format = "X: %d",
                                              .min = -10,
                                              .max = 330,
@@ -299,7 +299,7 @@ void HudEditorWindow::DrawElement() {
                 ImGui::TableNextColumn();
                 UIWidgets::CVarSliderInt("Y", hudEditorElements[i].yCvar,
                                          {
-                                             .showButtons = false,
+                                             .showAdjustmentButtons = false,
                                              .format = "Y: %d",
                                              .min = -10,
                                              .max = 250,
@@ -309,7 +309,7 @@ void HudEditorWindow::DrawElement() {
                 ImGui::TableNextColumn();
                 UIWidgets::CVarSliderFloat("Scale", hudEditorElements[i].scaleCvar,
                                            {
-                                               .showButtons = false,
+                                               .showAdjustmentButtons = false,
                                                .format = "Scale: %.2f",
                                                .min = 0.25f,
                                                .max = 4.0f,
