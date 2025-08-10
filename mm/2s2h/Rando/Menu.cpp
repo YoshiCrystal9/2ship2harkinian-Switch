@@ -283,7 +283,11 @@ static void DrawItemsTab() {
                  CheckboxOptions({ {
                      .tooltip = "Start with a full wallet",
                  } }));
-    CVarCheckbox("Consumables Full", Rando::StaticData::Options[RO_STARTING_CONSUMABLES].cvar);
+    CVarCheckbox("Consumables Full", Rando::StaticData::Options[RO_STARTING_CONSUMABLES].cvar,
+                 CheckboxOptions({ {
+                     .tooltip = "Start with full Deku Sticks and Deku Nuts",
+                 } }));
+
     CVarCheckbox("Maps and Compasses", Rando::StaticData::Options[RO_STARTING_MAPS_AND_COMPASSES].cvar,
                  CheckboxOptions({ {
                      .tooltip = "Enables maps and compasses everywhere",
