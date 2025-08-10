@@ -1040,6 +1040,9 @@ void BenMenu::AddEnhancements() {
         .Options(
             CheckboxOptions().Tooltip("The Oceanside Spider House squatter will not move in until the player interacts "
                                       "with him. Forced on for randomizers."));
+    AddWidget(path, "Oceanside wallet any day", WIDGET_CVAR_CHECKBOX)
+        .CVar("gEnhancements.Cycle.OceansideWalletAnyDay")
+        .Options(CheckboxOptions().Tooltip("Allows the wallet reward to be collected on any day."));
     AddWidget(path, "Unstable", WIDGET_SEPARATOR_TEXT).Options(WidgetOptions().Color(Colors::Orange));
     AddWidget(path, "Disable Save Delay", WIDGET_CVAR_CHECKBOX)
         .CVar("gEnhancements.Saving.DisableSaveDelay")
