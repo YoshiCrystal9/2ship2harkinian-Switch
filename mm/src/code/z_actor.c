@@ -1540,6 +1540,10 @@ void Actor_SpawnHorse(PlayState* play, Player* player) {
  * Player must leave the cutscene action state and enter it again before halting actors can be toggled.
  */
 s32 Player_SetCsAction(PlayState* play, Actor* csActor, u8 csAction) {
+    if (!GameInteractor_Should(VB_PLAYER_CUTSCENE_ACTION, true, csActor)) {
+        return false;
+    }
+
     Player* player = GET_PLAYER(play);
 
     if ((player->csAction == PLAYER_CSACTION_5) ||
