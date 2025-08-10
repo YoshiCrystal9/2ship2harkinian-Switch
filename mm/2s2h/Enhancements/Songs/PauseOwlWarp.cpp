@@ -4,12 +4,14 @@
 
 extern "C" {
 #include "overlays/kaleido_scope/ovl_kaleido_scope/z_kaleido_scope.h"
+#include "z64horse.h"
 
 extern f32 sPauseMenuVerticalOffset;
 extern u16 sCursorPointsToOcarinaModes[];
 extern u16 sOwlWarpPauseItems[];
 extern u16 D_80AF343C[];
 extern s16 sInDungeonScene;
+extern s32 gHorseIsMounted;
 }
 
 #define CVAR_NAME "gEnhancements.Songs.PauseOwlWarp"
@@ -24,6 +26,23 @@ extern "C" bool PauseOwlWarp_IsOwlWarpEnabled() {
 void HandleConfirmingState(PauseContext* pauseCtx, Input* input) {
     if (Message_ShouldAdvance(gPlayState)) {
         if (gPlayState->msgCtx.choiceIndex == 0) { // Yes
+            Player* player = GET_PLAYER(gPlayState);
+
+            // Handle Epona's state before warping to prevent her from following the player
+            if (gHorseIsMounted && (player->stateFlags1 & PLAYER_STATE1_800000) && player->rideActor != NULL) {
+                // Save Epona's current position to horse data so she can be found later in the current scene
+                if (CHECK_QUEST_ITEM(QUEST_SONG_EPONA)) {
+                    gSaveContext.save.saveInfo.horseData.sceneId = gPlayState->sceneId;
+                    gSaveContext.save.saveInfo.horseData.pos.x = player->rideActor->world.pos.x;
+                    gSaveContext.save.saveInfo.horseData.pos.y = player->rideActor->world.pos.y;
+                    gSaveContext.save.saveInfo.horseData.pos.z = player->rideActor->world.pos.z;
+                    gSaveContext.save.saveInfo.horseData.yaw = player->rideActor->shape.rot.y;
+                }
+
+                // Clear horse mounting state to prevent Epona from spawning at warp destination
+                gHorseIsMounted = false;
+            }
+
             Interface_SetAButtonDoAction(gPlayState, DO_ACTION_NONE);
             pauseCtx->state = PAUSE_STATE_UNPAUSE_SETUP;
             sPauseMenuVerticalOffset = -6240.0f;
