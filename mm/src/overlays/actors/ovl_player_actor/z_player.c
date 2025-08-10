@@ -9267,8 +9267,10 @@ s32 Player_ActionChange_2(Player* this, PlayState* play) {
                             this->currentYaw = this->actor.shape.rot.y = interactRangeActor->shape.rot.y;
 
                             func_8082DAD4(this);
-                            if ((giEntry->itemId != ITEM_NONE) && (giEntry->gid >= 0) &&
-                                (Item_CheckObtainability(giEntry->itemId) == ITEM_NONE)) {
+                            if (GameInteractor_Should(VB_PLAY_SLOW_CHEST_CS,
+                                                      (giEntry->itemId != ITEM_NONE) && (giEntry->gid >= 0) &&
+                                                          (Item_CheckObtainability(giEntry->itemId) == ITEM_NONE),
+                                                      chest)) {
                                 this->csId = chest->csId2;
                                 func_8082DB90(play, this, this->ageProperties->openChestAnim);
                                 func_8082E920(play, this,
