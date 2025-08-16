@@ -30,11 +30,13 @@ extern "C" int SavingEnhancements_GetSaveEntrance() {
         case SCENE_SEA:
         case SCENE_SEA_BS:
             return ENTRANCE(GREAT_BAY_TEMPLE, 0);
-        // Stone Tower Temple (+ inverted) + Twinmold
+        // Stone Tower Temple
         case SCENE_INISIE_N:
+            return ENTRANCE(STONE_TOWER_TEMPLE, 0);
+        // Stone Tower Temple (inverted) + Twinmold
         case SCENE_INISIE_R:
         case SCENE_INISIE_BS:
-            return ENTRANCE(STONE_TOWER_TEMPLE, 0);
+            return ENTRANCE(STONE_TOWER_TEMPLE_INVERTED, 0);
         default:
             return ENTRANCE(SOUTH_CLOCK_TOWN, 0);
     }
