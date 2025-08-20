@@ -1371,6 +1371,11 @@ std::map<RandoCheckId, RandoStaticCheck> Checks = {
     RC(RC_TWIN_ISLANDS_SMALL_SNOWBALL_05,                                RCTYPE_SNOWBALL,         SCENE_17SETUGEN,                FLAG_NONE,                   0x0,                                                                 RI_JUNK),
     RC(RC_TWIN_ISLANDS_SMALL_SNOWBALL_06,                                RCTYPE_SNOWBALL,         SCENE_17SETUGEN,                FLAG_NONE,                   0x0,                                                                 RI_JUNK),
 
+    // Frogs //
+    RC(RC_CLOCK_TOWN_LAUNDRY_FROG,                                       RCTYPE_FROG,             SCENE_ALLEY,                    FLAG_NONE,                   0x00,                                                                RI_FROG_WHITE),
+    RC(RC_GREAT_BAY_TEMPLE_GEKKO_FROG,                                   RCTYPE_FROG,             SCENE_SEA,                      FLAG_NONE,                   0x00,                                                                RI_FROG_PINK),
+    RC(RC_SOUTHERN_SWAMP_FROG,                                           RCTYPE_FROG,             SCENE_20SICHITAI,               FLAG_NONE,                   0x00,                                                                RI_FROG_BLUE),
+    RC(RC_WOODFALL_TEMPLE_GEKKO_FROG,                                    RCTYPE_FROG,             SCENE_MITURIN,                  FLAG_NONE,                   0x00,                                                                RI_FROG_CYAN),
 
     // Grass //
     RC(RC_CLOCK_TOWN_LAUNDRY_POOL_GRASS_01,             RCTYPE_GRASS, SCENE_ALLEY,              FLAG_NONE, 0x0, RI_JUNK),

@@ -415,6 +415,12 @@ void Rando::DrawItem(RandoItemId randoItemId, Actor* actor) {
         case RI_SOUL_TWINMOLD:
             DrawTwinmold();
             break;
+        case RI_FROG_BLUE:
+        case RI_FROG_CYAN:
+        case RI_FROG_PINK:
+        case RI_FROG_WHITE:
+            DrawMinifrog(randoItemId, actor);
+            break;
         case RI_NONE:
         case RI_UNKNOWN:
             break;

@@ -60,6 +60,7 @@ void InitEnKujiyaBehavior();
 void InitEnLiftNutsBehavior();
 void InitEnMa4Behavior();
 void InitEnMaYtoBehavior();
+void InitEnMinifrogBehavior();
 void InitEnMnkBehavior();
 void InitEnNbBehavior();
 void InitEnOsnBehavior();

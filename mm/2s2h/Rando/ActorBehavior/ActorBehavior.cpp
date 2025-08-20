@@ -104,6 +104,7 @@ void Rando::ActorBehavior::OnFileLoad() {
     Rando::ActorBehavior::InitEnLiftNutsBehavior();
     Rando::ActorBehavior::InitEnMa4Behavior();
     Rando::ActorBehavior::InitEnMaYtoBehavior();
+    Rando::ActorBehavior::InitEnMinifrogBehavior();
     Rando::ActorBehavior::InitEnMnkBehavior();
     Rando::ActorBehavior::InitEnNbBehavior();
     Rando::ActorBehavior::InitEnOsnBehavior();

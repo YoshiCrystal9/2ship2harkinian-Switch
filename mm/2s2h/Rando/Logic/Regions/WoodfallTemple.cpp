@@ -10,6 +10,7 @@ static RegisterShipInitFunc initFunc([]() {
     Regions[RR_WOODFALL_TEMPLE_BOSS_KEY_ROOM] = RandoRegion{ .name = "Boss Key Room", .sceneId = SCENE_MITURIN,
         .checks = {
             CHECK(RC_WOODFALL_TEMPLE_BOSS_KEY_CHEST, CanKillEnemy(ACTOR_EN_PAMETFROG)),
+            CHECK(RC_WOODFALL_TEMPLE_GEKKO_FROG, CanKillEnemy(ACTOR_EN_PAMETFROG) && HAS_ITEM(ITEM_MASK_DON_GERO)),
             CHECK(RC_WOODFALL_TEMPLE_MINIBOSS_ROOM_POT_01, CanKillEnemy(ACTOR_EN_PAMETFROG)),
             CHECK(RC_WOODFALL_TEMPLE_MINIBOSS_ROOM_POT_02, CanKillEnemy(ACTOR_EN_PAMETFROG)),
             CHECK(RC_WOODFALL_TEMPLE_MINIBOSS_ROOM_POT_03, CanKillEnemy(ACTOR_EN_PAMETFROG)),
@@ -17,9 +18,6 @@ static RegisterShipInitFunc initFunc([]() {
         },
         .connections = {
             CONNECTION(RR_WOODFALL_TEMPLE_WATER_ROOM_UPPER, true),
-        },
-        .events = {
-            EVENT(RE_ACCESS_FROG_CYAN, CanKillEnemy(ACTOR_EN_PAMETFROG)),
         },
     };
     Regions[RR_WOODFALL_TEMPLE_BOSS_ROOM] = RandoRegion{ .sceneId = SCENE_MITURIN_BS,

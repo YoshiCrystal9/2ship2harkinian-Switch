@@ -6,6 +6,12 @@ extern "C" {
 #include <functions.h>
 #include "objects/gameplay_keep/gameplay_keep.h"
 
+// Soul Effects
+#include "src/overlays/actors/ovl_Obj_Moon_Stone/z_obj_moon_stone.h"
+#include "assets/objects/object_gi_reserve00/object_gi_reserve00.h"
+
+s32 EnMinifrog_OverrideLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3f* pos, Vec3s* rot, Actor* enMini);
+
 // clang-format off
 // Boss Includes
 /* Goht */      #include "objects/object_boss_hakugin/object_boss_hakugin.h"
@@ -13,11 +19,10 @@ extern "C" {
 /* Odolwa */    #include "objects/object_boss01/object_boss01.h"
 /* Twinmold */  #include "objects/object_boss02/object_boss02.h"
 /* Majora */    #include "objects/object_boss07/object_boss07.h"
-// clang-format on
 
-// Soul Effects
-#include "src/overlays/actors/ovl_Obj_Moon_Stone/z_obj_moon_stone.h"
-#include "assets/objects/object_gi_reserve00/object_gi_reserve00.h"
+// Other Actor Includes
+/* Minifrog */  #include "objects/object_fr/object_fr.h"
+// clang-format on
 }
 
 // Soul Effects
@@ -47,6 +52,19 @@ void DrawEnLight(Color_RGB8 flameColor, Vec3f flameSize) {
     if (gPlayState != NULL && lastUpdate != gPlayState->state.frames) {
         lastUpdate = gPlayState->state.frames;
         unk_144++;
+    }
+}
+
+// Limb Override Functions
+void EnMinifrogPostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* rot, Actor* thisx) {
+    if ((limbIndex == FROG_LIMB_RIGHT_EYE) || (limbIndex == FROG_LIMB_LEFT_EYE)) {
+        OPEN_DISPS(play->state.gfxCtx);
+
+        Matrix_ReplaceRotation(&play->billboardMtxF);
+        gSPMatrix(POLY_OPA_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+        gSPDisplayList(POLY_OPA_DISP++, *dList);
+
+        CLOSE_DISPS(play->state.gfxCtx);
     }
 }
 
@@ -193,4 +211,54 @@ extern void DrawMajora() {
 
     CLOSE_DISPS(gPlayState->state.gfxCtx);
     DrawEnLight({ 232, 128, 21 }, { 3.0f, 3.0f, 3.0f });
+}
+
+// Other Actors
+extern void DrawMinifrog(RandoItemId randoItemId, Actor* actor) {
+    OPEN_DISPS(gPlayState->state.gfxCtx);
+
+    Gfx_SetupDL25_Opa(gPlayState->state.gfxCtx);
+    Matrix_Translate(0.0f, -20.0f, 0.0f, MTXMODE_APPLY);
+    Matrix_Scale(0.03f, 0.03f, 0.03f, MTXMODE_APPLY);
+
+    static bool initialized = false;
+    static SkelAnime skelAnime;
+    static Vec3s jointTable[FROG_LIMB_MAX];
+    static Vec3s otherTable[FROG_LIMB_MAX];
+    Color_RGBA8 envColor = { 200, 170, 0, 255 }; // FROG_YELLOW
+    static u32 lastUpdate = 0;
+    if (!initialized) {
+        initialized = true;
+        SkelAnime_InitFlex(gPlayState, &skelAnime, (FlexSkeletonHeader*)&gFrogSkel, (AnimationHeader*)&gFrogIdleAnim,
+                           jointTable, otherTable, FROG_LIMB_MAX);
+    }
+    if (gPlayState != NULL && lastUpdate != gPlayState->state.frames) {
+        lastUpdate = gPlayState->state.frames;
+        SkelAnime_Update(&skelAnime);
+    }
+
+    switch (randoItemId) {
+        case RI_FROG_BLUE:
+            envColor = { 120, 130, 230, 255 };
+            break;
+        case RI_FROG_CYAN:
+            envColor = { 0, 170, 200, 255 };
+            break;
+        case RI_FROG_PINK:
+            envColor = { 210, 120, 100, 255 };
+            break;
+        case RI_FROG_WHITE:
+            envColor = { 190, 190, 190, 255 };
+            break;
+    }
+
+    gDPSetEnvColor(POLY_OPA_DISP++, envColor.r, envColor.g, envColor.b, envColor.a);
+
+    Mtx* mtxHead = (Mtx*)GRAPH_ALLOC(gPlayState->state.gfxCtx, 23 * sizeof(Mtx));
+    gSPSegment(POLY_OPA_DISP++, 0x08, (uintptr_t)gFrogIrisOpenTex);
+    gSPSegment(POLY_OPA_DISP++, 0x09, (uintptr_t)gFrogIrisOpenTex);
+    SkelAnime_DrawFlexOpa(gPlayState, skelAnime.skeleton, skelAnime.jointTable, FROG_LIMB_MAX,
+                          EnMinifrog_OverrideLimbDraw, EnMinifrogPostLimbDraw, actor);
+
+    CLOSE_DISPS(gPlayState->state.gfxCtx);
 }
