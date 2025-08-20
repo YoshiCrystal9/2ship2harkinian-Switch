@@ -380,7 +380,7 @@ static RegisterShipInitFunc initFunc([]() {
     };
     Regions[RR_WOODFALL_GREAT_FAIRY_FOUNTAIN] = RandoRegion{ .name = "Woodfall", .sceneId = SCENE_YOUSEI_IZUMI,
         .checks = {
-            CHECK(RC_WOODFALL_GREAT_FAIRY, HAS_ALL_STRAY_FAIRIES(DUNGEON_INDEX_WOODFALL_TEMPLE)),
+            CHECK(RC_WOODFALL_GREAT_FAIRY, HAS_ENOUGH_STRAY_FAIRIES(DUNGEON_INDEX_WOODFALL_TEMPLE)),
         },
         .exits = { //     TO                                         FROM
             EXIT(ENTRANCE(WOODFALL, 2),                     ENTRANCE(FAIRY_FOUNTAIN, 1), true),

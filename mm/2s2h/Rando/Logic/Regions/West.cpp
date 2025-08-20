@@ -171,7 +171,7 @@ static RegisterShipInitFunc initFunc([]() {
     };
     Regions[RR_GREAT_BAY_GREAT_FAIRY_FOUNTAIN] = RandoRegion{ .sceneId = SCENE_YOUSEI_IZUMI,
         .checks = {
-            CHECK(RC_GREAT_BAY_GREAT_FAIRY, HAS_ALL_STRAY_FAIRIES(DUNGEON_INDEX_GREAT_BAY_TEMPLE)),
+            CHECK(RC_GREAT_BAY_GREAT_FAIRY, HAS_ENOUGH_STRAY_FAIRIES(DUNGEON_INDEX_GREAT_BAY_TEMPLE)),
         },
         .exits = { //     TO                                         FROM
             EXIT(ENTRANCE(ZORA_CAPE, 5),                    ENTRANCE(FAIRY_FOUNTAIN, 3), true),

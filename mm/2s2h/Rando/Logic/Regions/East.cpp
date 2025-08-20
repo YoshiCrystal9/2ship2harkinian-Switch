@@ -242,7 +242,7 @@ static RegisterShipInitFunc initFunc([]() {
     };
     Regions[RR_IKANA_GREAT_FAIRY_FOUNTAIN] = RandoRegion{ .name = "Ikana", .sceneId = SCENE_YOUSEI_IZUMI,
         .checks = {
-            CHECK(RC_IKANA_GREAT_FAIRY, HAS_ALL_STRAY_FAIRIES(DUNGEON_INDEX_STONE_TOWER_TEMPLE)),
+            CHECK(RC_IKANA_GREAT_FAIRY, HAS_ENOUGH_STRAY_FAIRIES(DUNGEON_INDEX_STONE_TOWER_TEMPLE)),
         },
         .exits = { //     TO                                         FROM
             EXIT(ENTRANCE(IKANA_CANYON, 11),                ENTRANCE(FAIRY_FOUNTAIN, 4), true),

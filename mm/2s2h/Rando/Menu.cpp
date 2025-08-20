@@ -207,6 +207,13 @@ static void DrawLocationsTab() {
     CVarSliderInt(
         "Shuffle Gold Skulltula Tokens", "gPlaceholderInt",
         IntSliderOptions({ { .disabled = true, .disabledTooltip = "Coming Soon" } }).Min(1).Max(30).DefaultValue(30));
+    CVarSliderInt(
+        "Minimum Required Stray Fairies", Rando::StaticData::Options[RO_MINIMUM_STRAY_FAIRIES].cvar,
+        IntSliderOptions({ { .tooltip = "Minimum Stray Fairies needed to obtain the corresponding Great Fairy check.\n"
+                                        "Does not affect the Clock Town fairy." } })
+            .Min(1)
+            .Max(STRAY_FAIRY_SCATTERED_TOTAL)
+            .DefaultValue(STRAY_FAIRY_SCATTERED_TOTAL));
     ImGui::EndChild();
     ImGui::SameLine();
     ImGui::BeginChild("randoLocationsColumn2", ImVec2(columnWidth, halfHeight));
