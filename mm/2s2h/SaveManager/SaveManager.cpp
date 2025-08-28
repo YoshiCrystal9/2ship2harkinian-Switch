@@ -242,7 +242,7 @@ std::string SaveManager_GetFileNameFromFlashSave(FlashSave flashSave) {
     return "file" + std::to_string(fileNum) + (isBackup ? "backup" : "") + ".json";
 }
 
-bool SaveManager_HandleFileDropped(const std::string& filePath) {
+bool SaveManager_HandleFileDropped(char* filePath) {
     try {
         std::ifstream fileStream(filePath);
 

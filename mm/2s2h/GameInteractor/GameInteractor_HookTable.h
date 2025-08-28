@@ -1,5 +1,3 @@
-DEFINE_HOOK(OnFileDropped, (const std::string& path))
-
 DEFINE_HOOK(OnGameStateMainStart, ())
 DEFINE_HOOK(OnGameStateMainFinish, ())
 DEFINE_HOOK(OnGameStateDrawFinish, ())

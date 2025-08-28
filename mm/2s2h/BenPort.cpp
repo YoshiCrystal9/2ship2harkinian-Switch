@@ -471,33 +471,6 @@ extern "C" void OTRExtScanner() {
     }
 }
 
-void Ben_ProcessDroppedFiles(const std::string& filePath) {
-    SPDLOG_INFO("Processing dropped file: {}", filePath);
-
-    bool handled = false;
-
-    if (!handled) {
-        handled = SaveManager_HandleFileDropped(filePath);
-    }
-
-    if (!handled) {
-        handled = BinarySaveConverter_HandleFileDropped(filePath);
-    }
-
-    if (!handled) {
-        handled = Rando::Spoiler::HandleFileDropped(filePath);
-    }
-
-    if (!handled) {
-        handled = PresetManager_HandleFileDropped(filePath);
-    }
-
-    if (!handled) {
-        auto gui = Ship::Context::GetInstance()->GetWindow()->GetGui();
-        gui->GetGameOverlay()->TextDrawNotification(30.0f, true, "Unsupported file dropped, ignoring");
-    }
-}
-
 typedef struct {
     uint16_t major;
     uint16_t minor;
@@ -743,8 +716,6 @@ extern "C" void InitOTR() {
     // usually set once(?) in currently stubbed out areas of code.
     gIrqMgrRetraceTime = Ship_Random(700000, 850000);
 
-    GameInteractor::Instance->RegisterGameHook<GameInteractor::OnFileDropped>(Ben_ProcessDroppedFiles);
-
     time_t now = time(NULL);
     tm* tm_now = localtime(&now);
     if (tm_now->tm_mon == 11 && tm_now->tm_mday >= 24 && tm_now->tm_mday <= 25) {
@@ -765,6 +736,8 @@ extern "C" void InitOTR() {
 #endif
 
     std::shared_ptr<Ship::Config> conf = OTRGlobals::Instance->context->GetConfig();
+    Ship::Context::GetInstance()->GetFileDropMgr()->RegisterDropHandler(BinarySaveConverter_HandleFileDropped);
+    Ship::Context::GetInstance()->GetFileDropMgr()->RegisterDropHandler(SaveManager_HandleFileDropped);
 }
 
 extern "C" void SaveManager_ThreadPoolWait() {
@@ -916,14 +889,6 @@ extern "C" void Graph_StartFrame() {
         }
     }
 #endif
-    auto dropMgr = Ship::Context::GetInstance()->GetFileDropMgr();
-    if (dropMgr->FileDropped()) {
-        std::string filePath = dropMgr->GetDroppedFile();
-        if (!filePath.empty()) {
-            GameInteractor::Instance->ExecuteHooks<GameInteractor::OnFileDropped>(filePath);
-        }
-        dropMgr->ClearDroppedFile();
-    }
 }
 
 void RunCommands(Gfx* Commands, const std::vector<std::unordered_map<Mtx*, MtxF>>& mtx_replacements) {
