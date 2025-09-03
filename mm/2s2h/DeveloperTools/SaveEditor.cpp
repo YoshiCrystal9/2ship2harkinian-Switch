@@ -508,13 +508,21 @@ void DrawGeneralTab() {
         gSaveContext.save.saveInfo.playerData.isMagicAcquired = false;
         gSaveContext.save.saveInfo.playerData.isDoubleMagicAcquired = false;
     }
-    ImGui::SameLine();
     bool spinAttack = CHECK_WEEKEVENTREG(WEEKEVENTREG_OBTAINED_GREAT_SPIN_ATTACK);
     if (UIWidgets::Checkbox("Spin Lv2", &spinAttack, { .color = UIWidgets::Colors::DarkGreen })) {
         if (spinAttack) {
             SET_WEEKEVENTREG(WEEKEVENTREG_OBTAINED_GREAT_SPIN_ATTACK);
         } else {
             CLEAR_WEEKEVENTREG(WEEKEVENTREG_OBTAINED_GREAT_SPIN_ATTACK);
+        }
+    }
+    ImGui::SameLine();
+    bool drankChateau = CHECK_WEEKEVENTREG(WEEKEVENTREG_DRANK_CHATEAU_ROMANI);
+    if (UIWidgets::Checkbox("Drank Chateau", &drankChateau, { .color = UIWidgets::Colors::DarkGreen })) {
+        if (drankChateau) {
+            SET_WEEKEVENTREG(WEEKEVENTREG_DRANK_CHATEAU_ROMANI);
+        } else {
+            CLEAR_WEEKEVENTREG(WEEKEVENTREG_DRANK_CHATEAU_ROMANI);
         }
     }
     UIWidgets::PushStyleSlider(UIWidgets::Colors::DarkGreen);
@@ -1060,10 +1068,12 @@ void NextQuestInSlot(QuestItem slot) {
         Interface_LoadItemIconImpl(gPlayState, EQUIP_SLOT_B);
     } else if (slot == QUEST_SHIELD) {
         uint32_t currentShield = GET_CUR_EQUIP_VALUE(EQUIP_TYPE_SHIELD);
-        if (GET_CUR_EQUIP_VALUE(EQUIP_TYPE_SHIELD) == 1) {
+        if (GET_CUR_EQUIP_VALUE(EQUIP_TYPE_SHIELD) == EQUIP_VALUE_SHIELD_NONE) {
+            SET_EQUIP_VALUE(EQUIP_TYPE_SHIELD, EQUIP_VALUE_SHIELD_HERO);
+        } else if (GET_CUR_EQUIP_VALUE(EQUIP_TYPE_SHIELD) == EQUIP_VALUE_SHIELD_HERO) {
             SET_EQUIP_VALUE(EQUIP_TYPE_SHIELD, EQUIP_VALUE_SHIELD_MIRROR);
         } else {
-            SET_EQUIP_VALUE(EQUIP_TYPE_SHIELD, EQUIP_VALUE_SHIELD_HERO);
+            SET_EQUIP_VALUE(EQUIP_TYPE_SHIELD, EQUIP_VALUE_SHIELD_NONE);
         }
         Player_SetEquipmentData(gPlayState, player);
     } else {
@@ -1191,22 +1201,17 @@ void DrawQuestStatusTab() {
         }
     }
     ImGui::SameLine();
-    if (GET_CUR_EQUIP_VALUE(EQUIP_TYPE_SHIELD) == EQUIP_VALUE_SHIELD_HERO) {
-        ImTextureID shieldTextureId = Ship::Context::GetInstance()->GetWindow()->GetGui()->GetTextureByName(
-            (const char*)gItemIcons[ITEM_SHIELD_HERO]);
-        if (ImGui::ImageButton(std::to_string(ITEM_SHIELD_HERO).c_str(), shieldTextureId,
-                               ImVec2(INV_GRID_ICON_SIZE, INV_GRID_ICON_SIZE), ImVec2(0, 0), ImVec2(1, 1),
-                               ImVec4(0, 0, 0, 0), ImVec4(1, 1, 1, 1))) {
-            NextQuestInSlot(QUEST_SHIELD);
-        }
-    } else {
-        ImTextureID shieldTextureId = Ship::Context::GetInstance()->GetWindow()->GetGui()->GetTextureByName(
-            (const char*)gItemIcons[ITEM_SHIELD_MIRROR]);
-        if (ImGui::ImageButton(std::to_string(ITEM_SHIELD_MIRROR).c_str(), shieldTextureId,
-                               ImVec2(INV_GRID_ICON_SIZE, INV_GRID_ICON_SIZE), ImVec2(0, 0), ImVec2(1, 1),
-                               ImVec4(0, 0, 0, 0), ImVec4(1, 1, 1, 1))) {
-            NextQuestInSlot(QUEST_SHIELD);
-        }
+    int shieldValue = GET_CUR_EQUIP_VALUE(EQUIP_TYPE_SHIELD);
+    if (shieldValue == EQUIP_VALUE_SHIELD_NONE) {
+        shieldValue = EQUIP_VALUE_SHIELD_HERO;
+    }
+    ImTextureID shieldTextureId = Ship::Context::GetInstance()->GetWindow()->GetGui()->GetTextureByName(
+        (const char*)gItemIcons[ITEM_SHIELD_HERO + shieldValue - EQUIP_VALUE_SHIELD_HERO]);
+
+    if (ImGui::ImageButton(std::to_string(ITEM_SHIELD_HERO).c_str(), shieldTextureId,
+                           ImVec2(INV_GRID_ICON_SIZE, INV_GRID_ICON_SIZE), ImVec2(0, 0), ImVec2(1, 1),
+                           ImVec4(0, 0, 0, 0), ImVec4(1, 1, 1, GET_CUR_EQUIP_VALUE(EQUIP_TYPE_SHIELD) ? 1 : 0.4f))) {
+        NextQuestInSlot(QUEST_SHIELD);
     }
     ImGui::SameLine();
     ImTextureID textureId = Ship::Context::GetInstance()->GetWindow()->GetGui()->GetTextureByName(
@@ -1626,8 +1631,17 @@ void DrawFlagsTab() {
                             .labelPosition = UIWidgets::LabelPosition::None,
                         });
 
+    if (selectedFlagSection == WEEK_EVENT_REG) { // Draw color legend
+        ImGui::SameLine();
+        ImGui::TextColored(UIWidgets::ColorValues.at(UIWidgets::Colors::Gray), ICON_FA_SQUARE "Persistent");
+        ImGui::SameLine();
+        ImGui::TextColored(UIWidgets::ColorValues.at(UIWidgets::Colors::LightBlue), ICON_FA_SQUARE "Cycle");
+        ImGui::SameLine();
+        ImGui::TextColored(UIWidgets::ColorValues.at(UIWidgets::Colors::Orange), ICON_FA_SQUARE "Scene/Other");
+    }
+
     static int16_t selectedScene = 0;
-    if (selectedFlagSection == 5 || selectedFlagSection == 6) {
+    if (selectedFlagSection == PERMANENT_SCENE_FLAGS || selectedFlagSection == CYCLE_SCENE_FLAGS) {
         ImGui::SameLine();
         UIWidgets::Combobox("Scene", &selectedScene, &sceneList,
                             {
@@ -1645,7 +1659,7 @@ void DrawFlagsTab() {
 
     ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(1.0f, 1.0f));
     switch (selectedFlagSection) {
-        case 0: // currentSceneFlags
+        case CURRENT_SCENE_FLAGS:
             if (gPlayState == NULL) {
                 ImGui::Text("Play state is NULL, cannot display scene flags");
                 break;
@@ -1822,25 +1836,26 @@ void DrawFlagsTab() {
             UIWidgets::DrawFlagArray32("##collectible3", gPlayState->actorCtx.sceneFlags.collectible[3]);
             ImGui::EndGroup();
             break;
-        case 1: // weekEventReg
+        case WEEK_EVENT_REG:
             for (int i = 0; i < 100; i++) {
                 ImGui::PushID(i);
                 ImGui::Text("%02d", i);
                 ImGui::SameLine();
-                UIWidgets::DrawFlagArray8Mask("##", gSaveContext.save.saveInfo.weekEventReg[i]);
+                UIWidgets::DrawFlagTableArray8Mask(flagTables.at(WEEK_EVENT_REG), i,
+                                                   gSaveContext.save.saveInfo.weekEventReg[i]);
                 ImGui::PopID();
             }
             break;
-        case 2: // eventInf
+        case EVENT_INF:
             for (int i = 0; i < 8; i++) {
                 ImGui::PushID(i);
                 ImGui::Text("%02d", i);
                 ImGui::SameLine();
-                UIWidgets::DrawFlagArray8("##", gSaveContext.eventInf[i]);
+                UIWidgets::DrawFlagTableArray8(flagTables.at(EVENT_INF), i, gSaveContext.eventInf[i]);
                 ImGui::PopID();
             }
             break;
-        case 3: // scenesVisible
+        case SCENES_VISIBLE:
             if (UIWidgets::Button("All##scenesVisible",
                                   { .size = UIWidgets::Sizes::Inline, .color = UIWidgets::Colors::Gray })) {
                 for (int i = 0; i < 7; i++) {
@@ -1860,7 +1875,7 @@ void DrawFlagsTab() {
                 ImGui::PopID();
             }
             break;
-        case 4: // owlActivation
+        case OWL_ACTIVATION:
             if (UIWidgets::Button("All##owlActivationFlags",
                                   { .size = UIWidgets::Sizes::Inline, .color = UIWidgets::Colors::Gray })) {
                 gSaveContext.save.saveInfo.playerData.owlActivationFlags = UINT16_MAX;
@@ -1870,10 +1885,10 @@ void DrawFlagsTab() {
                                   { .size = UIWidgets::Sizes::Inline, .color = UIWidgets::Colors::Red })) {
                 gSaveContext.save.saveInfo.playerData.owlActivationFlags = 0;
             }
-            UIWidgets::DrawFlagArray16("##owlActivationFlags",
-                                       gSaveContext.save.saveInfo.playerData.owlActivationFlags);
+            UIWidgets::DrawFlagTableArray16(flagTables.at(OWL_ACTIVATION),
+                                            gSaveContext.save.saveInfo.playerData.owlActivationFlags);
             break;
-        case 5: // permanentSceneFlags
+        case PERMANENT_SCENE_FLAGS:
             ImGui::BeginGroup();
             ImGui::AlignTextToFramePadding();
             ImGui::Text("chest");
@@ -1988,7 +2003,7 @@ void DrawFlagsTab() {
             UIWidgets::DrawFlagArray32("##rooms", gSaveContext.save.saveInfo.permanentSceneFlags[selectedScene].rooms);
             ImGui::EndGroup();
             break;
-        case 6: // cycleSceneFlags
+        case CYCLE_SCENE_FLAGS:
             ImGui::BeginGroup();
             ImGui::AlignTextToFramePadding();
             ImGui::Text("chest");

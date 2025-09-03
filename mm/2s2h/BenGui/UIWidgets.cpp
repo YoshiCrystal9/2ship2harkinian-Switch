@@ -1097,18 +1097,19 @@ void DrawFlagArray16(const std::string& name, uint16_t& flags, Colors color) {
     ImGui::PopID();
 }
 
-void DrawFlagArray8(const std::string& name, uint8_t& flags, Colors color) {
-    ImGui::PushID(name.c_str());
-    for (int8_t flagIndex = 0; flagIndex < 8; flagIndex++) {
+void DrawFlagTableArray16(const FlagTable& flagTable, uint16_t& flags) {
+    ImGui::PushID(flagTable.name);
+    for (int16_t flagIndex = 0; flagIndex < 16; flagIndex++) {
         if ((flagIndex % 8) != 0) {
             ImGui::SameLine();
         }
         ImGui::PushID(flagIndex);
-        uint8_t bitMask = 1 << flagIndex;
+        uint16_t bitMask = 1 << flagIndex;
         bool flag = (flags & bitMask) != 0;
-        PushStyleCheckbox(color);
+        FlagEntry flagEntry = flagTable.entries.at(flagIndex);
+        PushStyleCheckbox(LightBlue);
         ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(4.0f, 6.0f));
-        std::string id = fmt::format("##{}{}", name, flagIndex);
+        std::string id = fmt::format("##{}{}", flagTable.name, flagIndex);
         if (ImGui::Checkbox(id.c_str(), &flag)) {
             if (flag) {
                 flags |= bitMask;
@@ -1117,7 +1118,10 @@ void DrawFlagArray8(const std::string& name, uint8_t& flags, Colors color) {
             }
         }
         if (ImGui::IsItemHovered()) {
-            std::string label = fmt::format("0x{:02X} ({})", flagIndex, flagIndex);
+            std::string label = WrappedText(flagEntry.description, 60).c_str();
+            if (!label.size()) {
+                label = fmt::format("0x{:02X} ({})", flagIndex, flagIndex);
+            }
             ImGui::SetTooltip(label.c_str());
         }
         ImGui::PopStyleVar();
@@ -1127,8 +1131,8 @@ void DrawFlagArray8(const std::string& name, uint8_t& flags, Colors color) {
     ImGui::PopID();
 }
 
-void DrawFlagArray8Mask(const std::string& name, uint8_t& flags, Colors color) {
-    ImGui::PushID(name.c_str());
+void DrawFlagTableArray8(const FlagTable& flagTable, uint16_t row, uint8_t& flags) {
+    ImGui::PushID(flagTable.name);
     for (int8_t flagIndex = 0; flagIndex < 8; flagIndex++) {
         if ((flagIndex % 8) != 0) {
             ImGui::SameLine();
@@ -1136,9 +1140,10 @@ void DrawFlagArray8Mask(const std::string& name, uint8_t& flags, Colors color) {
         ImGui::PushID(flagIndex);
         uint8_t bitMask = 1 << flagIndex;
         bool flag = (flags & bitMask) != 0;
-        PushStyleCheckbox(color);
+        FlagEntry flagEntry = flagTable.entries.at(row * 8 + flagIndex);
+        PushStyleCheckbox(LightBlue);
         ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(4.0f, 6.0f));
-        std::string id = fmt::format("##{}{}", name, flagIndex);
+        std::string id = fmt::format("####{}", flagIndex);
         if (ImGui::Checkbox(id.c_str(), &flag)) {
             if (flag) {
                 flags |= bitMask;
@@ -1147,7 +1152,42 @@ void DrawFlagArray8Mask(const std::string& name, uint8_t& flags, Colors color) {
             }
         }
         if (ImGui::IsItemHovered()) {
-            std::string label = fmt::format("0x{:02X} ({})", bitMask, flagIndex);
+            std::string label = WrappedText(flagEntry.description, 60).c_str();
+            if (!label.size()) {
+                label = fmt::format("0x{:02X} ({})", flagIndex, flagIndex);
+            }
+            ImGui::SetTooltip(label.c_str());
+        }
+        ImGui::PopStyleVar();
+        PopStyleCheckbox();
+        ImGui::PopID();
+    }
+    ImGui::PopID();
+}
+
+void DrawFlagTableArray8Mask(const FlagTable& flagTable, uint16_t row, uint8_t& flags) {
+    ImGui::PushID(flagTable.name);
+    for (int8_t flagIndex = 0; flagIndex < 8; flagIndex++) {
+        if ((flagIndex % 8) != 0) {
+            ImGui::SameLine();
+        }
+        ImGui::PushID(flagIndex);
+        uint8_t bitMask = 1 << flagIndex;
+        bool flag = (flags & bitMask) != 0;
+        FlagEntry flagEntry = flagTable.entries.at(row * 8 + flagIndex);
+        PushStyleCheckbox(flagEntry.type == PERSISTENT ? Gray : (flagEntry.type == CYCLE_RESET ? LightBlue : Orange));
+        ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(4.0f, 6.0f));
+        std::string id = fmt::format("##{}{}", flagTable.name, flagIndex);
+        if (ImGui::Checkbox(id.c_str(), &flag)) {
+            if (flag) {
+                flags |= bitMask;
+            } else {
+                flags &= ~bitMask;
+            }
+        }
+        if (ImGui::IsItemHovered()) {
+            std::string label = WrappedText(flagEntry.description, 60).c_str();
+            label += fmt::format("{}0x{:02X} ({})", label.size() ? "\n" : "", bitMask, flagIndex);
             ImGui::SetTooltip(label.c_str());
         }
         ImGui::PopStyleVar();
