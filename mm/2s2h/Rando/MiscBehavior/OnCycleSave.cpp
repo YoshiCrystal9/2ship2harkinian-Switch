@@ -103,8 +103,17 @@ void Rando::MiscBehavior::AfterEndOfCycleSave() {
                         ~(1 << (randoStaticCheck.flag & 0x1F));
                 }
                 break;
-                // most of the others are handled by the game, with the exception of PERSISTENT_CYCLE_FLAGS_SET, not
-                // sure if any of these cases affect us yet so ignoring for now
+            case FLAG_CYCL_SCENE_COLLECTIBLE:
+                // Clear the flag without triggering hook
+                if (gPlayState->sceneId == randoStaticCheck.sceneId) {
+                    gPlayState->actorCtx.sceneFlags.collectible[(randoStaticCheck.flag & ~0x1F) >> 5] &=
+                        ~(1 << (randoStaticCheck.flag & 0x1F));
+                }
+                gSaveContext.save.saveInfo.permanentSceneFlags[randoStaticCheck.sceneId].collectible &=
+                    ~(1 << (randoStaticCheck.flag & 0x1F));
+                gSaveContext.cycleSceneFlags[randoStaticCheck.sceneId].collectible &=
+                    ~(1 << (randoStaticCheck.flag & 0x1F));
+                break;
         }
     }
 
