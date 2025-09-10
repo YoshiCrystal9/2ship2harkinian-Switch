@@ -61,7 +61,7 @@ AudioCollection::AudioCollection() {
                            "NA_BGM_CLOCK_TOWN_MAIN_SEQUENCE", SEQ_BGM_WORLD, false, false),
         SEQUENCE_MAP_ENTRY(NA_BGM_OPENING, "Opening", "NA_BGM_OPENING", SEQ_BGM_WORLD, true, true),
         SEQUENCE_MAP_ENTRY(NA_BGM_INSIDE_A_HOUSE, "Inside House", "NA_BGM_INSIDE_A_HOUSE", SEQ_BGM_WORLD, true, true),
-        SEQUENCE_MAP_ENTRY(NA_BGM_GAME_OVER, "Game Over", "NA_BGM_GAME_OVER", SEQ_BGM_EVENT, false, true),
+        SEQUENCE_MAP_ENTRY(NA_BGM_GAME_OVER, "Game Over", "NA_BGM_GAME_OVER", SEQ_BGM_EVENT, true, true),
         SEQUENCE_MAP_ENTRY(NA_BGM_CLEAR_BOSS, "Clear Boss", "NA_BGM_CLEAR_BOSS", SEQ_BGM_BATTLE, true, true),
         SEQUENCE_MAP_ENTRY(NA_BGM_GET_ITEM, "Get Item", "NA_BGM_GET_ITEM", SEQ_FANFARE, true, true),
         SEQUENCE_MAP_ENTRY(NA_BGM_CLOCK_TOWN_DAY_2_PTR, "Clock Town Day 2 (Alt)", "NA_BGM_CLOCK_TOWN_DAY_2_PTR",

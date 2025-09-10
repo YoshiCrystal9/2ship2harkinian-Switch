@@ -19,15 +19,13 @@ void RegisterCustomBankRewardThresholds() {
     COND_VB_SHOULD(VB_PASS_FIRST_BANK_THRESHOLD, CVAR, {
         EnGinkoMan* enGinkoMan = va_arg(args, EnGinkoMan*);
 
-        *should = (HS_GET_BANK_RUPEES() >= FIRST_BANK_THRESHOLD) &&
-                  (enGinkoMan->previousBankValue < FIRST_BANK_THRESHOLD) && !CHECK_WEEKEVENTREG(WEEKEVENTREG_10_08);
+        *should = (HS_GET_BANK_RUPEES() >= FIRST_BANK_THRESHOLD) && !CHECK_WEEKEVENTREG(WEEKEVENTREG_10_08);
     });
 
     COND_VB_SHOULD(VB_PASS_INTEREST_BANK_THRESHOLD, CVAR, {
         EnGinkoMan* enGinkoMan = va_arg(args, EnGinkoMan*);
 
-        *should = (HS_GET_BANK_RUPEES() >= INTEREST_BANK_THRESHOLD &&
-                   enGinkoMan->previousBankValue < INTEREST_BANK_THRESHOLD);
+        *should = (HS_GET_BANK_RUPEES() >= INTEREST_BANK_THRESHOLD);
     });
 
     COND_VB_SHOULD(VB_PASS_SECOND_BANK_THRESHOLD, CVAR, {
@@ -41,8 +39,7 @@ void RegisterCustomBankRewardThresholds() {
     COND_VB_SHOULD(VB_PASS_SECOND_BANK_THRESHOLD_ALT, CVAR, {
         EnGinkoMan* enGinkoMan = va_arg(args, EnGinkoMan*);
 
-        if (!CHECK_WEEKEVENTREG(WEEKEVENTREG_59_08) && HS_GET_BANK_RUPEES() >= SECOND_BANK_THRESHOLD &&
-            enGinkoMan->previousBankValue < SECOND_BANK_THRESHOLD) {
+        if (!CHECK_WEEKEVENTREG(WEEKEVENTREG_59_08) && HS_GET_BANK_RUPEES() >= SECOND_BANK_THRESHOLD) {
             *should = true;
         }
     });

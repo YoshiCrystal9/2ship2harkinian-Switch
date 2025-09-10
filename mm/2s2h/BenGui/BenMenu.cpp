@@ -537,7 +537,7 @@ void BenMenu::AddSettings() {
                      .Tooltip("Which corner of the screen notifications appear in.")
                      .ComboVec(&notificationPosition)
                      .DefaultIndex(3));
-    AddWidget(path, "Duration: %.1f seconds", WIDGET_CVAR_SLIDER_FLOAT)
+    AddWidget(path, "Duration: %.0f seconds", WIDGET_CVAR_SLIDER_FLOAT)
         .CVar("gNotifications.Duration")
         .Options(FloatSliderOptions()
                      .Tooltip("How long notifications are displayed for.")
@@ -580,7 +580,7 @@ void BenMenu::AddSettings() {
     AddWidget(path, "Hide Window Background", WIDGET_CVAR_CHECKBOX)
         .CVar("gDisplayOverlay.Background")
         .Options(CheckboxOptions().Tooltip("Hides the background of the Display Overlay window."));
-    AddWidget(path, "Scale: %.1fx", WIDGET_CVAR_SLIDER_FLOAT)
+    AddWidget(path, "Scale: %.0fx", WIDGET_CVAR_SLIDER_FLOAT)
         .CVar("gDisplayOverlay.Scale")
         .Options(FloatSliderOptions()
                      .Tooltip("Adjust the Scale for the Display Overlay window.")

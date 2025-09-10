@@ -136,7 +136,7 @@ void OnPlayerUpdate(Actor* actor) {
                 gSaveContext.respawnFlag = 2;
 
                 // Stop BGM so that new day sequences can play
-                gSaveContext.seqId = NA_BGM_DISABLED;
+                gSaveContext.seqId = (u8)NA_BGM_DISABLED;
 
                 GameInteractor::Instance->UnregisterGameHookForID<GameInteractor::OnActorKill>(onEnTest6KillHookId);
                 onEnTest6KillHookId = 0;
@@ -226,8 +226,7 @@ void OnPlayerUpdate(Actor* actor) {
         sSelectedTime = newTime;
     } else if (adjustMode == ADJUST_DIRECTION_REVERSE) { // Reverse time
         u16 newTime = sSelectedTime - interval;
-        if (sSelectedDay == sOriginalDay && (CLOCK_TIME_NORMALIZED(newTime) < CLOCK_TIME_NORMALIZED(sOriginalTime) ||
-                                             interval > CLOCK_TIME_NORMALIZED(sSelectedTime))) {
+        if (sSelectedDay == sOriginalDay && CLOCK_TIME_NORMALIZED(newTime) < CLOCK_TIME_NORMALIZED(sOriginalTime)) {
             newTime = sOriginalTime;
         }
         // Day decrementing

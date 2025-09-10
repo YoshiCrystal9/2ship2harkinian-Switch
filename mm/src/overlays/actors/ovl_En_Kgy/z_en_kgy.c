@@ -390,9 +390,8 @@ void func_80B413C8(EnKgy* this) {
 
 s32 func_80B41460(void) {
     if ((GET_PLAYER_FORM != PLAYER_FORM_HUMAN) ||
-        GameInteractor_Should(VB_SMITHY_CHECK_FOR_SWORD, ((CUR_FORM_EQUIP(EQUIP_SLOT_B) != ITEM_SWORD_KOKIRI) &&
-                                                          (CUR_FORM_EQUIP(EQUIP_SLOT_B) != ITEM_SWORD_RAZOR) &&
-                                                          (CUR_FORM_EQUIP(EQUIP_SLOT_B) != ITEM_SWORD_GILDED)))) {
+        ((CUR_FORM_EQUIP(EQUIP_SLOT_B) != ITEM_SWORD_KOKIRI) && (CUR_FORM_EQUIP(EQUIP_SLOT_B) != ITEM_SWORD_RAZOR) &&
+         (CUR_FORM_EQUIP(EQUIP_SLOT_B) != ITEM_SWORD_GILDED))) {
         return 0xC38;
     }
 

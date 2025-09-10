@@ -5,10 +5,10 @@ set(CMAKE_CXX_STANDARD 20 CACHE STRING "The C++ standard to use")
 
 set(CMAKE_OSX_DEPLOYMENT_TARGET "10.15" CACHE STRING "Minimum OS X deployment version")
 set(GAME_STR "MM")
-project(2s2h VERSION 2.0.1 LANGUAGES C CXX)
+project(2s2h VERSION 2.0.0 LANGUAGES C CXX)
 include(CMake/2ship-cvars.cmake)
 include(CMake/lus-cvars.cmake)
-set(PROJECT_BUILD_NAME "Rena Bravo" CACHE STRING "" FORCE)
+set(PROJECT_BUILD_NAME "Rena Alfa" CACHE STRING "" FORCE)
 set(PROJECT_TEAM "github.com/harbourmasters" CACHE STRING "" FORCE)
 
 execute_process(
@@ -69,9 +69,6 @@ set(GFX_DEBUG_DISASSEMBLER ON)
 set(GBI_UCODE F3DEX_GBI_2)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/CMake")
-
-# Enable MPQ and OTR support
-set(INCLUDE_MPQ_SUPPORT ON)
 
 ################################################################################
 # Set target arch type if empty. Visual studio solution generator provides it.
@@ -156,7 +153,6 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 # Sub-projects
 ################################################################################
 add_subdirectory(libultraship ${CMAKE_BINARY_DIR}/libultraship)
-target_compile_definitions(libultraship PUBLIC INCLUDE_MPQ_SUPPORT)
 add_subdirectory(ZAPDTR/ZAPD ${CMAKE_BINARY_DIR}/ZAPD)
 add_subdirectory(OTRExporter)
 add_subdirectory(mm)

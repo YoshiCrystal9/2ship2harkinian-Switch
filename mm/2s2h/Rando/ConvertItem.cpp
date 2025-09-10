@@ -547,13 +547,9 @@ RandoItemId Rando::ConvertItem(RandoItemId randoItemId, RandoCheckId randoCheckI
                 }
                 break;
             case RI_BOTTLE_MILK:
-                if (Inventory_HasEmptyBottle()) {
-                    return RI_MILK_REFILL;
-                }
-                break;
             case RI_BOTTLE_CHATEAU_ROMANI:
                 if (Inventory_HasEmptyBottle()) {
-                    return RI_CHATEAU_ROMANI_REFILL;
+                    return RI_MILK_REFILL;
                 }
                 break;
             case RI_BOTTLE_RED_POTION:

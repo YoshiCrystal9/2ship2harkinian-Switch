@@ -6,7 +6,6 @@
 
 #include "z_en_kbt.h"
 #include "BenPort.h"
-#include "2s2h/GameInteractor/GameInteractor.h"
 
 #define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_FRIENDLY)
 
@@ -331,11 +330,9 @@ void func_80B34314(EnKbt* this, PlayState* play) {
     } else if (this->actor.xzDistToPlayer < 250.0f) {
         if ((this->unk_278 != NULL) && (this->unk_278->xzDistToPlayer < 250.0f)) {
             if (this->unk_27C & 4) {
-                if ((GET_PLAYER_FORM != PLAYER_FORM_HUMAN) ||
-                    GameInteractor_Should(VB_SMITHY_CHECK_FOR_SWORD,
-                                          ((CUR_FORM_EQUIP(EQUIP_SLOT_B) != ITEM_SWORD_KOKIRI) &&
-                                           (CUR_FORM_EQUIP(EQUIP_SLOT_B) != ITEM_SWORD_RAZOR) &&
-                                           (CUR_FORM_EQUIP(EQUIP_SLOT_B) != ITEM_SWORD_GILDED)))) {
+                if ((GET_PLAYER_FORM != PLAYER_FORM_HUMAN) || ((CUR_FORM_EQUIP(EQUIP_SLOT_B) != ITEM_SWORD_KOKIRI) &&
+                                                               (CUR_FORM_EQUIP(EQUIP_SLOT_B) != ITEM_SWORD_RAZOR) &&
+                                                               (CUR_FORM_EQUIP(EQUIP_SLOT_B) != ITEM_SWORD_GILDED))) {
                     this->actor.textId = 0xC38;
                 } else if (CURRENT_DAY == 3) {
                     this->actor.textId = 0xC39;

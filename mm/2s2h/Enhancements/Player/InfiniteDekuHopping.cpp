@@ -13,9 +13,7 @@ void RegisterInfiniteDekuHopping() {
     COND_VB_SHOULD(VB_DEKU_LINK_SPIN_ON_LAST_HOP, CVAR, {
         if (*should) {
             Player* player = GET_PLAYER(gPlayState);
-            if (gSaveContext.save.saveInfo.playerData.health != 0) {
-                player->remainingHopsCounter = 5;
-            }
+            player->remainingHopsCounter = 5;
         }
     });
 

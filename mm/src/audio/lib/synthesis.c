@@ -1157,8 +1157,9 @@ Acmd* AudioSynth_ProcessSample(s32 noteIndex, NoteSampleState* sampleState, Note
                         numSamplesProcessed += numSamplesToLoadAdj;
                         dmemUncompressedAddrOffset1 = numSamplesToLoadAdj;
 
-                        if (((synthState->samplePosInt * 2) + (numSamplesToLoadAdj)*SAMPLE_SIZE) < sample->size) {
-                            bytesToRead = (numSamplesToLoadAdj)*SAMPLE_SIZE;
+                        if (((synthState->samplePosInt * 2) + (numSamplesToLoadAdj + 16) * SAMPLE_SIZE) <
+                            sample->size) {
+                            bytesToRead = (numSamplesToLoadAdj + 16) * SAMPLE_SIZE;
                         } else {
                             bytesToRead = sample->size - (synthState->samplePosInt * 2);
                         }
