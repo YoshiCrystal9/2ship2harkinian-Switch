@@ -20,7 +20,7 @@ void EndEnFsnDialogue(EnFsn* actor) {
     player->talkActorDistance = actor->actor.xzDistToPlayer;
     player->exchangeItemAction = PLAYER_IA_MINUS1;
     Player_TalkWithPlayer(gPlayState, &actor->actor);
-    actor->flags |= ACTOR_FLAG_TALK_REQUESTED;
+    actor->flags |= ACTOR_FLAG_TALK;
     actor->actionFunc = EnFsn_ResumeInteraction;
 }
 

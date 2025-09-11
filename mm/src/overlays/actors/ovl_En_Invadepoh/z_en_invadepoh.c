@@ -2599,7 +2599,7 @@ void EnInvadepoh_ConfusedRomani_Update(Actor* thisx, PlayState* play2) {
     PlayState* play = play2;
     EnInvadepoh* this = (EnInvadepoh*)thisx;
     s32 inUncullRange = CHECK_FLAG_ALL(this->actor.flags, ACTOR_FLAG_40);
-    s32 talkRequested = Actor_ProcessTalkRequest(&this->actor, &play->state);
+    s32 talkRequested = Actor_TalkOfferAccepted(&this->actor, &play->state);
 
     if (talkRequested) {
         Message_BombersNotebookQueueEvent(play, 5);
@@ -2981,7 +2981,7 @@ void EnInvadepoh_Night1Romani_Update(Actor* thisx, PlayState* play2) {
     PlayState* play = play2;
     EnInvadepoh* this = (EnInvadepoh*)thisx;
     s32 inUncullRange = CHECK_FLAG_ALL(this->actor.flags, ACTOR_FLAG_40);
-    s32 talkRequested = Actor_ProcessTalkRequest(&this->actor, &play->state);
+    s32 talkRequested = Actor_TalkOfferAccepted(&this->actor, &play->state);
 
     if (talkRequested) {
         Message_BombersNotebookQueueEvent(play, 5);
@@ -3205,7 +3205,7 @@ void EnInvadepoh_BarnRomani_Update(Actor* thisx, PlayState* play2) {
     PlayState* play = play2;
     EnInvadepoh* this = (EnInvadepoh*)thisx;
     s32 inUncullRange = CHECK_FLAG_ALL(this->actor.flags, ACTOR_FLAG_40);
-    s32 talkRequested = Actor_ProcessTalkRequest(&this->actor, &play->state);
+    s32 talkRequested = Actor_TalkOfferAccepted(&this->actor, &play->state);
 
     if (talkRequested) {
         Message_BombersNotebookQueueEvent(play, 5);
@@ -3241,7 +3241,7 @@ void EnInvadepoh_RewardRomani_SetupStartCs(EnInvadepoh* this) {
 }
 
 void EnInvadepoh_RewardRomani_StartCs(EnInvadepoh* this, PlayState* play) {
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+    if (Actor_TalkOfferAccepted(&this->actor, &play->state)) {
         EnInvadepoh_Romani_StartTextBox(this, play, 0x3331); // We did it...We won.
         EnInvadepoh_RewardRomani_SetupTalk(this);
     } else {
@@ -3298,7 +3298,7 @@ void EnInvadepoh_RewardRomani_SetupAfterGiveBottle(EnInvadepoh* this) {
 }
 
 void EnInvadepoh_RewardRomani_AfterGiveBottle(EnInvadepoh* this, PlayState* play) {
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+    if (Actor_TalkOfferAccepted(&this->actor, &play->state)) {
         EnInvadepoh_Romani_StartTextBox(this, play, 0x3334); // I have to get back to bed..
         Message_BombersNotebookQueueEvent(play, 0x1E);
         Message_BombersNotebookQueueEvent(play, 0x1D);
@@ -3744,7 +3744,7 @@ void EnInvadepoh_Cremia_Update(Actor* thisx, PlayState* play2) {
     PlayState* play = play2;
     EnInvadepoh* this = (EnInvadepoh*)thisx;
     s32 inUncullRange = CHECK_FLAG_ALL(this->actor.flags, ACTOR_FLAG_40);
-    s32 talkRequested = Actor_ProcessTalkRequest(&this->actor, &play->state);
+    s32 talkRequested = Actor_TalkOfferAccepted(&this->actor, &play->state);
 
     if (talkRequested) {
         Message_BombersNotebookQueueEvent(play, 6);
@@ -3938,7 +3938,7 @@ void EnInvadepoh_Night3Romani_Update(Actor* thisx, PlayState* play2) {
     PlayState* play = play2;
     EnInvadepoh* this = (EnInvadepoh*)thisx;
     s32 inUncullRange = CHECK_FLAG_ALL(this->actor.flags, ACTOR_FLAG_40);
-    s32 talkRequested = Actor_ProcessTalkRequest(&this->actor, &play->state);
+    s32 talkRequested = Actor_TalkOfferAccepted(&this->actor, &play->state);
 
     if (talkRequested) {
         Message_BombersNotebookQueueEvent(play, 5);

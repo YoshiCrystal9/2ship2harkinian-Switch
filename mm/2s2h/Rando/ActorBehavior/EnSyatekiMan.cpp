@@ -25,7 +25,7 @@ void Rando::ActorBehavior::InitEnSyatekiManBehavior() {
                 if (CURRENT_DAY == 3) {
                     // On the third day, there is additional dialog after the reward
                     talkToShootingGalleryNpc(player, actor);
-                    actor->flags |= ACTOR_FLAG_TALK_REQUESTED;
+                    actor->flags |= ACTOR_FLAG_TALK;
                 } else {
                     /*
                      * On the other two days, there is no dialog after the reward. The simplest thing to make the NPC

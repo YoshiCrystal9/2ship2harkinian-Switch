@@ -154,7 +154,7 @@ void func_80C09518(EnKitan* this, PlayState* play) {
 
     SkelAnime_Update(&this->skelAnime);
 
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+    if (Actor_TalkOfferAccepted(&this->actor, &play->state)) {
         this->actionFunc = func_80C09708;
         Message_ContinueTextbox(play, 0x04B5);
         this->actor.flags &= ~ACTOR_FLAG_10000;
@@ -259,7 +259,7 @@ void func_80C09708(EnKitan* this, PlayState* play) {
 void func_80C09990(EnKitan* this, PlayState* play) {
     SkelAnime_Update(&this->skelAnime);
 
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+    if (Actor_TalkOfferAccepted(&this->actor, &play->state)) {
         this->actionFunc = func_80C09708;
         Message_StartTextbox(play, 0x04B0, &this->actor);
         this->timer = 0;

@@ -10,7 +10,7 @@ void func_80BC9E50(EnStoneheishi* enStoneheishi, PlayState* play);
 
 /*
  * This is the same block found for non-scripted actors in OfferGetItem.cpp, with the addition of setting
- * ACTOR_FLAG_TALK_REQUESTED, other actor data, and finishes actor's dialogue.
+ * ACTOR_FLAG_TALK, other actor data, and finishes actor's dialogue.
  */
 void Rando::ActorBehavior::InitEnStoneheishiBehavior() {
     COND_VB_SHOULD(VB_GIVE_ITEM_FROM_OFFER, IS_RANDO, {
@@ -23,7 +23,7 @@ void Rando::ActorBehavior::InitEnStoneheishiBehavior() {
             player->talkActorDistance = actor->xzDistToPlayer;
             player->exchangeItemAction = PLAYER_IA_MINUS1;
             Player_TalkWithPlayer(gPlayState, actor);
-            actor->flags |= ACTOR_FLAG_TALK_REQUESTED;
+            actor->flags |= ACTOR_FLAG_TALK;
             SET_WEEKEVENTREG(WEEKEVENTREG_41_40);
             EnStoneheishi* enStoneheishi = (EnStoneheishi*)actor;
             enStoneheishi->textIdIndex++;

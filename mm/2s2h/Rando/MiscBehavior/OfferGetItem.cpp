@@ -23,7 +23,7 @@ void Rando::MiscBehavior::InitOfferGetItemBehavior() {
         if (cmdId == MSCRIPT_CMD_06) { // MSCRIPT_OFFER_ITEM
             switch (actor->id) {
                 case ACTOR_EN_PST:
-                    actor->flags |= ACTOR_FLAG_TALK_REQUESTED; // Prevent softlock
+                    actor->flags |= ACTOR_FLAG_TALK; // Prevent softlock
                     func_80832558(gPlayState, player, func_80837B60);
                     *should = false;
                     return;

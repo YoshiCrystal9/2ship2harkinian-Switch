@@ -55,7 +55,7 @@ void RegisterSkipRosaSistersDance() {
                      * this cutscene plays. If we're skipping the cutscene, we have to set it again to prevent the
                      * dialog from hanging. This does not affect vanilla.
                      */
-                    actor->flags |= ACTOR_FLAG_TALK_REQUESTED;
+                    actor->flags |= ACTOR_FLAG_TALK;
                     *should = false;
                 }
             }

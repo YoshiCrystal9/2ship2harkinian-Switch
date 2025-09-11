@@ -259,7 +259,7 @@ void func_80BEA088(EnDt* this, PlayState* play) {
     EnMuto* mutoh = NULL;
     EnBaisen* viscen = NULL;
 
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+    if (Actor_TalkOfferAccepted(&this->actor, &play->state)) {
         func_80BEA254(this, play);
         return;
     }
@@ -545,7 +545,7 @@ void func_80BEAB44(EnDt* this, PlayState* play) {
 
 void func_80BEABF8(EnDt* this, PlayState* play) {
     SkelAnime_Update(&this->skelanime);
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state) != 0) {
+    if (Actor_TalkOfferAccepted(&this->actor, &play->state) != 0) {
         Message_BombersNotebookQueueEvent(play, 0x26);
         Message_BombersNotebookQueueEvent(play, 7);
         this->actionFunc = func_80BEA394;
@@ -573,7 +573,7 @@ void func_80BEAC84(EnDt* this, PlayState* play) {
 
 void func_80BEAD2C(EnDt* this, PlayState* play) {
     func_80BE9C74(this);
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state) != 0) {
+    if (Actor_TalkOfferAccepted(&this->actor, &play->state) != 0) {
         func_80BEADB8(this);
         return;
     }

@@ -171,7 +171,7 @@ s32 MsgEvent_Cmd07(Actor* actor, PlayState* play, u8** scriptPtr, MsgEventCallba
     f32 xzDist;
     s16 skip = MSCRIPT_GET_16(script, 1);
 
-    if (Actor_ProcessTalkRequest(actor, &play->state)) {
+    if (Actor_TalkOfferAccepted(actor, &play->state)) {
         *scriptPtr += skip;
     } else {
         actor->flags |= ACTOR_FLAG_10000;

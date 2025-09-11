@@ -8,7 +8,7 @@ void Player_TalkWithPlayer(PlayState* play, Actor* actor);
 
 /*
  * This is the same block found for non-scripted actors in OfferGetItem.cpp, with the addition of unsetting
- * ACTOR_FLAG_TALK_REQUESTED. Without that, the actor will bring up an extra textbox after the applause cutscene ends.
+ * ACTOR_FLAG_TALK. Without that, the actor will bring up an extra textbox after the applause cutscene ends.
  * Link can freely move when this extra textbox appears.
  */
 void Rando::ActorBehavior::InitEnRzBehavior() {
@@ -22,7 +22,7 @@ void Rando::ActorBehavior::InitEnRzBehavior() {
             player->talkActorDistance = actor->xzDistToPlayer;
             player->exchangeItemAction = PLAYER_IA_MINUS1;
             Player_TalkWithPlayer(gPlayState, actor);
-            actor->flags &= ~ACTOR_FLAG_TALK_REQUESTED;
+            actor->flags &= ~ACTOR_FLAG_TALK;
             *should = false;
         }
     });
