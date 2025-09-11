@@ -17735,7 +17735,7 @@ void Player_Action_68(Player* this, PlayState* play) {
                                 this->stateFlags1 |= PLAYER_STATE1_10000000 | PLAYER_STATE1_20000000;
                                 interactRangeActor->parent = &this->actor;
                                 Player_UpdateBottleHeld(play, this, entry->itemId, entry->itemAction);
-                                func_8082DB90(play, this, sp24->unk_4);
+                                Player_Anim_PlayOnceAdjusted(play, this, sp24->unk_4);
                             }
                         }
                     }
