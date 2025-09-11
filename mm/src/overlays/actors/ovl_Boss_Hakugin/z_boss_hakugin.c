@@ -1466,7 +1466,7 @@ void func_80B08848(BossHakugin* this, PlayState* play) {
     this->actor.speed = 5.0f;
     Player_SetCsActionWithHaltedActors(play, &this->actor, PLAYER_CSACTION_END);
     player->stateFlags1 |= PLAYER_STATE1_20;
-    play->actorCtx.unk268 = true;
+    play->actorCtx.isOverrideInputOn  = true;
     this->actionFunc = func_80B08960;
 }
 
@@ -1516,13 +1516,13 @@ void func_80B08960(BossHakugin* this, PlayState* play) {
     if (this->unk_0484.base.atFlags & AT_HIT) {
         func_800B8D50(play, &this->actor, 10.0f, 0, 6.0f, 0);
     } else {
-        play->actorCtx.unk268 = true;
+        play->actorCtx.isOverrideInputOn = true;
     }
 
     if (this->unk_019C > 4) {
         var_fv0 = (this->unk_019C - 4) * 5.0f;
         var_fv0 = CLAMP_MAX(var_fv0, 60.0f);
-        func_800B6F20(play, &play->actorCtx.unk_26C, var_fv0, -0x4000);
+        Actor_SetControlStickData(play, &play->actorCtx.overrideInput, var_fv0, -0x4000);
     }
 }
 
