@@ -7,6 +7,8 @@
 #include "alignment.h"
 #include "unk.h"
 
+#include "functions.h" // TODO: Revisit this. Done to make Graph_OpenDisps et al visible
+
 struct GameState;
 
 #define TMEM_SIZE 0x1000
