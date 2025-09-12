@@ -3,6 +3,7 @@
 
 #include "PR/ultratypes.h"
 #include "z64math.h"
+#include "PR/gbi.h"
 
 struct Actor;
 struct PlayState;

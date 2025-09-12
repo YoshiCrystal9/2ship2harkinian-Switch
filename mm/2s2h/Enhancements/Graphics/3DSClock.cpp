@@ -58,7 +58,7 @@ void Draw3DSClock() {
 
     if ((R_TIME_SPEED != 0) &&
         ((gPlayState->msgCtx.msgMode == MSGMODE_NONE) ||
-         ((gPlayState->actorCtx.flags & ACTORCTX_FLAG_1) && !Play_InCsMode(gPlayState)) ||
+         ((gPlayState->actorCtx.flags & ACTORCTX_FLAG_TELESCOPE_ON) && !Play_InCsMode(gPlayState)) ||
          (gPlayState->msgCtx.msgMode == MSGMODE_NONE) ||
          ((gPlayState->msgCtx.currentTextId >= 0x100) && (gPlayState->msgCtx.currentTextId <= 0x200)) ||
          (gSaveContext.gameMode == GAMEMODE_END_CREDITS)) &&

@@ -15,10 +15,10 @@ typedef struct GameAlloc {
     /* 0x10 */ GameAllocEntry* head;
 } GameAlloc; // size = 0x14
 
-void GameAlloc_Log(GameAlloc* this);
-void* GameAlloc_Malloc(GameAlloc* this, size_t size);
-void GameAlloc_Free(GameAlloc* this, void* data);
-void GameAlloc_Cleanup(GameAlloc* this);
-void GameAlloc_Init(GameAlloc* this);
+void GameAlloc_Log(GameAlloc* thisx);
+void* GameAlloc_Malloc(GameAlloc* thisx, size_t size);
+void GameAlloc_Free(GameAlloc* thisx, void* data);
+void GameAlloc_Cleanup(GameAlloc* thisx);
+void GameAlloc_Init(GameAlloc* thisx);
 
 #endif

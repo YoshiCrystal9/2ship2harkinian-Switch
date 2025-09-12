@@ -50,6 +50,7 @@ uint32_t IsGameMasterQuest();
 #endif
 
 #ifndef __cplusplus
+#include <z64audio.h>
 #include <z64bgcheck.h>
 #include <z64camera.h>
 #include <z64game.h>

@@ -5,6 +5,7 @@
 #include "regs.h"
 #include "z64math.h"
 #include "z64save.h"
+#include "macros.h"
 
 #define THIS ((TransitionFade*)thisx)
 

@@ -890,7 +890,7 @@ const std::vector<FlagTable> flagTables = {
           { NONE, EVENTINF_47, "Ghost Hut: Played Song of Healing" },
           { NONE, EVENTINF_50, "Boat Cruise Host (1 bit)" },
           { NONE, EVENTINF_51, "" },
-          { NONE, EVENTINF_52, "Transitions Enabled for Current Scene" },
+          { NONE, EVENTINF_HAS_DAYTIME_TRANSITION_CS, "Transitions Enabled for Current Scene" },
           { NONE, EVENTINF_53, "Unfroze Goht" },
           { NONE, EVENTINF_54, "Began Odolwa Battle" },
           { NONE, EVENTINF_55, "Began Twinmold Battle" },

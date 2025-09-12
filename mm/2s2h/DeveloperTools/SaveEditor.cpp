@@ -39,8 +39,8 @@ void TransitionFade_SetColor(void* thisx, u32 color);
 void ObjTokeiStep_SetupOpen(ObjTokeiStep* objTokeiStep);
 void ObjTokeiStep_DrawOpen(Actor* actor, PlayState* play);
 void ObjTokeiStep_DoNothing(ObjTokeiStep* objTokeiStep, PlayState* play);
-void func_80A42198(EnTest4* thisx);
-void func_80A425E4(EnTest4* thisx, PlayState* play);
+void EnTest4_GetBellTimeOnDay3(EnTest4* thisx);
+void EnTest4_GetBellTimeAndShrinkScreenBeforeDay3(EnTest4* thisx, PlayState* play);
 }
 
 bool safeMode = true;
@@ -211,15 +211,15 @@ void UpdateGameTime(u16 gameTime) {
     // Update EnTest4 actor to be in sync with the new time
     // This ensures that day transitions are not triggered with the change
     if (enTest4 != NULL) {
-        enTest4->unk_146 = gameTime;
-        enTest4->lastBellTime = gameTime;
-        enTest4->csIdIndex = newTimeIsNight ? 0 : 1;
+        enTest4->prevTime = gameTime;
+        enTest4->prevBellTime = gameTime;
+        enTest4->daytimeIndex = newTimeIsNight ? 0 : 1;
 
         // Sets the nextBellTime based on the new current time
         if (CURRENT_DAY == 3) {
-            func_80A42198(enTest4);
+            EnTest4_GetBellTimeOnDay3(enTest4);
         } else {
-            func_80A425E4(enTest4, gPlayState);
+            EnTest4_GetBellTimeAndShrinkScreenBeforeDay3(enTest4, gPlayState);
         }
 
         // Unset any screen scaling from the above funcs
@@ -470,7 +470,7 @@ void DrawGeneralTab() {
             // Inverting setup actors forces half-day actors to kill/respawn for new day
             gPlayState->numSetupActors = -gPlayState->numSetupActors;
             // Load environment values for new day
-            func_800FEAF4(&gPlayState->envCtx);
+            Environment_NewDay(&gPlayState->envCtx);
             // Clear weather from day 2
             gWeatherMode = WEATHER_MODE_CLEAR;
             gPlayState->envCtx.lightningState = LIGHTNING_OFF;

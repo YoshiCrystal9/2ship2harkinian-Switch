@@ -225,10 +225,10 @@ void Transition_Destroy(TransitionContext* transitionCtx);
 
 // z_fbdemo.c
 
-void TransitionTile_Destroy(TransitionTile* this);
-TransitionTile* TransitionTile_Init(TransitionTile* this, s32 cols, s32 rows);
-void TransitionTile_Draw(TransitionTile* this, Gfx** gfxP);
-void TransitionTile_Update(TransitionTile* this);
+void TransitionTile_Destroy(TransitionTile* thisx);
+TransitionTile* TransitionTile_Init(TransitionTile* thisx, s32 cols, s32 rows);
+void TransitionTile_Draw(TransitionTile* thisx, Gfx** gfxP);
+void TransitionTile_Update(TransitionTile* thisx);
 
 // z_fbdemo_fade.c
 
