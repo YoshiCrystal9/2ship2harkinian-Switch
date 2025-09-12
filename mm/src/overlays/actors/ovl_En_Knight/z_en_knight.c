@@ -3241,7 +3241,7 @@ void EnKnight_Update(Actor* thisx, PlayState* play) {
                 }
             }
 
-            this->unk_144 = gSaveContext.save.time;
+            this->unk_144 = CURRENT_TIME;
             Math_ApproachS(&this->unk428, 0, 2, 0x200);
         } else if (D_809BEFD0->unk_154 == 0) {
             this->actor.hintId = 0x1D;
@@ -3511,7 +3511,7 @@ void EnKnight_Update(Actor* thisx, PlayState* play) {
                     play->envCtx.lightSetting = 0;
                     play->envCtx.prevLightSetting = 10;
                 }
-                var_v0_2 = gSaveContext.save.time;
+                var_v0_2 = CURRENT_TIME;
                 if ((s32)var_v0_2 > 0x8000) {
                     var_v0_2 = (0xFFFF - var_v0_2) & 0xFFFF;
                 }

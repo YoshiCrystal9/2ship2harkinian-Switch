@@ -178,7 +178,7 @@ EnTest4* FindEnTest4Actor() {
 
 void UpdateGameTime(u16 gameTime) {
     bool newTimeIsNight = (gameTime > CLOCK_TIME(18, 0)) || (gameTime < CLOCK_TIME(6, 0));
-    bool prevTimeIsNight = (gSaveContext.save.time > CLOCK_TIME(18, 0)) || (gSaveContext.save.time < CLOCK_TIME(6, 0));
+    bool prevTimeIsNight = (CURRENT_TIME > CLOCK_TIME(18, 0)) || (CURRENT_TIME < CLOCK_TIME(6, 0));
 
     gSaveContext.save.time = gameTime;
 
@@ -228,7 +228,7 @@ void UpdateGameTime(u16 gameTime) {
     }
 
     // Open the Clock Tower rooftop
-    if (((CURRENT_DAY == 3) && (gSaveContext.save.time < CLOCK_TIME(6, 0)))) {
+    if (((CURRENT_DAY == 3) && (CURRENT_TIME < CLOCK_TIME(6, 0)))) {
         ObjTokeiStep* objTokeiStep = (ObjTokeiStep*)Actor_FindNearby(gPlayState, &GET_PLAYER(gPlayState)->actor,
                                                                      ACTOR_OBJ_TOKEI_STEP, ACTORCAT_BG, 99999.9f);
         if (objTokeiStep != NULL && objTokeiStep->actionFunc == ObjTokeiStep_DoNothing) {
@@ -381,8 +381,8 @@ void DrawGeneralTab() {
     static u16 minTime = 0;
     static u16 maxTime = 0xFFFF;
     // Get current time and format as digital string
-    u16 curMinutes = (s32)TIME_TO_MINUTES_F(gSaveContext.save.time) % 60;
-    u16 curHours = (s32)TIME_TO_MINUTES_F(gSaveContext.save.time) / 60;
+    u16 curMinutes = (s32)TIME_TO_MINUTES_F(CURRENT_TIME) % 60;
+    u16 curHours = (s32)TIME_TO_MINUTES_F(CURRENT_TIME) / 60;
     std::string minutes = (curMinutes < 10 ? "0" : "") + std::to_string(curMinutes);
     std::string hours = "";
     std::string ampm = "";
@@ -398,7 +398,7 @@ void DrawGeneralTab() {
     hours += std::to_string(curHours);
     std::string timeString = hours + ":" + minutes + ampm + " (0x%x)";
 
-    u16 gameTime = gSaveContext.save.time;
+    u16 gameTime = CURRENT_TIME;
     if (ImGui::SliderScalar("##timeInput", ImGuiDataType_U16, &gameTime, &minTime, &maxTime, timeString.c_str())) {
         UpdateGameTime(gameTime);
     }
@@ -452,7 +452,7 @@ void DrawGeneralTab() {
         const auto& skip = timeSkipAmounts.at(i);
         if (UIWidgets::Button(skip.second,
                               { .size = UIWidgets::Sizes::Inline, .color = UIWidgets::Colors::LightBlue })) {
-            UpdateGameTime(gSaveContext.save.time + CLOCK_TIME(0, skip.first));
+            UpdateGameTime(CURRENT_TIME + CLOCK_TIME(0, skip.first));
         }
         if (i < timeSkipAmounts.size() - 1) {
             ImGui::SameLine();

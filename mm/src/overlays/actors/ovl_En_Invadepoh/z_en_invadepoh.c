@@ -346,7 +346,7 @@ s32 EnInvadepoh_Invader_AddKill(void) {
 }
 
 void EnInvadepoh_Invader_SetRespawnTime(s32 invaderIndex) {
-    s32 currentTime = gSaveContext.save.time;
+    s32 currentTime = CURRENT_TIME;
 
     if ((CURRENT_DAY == 1) && (CLOCK_TIME(2, 30) <= currentTime) && (currentTime < CLOCK_TIME(5, 15))) {
         s32 spawnDelay = (12 - EnInvadepoh_Invader_GetKillCount()) * 25.0f;
@@ -537,7 +537,7 @@ s32 EnInvadepoh_Dog_FindClosestWaypoint(EnInvadepoh* this, Vec3f* pos) {
 
 void EnInvadepoh_Invader_SetProgress(EnInvadepoh* this) {
     s32 pad;
-    s32 currentTime = gSaveContext.save.time;
+    s32 currentTime = CURRENT_TIME;
     s32 warpInTime = EnInvadepoh_Invader_GetSpawnTime(ENINVADEPOH_GET_INDEX(&this->actor));
 
     if (sEventState == ENINVADEPOH_EVENT_WAIT) {
@@ -604,12 +604,12 @@ void EnInvadepoh_Night1Romani_SetupPath(EnInvadepoh* this, PlayState* play) {
 }
 
 void EnInvadepoh_Night1Romani_SetProgress(EnInvadepoh* this) {
-    if ((gSaveContext.save.time < CLOCK_TIME(2, 00)) || (gSaveContext.save.time >= CLOCK_TIME(6, 00))) {
+    if ((CURRENT_TIME < CLOCK_TIME(2, 00)) || (CURRENT_TIME >= CLOCK_TIME(6, 00))) {
         this->progress = 0.0f;
-    } else if ((gSaveContext.save.time >= CLOCK_TIME(2, 15)) && (gSaveContext.save.time < CLOCK_TIME(6, 00))) {
+    } else if ((CURRENT_TIME >= CLOCK_TIME(2, 15)) && (CURRENT_TIME < CLOCK_TIME(6, 00))) {
         this->progress = 1.0f;
     } else {
-        f32 progress = (gSaveContext.save.time - CLOCK_TIME(2, 00)) * (1.0f / (CLOCK_TIME(2, 15) - CLOCK_TIME(2, 00)));
+        f32 progress = (CURRENT_TIME - CLOCK_TIME(2, 00)) * (1.0f / (CLOCK_TIME(2, 15) - CLOCK_TIME(2, 00)));
 
         this->progress = progress;
         this->progress = CLAMP(this->progress, 0.0f, 1.0f);
@@ -646,13 +646,13 @@ void EnInvadepoh_Night3Romani_SetupPath(EnInvadepoh* this, PlayState* play) {
 }
 
 void EnInvadepoh_Night3Romani_SetProgress(EnInvadepoh* this) {
-    if ((gSaveContext.save.time < CLOCK_TIME(20, 00)) && (gSaveContext.save.time >= CLOCK_TIME(6, 00))) {
+    if ((CURRENT_TIME < CLOCK_TIME(20, 00)) && (CURRENT_TIME >= CLOCK_TIME(6, 00))) {
         this->progress = 0.0f;
-    } else if ((gSaveContext.save.time >= CLOCK_TIME(20, 14) + 15) || (gSaveContext.save.time < CLOCK_TIME(6, 00))) {
+    } else if ((CURRENT_TIME >= CLOCK_TIME(20, 14) + 15) || (CURRENT_TIME < CLOCK_TIME(6, 00))) {
         this->progress = 1.0f;
     } else {
         f32 progress =
-            (gSaveContext.save.time - CLOCK_TIME(20, 00)) * (1.0f / (CLOCK_TIME(20, 14) + 15 - CLOCK_TIME(20, 00)));
+            (CURRENT_TIME - CLOCK_TIME(20, 00)) * (1.0f / (CLOCK_TIME(20, 14) + 15 - CLOCK_TIME(20, 00)));
 
         this->progress = progress;
         this->progress = CLAMP(this->progress, 0.0f, 1.0f);
@@ -906,7 +906,7 @@ void EnInvadepoh_Event_CheckState(EnInvadepoh* this, PlayState* play) {
         if (CURRENT_DAY < 1) {
             sEventState = ENINVADEPOH_EVENT_WAIT;
         } else if (CURRENT_DAY == 1) {
-            s32 currentTime = gSaveContext.save.time;
+            s32 currentTime = CURRENT_TIME;
 
             if (!((CLOCK_TIME(2, 30) <= currentTime) && (currentTime < CLOCK_TIME(6, 00)))) {
                 sEventState = ENINVADEPOH_EVENT_WAIT;
@@ -1399,7 +1399,7 @@ void EnInvadepoh_Event_Init(Actor* thisx, PlayState* play) {
     if (sEventState == ENINVADEPOH_EVENT_WAIT) {
         EnInvadepoh_Event_SetupWait(this);
     } else if (sEventState == ENINVADEPOH_EVENT_ACTIVE) {
-        if (gSaveContext.save.time < CLOCK_TIME(2, 31)) {
+        if (CURRENT_TIME < CLOCK_TIME(2, 31)) {
             EnInvadepoh_Event_SetupWait(this);
         } else {
             EnInvadepoh_Event_SpawnLightBall(this, play);
@@ -1533,7 +1533,7 @@ void EnInvadepoh_Romani_Init(Actor* thisx, PlayState* play) {
             Actor_Kill(&this->actor);
         }
     } else if (romaniType == ENINVADEPOH_ROMANI_NIGHT_1) {
-        if ((CLOCK_TIME(6, 00) > gSaveContext.save.time) && (gSaveContext.save.time >= CLOCK_TIME(2, 15))) {
+        if ((CLOCK_TIME(6, 00) > CURRENT_TIME) && (CURRENT_TIME >= CLOCK_TIME(2, 15))) {
             Actor_Kill(&this->actor);
         }
     } else if (romaniType == ENINVADEPOH_ROMANI_BARN) {
@@ -1563,7 +1563,7 @@ void EnInvadepoh_LightBall_Init(Actor* thisx, PlayState* play2) {
     this->actor.update = EnInvadepoh_LightBall_Update;
     this->actor.draw = EnInvadepoh_LightBall_Draw;
     func_800BC154(play, &play->actorCtx, &this->actor, ACTORCAT_NPC);
-    if ((sEventState == ENINVADEPOH_EVENT_WAIT) || (gSaveContext.save.time < CLOCK_TIME(2, 31))) {
+    if ((sEventState == ENINVADEPOH_EVENT_WAIT) || (CURRENT_TIME < CLOCK_TIME(2, 31))) {
         this->actor.world.pos.x += sLightBallSpawnOffset.x;
         this->actor.world.pos.y += sLightBallSpawnOffset.y + 3000.0f;
         this->actor.world.pos.z += sLightBallSpawnOffset.z;
@@ -1752,7 +1752,7 @@ void EnInvadepoh_Event_SetupWait(EnInvadepoh* this) {
 }
 
 void EnInvadepoh_Event_Wait(EnInvadepoh* this, PlayState* play) {
-    if ((CLOCK_TIME(6, 00) > gSaveContext.save.time) && (gSaveContext.save.time >= CLOCK_TIME(2, 30))) {
+    if ((CLOCK_TIME(6, 00) > CURRENT_TIME) && (CURRENT_TIME >= CLOCK_TIME(2, 30))) {
         EnInvadepoh_Event_SpawnLightBall(this, play);
         EnInvadepoh_Event_SpawnInvaders(this, play);
         EnInvadepoh_Event_SetupQueueInvasionCs(this);
@@ -1807,7 +1807,7 @@ void EnInvadepoh_Event_SetupInvasion(EnInvadepoh* this) {
 }
 
 void EnInvadepoh_Event_Invasion(EnInvadepoh* this, PlayState* play) {
-    if ((CLOCK_TIME(6, 00) > gSaveContext.save.time) && (gSaveContext.save.time >= CLOCK_TIME(5, 15))) {
+    if ((CLOCK_TIME(6, 00) > CURRENT_TIME) && (CURRENT_TIME >= CLOCK_TIME(5, 15))) {
         SET_WEEKEVENTREG(WEEKEVENTREG_DEFENDED_AGAINST_THEM);
         EnInvadepoh_Event_SetupQueueVictoryCs(this);
     } else {
@@ -2147,7 +2147,7 @@ void EnInvadepoh_Invader_WaitForObject(Actor* thisx, PlayState* play2) {
         EnInvadepoh_Invader_ApplyProgress(this, play);
         EnInvadepoh_SetYawAlongPath(this);
         EnInvadepoh_SnapToFloor(this);
-        if ((sEventState == ENINVADEPOH_EVENT_WAIT) || (gSaveContext.save.time < CLOCK_TIME(2, 31))) {
+        if ((sEventState == ENINVADEPOH_EVENT_WAIT) || (CURRENT_TIME < CLOCK_TIME(2, 31))) {
             EnInvadepoh_Invader_SetupWaitForEvent(this);
         } else if (sEventState == ENINVADEPOH_EVENT_ACTIVE) {
             if (this->progress >= 0.0001f) {
@@ -2930,7 +2930,7 @@ void EnInvadepoh_Night1Romani_WaitForObject(Actor* thisx, PlayState* play2) {
     s32 currentTime;
 
     if (Object_IsLoaded(&play->objectCtx, this->bankIndex)) {
-        currentTime = gSaveContext.save.time;
+        currentTime = CURRENT_TIME;
         this->actor.objectSlot = this->bankIndex;
         Actor_SetObjectDependency(play, &this->actor);
         EnInvadepoh_Romani_DesegmentTextures();
@@ -2970,7 +2970,7 @@ void EnInvadepoh_Night1Romani_WaitForEvent(Actor* thisx, PlayState* play2) {
     PlayState* play = play2;
     EnInvadepoh* this = (EnInvadepoh*)thisx;
 
-    if ((CLOCK_TIME(6, 00) > gSaveContext.save.time) && (gSaveContext.save.time >= CLOCK_TIME(2, 00))) {
+    if ((CLOCK_TIME(6, 00) > CURRENT_TIME) && (CURRENT_TIME >= CLOCK_TIME(2, 00))) {
         this->actor.update = EnInvadepoh_Night1Romani_Update;
         this->actor.draw = EnInvadepoh_Romani_Draw;
         EnInvadepoh_Night1Romani_SetupWalk(this);
@@ -3155,7 +3155,7 @@ void EnInvadepoh_BarnRomani_WaitForObject(Actor* thisx, PlayState* play2) {
     s32 pad;
 
     if (Object_IsLoaded(&play->objectCtx, this->bankIndex)) {
-        s32 currentTime = gSaveContext.save.time;
+        s32 currentTime = CURRENT_TIME;
 
         this->actor.objectSlot = this->bankIndex;
         Actor_SetObjectDependency(play, &this->actor);
@@ -3194,7 +3194,7 @@ void EnInvadepoh_BarnRomani_WaitForEvent(Actor* thisx, PlayState* play2) {
     PlayState* play = play2;
     EnInvadepoh* this = (EnInvadepoh*)thisx;
 
-    if ((gSaveContext.save.time < CLOCK_TIME(6, 00)) && (gSaveContext.save.time >= CLOCK_TIME(2, 15))) {
+    if ((CURRENT_TIME < CLOCK_TIME(6, 00)) && (CURRENT_TIME >= CLOCK_TIME(2, 15))) {
         this->actor.update = EnInvadepoh_BarnRomani_Update;
         this->actor.draw = EnInvadepoh_Romani_Draw;
         EnInvadepoh_BarnRomani_SetupWalk(this);
@@ -3631,7 +3631,7 @@ void EnInvadepoh_Cremia_Walk(EnInvadepoh* this, PlayState* play) {
         (Animation_OnFrame(&this->skelAnime, 0.0f) || Animation_OnFrame(&this->skelAnime, 12.0f))) {
         Actor_PlaySfx(&this->actor, NA_SE_EN_ROMANI_WALK);
     }
-    if (gSaveContext.save.time > CLOCK_TIME(20, 15)) {
+    if (CURRENT_TIME > CLOCK_TIME(20, 15)) {
         Actor_Kill(&this->actor);
     } else if ((romani != NULL) && (romani->actionFunc == EnInvadepoh_Night3Romani_Talk)) {
         EnInvadepoh_Cremia_SetupIdle(this);
@@ -3696,7 +3696,7 @@ void EnInvadepoh_Cremia_WaitForObject(Actor* thisx, PlayState* play2) {
     s32 pad;
 
     if (Object_IsLoaded(&play2->objectCtx, this->bankIndex)) {
-        s32 currentTime = gSaveContext.save.time;
+        s32 currentTime = CURRENT_TIME;
 
         this->actor.objectSlot = this->bankIndex;
         Actor_SetObjectDependency(play, &this->actor);
@@ -3733,7 +3733,7 @@ void EnInvadepoh_Cremia_WaitForEvent(Actor* thisx, PlayState* play2) {
     PlayState* play = play2;
     EnInvadepoh* this = (EnInvadepoh*)thisx;
 
-    if ((gSaveContext.save.time >= CLOCK_TIME(20, 00) + 30) && (gSaveContext.save.time < CLOCK_TIME(20, 15))) {
+    if ((CURRENT_TIME >= CLOCK_TIME(20, 00) + 30) && (CURRENT_TIME < CLOCK_TIME(20, 15))) {
         this->actor.update = EnInvadepoh_Cremia_Update;
         this->actor.draw = EnInvadepoh_Cremia_Draw;
         EnInvadepoh_Cremia_SetupWalk(this);
@@ -3894,7 +3894,7 @@ void EnInvadepoh_Night3Romani_WaitForObject(Actor* thisx, PlayState* play2) {
     s32 pad;
 
     if (Object_IsLoaded(&play2->objectCtx, this->bankIndex)) {
-        s32 currentTime = gSaveContext.save.time;
+        s32 currentTime = CURRENT_TIME;
 
         this->actor.objectSlot = this->bankIndex;
         Actor_SetObjectDependency(play, &this->actor);
@@ -3927,7 +3927,7 @@ void EnInvadepoh_Night3Romani_WaitForEvent(Actor* thisx, PlayState* play2) {
     PlayState* play = play2;
     EnInvadepoh* this = (EnInvadepoh*)thisx;
 
-    if ((gSaveContext.save.time >= CLOCK_TIME(20, 00)) && (gSaveContext.save.time < CLOCK_TIME(20, 14) + 15)) {
+    if ((CURRENT_TIME >= CLOCK_TIME(20, 00)) && (CURRENT_TIME < CLOCK_TIME(20, 14) + 15)) {
         this->actor.update = EnInvadepoh_Night3Romani_Update;
         this->actor.draw = EnInvadepoh_Romani_Draw;
         EnInvadepoh_Night3Romani_SetupWalk(this);

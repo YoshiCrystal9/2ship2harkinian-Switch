@@ -671,7 +671,7 @@ s32 MsgEvent_Cmd32(Actor* actor, PlayState* play, u8** scriptPtr, MsgEventCallba
     (dest) = (temp) * (0x10000 / 60 / 24.0f);      \
     (dest) = ((dest)-0x10000 / 360 * 90)
 
-#define MSCRIPT_TIME_NOW ((gSaveContext.save.time) - 0x10000 / 360 * 90)
+#define MSCRIPT_TIME_NOW ((CURRENT_TIME) - 0x10000 / 360 * 90)
 
 /**
  * Branches forward if the current time is greater than the provided time

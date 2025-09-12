@@ -443,8 +443,8 @@ void BetterMapSelect_PrintMenu(MapSelectState* mapSelectState, GfxPrint* printer
     if (gSaveContext.save.cutsceneIndex != STAGE_CURRENT_TIME) {
         GfxPrint_Printf(printer, "%s", stageName);
     } else {
-        u16 curMinutes = (s32)TIME_TO_MINUTES_F(gSaveContext.save.time) % 60;
-        u16 curHours = (s32)TIME_TO_MINUTES_F(gSaveContext.save.time) / 60;
+        u16 curMinutes = (s32)TIME_TO_MINUTES_F(CURRENT_TIME) % 60;
+        u16 curHours = (s32)TIME_TO_MINUTES_F(CURRENT_TIME) / 60;
         char* ampm = "";
         char* hourPrefix = "";
         char* minutePrefix = curMinutes < 10 ? "0" : "";

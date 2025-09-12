@@ -374,9 +374,9 @@ void RegisterBetterSongOfDoubleTime() {
 
         gPlayState->msgCtx.ocarinaMode = OCARINA_MODE_PROCESS_DOUBLE_TIME;
         sActivelyChangingTime = true;
-        sOriginalTime = gSaveContext.save.time;
+        sOriginalTime = CURRENT_TIME;
         sOriginalDay = gSaveContext.save.day;
-        sSelectedTime = gSaveContext.save.time;
+        sSelectedTime = CURRENT_TIME;
         sSelectedDay = gSaveContext.save.day;
 
         onPlayerUpdateHookId = GameInteractor::Instance->RegisterGameHookForID<GameInteractor::OnActorUpdate>(

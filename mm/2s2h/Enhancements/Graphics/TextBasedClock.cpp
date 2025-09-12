@@ -32,8 +32,8 @@ void DrawTextBasedClock() {
             (gPlayState->pauseCtx.debugEditor == DEBUG_EDITOR_NONE)) {
             Gfx_SetupDL39_Overlay(gPlayState->state.gfxCtx);
 
-            u16 curMinutes = (s32)TIME_TO_MINUTES_F(gSaveContext.save.time) % 60;
-            u16 curHours = (s32)TIME_TO_MINUTES_F(gSaveContext.save.time) / 60;
+            u16 curMinutes = (s32)TIME_TO_MINUTES_F(CURRENT_TIME) % 60;
+            u16 curHours = (s32)TIME_TO_MINUTES_F(CURRENT_TIME) / 60;
 
             u16 timeUntilMoonCrash = (s32)TIME_UNTIL_MOON_CRASH;
             u16 timeInMinutes = (s32)TIME_TO_MINUTES_F(timeUntilMoonCrash) % 60;
@@ -86,8 +86,7 @@ void DrawTextBasedClock() {
 
             // Crash Countdown
             if ((CURRENT_DAY >= 4) ||
-                ((CURRENT_DAY == 3) && (((void)0, gSaveContext.save.time) >= (CLOCK_TIME(0, 0) + 5)) &&
-                 (((void)0, gSaveContext.save.time) < CLOCK_TIME(6, 0)))) {
+                ((CURRENT_DAY == 3) && (CURRENT_TIME >= (CLOCK_TIME(0, 0) + 5)) && (CURRENT_TIME < CLOCK_TIME(6, 0)))) {
                 GfxPrint_SetColor(&printer, 255, 0, 0, 255);
                 sprintf(formattedCrashTime, "%02d:%02d", timeInHours, timeInMinutes);
                 GfxPrint_Printf(&printer, "Crash in %s", formattedCrashTime);
