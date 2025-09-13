@@ -1395,7 +1395,7 @@ void EnInvadepoh_Event_Init(Actor* thisx, PlayState* play) {
     this->spawnCount = spawnCount;
     EnInvadepoh_Event_CheckState(this, play);
     EnInvadepoh_Event_SetCutscenes(this);
-    func_800BC154(play, &play->actorCtx, &this->actor, ACTORCAT_SWITCH);
+    Actor_ChangeCategory(play, &play->actorCtx, &this->actor, ACTORCAT_SWITCH);
     if (sEventState == ENINVADEPOH_EVENT_WAIT) {
         EnInvadepoh_Event_SetupWait(this);
     } else if (sEventState == ENINVADEPOH_EVENT_ACTIVE) {
@@ -1503,7 +1503,7 @@ void EnInvadepoh_Romani_Init(Actor* thisx, PlayState* play) {
     } else {
         this->actor.targetMode = 6;
     }
-    func_800BC154(play, &play->actorCtx, &this->actor, ACTORCAT_NPC);
+    Actor_ChangeCategory(play, &play->actorCtx, &this->actor, ACTORCAT_NPC);
     Collider_InitCylinder(play, &this->collider);
     if (romaniType != ENINVADEPOH_ROMANI_ABDUCTED) {
         ActorShape_Init(&this->actor.shape, 0.0f, ActorShadow_DrawCircle, 18.0f);
@@ -1562,7 +1562,7 @@ void EnInvadepoh_LightBall_Init(Actor* thisx, PlayState* play2) {
     Actor_ProcessInitChain(&this->actor, sLightBallInitChain);
     this->actor.update = EnInvadepoh_LightBall_Update;
     this->actor.draw = EnInvadepoh_LightBall_Draw;
-    func_800BC154(play, &play->actorCtx, &this->actor, ACTORCAT_NPC);
+    Actor_ChangeCategory(play, &play->actorCtx, &this->actor, ACTORCAT_NPC);
     if ((sEventState == ENINVADEPOH_EVENT_WAIT) || (CURRENT_TIME < CLOCK_TIME(2, 31))) {
         this->actor.world.pos.x += sLightBallSpawnOffset.x;
         this->actor.world.pos.y += sLightBallSpawnOffset.y + 3000.0f;
@@ -1614,7 +1614,7 @@ void EnInvadepoh_Cremia_Init(Actor* thisx, PlayState* play) {
 
     Actor_ProcessInitChain(&this->actor, sCremiaInitChain);
     this->actor.update = EnInvadepoh_Cremia_WaitForObject;
-    func_800BC154(play, &play->actorCtx, &this->actor, ACTORCAT_NPC);
+    Actor_ChangeCategory(play, &play->actorCtx, &this->actor, ACTORCAT_NPC);
     Collider_InitCylinder(play, &this->collider);
     Collider_SetCylinder(play, &this->collider, &this->actor, &sHumanCylinderInit);
     this->actor.colChkInfo.mass = MASS_HEAVY;

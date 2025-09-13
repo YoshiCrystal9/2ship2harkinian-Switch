@@ -503,7 +503,7 @@ void func_80C0BFE8(EnBsb* this, PlayState* play) {
 
         if ((play->msgCtx.ocarinaMode == 3) && (play->msgCtx.lastPlayedSong == 0)) {
             play->msgCtx.ocarinaMode = 4;
-            func_800BC154(play, &play->actorCtx, &this->actor, 9);
+            Actor_ChangeCategory(play, &play->actorCtx, &this->actor, 9);
             func_80C0C0F4(this, play);
         }
     }
@@ -1469,7 +1469,7 @@ void func_80C0E618(EnBsb* this, PlayState* play) {
                 Actor_PlaySfx(&this->actor, NA_SE_EN_KITA_DEAD);
                 this->actor.flags |= 0x08000000;
                 this->actor.flags &= ~1;
-                func_800BC154(play, &play->actorCtx, &this->actor, 4U);
+                Actor_ChangeCategory(play, &play->actorCtx, &this->actor, 4U);
                 func_80C0D3C0(this, play);
             } else {
                 for (i = 0; i < 0x7; i++) {

@@ -718,7 +718,7 @@ void Boss07_Init(Actor* thisx, PlayState* play2) {
         this->actor.draw = Boss07_Projectile_Draw;
         this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
         Collider_InitAndSetCylinder(play, &this->spawnCollider, &this->actor, &sShotCylInit);
-        func_800BC154(play, &play->actorCtx, &this->actor, ACTORCAT_ENEMY);
+        Actor_ChangeCategory(play, &play->actorCtx, &this->actor, ACTORCAT_ENEMY);
         this->shotColorIndex = Rand_ZeroFloat(ARRAY_COUNT(sShotEnvColors) - 0.01f);
         return;
     }
@@ -965,7 +965,7 @@ void Boss07_Wrath_Intro(Boss07* this, PlayState* play) {
                     Play_DisableMotionBlur();
                     if (sBossRemains[REMAINS_ODOLWA] != NULL) {
                         for (i = 0; i < ARRAY_COUNT(sBossRemains); i++) {
-                            func_800BC154(play, &play->actorCtx, &sBossRemains[i]->actor, ACTORCAT_BOSS);
+                            Actor_ChangeCategory(play, &play->actorCtx, &sBossRemains[i]->actor, ACTORCAT_BOSS);
                         }
                     }
                 }
@@ -5199,7 +5199,7 @@ void Boss07_Projectile_Update(Actor* thisx, PlayState* play2) {
             this->actor.world.rot.x = Math_Atan2S(sp54, pad);
             this->actionState = MAJORAS_PROJECTILE_STATE_1;
             this->actor.speed = 30.0f;
-            func_800BC154(play, &play->actorCtx, &this->actor, ACTORCAT_ENEMY);
+            Actor_ChangeCategory(play, &play->actorCtx, &this->actor, ACTORCAT_ENEMY);
             if (this->actor.params == MAJORAS_INCARNATION_SHOT) {
                 Actor_PlaySfx(&this->actor, NA_SE_EN_LAST2_FIRE_OLD);
             }
@@ -5719,7 +5719,7 @@ void Boss07_Top_Ground(Boss07* this, PlayState* play) {
         Actor_Kill(&this->actor);
     } else if (this->timers[1] == 25) {
         this->dmgFogEffectTimer = 25;
-        func_800BC154(play, &play->actorCtx, &this->actor, ACTORCAT_EXPLOSIVES);
+        Actor_ChangeCategory(play, &play->actorCtx, &this->actor, ACTORCAT_EXPLOSIVES);
     }
 }
 
@@ -6004,7 +6004,7 @@ void Boss07_Static_Update(Actor* thisx, PlayState* play2) {
                 Player_SetCsActionWithHaltedActors(play, &this->actor, 6);
                 Play_DisableMotionBlur();
                 for (i = 0; i < ARRAY_COUNT(sBossRemains); i++) {
-                    func_800BC154(play, &play->actorCtx, &sBossRemains[i]->actor, ACTORCAT_ENEMY);
+                    Actor_ChangeCategory(play, &play->actorCtx, &sBossRemains[i]->actor, ACTORCAT_ENEMY);
                 }
             }
             break;

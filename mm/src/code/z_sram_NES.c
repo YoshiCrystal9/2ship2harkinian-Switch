@@ -1391,7 +1391,7 @@ void Sram_OpenSave(FileSelectState* fileSelect, SramContext* sramCtx) {
         }
     } else {
         // When a pauseSaveEntrance is available, prioritize it over the
-        // owlSaveLocation, this means the players last save was a pause save.
+        // owlWarpId, this means the players last save was a pause save.
         if (gSaveContext.save.shipSaveInfo.pauseSaveEntrance != -1) {
             gSaveContext.save.entrance = gSaveContext.save.shipSaveInfo.pauseSaveEntrance;
         } else {

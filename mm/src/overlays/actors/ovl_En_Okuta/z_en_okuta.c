@@ -197,7 +197,7 @@ void EnOkuta_Init(Actor* thisx, PlayState* play2) {
         this->actor.flags &= ~1;
         this->actor.flags |= 0x10;
         Collider_InitAndSetCylinder(play, &this->collider, &this->actor, &sCylinderInit);
-        func_800BC154(play, &play->actorCtx, &this->actor, 6);
+        Actor_ChangeCategory(play, &play->actorCtx, &this->actor, 6);
         this->unk_18E = 0x16;
         this->actor.shape.rot.y = 0;
         this->actor.world.rot.x = -this->actor.shape.rot.x;

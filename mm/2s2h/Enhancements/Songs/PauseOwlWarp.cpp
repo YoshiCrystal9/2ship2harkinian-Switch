@@ -9,13 +9,29 @@ extern "C" {
 extern f32 sPauseMenuVerticalOffset;
 extern u16 sCursorPointsToOcarinaModes[];
 extern u16 sOwlWarpPauseItems[];
-extern u16 D_80AF343C[];
 extern s16 sInDungeonScene;
 extern s32 gHorseIsMounted;
 }
 
 #define CVAR_NAME "gEnhancements.Songs.PauseOwlWarp"
 #define CVAR CVarGetInteger(CVAR_NAME, 0)
+
+/*
+ * This became a static var in decomp, so we cannot extern it. It is already redundantly defined in z_sram_NES.c and
+ * z_en_test7.c, so let's just define it a third time for now instead of modifying source.
+ */
+static u16 sOwlWarpEntrances[OWL_WARP_MAX - 1] = {
+    ENTRANCE(GREAT_BAY_COAST, 11),         // OWL_WARP_GREAT_BAY_COAST
+    ENTRANCE(ZORA_CAPE, 6),                // OWL_WARP_ZORA_CAPE
+    ENTRANCE(SNOWHEAD, 3),                 // OWL_WARP_SNOWHEAD
+    ENTRANCE(MOUNTAIN_VILLAGE_WINTER, 8),  // OWL_WARP_MOUNTAIN_VILLAGE
+    ENTRANCE(SOUTH_CLOCK_TOWN, 9),         // OWL_WARP_CLOCK_TOWN
+    ENTRANCE(MILK_ROAD, 4),                // OWL_WARP_MILK_ROAD
+    ENTRANCE(WOODFALL, 4),                 // OWL_WARP_WOODFALL
+    ENTRANCE(SOUTHERN_SWAMP_POISONED, 10), // OWL_WARP_SOUTHERN_SWAMP
+    ENTRANCE(IKANA_CANYON, 4),             // OWL_WARP_IKANA_CANYON
+    ENTRANCE(STONE_TOWER, 3),              // OWL_WARP_STONE_TOWER
+};
 
 extern "C" bool PauseOwlWarp_IsOwlWarpEnabled() {
     return CVAR && CHECK_QUEST_ITEM(QUEST_SONG_SOARING) &&
@@ -52,7 +68,7 @@ void HandleConfirmingState(PauseContext* pauseCtx, Input* input) {
 
             Message_CloseTextbox(gPlayState);
 
-            gPlayState->nextEntrance = D_80AF343C[pauseCtx->cursorPoint[PAUSE_WORLD_MAP]];
+            gPlayState->nextEntrance = sOwlWarpEntrances[pauseCtx->cursorPoint[PAUSE_WORLD_MAP]];
             gPlayState->transitionTrigger = TRANS_TRIGGER_START;
             gPlayState->transitionType = TRANS_TYPE_FADE_WHITE;
         } else { // No

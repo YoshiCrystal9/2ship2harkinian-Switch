@@ -1442,7 +1442,7 @@ void func_809B5698(EnKnight* this, PlayState* play) {
         } else {
             this->actionFunc = func_809B58D4;
         }
-        func_800BC154(play, &play->actorCtx, &this->actor, 5);
+        Actor_ChangeCategory(play, &play->actorCtx, &this->actor, 5);
         this->unk14A[0] = 30;
     }
 }

@@ -74,7 +74,7 @@ void ObjWarpstone_Init(Actor* thisx, PlayState* play) {
 
     if (!GameInteractor_Should(VB_OWL_STATUE_BE_ACTIVE,
                                GET_OWL_STATUE_ACTIVATED(OBJ_WARPSTONE_GET_OWL_WARP_ID(&this->dyna.actor)),
-                               OBJ_WARPSTONE_GET_ID(&this->dyna.actor))) {
+                               OBJ_WARPSTONE_GET_OWL_WARP_ID(&this->dyna.actor))) {
         ObjWarpstone_SetupAction(this, ObjWarpstone_ClosedIdle);
     } else {
         ObjWarpstone_SetupAction(this, ObjWarpstone_OpenedIdle);
@@ -113,7 +113,7 @@ s32 ObjWarpstone_BeginOpeningCutscene(ObjWarpstone* this, PlayState* play) {
 s32 ObjWarpstone_PlayOpeningCutscene(ObjWarpstone* this, PlayState* play) {
     if (this->openingCSTimer++ >= OBJ_WARPSTONE_TIMER_ACTIVATE_THRESHOLD) {
         CutsceneManager_Stop(this->dyna.actor.csId);
-        if (GameInteractor_Should(VB_OWL_STATUE_ACTIVATE, true, OBJ_WARPSTONE_GET_ID(&this->dyna.actor))) {
+        if (GameInteractor_Should(VB_OWL_STATUE_ACTIVATE, true, OBJ_WARPSTONE_GET_OWL_WARP_ID(&this->dyna.actor))) {
             Sram_ActivateOwl(OBJ_WARPSTONE_GET_OWL_WARP_ID(&this->dyna.actor));
         }
         ObjWarpstone_SetupAction(this, ObjWarpstone_OpenedIdle);

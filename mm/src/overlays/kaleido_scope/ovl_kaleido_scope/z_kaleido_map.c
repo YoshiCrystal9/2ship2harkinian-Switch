@@ -987,7 +987,7 @@ void Ship_UpdateWorldMapCursorMirrorWorld(PlayState* play) {
         if (oldCursorPoint != pauseCtx->cursorPoint[PAUSE_WORLD_MAP]) {
             Audio_PlaySfx(NA_SE_SY_CURSOR);
         }
-    } else if (pauseCtx->state == PAUSE_STATE_OWLWARP_SELECT) {
+    } else if (pauseCtx->state == PAUSE_STATE_OWL_WARP_SELECT) {
         pauseCtx->cursorColorSet = PAUSE_CURSOR_COLOR_SET_BLUE;
         oldCursorPoint = pauseCtx->cursorPoint[PAUSE_WORLD_MAP];
 
