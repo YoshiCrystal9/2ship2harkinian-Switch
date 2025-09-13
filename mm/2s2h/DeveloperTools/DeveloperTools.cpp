@@ -51,7 +51,7 @@ void SetSaveFileInfo() {
         gSaveContext.save.saveInfo.playerData.magicLevel = 2;
         gSaveContext.save.saveInfo.playerData.magic = MAGIC_DOUBLE_METER;
         gSaveContext.save.saveInfo.playerData.owlActivationFlags = (1 << (OWL_WARP_STONE_TOWER + 1)) - 1;
-        gSaveContext.save.saveInfo.playerData.unk_20 = OWL_WARP_CLOCK_TOWN;
+        gSaveContext.save.saveInfo.playerData.owlWarpId = OWL_WARP_CLOCK_TOWN;
 
         gSaveContext.save.saveInfo.inventory.defenseHearts = 20;
         gSaveContext.save.saveInfo.regionsVisited = (1 << REGION_MAX) - 1;
