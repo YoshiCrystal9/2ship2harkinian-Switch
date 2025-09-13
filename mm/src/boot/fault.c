@@ -42,11 +42,8 @@
 
 #include "fault_internal.h"
 #include "fault.h"
-
 #include "prevent_bss_reordering.h"
 #include "prevent_bss_reordering2.h"
-#include "libc64/sprintf.h"
-#include "libc64/sleep.h"
 #include "vt.h"
 #include "PR/osint.h"
 #include "stackcheck.h"
@@ -87,10 +84,10 @@ const char* sFpuExceptions[] = {
 };
 #endif
 #include <assert.h>
-void Fault_SleepImpl(u32 msec) {
-    // OSTime value = (msec * OS_CPU_COUNTER) / 1000ULL;
+void Fault_SleepImpl(u32 duration) {
+    // OSTime value = (duration * OS_CPU_COUNTER) / 1000ULL;
 
-    // csleep(value);
+    // Sleep_Cycles(value);
 }
 
 /**

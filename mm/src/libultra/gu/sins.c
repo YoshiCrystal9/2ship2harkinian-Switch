@@ -1,4 +1,3 @@
-#include "ultra64.h"
 #include "libc/math.h"
 
 static s16 sintable[0x400] = {

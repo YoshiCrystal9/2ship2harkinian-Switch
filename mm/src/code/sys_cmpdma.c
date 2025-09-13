@@ -1,5 +1,5 @@
 #include "global.h"
-#include "libc64/malloc.h"
+#include "system_malloc.h"
 
 typedef struct {
     /* 0x0 */ union {
@@ -83,11 +83,11 @@ void CmpDma_LoadFileImpl(uintptr_t segmentRom, s32 id, void* dst, size_t size) {
 
     CmpDma_GetFileInfo(segmentRom, id, &romStart, &compressedSize, &flag);
     if (flag & 1) {
-        void* tempBuf = malloc(0x1000);
+        void* tempBuf = SystemArena_Malloc(0x1000);
 
         CmpDma_Decompress(romStart, compressedSize, tempBuf);
         func_80178AC0(tempBuf, dst, size);
-        free(tempBuf);
+        SystemArena_Free(tempBuf);
     } else {
         CmpDma_Decompress(romStart, compressedSize, dst);
     }

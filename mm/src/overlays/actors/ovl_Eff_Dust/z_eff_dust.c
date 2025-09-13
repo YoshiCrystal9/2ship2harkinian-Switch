@@ -6,7 +6,7 @@
 
 #include "z_eff_dust.h"
 #include "objects/gameplay_keep/gameplay_keep.h"
-#include "libc64/malloc.h"
+#include "system_malloc.h"
 
 #include "2s2h/Enhancements/FrameInterpolation/FrameInterpolation.h"
 
@@ -101,7 +101,7 @@ void EffDust_Init(Actor* thisx, PlayState* play) {
             break;
 
         default:
-            free(this);
+            SystemArena_Free(this);
             break;
     }
     this->life = 10;

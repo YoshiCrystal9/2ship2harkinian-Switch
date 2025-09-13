@@ -1,10 +1,8 @@
-#include "libc64/os_malloc.h"
-
-#include "alignment.h"
-#include "functions.h" // for __osMemcpy
+#include "os_malloc.h"
 #include "libc/stdbool.h"
 #include "libc/stdint.h"
-#include "macros.h" // for ARRAY_COUNT
+#include "macros.h"
+#include "functions.h"
 #include <string.h>
 
 #define FILL_ALLOCBLOCK (1 << 0)

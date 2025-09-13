@@ -11,7 +11,7 @@
  */
 
 #include "global.h"
-#include "libc64/malloc.h"
+#include "system_malloc.h"
 #include "loadfragment.h"
 #include <string.h>
 
@@ -187,7 +187,7 @@ void* Fragment_AllocateAndLoad(uintptr_t vromStart, uintptr_t vromEnd, void* vra
 
     if (gLoadLogSeverity >= 3) {}
 
-    allocatedRamAddr = malloc_r(size);
+    allocatedRamAddr = SystemArena_MallocR(size);
     end = (uintptr_t)allocatedRamAddr + size;
 
     if (gLoadLogSeverity >= 3) {}
@@ -203,7 +203,7 @@ void* Fragment_AllocateAndLoad(uintptr_t vromStart, uintptr_t vromEnd, void* vra
 
     allocatedBytes = ovlRelocs->bssSize + size;
 
-    allocatedRamAddr = realloc(allocatedRamAddr, allocatedBytes);
+    allocatedRamAddr = SystemArena_Realloc(allocatedRamAddr, allocatedBytes);
 
     if (gLoadLogSeverity >= 3) {}
 

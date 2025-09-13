@@ -1,6 +1,6 @@
 #include "z64malloc.h"
 
-#include "libc64/os_malloc.h"
+#include "os_malloc.h"
 #include <string.h>
 
 Arena sZeldaArena;

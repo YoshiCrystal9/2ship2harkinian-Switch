@@ -28,7 +28,7 @@ extern "C" {
 #include "gfx.h"
 #include "gfxprint.h"
 #include "padutils.h"
-#include "libc64/qrand.h"
+#include "rand.h"
 #include "sys_matrix.h"
 #include "tha.h"
 #include "thga.h"

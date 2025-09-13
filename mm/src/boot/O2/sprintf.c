@@ -1,16 +1,15 @@
-#include "libc64/sprintf.h"
-
+#include "ultra64.h"
+#include "libc/stdlib.h"
 #include "libc/string.h"
 #include <stdio.h>
 
 #if 0
-void* proutPrintf(void* dst, const char* fmt, size_t size) {
+void* proutSprintf(void* dst, const char* fmt, size_t size) {
     return (void*)((uintptr_t)memcpy(dst, fmt, size) + size);
 }
 
-int vsprintf(char* dst, const char* fmt, va_list args) {
-    int ans = _Printf(proutPrintf, dst, fmt, args);
-
+int vsprintf(char* dst, char* fmt, va_list args) {
+    int ans = _Printf(proutSprintf, dst, fmt, args);
     if (ans > -1) {
         dst[ans] = 0;
     }
@@ -22,7 +21,7 @@ int sprintf(char* dst, const char* fmt, ...) {
     va_list args;
     va_start(args, fmt);
 
-    ans = _Printf(&proutPrintf, dst, fmt, args);
+    ans = _Printf(&proutSprintf, dst, fmt, args);
     if (ans > -1) {
         dst[ans] = 0;
     }
