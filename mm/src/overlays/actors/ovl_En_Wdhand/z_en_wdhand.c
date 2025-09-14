@@ -338,7 +338,7 @@ void func_80AF4A88(EnWdhand* this, PlayState* play) {
                 this->unk1EC[var_s1 + 1].y = this->unk1EC[var_s1].y + (s32)Rand_CenteredFloat(16384.0f);
                 this->unk1EC[var_s1 + 1].y -= 0x8000;
             } else {
-                this->unk1EC[1].y += (s16)(s32)Rand_CenteredFloat(16384.0f);
+                this->unk1EC[1].y += TRUNCF_BINANG(Rand_CenteredFloat(16384.0f));
             }
             this->unk1EC[var_s1 + 1].z = Rand_S16Offset(0x1800, 0x1000);
         }
@@ -384,11 +384,11 @@ void func_80AF4C64(EnWdhand* this, PlayState* play) {
 
             if (ABS_ALT(var_v1) < 0x4000) {
                 var_s0 &=
-                    Math_ScaledStepToS(&this->unk1EC[1 + var_s1].x, sp6A, (s16)(s32)((var_s1 * 0.1f + 1.0f) * 1920.0f));
+                    Math_ScaledStepToS(&this->unk1EC[1 + var_s1].x, sp6A, TRUNCF_BINANG((var_s1 * 0.1f + 1.0f) * 1920.0f));
                 var_s0 &= Math_ScaledStepToS(&this->unk1EC[1 + var_s1].y, sp68, 0x800);
             } else {
                 var_s0 &= Math_ScaledStepToS(&this->unk1EC[1 + var_s1].x, -sp6A,
-                                             (s16)(s32)((var_s1 * 0.1f + 1.0f) * 1920.0f));
+                                             TRUNCF_BINANG((var_s1 * 0.1f + 1.0f) * 1920.0f));
                 var_s0 &= Math_ScaledStepToS(&this->unk1EC[1 + var_s1].y, sp68 + 0x8000, 0x800);
             }
         }
@@ -494,10 +494,10 @@ void func_80AF520C(EnWdhand* this, PlayState* play) {
     var_s2 = this->unk1EC[0].z;
     for (var_s1 = 0; var_s1 < 4; var_s1++, var_s2 += 2) {
         if (this->unk1EC[0].z < 0x4C) {
-            this->unk1EC[1 + var_s1].x = (s16)(s32)(this->unk1EC[1 + var_s1].z * Math_SinF(var_s2 * 0.3926991f));
+            this->unk1EC[1 + var_s1].x = TRUNCF_BINANG(this->unk1EC[1 + var_s1].z * Math_SinF(var_s2 * 0.3926991f));
         } else {
             Math_ScaledStepToS(&this->unk1EC[1 + var_s1].x,
-                               (s16)(s32)(this->unk1EC[1 + var_s1].z * Math_SinF(var_s2 * 0.3926991f)), 0x400);
+                               TRUNCF_BINANG(this->unk1EC[1 + var_s1].z * Math_SinF(var_s2 * 0.3926991f)), 0x400);
         }
         if (!(var_s2 & 0xF)) {
             if (var_s2 == 0x10) {
@@ -541,7 +541,7 @@ void func_80AF520C(EnWdhand* this, PlayState* play) {
             } else {
                 var_fv1 = this->unk20C;
             }
-            Matrix_RotateZS((s16)(s32)((var_fv1 - 1.0f) * -32768.0f), MTXMODE_APPLY);
+            Matrix_RotateZS(TRUNCF_BINANG((var_fv1 - 1.0f) * -32768.0f), MTXMODE_APPLY);
         }
         Matrix_MultVecY(1000.0f, &player->actor.world.pos);
 
@@ -807,7 +807,7 @@ void EnWdhand_Draw(Actor* thisx, PlayState* play) {
         } else {
             var_fv1 = this->unk20C;
         }
-        Matrix_RotateZS((s16)(s32)((var_fv1 - 1.0f) * -32768.0f), MTXMODE_APPLY);
+        Matrix_RotateZS(TRUNCF_BINANG((var_fv1 - 1.0f) * -32768.0f), MTXMODE_APPLY);
     }
     if (this->actor.scale.x < 0.01f) {
         Matrix_Translate(0.0f, (10.0f / this->actor.scale.x) - 1000.0f, 0.0f, MTXMODE_APPLY);
