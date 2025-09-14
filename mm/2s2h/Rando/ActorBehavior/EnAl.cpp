@@ -22,10 +22,10 @@ void Rando::ActorBehavior::InitEnAlBehavior() {
         if (actor->id == ACTOR_EN_AL) { // Madame Aroma
             Player* player = GET_PLAYER(gPlayState);
 
-            if (cmdId == MSCRIPT_CMD_06) { // MSCRIPT_OFFER_ITEM
+            if (cmdId == MSCRIPT_CMD_ID_OFFER_ITEM) {
                 *should = false;
-                MsgScript* script = va_arg(args, MsgScript*);
-                GetItemId getItemId = (GetItemId)MSCRIPT_GET_16(script, 1);
+                MsgScriptCmdOfferItem* cmd = (MsgScriptCmdOfferItem*)*va_arg(args, MsgScript*);
+                GetItemId getItemId = (GetItemId)SCRIPT_PACK_16(cmd->itemIdH, cmd->itemIdL);
                 skipCmds.clear();
                 if (getItemId == GI_MASK_KAFEIS_MASK) { // Mayor's Residence
                     // Prevents the player from moving freely in case a notebook event message pops afterward
@@ -42,9 +42,9 @@ void Rando::ActorBehavior::InitEnAlBehavior() {
                      */
                     Message_StartTextbox(gPlayState, 0x2B20, actor);
                     Player_TalkWithPlayer(gPlayState, actor);
-                    func_80848250(gPlayState, player);  // End the giveItem animation, or the Express Mail will persist
-                    skipCmds.push_back(MSCRIPT_CMD_14); // MSCRIPT_BEGIN_TEXT, the scripted text at textId 0x2B20
-                    skipCmds.push_back(MSCRIPT_CMD_12); // MSCRIPT_AWAIT_TEXT
+                    func_80848250(gPlayState, player); // End the giveItem animation, or the Express Mail will persist
+                    skipCmds.push_back(MSCRIPT_CMD_ID_BEGIN_TEXT); // The scripted text at textId 0x2B20
+                    skipCmds.push_back(MSCRIPT_CMD_ID_AWAIT_TEXT);
                 }
                 return;
             }

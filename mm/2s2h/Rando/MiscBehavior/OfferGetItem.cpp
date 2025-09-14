@@ -20,7 +20,7 @@ void Rando::MiscBehavior::InitOfferGetItemBehavior() {
 
         // SPDLOG_INFO("VB_EXEC_MSG_EVENT {}", cmdId);
 
-        if (cmdId == MSCRIPT_CMD_06) { // MSCRIPT_OFFER_ITEM
+        if (cmdId == MSCRIPT_CMD_ID_OFFER_ITEM) {
             switch (actor->id) {
                 case ACTOR_EN_PST:
                     actor->flags |= ACTOR_FLAG_TALK; // Prevent softlock

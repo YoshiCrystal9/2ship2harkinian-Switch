@@ -20,13 +20,14 @@ void Rando::ActorBehavior::InitEnAnBehavior() {
             MsgScript* script = va_arg(args, MsgScript*);
             Player* player = GET_PLAYER(gPlayState);
 
-            if (cmdId == MSCRIPT_CMD_06) { // MSCRIPT_OFFER_ITEM
+            if (cmdId == MSCRIPT_CMD_ID_OFFER_ITEM) { // MSCRIPT_OFFER_ITEM
                 func_80832558(gPlayState, player, func_80837B60);
                 *should = false;
                 skipCmds.clear();
-                skipCmds.push_back(MSCRIPT_CMD_12); // Have to skip this to prevent a crash
-                skipCmds.push_back(MSCRIPT_CMD_07); // And have to skip this to prevent a softlock on repeats
-                GetItemId getItemId = (GetItemId)MSCRIPT_GET_16(script, 1);
+                skipCmds.push_back(MSCRIPT_CMD_ID_AWAIT_TEXT); // Have to skip this to prevent a crash
+                skipCmds.push_back(MSCRIPT_CMD_ID_AUTOTALK);   // And have to skip this to prevent a softlock on repeats
+                MsgScriptCmdOfferItem* cmd = (MsgScriptCmdOfferItem*)*va_arg(args, MsgScript*);
+                GetItemId getItemId = (GetItemId)SCRIPT_PACK_16(cmd->itemIdH, cmd->itemIdL);
                 /*
                  * If the player has the Bombers' Notebook and this is the Letter to Kafei check, the game will crash
                  * unless player->talkActor is set AND these skipped notebook events are queued. This does not happen
