@@ -11,8 +11,8 @@ typedef struct VisCvg {
     /* 0xC */ Color_RGBA8 envColor;
 } VisCvg; // size = 0x10
 
-void VisCvg_Init(VisCvg* this);
-void VisCvg_Destroy(VisCvg* this);
-void VisCvg_Draw(VisCvg* this, Gfx** gfxp);
+void VisCvg_Init(VisCvg* thisx);
+void VisCvg_Destroy(VisCvg* thisx);
+void VisCvg_Draw(VisCvg* thisx, Gfx** gfxp);
 
 #endif

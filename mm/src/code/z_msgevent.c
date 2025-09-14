@@ -282,7 +282,7 @@ s32 MsgEvent_Cmd11(Actor* actor, PlayState* play, u8** scriptPtr, MsgEventCallba
 
     switch (Message_GetState(&play->msgCtx)) {
         case TEXT_STATE_CHOICE:
-        case TEXT_STATE_5:
+        case TEXT_STATE_EVENT:
             if (!Message_ShouldAdvance(play)) {
                 return MSCRIPT_STOP;
             }
@@ -306,7 +306,7 @@ s32 MsgEvent_Cmd11(Actor* actor, PlayState* play, u8** scriptPtr, MsgEventCallba
 s32 MsgEvent_Cmd12(Actor* actor, PlayState* play, u8** scriptPtr, MsgEventCallback callback, s32* endScript) {
     switch (Message_GetState(&play->msgCtx)) {
         case TEXT_STATE_CHOICE:
-        case TEXT_STATE_5:
+        case TEXT_STATE_EVENT:
             if (!Message_ShouldAdvance(play)) {
                 return MSCRIPT_STOP;
             }
@@ -333,7 +333,7 @@ s32 MsgEvent_Cmd13(Actor* actor, PlayState* play, u8** scriptPtr, MsgEventCallba
 
     switch (state) {
         case TEXT_STATE_CHOICE:
-        case TEXT_STATE_5:
+        case TEXT_STATE_EVENT:
             if (!Message_ShouldAdvance(play)) {
                 break;
             }
@@ -601,7 +601,7 @@ s32 MsgEvent_Cmd30(Actor* actor, PlayState* play, u8** scriptPtr, MsgEventCallba
 
     switch (Message_GetState(&play->msgCtx)) {
         case TEXT_STATE_CHOICE:
-        case TEXT_STATE_5:
+        case TEXT_STATE_EVENT:
             if (!Message_ShouldAdvance(play)) {
                 return MSCRIPT_STOP;
             }
@@ -967,7 +967,7 @@ s32 MsgEvent_Cmd46(Actor* actor, PlayState* play, u8** scriptPtr, MsgEventCallba
         case TEXT_STATE_CLOSING:
             break;
         case TEXT_STATE_CHOICE:
-        case TEXT_STATE_5:
+        case TEXT_STATE_EVENT:
             if (!Message_ShouldAdvance(play)) {
                 return MSCRIPT_STOP;
             }

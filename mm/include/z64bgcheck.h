@@ -512,7 +512,7 @@ s32 BgCheck_SphVsFirstPolyImpl(CollisionContext* colCtx, u16 xpFlags, CollisionP
 s32 BgCheck_SphVsFirstPoly(CollisionContext* colCtx, Vec3f* center, f32 radius);
 s32 BgCheck_SphVsFirstWall(CollisionContext* colCtx, Vec3f* center, f32 radius);
 void SSNodeList_Init(SSNodeList* this);
-void SSNodeList_Alloc(struct PlayState* play, SSNodeList* this, s32 tblMax, s32 numPolys);
+void SSNodeList_Alloc(struct PlayState* play, SSNodeList* thisx, s32 tblMax, s32 numPolys);
 SSNode* SSNodeList_GetNextNode(SSNodeList* this);
 u16 SSNodeList_GetNextNodeIdx(SSNodeList* this);
 void ScaleRotPos_Init(ScaleRotPos* srp);

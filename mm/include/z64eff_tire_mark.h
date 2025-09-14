@@ -37,8 +37,8 @@ typedef struct EffectTireMark {
     /* 0x606 */ Color_RGBA8 color;
 } EffectTireMark; // size = 0x60C
 
-void func_800AE930(struct CollisionContext* colCtx, EffectTireMark* this, Vec3f* pos, f32 arg3, s16 angle, struct CollisionPoly* colPoly, s32 bgId);
-void func_800AEF44(EffectTireMark* this);
+void func_800AE930(struct CollisionContext* colCtx, EffectTireMark* thisx, Vec3f* pos, f32 arg3, s16 angle, struct CollisionPoly* colPoly, s32 bgId);
+void func_800AEF44(EffectTireMark* thisx);
 void EffectTireMark_Init(void* thisx, void* initParamsx);
 void EffectTireMark_Destroy(void* thisx);
 s32 EffectTireMark_Update(void* thisx);

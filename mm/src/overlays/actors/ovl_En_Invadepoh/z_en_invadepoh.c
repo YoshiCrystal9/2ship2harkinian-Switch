@@ -3254,7 +3254,7 @@ void EnInvadepoh_RewardRomani_SetupTalk(EnInvadepoh* this) {
 }
 
 void EnInvadepoh_RewardRomani_Talk(EnInvadepoh* this, PlayState* play) {
-    if ((Message_GetState(&play->msgCtx) == TEXT_STATE_5) && Message_ShouldAdvance(play)) {
+    if ((Message_GetState(&play->msgCtx) == TEXT_STATE_EVENT) && Message_ShouldAdvance(play)) {
         if (this->textId == 0x3331) { // We did it...We won.
             if (CHECK_WEEKEVENTREG(WEEKEVENTREG_22_02)) {
                 EnInvadepoh_Romani_StartTextBox(this, play, 0x3334); // I have to get back to bed...
@@ -3319,7 +3319,7 @@ void EnInvadepoh_RewardRomani_Finished(EnInvadepoh* this, PlayState* play) {
         if (play->msgCtx.msgMode == 0) {
             sRewardFinished = true;
         } else if ((Message_GetState(&play->msgCtx) == TEXT_STATE_DONE) ||
-                   (Message_GetState(&play->msgCtx) == TEXT_STATE_5)) {
+                   (Message_GetState(&play->msgCtx) == TEXT_STATE_EVENT)) {
             sRewardFinished = true;
         }
     }
