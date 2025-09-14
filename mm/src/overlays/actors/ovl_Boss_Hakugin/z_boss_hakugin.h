@@ -103,25 +103,6 @@ typedef enum GohtColliderBodyPart {
     /* 19 */ GOHT_COLLIDER_BODYPART_MAX
 } GohtColliderBodyPart;
 
-typedef enum GohtBodyPart {
-    /*  0 */ GOHT_BODYPART_PELVIS,
-    /*  1 */ GOHT_BODYPART_THORAX,
-    /*  2 */ GOHT_BODYPART_HEAD,
-    /*  3 */ GOHT_BODYPART_FRONT_RIGHT_UPPER_LEG,
-    /*  4 */ GOHT_BODYPART_FRONT_RIGHT_LOWER_LEG,
-    /*  5 */ GOHT_BODYPART_FRONT_RIGHT_HOOF,
-    /*  6 */ GOHT_BODYPART_FRONT_LEFT_UPPER_LEG,
-    /*  7 */ GOHT_BODYPART_FRONT_LEFT_LOWER_LEG,
-    /*  8 */ GOHT_BODYPART_FRONT_LEFT_HOOF,
-    /*  9 */ GOHT_BODYPART_BACK_RIGHT_THIGH,
-    /* 10 */ GOHT_BODYPART_BACK_RIGHT_SHIN,
-    /* 11 */ GOHT_BODYPART_BACK_RIGHT_HOOF,
-    /* 12 */ GOHT_BODYPART_BACK_LEFT_THIGH,
-    /* 13 */ GOHT_BODYPART_BACK_LEFT_SHIN,
-    /* 14 */ GOHT_BODYPART_BACK_LEFT_HOOF,
-    /* 15 */ GOHT_BODYPART_MAX
-} GohtBodyPart;
-
 typedef struct BossHakugin {
     /* 0x0000 */ Actor actor;
     /* 0x0144 */ SkelAnime skelAnime;
