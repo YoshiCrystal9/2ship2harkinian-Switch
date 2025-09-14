@@ -1,5 +1,5 @@
-#ifndef OBJECTS_OBJECT_RS_H
-#define OBJECTS_OBJECT_RS_H 1
+#ifndef OBJECTS_OBJECT_RSN_H
+#define OBJECTS_OBJECT_RSN_H 1
 
 #include "align_asset_macro.h"
 
@@ -125,4 +125,4 @@ typedef enum BombShopkeeperLimb {
     /* 0x10 */ BOMB_SHOPKEEPER_LIMB_MAX
 } BombShopkeeperLimb;
 
-#endif // OBJECTS_OBJECT_RS_H
+#endif // OBJECTS_OBJECT_RSN_H

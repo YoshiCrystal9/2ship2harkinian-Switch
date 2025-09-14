@@ -72,7 +72,7 @@ void RegisterSkipEnemyIntros() {
 
     // Majora
     COND_ID_HOOK(ShouldActorInit, ACTOR_BOSS_07, CVAR,
-                 [](Actor* actor, bool* should) { gSaveContext.eventInf[6] |= 2; });
+                 [](Actor* actor, bool* should) { SET_EVENTINF(EVENTINF_INTRO_CS_WATCHED_MAJORA); });
 
     // Igos du Ikana (and lackeys)
     COND_ID_HOOK(ShouldActorInit, ACTOR_EN_KNIGHT, CVAR, [](Actor* actor, bool* should) {
@@ -84,7 +84,7 @@ void RegisterSkipEnemyIntros() {
 
     // Gomess
     COND_ID_HOOK(ShouldActorInit, ACTOR_EN_DEATH, CVAR,
-                 [](Actor* actor, bool* should) { gSaveContext.eventInf[6] |= 8; });
+                 [](Actor* actor, bool* should) { SET_EVENTINF(EVENTINF_INTRO_CS_WATCHED_GOMESS); });
 
     // Stone Tower Temple Garo Master
     COND_ID_HOOK(ShouldActorInit, ACTOR_EN_JSO2, CVAR, [](Actor* actor, bool* should) {
