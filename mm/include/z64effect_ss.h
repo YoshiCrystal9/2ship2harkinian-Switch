@@ -91,7 +91,7 @@ void EffectSS_DrawAllParticles(struct PlayState* play);
 s16 func_800B096C(s16 arg0, s16 arg1, s32 arg2);
 s16 func_800B09D0(s16 arg0, s16 arg1, f32 arg2);
 u8 func_800B0A24(u8 arg0, u8 arg1, f32 arg2);
-void EffectSs_DrawGEffect(struct PlayState* play, EffectSs* this, void* texture);
+void EffectSs_DrawGEffect(struct PlayState* play, EffectSs* thisx, void* texture);
 void EffectSsDust_Spawn(struct PlayState* play, u16 drawFlags, Vec3f* pos, Vec3f* velocity, Vec3f* accel, Color_RGBA8* primColor, Color_RGBA8* envColor, s16 scale, s16 scaleStep, s16 life, u8 updateMode);
 void func_800B0DE0(struct PlayState* play, Vec3f* pos, Vec3f* velocity, Vec3f* accel, Color_RGBA8* primColor, Color_RGBA8* envColor, s16 scale, s16 scaleStep);
 void func_800B0E48(struct PlayState* play, Vec3f* pos, Vec3f* velocity, Vec3f* accel, Color_RGBA8* primColor, Color_RGBA8* envColor, s16 scale, s16 scaleStep);
