@@ -137,8 +137,18 @@ typedef union {
 } MtxF; // size = 0x40
 #endif
 
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
 extern Vec3f gZeroVec3f;
 extern Vec3s gZeroVec3s;
+
+#ifdef __cplusplus
+extern "C"
+}
+#endif
 
 #define LERPIMP(v0, v1, t) ((v0) + (((v1) - (v0)) * (t)))
 #define LERPIMP_ALT(v0, v1, t) (((v1) - (v0)) * (t) + (v0))

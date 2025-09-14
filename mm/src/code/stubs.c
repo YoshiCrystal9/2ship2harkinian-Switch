@@ -83,8 +83,8 @@ u16 D_0F000000[SCREEN_WIDTH * SCREEN_HEIGHT];
 // u64 gspF3DZEX2_NoN_PosLight_fifoDataStart[1];
 // u64 gspF3DZEX2_NoN_PosLight_fifoDataEnd[1];
 
-Vec3f gZeroVec3f;
-Vec3s gZeroVec3s;
+Vec3f gZeroVec3f = { 0.0f, 0.0f, 0.0f };
+Vec3s gZeroVec3s = { 0, 0, 0 };
 
 u64 rspbootTextStart[1];
 u64 rspbootTextEnd[1];

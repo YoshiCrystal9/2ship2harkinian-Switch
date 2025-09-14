@@ -6,7 +6,6 @@
 
 #include "main.h"
 #include "sys_cfb.h"
-#include "z64circle_tex.h"
 #include "z64math.h"
 
 typedef enum TransitionCircleDirection {
