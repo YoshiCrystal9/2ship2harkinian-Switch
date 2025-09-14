@@ -54,6 +54,7 @@ uint32_t IsGameMasterQuest();
 #include <z64bgcheck.h>
 #include <z64camera.h>
 #include <z64game.h>
+#include <z64keyframe.h>
 #include <z64scene.h>
 #include <z64skin.h>
 void InitOTR(void);
