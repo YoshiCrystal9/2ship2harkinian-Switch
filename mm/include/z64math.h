@@ -146,7 +146,6 @@ extern Vec3f gZeroVec3f;
 extern Vec3s gZeroVec3s;
 
 #ifdef __cplusplus
-extern "C"
 }
 #endif
 
