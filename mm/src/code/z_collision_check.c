@@ -3017,15 +3017,15 @@ void CollisionCheck_SetOCvsOC(PlayState* play, Collider* left, ColliderInfo* lef
     }
 
     if (!IS_ZERO(xzDist)) {
-        xDelta *= overlapSize / xzDist;
-        zDelta *= overlapSize / xzDist;
+        xDelta *= overlap / xzDist;
+        zDelta *= overlap / xzDist;
         leftActor->colChkInfo.displacement.x += -xDelta * leftDispRatio;
         leftActor->colChkInfo.displacement.z += -zDelta * leftDispRatio;
         rightActor->colChkInfo.displacement.x += xDelta * rightDispRatio;
         rightActor->colChkInfo.displacement.z += zDelta * rightDispRatio;
-    } else if (overlapSize != 0.0f) {
-        leftActor->colChkInfo.displacement.x += -overlapSize * leftDispRatio;
-        rightActor->colChkInfo.displacement.x += overlapSize * rightDispRatio;
+    } else if (overlap != 0.0f) {
+        leftActor->colChkInfo.displacement.x += -overlap * leftDispRatio;
+        rightActor->colChkInfo.displacement.x += overlap * rightDispRatio;
     } else {
         leftActor->colChkInfo.displacement.x += -leftDispRatio;
         rightActor->colChkInfo.displacement.x += rightDispRatio;
