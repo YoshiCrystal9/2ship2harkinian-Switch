@@ -20,7 +20,8 @@ void RegisterCustomBankRewardThresholds() {
         EnGinkoMan* enGinkoMan = va_arg(args, EnGinkoMan*);
 
         *should = (HS_GET_BANK_RUPEES() >= FIRST_BANK_THRESHOLD) &&
-                  (enGinkoMan->previousBankValue < FIRST_BANK_THRESHOLD) && !CHECK_WEEKEVENTREG(WEEKEVENTREG_10_08);
+                  (enGinkoMan->previousBankValue < FIRST_BANK_THRESHOLD) &&
+                  !CHECK_WEEKEVENTREG(WEEKEVENTREG_RECEIVED_BANK_WALLET_UPGRADE);
     });
 
     COND_VB_SHOULD(VB_PASS_INTEREST_BANK_THRESHOLD, CVAR, {

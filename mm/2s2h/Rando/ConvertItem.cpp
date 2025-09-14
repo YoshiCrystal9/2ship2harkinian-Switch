@@ -325,7 +325,7 @@ bool Rando::IsItemObtainable(RandoItemId randoItemId, RandoCheckId randoCheckId)
         case RI_DOUBLE_DEFENSE:
             return !gSaveContext.save.saveInfo.playerData.doubleDefense;
         case RI_GREAT_SPIN_ATTACK:
-            return !CHECK_WEEKEVENTREG(WEEKEVENTREG_OBTAINED_GREAT_SPIN_ATTACK);
+            return !CHECK_WEEKEVENTREG(WEEKEVENTREG_RECEIVED_GREAT_SPIN_ATTACK);
         case RI_WOODFALL_BOSS_KEY:
             return !CHECK_DUNGEON_ITEM(DUNGEON_BOSS_KEY, DUNGEON_INDEX_WOODFALL_TEMPLE);
         case RI_WOODFALL_COMPASS:

@@ -18,7 +18,7 @@ void Rando::ActorBehavior::InitEnScopenutsBehavior() {
         if (actor->id == ACTOR_EN_SCOPENUTS) {
             EnScopenuts* enScopenuts = (EnScopenuts*)actor;
             *should = false;
-            SET_WEEKEVENTREG(WEEKEVENTREG_53_02);
+            SET_WEEKEVENTREG(WEEKEVENTREG_RECEIVED_BUSINESS_SCRUB_HEART_PIECE);
             actor->parent = &player->actor;
             player->talkActor = actor;
             player->talkActorDistance = actor->xzDistToPlayer;

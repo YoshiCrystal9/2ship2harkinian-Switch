@@ -25,7 +25,7 @@ void Rando::RemoveItem(RandoItemId randoItemId) {
             gSaveContext.save.saveInfo.inventory.strayFairies[DUNGEON_INDEX_STONE_TOWER_TEMPLE]--;
             break;
         case RI_GREAT_SPIN_ATTACK:
-            CLEAR_WEEKEVENTREG(WEEKEVENTREG_OBTAINED_GREAT_SPIN_ATTACK);
+            CLEAR_WEEKEVENTREG(WEEKEVENTREG_RECEIVED_GREAT_SPIN_ATTACK);
             break;
         case RI_DOUBLE_DEFENSE:
             gSaveContext.save.saveInfo.playerData.doubleDefense = false;
