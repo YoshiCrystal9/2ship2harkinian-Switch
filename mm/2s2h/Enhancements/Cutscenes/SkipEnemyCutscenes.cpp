@@ -49,23 +49,26 @@ static s16 worldRotY = 0;
 
 void RegisterSkipEnemyIntros() {
     // Odolwa
-    COND_ID_HOOK(ShouldActorInit, ACTOR_BOSS_01, CVAR, [](Actor* actor, bool* should) { SET_EVENTINF(EVENTINF_54); });
+    COND_ID_HOOK(ShouldActorInit, ACTOR_BOSS_01, CVAR,
+                 [](Actor* actor, bool* should) { SET_EVENTINF(EVENTINF_INTRO_CS_WATCHED_ODOLWA); });
 
     // Goht
     COND_ID_HOOK(ShouldActorInit, ACTOR_BOSS_HAKUGIN, CVAR, [](Actor* actor, bool* should) {
         /*
-         * EVENTINF_62 gets set after seeing the boss lair intro cutscene.
-         * EVENTINF_53 gets set after melting the ice (not skipped here, as that would skip the ice melting
-         * requirement).
+         * EVENTINF_ENTR_CS_WATCHED_GOHT gets set after seeing the boss lair intro cutscene.
+         * EVENTINF_INTRO_CS_WATCHED_GOHT gets set after melting the ice (not skipped here, as that would skip the ice
+         * melting requirement).
          */
-        SET_EVENTINF(EVENTINF_62);
+        SET_EVENTINF(EVENTINF_ENTR_CS_WATCHED_GOHT);
     });
 
     // Gyorg
-    COND_ID_HOOK(ShouldActorInit, ACTOR_BOSS_03, CVAR, [](Actor* actor, bool* should) { SET_EVENTINF(EVENTINF_56); });
+    COND_ID_HOOK(ShouldActorInit, ACTOR_BOSS_03, CVAR,
+                 [](Actor* actor, bool* should) { SET_EVENTINF(EVENTINF_INTRO_CS_WATCHED_GYORG); });
 
     // Twinmold
-    COND_ID_HOOK(ShouldActorInit, ACTOR_BOSS_02, CVAR, [](Actor* actor, bool* should) { SET_EVENTINF(EVENTINF_55); });
+    COND_ID_HOOK(ShouldActorInit, ACTOR_BOSS_02, CVAR,
+                 [](Actor* actor, bool* should) { SET_EVENTINF(EVENTINF_INTRO_CS_WATCHED_TWINMOLD); });
 
     // Majora
     COND_ID_HOOK(ShouldActorInit, ACTOR_BOSS_07, CVAR,
@@ -75,7 +78,7 @@ void RegisterSkipEnemyIntros() {
     COND_ID_HOOK(ShouldActorInit, ACTOR_EN_KNIGHT, CVAR, [](Actor* actor, bool* should) {
         // In the credits, this sceneLayer will be 1. Do not set this flag in that case, or things will break.
         if (gSaveContext.sceneLayer == 0) {
-            SET_EVENTINF(EVENTINF_57);
+            SET_EVENTINF(EVENTINF_INTRO_CS_WATCHED_IGOS_DU_IKANA);
         }
     });
 
@@ -106,7 +109,8 @@ void RegisterSkipEnemyIntros() {
     });
 
     // Wart
-    COND_ID_HOOK(ShouldActorInit, ACTOR_BOSS_04, CVAR, [](Actor* actor, bool* should) { SET_EVENTINF(EVENTINF_60); });
+    COND_ID_HOOK(ShouldActorInit, ACTOR_BOSS_04, CVAR,
+                 [](Actor* actor, bool* should) { SET_EVENTINF(EVENTINF_INTRO_CS_WATCHED_WART); });
 
     // Big Poe (Beneath the Well)
     COND_ID_HOOK(OnActorInit, ACTOR_EN_BIGPO, CVAR, [](Actor* actor) {
