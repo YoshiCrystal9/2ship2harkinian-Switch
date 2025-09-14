@@ -677,6 +677,8 @@ typedef struct {
     /* 0x1A */ u16 combFilterGain;
 } NoteSubAttributes; // size = 0x1A
 
+#define MAX_AUTHENTIC_SEQID 128
+
 typedef void (*AudioCustomUpdateFunction)(void);
 typedef u32 (*AudioCustomSeqFunction)(s8 value, SequenceChannel* channel);
 typedef void* (*AudioCustomReverbFunction)(Sample*, s32, s8, s32);
