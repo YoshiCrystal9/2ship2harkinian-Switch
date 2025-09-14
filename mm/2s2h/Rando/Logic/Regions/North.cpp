@@ -465,7 +465,7 @@ static RegisterShipInitFunc initFunc([]() {
     };
     Regions[RR_SNOWHEAD_GREAT_FAIRY_FOUNTAIN] = RandoRegion{ .sceneId = SCENE_YOUSEI_IZUMI,
         .checks = {
-            CHECK(RC_SNOWHEAD_GREAT_FAIRY, HAS_ENOUGH_STRAY_FAIRIES(DUNGEON_INDEX_SNOWHEAD_TEMPLE)),
+            CHECK(RC_SNOWHEAD_GREAT_FAIRY, HAS_ENOUGH_STRAY_FAIRIES(DUNGEON_SCENE_INDEX_SNOWHEAD_TEMPLE)),
         },
         .exits = { //     TO                                         FROM
             EXIT(ENTRANCE(SNOWHEAD, 2),                     ENTRANCE(FAIRY_FOUNTAIN, 2), true),
@@ -483,7 +483,7 @@ static RegisterShipInitFunc initFunc([]() {
             EXIT(ENTRANCE(PATH_TO_SNOWHEAD, 1),             ENTRANCE(SNOWHEAD, 0), true),
         },
         .connections = {
-            CONNECTION(RR_SNOWHEAD_NEAR_TEMPLE, CanAccessDungeon(DUNGEON_INDEX_SNOWHEAD_TEMPLE) && CAN_BE_GORON),
+            CONNECTION(RR_SNOWHEAD_NEAR_TEMPLE, CanAccessDungeon(DUNGEON_SCENE_INDEX_SNOWHEAD_TEMPLE) && CAN_BE_GORON),
         },
         .oneWayEntrances = {
             ENTRANCE(SNOWHEAD, 3), // From Song of Soaring
@@ -509,7 +509,7 @@ static RegisterShipInitFunc initFunc([]() {
             EXIT(ENTRANCE(FAIRY_FOUNTAIN, 2),               ENTRANCE(SNOWHEAD, 2), true),
         },
         .connections = {
-            CONNECTION(RR_SNOWHEAD_NEAR_TEMPLE, CanAccessDungeon(DUNGEON_INDEX_SNOWHEAD_TEMPLE)),
+            CONNECTION(RR_SNOWHEAD_NEAR_TEMPLE, CanAccessDungeon(DUNGEON_SCENE_INDEX_SNOWHEAD_TEMPLE)),
             // CONNECTION(RR_SNOWHEAD_NEAR_PATH, true), // can void out to this RR
         },
     };
@@ -518,7 +518,7 @@ static RegisterShipInitFunc initFunc([]() {
             EXIT(ENTRANCE(SNOWHEAD_TEMPLE, 0),              ENTRANCE(SNOWHEAD, 1), true),
         },
         .connections = {
-            CONNECTION(RR_SNOWHEAD_NEAR_TEMPLE, CanAccessDungeon(DUNGEON_INDEX_SNOWHEAD_TEMPLE)),
+            CONNECTION(RR_SNOWHEAD_NEAR_TEMPLE, CanAccessDungeon(DUNGEON_SCENE_INDEX_SNOWHEAD_TEMPLE)),
             // CONNECTION(RR_SNOWHEAD_NEAR_PATH, true), // can void out to this RR
         },
     };

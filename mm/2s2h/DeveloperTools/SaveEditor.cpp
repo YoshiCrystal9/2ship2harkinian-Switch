@@ -1278,7 +1278,7 @@ void DrawDungeonItemTab() {
     ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(8.0f, 8.0f));
     ImGui::BeginChild("dungeonTab", ImVec2(0, 0), true);
 
-    for (int i = DUNGEON_INDEX_WOODFALL_TEMPLE; i <= DUNGEON_INDEX_STONE_TOWER_TEMPLE; i++) {
+    for (int i = DUNGEON_SCENE_INDEX_WOODFALL_TEMPLE; i <= DUNGEON_SCENE_INDEX_STONE_TOWER_TEMPLE; i++) {
         std::string stray_id = "Stray" + std::to_string(i);
         std::string map_id = "Map" + std::to_string(i);
         std::string comp_id = "Compass" + std::to_string(i);

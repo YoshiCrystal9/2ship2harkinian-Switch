@@ -378,8 +378,9 @@ ItemTrackerWindow::CountInfo ItemTrackerWindow::GetItemCountInfo(int itemId) {
         case TRACKER_ITEM_STRAY_FAIRY_GREAT_BAY:
         case TRACKER_ITEM_STRAY_FAIRY_STONE_TOWER:
             info = {
-                .cur = (uint16_t)gSaveContext.save.saveInfo.inventory
-                           .strayFairies[itemId - TRACKER_ITEM_STRAY_FAIRY_WOODFALL + DUNGEON_INDEX_WOODFALL_TEMPLE],
+                .cur =
+                    (uint16_t)gSaveContext.save.saveInfo.inventory
+                        .strayFairies[itemId - TRACKER_ITEM_STRAY_FAIRY_WOODFALL + DUNGEON_SCENE_INDEX_WOODFALL_TEMPLE],
                 .curCap = 15,
                 .maxCap = 15,
             };
@@ -410,9 +411,9 @@ ItemTrackerWindow::CountInfo ItemTrackerWindow::GetItemCountInfo(int itemId) {
         case TRACKER_ITEM_KEY_STONE_TONER:
             info = {
                 .cur = (uint16_t)MAX(
-                    DUNGEON_KEY_COUNT(itemId - TRACKER_ITEM_KEY_WOODFALL + DUNGEON_INDEX_WOODFALL_TEMPLE), 0),
-                .curCap = sSmallKeyCounts[itemId - TRACKER_ITEM_KEY_WOODFALL + DUNGEON_INDEX_WOODFALL_TEMPLE],
-                .maxCap = sSmallKeyCounts[itemId - TRACKER_ITEM_KEY_WOODFALL + DUNGEON_INDEX_WOODFALL_TEMPLE],
+                    DUNGEON_KEY_COUNT(itemId - TRACKER_ITEM_KEY_WOODFALL + DUNGEON_SCENE_INDEX_WOODFALL_TEMPLE), 0),
+                .curCap = sSmallKeyCounts[itemId - TRACKER_ITEM_KEY_WOODFALL + DUNGEON_SCENE_INDEX_WOODFALL_TEMPLE],
+                .maxCap = sSmallKeyCounts[itemId - TRACKER_ITEM_KEY_WOODFALL + DUNGEON_SCENE_INDEX_WOODFALL_TEMPLE],
             };
             break;
         default:

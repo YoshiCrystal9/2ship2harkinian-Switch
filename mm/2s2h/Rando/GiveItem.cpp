@@ -11,16 +11,16 @@ void Rando::GiveItem(RandoItemId randoItemId) {
             SET_WEEKEVENTREG(WEEKEVENTREG_08_80);
             break;
         case RI_WOODFALL_STRAY_FAIRY:
-            gSaveContext.save.saveInfo.inventory.strayFairies[DUNGEON_INDEX_WOODFALL_TEMPLE]++;
+            gSaveContext.save.saveInfo.inventory.strayFairies[DUNGEON_SCENE_INDEX_WOODFALL_TEMPLE]++;
             break;
         case RI_SNOWHEAD_STRAY_FAIRY:
-            gSaveContext.save.saveInfo.inventory.strayFairies[DUNGEON_INDEX_SNOWHEAD_TEMPLE]++;
+            gSaveContext.save.saveInfo.inventory.strayFairies[DUNGEON_SCENE_INDEX_SNOWHEAD_TEMPLE]++;
             break;
         case RI_GREAT_BAY_STRAY_FAIRY:
-            gSaveContext.save.saveInfo.inventory.strayFairies[DUNGEON_INDEX_GREAT_BAY_TEMPLE]++;
+            gSaveContext.save.saveInfo.inventory.strayFairies[DUNGEON_SCENE_INDEX_GREAT_BAY_TEMPLE]++;
             break;
         case RI_STONE_TOWER_STRAY_FAIRY:
-            gSaveContext.save.saveInfo.inventory.strayFairies[DUNGEON_INDEX_STONE_TOWER_TEMPLE]++;
+            gSaveContext.save.saveInfo.inventory.strayFairies[DUNGEON_SCENE_INDEX_STONE_TOWER_TEMPLE]++;
             break;
         case RI_GREAT_SPIN_ATTACK:
             SET_WEEKEVENTREG(WEEKEVENTREG_RECEIVED_GREAT_SPIN_ATTACK);
@@ -47,60 +47,60 @@ void Rando::GiveItem(RandoItemId randoItemId) {
         case RI_WOODFALL_MAP:
         case RI_WOODFALL_COMPASS:
             SET_DUNGEON_ITEM(Rando::StaticData::Items[randoItemId].itemId - ITEM_KEY_BOSS,
-                             DUNGEON_INDEX_WOODFALL_TEMPLE);
+                             DUNGEON_SCENE_INDEX_WOODFALL_TEMPLE);
             break;
         case RI_WOODFALL_SMALL_KEY:
-            if (DUNGEON_KEY_COUNT(DUNGEON_INDEX_WOODFALL_TEMPLE) < 0) {
-                DUNGEON_KEY_COUNT(DUNGEON_INDEX_WOODFALL_TEMPLE) = 1;
-                gSaveContext.save.shipSaveInfo.rando.foundDungeonKeys[DUNGEON_INDEX_WOODFALL_TEMPLE] = 1;
+            if (DUNGEON_KEY_COUNT(DUNGEON_SCENE_INDEX_WOODFALL_TEMPLE) < 0) {
+                DUNGEON_KEY_COUNT(DUNGEON_SCENE_INDEX_WOODFALL_TEMPLE) = 1;
+                gSaveContext.save.shipSaveInfo.rando.foundDungeonKeys[DUNGEON_SCENE_INDEX_WOODFALL_TEMPLE] = 1;
             } else {
-                DUNGEON_KEY_COUNT(DUNGEON_INDEX_WOODFALL_TEMPLE)++;
-                gSaveContext.save.shipSaveInfo.rando.foundDungeonKeys[DUNGEON_INDEX_WOODFALL_TEMPLE]++;
+                DUNGEON_KEY_COUNT(DUNGEON_SCENE_INDEX_WOODFALL_TEMPLE)++;
+                gSaveContext.save.shipSaveInfo.rando.foundDungeonKeys[DUNGEON_SCENE_INDEX_WOODFALL_TEMPLE]++;
             }
             break;
         case RI_SNOWHEAD_BOSS_KEY:
         case RI_SNOWHEAD_MAP:
         case RI_SNOWHEAD_COMPASS:
             SET_DUNGEON_ITEM(Rando::StaticData::Items[randoItemId].itemId - ITEM_KEY_BOSS,
-                             DUNGEON_INDEX_SNOWHEAD_TEMPLE);
+                             DUNGEON_SCENE_INDEX_SNOWHEAD_TEMPLE);
             break;
         case RI_SNOWHEAD_SMALL_KEY:
-            if (DUNGEON_KEY_COUNT(DUNGEON_INDEX_SNOWHEAD_TEMPLE) < 0) {
-                DUNGEON_KEY_COUNT(DUNGEON_INDEX_SNOWHEAD_TEMPLE) = 1;
-                gSaveContext.save.shipSaveInfo.rando.foundDungeonKeys[DUNGEON_INDEX_SNOWHEAD_TEMPLE] = 1;
+            if (DUNGEON_KEY_COUNT(DUNGEON_SCENE_INDEX_SNOWHEAD_TEMPLE) < 0) {
+                DUNGEON_KEY_COUNT(DUNGEON_SCENE_INDEX_SNOWHEAD_TEMPLE) = 1;
+                gSaveContext.save.shipSaveInfo.rando.foundDungeonKeys[DUNGEON_SCENE_INDEX_SNOWHEAD_TEMPLE] = 1;
             } else {
-                DUNGEON_KEY_COUNT(DUNGEON_INDEX_SNOWHEAD_TEMPLE)++;
-                gSaveContext.save.shipSaveInfo.rando.foundDungeonKeys[DUNGEON_INDEX_SNOWHEAD_TEMPLE]++;
+                DUNGEON_KEY_COUNT(DUNGEON_SCENE_INDEX_SNOWHEAD_TEMPLE)++;
+                gSaveContext.save.shipSaveInfo.rando.foundDungeonKeys[DUNGEON_SCENE_INDEX_SNOWHEAD_TEMPLE]++;
             }
             break;
         case RI_GREAT_BAY_BOSS_KEY:
         case RI_GREAT_BAY_MAP:
         case RI_GREAT_BAY_COMPASS:
             SET_DUNGEON_ITEM(Rando::StaticData::Items[randoItemId].itemId - ITEM_KEY_BOSS,
-                             DUNGEON_INDEX_GREAT_BAY_TEMPLE);
+                             DUNGEON_SCENE_INDEX_GREAT_BAY_TEMPLE);
             break;
         case RI_GREAT_BAY_SMALL_KEY:
-            if (DUNGEON_KEY_COUNT(DUNGEON_INDEX_GREAT_BAY_TEMPLE) < 0) {
-                DUNGEON_KEY_COUNT(DUNGEON_INDEX_GREAT_BAY_TEMPLE) = 1;
-                gSaveContext.save.shipSaveInfo.rando.foundDungeonKeys[DUNGEON_INDEX_GREAT_BAY_TEMPLE] = 1;
+            if (DUNGEON_KEY_COUNT(DUNGEON_SCENE_INDEX_GREAT_BAY_TEMPLE) < 0) {
+                DUNGEON_KEY_COUNT(DUNGEON_SCENE_INDEX_GREAT_BAY_TEMPLE) = 1;
+                gSaveContext.save.shipSaveInfo.rando.foundDungeonKeys[DUNGEON_SCENE_INDEX_GREAT_BAY_TEMPLE] = 1;
             } else {
-                DUNGEON_KEY_COUNT(DUNGEON_INDEX_GREAT_BAY_TEMPLE)++;
-                gSaveContext.save.shipSaveInfo.rando.foundDungeonKeys[DUNGEON_INDEX_GREAT_BAY_TEMPLE]++;
+                DUNGEON_KEY_COUNT(DUNGEON_SCENE_INDEX_GREAT_BAY_TEMPLE)++;
+                gSaveContext.save.shipSaveInfo.rando.foundDungeonKeys[DUNGEON_SCENE_INDEX_GREAT_BAY_TEMPLE]++;
             }
             break;
         case RI_STONE_TOWER_BOSS_KEY:
         case RI_STONE_TOWER_MAP:
         case RI_STONE_TOWER_COMPASS:
             SET_DUNGEON_ITEM(Rando::StaticData::Items[randoItemId].itemId - ITEM_KEY_BOSS,
-                             DUNGEON_INDEX_STONE_TOWER_TEMPLE);
+                             DUNGEON_SCENE_INDEX_STONE_TOWER_TEMPLE);
             break;
         case RI_STONE_TOWER_SMALL_KEY:
-            if (DUNGEON_KEY_COUNT(DUNGEON_INDEX_STONE_TOWER_TEMPLE) < 0) {
-                DUNGEON_KEY_COUNT(DUNGEON_INDEX_STONE_TOWER_TEMPLE) = 1;
-                gSaveContext.save.shipSaveInfo.rando.foundDungeonKeys[DUNGEON_INDEX_STONE_TOWER_TEMPLE] = 1;
+            if (DUNGEON_KEY_COUNT(DUNGEON_SCENE_INDEX_STONE_TOWER_TEMPLE) < 0) {
+                DUNGEON_KEY_COUNT(DUNGEON_SCENE_INDEX_STONE_TOWER_TEMPLE) = 1;
+                gSaveContext.save.shipSaveInfo.rando.foundDungeonKeys[DUNGEON_SCENE_INDEX_STONE_TOWER_TEMPLE] = 1;
             } else {
-                DUNGEON_KEY_COUNT(DUNGEON_INDEX_STONE_TOWER_TEMPLE)++;
-                gSaveContext.save.shipSaveInfo.rando.foundDungeonKeys[DUNGEON_INDEX_STONE_TOWER_TEMPLE]++;
+                DUNGEON_KEY_COUNT(DUNGEON_SCENE_INDEX_STONE_TOWER_TEMPLE)++;
+                gSaveContext.save.shipSaveInfo.rando.foundDungeonKeys[DUNGEON_SCENE_INDEX_STONE_TOWER_TEMPLE]++;
             }
             break;
         // Technically these should never be used, but leaving them here just in case

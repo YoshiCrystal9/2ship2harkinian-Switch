@@ -89,7 +89,7 @@ extern std::unordered_map<RandoRegionId, RandoRegion> Regions;
      (CAN_PLAY_SONG(STORMS) || (HAS_BOTTLE && (CAN_ACCESS(SPRING_WATER) || CAN_ACCESS(HOT_SPRING_WATER)))))
 #define CAN_USE_MAGIC_ARROW(arrowType) (HAS_ITEM(ITEM_BOW) && HAS_ITEM(ITEM_ARROW_##arrowType) && HAS_MAGIC)
 #define CAN_LIGHT_TORCH_NEAR_ANOTHER (HAS_ITEM(ITEM_DEKU_STICK) || CAN_USE_MAGIC_ARROW(FIRE))
-#define KEY_COUNT(dungeon) (gSaveContext.save.shipSaveInfo.rando.foundDungeonKeys[DUNGEON_INDEX_##dungeon])
+#define KEY_COUNT(dungeon) (gSaveContext.save.shipSaveInfo.rando.foundDungeonKeys[DUNGEON_SCENE_INDEX_##dungeon])
 #define CAN_AFFORD(rc)                                                                                                \
     ((RANDO_SAVE_CHECKS[rc].price < 100) || (RANDO_SAVE_CHECKS[rc].price <= 200 && CUR_UPG_VALUE(UPG_WALLET) >= 1) || \
      (CUR_UPG_VALUE(UPG_WALLET) >= 2))
@@ -129,19 +129,19 @@ inline std::string LogicString(std::string condition) {
     return condition;
 }
 
-inline bool CanAccessDungeon(DungeonIndex dungeonIndex) {
+inline bool CanAccessDungeon(DungeonSceneIndex dungeonIndex) {
     bool hasSongAccess = false;
     bool hasFormAccess = false;
     switch (dungeonIndex) {
-        case DUNGEON_INDEX_WOODFALL_TEMPLE:
+        case DUNGEON_SCENE_INDEX_WOODFALL_TEMPLE:
             hasSongAccess = CAN_PLAY_SONG(SONATA);
             hasFormAccess = CAN_BE_DEKU && HAS_ITEM(ITEM_OCARINA_OF_TIME);
             break;
-        case DUNGEON_INDEX_SNOWHEAD_TEMPLE:
+        case DUNGEON_SCENE_INDEX_SNOWHEAD_TEMPLE:
             hasSongAccess = CAN_PLAY_SONG(LULLABY);
             hasFormAccess = CAN_BE_GORON && HAS_ITEM(ITEM_OCARINA_OF_TIME);
             break;
-        case DUNGEON_INDEX_GREAT_BAY_TEMPLE:
+        case DUNGEON_SCENE_INDEX_GREAT_BAY_TEMPLE:
             hasSongAccess = CAN_PLAY_SONG(BOSSA_NOVA);
             hasFormAccess = CAN_BE_ZORA && HAS_ITEM(ITEM_OCARINA_OF_TIME);
             break;
