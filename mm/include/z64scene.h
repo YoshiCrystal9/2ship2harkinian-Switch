@@ -161,12 +161,13 @@ typedef struct {
     /* 0x4 */ u32 data2;
 } SCmdEndMarker; // size = 0x8
 
+// 2S2H [Custom Audio]. Was originally u8 seqId. Made 16 bit to allow for more than 255 sequences.
 typedef struct {
     /* 0x0 */ u8  code;
     /* 0x1 */ u8  specId;
     /* 0x2 */ UNK_TYPE1 unk_02[4];
     /* 0x6 */ u8  ambienceId;
-    /* 0x7 */ u8  seqId;
+    /* 0x7 */ u16  seqId;
 } SCmdSoundSettings; // size = 0x8
 
 typedef struct {
