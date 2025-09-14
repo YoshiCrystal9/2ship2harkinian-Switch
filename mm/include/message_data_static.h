@@ -10,6 +10,7 @@ typedef struct MessageTableEntry {
     u32 msgSize;
 } MessageTableEntry; // size = 0x8;
 
+#if 0
 #define DEFINE_MESSAGE(textId, typePos, msg) \
     extern const char _message_##textId[];
 
@@ -23,5 +24,6 @@ typedef struct MessageTableEntry {
 #include "assets/text/staff_message_data.h"
 
 #undef DEFINE_MESSAGE
+#endif
 
 #endif
