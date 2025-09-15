@@ -24,7 +24,7 @@ void DrawTextBasedClock() {
          (gPlayState->msgCtx.msgMode == MSGMODE_NONE) ||
          ((gPlayState->msgCtx.currentTextId >= 0x100) && (gPlayState->msgCtx.currentTextId <= 0x200)) ||
          (gSaveContext.gameMode == GAMEMODE_END_CREDITS)) &&
-        !FrameAdvance_IsEnabled(&gPlayState->state) && !Environment_IsTimeStopped() && (gSaveContext.save.day <= 3)) {
+        !FrameAdvance_IsEnabled(gPlayState) && !Environment_IsTimeStopped() && (gSaveContext.save.day <= 3)) {
 
         OPEN_DISPS(gPlayState->state.gfxCtx);
 

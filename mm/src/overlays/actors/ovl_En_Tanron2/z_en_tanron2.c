@@ -362,8 +362,8 @@ void func_80BB71C8(EnTanron2* this, PlayState* play) {
     Vec3f pos;
 
     for (i = 0; i < 15; i++) {
-        Matrix_RotateYF(Rand_ZeroFloat(2 * M_PI), MTXMODE_NEW);
-        Matrix_RotateXFApply(Rand_ZeroFloat(2 * M_PI));
+        Matrix_RotateYF(Rand_ZeroFloat(2 * M_PIf), MTXMODE_NEW);
+        Matrix_RotateXFApply(Rand_ZeroFloat(2 * M_PIf));
         Matrix_MultVecZ(Rand_ZeroFloat(10.0f) + 5.0f, &velocity);
         pos.x = this->actor.world.pos.x + velocity.x;
         pos.y = this->actor.world.pos.y + velocity.y;

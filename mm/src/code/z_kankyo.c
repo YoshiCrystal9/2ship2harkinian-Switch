@@ -1122,7 +1122,7 @@ void Environment_UpdateSkybox(u8 skyboxId, EnvironmentContext* envCtx, SkyboxCon
                 envCtx->skyboxDmaState = SKYBOX_DMA_INACTIVE;
                 // 2S2H [Port] Since the skybox static segments point to OTR strings, we need to re-create the skybox
                 // display lists to have the new textures loaded
-                func_80143148(skyboxCtx, 5);
+                Skybox_Calculate128(skyboxCtx, 5);
                 // #endregion
             }
         }

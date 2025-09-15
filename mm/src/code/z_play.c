@@ -1,16 +1,20 @@
-#include "PR/ultratypes.h"
+#include "z64.h"
+#include "regs.h"
+#include "functions.h"
+#include "z64vismono.h"
+#include "z64visfbuf.h"
 #include "public/bridge/consolevariablebridge.h"
 
 // Variables are put before most headers as a hacky way to bypass bss reordering
 s16 sTransitionFillTimer;
-struct Input D_801F6C18;
-struct TransitionTile sTransitionTile;
+Input D_801F6C18;
+TransitionTile sTransitionTile;
 s32 gTransitionTileState;
-struct VisMono sPlayVisMono;
+VisMono sPlayVisMono;
 Color_RGBA8_u32 gVisMonoColor;
-struct VisFbuf sPlayVisFbuf;
-struct VisFbuf* sPlayVisFbufInstance;
-struct BombersNotebook sBombersNotebook;
+VisFbuf sPlayVisFbuf;
+VisFbuf* sPlayVisFbufInstance;
+BombersNotebook sBombersNotebook;
 u8 sBombersNotebookOpen;
 u8 sMotionBlurStatus;
 

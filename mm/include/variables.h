@@ -278,6 +278,8 @@ extern u32 gAudioSPDataSize;
 extern MtxF* sMatrixStack;
 extern MtxF* sCurrentMatrix;
 
+extern Color_RGBA8_u32 gVisMonoColor;
+
 extern s32 D_801FD120;
 extern u8 sResetAudioHeapTimer;
 extern u16 sResetAudioHeapFadeReverbVolume;

@@ -1,8 +1,6 @@
 #include "z64lib.h"
 #include "ichain.h"
 
-#include "libc64/qrand.h"
-
 #include "main.h"
 #include "sfx.h"
 #include "z64game.h"

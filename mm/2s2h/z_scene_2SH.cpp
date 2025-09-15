@@ -336,8 +336,8 @@ void Scene_CommandExitList(PlayState* play, SOH::ISceneCommand* cmd) {
 void Scene_CommandSoundSettings(PlayState* play, SOH::ISceneCommand* cmd) {
     SOH::SetSoundSettings* settings = (SOH::SetSoundSettings*)cmd;
 
-    play->sequenceCtx.seqId = settings->settings.seqId;
-    play->sequenceCtx.ambienceId = settings->settings.natureAmbienceId;
+    play->sceneSequences.seqId = settings->settings.seqId;
+    play->sceneSequences.ambienceId = settings->settings.natureAmbienceId;
 
     if (gSaveContext.seqId == NA_BGM_DISABLED || AudioSeq_GetActiveSeqId(SEQ_PLAYER_BGM_MAIN) == NA_BGM_FINAL_HOURS) {
         Audio_SetSpec(settings->settings.reverb); // BENTODO Verify if this should be reverb

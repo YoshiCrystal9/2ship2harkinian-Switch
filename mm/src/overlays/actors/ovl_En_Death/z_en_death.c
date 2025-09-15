@@ -1444,7 +1444,7 @@ void EnDeath_DrawBats(EnDeath* this, PlayState* play) {
 
             for (effect = miniDeath->effects, j = 0; j < MINIDEATH_NUM_EFFECTS; j++, effect++) {
                 if (effect->state == 0) {
-                    FrameInterpolation_RecordOpenChild(phi_s0, 0);
+                    FrameInterpolation_RecordOpenChild(effect, 0);
                     cmf->mf[3][0] = effect->pos.x + quakeOffset.x;
                     cmf->mf[3][1] = effect->pos.y + quakeOffset.y;
                     cmf->mf[3][2] = effect->pos.z + quakeOffset.z;
@@ -1458,7 +1458,7 @@ void EnDeath_DrawBats(EnDeath* this, PlayState* play) {
 
             for (effect = miniDeath->effects, j = 0; j < MINIDEATH_NUM_EFFECTS; j++, effect++) {
                 if (effect->state == 1) {
-                    FrameInterpolation_RecordOpenChild(phi_s0, 1);
+                    FrameInterpolation_RecordOpenChild(effect, 1);
                     Matrix_RotateZYX(0x4000, effect->angle.y, 0, MTXMODE_NEW);
                     Matrix_Scale(scale, scale, scale, MTXMODE_APPLY);
                     cmf->mf[3][0] = effect->pos.x + quakeOffset.x;
@@ -1481,7 +1481,7 @@ void EnDeath_DrawBats(EnDeath* this, PlayState* play) {
             Matrix_Scale(scale2, scale2, scale2, MTXMODE_APPLY);
 
             for (effect = miniDeath->effects, j = 0; j < MINIDEATH_NUM_EFFECTS; j++, effect++) {
-                FrameInterpolation_RecordOpenChild(phi_s0, 2);
+                FrameInterpolation_RecordOpenChild(effect, 2);
                 cmf->mf[3][0] = miniDeath->actor.world.pos.x - effect->vel.x;
                 cmf->mf[3][1] = miniDeath->actor.world.pos.y + (20.0f - effect->vel.y);
                 cmf->mf[3][2] = miniDeath->actor.world.pos.z - effect->vel.z;

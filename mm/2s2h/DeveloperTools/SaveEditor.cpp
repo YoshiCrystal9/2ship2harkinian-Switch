@@ -194,7 +194,7 @@ void UpdateGameTime(u16 gameTime) {
     if (newTimeIsNight != prevTimeIsNight) {
         // AMBIENCE_ID_13 is used to persist a scenes sequence through night, so we shouldn't
         // change anything if thats active
-        if (gPlayState->sequenceCtx.ambienceId != AMBIENCE_ID_13) {
+        if (gPlayState->sceneSequences.ambienceId != AMBIENCE_ID_13) {
             SEQCMD_STOP_SEQUENCE(SEQ_PLAYER_AMBIENCE, 0);
             SEQCMD_STOP_SEQUENCE(SEQ_PLAYER_BGM_MAIN, 240);
             gSaveContext.seqId = NA_BGM_DISABLED;

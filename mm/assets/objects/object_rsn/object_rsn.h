@@ -3,106 +3,106 @@
 
 #include "align_asset_macro.h"
 
-#define dgBombShopkeeperBombDL "__OTR__objects/object_rs/gBombShopkeeperBombDL"
+#define dgBombShopkeeperBombDL "__OTR__objects/object_rsn/gBombShopkeeperBombDL"
 static const ALIGN_ASSET(2) char gBombShopkeeperBombDL[] = dgBombShopkeeperBombDL;
 
-#define dgBombShopkeeperBombFuseTex "__OTR__objects/object_rs/gBombShopkeeperBombFuseTex"
+#define dgBombShopkeeperBombFuseTex "__OTR__objects/object_rsn/gBombShopkeeperBombFuseTex"
 static const ALIGN_ASSET(2) char gBombShopkeeperBombFuseTex[] = dgBombShopkeeperBombFuseTex;
 
-#define dgBombShopkeeperPelvisDL "__OTR__objects/object_rs/gBombShopkeeperPelvisDL"
+#define dgBombShopkeeperPelvisDL "__OTR__objects/object_rsn/gBombShopkeeperPelvisDL"
 static const ALIGN_ASSET(2) char gBombShopkeeperPelvisDL[] = dgBombShopkeeperPelvisDL;
 
-#define dgBombShopkeeperTorsoDL "__OTR__objects/object_rs/gBombShopkeeperTorsoDL"
+#define dgBombShopkeeperTorsoDL "__OTR__objects/object_rsn/gBombShopkeeperTorsoDL"
 static const ALIGN_ASSET(2) char gBombShopkeeperTorsoDL[] = dgBombShopkeeperTorsoDL;
 
-#define dgBombShopkeeperHeadDL "__OTR__objects/object_rs/gBombShopkeeperHeadDL"
+#define dgBombShopkeeperHeadDL "__OTR__objects/object_rsn/gBombShopkeeperHeadDL"
 static const ALIGN_ASSET(2) char gBombShopkeeperHeadDL[] = dgBombShopkeeperHeadDL;
 
-#define dgBombShopkeeperRightUpperArmDL "__OTR__objects/object_rs/gBombShopkeeperRightUpperArmDL"
+#define dgBombShopkeeperRightUpperArmDL "__OTR__objects/object_rsn/gBombShopkeeperRightUpperArmDL"
 static const ALIGN_ASSET(2) char gBombShopkeeperRightUpperArmDL[] = dgBombShopkeeperRightUpperArmDL;
 
-#define dgBombShopkeeperRightForearmDL "__OTR__objects/object_rs/gBombShopkeeperRightForearmDL"
+#define dgBombShopkeeperRightForearmDL "__OTR__objects/object_rsn/gBombShopkeeperRightForearmDL"
 static const ALIGN_ASSET(2) char gBombShopkeeperRightForearmDL[] = dgBombShopkeeperRightForearmDL;
 
-#define dgBombShopkeeperRightHandDL "__OTR__objects/object_rs/gBombShopkeeperRightHandDL"
+#define dgBombShopkeeperRightHandDL "__OTR__objects/object_rsn/gBombShopkeeperRightHandDL"
 static const ALIGN_ASSET(2) char gBombShopkeeperRightHandDL[] = dgBombShopkeeperRightHandDL;
 
-#define dgBombShopkeeperLeftUpperArmDL "__OTR__objects/object_rs/gBombShopkeeperLeftUpperArmDL"
+#define dgBombShopkeeperLeftUpperArmDL "__OTR__objects/object_rsn/gBombShopkeeperLeftUpperArmDL"
 static const ALIGN_ASSET(2) char gBombShopkeeperLeftUpperArmDL[] = dgBombShopkeeperLeftUpperArmDL;
 
-#define dgBombShopkeeperLeftForearmDL "__OTR__objects/object_rs/gBombShopkeeperLeftForearmDL"
+#define dgBombShopkeeperLeftForearmDL "__OTR__objects/object_rsn/gBombShopkeeperLeftForearmDL"
 static const ALIGN_ASSET(2) char gBombShopkeeperLeftForearmDL[] = dgBombShopkeeperLeftForearmDL;
 
-#define dgBombShopkeeperLeftHandDL "__OTR__objects/object_rs/gBombShopkeeperLeftHandDL"
+#define dgBombShopkeeperLeftHandDL "__OTR__objects/object_rsn/gBombShopkeeperLeftHandDL"
 static const ALIGN_ASSET(2) char gBombShopkeeperLeftHandDL[] = dgBombShopkeeperLeftHandDL;
 
-#define dgBombShopkeeperRightThighDL "__OTR__objects/object_rs/gBombShopkeeperRightThighDL"
+#define dgBombShopkeeperRightThighDL "__OTR__objects/object_rsn/gBombShopkeeperRightThighDL"
 static const ALIGN_ASSET(2) char gBombShopkeeperRightThighDL[] = dgBombShopkeeperRightThighDL;
 
-#define dgBombShopkeeperRightShinDL "__OTR__objects/object_rs/gBombShopkeeperRightShinDL"
+#define dgBombShopkeeperRightShinDL "__OTR__objects/object_rsn/gBombShopkeeperRightShinDL"
 static const ALIGN_ASSET(2) char gBombShopkeeperRightShinDL[] = dgBombShopkeeperRightShinDL;
 
-#define dgBombShopkeeperRightFootDL "__OTR__objects/object_rs/gBombShopkeeperRightFootDL"
+#define dgBombShopkeeperRightFootDL "__OTR__objects/object_rsn/gBombShopkeeperRightFootDL"
 static const ALIGN_ASSET(2) char gBombShopkeeperRightFootDL[] = dgBombShopkeeperRightFootDL;
 
-#define dgBombShopkeeperLeftThighDL "__OTR__objects/object_rs/gBombShopkeeperLeftThighDL"
+#define dgBombShopkeeperLeftThighDL "__OTR__objects/object_rsn/gBombShopkeeperLeftThighDL"
 static const ALIGN_ASSET(2) char gBombShopkeeperLeftThighDL[] = dgBombShopkeeperLeftThighDL;
 
-#define dgBombShopkeeperLeftShinDL "__OTR__objects/object_rs/gBombShopkeeperLeftShinDL"
+#define dgBombShopkeeperLeftShinDL "__OTR__objects/object_rsn/gBombShopkeeperLeftShinDL"
 static const ALIGN_ASSET(2) char gBombShopkeeperLeftShinDL[] = dgBombShopkeeperLeftShinDL;
 
-#define dgBombShopkeeperLeftFootDL "__OTR__objects/object_rs/gBombShopkeeperLeftFootDL"
+#define dgBombShopkeeperLeftFootDL "__OTR__objects/object_rsn/gBombShopkeeperLeftFootDL"
 static const ALIGN_ASSET(2) char gBombShopkeeperLeftFootDL[] = dgBombShopkeeperLeftFootDL;
 
-#define dgBombShopkeeperTLUT "__OTR__objects/object_rs/gBombShopkeeperTLUT"
+#define dgBombShopkeeperTLUT "__OTR__objects/object_rsn/gBombShopkeeperTLUT"
 static const ALIGN_ASSET(2) char gBombShopkeeperTLUT[] = dgBombShopkeeperTLUT;
 
-#define dgBombShopkeeperEarTex "__OTR__objects/object_rs/gBombShopkeeperEarTex"
+#define dgBombShopkeeperEarTex "__OTR__objects/object_rsn/gBombShopkeeperEarTex"
 static const ALIGN_ASSET(2) char gBombShopkeeperEarTex[] = dgBombShopkeeperEarTex;
 
-#define dgBombShopkeeperSkinTex "__OTR__objects/object_rs/gBombShopkeeperSkinTex"
+#define dgBombShopkeeperSkinTex "__OTR__objects/object_rsn/gBombShopkeeperSkinTex"
 static const ALIGN_ASSET(2) char gBombShopkeeperSkinTex[] = dgBombShopkeeperSkinTex;
 
-#define dgBombShopkeeperTorsoTex "__OTR__objects/object_rs/gBombShopkeeperTorsoTex"
+#define dgBombShopkeeperTorsoTex "__OTR__objects/object_rsn/gBombShopkeeperTorsoTex"
 static const ALIGN_ASSET(2) char gBombShopkeeperTorsoTex[] = dgBombShopkeeperTorsoTex;
 
-#define dgBombShopkeeperFingersTex "__OTR__objects/object_rs/gBombShopkeeperFingersTex"
+#define dgBombShopkeeperFingersTex "__OTR__objects/object_rsn/gBombShopkeeperFingersTex"
 static const ALIGN_ASSET(2) char gBombShopkeeperFingersTex[] = dgBombShopkeeperFingersTex;
 
-#define dgBombShopkeeperEyeTex "__OTR__objects/object_rs/gBombShopkeeperEyeTex"
+#define dgBombShopkeeperEyeTex "__OTR__objects/object_rsn/gBombShopkeeperEyeTex"
 static const ALIGN_ASSET(2) char gBombShopkeeperEyeTex[] = dgBombShopkeeperEyeTex;
 
-#define dgBombShopkeeperTatooTex "__OTR__objects/object_rs/gBombShopkeeperTatooTex"
+#define dgBombShopkeeperTatooTex "__OTR__objects/object_rsn/gBombShopkeeperTatooTex"
 static const ALIGN_ASSET(2) char gBombShopkeeperTatooTex[] = dgBombShopkeeperTatooTex;
 
-#define dgBombShopkeeperShortsTex "__OTR__objects/object_rs/gBombShopkeeperShortsTex"
+#define dgBombShopkeeperShortsTex "__OTR__objects/object_rsn/gBombShopkeeperShortsTex"
 static const ALIGN_ASSET(2) char gBombShopkeeperShortsTex[] = dgBombShopkeeperShortsTex;
 
-#define dgBombShopkeeperSandalsTex "__OTR__objects/object_rs/gBombShopkeeperSandalsTex"
+#define dgBombShopkeeperSandalsTex "__OTR__objects/object_rsn/gBombShopkeeperSandalsTex"
 static const ALIGN_ASSET(2) char gBombShopkeeperSandalsTex[] = dgBombShopkeeperSandalsTex;
 
-#define dgBombShopkeeperVestTex "__OTR__objects/object_rs/gBombShopkeeperVestTex"
+#define dgBombShopkeeperVestTex "__OTR__objects/object_rsn/gBombShopkeeperVestTex"
 static const ALIGN_ASSET(2) char gBombShopkeeperVestTex[] = dgBombShopkeeperVestTex;
 
-#define dgBombShopkeeperToesTex "__OTR__objects/object_rs/gBombShopkeeperToesTex"
+#define dgBombShopkeeperToesTex "__OTR__objects/object_rsn/gBombShopkeeperToesTex"
 static const ALIGN_ASSET(2) char gBombShopkeeperToesTex[] = dgBombShopkeeperToesTex;
 
-#define dgBombShopkeeperWristBandTex "__OTR__objects/object_rs/gBombShopkeeperWristBandTex"
+#define dgBombShopkeeperWristBandTex "__OTR__objects/object_rsn/gBombShopkeeperWristBandTex"
 static const ALIGN_ASSET(2) char gBombShopkeeperWristBandTex[] = dgBombShopkeeperWristBandTex;
 
-#define dgBombShopkeeperSwayAnim "__OTR__objects/object_rs/gBombShopkeeperSwayAnim"
+#define dgBombShopkeeperSwayAnim "__OTR__objects/object_rsn/gBombShopkeeperSwayAnim"
 static const ALIGN_ASSET(2) char gBombShopkeeperSwayAnim[] = dgBombShopkeeperSwayAnim;
 
-#define dgBombShopkeeperSitAtCounterStartAnim "__OTR__objects/object_rs/gBombShopkeeperSitAtCounterStartAnim"
+#define dgBombShopkeeperSitAtCounterStartAnim "__OTR__objects/object_rsn/gBombShopkeeperSitAtCounterStartAnim"
 static const ALIGN_ASSET(2) char gBombShopkeeperSitAtCounterStartAnim[] = dgBombShopkeeperSitAtCounterStartAnim;
 
-#define dgBombShopkeeperSitAtCounterLoopAnim "__OTR__objects/object_rs/gBombShopkeeperSitAtCounterLoopAnim"
+#define dgBombShopkeeperSitAtCounterLoopAnim "__OTR__objects/object_rsn/gBombShopkeeperSitAtCounterLoopAnim"
 static const ALIGN_ASSET(2) char gBombShopkeeperSitAtCounterLoopAnim[] = dgBombShopkeeperSitAtCounterLoopAnim;
 
-#define dgBombShopkeeperWalkAnim "__OTR__objects/object_rs/gBombShopkeeperWalkAnim"
+#define dgBombShopkeeperWalkAnim "__OTR__objects/object_rsn/gBombShopkeeperWalkAnim"
 static const ALIGN_ASSET(2) char gBombShopkeeperWalkAnim[] = dgBombShopkeeperWalkAnim;
 
-#define dgBombShopkeeperSkel "__OTR__objects/object_rs/gBombShopkeeperSkel"
+#define dgBombShopkeeperSkel "__OTR__objects/object_rsn/gBombShopkeeperSkel"
 static const ALIGN_ASSET(2) char gBombShopkeeperSkel[] = dgBombShopkeeperSkel;
 
 typedef enum BombShopkeeperLimb {

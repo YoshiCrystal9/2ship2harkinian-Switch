@@ -2355,7 +2355,7 @@ void Boss02_Reset(void) {
     sIsInGiantMode = false;
     sRedTwinmold = NULL;
     sBlueTwinmold = NULL;
-    sTwinmoldStatic = NULL;
+    sTwinmoldBattleHandler = NULL;
     sTwinmoldMusicStartTimer = 0;
     sBlueWarp = NULL;
     sGiantModeScaleFactor = 1.0f;

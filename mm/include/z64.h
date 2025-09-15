@@ -103,4 +103,9 @@ typedef struct {
 } PreRenderParams; // size = 0x28
 
 struct PlayState;
+
+#ifdef __cplusplus
+}
+#endif
+
 #endif
