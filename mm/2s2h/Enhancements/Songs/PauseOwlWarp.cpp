@@ -116,7 +116,7 @@ void UpdateCursorForOwlWarpPoints(PauseContext* pauseCtx) {
                 gSaveContext.hudVisibility = HUD_VISIBILITY_IDLE;
                 Interface_SetHudVisibility(HUD_VISIBILITY_ALL);
             }
-            if (interfaceCtx->aButtonHorseDoAction != DO_ACTION_WARP) {
+            if (interfaceCtx->aButtonDoActionDelayed != DO_ACTION_WARP) {
                 Interface_SetAButtonDoAction(gPlayState, DO_ACTION_WARP);
             }
         } else {
@@ -127,7 +127,7 @@ void UpdateCursorForOwlWarpPoints(PauseContext* pauseCtx) {
                 gSaveContext.hudVisibility = HUD_VISIBILITY_IDLE;
                 Interface_SetHudVisibility(HUD_VISIBILITY_ALL);
             }
-            if (interfaceCtx->aButtonHorseDoAction != DO_ACTION_INFO) {
+            if (interfaceCtx->aButtonDoActionDelayed != DO_ACTION_INFO) {
                 Interface_SetAButtonDoAction(gPlayState, DO_ACTION_INFO);
             }
         }
