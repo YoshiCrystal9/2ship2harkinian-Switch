@@ -342,7 +342,7 @@ typedef struct {
 
 // functions in sequence.c
 
-void AudioSeq_StartSequence(u8 seqPlayerIndex, u16 seqId, u8 seqArgs, u16 fadeInDuration);
+void AudioSeq_StartSequence(u8 seqPlayerIndex, u16 seqId, u16 seqArgs, u16 fadeInDuration);
 void AudioSeq_StopSequence(u8 seqPlayerIndex, u16 fadeOutDuration);
 void AudioSeq_QueueSeqCmd(u32 cmd);
 void AudioSeq_ProcessSeqCmds(void);
