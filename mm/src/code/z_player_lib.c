@@ -688,8 +688,8 @@ PlayerItemAction func_80123810(PlayState* play) {
             if (CHECK_BTN_ALL(CONTROLLER1(&play->state)->press.button, sDItemButtons[i])) {
                 itemId = Player_Dpad_GetItemOnButton(play, player, i);
 
-                play->interfaceCtx.unk_222 = 0;
-                play->interfaceCtx.unk_224 = 0;
+                play->interfaceCtx.bButtonInterfaceDoActionActive = 0;
+                play->interfaceCtx.bButtonInterfaceDoAction = 0;
                 Interface_SetHudVisibility(play->msgCtx.hudVisibility);
 
                 if ((itemId >= ITEM_FD) || ((itemAction = play->unk_18794(play, player, itemId)) <= PLAYER_IA_MINUS1)) {

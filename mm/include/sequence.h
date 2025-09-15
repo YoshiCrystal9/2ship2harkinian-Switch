@@ -342,7 +342,7 @@ typedef struct {
 
 // functions in sequence.c
 
-void AudioSeq_StartSequence(u8 seqPlayerIndex, u8 seqId, u8 seqArgs, u16 fadeInDuration);
+void AudioSeq_StartSequence(u8 seqPlayerIndex, u16 seqId, u8 seqArgs, u16 fadeInDuration);
 void AudioSeq_StopSequence(u8 seqPlayerIndex, u16 fadeOutDuration);
 void AudioSeq_QueueSeqCmd(u32 cmd);
 void AudioSeq_ProcessSeqCmds(void);
@@ -357,10 +357,10 @@ void AudioSeq_ResetActiveSequencesAndVolume(void);
 
 // functions in code_8019AF00.c
 
-void Audio_PlayObjSoundBgm(Vec3f* pos, s8 seqId);
-void Audio_PlayObjSoundFanfare(Vec3f* pos, s8 seqId);
-void Audio_PlaySubBgmAtPos(Vec3f* pos, u8 seqId, f32 maxDist);
-void Audio_PlaySubBgmAtPosWithFilter(Vec3f* pos, u8 seqId, f32 maxDist);
+void Audio_PlayObjSoundBgm(Vec3f* pos, s16 seqId);
+void Audio_PlayObjSoundFanfare(Vec3f* pos, s16 seqId);
+void Audio_PlaySubBgmAtPos(Vec3f* pos, u16 seqId, f32 maxDist);
+void Audio_PlaySubBgmAtPosWithFilter(Vec3f* pos, u16 seqId, f32 maxDist);
 void Audio_PlaySequenceAtDefaultPos(u8 seqPlayerIndex, u16 seqId);
 void Audio_PlaySequenceAtPos(u8 seqPlayerIndex, Vec3f* pos, u16 seqId, f32 maxDist);
 void Audio_PlayMorningSceneSequence(u16 seqId, u8 dayMinusOne);
@@ -399,9 +399,9 @@ void Audio_MuteSeqPlayerBgmSub(u8 isMuted);
 void Audio_MuteAllSeqExceptSystemAndOcarina(u16 duration);
 void Audio_MuteSfxAndAmbienceSeqExceptSysAndOca(u16 duration);
 
-void func_801A0204(s8 seqId);
+void func_801A0204(s16 seqId);
 void func_801A246C(u8 seqPlayerIndex, u8 type);
-s32 Audio_IsSequencePlaying(u8 seqId);
+s32 Audio_IsSequencePlaying(u16 seqId);
 void Audio_RestorePrevBgm(void);
 void Audio_UpdateEnemyBgmVolume(f32 dist);
 u8 func_801A3950(u8 seqPlayerIndex, u8 resetChannelIO);
