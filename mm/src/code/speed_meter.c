@@ -9,6 +9,7 @@
 #include "z64malloc.h"
 #include "z64view.h"
 
+#include "functions.h"
 #include "variables.h"
 
 /**
