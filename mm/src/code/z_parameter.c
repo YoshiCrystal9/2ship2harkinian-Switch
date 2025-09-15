@@ -5005,8 +5005,8 @@ void Interface_LoadAButtonDoActionLabel(InterfaceContext* interfaceCtx, u16 doAc
         // osCreateMesgQueue(&interfaceCtx->loadQueue, &interfaceCtx->loadMsg, 1);
         // DmaMgr_RequestAsync(&interfaceCtx->dmaRequest,
         //                     interfaceCtx->doActionSegment + DO_ACTION_OFFSET_A_ACTIVE + slot * DO_ACTION_TEX_SIZE,
-        //                     SEGMENT_ROM_START(do_action_static) + doAction * DO_ACTION_TEX_SIZE, DO_ACTION_TEX_SIZE, 0,
-        //                     &interfaceCtx->loadQueue, NULL);
+        //                     SEGMENT_ROM_START(do_action_static) + doAction * DO_ACTION_TEX_SIZE, DO_ACTION_TEX_SIZE,
+        //                     0, &interfaceCtx->loadQueue, NULL);
         // osRecvMesg(&interfaceCtx->loadQueue, NULL, OS_MESG_BLOCK);
         if (slot) {
             interfaceCtx->doActionSegment[DO_ACTION_SEG_A].subTex = doActionTbl[doAction];
@@ -5024,7 +5024,6 @@ void Interface_LoadAButtonDoActionLabel(InterfaceContext* interfaceCtx, u16 doAc
         // #endregion
     }
 }
-
 
 /**
  * Updates the current A button do action.
@@ -5113,8 +5112,8 @@ void Interface_SetBButtonInterfaceDoAction(PlayState* play, s16 bButtonDoAction)
     // #region 2S2H [Port]
     // osCreateMesgQueue(&play->interfaceCtx.loadQueue, &play->interfaceCtx.loadMsg, 1);
     // DmaMgr_RequestAsync(&interfaceCtx->dmaRequest, interfaceCtx->doActionSegment + DO_ACTION_OFFSET_B_PLAYER,
-    //                     SEGMENT_ROM_START(do_action_static) + bButtonDoAction * DO_ACTION_TEX_SIZE, DO_ACTION_TEX_SIZE,
-    //                     0, &interfaceCtx->loadQueue, NULL);
+    //                     SEGMENT_ROM_START(do_action_static) + bButtonDoAction * DO_ACTION_TEX_SIZE,
+    //                     DO_ACTION_TEX_SIZE, 0, &interfaceCtx->loadQueue, NULL);
     // osRecvMesg(&interfaceCtx->loadQueue, NULL, OS_MESG_BLOCK);
     interfaceCtx->doActionSegment[DO_ACTION_SEG_B].mainTex = doActionTbl[bButtonDoAction];
     // #endregion
@@ -5923,7 +5922,7 @@ void Interface_DrawItemButtons(PlayState* play) {
     OVERLAY_DISP = Gfx_DrawRect_DropShadowOverride(
         OVERLAY_DISP, sBCButtonXPositions[EQUIP_SLOT_C_DOWN], sBCButtonYPositions[EQUIP_SLOT_C_DOWN],
         sBCButtonSizes[EQUIP_SLOT_C_DOWN], sBCButtonSizes[EQUIP_SLOT_C_DOWN], sBCButtonScales[EQUIP_SLOT_C_DOWN] * 2,
-        sBCButtonScales[EQUIP_SLOT_C_DOWN] * 2, 255, 240, 0, interfaceCtx->cDownAlpha,  COSMETIC_ELEMENT_C_DOWN_BUTTON);
+        sBCButtonScales[EQUIP_SLOT_C_DOWN] * 2, 255, 240, 0, interfaceCtx->cDownAlpha, COSMETIC_ELEMENT_C_DOWN_BUTTON);
     // C-Right Button Color & Texture
     HudEditor_SetActiveElement(HUD_EDITOR_ELEMENT_C_RIGHT);
     OVERLAY_DISP = Gfx_DrawRect_DropShadowOverride(
@@ -5935,18 +5934,17 @@ void Interface_DrawItemButtons(PlayState* play) {
     if (!IS_PAUSE_STATE_GAMEOVER(pauseCtx)) {
         if (IS_PAUSED(&play->pauseCtx)) {
             HudEditor_SetActiveElement(HUD_EDITOR_ELEMENT_START);
-            OVERLAY_DISP =
-                Gfx_DrawRect_DropShadowOverride(OVERLAY_DISP, 136, 17, 22, 22, (s32)(1.4277344f * (1 << 10)),
-                                        (s32)(1.4277344f * (1 << 10)), 255, 130, 60, interfaceCtx->startAlpha,
-                                        COSMETIC_ELEMENT_START_BUTTON);
+            OVERLAY_DISP = Gfx_DrawRect_DropShadowOverride(OVERLAY_DISP, 136, 17, 22, 22, (s32)(1.4277344f * (1 << 10)),
+                                                           (s32)(1.4277344f * (1 << 10)), 255, 130, 60,
+                                                           interfaceCtx->startAlpha, COSMETIC_ELEMENT_START_BUTTON);
             // Start Button Texture, Color & Label
             gDPPipeSync(OVERLAY_DISP++);
             gDPSetPrimColor(OVERLAY_DISP++, 0, 0, 255, 255, 255, interfaceCtx->startAlpha);
             gDPSetEnvColor(OVERLAY_DISP++, 0, 0, 0, 0);
             gDPSetCombineLERP(OVERLAY_DISP++, PRIMITIVE, ENVIRONMENT, TEXEL0, ENVIRONMENT, TEXEL0, 0, PRIMITIVE, 0,
                               PRIMITIVE, ENVIRONMENT, TEXEL0, ENVIRONMENT, TEXEL0, 0, PRIMITIVE, 0);
-            gDPLoadTextureBlock_4b(OVERLAY_DISP++, interfaceCtx->doActionSegment + DO_ACTION_OFFSET_START, G_IM_FMT_IA,
-                                   DO_ACTION_TEX_WIDTH, DO_ACTION_TEX_HEIGHT, 0, G_TX_NOMIRROR | G_TX_WRAP,
+            gDPLoadTextureBlock_4b(OVERLAY_DISP++, interfaceCtx->doActionSegment[DO_ACTION_SEG_START].mainTex,
+                                   G_IM_FMT_IA, DO_ACTION_TEX_WIDTH, DO_ACTION_TEX_HEIGHT, 0, G_TX_NOMIRROR | G_TX_WRAP,
                                    G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
             // #region 2S2H [Cosmetic] Hud Editor
             HudEditor_SetActiveElement(HUD_EDITOR_ELEMENT_START);
@@ -6031,8 +6029,8 @@ void Interface_DrawItemButtons(PlayState* play) {
                 }
             } else {
                 // #endregion
-            gSPTextureRectangle(OVERLAY_DISP++, 247 << 2, 18 << 2, (247 + 32) << 2, (18 + 12) << 2, G_TX_RENDERTILE, 0,
-                                0, 1 << 10, 1 << 10);
+                gSPTextureRectangle(OVERLAY_DISP++, 247 << 2, 18 << 2, (247 + 32) << 2, (18 + 12) << 2, G_TX_RENDERTILE,
+                                    0, 0, 1 << 10, 1 << 10);
             }
         }
 
@@ -6057,9 +6055,9 @@ void Interface_DrawItemButtons(PlayState* play) {
             }
             HudEditor_SetActiveElement(temp);
             OVERLAY_DISP =
-                Gfx_DrawTexRectIA8(OVERLAY_DISP, ((u8*)gButtonBackgroundTex + ((32 * 32) * (temp + 1))), 32, 32,
-                                   sBCButtonXPositions[temp], sBCButtonYPositions[temp], sBCButtonSizes[temp],
-                                   sBCButtonSizes[temp], sBCButtonScales[temp] * 2, sBCButtonScales[temp] * 2);
+                Gfx_DrawTexRectIA8(OVERLAY_DISP, emptyCButtonArrows[temp - 1], 0x20, 0x20, sBCButtonXPositions[temp],
+                                   sBCButtonYPositions[temp], sBCButtonSizes[temp], sBCButtonSizes[temp],
+                                   sBCButtonScales[temp] * 2, sBCButtonScales[temp] * 2);
         }
     }
 
@@ -6308,17 +6306,18 @@ void Interface_DrawAmmoCount(PlayState* play, s16 button, s16 alpha) {
 
         // Draw upper digit (tens)
         if ((u32)i != 0) {
+            HudEditor_SetActiveElement(button);
             OVERLAY_DISP =
-                Gfx_DrawTexRectIA8(OVERLAY_DISP, (u8*)gAmmoDigit0Tex + i * AMMO_DIGIT_TEX_SIZE, AMMO_DIGIT_TEX_WIDTH,
-                                   AMMO_DIGIT_TEX_HEIGHT, sAmmoDigitsXPositions[button], sAmmoDigitsYPositions[button],
-                                   AMMO_DIGIT_TEX_WIDTH, AMMO_DIGIT_TEX_HEIGHT, 1 << 10, 1 << 10);
+                Gfx_DrawTexRectIA8(OVERLAY_DISP, gAmmoDigitTextures[i], AMMO_DIGIT_TEX_WIDTH, AMMO_DIGIT_TEX_HEIGHT,
+                                   sAmmoDigitsXPositions[button], sAmmoDigitsYPositions[button], AMMO_DIGIT_TEX_WIDTH,
+                                   AMMO_DIGIT_TEX_HEIGHT, 1 << 10, 1 << 10);
         }
 
         // Draw lower digit (ones)
+        HudEditor_SetActiveElement(button);
         OVERLAY_DISP =
-            Gfx_DrawTexRectIA8(OVERLAY_DISP, (u8*)gAmmoDigit0Tex + ammo * AMMO_DIGIT_TEX_SIZE, AMMO_DIGIT_TEX_WIDTH,
-                               AMMO_DIGIT_TEX_HEIGHT, sAmmoDigitsXPositions[button] + 6, sAmmoDigitsYPositions[button],
-                               AMMO_DIGIT_TEX_WIDTH, AMMO_DIGIT_TEX_HEIGHT, 1 << 10, 1 << 10);
+            Gfx_DrawTexRectIA8(OVERLAY_DISP, gAmmoDigitTextures[ammo], 8, 8, sAmmoDigitsXPositions[button] + 6,
+                               sAmmoDigitsYPositions[button], 8, 8, 1 << 10, 1 << 10);
     }
 
     CLOSE_DISPS(play->state.gfxCtx);
@@ -6374,7 +6373,7 @@ void Interface_DrawBButtonIcons(PlayState* play) {
         gDPSetCombineLERP(OVERLAY_DISP++, PRIMITIVE, ENVIRONMENT, TEXEL0, ENVIRONMENT, TEXEL0, 0, PRIMITIVE, 0,
                           PRIMITIVE, ENVIRONMENT, TEXEL0, ENVIRONMENT, TEXEL0, 0, PRIMITIVE, 0);
         gDPSetPrimColor(OVERLAY_DISP++, 0, 0, 255, 255, 255, interfaceCtx->bAlpha);
-        gDPLoadTextureBlock_4b(OVERLAY_DISP++, interfaceCtx->doActionSegment + DO_ACTION_OFFSET_B_PLAYER, G_IM_FMT_IA,
+        gDPLoadTextureBlock_4b(OVERLAY_DISP++, interfaceCtx->doActionSegment[DO_ACTION_SEG_B].mainTex, G_IM_FMT_IA,
                                DO_ACTION_TEX_WIDTH, DO_ACTION_TEX_HEIGHT, 0, G_TX_NOMIRROR | G_TX_WRAP,
                                G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
 
@@ -6393,8 +6392,8 @@ void Interface_DrawBButtonIcons(PlayState* play) {
                 s16 rectTop = sBButtonDoActionYPositions[gSaveContext.options.language];
                 s16 rectWidth = 0x30;
                 s16 rectHeight = 0x10;
-                s16 dsdx = sBButtonDoActionTextureScale  >> 1;
-                s16 dtdy = sBButtonDoActionTextureScale  >> 1;
+                s16 dsdx = sBButtonDoActionTextureScale >> 1;
+                s16 dtdy = sBButtonDoActionTextureScale >> 1;
 
                 HudEditor_ModifyDrawValues(&rectLeft, &rectTop, &rectWidth, &rectHeight, &dsdx, &dtdy);
 
@@ -6405,19 +6404,20 @@ void Interface_DrawBButtonIcons(PlayState* play) {
             }
             // #endregion
         } else {
-            gSPTextureRectangle(OVERLAY_DISP++, sBButtonDoActionXPositions[gSaveContext.options.language] * 4,
-                                sBButtonDoActionYPositions[gSaveContext.options.language] * 4,
-                                (sBButtonDoActionXPositions[gSaveContext.options.language] + DO_ACTION_TEX_WIDTH) << 2,
-                                (sBButtonDoActionYPositions[gSaveContext.options.language] + DO_ACTION_TEX_HEIGHT) << 2,
-                                G_TX_RENDERTILE, 0, 0, sBButtonDoActionTextureScale, sBButtonDoActionTextureScale);
+            gSPTextureRectangle(
+                OVERLAY_DISP++, (sBButtonDoActionXPositions[gSaveContext.options.language] * 4),
+                (sBButtonDoActionYPositions[gSaveContext.options.language] * 4),
+                ((sBButtonDoActionXPositions[gSaveContext.options.language] + DO_ACTION_TEX_WIDTH) << 2),
+                ((sBButtonDoActionYPositions[gSaveContext.options.language] + DO_ACTION_TEX_HEIGHT) << 2),
+                G_TX_RENDERTILE, 0, 0, sBButtonDoActionTextureScale, sBButtonDoActionTextureScale);
         }
     } else if (interfaceCtx->bButtonPlayerDoAction != DO_ACTION_NONE) {
         gDPPipeSync(OVERLAY_DISP++);
         gDPSetCombineLERP(OVERLAY_DISP++, PRIMITIVE, ENVIRONMENT, TEXEL0, ENVIRONMENT, TEXEL0, 0, PRIMITIVE, 0,
                           PRIMITIVE, ENVIRONMENT, TEXEL0, ENVIRONMENT, TEXEL0, 0, PRIMITIVE, 0);
         gDPSetPrimColor(OVERLAY_DISP++, 0, 0, 255, 255, 255, interfaceCtx->bAlpha);
-        gDPLoadTextureBlock_4b(OVERLAY_DISP++, interfaceCtx->doActionSegment + DO_ACTION_OFFSET_B_INTERFACE,
-                               G_IM_FMT_IA, DO_ACTION_TEX_WIDTH, DO_ACTION_TEX_HEIGHT, 0, G_TX_NOMIRROR | G_TX_WRAP,
+        gDPLoadTextureBlock_4b(OVERLAY_DISP++, interfaceCtx->doActionSegment[DO_ACTION_SEG_B].subTex, G_IM_FMT_IA,
+                               DO_ACTION_TEX_WIDTH, DO_ACTION_TEX_HEIGHT, 0, G_TX_NOMIRROR | G_TX_WRAP,
                                G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
 
         sBButtonDoActionTextureScale =
@@ -6472,8 +6472,7 @@ void Interface_DrawCButtonIcons(PlayState* play) {
     if (BUTTON_ITEM_EQUIP(0, EQUIP_SLOT_C_LEFT) < ITEM_F0) {
         gDPSetPrimColor(OVERLAY_DISP++, 0, 0, 255, 255, 255, interfaceCtx->cLeftAlpha);
         gDPSetCombineMode(OVERLAY_DISP++, G_CC_MODULATEIA_PRIM, G_CC_MODULATEIA_PRIM);
-        Interface_DrawItemIconTexture(play, interfaceCtx->iconItemSegment + EQUIP_SLOT_C_LEFT * ICON_ITEM_TEX_SIZE,
-                                      EQUIP_SLOT_C_LEFT);
+        Interface_DrawItemIconTexture(play, interfaceCtx->iconItemSegment[EQUIP_SLOT_C_LEFT], EQUIP_SLOT_C_LEFT);
         gDPPipeSync(OVERLAY_DISP++);
         gDPSetCombineLERP(OVERLAY_DISP++, PRIMITIVE, ENVIRONMENT, TEXEL0, ENVIRONMENT, TEXEL0, 0, PRIMITIVE, 0,
                           PRIMITIVE, ENVIRONMENT, TEXEL0, ENVIRONMENT, TEXEL0, 0, PRIMITIVE, 0);
@@ -6486,8 +6485,7 @@ void Interface_DrawCButtonIcons(PlayState* play) {
     if (BUTTON_ITEM_EQUIP(0, EQUIP_SLOT_C_DOWN) < ITEM_F0) {
         gDPSetPrimColor(OVERLAY_DISP++, 0, 0, 255, 255, 255, interfaceCtx->cDownAlpha);
         gDPSetCombineMode(OVERLAY_DISP++, G_CC_MODULATEIA_PRIM, G_CC_MODULATEIA_PRIM);
-        Interface_DrawItemIconTexture(play, interfaceCtx->iconItemSegment + EQUIP_SLOT_C_DOWN * ICON_ITEM_TEX_SIZE,
-                                      EQUIP_SLOT_C_DOWN);
+        Interface_DrawItemIconTexture(play, interfaceCtx->iconItemSegment[EQUIP_SLOT_C_DOWN], EQUIP_SLOT_C_DOWN);
         gDPPipeSync(OVERLAY_DISP++);
         gDPSetCombineLERP(OVERLAY_DISP++, PRIMITIVE, ENVIRONMENT, TEXEL0, ENVIRONMENT, TEXEL0, 0, PRIMITIVE, 0,
                           PRIMITIVE, ENVIRONMENT, TEXEL0, ENVIRONMENT, TEXEL0, 0, PRIMITIVE, 0);
@@ -6500,8 +6498,7 @@ void Interface_DrawCButtonIcons(PlayState* play) {
     if (BUTTON_ITEM_EQUIP(0, EQUIP_SLOT_C_RIGHT) < ITEM_F0) {
         gDPSetPrimColor(OVERLAY_DISP++, 0, 0, 255, 255, 255, interfaceCtx->cRightAlpha);
         gDPSetCombineMode(OVERLAY_DISP++, G_CC_MODULATEIA_PRIM, G_CC_MODULATEIA_PRIM);
-        Interface_DrawItemIconTexture(play, interfaceCtx->iconItemSegment + EQUIP_SLOT_C_RIGHT * ICON_ITEM_TEX_SIZE,
-                                      EQUIP_SLOT_C_RIGHT);
+        Interface_DrawItemIconTexture(play, interfaceCtx->iconItemSegment[EQUIP_SLOT_C_RIGHT], EQUIP_SLOT_C_RIGHT);
         gDPPipeSync(OVERLAY_DISP++);
         gDPSetCombineLERP(OVERLAY_DISP++, PRIMITIVE, ENVIRONMENT, TEXEL0, ENVIRONMENT, TEXEL0, 0, PRIMITIVE, 0,
                           PRIMITIVE, ENVIRONMENT, TEXEL0, ENVIRONMENT, TEXEL0, 0, PRIMITIVE, 0);
@@ -6634,10 +6631,10 @@ void Interface_DrawAButton(PlayState* play) {
     // Draw Action Label
     if ((interfaceCtx->aButtonState <= A_BTN_STATE_CHANGE_1_UNPAUSED) ||
         (interfaceCtx->aButtonState == A_BTN_STATE_CHANGE_1_PAUSED)) {
-        OVERLAY_DISP = Gfx_DrawTexQuad4b(OVERLAY_DISP, interfaceCtx->doActionSegment + DO_ACTION_OFFSET_A_ACTIVE,
+        OVERLAY_DISP = Gfx_DrawTexQuad4b(OVERLAY_DISP, interfaceCtx->doActionSegment[DO_ACTION_SEG_A].mainTex,
                                          G_IM_FMT_IA, DO_ACTION_TEX_WIDTH, DO_ACTION_TEX_HEIGHT, 0);
     } else {
-        OVERLAY_DISP = Gfx_DrawTexQuad4b(OVERLAY_DISP, interfaceCtx->doActionSegment + DO_ACTION_OFFSET_A_NEXT,
+        OVERLAY_DISP = Gfx_DrawTexQuad4b(OVERLAY_DISP, interfaceCtx->doActionSegment[DO_ACTION_SEG_A].subTex,
                                          G_IM_FMT_IA, DO_ACTION_TEX_WIDTH, DO_ACTION_TEX_HEIGHT, 0);
     }
 
@@ -6983,7 +6980,7 @@ void Interface_DrawClock(PlayState* play) {
 
                 HudEditor_SetActiveElement(HUD_EDITOR_ELEMENT_CLOCK);
                 OVERLAY_DISP = Gfx_DrawTexRectIA8(
-                    OVERLAY_DISP, interfaceCtx->doActionSegment + DO_ACTION_OFFSET_DAY_NUMBER, WEEK_STATIC_TEX_WIDTH,
+                    OVERLAY_DISP, interfaceCtx->doActionSegment[DO_ACTION_SEG_CLOCK].mainTex, WEEK_STATIC_TEX_WIDTH,
                     WEEK_STATIC_TEX_HEIGHT, 137, 192, WEEK_STATIC_TEX_WIDTH, WEEK_STATIC_TEX_HEIGHT, 1 << 10, 1 << 10);
 
                 /**
@@ -8808,9 +8805,9 @@ void Interface_DrawMinigameIcons(PlayState* play) {
                 if ((sMinigameScoreDigits[i] != 0) || (numDigitsDrawn != 0) || (i >= 3)) {
                     // 2S2H [Cosmetic] Hud Editor
                     HudEditor_SetActiveElement(HUD_EDITOR_ELEMENT_MINIGAME_COUNTER);
-                    OVERLAY_DISP = Gfx_DrawTexRectI8(
-                        OVERLAY_DISP, ((u8*)gCounterDigit0Tex + (8 * 16 * sMinigameScoreDigits[i])), 8, 16, rectX,
-                        rectY - 2, 9, 250, (s32)(0.859375f * (1 << 10)), (s32)(0.859375f * (1 << 10)));
+                    OVERLAY_DISP = Gfx_DrawTexRectI8(OVERLAY_DISP, sCounterTextures[sMinigameScoreDigits[i]], 8, 16,
+                                                     rectX, rectY - 2, 9, 250, (s32)(0.859375f * (1 << 10)),
+                                                     (s32)(0.859375f * (1 << 10)));
                     rectX += 9;
                     numDigitsDrawn++;
                 }
@@ -9033,8 +9030,8 @@ void Interface_Draw(PlayState* play) {
                         }
                         // #endregion
                     } else {
-                        gSPTextureRectangle(OVERLAY_DISP++, sp2CA * 4, 190 << 2, (sp2CA + 8) * 4, 206 << 2, G_TX_RENDERTILE,
-                                            0, 0, 1 << 10, 1 << 10);
+                        gSPTextureRectangle(OVERLAY_DISP++, sp2CA * 4, 190 << 2, (sp2CA + 8) * 4, 206 << 2,
+                                            G_TX_RENDERTILE, 0, 0, 1 << 10, 1 << 10);
                     }
                 }
                 break;
@@ -9174,8 +9171,8 @@ void Interface_Draw(PlayState* play) {
                     }
                     // #endregion
                 } else {
-                    gSPTextureRectangle(OVERLAY_DISP++, sp2CA * 4, 190 << 2, (sp2CA + 8) * 4, 206 << 2, G_TX_RENDERTILE, 0,
-                                        0, 1 << 10, 1 << 10);
+                    gSPTextureRectangle(OVERLAY_DISP++, sp2CA * 4, 190 << 2, (sp2CA * 4) + 0x20, 206 << 2,
+                                        G_TX_RENDERTILE, 0, 0, 1 << 10, 1 << 10);
                 }
                 break;
 
@@ -9255,8 +9252,8 @@ void Interface_Draw(PlayState* play) {
                 }
                 // #endregion
             } else {
-                gSPTextureRectangle(OVERLAY_DISP++, sp2CA * 4, 206 << 2, (sp2CA + 8) * 4, 222 << 2, G_TX_RENDERTILE, 0, 0,
-                                    1 << 10, 1 << 10);
+                gSPTextureRectangle(OVERLAY_DISP++, sp2CA * 4, 206 << 2, (sp2CA * 4) + 0x20, 222 << 2, G_TX_RENDERTILE,
+                                    0, 0, 1 << 10, 1 << 10);
             }
         }
 
@@ -10013,8 +10010,7 @@ void Interface_Init(PlayState* play) {
     // DmaMgr_SendRequest0(interfaceCtx->parameterSegment, SEGMENT_ROM_START(parameter_static), parameterStaticSize); //
     // 2S2H [Port] TODO
 
-    interfaceCtx->doActionSegment =
-        THA_AllocTailAlign16(&play->state.tha, DO_ACTION_OFFSET_DAY_NUMBER + WEEK_STATIC_TEX_SIZE);
+    interfaceCtx->doActionSegment = THA_AllocTailAlign16(&play->state.tha, sizeof(ActionLabel) * DO_ACTION_SEG_MAX);
     for (size_t id = 0; id < DO_ACTION_SEG_MAX; id++) {
         ActionLabel lbl = { gEmptyTexture, gEmptyTexture };
         interfaceCtx->doActionSegment[id] = lbl;
