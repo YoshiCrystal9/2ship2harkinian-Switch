@@ -1451,12 +1451,12 @@ void DrawPlayerTab() {
                 if (i != PLAYER_FORM_HUMAN) {
                     gSaveContext.save.equippedMask = PLAYER_MASK_FIERCE_DEITY + i;
                 }
-                gActorOverlayTable[ACTOR_PLAYER].initInfo->objectId = objectId;
+                gActorOverlayTable[ACTOR_PLAYER].profile->objectId = objectId;
                 func_8012F73C(&gPlayState->objectCtx, player->actor.objectSlot, objectId);
                 player->actor.objectSlot = Object_GetSlot(&gPlayState->objectCtx, GAMEPLAY_KEEP);
                 gSaveContext.save.playerForm = i;
                 s32 objectSlot =
-                    Object_GetSlot(&gPlayState->objectCtx, gActorOverlayTable[ACTOR_PLAYER].initInfo->objectId);
+                    Object_GetSlot(&gPlayState->objectCtx, gActorOverlayTable[ACTOR_PLAYER].profile->objectId);
                 player->actor.objectSlot = objectSlot;
                 player->actor.shape.rot.z = GET_PLAYER_FORM + 1;
                 player->actor.init = PlayerCall_Init;
