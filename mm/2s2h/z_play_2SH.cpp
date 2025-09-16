@@ -50,7 +50,7 @@ extern "C" void OTRPlay_SpawnScene(PlayState* play, s32 sceneId, s32 spawn) {
     scene->unk_D = 0;
     gSegments[2] = (uintptr_t)play->sceneSegment;
     OTRPlay_InitScene(play, spawn);
-    Room_AllocateAndLoad(play, &play->roomCtx);
+    Room_SetupFirstRoom(play, &play->roomCtx);
 }
 
 extern "C" s32 OTRfunc_800973FC(PlayState* play, RoomContext* roomCtx) {
@@ -58,8 +58,8 @@ extern "C" s32 OTRfunc_800973FC(PlayState* play, RoomContext* roomCtx) {
         // if (!osRecvMesg(&roomCtx->loadQueue, nullptr, OS_MESG_NOBLOCK)) {
         if (1) {
             roomCtx->status = 0;
-            roomCtx->curRoom.segment = roomCtx->activeRoomVram;
-            gSegments[3] = (uintptr_t)roomCtx->activeRoomVram;
+            roomCtx->curRoom.segment = roomCtx->roomRequestAddr;
+            gSegments[3] = (uintptr_t)roomCtx->roomRequestAddr;
 
             OTRScene_ExecuteCommands(play, (SOH::Scene*)roomCtx->curRoom.segment);
             func_80123140(play, GET_PLAYER(play));
