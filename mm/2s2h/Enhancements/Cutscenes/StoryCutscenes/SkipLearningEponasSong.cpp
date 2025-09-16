@@ -54,7 +54,7 @@ void RegisterSkipLearningEponasSong() {
         Message_StartTextbox(gPlayState, 0x334C, &enMa4->actor);
         enMa4->textId = 0x334C;
         GET_PLAYER(gPlayState)->stateFlags1 &= ~PLAYER_STATE1_20;
-        enMa4->actor.flags &= ~ACTOR_FLAG_10000;
+        enMa4->actor.flags &= ~ACTOR_FLAG_TALK_OFFER_AUTO_ACCEPTED;
         EnMa4_SetupDialogueHandler(enMa4);
     });
 }
