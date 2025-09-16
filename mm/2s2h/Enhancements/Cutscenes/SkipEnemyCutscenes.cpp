@@ -16,11 +16,10 @@ extern "C" {
 void EnDeath_PlayCutscene(EnDeath* enDeath, PlayState* play);
 void EnDeath_DeathCutscenePart1(EnDeath* enDeath, PlayState* play);
 void EnDeath_SetupDeathCutscenePart2(EnDeath* enDeath, PlayState* play);
-void func_809F2EE8(Boss06* boss06, PlayState* play);
-void func_809F24C8(Boss06* boss06, PlayState* play);
-void func_809B3E9C(EnKnight* enKnight, PlayState* play);
-void func_809B71DC(EnKnight* enKnight, PlayState* play);
-void func_809B6764(EnKnight* enKnight, PlayState* play);
+void Boss06_CurtainDestroyed(Boss06* boss06, PlayState* play);
+void Boss06_CurtainBurningCutscene(Boss06* boss06, PlayState* play);
+void EnKnight_SetupWait(EnKnight* enKnight, PlayState* play);
+void EnKnight_IgosSitting(EnKnight* enKnight, PlayState* play);
 void EnWiz_SetupDisappear(EnWiz* enWiz);
 void EnBigpo_SetupIdleFlying(EnBigpo* enBigpo);
 void EnBigpo_DrawMainBigpo(Actor* actor, PlayState* play);
@@ -33,8 +32,8 @@ void func_80B86B58(EnKaizoku* enKaizoku);
 void func_80B86B74(EnKaizoku* enKaizoku, PlayState* play);
 void EnKaizoku_ChangeAnim(EnKaizoku* enKaizoku, EnKaizokuAnimation animIndex);
 void EnWiz_SetupSecondPhaseCutscene(EnWiz* enWiz, PlayState* play);
-extern EnKnight* D_809BEFD4;
-extern EnKnight* D_809BEFD8;
+extern EnKnight* sThinKnightInstance;
+extern EnKnight* sWideKnightInstance;
 }
 
 #define CVAR_NAME "gEnhancements.Cutscenes.SkipEnemyCutscenes"
@@ -338,20 +337,20 @@ void RegisterSkipEnemyCutscenes() {
     COND_ID_HOOK(OnActorUpdate, ACTOR_BOSS_06, CVAR, [](Actor* actor) {
         Boss06* boss06 = (Boss06*)actor;
         // Igos du Ikana curtain burning. Just instantly snap to the post-burned state
-        if (boss06->actionFunc == func_809F24C8) {
-            boss06->unk_1C9 = 2;
-            boss06->unk_1CA = 0;
-            boss06->unk_1B4 = 0.0f;
-            boss06->unk_1B0 = 0.0f;
-            boss06->unk_144 = 2;
-            boss06->unk_1A4 = 0.0f;
-            boss06->unk_1A0 = 0.0f;
-            boss06->unk_1DC = 18.0f;
-            boss06->unk_1E0 = 255.0f;
-            boss06->unk_19C = 1.0f;
+        if (boss06->actionFunc == Boss06_CurtainBurningCutscene) {
+            boss06->csState = 2; // BOSS06_CS_STATE_PAN_OVER_LIGHT_RAY
+            boss06->csFrameCount = 0;
+            boss06->arrowHitPos.y = 0.0f;
+            boss06->arrowHitPos.x = 0.0f;
+            boss06->drawFlags = 2; // BOSS06_DRAWFLAG_LIGHT_RAY
+            boss06->lightRayBaseOffsetZ = 0.0f;
+            boss06->lightRayTopVerticesOffset = 0.0f;
+            boss06->lightOrbScale = 18.0f;
+            boss06->lightOrbAlphaFactor = 255.0f;
+            boss06->lightRayBrightness = 1.0f;
             Actor_SpawnAsChild(&gPlayState->actorCtx, actor, gPlayState, ACTOR_MIR_RAY2, actor->world.pos.x,
                                actor->world.pos.y - 200.0f, actor->world.pos.z - 170.0f, 15, 0, 0, 1);
-            boss06->actionFunc = func_809F2EE8;
+            boss06->actionFunc = Boss06_CurtainDestroyed;
         }
     });
 
@@ -359,18 +358,19 @@ void RegisterSkipEnemyCutscenes() {
     COND_ID_HOOK(ShouldActorUpdate, ACTOR_EN_KNIGHT, CVAR, [](Actor* actor, bool* should) {
         EnKnight* enKnight = (EnKnight*)actor;
         // Killed two lackeys, so ready Igos for battle
-        if (enKnight->actionFunc == func_809B6764) {
+        if (enKnight->actionFunc == EnKnight_IgosSitting) {
             // This is Igos, and the two lackeys have been slain. Skip cutscene, start next phase
-            if (D_809BEFD4->actor.draw == NULL && D_809BEFD8->actor.draw == NULL) {
-                enKnight->unk17A = enKnight->unk178 = enKnight->unk176 = enKnight->unk174 = 0;
-                enKnight->unk684 = 0;
-                enKnight->unk6A4 = 0.0f;
-                enKnight->unk46C = enKnight->unk470 = 1.0f; // Show sword and shield
-                enKnight->unk688 = 0;
-                func_809B3E9C(enKnight, gPlayState);
-                enKnight->unk14A[2] = 0x12C;
-                enKnight->unk152 = 1;
-                enKnight->actor.flags |= 1;
+            if (sThinKnightInstance->actor.draw == NULL && sWideKnightInstance->actor.draw == NULL) {
+                enKnight->rightLegLowerRotation = enKnight->leftLegLowerRotation = enKnight->rightLegUpperRotation =
+                    enKnight->leftLegUpperRotation = 0;
+                enKnight->csTimer = 0;
+                enKnight->csStepValue = 0.0f;
+                enKnight->swordScale = enKnight->shieldScale = 1.0f;
+                enKnight->csState = 0;
+                EnKnight_SetupWait(enKnight, gPlayState);
+                enKnight->timers[2] = 300;
+                enKnight->doBgChecks = true;
+                enKnight->actor.flags |= ACTOR_FLAG_TARGETABLE;
                 enKnight->actor.gravity = -1.5f;
             }
         }

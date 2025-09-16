@@ -3,140 +3,140 @@
 
 #include "align_asset_macro.h"
 
-#define dobject_knight_Anim_0005A8 "__OTR__objects/object_knight/object_knight_Anim_0005A8"
-static const ALIGN_ASSET(2) char object_knight_Anim_0005A8[] = dobject_knight_Anim_0005A8;
+#define dgKnightIgosCurtainReactionShockedAnim "__OTR__objects/object_knight/gKnightIgosCurtainReactionShockedAnim"
+static const ALIGN_ASSET(2) char gKnightIgosCurtainReactionShockedAnim[] = dgKnightIgosCurtainReactionShockedAnim;
 
-#define dobject_knight_Anim_0009E0 "__OTR__objects/object_knight/object_knight_Anim_0009E0"
-static const ALIGN_ASSET(2) char object_knight_Anim_0009E0[] = dobject_knight_Anim_0009E0;
+#define dgKnightIgosCurtainReactionAngryAnim "__OTR__objects/object_knight/gKnightIgosCurtainReactionAngryAnim"
+static const ALIGN_ASSET(2) char gKnightIgosCurtainReactionAngryAnim[] = dgKnightIgosCurtainReactionAngryAnim;
 
-#define dobject_knight_Anim_000D9C "__OTR__objects/object_knight/object_knight_Anim_000D9C"
-static const ALIGN_ASSET(2) char object_knight_Anim_000D9C[] = dobject_knight_Anim_000D9C;
+#define dgKnightDamagedBackAnim "__OTR__objects/object_knight/gKnightDamagedBackAnim"
+static const ALIGN_ASSET(2) char gKnightDamagedBackAnim[] = dgKnightDamagedBackAnim;
 
-#define dobject_knight_Anim_001CDC "__OTR__objects/object_knight/object_knight_Anim_001CDC"
-static const ALIGN_ASSET(2) char object_knight_Anim_001CDC[] = dobject_knight_Anim_001CDC;
+#define dgKnightFallBackwardsAnim "__OTR__objects/object_knight/gKnightFallBackwardsAnim"
+static const ALIGN_ASSET(2) char gKnightFallBackwardsAnim[] = dgKnightFallBackwardsAnim;
 
-#define dobject_knight_Anim_002174 "__OTR__objects/object_knight/object_knight_Anim_002174"
-static const ALIGN_ASSET(2) char object_knight_Anim_002174[] = dobject_knight_Anim_002174;
+#define dgKnightJumpBackAnim "__OTR__objects/object_knight/gKnightJumpBackAnim"
+static const ALIGN_ASSET(2) char gKnightJumpBackAnim[] = dgKnightJumpBackAnim;
 
-#define dobject_knight_Anim_003008 "__OTR__objects/object_knight/object_knight_Anim_003008"
-static const ALIGN_ASSET(2) char object_knight_Anim_003008[] = dobject_knight_Anim_003008;
+#define dgKnightIgosRemoveHeadAnim "__OTR__objects/object_knight/gKnightIgosRemoveHeadAnim"
+static const ALIGN_ASSET(2) char gKnightIgosRemoveHeadAnim[] = dgKnightIgosRemoveHeadAnim;
 
-#define dobject_knight_Anim_0031F0 "__OTR__objects/object_knight/object_knight_Anim_0031F0"
-static const ALIGN_ASSET(2) char object_knight_Anim_0031F0[] = dobject_knight_Anim_0031F0;
+#define dgKnightFastBlockStandingAnim "__OTR__objects/object_knight/gKnightFastBlockStandingAnim"
+static const ALIGN_ASSET(2) char gKnightFastBlockStandingAnim[] = dgKnightFastBlockStandingAnim;
 
-#define dobject_knight_Anim_003650 "__OTR__objects/object_knight/object_knight_Anim_003650"
-static const ALIGN_ASSET(2) char object_knight_Anim_003650[] = dobject_knight_Anim_003650;
+#define dgKnightFastWalkShieldingAnim "__OTR__objects/object_knight/gKnightFastWalkShieldingAnim"
+static const ALIGN_ASSET(2) char gKnightFastWalkShieldingAnim[] = dgKnightFastWalkShieldingAnim;
 
-#define dobject_knight_Anim_0040E0 "__OTR__objects/object_knight/object_knight_Anim_0040E0"
-static const ALIGN_ASSET(2) char object_knight_Anim_0040E0[] = dobject_knight_Anim_0040E0;
+#define dgKnightIdleAnim "__OTR__objects/object_knight/gKnightIdleAnim"
+static const ALIGN_ASSET(2) char gKnightIdleAnim[] = dgKnightIdleAnim;
 
-#define dobject_knight_Anim_004620 "__OTR__objects/object_knight/object_knight_Anim_004620"
-static const ALIGN_ASSET(2) char object_knight_Anim_004620[] = dobject_knight_Anim_004620;
+#define dgKnightSlowWalkShieldingAnim "__OTR__objects/object_knight/gKnightSlowWalkShieldingAnim"
+static const ALIGN_ASSET(2) char gKnightSlowWalkShieldingAnim[] = dgKnightSlowWalkShieldingAnim;
 
-#define dobject_knight_Anim_004974 "__OTR__objects/object_knight/object_knight_Anim_004974"
-static const ALIGN_ASSET(2) char object_knight_Anim_004974[] = dobject_knight_Anim_004974;
+#define dgKnightDamagedFrontAnim "__OTR__objects/object_knight/gKnightDamagedFrontAnim"
+static const ALIGN_ASSET(2) char gKnightDamagedFrontAnim[] = dgKnightDamagedFrontAnim;
 
-#define dobject_knight_Anim_005D30 "__OTR__objects/object_knight/object_knight_Anim_005D30"
-static const ALIGN_ASSET(2) char object_knight_Anim_005D30[] = dobject_knight_Anim_005D30;
+#define dgKnightFallForwardsAnim "__OTR__objects/object_knight/gKnightFallForwardsAnim"
+static const ALIGN_ASSET(2) char gKnightFallForwardsAnim[] = dgKnightFallForwardsAnim;
 
-#define dobject_knight_Anim_005E78 "__OTR__objects/object_knight/object_knight_Anim_005E78"
-static const ALIGN_ASSET(2) char object_knight_Anim_005E78[] = dobject_knight_Anim_005E78;
+#define dgKnightIgosShrugAnim "__OTR__objects/object_knight/gKnightIgosShrugAnim"
+static const ALIGN_ASSET(2) char gKnightIgosShrugAnim[] = dgKnightIgosShrugAnim;
 
-#define dobject_knight_Anim_006754 "__OTR__objects/object_knight/object_knight_Anim_006754"
-static const ALIGN_ASSET(2) char object_knight_Anim_006754[] = dobject_knight_Anim_006754;
+#define dgKnightCaptainsHatCSIgosShockedStandingAnim "__OTR__objects/object_knight/gKnightCaptainsHatCSIgosShockedStandingAnim"
+static const ALIGN_ASSET(2) char gKnightCaptainsHatCSIgosShockedStandingAnim[] = dgKnightCaptainsHatCSIgosShockedStandingAnim;
 
-#define dobject_knight_Anim_006EF8 "__OTR__objects/object_knight/object_knight_Anim_006EF8"
-static const ALIGN_ASSET(2) char object_knight_Anim_006EF8[] = dobject_knight_Anim_006EF8;
+#define dgKnightCaptainsHatCSIgosShockedSittingAnim "__OTR__objects/object_knight/gKnightCaptainsHatCSIgosShockedSittingAnim"
+static const ALIGN_ASSET(2) char gKnightCaptainsHatCSIgosShockedSittingAnim[] = dgKnightCaptainsHatCSIgosShockedSittingAnim;
 
-#define dobject_knight_Anim_0079D4 "__OTR__objects/object_knight/object_knight_Anim_0079D4"
-static const ALIGN_ASSET(2) char object_knight_Anim_0079D4[] = dobject_knight_Anim_0079D4;
+#define dgKnightIgosPutHeadBackOnAnim "__OTR__objects/object_knight/gKnightIgosPutHeadBackOnAnim"
+static const ALIGN_ASSET(2) char gKnightIgosPutHeadBackOnAnim[] = dgKnightIgosPutHeadBackOnAnim;
 
-#define dobject_knight_Anim_008390 "__OTR__objects/object_knight/object_knight_Anim_008390"
-static const ALIGN_ASSET(2) char object_knight_Anim_008390[] = dobject_knight_Anim_008390;
+#define dgKnightIgosLaughAnim "__OTR__objects/object_knight/gKnightIgosLaughAnim"
+static const ALIGN_ASSET(2) char gKnightIgosLaughAnim[] = dgKnightIgosLaughAnim;
 
-#define dobject_knight_Anim_008524 "__OTR__objects/object_knight/object_knight_Anim_008524"
-static const ALIGN_ASSET(2) char object_knight_Anim_008524[] = dobject_knight_Anim_008524;
+#define dgKnightFastBlockSittingAnim "__OTR__objects/object_knight/gKnightFastBlockSittingAnim"
+static const ALIGN_ASSET(2) char gKnightFastBlockSittingAnim[] = dgKnightFastBlockSittingAnim;
 
-#define dobject_knight_Anim_0089E4 "__OTR__objects/object_knight/object_knight_Anim_0089E4"
-static const ALIGN_ASSET(2) char object_knight_Anim_0089E4[] = dobject_knight_Anim_0089E4;
+#define dgKnightEndBlockAndSitAnim "__OTR__objects/object_knight/gKnightEndBlockAndSitAnim"
+static const ALIGN_ASSET(2) char gKnightEndBlockAndSitAnim[] = dgKnightEndBlockAndSitAnim;
 
-#define dobject_knight_Anim_008D80 "__OTR__objects/object_knight/object_knight_Anim_008D80"
-static const ALIGN_ASSET(2) char object_knight_Anim_008D80[] = dobject_knight_Anim_008D80;
+#define dgKnightIgosBreathAttackAnim "__OTR__objects/object_knight/gKnightIgosBreathAttackAnim"
+static const ALIGN_ASSET(2) char gKnightIgosBreathAttackAnim[] = dgKnightIgosBreathAttackAnim;
 
-#define dobject_knight_Anim_009538 "__OTR__objects/object_knight/object_knight_Anim_009538"
-static const ALIGN_ASSET(2) char object_knight_Anim_009538[] = dobject_knight_Anim_009538;
+#define dgKnightIgosBreathAttackStartAnim "__OTR__objects/object_knight/gKnightIgosBreathAttackStartAnim"
+static const ALIGN_ASSET(2) char gKnightIgosBreathAttackStartAnim[] = dgKnightIgosBreathAttackStartAnim;
 
-#define dobject_knight_Anim_009D8C "__OTR__objects/object_knight/object_knight_Anim_009D8C"
-static const ALIGN_ASSET(2) char object_knight_Anim_009D8C[] = dobject_knight_Anim_009D8C;
+#define dgKnightIgosStandAndDrawAnim "__OTR__objects/object_knight/gKnightIgosStandAndDrawAnim"
+static const ALIGN_ASSET(2) char gKnightIgosStandAndDrawAnim[] = dgKnightIgosStandAndDrawAnim;
 
-#define dobject_knight_Anim_00A530 "__OTR__objects/object_knight/object_knight_Anim_00A530"
-static const ALIGN_ASSET(2) char object_knight_Anim_00A530[] = dobject_knight_Anim_00A530;
+#define dgKnightIgosSitDownAnim "__OTR__objects/object_knight/gKnightIgosSitDownAnim"
+static const ALIGN_ASSET(2) char gKnightIgosSitDownAnim[] = dgKnightIgosSitDownAnim;
 
-#define dobject_knight_Anim_00A88C "__OTR__objects/object_knight/object_knight_Anim_00A88C"
-static const ALIGN_ASSET(2) char object_knight_Anim_00A88C[] = dobject_knight_Anim_00A88C;
+#define dgKnightCaptainsHatCSIgosSteppingAnim "__OTR__objects/object_knight/gKnightCaptainsHatCSIgosSteppingAnim"
+static const ALIGN_ASSET(2) char gKnightCaptainsHatCSIgosSteppingAnim[] = dgKnightCaptainsHatCSIgosSteppingAnim;
 
-#define dobject_knight_Anim_00AB68 "__OTR__objects/object_knight/object_knight_Anim_00AB68"
-static const ALIGN_ASSET(2) char object_knight_Anim_00AB68[] = dobject_knight_Anim_00AB68;
+#define dgKnightJumpAnim "__OTR__objects/object_knight/gKnightJumpAnim"
+static const ALIGN_ASSET(2) char gKnightJumpAnim[] = dgKnightJumpAnim;
 
-#define dobject_knight_Anim_00AFAC "__OTR__objects/object_knight/object_knight_Anim_00AFAC"
-static const ALIGN_ASSET(2) char object_knight_Anim_00AFAC[] = dobject_knight_Anim_00AFAC;
+#define dgKnightJumpAttackBeginAnim "__OTR__objects/object_knight/gKnightJumpAttackBeginAnim"
+static const ALIGN_ASSET(2) char gKnightJumpAttackBeginAnim[] = dgKnightJumpAttackBeginAnim;
 
-#define dobject_knight_Anim_00B5D4 "__OTR__objects/object_knight/object_knight_Anim_00B5D4"
-static const ALIGN_ASSET(2) char object_knight_Anim_00B5D4[] = dobject_knight_Anim_00B5D4;
+#define dgKnightJumpAttackEndAnim "__OTR__objects/object_knight/gKnightJumpAttackEndAnim"
+static const ALIGN_ASSET(2) char gKnightJumpAttackEndAnim[] = dgKnightJumpAttackEndAnim;
 
-#define dobject_knight_Anim_00BCF4 "__OTR__objects/object_knight/object_knight_Anim_00BCF4"
-static const ALIGN_ASSET(2) char object_knight_Anim_00BCF4[] = dobject_knight_Anim_00BCF4;
+#define dgKnightLeftSwingAnim "__OTR__objects/object_knight/gKnightLeftSwingAnim"
+static const ALIGN_ASSET(2) char gKnightLeftSwingAnim[] = dgKnightLeftSwingAnim;
 
-#define dobject_knight_Anim_00C384 "__OTR__objects/object_knight/object_knight_Anim_00C384"
-static const ALIGN_ASSET(2) char object_knight_Anim_00C384[] = dobject_knight_Anim_00C384;
+#define dgKnightRightSwingAnim "__OTR__objects/object_knight/gKnightRightSwingAnim"
+static const ALIGN_ASSET(2) char gKnightRightSwingAnim[] = dgKnightRightSwingAnim;
 
-#define dobject_knight_Anim_00C7F0 "__OTR__objects/object_knight/object_knight_Anim_00C7F0"
-static const ALIGN_ASSET(2) char object_knight_Anim_00C7F0[] = dobject_knight_Anim_00C7F0;
+#define dgKnightCaptainsHatCSIgosShockedAnim "__OTR__objects/object_knight/gKnightCaptainsHatCSIgosShockedAnim"
+static const ALIGN_ASSET(2) char gKnightCaptainsHatCSIgosShockedAnim[] = dgKnightCaptainsHatCSIgosShockedAnim;
 
-#define dobject_knight_Anim_00CDE0 "__OTR__objects/object_knight/object_knight_Anim_00CDE0"
-static const ALIGN_ASSET(2) char object_knight_Anim_00CDE0[] = dobject_knight_Anim_00CDE0;
+#define dgKnightLaugh1Anim "__OTR__objects/object_knight/gKnightLaugh1Anim"
+static const ALIGN_ASSET(2) char gKnightLaugh1Anim[] = dgKnightLaugh1Anim;
 
-#define dobject_knight_Anim_00D870 "__OTR__objects/object_knight/object_knight_Anim_00D870"
-static const ALIGN_ASSET(2) char object_knight_Anim_00D870[] = dobject_knight_Anim_00D870;
+#define dgKnightLaugh2Anim "__OTR__objects/object_knight/gKnightLaugh2Anim"
+static const ALIGN_ASSET(2) char gKnightLaugh2Anim[] = dgKnightLaugh2Anim;
 
-#define dobject_knight_Anim_00DDCC "__OTR__objects/object_knight/object_knight_Anim_00DDCC"
-static const ALIGN_ASSET(2) char object_knight_Anim_00DDCC[] = dobject_knight_Anim_00DDCC;
+#define dgKnightMarchAnim "__OTR__objects/object_knight/gKnightMarchAnim"
+static const ALIGN_ASSET(2) char gKnightMarchAnim[] = dgKnightMarchAnim;
 
-#define dobject_knight_Anim_00E15C "__OTR__objects/object_knight/object_knight_Anim_00E15C"
-static const ALIGN_ASSET(2) char object_knight_Anim_00E15C[] = dobject_knight_Anim_00E15C;
+#define dgKnightIgosBreathAttackStopAnim "__OTR__objects/object_knight/gKnightIgosBreathAttackStopAnim"
+static const ALIGN_ASSET(2) char gKnightIgosBreathAttackStopAnim[] = dgKnightIgosBreathAttackStopAnim;
 
-#define dobject_knight_Anim_00E45C "__OTR__objects/object_knight/object_knight_Anim_00E45C"
-static const ALIGN_ASSET(2) char object_knight_Anim_00E45C[] = dobject_knight_Anim_00E45C;
+#define dgKnightStruckByLightRayAnim "__OTR__objects/object_knight/gKnightStruckByLightRayAnim"
+static const ALIGN_ASSET(2) char gKnightStruckByLightRayAnim[] = dgKnightStruckByLightRayAnim;
 
-#define dobject_knight_Anim_00E7F4 "__OTR__objects/object_knight/object_knight_Anim_00E7F4"
-static const ALIGN_ASSET(2) char object_knight_Anim_00E7F4[] = dobject_knight_Anim_00E7F4;
+#define dgKnightCaptainsHatCSBeginStandingAnim "__OTR__objects/object_knight/gKnightCaptainsHatCSBeginStandingAnim"
+static const ALIGN_ASSET(2) char gKnightCaptainsHatCSBeginStandingAnim[] = dgKnightCaptainsHatCSBeginStandingAnim;
 
-#define dobject_knight_Anim_00EA90 "__OTR__objects/object_knight/object_knight_Anim_00EA90"
-static const ALIGN_ASSET(2) char object_knight_Anim_00EA90[] = dobject_knight_Anim_00EA90;
+#define dgKnightCaptainsHatCSBeginSittingAnim "__OTR__objects/object_knight/gKnightCaptainsHatCSBeginSittingAnim"
+static const ALIGN_ASSET(2) char gKnightCaptainsHatCSBeginSittingAnim[] = dgKnightCaptainsHatCSBeginSittingAnim;
 
-#define dobject_knight_Anim_00EF44 "__OTR__objects/object_knight/object_knight_Anim_00EF44"
-static const ALIGN_ASSET(2) char object_knight_Anim_00EF44[] = dobject_knight_Anim_00EF44;
+#define dgKnightStrafeAnim "__OTR__objects/object_knight/gKnightStrafeAnim"
+static const ALIGN_ASSET(2) char gKnightStrafeAnim[] = dgKnightStrafeAnim;
 
-#define dobject_knight_Anim_00F90C "__OTR__objects/object_knight/object_knight_Anim_00F90C"
-static const ALIGN_ASSET(2) char object_knight_Anim_00F90C[] = dobject_knight_Anim_00F90C;
+#define dgKnightUppercutAnim "__OTR__objects/object_knight/gKnightUppercutAnim"
+static const ALIGN_ASSET(2) char gKnightUppercutAnim[] = dgKnightUppercutAnim;
 
-#define dobject_knight_Anim_00FC78 "__OTR__objects/object_knight/object_knight_Anim_00FC78"
-static const ALIGN_ASSET(2) char object_knight_Anim_00FC78[] = dobject_knight_Anim_00FC78;
+#define dgKnightIgosSittingAnim "__OTR__objects/object_knight/gKnightIgosSittingAnim"
+static const ALIGN_ASSET(2) char gKnightIgosSittingAnim[] = dgKnightIgosSittingAnim;
 
-#define dobject_knight_Anim_01024C "__OTR__objects/object_knight/object_knight_Anim_01024C"
-static const ALIGN_ASSET(2) char object_knight_Anim_01024C[] = dobject_knight_Anim_01024C;
+#define dgKnightCaptainsHatCSSitBackDownAnim "__OTR__objects/object_knight/gKnightCaptainsHatCSSitBackDownAnim"
+static const ALIGN_ASSET(2) char gKnightCaptainsHatCSSitBackDownAnim[] = dgKnightCaptainsHatCSSitBackDownAnim;
 
-#define dobject_knight_Anim_010E98 "__OTR__objects/object_knight/object_knight_Anim_010E98"
-static const ALIGN_ASSET(2) char object_knight_Anim_010E98[] = dobject_knight_Anim_010E98;
+#define dgKnightIntroSitDownAnim "__OTR__objects/object_knight/gKnightIntroSitDownAnim"
+static const ALIGN_ASSET(2) char gKnightIntroSitDownAnim[] = dgKnightIntroSitDownAnim;
 
-#define dobject_knight_Anim_011298 "__OTR__objects/object_knight/object_knight_Anim_011298"
-static const ALIGN_ASSET(2) char object_knight_Anim_011298[] = dobject_knight_Anim_011298;
+#define dgKnightHeavyAttackAnim "__OTR__objects/object_knight/gKnightHeavyAttackAnim"
+static const ALIGN_ASSET(2) char gKnightHeavyAttackAnim[] = dgKnightHeavyAttackAnim;
 
-#define dobject_knight_Anim_011AAC "__OTR__objects/object_knight/object_knight_Anim_011AAC"
-static const ALIGN_ASSET(2) char object_knight_Anim_011AAC[] = dobject_knight_Anim_011AAC;
+#define dgKnightBeginTelegraphHeavyAttackAnim "__OTR__objects/object_knight/gKnightBeginTelegraphHeavyAttackAnim"
+static const ALIGN_ASSET(2) char gKnightBeginTelegraphHeavyAttackAnim[] = dgKnightBeginTelegraphHeavyAttackAnim;
 
-#define dobject_knight_DL_012400 "__OTR__objects/object_knight/object_knight_DL_012400"
-static const ALIGN_ASSET(2) char object_knight_DL_012400[] = dobject_knight_DL_012400;
+#define dgKnightWideHeadDL "__OTR__objects/object_knight/gKnightWideHeadDL"
+static const ALIGN_ASSET(2) char gKnightWideHeadDL[] = dgKnightWideHeadDL;
 
 #define dobject_knight_Tex_012760 "__OTR__objects/object_knight/object_knight_Tex_012760"
 static const ALIGN_ASSET(2) char object_knight_Tex_012760[] = dobject_knight_Tex_012760;
@@ -150,8 +150,8 @@ static const ALIGN_ASSET(2) char object_knight_Tex_012B60[] = dobject_knight_Tex
 #define dobject_knight_Tex_012BE0 "__OTR__objects/object_knight/object_knight_Tex_012BE0"
 static const ALIGN_ASSET(2) char object_knight_Tex_012BE0[] = dobject_knight_Tex_012BE0;
 
-#define dobject_knight_DL_012DB0 "__OTR__objects/object_knight/object_knight_DL_012DB0"
-static const ALIGN_ASSET(2) char object_knight_DL_012DB0[] = dobject_knight_DL_012DB0;
+#define dgKnightWideJawDL "__OTR__objects/object_knight/gKnightWideJawDL"
+static const ALIGN_ASSET(2) char gKnightWideJawDL[] = dgKnightWideJawDL;
 
 #define dobject_knight_Tex_012EC0 "__OTR__objects/object_knight/object_knight_Tex_012EC0"
 static const ALIGN_ASSET(2) char object_knight_Tex_012EC0[] = dobject_knight_Tex_012EC0;
@@ -159,8 +159,8 @@ static const ALIGN_ASSET(2) char object_knight_Tex_012EC0[] = dobject_knight_Tex
 #define dobject_knight_Tex_012FC0 "__OTR__objects/object_knight/object_knight_Tex_012FC0"
 static const ALIGN_ASSET(2) char object_knight_Tex_012FC0[] = dobject_knight_Tex_012FC0;
 
-#define dobject_knight_DL_013020 "__OTR__objects/object_knight/object_knight_DL_013020"
-static const ALIGN_ASSET(2) char object_knight_DL_013020[] = dobject_knight_DL_013020;
+#define dgKnightWideNeckDL "__OTR__objects/object_knight/gKnightWideNeckDL"
+static const ALIGN_ASSET(2) char gKnightWideNeckDL[] = dgKnightWideNeckDL;
 
 #define dobject_knight_DL_0153E0 "__OTR__objects/object_knight/object_knight_DL_0153E0"
 static const ALIGN_ASSET(2) char object_knight_DL_0153E0[] = dobject_knight_DL_0153E0;
@@ -285,26 +285,26 @@ static const ALIGN_ASSET(2) char object_knight_Tex_018018[] = dobject_knight_Tex
 #define dobject_knight_Tex_018098 "__OTR__objects/object_knight/object_knight_Tex_018098"
 static const ALIGN_ASSET(2) char object_knight_Tex_018098[] = dobject_knight_Tex_018098;
 
-#define dobject_knight_DL_0188F8 "__OTR__objects/object_knight/object_knight_DL_0188F8"
-static const ALIGN_ASSET(2) char object_knight_DL_0188F8[] = dobject_knight_DL_0188F8;
+#define dgKnightBlureState2DL "__OTR__objects/object_knight/gKnightBlureState2DL"
+static const ALIGN_ASSET(2) char gKnightBlureState2DL[] = dgKnightBlureState2DL;
 
-#define dobject_knight_DL_0189F0 "__OTR__objects/object_knight/object_knight_DL_0189F0"
-static const ALIGN_ASSET(2) char object_knight_DL_0189F0[] = dobject_knight_DL_0189F0;
+#define dgKnightBlureState1DL "__OTR__objects/object_knight/gKnightBlureState1DL"
+static const ALIGN_ASSET(2) char gKnightBlureState1DL[] = dgKnightBlureState1DL;
 
-#define dobject_knight_DL_018AF0 "__OTR__objects/object_knight/object_knight_DL_018AF0"
-static const ALIGN_ASSET(2) char object_knight_DL_018AF0[] = dobject_knight_DL_018AF0;
+#define dgKnightBlureState0DL "__OTR__objects/object_knight/gKnightBlureState0DL"
+static const ALIGN_ASSET(2) char gKnightBlureState0DL[] = dgKnightBlureState0DL;
 
-#define dobject_knight_Matanimheader_018BC4 "__OTR__objects/object_knight/object_knight_Matanimheader_018BC4"
-static const ALIGN_ASSET(2) char object_knight_Matanimheader_018BC4[] = dobject_knight_Matanimheader_018BC4;
+#define dgKnightBlureTexAnim "__OTR__objects/object_knight/gKnightBlureTexAnim"
+static const ALIGN_ASSET(2) char gKnightBlureTexAnim[] = dgKnightBlureTexAnim;
 
-#define dobject_knight_Vtx_018BD0 "__OTR__objects/object_knight/object_knight_Vtx_018BD0"
-static const ALIGN_ASSET(2) char object_knight_Vtx_018BD0[] = dobject_knight_Vtx_018BD0;
+#define dgIkanaThroneRoomLightRayVtx "__OTR__objects/object_knight/gIkanaThroneRoomLightRayVtx"
+static const ALIGN_ASSET(2) char gIkanaThroneRoomLightRayVtx[] = dgIkanaThroneRoomLightRayVtx;
 
-#define dobject_knight_DL_018CF0 "__OTR__objects/object_knight/object_knight_DL_018CF0"
-static const ALIGN_ASSET(2) char object_knight_DL_018CF0[] = dobject_knight_DL_018CF0;
+#define dgIkanaThroneRoomLightRayDL "__OTR__objects/object_knight/gIkanaThroneRoomLightRayDL"
+static const ALIGN_ASSET(2) char gIkanaThroneRoomLightRayDL[] = dgIkanaThroneRoomLightRayDL;
 
-#define dobject_knight_DL_018DE0 "__OTR__objects/object_knight/object_knight_DL_018DE0"
-static const ALIGN_ASSET(2) char object_knight_DL_018DE0[] = dobject_knight_DL_018DE0;
+#define dgIkanaThroneRoomLightOnFloorDL "__OTR__objects/object_knight/gIkanaThroneRoomLightOnFloorDL"
+static const ALIGN_ASSET(2) char gIkanaThroneRoomLightOnFloorDL[] = dgIkanaThroneRoomLightOnFloorDL;
 
 #define dobject_knight_DL_018E50 "__OTR__objects/object_knight/object_knight_DL_018E50"
 static const ALIGN_ASSET(2) char object_knight_DL_018E50[] = dobject_knight_DL_018E50;
@@ -315,20 +315,20 @@ static const ALIGN_ASSET(2) char object_knight_Tex_018E58[] = dobject_knight_Tex
 #define dobject_knight_Tex_018F58 "__OTR__objects/object_knight/object_knight_Tex_018F58"
 static const ALIGN_ASSET(2) char object_knight_Tex_018F58[] = dobject_knight_Tex_018F58;
 
-#define dobject_knight_Matanimheader_019360 "__OTR__objects/object_knight/object_knight_Matanimheader_019360"
-static const ALIGN_ASSET(2) char object_knight_Matanimheader_019360[] = dobject_knight_Matanimheader_019360;
+#define dgIkanaThroneRoomLightRayTexAnim "__OTR__objects/object_knight/gIkanaThroneRoomLightRayTexAnim"
+static const ALIGN_ASSET(2) char gIkanaThroneRoomLightRayTexAnim[] = dgIkanaThroneRoomLightRayTexAnim;
 
 #define dobject_knight_DL_0193A8 "__OTR__objects/object_knight/object_knight_DL_0193A8"
 static const ALIGN_ASSET(2) char object_knight_DL_0193A8[] = dobject_knight_DL_0193A8;
 
-#define dobject_knight_DL_0193B0 "__OTR__objects/object_knight/object_knight_DL_0193B0"
-static const ALIGN_ASSET(2) char object_knight_DL_0193B0[] = dobject_knight_DL_0193B0;
+#define dgIkanaThroneRoomCurtainDL "__OTR__objects/object_knight/gIkanaThroneRoomCurtainDL"
+static const ALIGN_ASSET(2) char gIkanaThroneRoomCurtainDL[] = dgIkanaThroneRoomCurtainDL;
 
-#define dobject_knight_Tex_019470 "__OTR__objects/object_knight/object_knight_Tex_019470"
-static const ALIGN_ASSET(2) char object_knight_Tex_019470[] = dobject_knight_Tex_019470;
+#define dobject_knight_TLUT_019470 "__OTR__objects/object_knight/object_knight_TLUT_019470"
+static const ALIGN_ASSET(2) char object_knight_TLUT_019470[] = dobject_knight_TLUT_019470;
 
-#define dobject_knight_Tex_019490 "__OTR__objects/object_knight/object_knight_Tex_019490"
-static const ALIGN_ASSET(2) char object_knight_Tex_019490[] = dobject_knight_Tex_019490;
+#define dgIkanaThroneRoomCurtainTex "__OTR__objects/object_knight/gIkanaThroneRoomCurtainTex"
+static const ALIGN_ASSET(2) char gIkanaThroneRoomCurtainTex[] = dgIkanaThroneRoomCurtainTex;
 
 #define dobject_knight_DL_01D380 "__OTR__objects/object_knight/object_knight_DL_01D380"
 static const ALIGN_ASSET(2) char object_knight_DL_01D380[] = dobject_knight_DL_01D380;
@@ -426,95 +426,95 @@ static const ALIGN_ASSET(2) char object_knight_Tex_01FCE8[] = dobject_knight_Tex
 #define dobject_knight_Tex_01FDE8 "__OTR__objects/object_knight/object_knight_Tex_01FDE8"
 static const ALIGN_ASSET(2) char object_knight_Tex_01FDE8[] = dobject_knight_Tex_01FDE8;
 
-#define dobject_knight_Skel_0201A8 "__OTR__objects/object_knight/object_knight_Skel_0201A8"
-static const ALIGN_ASSET(2) char object_knight_Skel_0201A8[] = dobject_knight_Skel_0201A8;
+#define dgIgosSkel "__OTR__objects/object_knight/gIgosSkel"
+static const ALIGN_ASSET(2) char gIgosSkel[] = dgIgosSkel;
 
-#define dobject_knight_Skel_020374 "__OTR__objects/object_knight/object_knight_Skel_020374"
-static const ALIGN_ASSET(2) char object_knight_Skel_020374[] = dobject_knight_Skel_020374;
+#define dgKnightSkel "__OTR__objects/object_knight/gKnightSkel"
+static const ALIGN_ASSET(2) char gKnightSkel[] = dgKnightSkel;
 
-#define dobject_knight_Anim_020950 "__OTR__objects/object_knight/object_knight_Anim_020950"
-static const ALIGN_ASSET(2) char object_knight_Anim_020950[] = dobject_knight_Anim_020950;
+#define dgKnightTelegraphHeavyAttackAnim "__OTR__objects/object_knight/gKnightTelegraphHeavyAttackAnim"
+static const ALIGN_ASSET(2) char gKnightTelegraphHeavyAttackAnim[] = dgKnightTelegraphHeavyAttackAnim;
 
-#define dobject_knight_Anim_02105C "__OTR__objects/object_knight/object_knight_Anim_02105C"
-static const ALIGN_ASSET(2) char object_knight_Anim_02105C[] = dobject_knight_Anim_02105C;
+#define dgKnightIgosShrugStopAnim "__OTR__objects/object_knight/gKnightIgosShrugStopAnim"
+static const ALIGN_ASSET(2) char gKnightIgosShrugStopAnim[] = dgKnightIgosShrugStopAnim;
 
-#define dobject_knight_Anim_021B10 "__OTR__objects/object_knight/object_knight_Anim_021B10"
-static const ALIGN_ASSET(2) char object_knight_Anim_021B10[] = dobject_knight_Anim_021B10;
+#define dgKnightIntroWalkAnim "__OTR__objects/object_knight/gKnightIntroWalkAnim"
+static const ALIGN_ASSET(2) char gKnightIntroWalkAnim[] = dgKnightIntroWalkAnim;
 
-#define dobject_knight_Anim_021E34 "__OTR__objects/object_knight/object_knight_Anim_021E34"
-static const ALIGN_ASSET(2) char object_knight_Anim_021E34[] = dobject_knight_Anim_021E34;
+#define dgKnightIgosShrugStartAnim "__OTR__objects/object_knight/gKnightIgosShrugStartAnim"
+static const ALIGN_ASSET(2) char gKnightIgosShrugStartAnim[] = dgKnightIgosShrugStartAnim;
 
-#define dobject_knight_Anim_022728 "__OTR__objects/object_knight/object_knight_Anim_022728"
-static const ALIGN_ASSET(2) char object_knight_Anim_022728[] = dobject_knight_Anim_022728;
+#define dgKnightLowSwingAnim "__OTR__objects/object_knight/gKnightLowSwingAnim"
+static const ALIGN_ASSET(2) char gKnightLowSwingAnim[] = dgKnightLowSwingAnim;
 
-#define dobject_knight_Anim_022CAC "__OTR__objects/object_knight/object_knight_Anim_022CAC"
-static const ALIGN_ASSET(2) char object_knight_Anim_022CAC[] = dobject_knight_Anim_022CAC;
+#define dgKnightLowSwingEndAnim "__OTR__objects/object_knight/gKnightLowSwingEndAnim"
+static const ALIGN_ASSET(2) char gKnightLowSwingEndAnim[] = dgKnightLowSwingEndAnim;
 
-typedef enum ObjectKnight1Limb {
-    /* 0x00 */ OBJECT_KNIGHT_1_LIMB_NONE,
-    /* 0x01 */ OBJECT_KNIGHT_1_LIMB_01,
-    /* 0x02 */ OBJECT_KNIGHT_1_LIMB_02,
-    /* 0x03 */ OBJECT_KNIGHT_1_LIMB_03,
-    /* 0x04 */ OBJECT_KNIGHT_1_LIMB_04,
-    /* 0x05 */ OBJECT_KNIGHT_1_LIMB_05,
-    /* 0x06 */ OBJECT_KNIGHT_1_LIMB_06,
-    /* 0x07 */ OBJECT_KNIGHT_1_LIMB_07,
-    /* 0x08 */ OBJECT_KNIGHT_1_LIMB_08,
-    /* 0x09 */ OBJECT_KNIGHT_1_LIMB_09,
-    /* 0x0A */ OBJECT_KNIGHT_1_LIMB_0A,
-    /* 0x0B */ OBJECT_KNIGHT_1_LIMB_0B,
-    /* 0x0C */ OBJECT_KNIGHT_1_LIMB_0C,
-    /* 0x0D */ OBJECT_KNIGHT_1_LIMB_0D,
-    /* 0x0E */ OBJECT_KNIGHT_1_LIMB_0E,
-    /* 0x0F */ OBJECT_KNIGHT_1_LIMB_0F,
-    /* 0x10 */ OBJECT_KNIGHT_1_LIMB_10,
-    /* 0x11 */ OBJECT_KNIGHT_1_LIMB_11,
-    /* 0x12 */ OBJECT_KNIGHT_1_LIMB_12,
-    /* 0x13 */ OBJECT_KNIGHT_1_LIMB_13,
-    /* 0x14 */ OBJECT_KNIGHT_1_LIMB_14,
-    /* 0x15 */ OBJECT_KNIGHT_1_LIMB_15,
-    /* 0x16 */ OBJECT_KNIGHT_1_LIMB_16,
-    /* 0x17 */ OBJECT_KNIGHT_1_LIMB_17,
-    /* 0x18 */ OBJECT_KNIGHT_1_LIMB_18,
-    /* 0x19 */ OBJECT_KNIGHT_1_LIMB_19,
-    /* 0x1A */ OBJECT_KNIGHT_1_LIMB_1A,
-    /* 0x1B */ OBJECT_KNIGHT_1_LIMB_1B,
-    /* 0x1C */ OBJECT_KNIGHT_1_LIMB_1C,
-    /* 0x1D */ OBJECT_KNIGHT_1_LIMB_MAX
-} ObjectKnight1Limb;
+typedef enum IgosLimb {
+    /* 0x00 */ IGOS_LIMB_NONE,
+    /* 0x01 */ IGOS_LIMB_ROOT,
+    /* 0x02 */ IGOS_LIMB_SPINE_BASE,
+    /* 0x03 */ IGOS_LIMB_SPINE_UPPER,
+    /* 0x04 */ IGOS_LIMB_LEFT_UPPER_ARM,
+    /* 0x05 */ IGOS_LIMB_LEFT_FOREARM,
+    /* 0x06 */ IGOS_LIMB_SHIELD,
+    /* 0x07 */ IGOS_LIMB_LEFT_HAND,
+    /* 0x08 */ IGOS_LIMB_LEFT_SHOULDER,
+    /* 0x09 */ IGOS_LIMB_RIGHT_UPPER_ARM,
+    /* 0x0A */ IGOS_LIMB_RIGHT_FOREARM,
+    /* 0x0B */ IGOS_LIMB_SWORD,
+    /* 0x0C */ IGOS_LIMB_RIGHT_HAND,
+    /* 0x0D */ IGOS_LIMB_RIGHT_SHOULDER,
+    /* 0x0E */ IGOS_LIMB_COLLAR,
+    /* 0x0F */ IGOS_LIMB_NECK,
+    /* 0x10 */ IGOS_LIMB_10,
+    /* 0x11 */ IGOS_LIMB_11,
+    /* 0x12 */ IGOS_LIMB_JAW,
+    /* 0x13 */ IGOS_LIMB_HEAD,
+    /* 0x14 */ IGOS_LIMB_TORSO,
+    /* 0x15 */ IGOS_LIMB_PELVIS,
+    /* 0x16 */ IGOS_LIMB_16,
+    /* 0x17 */ IGOS_LIMB_LEFT_LEG_UPPER,
+    /* 0x18 */ IGOS_LIMB_LEFT_LEG_LOWER,
+    /* 0x19 */ IGOS_LIMB_LEFT_FOOT,
+    /* 0x1A */ IGOS_LIMB_RIGHT_LEG_UPPER,
+    /* 0x1B */ IGOS_LIMB_RIGHT_LEG_LOWER,
+    /* 0x1C */ IGOS_LIMB_RIGHT_FOOT,
+    /* 0x1D */ IGOS_LIMB_MAX
+} IgosLimb;
 
 
-typedef enum ObjectKnight2Limb {
-    /* 0x00 */ OBJECT_KNIGHT_2_LIMB_NONE,
-    /* 0x01 */ OBJECT_KNIGHT_2_LIMB_01,
-    /* 0x02 */ OBJECT_KNIGHT_2_LIMB_02,
-    /* 0x03 */ OBJECT_KNIGHT_2_LIMB_03,
-    /* 0x04 */ OBJECT_KNIGHT_2_LIMB_04,
-    /* 0x05 */ OBJECT_KNIGHT_2_LIMB_05,
-    /* 0x06 */ OBJECT_KNIGHT_2_LIMB_06,
-    /* 0x07 */ OBJECT_KNIGHT_2_LIMB_07,
-    /* 0x08 */ OBJECT_KNIGHT_2_LIMB_08,
-    /* 0x09 */ OBJECT_KNIGHT_2_LIMB_09,
-    /* 0x0A */ OBJECT_KNIGHT_2_LIMB_0A,
-    /* 0x0B */ OBJECT_KNIGHT_2_LIMB_0B,
-    /* 0x0C */ OBJECT_KNIGHT_2_LIMB_0C,
-    /* 0x0D */ OBJECT_KNIGHT_2_LIMB_0D,
-    /* 0x0E */ OBJECT_KNIGHT_2_LIMB_0E,
-    /* 0x0F */ OBJECT_KNIGHT_2_LIMB_0F,
-    /* 0x10 */ OBJECT_KNIGHT_2_LIMB_10,
-    /* 0x11 */ OBJECT_KNIGHT_2_LIMB_11,
-    /* 0x12 */ OBJECT_KNIGHT_2_LIMB_12,
-    /* 0x13 */ OBJECT_KNIGHT_2_LIMB_13,
-    /* 0x14 */ OBJECT_KNIGHT_2_LIMB_14,
-    /* 0x15 */ OBJECT_KNIGHT_2_LIMB_15,
-    /* 0x16 */ OBJECT_KNIGHT_2_LIMB_16,
-    /* 0x17 */ OBJECT_KNIGHT_2_LIMB_17,
-    /* 0x18 */ OBJECT_KNIGHT_2_LIMB_18,
-    /* 0x19 */ OBJECT_KNIGHT_2_LIMB_19,
-    /* 0x1A */ OBJECT_KNIGHT_2_LIMB_1A,
-    /* 0x1B */ OBJECT_KNIGHT_2_LIMB_1B,
-    /* 0x1C */ OBJECT_KNIGHT_2_LIMB_1C,
-    /* 0x1D */ OBJECT_KNIGHT_2_LIMB_MAX
-} ObjectKnight2Limb;
+typedef enum KnightLimb {
+    /* 0x00 */ KNIGHT_LIMB_NONE,
+    /* 0x01 */ KNIGHT_LIMB_ROOT,
+    /* 0x02 */ KNIGHT_LIMB_SPINE_BASE,
+    /* 0x03 */ KNIGHT_LIMB_SPINE_UPPER,
+    /* 0x04 */ KNIGHT_LIMB_LEFT_UPPER_ARM,
+    /* 0x05 */ KNIGHT_LIMB_LEFT_FOREARM,
+    /* 0x06 */ KNIGHT_LIMB_SHIELD,
+    /* 0x07 */ KNIGHT_LIMB_LEFT_HAND,
+    /* 0x08 */ KNIGHT_LIMB_LEFT_SHOULDER,
+    /* 0x09 */ KNIGHT_LIMB_RIGHT_UPPER_ARM,
+    /* 0x0A */ KNIGHT_LIMB_RIGHT_FOREARM,
+    /* 0x0B */ KNIGHT_LIMB_SWORD,
+    /* 0x0C */ KNIGHT_LIMB_RIGHT_HAND,
+    /* 0x0D */ KNIGHT_LIMB_RIGHT_SHOULDER,
+    /* 0x0E */ KNIGHT_LIMB_COLLAR,
+    /* 0x0F */ KNIGHT_LIMB_NECK,
+    /* 0x10 */ KNIGHT_LIMB_10,
+    /* 0x11 */ KNIGHT_LIMB_11,
+    /* 0x12 */ KNIGHT_LIMB_JAW,
+    /* 0x13 */ KNIGHT_LIMB_HEAD,
+    /* 0x14 */ KNIGHT_LIMB_TORSO,
+    /* 0x15 */ KNIGHT_LIMB_PELVIS,
+    /* 0x16 */ KNIGHT_LIMB_16,
+    /* 0x17 */ KNIGHT_LIMB_LEFT_LEG_UPPER,
+    /* 0x18 */ KNIGHT_LIMB_LEFT_LEG_LOWER,
+    /* 0x19 */ KNIGHT_LIMB_LEFT_FOOT,
+    /* 0x1A */ KNIGHT_LIMB_RIGHT_LEG_UPPER,
+    /* 0x1B */ KNIGHT_LIMB_RIGHT_LEG_LOWER,
+    /* 0x1C */ KNIGHT_LIMB_RIGHT_FOOT,
+    /* 0x1D */ KNIGHT_LIMB_MAX
+} KnightLimb;
 
 #endif // OBJECTS_OBJECT_KNIGHT_H
