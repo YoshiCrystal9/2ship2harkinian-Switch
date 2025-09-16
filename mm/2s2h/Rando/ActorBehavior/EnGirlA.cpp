@@ -85,7 +85,7 @@ void EnGirlA_RandoInit(EnGirlA* enGirlA, PlayState* play) {
     enGirlA->buyFunc = EnGirlA_RandoBuyFunc;
     enGirlA->buyFanfareFunc = EnGirlA_RandoBuyFanfareFunc;
 
-    enGirlA->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
+    enGirlA->actor.flags &= ~ACTOR_FLAG_ATTENTION_ENABLED;
     Actor_SetScale(&enGirlA->actor, 0.25f);
     enGirlA->actor.shape.yOffset = 24.0f;
     enGirlA->actor.shape.shadowScale = 4.0f;

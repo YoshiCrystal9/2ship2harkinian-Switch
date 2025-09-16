@@ -803,7 +803,7 @@ void Boss07_Init(Actor* thisx, PlayState* play2) {
     if (this->actor.params == MAJORAS_STATIC) {
         this->actor.update = Boss07_Static_Update;
         this->actor.draw = Boss07_Static_Draw;
-        this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
+        this->actor.flags &= ~ACTOR_FLAG_ATTENTION_ENABLED;
         sMajoraStatic = this;
         sKillProjectiles = false;
         play->envCtx.lightSettingOverride = 0;
@@ -843,7 +843,7 @@ void Boss07_Init(Actor* thisx, PlayState* play2) {
         } else {
             Boss07_Remains_SetupIntro(this, play);
         }
-        this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
+        this->actor.flags &= ~ACTOR_FLAG_ATTENTION_ENABLED;
         this->actor.colChkInfo.damageTable = &sRemainsDmgTable;
         return;
     }
@@ -859,14 +859,14 @@ void Boss07_Init(Actor* thisx, PlayState* play2) {
         this->actor.shape.shadowAlpha = 180;
         Collider_InitAndSetCylinder(play, &this->spawnCollider, &this->actor, &sTopCylInit);
         Effect_Add(play, &this->effectIndex, 4, 0, 0, &sTopTireMarkInit);
-        this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
+        this->actor.flags &= ~ACTOR_FLAG_ATTENTION_ENABLED;
         return;
     }
 
     if ((this->actor.params == MAJORAS_REMAINS_SHOT) || (this->actor.params == MAJORAS_INCARNATION_SHOT)) {
         this->actor.update = Boss07_Projectile_Update;
         this->actor.draw = Boss07_Projectile_Draw;
-        this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
+        this->actor.flags &= ~ACTOR_FLAG_ATTENTION_ENABLED;
         Collider_InitAndSetCylinder(play, &this->spawnCollider, &this->actor, &sShotCylInit);
         Actor_ChangeCategory(play, &play->actorCtx, &this->actor, ACTORCAT_ENEMY);
         this->shotColorIndex = Rand_ZeroFloat(ARRAY_COUNT(sShotEnvColors) - 0.01f);
@@ -897,7 +897,7 @@ void Boss07_Init(Actor* thisx, PlayState* play2) {
                 this->timers[0] = 50;
                 this->timers[2] = 200;
                 this->noclipTimer = 50;
-                this->actor.flags |= ACTOR_FLAG_TARGETABLE;
+                this->actor.flags |= ACTOR_FLAG_ATTENTION_ENABLED;
                 sMusicStartTimer = 20;
             } else {
                 Boss07_Mask_SetupIntro(this, play);
@@ -921,7 +921,7 @@ void Boss07_Init(Actor* thisx, PlayState* play2) {
             this->actor.world.rot.z = 0;
             this->actor.update = Boss07_Afterimage_Update;
             this->actor.draw = Boss07_Afterimage_Draw;
-            this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
+            this->actor.flags &= ~ACTOR_FLAG_ATTENTION_ENABLED;
         } else {
             this->actor.colChkInfo.damageTable = &sIncarnationDmgTable;
             this->actor.colChkInfo.health = 30;
@@ -1012,7 +1012,7 @@ void Boss07_Destroy(Actor* thisx, PlayState* play2) {
 void Boss07_Wrath_SetupIntro(Boss07* this, PlayState* play) {
     this->actionFunc = Boss07_Wrath_Intro;
     Animation_MorphToLoop(&this->skelAnime, &gMajorasWrathHeavyBreathingAnim, 0.0f);
-    this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
+    this->actor.flags &= ~ACTOR_FLAG_ATTENTION_ENABLED;
     this->csHeadRot.x = 0x7F00;
     this->invincibilityTimer = 20;
     this->unk_17E8 = 0x1400;
@@ -1111,7 +1111,7 @@ void Boss07_Wrath_Intro(Boss07* this, PlayState* play) {
                     this->subCamIndex = SUB_CAM_ID_DONE;
                     Cutscene_StopManual(play, &play->csCtx);
                     Player_SetCsActionWithHaltedActors(play, &this->actor, 6);
-                    this->actor.flags |= ACTOR_FLAG_TARGETABLE;
+                    this->actor.flags |= ACTOR_FLAG_ATTENTION_ENABLED;
                     Play_DisableMotionBlur();
                     if (sBossRemains[REMAINS_ODOLWA] != NULL) {
                         for (i = 0; i < ARRAY_COUNT(sBossRemains); i++) {
@@ -1141,7 +1141,7 @@ void Boss07_Wrath_SetupDeath(Boss07* this, PlayState* play) {
     this->leftWhip.tension = this->rightWhip.tension = 0.0f;
     this->leftWhip.gravity = this->rightWhip.gravity = -15.0f;
     Animation_MorphToPlayOnce(&this->skelAnime, &gMajorasWrathDeathAnim, 0.0f);
-    this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
+    this->actor.flags &= ~ACTOR_FLAG_ATTENTION_ENABLED;
     this->csState = MAJORAS_WRATH_DEATH_STATE_0;
     this->timer_ABC8 = 0;
     if (sBossRemains[REMAINS_ODOLWA] != NULL) {
@@ -1392,7 +1392,7 @@ void Boss07_Wrath_SetupIdle(Boss07* this, PlayState* play, s16 delay) {
     } else {
         this->timers[0] = Rand_ZeroFloat(30.0f);
     }
-    this->actor.flags |= ACTOR_FLAG_TARGETABLE;
+    this->actor.flags |= ACTOR_FLAG_ATTENTION_ENABLED;
 }
 
 void Boss07_Wrath_Idle(Boss07* this, PlayState* play) {
@@ -1793,7 +1793,7 @@ void Boss07_Wrath_GrabPlayer(Boss07* this, PlayState* play) {
     SkelAnime_Update(&this->skelAnime);
     Boss07_SmoothStop(this, 2.0f);
     player->actor.world.pos = this->whipGrabPos;
-    this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
+    this->actor.flags &= ~ACTOR_FLAG_ATTENTION_ENABLED;
     this->whipCollisionTimer = 20;
     this->whipWrapIndex++;
     if (this->actionTimer > (s16)(46 - this->whipGrabIndex)) {
@@ -1874,7 +1874,7 @@ void Boss07_Wrath_Shock(Boss07* this, PlayState* play) {
     SkelAnime_Update(&this->skelAnime);
     Boss07_SmoothStop(this, 2.0f);
     player->actor.world.pos = this->whipGrabPos;
-    this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
+    this->actor.flags &= ~ACTOR_FLAG_ATTENTION_ENABLED;
     this->whipCollisionTimer = 20;
     if (this->actionTimer <= (s16)(46 - this->whipGrabIndex)) {
         this->whipWrapIndex++;
@@ -3118,7 +3118,7 @@ void Boss07_Incarnation_AvoidPlayer(Boss07* this) {
 void Boss07_Incarnation_SetupIntro(Boss07* this, PlayState* play) {
     this->actionFunc = Boss07_Incarnation_Intro;
     Animation_MorphToLoop(&this->skelAnime, &gMajorasIncarnationJerkingAnim, 0.0f);
-    this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
+    this->actor.flags &= ~ACTOR_FLAG_ATTENTION_ENABLED;
     this->csHeadRot.x = 0x6E00;
 }
 
@@ -3259,7 +3259,7 @@ void Boss07_Incarnation_Intro(Boss07* this, PlayState* play) {
                 this->subCamIndex = SUB_CAM_ID_DONE;
                 Cutscene_StopManual(play, &play->csCtx);
                 Player_SetCsActionWithHaltedActors(play, &this->actor, 6);
-                this->actor.flags |= ACTOR_FLAG_TARGETABLE;
+                this->actor.flags |= ACTOR_FLAG_ATTENTION_ENABLED;
             }
             break;
     }
@@ -3284,7 +3284,7 @@ void Boss07_Incarnation_SetupTaunt(Boss07* this, PlayState* play) {
     this->actionFunc = Boss07_Incarnation_Taunt;
     this->actionState = Rand_ZeroFloat(MAJORAS_INCARNATION_STATE_MAX - 0.001f);
     Animation_MorphToLoop(&this->skelAnime, sTauntAnims[this->actionState], -10.0f);
-    this->actor.flags |= ACTOR_FLAG_TARGETABLE;
+    this->actor.flags |= ACTOR_FLAG_ATTENTION_ENABLED;
     this->timers[0] = Rand_ZeroFloat(50.0f) + 50.0f;
 }
 
@@ -3577,7 +3577,7 @@ void Boss07_Incarnation_SetupDeath(Boss07* this, PlayState* play) {
     this->animEndFrame = Animation_GetLastFrame(&gMajorasIncarnationDamageAnim);
     this->csState = MAJORAS_INCARNATION_DEATH_STATE_0;
     this->timer_ABC8 = 0;
-    this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
+    this->actor.flags &= ~ACTOR_FLAG_ATTENTION_ENABLED;
     this->invincibilityTimer = 20;
 }
 
@@ -4767,7 +4767,7 @@ void Boss07_Mask_Intro(Boss07* this, PlayState* play) {
                     this->subCamIndex = SUB_CAM_ID_DONE;
                     Cutscene_StopManual(play, &play->csCtx);
                     Player_SetCsActionWithHaltedActors(play, &this->actor, 6);
-                    this->actor.flags |= ACTOR_FLAG_TARGETABLE;
+                    this->actor.flags |= ACTOR_FLAG_ATTENTION_ENABLED;
                     gSaveContext.eventInf[6] |= 2;
                     Play_DisableMotionBlur();
                 }
@@ -4799,7 +4799,7 @@ void Boss07_Mask_SetupDeath(Boss07* this, PlayState* play) {
         Math_Atan2F_XY(-this->actor.world.pos.z, -this->actor.world.pos.x) * (0x8000 / M_PIf);
     this->csState = MAJORAS_MASK_DEATH_STATE_0;
     this->timer_ABC8 = 0;
-    this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
+    this->actor.flags &= ~ACTOR_FLAG_ATTENTION_ENABLED;
     this->invincibilityTimer = 20;
 }
 
@@ -5555,7 +5555,7 @@ void Boss07_Remains_Fly(Boss07* this, PlayState* play) {
             this->actionState = MAJORAS_REMAINS_FLY;
             this->noclipTimer = 100;
             this->spawnCollider.base.colMaterial = COL_MATERIAL_HIT3;
-            this->actor.flags |= (ACTOR_FLAG_200 | ACTOR_FLAG_TARGETABLE);
+            this->actor.flags |= (ACTOR_FLAG_200 | ACTOR_FLAG_ATTENTION_ENABLED);
             Actor_PlaySfx(&this->actor, NA_SE_EN_LAST1_DEMO_BREAK);
             break;
         case MAJORAS_REMAINS_FLY:
@@ -5612,7 +5612,7 @@ void Boss07_Remains_Fly(Boss07* this, PlayState* play) {
                 if (this->actor.scale.z == 0.0f) {
                     this->actionState = MAJORAS_REMAINS_GONE;
                     this->actor.draw = NULL;
-                    this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
+                    this->actor.flags &= ~ACTOR_FLAG_ATTENTION_ENABLED;
                 }
                 Boss07_SmoothStop(this, 2.0f);
             } else {

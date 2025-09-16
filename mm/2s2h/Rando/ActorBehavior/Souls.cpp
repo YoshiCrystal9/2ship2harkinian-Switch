@@ -13,9 +13,9 @@ void BossHakugin_DrawIce(BossHakugin*, PlayState*);
 void ShouldActorUpdate(Actor* actor, bool* should, RandoInf randoInf) {
     if (!Flags_GetRandoInf(randoInf)) {
         *should = false;
-        actor->flags &= ~ACTOR_FLAG_TARGETABLE;
-    } else if (!actor->flags & ACTOR_FLAG_TARGETABLE) {
-        actor->flags |= ACTOR_FLAG_TARGETABLE;
+        actor->flags &= ~ACTOR_FLAG_ATTENTION_ENABLED;
+    } else if (!actor->flags & ACTOR_FLAG_ATTENTION_ENABLED) {
+        actor->flags |= ACTOR_FLAG_ATTENTION_ENABLED;
     }
 }
 
