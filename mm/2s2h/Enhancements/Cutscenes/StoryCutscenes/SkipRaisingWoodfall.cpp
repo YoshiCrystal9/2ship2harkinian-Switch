@@ -31,7 +31,7 @@ void RegisterSkipRaisingWoodfall() {
                 gSaveContext.respawn[RESPAWN_MODE_DOWN].pos.y = player->actor.world.pos.y;
                 gSaveContext.respawn[RESPAWN_MODE_DOWN].pos.z = player->actor.world.pos.z;
                 gSaveContext.respawn[RESPAWN_MODE_DOWN].yaw = player->actor.shape.rot.y;
-                gSaveContext.respawn[RESPAWN_MODE_DOWN].playerParams = PLAYER_PARAMS(0xFF, PLAYER_INITMODE_D);
+                gSaveContext.respawn[RESPAWN_MODE_DOWN].playerParams = PLAYER_PARAMS(0xFF, PLAYER_START_MODE_D);
                 gSaveContext.nextTransitionType = TRANS_TYPE_FADE_BLACK_FAST;
                 gSaveContext.respawnFlag = -8;
 

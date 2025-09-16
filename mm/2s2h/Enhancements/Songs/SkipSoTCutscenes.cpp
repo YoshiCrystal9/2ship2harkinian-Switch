@@ -56,7 +56,7 @@ void RegisterSkipSoTCutscenes() {
             // copied from last cutscene cue SOTCS_CUEID_DOUBLE_END in EnTest6_SharedSoTCutscene
             if (CURRENT_TIME > CLOCK_TIME(12, 0)) {
                 Play_SetRespawnData(gPlayState, RESPAWN_MODE_RETURN, gSaveContext.save.entrance, player->unk_3CE,
-                                    PLAYER_PARAMS(0xFF, PLAYER_INITMODE_B), &player->unk_3C0, player->unk_3CC);
+                                    PLAYER_PARAMS(0xFF, PLAYER_START_MODE_B), &player->unk_3C0, player->unk_3CC);
                 gPlayState->transitionTrigger = TRANS_TRIGGER_START;
                 gPlayState->nextEntrance = gSaveContext.respawn[RESPAWN_MODE_RETURN].entrance;
                 gPlayState->transitionType = TRANS_TYPE_FADE_BLACK;

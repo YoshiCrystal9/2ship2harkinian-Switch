@@ -130,7 +130,7 @@ void OnPlayerUpdate(Actor* actor) {
                 gPlayState->transitionType = TRANS_TYPE_FADE_BLACK_FAST;
 
                 Play_SetRespawnData(gPlayState, RESPAWN_MODE_RETURN, gSaveContext.save.entrance,
-                                    gPlayState->roomCtx.curRoom.num, PLAYER_PARAMS(0xFF, PLAYER_INITMODE_B),
+                                    gPlayState->roomCtx.curRoom.num, PLAYER_PARAMS(0xFF, PLAYER_START_MODE_B),
                                     &player->actor.world.pos, player->actor.world.rot.y);
                 gSaveContext.nextTransitionType = TRANS_TYPE_FADE_BLACK;
                 gSaveContext.respawnFlag = 2;

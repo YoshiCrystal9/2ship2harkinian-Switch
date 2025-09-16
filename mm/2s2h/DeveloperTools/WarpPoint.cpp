@@ -82,7 +82,7 @@ void Warp() {
     gSaveContext.respawn[RESPAWN_MODE_DOWN].roomIndex = CVarGetInteger(WARP_POINT_CVAR "Room", 0);
     gSaveContext.respawn[RESPAWN_MODE_DOWN].pos = pos;
     gSaveContext.respawn[RESPAWN_MODE_DOWN].yaw = CVarGetFloat(WARP_POINT_CVAR "Rotation", 0.0f);
-    gSaveContext.respawn[RESPAWN_MODE_DOWN].playerParams = PLAYER_PARAMS(0xFF, PLAYER_INITMODE_D);
+    gSaveContext.respawn[RESPAWN_MODE_DOWN].playerParams = PLAYER_PARAMS(0xFF, PLAYER_START_MODE_D);
     gSaveContext.nextTransitionType = TRANS_TYPE_FADE_BLACK_FAST;
     gSaveContext.respawnFlag = -8;
 }
