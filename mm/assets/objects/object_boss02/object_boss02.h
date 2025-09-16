@@ -57,6 +57,9 @@ static const ALIGN_ASSET(2) char gTwinmoldTailGemTex[] = dgTwinmoldTailGemTex;
 #define dgTwinmoldBlueSkinTex "__OTR__objects/object_boss02/gTwinmoldBlueSkinTex"
 static const ALIGN_ASSET(2) char gTwinmoldBlueSkinTex[] = dgTwinmoldBlueSkinTex;
 
+#define dgTwinmoldEmpty1TexAnim "__OTR__objects/object_boss02/gTwinmoldEmpty1TexAnim"
+static const ALIGN_ASSET(2) char gTwinmoldEmpty1TexAnim[] = dgTwinmoldEmpty1TexAnim;
+
 #define dgTwinmoldHeadStationaryAnim "__OTR__objects/object_boss02/gTwinmoldHeadStationaryAnim"
 static const ALIGN_ASSET(2) char gTwinmoldHeadStationaryAnim[] = dgTwinmoldHeadStationaryAnim;
 

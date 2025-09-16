@@ -3,7 +3,6 @@
 
 #include "align_asset_macro.h"
 
-#define dgOctorokBlueMaterialDL "__OTR__objects/object_okuta/gOctorokBlueMaterialDL"
+#define dgOctorokBlueMaterialDL "__OTR__overlays/ovl_En_Okuta/gOctorokBlueMaterialDL"
 static const ALIGN_ASSET(2) char gOctorokBlueMaterialDL[] = dgOctorokBlueMaterialDL;
-
 #endif // OVERLAYS_OVL_EN_OKUTA_H

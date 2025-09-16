@@ -94,7 +94,7 @@ static const ALIGN_ASSET(2) char object_kitan_Tex_007D68[] = dobject_kitan_Tex_0
 static const ALIGN_ASSET(2) char gKeatonSkel[] = dgKeatonSkel;
 
 typedef enum KeatonLimb {
-    /* 0x00 */ OBJECT_KITAN_LIMB_NONE,
+    /* 0x00 */ KEATON_LIMB_NONE,
     /* 0x01 */ KEATON_LIMB_LOWER_BODY,
     /* 0x02 */ KEATON_LIMB_UPPER_BODY,
     /* 0x03 */ KEATON_LIMB_HEAD,

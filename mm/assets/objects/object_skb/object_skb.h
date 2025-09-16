@@ -15,11 +15,20 @@ static const ALIGN_ASSET(2) char gStalchildSwingOnBranchAnim[] = dgStalchildSwin
 #define dgStalchildAttackAnim "__OTR__objects/object_skb/gStalchildAttackAnim"
 static const ALIGN_ASSET(2) char gStalchildAttackAnim[] = dgStalchildAttackAnim;
 
+#define dgStalchildEmpty1Blob "__OTR__objects/object_skb/gStalchildEmpty1Blob"
+static const ALIGN_ASSET(2) char gStalchildEmpty1Blob[] = dgStalchildEmpty1Blob;
+
 #define dgStalchildCollapseAnim "__OTR__objects/object_skb/gStalchildCollapseAnim"
 static const ALIGN_ASSET(2) char gStalchildCollapseAnim[] = dgStalchildCollapseAnim;
 
+#define dgStalchildEmpty2Blob "__OTR__objects/object_skb/gStalchildEmpty2Blob"
+static const ALIGN_ASSET(2) char gStalchildEmpty2Blob[] = dgStalchildEmpty2Blob;
+
 #define dgStalchildStaggerAnim "__OTR__objects/object_skb/gStalchildStaggerAnim"
 static const ALIGN_ASSET(2) char gStalchildStaggerAnim[] = dgStalchildStaggerAnim;
+
+#define dgStalchildEmpty3Blob "__OTR__objects/object_skb/gStalchildEmpty3Blob"
+static const ALIGN_ASSET(2) char gStalchildEmpty3Blob[] = dgStalchildEmpty3Blob;
 
 #define dgStalchildStandUpAnim "__OTR__objects/object_skb/gStalchildStandUpAnim"
 static const ALIGN_ASSET(2) char gStalchildStandUpAnim[] = dgStalchildStandUpAnim;

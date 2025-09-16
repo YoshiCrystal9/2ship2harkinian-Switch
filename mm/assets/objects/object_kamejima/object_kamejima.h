@@ -51,6 +51,9 @@ static const ALIGN_ASSET(2) char gTurtleAsleepGrassTex[] = dgTurtleAsleepGrassTe
 #define dgTurtleAsleepGrassDirtTex "__OTR__objects/object_kamejima/gTurtleAsleepGrassDirtTex"
 static const ALIGN_ASSET(2) char gTurtleAsleepGrassDirtTex[] = dgTurtleAsleepGrassDirtTex;
 
+#define dgTurtleEmpty2TexAnim "__OTR__objects/object_kamejima/gTurtleEmpty2TexAnim"
+static const ALIGN_ASSET(2) char gTurtleEmpty2TexAnim[] = dgTurtleEmpty2TexAnim;
+
 #define dgTurtleSwimAnim "__OTR__objects/object_kamejima/gTurtleSwimAnim"
 static const ALIGN_ASSET(2) char gTurtleSwimAnim[] = dgTurtleSwimAnim;
 

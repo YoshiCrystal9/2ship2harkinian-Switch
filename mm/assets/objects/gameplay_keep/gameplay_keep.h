@@ -210,6 +210,9 @@ static const ALIGN_ASSET(2) char gameplay_keep_Tex_00C830[] = dgameplay_keep_Tex
 #define dgameplay_keep_Tex_00CA30 "__OTR__objects/gameplay_keep/gameplay_keep_Tex_00CA30"
 static const ALIGN_ASSET(2) char gameplay_keep_Tex_00CA30[] = dgameplay_keep_Tex_00CA30;
 
+#define dgameplay_keep_Tex_00CA30_Overflow "__OTR__objects/gameplay_keep/gameplay_keep_Tex_00CA30_Overflow"
+static const ALIGN_ASSET(2) char gameplay_keep_Tex_00CA30_Overflow[] = dgameplay_keep_Tex_00CA30_Overflow;
+
 #define dgDekuStickTex "__OTR__objects/gameplay_keep/gDekuStickTex"
 static const ALIGN_ASSET(2) char gDekuStickTex[] = dgDekuStickTex;
 
@@ -3096,6 +3099,9 @@ static const ALIGN_ASSET(2) char gameplay_keep_Tex_044BB0[] = dgameplay_keep_Tex
 #define dgEffIceFragmentTex "__OTR__objects/gameplay_keep/gEffIceFragmentTex"
 static const ALIGN_ASSET(2) char gEffIceFragmentTex[] = dgEffIceFragmentTex;
 
+#define dgEffIceFragmentTex_Overflow "__OTR__objects/gameplay_keep/gEffIceFragmentTex_Overflow"
+static const ALIGN_ASSET(2) char gEffIceFragmentTex_Overflow[] = dgEffIceFragmentTex_Overflow;
+
 #define dgameplay_keep_Tex_0453B0 "__OTR__objects/gameplay_keep/gameplay_keep_Tex_0453B0"
 static const ALIGN_ASSET(2) char gameplay_keep_Tex_0453B0[] = dgameplay_keep_Tex_0453B0;
 
@@ -3828,6 +3834,9 @@ static const ALIGN_ASSET(2) char gSoaringWarpCsFeatherDL[] = dgSoaringWarpCsFeat
 #define dgSoaringWarpCsFeatherTex "__OTR__objects/gameplay_keep/gSoaringWarpCsFeatherTex"
 static const ALIGN_ASSET(2) char gSoaringWarpCsFeatherTex[] = dgSoaringWarpCsFeatherTex;
 
+#define dgameplay_keep_Blob_081AC0 "__OTR__objects/gameplay_keep/gameplay_keep_Blob_081AC0"
+static const ALIGN_ASSET(2) char gameplay_keep_Blob_081AC0[] = dgameplay_keep_Blob_081AC0;
+
 #define dgGameplayKeepKFAnim_83534 "__OTR__objects/gameplay_keep/gGameplayKeepKFAnim_83534"
 static const ALIGN_ASSET(2) char gGameplayKeepKFAnim_83534[] = dgGameplayKeepKFAnim_83534;
 
@@ -3920,6 +3929,9 @@ static const ALIGN_ASSET(2) char gameplay_keep_DL_085418[] = dgameplay_keep_DL_0
 
 #define dgameplay_keep_DL_085490 "__OTR__objects/gameplay_keep/gameplay_keep_DL_085490"
 static const ALIGN_ASSET(2) char gameplay_keep_DL_085490[] = dgameplay_keep_DL_085490;
+
+#define dgameplay_keep_Blob_085510 "__OTR__objects/gameplay_keep/gameplay_keep_Blob_085510"
+static const ALIGN_ASSET(2) char gameplay_keep_Blob_085510[] = dgameplay_keep_Blob_085510;
 
 #define dgGameplayKeepKFSkel_85640 "__OTR__objects/gameplay_keep/gGameplayKeepKFSkel_85640"
 static const ALIGN_ASSET(2) char gGameplayKeepKFSkel_85640[] = dgGameplayKeepKFSkel_85640;

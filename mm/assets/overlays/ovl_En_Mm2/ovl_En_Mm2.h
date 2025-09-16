@@ -15,6 +15,9 @@ static const ALIGN_ASSET(2) char sEnMm21Vtx[] = dsEnMm21Vtx;
 #define dsEnMm22Vtx "__OTR__overlays/ovl_En_Mm2/sEnMm22Vtx"
 static const ALIGN_ASSET(2) char sEnMm22Vtx[] = dsEnMm22Vtx;
 
+#define dsEnMm2EmptyDL "__OTR__overlays/ovl_En_Mm2/sEnMm2EmptyDL"
+static const ALIGN_ASSET(2) char sEnMm2EmptyDL[] = dsEnMm2EmptyDL;
+
 #define dsEnMm2DL "__OTR__overlays/ovl_En_Mm2/sEnMm2DL"
 static const ALIGN_ASSET(2) char sEnMm2DL[] = dsEnMm2DL;
 #endif // OVERLAYS_OVL_EN_MM2_H

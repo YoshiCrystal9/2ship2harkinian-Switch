@@ -90,6 +90,9 @@ static const ALIGN_ASSET(2) char object_iknv_obj_DL_010D90[] = dobject_iknv_obj_
 #define dobject_iknv_obj_DL_010D98 "__OTR__objects/object_iknv_obj/object_iknv_obj_DL_010D98"
 static const ALIGN_ASSET(2) char object_iknv_obj_DL_010D98[] = dobject_iknv_obj_DL_010D98;
 
+#define dobject_iknv_obj_Matanimheader_0113E0 "__OTR__objects/object_iknv_obj/object_iknv_obj_Matanimheader_0113E0"
+static const ALIGN_ASSET(2) char object_iknv_obj_Matanimheader_0113E0[] = dobject_iknv_obj_Matanimheader_0113E0;
+
 #define dobject_iknv_obj_DL_0115E0 "__OTR__objects/object_iknv_obj/object_iknv_obj_DL_0115E0"
 static const ALIGN_ASSET(2) char object_iknv_obj_DL_0115E0[] = dobject_iknv_obj_DL_0115E0;
 

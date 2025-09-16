@@ -183,7 +183,7 @@ static const ALIGN_ASSET(2) char gGomessCoreMatAnim[] = dgGomessCoreMatAnim;
 #define dgGomessBodyMatAnim "__OTR__objects/object_death/gGomessBodyMatAnim"
 static const ALIGN_ASSET(2) char gGomessBodyMatAnim[] = dgGomessBodyMatAnim;
 
-typedef enum GomessSkelLimbs {
+typedef enum GomessSkelLimb {
     /* 0x00 */ GOMESS_LIMB_NONE,
     /* 0x01 */ GOMESS_LIMB_1,
     /* 0x02 */ GOMESS_LIMB_CORE_POS,
@@ -207,7 +207,7 @@ typedef enum GomessSkelLimbs {
     /* 0x14 */ GOMESS_LIMB_SCYTHE_HANDLE,
     /* 0x15 */ GOMESS_LIMB_SCYTHE_BLADE,
     /* 0x16 */ GOMESS_LIMB_MAX
-} GomessSkelLimbs;
+} GomessSkelLimb;
 
 
 #endif // OBJECTS_OBJECT_DEATH_H
