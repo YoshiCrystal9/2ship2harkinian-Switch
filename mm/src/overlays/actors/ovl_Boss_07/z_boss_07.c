@@ -824,7 +824,7 @@ void Boss07_Init(Actor* thisx, PlayState* play2) {
             sBossRemains[i] = NULL;
         }
     }
-    this->actor.targetMode = 5;
+    this->actor.attentionRangeType = ATTENTION_RANGE_5;
     this->actor.colChkInfo.mass = MASS_HEAVY;
     this->actor.gravity = -2.5f;
 
@@ -5555,7 +5555,7 @@ void Boss07_Remains_Fly(Boss07* this, PlayState* play) {
             this->actionState = MAJORAS_REMAINS_FLY;
             this->noclipTimer = 100;
             this->spawnCollider.base.colMaterial = COL_MATERIAL_HIT3;
-            this->actor.flags |= (ACTOR_FLAG_200 | ACTOR_FLAG_ATTENTION_ENABLED);
+            this->actor.flags |= (ACTOR_FLAG_HOOKSHOT_PULLS_ACTOR | ACTOR_FLAG_ATTENTION_ENABLED);
             Actor_PlaySfx(&this->actor, NA_SE_EN_LAST1_DEMO_BREAK);
             break;
         case MAJORAS_REMAINS_FLY:
