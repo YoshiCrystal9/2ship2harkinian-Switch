@@ -750,7 +750,7 @@ void func_800B4AEC(struct PlayState* play, Actor* actor, f32 y);
 void func_800B4B50(Actor* actor, struct Lights* mapper, struct PlayState* play);
 void Actor_GetProjectedPos(struct PlayState* play, Vec3f* worldPos, Vec3f* projectedPos, f32* invW);
 
-void Target_Draw(TargetContext* targetCtx, struct PlayState* play);
+void Attention_Draw(Attention* attention, struct PlayState* play);
 
 s32 Flags_GetSwitch(struct PlayState* play, s32 flag);
 void Flags_SetSwitch(struct PlayState* play, s32 flag);

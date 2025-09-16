@@ -41,15 +41,15 @@ u8 GetActorMaxHealth(Actor* actor) {
 }
 
 // Draws an enemy health bar using the magic bar textures and positions it in a similar way to Z-Targeting
-void Interface_DrawEnemyHealthBar(TargetContext* targetCtx, PlayState* play) {
+void Interface_DrawEnemyHealthBar(Attention* attention, PlayState* play) {
     InterfaceContext* interfaceCtx = &play->interfaceCtx;
     PauseContext* pauseCtx = &play->pauseCtx;
     Player* player = GET_PLAYER(play);
-    Actor* actor = targetCtx->reticleActor;
+    Actor* actor = attention->reticleActor;
     Actor* healthActor = actor;
 
     if (actor == NULL || (actor->category != ACTORCAT_ENEMY && actor->category != ACTORCAT_BOSS) ||
-        targetCtx->reticleFadeAlphaControl == 0 || ((s32)pauseCtx->state > PAUSE_STATE_OPENING_2)) {
+        attention->reticleFadeAlphaControl == 0 || ((s32)pauseCtx->state > PAUSE_STATE_OPENING_2)) {
         return;
     }
 
@@ -115,12 +115,12 @@ void Interface_DrawEnemyHealthBar(TargetContext* targetCtx, PlayState* play) {
                                healthBarFill, 7, false);
 
     if (((!(player->stateFlags1 & PLAYER_STATE1_40)) || (actor != player->focusActor)) &&
-        targetCtx->reticleRadius < 500.0f) {
+        attention->reticleRadius < 500.0f) {
         f32 slideInOffsetY = 0;
 
         // Slide in the health bar from edge of the screen (mimic the Z-Target triangles fly in)
-        if (anchorType == ENEMYHEALTH_ANCHOR_ACTOR && targetCtx->reticleRadius > 120.0f) {
-            slideInOffsetY = (targetCtx->reticleRadius - 120.0f) / 2;
+        if (anchorType == ENEMYHEALTH_ANCHOR_ACTOR && attention->reticleRadius > 120.0f) {
+            slideInOffsetY = (attention->reticleRadius - 120.0f) / 2;
             // Slide in from the top if the bar is placed on the top half of the screen
             if (healthBar_offsetY - healthBar_actorOffset <= 0) {
                 slideInOffsetY *= -1;
@@ -208,7 +208,7 @@ static RegisterShipInitFunc initFunc(
 
         COND_HOOK(OnInterfaceDrawStart, CVAR, []() {
             if (gPlayState != NULL) {
-                Interface_DrawEnemyHealthBar(&gPlayState->actorCtx.targetCtx, gPlayState);
+                Interface_DrawEnemyHealthBar(&gPlayState->actorCtx.attention, gPlayState);
             }
         });
     },
