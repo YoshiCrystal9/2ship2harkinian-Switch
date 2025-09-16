@@ -1,3 +1,4 @@
+#include "functions.h"
 #include "z64transition.h"
 #include "code/fbdemo_circle/fbdemo_circle.h"
 #include <string.h>
