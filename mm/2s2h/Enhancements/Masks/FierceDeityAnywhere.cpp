@@ -142,7 +142,7 @@ void RegisterFierceDeityAnywhere() {
      * enemies in a damaging way, such as Skulltulas and Big Octos.
      */
     COND_VB_SHOULD(VB_CHECK_BUMPER_COLLISION, CVAR, {
-        ColliderInfo* toucher = va_arg(args, ColliderInfo*);
+        ColliderElement* toucher = va_arg(args, ColliderElement*);
         if (toucher->toucher.dmgFlags & DMG_SWORD_BEAM) {
             *should = false;
         }
@@ -155,8 +155,8 @@ void RegisterFierceDeityAnywhere() {
     COND_VB_SHOULD(VB_PERFORM_AC_COLLISION, CVAR, {
         Collider* at = va_arg(args, Collider*);
         Collider* ac = va_arg(args, Collider*);
-        ColliderInfo* atInfo = va_arg(args, ColliderInfo*);
-        ColliderInfo* acInfo = va_arg(args, ColliderInfo*);
+        ColliderElement* atInfo = va_arg(args, ColliderElement*);
+        ColliderElement* acInfo = va_arg(args, ColliderElement*);
         /*
          * If the AT actor is EnMThunder with a subtype > ENMTHUNDER_SUBTYPE_SPIN_REGULAR, it is a sword beam. If the AC
          * actor is not an enemy/boss and does not normally collide with sword beams, then do not handle the sword beam
@@ -176,7 +176,7 @@ void RegisterFierceDeityAnywhere() {
     COND_ID_HOOK(ShouldActorUpdate, ACTOR_EN_BIGOKUTA, CVAR, [](Actor* actor, bool* result) {
         EnBigokuta* enBigOkuta = (EnBigokuta*)actor;
         if (enBigOkuta->bodyCollider.base.acFlags & AC_HIT &&
-            enBigOkuta->bodyCollider.info.acHitInfo->toucher.dmgFlags & DMG_SWORD_BEAM) {
+            enBigOkuta->bodyCollider.info.acHitElem->toucher.dmgFlags & DMG_SWORD_BEAM) {
             enBigOkuta->drawDmgEffType = ACTOR_DRAW_DMGEFF_BLUE_LIGHT_ORBS;
             enBigOkuta->drawDmgEffScale = 1.2f;
             enBigOkuta->drawDmgEffAlpha = 4.0f;

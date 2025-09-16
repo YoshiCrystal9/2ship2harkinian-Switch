@@ -4736,7 +4736,7 @@ void Boss07_Mask_Death(Boss07* this, PlayState* play) {
 
 void Boss07_Mask_CollisionCheck(Boss07* this, PlayState* play) {
     Player* player = GET_PLAYER(play);
-    ColliderInfo* hitbox;
+    ColliderElement* hitbox;
     u8 damage;
     Actor* hitActor;
 
@@ -4750,7 +4750,7 @@ void Boss07_Mask_CollisionCheck(Boss07* this, PlayState* play) {
             this->dmgShakeTimer = 15;
             if ((this->actionFunc == Boss07_Mask_Stunned) || (player->stateFlags3 & PLAYER_STATE3_200)) {
                 hitActor = this->maskBackCollider.base.ac;
-                hitbox = this->maskBackCollider.info.acHitInfo;
+                hitbox = this->maskBackCollider.info.acHitElem;
                 damage = (hitbox->toucher.dmgFlags & 0xF7CFFFFF) ? this->actor.colChkInfo.damage : 0;
                 this->invincibilityTimer = 50;
                 this->dmgFogEffectTimer = 15;
@@ -5246,12 +5246,12 @@ void Boss07_Projectile_Draw(Actor* thisx, PlayState* play2) {
 
 void Boss07_Remains_CollisionCheck(Boss07* this, PlayState* play) {
     Vec3f sp2C;
-    ColliderInfo* hitbox;
+    ColliderElement* hitbox;
 
     if ((this->invincibilityTimer == 0) && (this->spawnCollider.base.acFlags & AC_HIT)) {
         this->spawnCollider.base.acFlags &= ~AC_HIT;
         this->invincibilityTimer = 15;
-        hitbox = this->spawnCollider.info.acHitInfo;
+        hitbox = this->spawnCollider.info.acHitElem;
         if (hitbox->toucher.dmgFlags & DMG_HOOKSHOT) {
             Boss07_Remains_SetupStunned(this, play);
         } else {
