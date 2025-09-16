@@ -139,7 +139,7 @@ void RegisterSkipEnemyIntros() {
             return;
         }
         enKaizoku->unk_59C = 0;
-        enKaizoku->picto.actor.flags &= ~ACTOR_FLAG_100000;
+        enKaizoku->picto.actor.flags &= ~ACTOR_FLAG_FREEZE_EXCEPTION;
         enKaizoku->picto.actor.flags &= ~ACTOR_FLAG_LOCK_ON_DISABLED;
         enKaizoku->picto.actor.flags |= ACTOR_FLAG_ATTENTION_ENABLED;
         enKaizoku->picto.actor.draw = EnKaizoku_Draw;
