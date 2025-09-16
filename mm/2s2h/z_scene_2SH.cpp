@@ -89,8 +89,8 @@ void Scene_CommandCollisionHeader(PlayState* play, SOH::ISceneCommand* cmd) {
 
 void Scene_CommandRoomList(PlayState* play, SOH::ISceneCommand* cmd) {
     SOH::SetRoomList* list = (SOH::SetRoomList*)cmd;
-    play->numRooms = list->numRooms;
-    play->roomList = (RomFile*)list->GetPointer();
+    play->roomList.count = list->numRooms;
+    play->roomList.romFiles = (RomFile*)list->GetPointer();
 }
 
 void Scene_CommandWindSettings(PlayState* play, SOH::ISceneCommand* cmd) {
@@ -500,24 +500,25 @@ extern "C" s32 OTRfunc_8009728C(PlayState* play, RoomContext* roomCtx, s32 roomN
         roomCtx->curRoom.segment = NULL;
         roomCtx->status = 1;
 
-        // assert(roomNum < play->numRooms);
+        // assert(roomNum < play->roomList.count);
 
-        if (roomNum >= play->numRooms)
+        if (roomNum >= play->roomList.count)
             return 0; // UH OH
 
-        size = play->roomList[roomNum].vromEnd - play->roomList[roomNum].vromStart;
-        // roomCtx->activeRoomVram =
-        //     (void*)((uintptr_t)roomCtx->roomMemPages[roomCtx->activeMemPage] - ((size + 8) * roomCtx->activeMemPage +
+        size = play->roomList.romFiles[roomNum].vromEnd - play->roomList.romFiles[roomNum].vromStart;
+        // roomCtx->roomRequestAddr =
+        //     (void*)((uintptr_t)roomCtx->roomMemPages[roomCtx->activeBufPage] - ((size + 8) * roomCtx->activeBufPage +
         //     7));
 
-        // DmaMgr_SendRequest2(&roomCtx->dmaRequest, roomCtx->unk_34, play->roomList[roomNum].vromStart, size, 0,
+        // DmaMgr_SendRequest2(&roomCtx->dmaRequest, roomCtx->unk_34, play->roomList.romFiles[roomNum].vromStart, size,
+        // 0,
         //&roomCtx->loadQueue, NULL, __FILE__, __LINE__);
-        printf("File Name %s\n", play->roomList[roomNum].fileName);
-        auto roomData = std::static_pointer_cast<SOH::Scene>(ResourceLoad(play->roomList[roomNum].fileName));
+        printf("File Name %s\n", play->roomList.romFiles[roomNum].fileName);
+        auto roomData = std::static_pointer_cast<SOH::Scene>(ResourceLoad(play->roomList.romFiles[roomNum].fileName));
         roomCtx->status = 1;
-        roomCtx->activeRoomVram = roomData.get();
+        roomCtx->roomRequestAddr = roomData.get();
 
-        roomCtx->activeMemPage ^= 1;
+        roomCtx->activeBufPage ^= 1;
 
         GameInteractor_ExecuteOnRoomInit(play->sceneId, roomCtx->curRoom.num);
 
