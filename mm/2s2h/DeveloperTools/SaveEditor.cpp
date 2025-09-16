@@ -1428,7 +1428,7 @@ void DrawPlayerTab() {
         ImGui::Text("Link's Speed");
         UIWidgets::PushStyleCombobox(formColor);
         ImGui::PushItemWidth(ImGui::GetFontSize() * 6);
-        ImGui::InputScalar("Linear Velocity", ImGuiDataType_Float, &player->linearVelocity);
+        ImGui::InputScalar("XZ Speed", ImGuiDataType_Float, &player->speedXZ);
         ImGui::InputScalar("Y Velocity", ImGuiDataType_Float, &player->actor.velocity.y);
         ImGui::InputScalar("Ledge Height", ImGuiDataType_Float, &player->yDistToLedge);
         ImGui::InputScalar("Invincibility Timer", ImGuiDataType_S16, &player->invincibilityTimer);
