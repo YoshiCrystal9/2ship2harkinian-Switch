@@ -13246,7 +13246,7 @@ s32 Ship_HandleFirstPersonAiming(PlayState* play, Player* this, s32 arg2) {
         this->actor.world.pos.z += (relY2 * movementSpeed) + this->actor.colChkInfo.displacement.z;
     }
 
-    this->unk_AA6 |= 2;
+    this->unk_AA6_rotFlags |= UNKAA6_ROT_FOCUS_Y;
 
     return func_80832754(this, (play->bButtonAmmoPlusOne != 0) || func_800B7128(this) || func_8082EF20(this));
 }

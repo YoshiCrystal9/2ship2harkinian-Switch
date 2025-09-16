@@ -45,11 +45,11 @@ void Interface_DrawEnemyHealthBar(TargetContext* targetCtx, PlayState* play) {
     InterfaceContext* interfaceCtx = &play->interfaceCtx;
     PauseContext* pauseCtx = &play->pauseCtx;
     Player* player = GET_PLAYER(play);
-    Actor* actor = targetCtx->lockOnActor;
+    Actor* actor = targetCtx->reticleActor;
     Actor* healthActor = actor;
 
     if (actor == NULL || (actor->category != ACTORCAT_ENEMY && actor->category != ACTORCAT_BOSS) ||
-        targetCtx->lockOnAlpha == 0 || ((s32)pauseCtx->state > PAUSE_STATE_OPENING_2)) {
+        targetCtx->reticleFadeAlphaControl == 0 || ((s32)pauseCtx->state > PAUSE_STATE_OPENING_2)) {
         return;
     }
 
@@ -114,13 +114,13 @@ void Interface_DrawEnemyHealthBar(TargetContext* targetCtx, PlayState* play) {
     Ship_CreateQuadVertexGroup(&sEnemyHealthVtx[12], -floorf(halfBarWidth) + endTexWidth, (-texHeight / 2) + 3,
                                healthBarFill, 7, false);
 
-    if (((!(player->stateFlags1 & PLAYER_STATE1_40)) || (actor != player->lockOnActor)) &&
-        targetCtx->lockOnRadius < 500.0f) {
+    if (((!(player->stateFlags1 & PLAYER_STATE1_40)) || (actor != player->focusActor)) &&
+        targetCtx->reticleRadius < 500.0f) {
         f32 slideInOffsetY = 0;
 
         // Slide in the health bar from edge of the screen (mimic the Z-Target triangles fly in)
-        if (anchorType == ENEMYHEALTH_ANCHOR_ACTOR && targetCtx->lockOnRadius > 120.0f) {
-            slideInOffsetY = (targetCtx->lockOnRadius - 120.0f) / 2;
+        if (anchorType == ENEMYHEALTH_ANCHOR_ACTOR && targetCtx->reticleRadius > 120.0f) {
+            slideInOffsetY = (targetCtx->reticleRadius - 120.0f) / 2;
             // Slide in from the top if the bar is placed on the top half of the screen
             if (healthBar_offsetY - healthBar_actorOffset <= 0) {
                 slideInOffsetY *= -1;

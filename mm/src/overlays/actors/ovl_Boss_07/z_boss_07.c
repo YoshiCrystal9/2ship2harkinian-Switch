@@ -1978,17 +1978,17 @@ void Boss07_Wrath_CollisionCheck(Boss07* this, PlayState* play) {
     Player* player = GET_PLAYER(play);
 
     if (this->invincibilityTimer == 0) {
-        if (this->kickCollider.elements[0].info.toucherFlags & TOUCH_HIT) {
-            this->kickCollider.elements[0].info.toucherFlags &= ~TOUCH_HIT;
+        if (this->kickCollider.elements[0].base.toucherFlags & TOUCH_HIT) {
+            this->kickCollider.elements[0].base.toucherFlags &= ~TOUCH_HIT;
             player->pushedYaw = this->actor.yawTowardsPlayer;
             player->pushedSpeed = 20.0f;
             Boss07_SpawnDustAtPos(play, &player->actor.world.pos, 12);
             Audio_PlaySfx(NA_SE_IT_HOOKSHOT_STICK_OBJ);
         }
         for (i = 0; i < ARRAY_COUNT(this->bodyElements); i++) {
-            if (this->bodyCollider.elements[i].info.bumperFlags & BUMP_HIT) {
+            if (this->bodyCollider.elements[i].base.bumperFlags & BUMP_HIT) {
                 for (j = 0; j < ARRAY_COUNT(this->bodyElements); j++) {
-                    this->bodyCollider.elements[j].info.bumperFlags &= ~BUMP_HIT;
+                    this->bodyCollider.elements[j].base.bumperFlags &= ~BUMP_HIT;
                 }
                 if (this->unk_1804 == ACTOR_DRAW_DMGEFF_FROZEN_NO_SFX) {
                     this->unk_1806 = 0;
@@ -2199,7 +2199,7 @@ void Boss07_Wrath_Update(Actor* thisx, PlayState* play2) {
     Boss07_Wrath_WhipCollisionCheck(this->leftWhip.pos, this->leftWhip.tension, this, play);
     if (this->collisionTimer != 0) {
         for (i = 0; i < ARRAY_COUNT(this->bodyElements); i++) {
-            this->bodyCollider.elements[i].info.bumperFlags &= ~BUMP_HIT;
+            this->bodyCollider.elements[i].base.bumperFlags &= ~BUMP_HIT;
         }
     }
     Boss07_Wrath_CollisionCheck(this, play);
@@ -3555,9 +3555,9 @@ void Boss07_Incarnation_CollisionCheck(Boss07* this, PlayState* play) {
 
     if (this->invincibilityTimer == 0) {
         for (i = 0; i < ARRAY_COUNT(this->bodyElements); i++) {
-            if (this->bodyCollider.elements[i].info.bumperFlags & BUMP_HIT) {
+            if (this->bodyCollider.elements[i].base.bumperFlags & BUMP_HIT) {
                 for (j = 0; j < ARRAY_COUNT(this->bodyElements); j++) {
-                    this->bodyCollider.elements[j].info.bumperFlags &= ~BUMP_HIT;
+                    this->bodyCollider.elements[j].base.bumperFlags &= ~BUMP_HIT;
                 }
                 if (this->unk_1804 == ACTOR_DRAW_DMGEFF_FROZEN_NO_SFX) {
                     this->unk_1806 = 0;
@@ -3661,7 +3661,7 @@ void Boss07_Incarnation_Update(Actor* thisx, PlayState* play2) {
     }
     if (this->collisionTimer != 0) {
         for (i = 0; i < ARRAY_COUNT(this->bodyElements); i++) {
-            this->bodyCollider.elements[i].info.bumperFlags &= ~BUMP_HIT;
+            this->bodyCollider.elements[i].base.bumperFlags &= ~BUMP_HIT;
         }
     }
     Boss07_Incarnation_CollisionCheck(this, play);
@@ -4106,7 +4106,7 @@ void Boss07_Mask_Beam(Boss07* this, PlayState* play) {
     Boss07_SmoothStop(this, 0.5f);
     Math_ApproachF(&this->actor.world.pos.y, 300.0f, 0.05f, 1.0f);
     Math_ApproachS(&this->actor.shape.rot.z, 0, 0xA, 0x400);
-    if ((player->lockOnActor != NULL) && (player->stateFlags1 & PLAYER_STATE1_400000)) {
+    if ((player->focusActor != NULL) && (player->stateFlags1 & PLAYER_STATE1_400000)) {
         phi_f24 = (player->transformation == PLAYER_FORM_HUMAN) ? 20 : 30.0f;
     } else {
         phi_f24 = (player->transformation == PLAYER_FORM_HUMAN) ? 8.0f : 15.0f;
@@ -5238,7 +5238,7 @@ void Boss07_Remains_CollisionCheck(Boss07* this, PlayState* play) {
     if ((this->invincibilityTimer == 0) && (this->spawnCollider.base.acFlags & AC_HIT)) {
         this->spawnCollider.base.acFlags &= ~AC_HIT;
         this->invincibilityTimer = 15;
-        hitbox = this->spawnCollider.info.acHitElem;
+        hitbox = this->spawnCollider.elem.acHitElem;
         if (hitbox->toucher.dmgFlags & DMG_HOOKSHOT) {
             Boss07_Remains_SetupStunned(this, play);
         } else {

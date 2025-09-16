@@ -15,7 +15,7 @@ void RegisterFierceDeityZTargetMovement() {
         float* speedArg = va_arg(args, float*);
 
         // If the player is Fierce Deity and targeting,
-        if (player->lockOnActor != NULL && player->transformation == PLAYER_FORM_FIERCE_DEITY) {
+        if (player->focusActor != NULL && player->transformation == PLAYER_FORM_FIERCE_DEITY) {
             // 6.0f is the maximum speed of Zora/Goron/Deku link, whereas FD can be up to 10
             // Clamping to 6.0 keeps z target movement similar to other transformations
             *speedArg = CLAMP_MAX(*speedArg, 6.0f);
