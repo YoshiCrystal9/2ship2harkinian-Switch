@@ -1095,7 +1095,7 @@ void Boss07_Wrath_Intro(Boss07* this, PlayState* play) {
                     AudioSeq_QueueSeqCmd(NA_BGM_MAJORAS_WRATH | 0x8000);
                 }
                 if (this->timer_ABC8 == 137) {
-                    TitleCard_InitBossName(&play->state, &play->actorCtx.titleCtxt,
+                    TitleCard_InitBossName(&play->state, &play->actorCtx.titleCtx,
                                            Lib_SegmentedToVirtual(&gMajorasWrathTitleCardTex), 0xA0, 0xB4, 0x80, 0x28);
                 }
                 if (Animation_OnFrame(&this->skelAnime, this->animEndFrame)) {
@@ -3233,7 +3233,7 @@ void Boss07_Incarnation_Intro(Boss07* this, PlayState* play) {
                 }
             }
             if (this->timer_ABC8 == 45) {
-                TitleCard_InitBossName(&play->state, &play->actorCtx.titleCtxt,
+                TitleCard_InitBossName(&play->state, &play->actorCtx.titleCtx,
                                        Lib_SegmentedToVirtual(&gMajorasIncarnationTitleCardTex), 0xA0, 0xB4, 0x80,
                                        0x28);
             }
@@ -4733,7 +4733,7 @@ void Boss07_Mask_Intro(Boss07* this, PlayState* play) {
                 Math_ApproachF(&this->actor.world.pos.z, -642.5f, 0.05f, 30.0f);
                 Math_ApproachF(&this->actor.world.pos.y, 350.0f, 0.03f, 2.0f);
                 if (this->timer_ABC8 == 55) {
-                    TitleCard_InitBossName(&play->state, &play->actorCtx.titleCtxt,
+                    TitleCard_InitBossName(&play->state, &play->actorCtx.titleCtx,
                                            Lib_SegmentedToVirtual(&gMajorasMaskTitleCardTex), 0xA0, 0xB4, 0x80, 0x28);
                 }
                 if (this->timer_ABC8 == 30) {
