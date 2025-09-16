@@ -114,7 +114,7 @@ void Interface_DrawEnemyHealthBar(Attention* attention, PlayState* play) {
     Ship_CreateQuadVertexGroup(&sEnemyHealthVtx[12], -floorf(halfBarWidth) + endTexWidth, (-texHeight / 2) + 3,
                                healthBarFill, 7, false);
 
-    if (((!(player->stateFlags1 & PLAYER_STATE1_40)) || (actor != player->focusActor)) &&
+    if (((!(player->stateFlags1 & PLAYER_STATE1_TALKING)) || (actor != player->focusActor)) &&
         attention->reticleRadius < 500.0f) {
         f32 slideInOffsetY = 0;
 

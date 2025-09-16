@@ -3,7 +3,7 @@
 
 extern "C" {
 #include "variables.h"
-void Player_TalkWithPlayer(PlayState* play, Actor* actor);
+void Player_StartTalking(PlayState* play, Actor* actor);
 }
 
 /*
@@ -21,7 +21,7 @@ void Rando::ActorBehavior::InitEnRzBehavior() {
             player->talkActor = actor;
             player->talkActorDistance = actor->xzDistToPlayer;
             player->exchangeItemAction = PLAYER_IA_MINUS1;
-            Player_TalkWithPlayer(gPlayState, actor);
+            Player_StartTalking(gPlayState, actor);
             actor->flags &= ~ACTOR_FLAG_TALK;
             *should = false;
         }

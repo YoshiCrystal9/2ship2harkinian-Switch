@@ -3,10 +3,10 @@
 
 extern "C" {
 #include "variables.h"
-void func_80837B60(PlayState* play, Player* player);
+void Player_SetupTalk(PlayState* play, Player* player);
 s32 Player_SetupWaitForPutAway(PlayState* play, Player* player, AfterPutAwayFunc afterPutAwayFunc);
 void func_80848250(PlayState* play, Player* player);
-void Player_TalkWithPlayer(PlayState* play, Actor* actor);
+void Player_StartTalking(PlayState* play, Actor* actor);
 }
 
 static std::vector<u8> skipCmds = {};
@@ -29,7 +29,7 @@ void Rando::ActorBehavior::InitEnAlBehavior() {
                 skipCmds.clear();
                 if (getItemId == GI_MASK_KAFEIS_MASK) { // Mayor's Residence
                     // Prevents the player from moving freely in case a notebook event message pops afterward
-                    Player_SetupWaitForPutAway(gPlayState, player, func_80837B60);
+                    Player_SetupWaitForPutAway(gPlayState, player, Player_SetupTalk);
                 } else { // Express Mail reward
                     /*
                      * We do something a little tricky here. We manually open a textbox with the message that normally
@@ -41,7 +41,7 @@ void Rando::ActorBehavior::InitEnAlBehavior() {
                      * notebook messages, even if it is a little counterintuitive.
                      */
                     Message_StartTextbox(gPlayState, 0x2B20, actor);
-                    Player_TalkWithPlayer(gPlayState, actor);
+                    Player_StartTalking(gPlayState, actor);
                     func_80848250(gPlayState, player); // End the giveItem animation, or the Express Mail will persist
                     skipCmds.push_back(MSCRIPT_CMD_ID_BEGIN_TEXT); // The scripted text at textId 0x2B20
                     skipCmds.push_back(MSCRIPT_CMD_ID_AWAIT_TEXT);

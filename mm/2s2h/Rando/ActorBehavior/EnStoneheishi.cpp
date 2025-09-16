@@ -4,7 +4,7 @@
 extern "C" {
 #include "variables.h"
 #include "overlays/actors/ovl_En_Stone_heishi/z_en_stone_heishi.h"
-void Player_TalkWithPlayer(PlayState* play, Actor* actor);
+void Player_StartTalking(PlayState* play, Actor* actor);
 void func_80BC9E50(EnStoneheishi* enStoneheishi, PlayState* play);
 }
 
@@ -22,7 +22,7 @@ void Rando::ActorBehavior::InitEnStoneheishiBehavior() {
             player->talkActor = actor;
             player->talkActorDistance = actor->xzDistToPlayer;
             player->exchangeItemAction = PLAYER_IA_MINUS1;
-            Player_TalkWithPlayer(gPlayState, actor);
+            Player_StartTalking(gPlayState, actor);
             actor->flags |= ACTOR_FLAG_TALK;
             SET_WEEKEVENTREG(WEEKEVENTREG_41_40);
             EnStoneheishi* enStoneheishi = (EnStoneheishi*)actor;

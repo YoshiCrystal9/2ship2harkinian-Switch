@@ -3,7 +3,7 @@
 
 extern "C" {
 #include "variables.h"
-void func_80837B60(PlayState* play, Player* player);
+void Player_SetupTalk(PlayState* play, Player* player);
 s32 Player_SetupWaitForPutAway(PlayState* play, Player* player, AfterPutAwayFunc afterPutAwayFunc);
 }
 
@@ -21,7 +21,7 @@ void Rando::ActorBehavior::InitEnAnBehavior() {
             Player* player = GET_PLAYER(gPlayState);
 
             if (cmdId == MSCRIPT_CMD_ID_OFFER_ITEM) { // MSCRIPT_OFFER_ITEM
-                Player_SetupWaitForPutAway(gPlayState, player, func_80837B60);
+                Player_SetupWaitForPutAway(gPlayState, player, Player_SetupTalk);
                 *should = false;
                 skipCmds.clear();
                 skipCmds.push_back(MSCRIPT_CMD_ID_AWAIT_TEXT); // Have to skip this to prevent a crash

@@ -5,7 +5,7 @@ extern "C" {
 #include "variables.h"
 #include "overlays/actors/ovl_En_Gk/z_en_gk.h"
 
-void Player_TalkWithPlayer(PlayState* play, Actor* actor);
+void Player_StartTalking(PlayState* play, Actor* actor);
 }
 
 void Rando::ActorBehavior::InitEnGKBehavior() {
@@ -25,7 +25,7 @@ void Rando::ActorBehavior::InitEnGKBehavior() {
                 player->talkActor = actor;
                 player->talkActorDistance = actor->xzDistToPlayer;
                 player->exchangeItemAction = PLAYER_IA_MINUS1;
-                Player_TalkWithPlayer(gPlayState, actor);
+                Player_StartTalking(gPlayState, actor);
                 break;
         }
     });

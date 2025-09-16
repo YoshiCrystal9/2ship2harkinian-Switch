@@ -4,7 +4,7 @@
 extern "C" {
 #include "overlays/actors/ovl_En_Kitan/z_en_kitan.h"
 void EnKitan_TalkAfterGivingPrize(EnKitan* enKitan, PlayState* play);
-void Player_TalkWithPlayer(PlayState* play, Actor* actor);
+void Player_StartTalking(PlayState* play, Actor* actor);
 }
 
 void Rando::ActorBehavior::InitEnKitanBehavior() {
@@ -19,7 +19,7 @@ void Rando::ActorBehavior::InitEnKitanBehavior() {
             ((EnKitan*)actor)->actionFunc = EnKitan_TalkAfterGivingPrize;
             // This forces the previous BGM to resume, ending the Keaton quiz BGM
             Audio_PlayFanfare(NA_BGM_GET_SMALL_ITEM);
-            Player_TalkWithPlayer(gPlayState, actor);
+            Player_StartTalking(gPlayState, actor);
         }
     });
 }

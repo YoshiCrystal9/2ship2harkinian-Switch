@@ -6,7 +6,7 @@ extern "C" {
 #include "variables.h"
 #include "overlays/actors/ovl_En_Scopenuts/z_en_scopenuts.h"
 
-void Player_TalkWithPlayer(PlayState* play, Actor* actor);
+void Player_StartTalking(PlayState* play, Actor* actor);
 void func_80BCB980(EnScopenuts* enScopenuts, PlayState* play);
 }
 
@@ -23,7 +23,7 @@ void Rando::ActorBehavior::InitEnScopenutsBehavior() {
             player->talkActor = actor;
             player->talkActorDistance = actor->xzDistToPlayer;
             player->exchangeItemAction = PLAYER_IA_MINUS1;
-            Player_TalkWithPlayer(gPlayState, actor);
+            Player_StartTalking(gPlayState, actor);
             enScopenuts->actionFunc = func_80BCB980;
         }
     });

@@ -4,7 +4,7 @@
 extern "C" {
 #include "variables.h"
 #include "overlays/actors/ovl_En_Baba/z_en_baba.h"
-void Player_TalkWithPlayer(PlayState* play, Actor* actor);
+void Player_StartTalking(PlayState* play, Actor* actor);
 void EnBaba_GaveBlastMask(EnBaba* enBaba, PlayState* play);
 }
 
@@ -27,7 +27,7 @@ void Rando::ActorBehavior::InitEnBabaBehavior() {
             player->talkActor = &enBaba->actor;
             player->talkActorDistance = enBaba->actor.xzDistToPlayer;
             player->exchangeItemAction = PLAYER_IA_MINUS1;
-            Player_TalkWithPlayer(gPlayState, &enBaba->actor);
+            Player_StartTalking(gPlayState, &enBaba->actor);
             RANDO_SAVE_CHECKS[RC_CLOCK_TOWN_NORTH_BOMB_LADY].eligible = true;
         }
     });

@@ -7,8 +7,8 @@ extern "C" {
 #include "variables.h"
 #include "overlays/actors/ovl_En_Go/z_en_go.h"
 
-void Player_TalkWithPlayer(PlayState* play, Actor* actor);
-void func_80837B60(PlayState* play, Player* player);
+void Player_StartTalking(PlayState* play, Actor* actor);
+void Player_SetupTalk(PlayState* play, Player* player);
 s32 Player_SetupWaitForPutAway(PlayState* play, Player* player, AfterPutAwayFunc afterPutAwayFunc);
 }
 

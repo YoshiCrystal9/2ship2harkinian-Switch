@@ -3,8 +3,8 @@
 extern "C" {
 #include "variables.h"
 
-void Player_TalkWithPlayer(PlayState* play, Actor* actor);
-void func_80837B60(PlayState* play, Player* player);
+void Player_StartTalking(PlayState* play, Actor* actor);
+void Player_SetupTalk(PlayState* play, Player* player);
 s32 Player_SetupWaitForPutAway(PlayState* play, Player* player, AfterPutAwayFunc afterPutAwayFunc);
 }
 
@@ -24,7 +24,7 @@ void Rando::MiscBehavior::InitOfferGetItemBehavior() {
             switch (actor->id) {
                 case ACTOR_EN_PST:
                     actor->flags |= ACTOR_FLAG_TALK; // Prevent softlock
-                    Player_SetupWaitForPutAway(gPlayState, player, func_80837B60);
+                    Player_SetupWaitForPutAway(gPlayState, player, Player_SetupTalk);
                     *should = false;
                     return;
             }
@@ -65,7 +65,7 @@ void Rando::MiscBehavior::InitOfferGetItemBehavior() {
                 player->talkActor = actor;
                 player->talkActorDistance = actor->xzDistToPlayer;
                 player->exchangeItemAction = PLAYER_IA_MINUS1;
-                Player_TalkWithPlayer(gPlayState, actor);
+                Player_StartTalking(gPlayState, actor);
                 break;
         }
     });

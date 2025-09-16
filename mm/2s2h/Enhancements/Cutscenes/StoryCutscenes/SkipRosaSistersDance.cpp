@@ -8,7 +8,7 @@
 extern "C" {
 #include "overlays/actors/ovl_En_Rz/z_en_rz.h"
 void func_80BFC270(EnRz* enRz, PlayState* play);
-void Player_TalkWithPlayer(PlayState* play, Actor* actor);
+void Player_StartTalking(PlayState* play, Actor* actor);
 }
 
 #define CVAR_NAME "gEnhancements.Cutscenes.SkipStoryCutscenes"
@@ -46,7 +46,7 @@ void RegisterSkipRosaSistersDance() {
                     player->talkActor = actor;
                     player->talkActorDistance = actor->xzDistToPlayer;
                     player->exchangeItemAction = PLAYER_IA_MINUS1;
-                    Player_TalkWithPlayer(gPlayState, actor);
+                    Player_StartTalking(gPlayState, actor);
                     *should = false;
                 } else if (*csId == 12) { // The sisters applaud Link
                     Actor* actor = va_arg(args, Actor*);
