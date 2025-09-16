@@ -4,7 +4,7 @@
 extern "C" {
 #include "variables.h"
 void func_80837B60(PlayState* play, Player* player);
-s32 func_80832558(PlayState* play, Player* player, PlayerFuncD58 arg2);
+s32 Player_SetupWaitForPutAway(PlayState* play, Player* player, AfterPutAwayFunc afterPutAwayFunc);
 void func_80848250(PlayState* play, Player* player);
 void Player_TalkWithPlayer(PlayState* play, Actor* actor);
 }
@@ -29,16 +29,16 @@ void Rando::ActorBehavior::InitEnAlBehavior() {
                 skipCmds.clear();
                 if (getItemId == GI_MASK_KAFEIS_MASK) { // Mayor's Residence
                     // Prevents the player from moving freely in case a notebook event message pops afterward
-                    func_80832558(gPlayState, player, func_80837B60);
+                    Player_SetupWaitForPutAway(gPlayState, player, func_80837B60);
                 } else { // Express Mail reward
                     /*
                      * We do something a little tricky here. We manually open a textbox with the message that normally
                      * plays after the player receives the reward (0x2B20), then also skip the MsgScript commands to
-                     * open that textbox and wait on it. The func_80832558 call above does not work for this scenario,
-                     * as it will softlock. More naive attempts at handling this actor case resulted in softlocks, not
-                     * appropriately locking textboxes, duplicate textboxes, or Bombers' Notebook messages being eaten.
-                     * The method below handles the intended behavior, both with or without notebook messages, even if
-                     * it is a little counterintuitive.
+                     * open that textbox and wait on it. The Player_SetupWaitForPutAway call above does not work for
+                     * this scenario, as it will softlock. More naive attempts at handling this actor case resulted in
+                     * softlocks, not appropriately locking textboxes, duplicate textboxes, or Bombers' Notebook
+                     * messages being eaten. The method below handles the intended behavior, both with or without
+                     * notebook messages, even if it is a little counterintuitive.
                      */
                     Message_StartTextbox(gPlayState, 0x2B20, actor);
                     Player_TalkWithPlayer(gPlayState, actor);

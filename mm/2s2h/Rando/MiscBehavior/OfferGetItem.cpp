@@ -5,7 +5,7 @@ extern "C" {
 
 void Player_TalkWithPlayer(PlayState* play, Actor* actor);
 void func_80837B60(PlayState* play, Player* player);
-s32 func_80832558(PlayState* play, Player* player, PlayerFuncD58 arg2);
+s32 Player_SetupWaitForPutAway(PlayState* play, Player* player, AfterPutAwayFunc afterPutAwayFunc);
 }
 
 // This prevents actors from giving items with Actor_OfferGetItem, along with preventing them from waiting on the
@@ -24,7 +24,7 @@ void Rando::MiscBehavior::InitOfferGetItemBehavior() {
             switch (actor->id) {
                 case ACTOR_EN_PST:
                     actor->flags |= ACTOR_FLAG_TALK; // Prevent softlock
-                    func_80832558(gPlayState, player, func_80837B60);
+                    Player_SetupWaitForPutAway(gPlayState, player, func_80837B60);
                     *should = false;
                     return;
             }

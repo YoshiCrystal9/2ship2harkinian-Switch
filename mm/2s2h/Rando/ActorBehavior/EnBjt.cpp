@@ -4,7 +4,7 @@
 extern "C" {
 #include "variables.h"
 void func_80837B60(PlayState* play, Player* player);
-s32 func_80832558(PlayState* play, Player* player, PlayerFuncD58 arg2);
+s32 Player_SetupWaitForPutAway(PlayState* play, Player* player, AfterPutAwayFunc afterPutAwayFunc);
 }
 
 void Rando::ActorBehavior::InitEnBjtBehavior() {
@@ -17,7 +17,7 @@ void Rando::ActorBehavior::InitEnBjtBehavior() {
             switch (cmdId) {
                 case MSCRIPT_CMD_ID_OFFER_ITEM:
                     // Lock the player into conversation because a notebook message might appear
-                    func_80832558(gPlayState, player, func_80837B60);
+                    Player_SetupWaitForPutAway(gPlayState, player, func_80837B60);
                     *should = false;
                     break;
                 case MSCRIPT_CMD_ID_DONE:

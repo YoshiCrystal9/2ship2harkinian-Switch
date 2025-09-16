@@ -9,7 +9,7 @@ extern "C" {
 
 void Player_TalkWithPlayer(PlayState* play, Actor* actor);
 void func_80837B60(PlayState* play, Player* player);
-s32 func_80832558(PlayState* play, Player* player, PlayerFuncD58 arg2);
+s32 Player_SetupWaitForPutAway(PlayState* play, Player* player, AfterPutAwayFunc afterPutAwayFunc);
 }
 
 static std::vector<u8> skipCmds = {};

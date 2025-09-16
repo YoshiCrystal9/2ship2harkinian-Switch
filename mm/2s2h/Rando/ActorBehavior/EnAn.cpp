@@ -4,7 +4,7 @@
 extern "C" {
 #include "variables.h"
 void func_80837B60(PlayState* play, Player* player);
-s32 func_80832558(PlayState* play, Player* player, PlayerFuncD58 arg2);
+s32 Player_SetupWaitForPutAway(PlayState* play, Player* player, AfterPutAwayFunc afterPutAwayFunc);
 }
 
 static std::vector<u8> skipCmds = {};
@@ -21,7 +21,7 @@ void Rando::ActorBehavior::InitEnAnBehavior() {
             Player* player = GET_PLAYER(gPlayState);
 
             if (cmdId == MSCRIPT_CMD_ID_OFFER_ITEM) { // MSCRIPT_OFFER_ITEM
-                func_80832558(gPlayState, player, func_80837B60);
+                Player_SetupWaitForPutAway(gPlayState, player, func_80837B60);
                 *should = false;
                 skipCmds.clear();
                 skipCmds.push_back(MSCRIPT_CMD_ID_AWAIT_TEXT); // Have to skip this to prevent a crash

@@ -7,7 +7,7 @@ extern "C" {
 
 void Player_TalkWithPlayer(PlayState* play, Actor* actor);
 void func_80837B60(PlayState* play, Player* player);
-s32 func_80832558(PlayState* play, Player* player, PlayerFuncD58 arg2);
+s32 Player_SetupWaitForPutAway(PlayState* play, Player* player, AfterPutAwayFunc afterPutAwayFunc);
 }
 
 void Rando::ActorBehavior::InitEnDnhBehavior() {
@@ -36,7 +36,7 @@ void Rando::ActorBehavior::InitEnDnhBehavior() {
         }
 
         if (cmdId == MSCRIPT_CMD_ID_OFFER_ITEM) {
-            func_80832558(gPlayState, player, func_80837B60);
+            Player_SetupWaitForPutAway(gPlayState, player, func_80837B60);
             *should = false;
             skipCmds.clear();
             skipCmds.push_back(MSCRIPT_CMD_ID_AUTOTALK);
