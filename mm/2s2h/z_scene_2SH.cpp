@@ -132,14 +132,14 @@ void Scene_CommandSpecialFiles(PlayState* play, SOH::ISceneCommand* cmd) {
 void Scene_CommandRoomBehavior(PlayState* play, SOH::ISceneCommand* cmd) {
     SOH::SetRoomBehaviorMM* behavior = (SOH::SetRoomBehaviorMM*)cmd;
 
-    play->roomCtx.curRoom.behaviorType1 = behavior->roomBehavior.gameplayFlags;
-    play->roomCtx.curRoom.behaviorType2 = behavior->roomBehavior.currRoomUnk2;
+    play->roomCtx.curRoom.type = behavior->roomBehavior.gameplayFlags;
+    play->roomCtx.curRoom.environmentType = behavior->roomBehavior.currRoomUnk2;
     play->roomCtx.curRoom.lensMode = behavior->roomBehavior.currRoomUnk5;
     play->msgCtx.unk12044 = behavior->roomBehavior.msgCtxUnk;
     play->roomCtx.curRoom.enablePosLights = behavior->roomBehavior.enablePointLights;
     play->envCtx.stormState = behavior->roomBehavior.kankyoContextUnkE2;
-    // play->roomCtx.curRoom.behaviorType1 = behavior->roomBehavior.gameplayFlags;
-    // play->roomCtx.curRoom.behaviorType2 = behavior->roomBehavior.gameplayFlags2 & 0xFF;
+    // play->roomCtx.curRoom.type = behavior->roomBehavior.gameplayFlags;
+    // play->roomCtx.curRoom.environmentType = behavior->roomBehavior.gameplayFlags2 & 0xFF;
     // play->roomCtx.curRoom.lensMode = (behavior->roomBehavior.gameplayFlags2 >> 8) & 1;
     // play->msgCtx.unk12044 = (behavior->roomBehavior.gameplayFlags2 >> 0xA) & 1;
     // play->roomCtx.curRoom.enablePosLights = (behavior->roomBehavior.gameplayFlags2 >> 0xB) & 1;
