@@ -3952,7 +3952,8 @@ void EnKnight_DrawEffectBlure(EnKnight* this, PlayState* play) {
     Gfx_SetupDL25_Xlu(play->state.gfxCtx);
     AnimatedMat_Draw(play, Lib_SegmentedToVirtual(&gKnightBlureTexAnim));
 
-    gSPDisplayList(POLY_XLU_DISP++, D_08000000);
+    // BENTODO, will this work on 64 bit.
+    gSPDisplayList(POLY_XLU_DISP++, 0x08000000 | 1);
 
     if (this == sIgosInstance) {
         gDPSetPrimColor(POLY_XLU_DISP++, 0, 0, (u8)(sREG(11) + 180), 255, 255,

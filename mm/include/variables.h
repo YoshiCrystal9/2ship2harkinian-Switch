@@ -292,7 +292,6 @@ extern AudioCustomSynthFunction gAudioCustomSynthFunction;
 
 // other segments
 extern Mtx D_01000000;
-extern Gfx D_08000000[];
 extern u16 D_0F000000[];
 
 // #region 2S2H [General]
