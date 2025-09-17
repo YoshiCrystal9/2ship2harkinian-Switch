@@ -703,7 +703,7 @@ void BossHakugin_StepVector(Vec3f* norm, Vec3f* targetNorm, f32 angleStep) {
         return;
     }
 
-   Math3D_Vec3f_Cross(norm, targetNorm, &crossProduct);
+    Math3D_Vec3f_Cross(norm, targetNorm, &crossProduct);
 
     if (BossHakugin_Vec3fNormalize(&crossProduct)) {
         Matrix_RotateAxisF(angleStep, &crossProduct, MTXMODE_NEW);

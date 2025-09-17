@@ -3499,7 +3499,8 @@ void func_801514B0(PlayState* play, u16 arg1, u8 arg2) {
     msgCtx->unk11F0C = msgCtx->unk11F08 & 0xF;
     msgCtx->textUnskippable = true;
     // #region 2S2H [Port]
-    // DmaMgr_SendRequest0(msgCtx->textboxSegment, SEGMENT_ROM_START(message_static) + (D_801CFC78[0] * 0x1000), 0x1000);
+    // DmaMgr_SendRequest0(msgCtx->textboxSegment, SEGMENT_ROM_START(message_static) + (D_801CFC78[0] * 0x1000),
+    // 0x1000);
     msgCtx->textboxSegment[TEXTBOX_SEG_TYPE] = gMessageBackgrounds[D_801CFC78[0]];
     // #endregion
     msgCtx->textboxColorRed = 0;

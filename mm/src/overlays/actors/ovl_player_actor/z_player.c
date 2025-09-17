@@ -9634,7 +9634,7 @@ s32 Player_ActionHandler_2(Player* this, PlayState* play) {
                             if (GameInteractor_Should(VB_GIVE_ITEM_FROM_CHEST, true, chest)) {
                                 // This inverts the sign of the getItemId and sets the player's action to GetItem
                                 // (Player_Action_65)
-                            Player_SetupWaitForPutAway(play, this, func_80837C78);
+                                Player_SetupWaitForPutAway(play, this, func_80837C78);
                             }
                             this->stateFlags1 |=
                                 (PLAYER_STATE1_400 | PLAYER_STATE1_CARRYING_ACTOR | PLAYER_STATE1_20000000);
@@ -17827,7 +17827,7 @@ void Player_Action_63(Player* this, PlayState* play) {
         func_808525C4(play, this);
         if (!CVarGetInteger("gEnhancements.Playback.NoDropOcarinaInput", 0) || this->av2.actionVar2 == 1) {
             if (!(this->actor.flags & ACTOR_FLAG_OCARINA_INTERACTION) ||
-                 (this->ocarinaInteractionActor->id == ACTOR_EN_ZOT)) {
+                (this->ocarinaInteractionActor->id == ACTOR_EN_ZOT)) {
                 Message_DisplayOcarinaStaff(play, OCARINA_ACTION_FREE_PLAY);
             }
         }
@@ -18002,8 +18002,9 @@ void Player_Action_65(Player* this, PlayState* play) {
             } else {
                 if (BEN_ANIM_EQUAL(this->skelAnime.animation, gPlayerAnim_link_normal_box_kick)) {
                     Player_Anim_PlayOnceAdjusted(play, this,
-                                  (this->transformation == PLAYER_FORM_DEKU) ? &gPlayerAnim_pn_getB
-                                                                             : &gPlayerAnim_link_demo_get_itemB);
+                                                 (this->transformation == PLAYER_FORM_DEKU)
+                                                     ? &gPlayerAnim_pn_getB
+                                                     : &gPlayerAnim_link_demo_get_itemB);
                 } else {
                     Player_Anim_PlayOnceAdjusted(play, this,
                                                  (this->transformation == PLAYER_FORM_DEKU)

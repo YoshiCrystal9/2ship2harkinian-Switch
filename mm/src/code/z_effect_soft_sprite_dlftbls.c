@@ -13,8 +13,8 @@
 #undef DEFINE_EFFECT_SS
 #undef DEFINE_EFFECT_SS_UNSET
 
-#define DEFINE_EFFECT_SS(name, _enumValue)     \
-    {                                          \
+#define DEFINE_EFFECT_SS(name, _enumValue)    \
+    {                                         \
         0, 0, 0, 0, NULL, &name##_Profile, 1, \
     },
 

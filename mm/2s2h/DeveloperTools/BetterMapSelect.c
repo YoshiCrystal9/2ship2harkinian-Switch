@@ -64,11 +64,9 @@ typedef struct {
     BetterMapSelectRespawnInfo downRespawn;
 } BetterMapSelectGrottoRespawnInfo;
 
-#define UNUSED_GROTTO_RESPAWN                                    \
-    {                                                            \
-        0, 0, 0xFF, 0, PLAYER_PARAMS(0xFF, PLAYER_START_MODE_GROTTO), { \
-            0, 0, 0                                              \
-        }                                                        \
+#define UNUSED_GROTTO_RESPAWN                                                     \
+    {                                                                             \
+        0, 0, 0xFF, 0, PLAYER_PARAMS(0xFF, PLAYER_START_MODE_GROTTO), { 0, 0, 0 } \
     }
 
 // clang-format off

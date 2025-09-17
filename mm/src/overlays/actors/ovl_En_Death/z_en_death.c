@@ -1488,7 +1488,7 @@ void EnDeath_DrawBats(EnDeath* this, PlayState* play) {
 
                 MATRIX_FINALIZE_AND_LOAD(gfx++, play->state.gfxCtx);
                 gSPDisplayList(gfx++, sMinideathDLs[effect->animFrame]);
-                    FrameInterpolation_RecordCloseChild();
+                FrameInterpolation_RecordCloseChild();
             }
         }
     }

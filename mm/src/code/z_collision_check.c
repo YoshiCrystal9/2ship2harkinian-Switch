@@ -77,7 +77,8 @@ f32 CollisionCheck_GetDamageAndEffectOnElementAC(Collider* atCol, ColliderElemen
             damage *= sDamageMultipliers[acCol->actor->colChkInfo.damageTable->attack[i] & 0xF];
         }
 
-        if ((GameInteractor_Should(VB_DAMAGE_EFFECT, true, i, acCol->actor->colChkInfo.damageTable, effect, acCol->actor))) {
+        if ((GameInteractor_Should(VB_DAMAGE_EFFECT, true, i, acCol->actor->colChkInfo.damageTable, effect,
+                                   acCol->actor))) {
             *effect = (acCol->actor->colChkInfo.damageTable->attack[i] >> 4) & 0xF;
         }
         // #endregion

@@ -501,7 +501,8 @@ void EnElforg_FreeFloating(EnElforg* this, PlayState* play) {
                     gSaveContext.save.saveInfo.inventory.strayFairies[gSaveContext.dungeonSceneSharedIndex]++;
                     // You found a Stray Fairy!
                     Message_StartTextbox(play, 0x11, NULL);
-                    if (gSaveContext.save.saveInfo.inventory.strayFairies[(void)0, gSaveContext.dungeonSceneSharedIndex] >=
+                    if (gSaveContext.save.saveInfo.inventory
+                            .strayFairies[(void)0, gSaveContext.dungeonSceneSharedIndex] >=
                         STRAY_FAIRY_SCATTERED_TOTAL) {
                         // BENTODO This had | 0x900 which interfered with the 16 bit sequence IDs. Removing it doesn't
                         // seem to do anything bad.

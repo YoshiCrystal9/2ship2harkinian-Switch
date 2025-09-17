@@ -732,8 +732,8 @@ void Message_DrawTextNES(PlayState* play, Gfx** gfxP, u16 textDrawPos) {
                                        G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMASK, G_TX_NOMASK,
                                        G_TX_NOLOD, G_TX_NOLOD);
                 gSPTextureRectangle(gfx++, msgCtx->textPosX << 2, (msgCtx->unk12012 + 1) << 2,
-                                    (msgCtx->textPosX + 96) << 2, (msgCtx->unk12012 + 49) << 2, G_TX_RENDERTILE, 0,
-                                    0, 1 << 10, 1 << 10);
+                                    (msgCtx->textPosX + 96) << 2, (msgCtx->unk12012 + 49) << 2, G_TX_RENDERTILE, 0, 0,
+                                    1 << 10, 1 << 10);
                 gDPLoadTextureBlock_4b(gfx++, msgCtx->textboxSegment[TEXTBOX_SEG_BG_2], G_IM_FMT_I, 96, 48, 0,
                                        G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMASK, G_TX_NOMASK,
                                        G_TX_NOLOD, G_TX_NOLOD);
@@ -918,9 +918,12 @@ void Message_DrawTextNES(PlayState* play, Gfx** gfxP, u16 textDrawPos) {
                     prevR = msgCtx->textColorR;
                     prevG = msgCtx->textColorG;
                     prevB = msgCtx->textColorB;
-                    msgCtx->textColorR = sColorsButtonsNES[(s16)sButtonColorIndicesNES[(u8)character - MESSAGE_BTN_A]].r;
-                    msgCtx->textColorG = sColorsButtonsNES[(s16)sButtonColorIndicesNES[(u8)character - MESSAGE_BTN_A]].g;
-                    msgCtx->textColorB = sColorsButtonsNES[(s16)sButtonColorIndicesNES[(u8)character - MESSAGE_BTN_A]].b;
+                    msgCtx->textColorR =
+                        sColorsButtonsNES[(s16)sButtonColorIndicesNES[(u8)character - MESSAGE_BTN_A]].r;
+                    msgCtx->textColorG =
+                        sColorsButtonsNES[(s16)sButtonColorIndicesNES[(u8)character - MESSAGE_BTN_A]].g;
+                    msgCtx->textColorB =
+                        sColorsButtonsNES[(s16)sButtonColorIndicesNES[(u8)character - MESSAGE_BTN_A]].b;
                     Message_DrawTextChar(play, &font->charBuf[font->unk_11D88][charTexIndex], &gfx);
                     msgCtx->textColorR = prevR;
                     msgCtx->textColorG = prevG;
