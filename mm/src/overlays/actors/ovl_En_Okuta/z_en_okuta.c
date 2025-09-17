@@ -42,7 +42,7 @@ void EnOkuta_Spin(EnOkuta* this, PlayState* play);
 void EnOkuta_Projectile_Fly(EnOkuta* this, PlayState* play);
 void EnOkuta_Projectile_Update(Actor* thisx, PlayState* play);
 
-ActorProfileEn_Okuta_Profile = {
+ActorProfile En_Okuta_Profile = {
     /**/ ACTOR_EN_OKUTA,
     /**/ ACTORCAT_ENEMY,
     /**/ FLAGS,

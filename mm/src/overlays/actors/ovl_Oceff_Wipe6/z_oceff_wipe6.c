@@ -14,7 +14,7 @@ void OceffWipe6_Destroy(Actor* thisx, PlayState* play);
 void OceffWipe6_Update(Actor* thisx, PlayState* play);
 void OceffWipe6_Draw(Actor* thisx, PlayState* play);
 
-ActorProfileOceff_Wipe6_Profile = {
+ActorProfile Oceff_Wipe6_Profile = {
     ACTOR_OCEFF_WIPE6,
     ACTORCAT_ITEMACTION,
     FLAGS,

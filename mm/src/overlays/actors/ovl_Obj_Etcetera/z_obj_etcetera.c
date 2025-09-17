@@ -18,7 +18,7 @@ void ObjEtcetera_Setup(ObjEtcetera* this, PlayState* play);
 void ObjEtcetera_DrawIdle(Actor* thisx, PlayState* play);
 void ObjEtcetera_DrawAnimated(Actor* thisx, PlayState* play);
 
-ActorProfileObj_Etcetera_Profile = {
+ActorProfile Obj_Etcetera_Profile = {
     ACTOR_OBJ_ETCETERA,
     ACTORCAT_BG,
     FLAGS,
