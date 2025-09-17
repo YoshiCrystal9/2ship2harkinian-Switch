@@ -17,15 +17,6 @@ Gfx* ResourceMgr_LoadGfxByName(const char* path);
 char* ResourceMgr_LoadVtxArrayByName(const char* path);
 }
 
-#define dgameplay_keep_Tex_00CA30_Overflow "__OTR__objects/gameplay_keep/gameplay_keep_Tex_00CA30_Overflow"
-static const ALIGN_ASSET(2) char gameplay_keep_Tex_00CA30_Overflow[] = dgameplay_keep_Tex_00CA30_Overflow;
-
-#define dgEffIceFragmentTex_Overflow "__OTR__objects/gameplay_keep/gEffIceFragmentTex_Overflow"
-static const ALIGN_ASSET(2) char gEffIceFragmentTex_Overflow[] = dgEffIceFragmentTex_Overflow;
-
-#define dgIronKnuckleFireTex_Overflow "__OTR__objects/object_ik/gIronKnuckleFireTex_Overflow"
-static const ALIGN_ASSET(2) char gIronKnuckleFireTex_Overflow[] = dgIronKnuckleFireTex_Overflow;
-
 typedef struct {
     const char* dlist;
     int startInstruction;
