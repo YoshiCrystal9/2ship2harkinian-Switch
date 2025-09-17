@@ -62,7 +62,7 @@ static void ChuDrop_Draw(Actor* actor, PlayState* play) {
 
         gSPSegment(POLY_OPA_DISP++, 0x08, (uintptr_t)gDropBombchuTex);
 
-        gSPMatrix(POLY_OPA_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_MODELVIEW | G_MTX_LOAD);
+        gSPMatrix(POLY_OPA_DISP++, Matrix_Finalize(play->state.gfxCtx), G_MTX_MODELVIEW | G_MTX_LOAD);
 
         gSPDisplayList(POLY_OPA_DISP++, (Gfx*)gItemDropDL);
     }

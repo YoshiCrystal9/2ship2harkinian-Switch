@@ -3244,7 +3244,7 @@ void Ship_DrawSkyboxStarInterpolated(Gfx** gfxP, PlayState* play, Vec3f pos, u32
         Matrix_Scale(width * scaleMultiplier, height * scaleMultiplier, 1.0f, MTXMODE_APPLY);
         Matrix_ReplaceRotation(&origBillboardMtxF);
 
-        gSPMatrix(gfx++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+        MATRIX_FINALIZE_AND_LOAD(gfx++, play->state.gfxCtx);
 
         gSPVertex(gfx++, starVtxData, ARRAY_COUNT(starVtxData), 0);
         gSP2Triangles(gfx++, 0, 1, 2, 0, 1, 3, 2, 0);

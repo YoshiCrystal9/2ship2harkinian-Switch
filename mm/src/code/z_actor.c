@@ -5105,7 +5105,7 @@ void Gfx_DrawDListOpa(PlayState* play, Gfx* dlist) {
     dl = POLY_OPA_DISP;
 
     gSPDisplayList(&dl[0], gSetupDLs[SETUPDL_25]);
-    gSPMatrix(&dl[1], Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    MATRIX_FINALIZE_AND_LOAD(&dl[1], play->state.gfxCtx);
     gSPDisplayList(&dl[2], dlist);
 
     POLY_OPA_DISP = &dl[3];
@@ -5124,7 +5124,7 @@ void Gfx_DrawDListXlu(PlayState* play, Gfx* dlist) {
     dl = POLY_XLU_DISP;
 
     gSPDisplayList(&dl[0], gSetupDLs[SETUPDL_25]);
-    gSPMatrix(&dl[1], Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    MATRIX_FINALIZE_AND_LOAD(&dl[1], play->state.gfxCtx);
     gSPDisplayList(&dl[2], dlist);
 
     POLY_XLU_DISP = &dl[3];

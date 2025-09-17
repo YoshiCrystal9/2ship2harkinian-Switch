@@ -100,7 +100,7 @@ void EnBox_RandoPostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s*
             break;
     }
 
-    gSPMatrix((*gfx)++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    MATRIX_FINALIZE_AND_LOAD((*gfx)++, play->state.gfxCtx);
     switch (randoItemType) {
         case RITYPE_BOSS_KEY:
         case RITYPE_HEALTH:

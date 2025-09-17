@@ -583,7 +583,7 @@ void KaleidoScope_DrawWorldMap(PlayState* play) {
         // We need to shift the matrix a little to the left before flipping it so that it aligns in the same spot
         Matrix_Translate(-2.0f, 0.0f, 0.0f, MTXMODE_APPLY);
         Matrix_Scale(-1.0f, 1.0f, 1.0f, MTXMODE_APPLY);
-        gSPMatrix(POLY_OPA_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+        MATRIX_FINALIZE_AND_LOAD(POLY_OPA_DISP++, play->state.gfxCtx);
         Matrix_Pop();
     }
 

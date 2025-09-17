@@ -32,8 +32,7 @@ void RegisterHyruleWarriorsStyledLink() {
             Matrix_RotateZS(-0x12F6, MTXMODE_APPLY);
             Matrix_Translate(300.0f, -250.0f, 77.7f, MTXMODE_APPLY);
             Matrix_Scale(0.648f, 0.648f, 0.648f, MTXMODE_APPLY);
-            gSPMatrix(POLY_OPA_DISP++, Matrix_NewMtx(gPlayState->state.gfxCtx),
-                      G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+            MATRIX_FINALIZE_AND_LOAD(POLY_OPA_DISP++, gPlayState->state.gfxCtx);
             gSPDisplayList(POLY_OPA_DISP++, (Gfx*)D_801C0B20[PLAYER_MASK_KEATON - 1]);
             Matrix_Pop();
             CLOSE_DISPS(gPlayState->state.gfxCtx);
@@ -49,8 +48,7 @@ void RegisterHyruleWarriorsStyledLink() {
             Matrix_RotateZS(-0x3A98, MTXMODE_APPLY);
             Matrix_Translate(-85.0f, 658.0f, -165.0f, MTXMODE_APPLY);
             Matrix_Scale(0.635f, 0.635f, 0.635f, MTXMODE_APPLY);
-            gSPMatrix(POLY_OPA_DISP++, Matrix_NewMtx(gPlayState->state.gfxCtx),
-                      G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+            MATRIX_FINALIZE_AND_LOAD(POLY_OPA_DISP++, gPlayState->state.gfxCtx);
             gSPDisplayList(POLY_OPA_DISP++, (Gfx*)D_801C0B20[PLAYER_MASK_FIERCE_DEITY - 1]);
             Matrix_Pop();
             CLOSE_DISPS(gPlayState->state.gfxCtx);
