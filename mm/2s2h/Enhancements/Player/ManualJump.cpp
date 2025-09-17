@@ -17,7 +17,7 @@ void func_808395F0(PlayState* play, Player* player, PlayerMeleeWeaponAnimation m
 void RegisterManualJump() {
     COND_VB_SHOULD(VB_START_JUMPSLASH, CVAR, {
         Player* player = GET_PLAYER(gPlayState);
-        s32 temp_a2 = player->unk_AE3[player->unk_ADE];
+        s32 temp_a2 = player->controlStickDirections[player->controlStickDataIndex];
 
         *should = false;
 

@@ -200,7 +200,7 @@ static RegisterShipInitFunc initFunc(
 
                 // The remains in the Majora fight get their health set after init for the first time fighting,
                 // so we set the expected value now
-                if (actor->id == ACTOR_BOSS_07 && actor->params >= MAJORAS_REMAINS) {
+                if (actor->id == ACTOR_BOSS_07 && actor->params >= MAJORA_TYPE_REMAINS) {
                     *maxHealth = 5;
                 }
             });

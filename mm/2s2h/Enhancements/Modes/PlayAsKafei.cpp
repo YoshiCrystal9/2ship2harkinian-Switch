@@ -41,9 +41,9 @@ void UpdatePlayAsKafei() {
         sPlayerEyesTextures[PLAYER_FORM_HUMAN][7] = (TexturePtr)gKafeiEyesWincingTex;
 
         sPlayerMouthTextures[PLAYER_FORM_HUMAN][0] = (TexturePtr)gKafeiMouthClosedTex;
-        sPlayerMouthTextures[PLAYER_FORM_HUMAN][1] = (TexturePtr)gKafeiMouthTeethTex;
-        sPlayerMouthTextures[PLAYER_FORM_HUMAN][2] = (TexturePtr)gKafeiMouthAngryTex;
-        sPlayerMouthTextures[PLAYER_FORM_HUMAN][3] = (TexturePtr)gKafeiMouthHappyTex;
+        sPlayerMouthTextures[PLAYER_FORM_HUMAN][1] = (TexturePtr)gKafeiMouthHalfTex;
+        sPlayerMouthTextures[PLAYER_FORM_HUMAN][2] = (TexturePtr)gKafeiMouthOpenTex;
+        sPlayerMouthTextures[PLAYER_FORM_HUMAN][3] = (TexturePtr)gKafeiMouthSmileTex;
     } else {
         auto gLinkHumanSkelResource = Ship::Context::GetInstance()->GetResourceManager()->LoadResource(gLinkHumanSkel);
         SkeletonHeader* gLinkHumanSkelPtr = (SkeletonHeader*)gLinkHumanSkelResource->GetRawPointer();

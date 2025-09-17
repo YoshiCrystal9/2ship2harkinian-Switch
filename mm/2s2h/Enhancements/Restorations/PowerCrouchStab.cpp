@@ -10,8 +10,8 @@ void RegisterPowerCrouchStab() {
 
     COND_ID_HOOK(OnActorInit, ACTOR_PLAYER, CVAR == 2, [](Actor* actor) {
         Player* player = (Player*)actor;
-        player->meleeWeaponQuads[0].info.toucher.dmgFlags = 512; // Kokiri Sword
-        player->meleeWeaponQuads[1].info.toucher.dmgFlags = 512; // Kokiri Sword
+        player->meleeWeaponQuads[0].elem.atDmgInfo.dmgFlags = 512; // Kokiri Sword
+        player->meleeWeaponQuads[1].elem.atDmgInfo.dmgFlags = 512; // Kokiri Sword
     });
 }
 
