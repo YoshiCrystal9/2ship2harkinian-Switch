@@ -1,7 +1,7 @@
 #include "global.h"
 #include "PR/gs2dex.h"
 #include "sys_cfb.h"
-// #include "z64malloc.h" // 2S2H [Port] Don't want this anymore
+#include "z64malloc.h"
 #include "z64snap.h"
 #include "z64view.h"
 #include "z64voice.h"
@@ -7234,8 +7234,8 @@ void Interface_DrawClock(PlayState* play) {
 
             OVERLAY_DISP =
                 CVarGetInteger("gEnhancements.Graphics.24HoursClock", 0)
-                    ? Gfx_DrawTexQuad4b(OVERLAY_DISP, sThreeDayClockHourTwentyFourHoursTextures[hourIndex], G_IM_FMT_I, 16,
-                                        11, 0)
+                    ? Gfx_DrawTexQuad4b(OVERLAY_DISP, sThreeDayClockHourTwentyFourHoursTextures[hourIndex], G_IM_FMT_I,
+                                        16, 11, 0)
                     : Gfx_DrawTexQuad4b(OVERLAY_DISP, sThreeDayClockHourTextures[hourIndex], G_IM_FMT_I, 16, 11, 0);
 
             // Colours the Three-Day Clocks's Hour Digit Above the Sun
@@ -7277,8 +7277,8 @@ void Interface_DrawClock(PlayState* play) {
 
             OVERLAY_DISP =
                 CVarGetInteger("gEnhancements.Graphics.24HoursClock", 0)
-                    ? Gfx_DrawTexQuad4b(OVERLAY_DISP, sThreeDayClockHourTwentyFourHoursTextures[hourIndex], G_IM_FMT_I, 16,
-                                        11, 0)
+                    ? Gfx_DrawTexQuad4b(OVERLAY_DISP, sThreeDayClockHourTwentyFourHoursTextures[hourIndex], G_IM_FMT_I,
+                                        16, 11, 0)
                     : Gfx_DrawTexQuad4b(OVERLAY_DISP, sThreeDayClockHourTextures[hourIndex], G_IM_FMT_I, 16, 11, 0);
 
             // Colours the Three-Day Clocks's Hour Digit Above the Moon
