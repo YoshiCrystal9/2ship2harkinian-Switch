@@ -63,20 +63,20 @@ static const ALIGN_ASSET(2) char gKafeiEyesHalfTex[] = dgKafeiEyesHalfTex;
 #define dgKafeiEyesClosedTex "__OTR__objects/object_test3/gKafeiEyesClosedTex"
 static const ALIGN_ASSET(2) char gKafeiEyesClosedTex[] = dgKafeiEyesClosedTex;
 
-#define dgKafeiEyesRollRightTex "__OTR__objects/object_test3/gKafeiEyesRollRightTex"
-static const ALIGN_ASSET(2) char gKafeiEyesRollRightTex[] = dgKafeiEyesRollRightTex;
+#define dgKafeiEyesRightTex "__OTR__objects/object_test3/gKafeiEyesRightTex"
+static const ALIGN_ASSET(2) char gKafeiEyesRightTex[] = dgKafeiEyesRightTex;
 
-#define dgKafeiEyesRollLeftTex "__OTR__objects/object_test3/gKafeiEyesRollLeftTex"
-static const ALIGN_ASSET(2) char gKafeiEyesRollLeftTex[] = dgKafeiEyesRollLeftTex;
+#define dgKafeiEyesLeftTex "__OTR__objects/object_test3/gKafeiEyesLeftTex"
+static const ALIGN_ASSET(2) char gKafeiEyesLeftTex[] = dgKafeiEyesLeftTex;
 
-#define dgKafeiEyesRollUpTex "__OTR__objects/object_test3/gKafeiEyesRollUpTex"
-static const ALIGN_ASSET(2) char gKafeiEyesRollUpTex[] = dgKafeiEyesRollUpTex;
+#define dgKafeiEyesUpTex "__OTR__objects/object_test3/gKafeiEyesUpTex"
+static const ALIGN_ASSET(2) char gKafeiEyesUpTex[] = dgKafeiEyesUpTex;
 
-#define dgKafeiEyesRollDownTex "__OTR__objects/object_test3/gKafeiEyesRollDownTex"
-static const ALIGN_ASSET(2) char gKafeiEyesRollDownTex[] = dgKafeiEyesRollDownTex;
+#define dgKafeiEyesDownTex "__OTR__objects/object_test3/gKafeiEyesDownTex"
+static const ALIGN_ASSET(2) char gKafeiEyesDownTex[] = dgKafeiEyesDownTex;
 
-#define dobject_test3_Tex_006680 "__OTR__objects/object_test3/object_test3_Tex_006680"
-static const ALIGN_ASSET(2) char object_test3_Tex_006680[] = dobject_test3_Tex_006680;
+#define dgKafeiEyesWincingTex "__OTR__objects/object_test3/gKafeiEyesWincingTex"
+static const ALIGN_ASSET(2) char gKafeiEyesWincingTex[] = dgKafeiEyesWincingTex;
 
 #define dgKafeiMouthTeethTex "__OTR__objects/object_test3/gKafeiMouthTeethTex"
 static const ALIGN_ASSET(2) char gKafeiMouthTeethTex[] = dgKafeiMouthTeethTex;
