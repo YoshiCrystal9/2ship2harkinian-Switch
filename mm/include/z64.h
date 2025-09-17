@@ -28,13 +28,9 @@ extern "C" {
 #include "sequence.h"
 #include "seqcmd.h"
 #include "sfx.h"
-#include "message_data_static.h"
 
 #include "main.h"
 
-#include "gfx.h"
-#include "gfxprint.h"
-#include "padutils.h"
 #include "rand.h"
 #include "sys_matrix.h"
 #include "tha.h"
@@ -83,7 +79,6 @@ extern "C" {
 #include "z64rumble.h"
 #include "z64transition.h"
 #include "z64view.h"
-#include "z64msgevent.h"
 
 #define AUDIO_HEAP_SIZE 0x1380000
 #define SYSTEM_HEAP_SIZE (1024 * 1024 * 32)
