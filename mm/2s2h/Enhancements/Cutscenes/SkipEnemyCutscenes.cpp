@@ -25,11 +25,11 @@ void EnBigpo_SetupIdleFlying(EnBigpo* enBigpo);
 void EnBigpo_DrawMainBigpo(Actor* actor, PlayState* play);
 void EnBigslime_CallMinislime(EnBigslime* enBigslime, PlayState* play);
 void EnBigslime_GekkoSfxOutsideBigslime(EnBigslime* enBigslime, u16 sfxId);
-void func_80B872A4(EnKaizoku* enKaizoku);
+void EnKaizoku_SetupReady(EnKaizoku* enKaizoku);
 void EnKaizoku_Draw(Actor* actor, PlayState* play);
-void func_80B8971C(EnKaizoku* enKaizoku, PlayState* play);
-void func_80B86B58(EnKaizoku* enKaizoku);
-void func_80B86B74(EnKaizoku* enKaizoku, PlayState* play);
+void EnKaizoku_DefeatKnockdown(EnKaizoku* enKaizoku, PlayState* play);
+void EnKaizoku_SetupPlayerWinCutscene(EnKaizoku* enKaizoku);
+void EnKaizoku_PlayerWinCutscene(EnKaizoku* enKaizoku, PlayState* play);
 void EnKaizoku_ChangeAnim(EnKaizoku* enKaizoku, EnKaizokuAnimation animIndex);
 void EnWiz_SetupSecondPhaseCutscene(EnWiz* enWiz, PlayState* play);
 extern EnKnight* sThinKnightInstance;
@@ -138,22 +138,22 @@ void RegisterSkipEnemyIntros() {
             // Pirate already defeated, don't do anything
             return;
         }
-        enKaizoku->unk_59C = 0;
+        enKaizoku->cutsceneState = 0;
         enKaizoku->picto.actor.flags &= ~ACTOR_FLAG_FREEZE_EXCEPTION;
         enKaizoku->picto.actor.flags &= ~ACTOR_FLAG_LOCK_ON_DISABLED;
         enKaizoku->picto.actor.flags |= ACTOR_FLAG_ATTENTION_ENABLED;
         enKaizoku->picto.actor.draw = EnKaizoku_Draw;
         enKaizoku->picto.actor.gravity = -2.0f;
-        // Swords
-        enKaizoku->unk_2F8.y = 1.0f;
-        enKaizoku->unk_2F8.z = 1.0f;
-        enKaizoku->unk_304.x = 1.0f;
-        enKaizoku->unk_304.y = 1.0f;
-        enKaizoku->unk_304.z = 1.0f;
-        enKaizoku->unk_2D8 = 0; // Flag for updating animation
+        enKaizoku->swordScaleRight.x = 1.0f;
+        enKaizoku->swordScaleRight.y = 1.0f;
+        enKaizoku->swordScaleRight.z = 1.0f;
+        enKaizoku->swordScaleLeft.x = 1.0f;
+        enKaizoku->swordScaleLeft.y = 1.0f;
+        enKaizoku->swordScaleLeft.z = 1.0f;
+        enKaizoku->animationsDisabled = 0; // Flag for updating animation
         Audio_SetMainBgmVolume(0x7F, 0);
         Audio_PlayBgm_StorePrevBgm(NA_BGM_MINI_BOSS);
-        func_80B872A4(enKaizoku);
+        EnKaizoku_SetupReady(enKaizoku);
     });
 
     // Wizrobe
@@ -293,10 +293,10 @@ void RegisterSkipEnemyCutscenes() {
 
     COND_ID_HOOK(ShouldActorUpdate, ACTOR_EN_KAIZOKU, CVAR, [](Actor* actor, bool* should) {
         EnKaizoku* enKaizoku = (EnKaizoku*)actor;
-        if (enKaizoku->actionFunc == func_80B8971C) { // Defeat cutscene
+        if (enKaizoku->actionFunc == EnKaizoku_DefeatKnockdown) {
             // Stop pirate from constantly rotating to face the player
             enKaizoku->picto.actor.yawTowardsPlayer = enKaizoku->picto.actor.shape.rot.y;
-        } else if (enKaizoku->actionFunc == func_80B86B74) { // Deku Nut escape
+        } else if (enKaizoku->actionFunc == EnKaizoku_PlayerWinCutscene) {
             // Store player's rotation values to prevent player from rotating to face the pirate
             Player* player = GET_PLAYER(gPlayState);
             shapeRotY = player->actor.shape.rot.y;
@@ -306,14 +306,14 @@ void RegisterSkipEnemyCutscenes() {
 
     COND_ID_HOOK(OnActorUpdate, ACTOR_EN_KAIZOKU, CVAR, [](Actor* actor) {
         EnKaizoku* enKaizoku = (EnKaizoku*)actor;
-        if (enKaizoku->actionFunc == func_80B8971C) { // Defeat cutscene
+        if (enKaizoku->actionFunc == EnKaizoku_DefeatKnockdown) {
             if (enKaizoku->skelAnime.curFrame >= 25.0f) {
-                enKaizoku->unk_2D8 = 0;
-                enKaizoku->unk_59C = 2; // Skip actor+player position change
-                func_80B86B58(enKaizoku);
-                EnKaizoku_ChangeAnim(enKaizoku, EN_KAIZOKU_ANIM_18); // Throw Deku Nut
+                enKaizoku->animationsDisabled = false;
+                enKaizoku->cutsceneState = 2; // Skip actor+player position change
+                EnKaizoku_SetupPlayerWinCutscene(enKaizoku);
+                EnKaizoku_ChangeAnim(enKaizoku, KAIZOKU_ANIM_THROW_FLASH);
             }
-        } else if (enKaizoku->actionFunc == func_80B86B74) { // Deku Nut escape
+        } else if (enKaizoku->actionFunc == EnKaizoku_PlayerWinCutscene) {
             // Restore player's rotation; do not constantly face pirate
             Player* player = GET_PLAYER(gPlayState);
             player->actor.shape.rot.y = shapeRotY;
