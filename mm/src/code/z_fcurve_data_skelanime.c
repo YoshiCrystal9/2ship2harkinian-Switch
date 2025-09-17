@@ -32,6 +32,7 @@
 #include "z64curve.h"
 #include "z64malloc.h"
 #include "z64.h"
+#include "functions.h"
 
 #include "2s2h/BenPort.h"
 
