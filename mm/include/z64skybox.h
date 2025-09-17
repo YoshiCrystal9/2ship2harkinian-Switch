@@ -48,6 +48,7 @@ void Skybox_SetColors(SkyboxContext* skyboxCtx, u8 primR, u8 primG, u8 primB, u8
 void Skybox_Draw(SkyboxContext* skyboxCtx, struct GraphicsContext* gfxCtx, s16 skyboxId, s16 blend, f32 x, f32 y,
                  f32 z);
 void Skybox_Update(SkyboxContext* skyboxCtx);
+void Skybox_Calculate128(SkyboxContext* skyboxCtx, s32 nFaces);
 
 // #region 2S2H [Port]
 typedef enum SkyboxTexturesIndex {
