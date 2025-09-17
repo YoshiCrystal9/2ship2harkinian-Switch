@@ -1898,7 +1898,7 @@ Gfx gCullFrontDList[] = {
  * Note that some player forms do not use the eyes and mouth textures loaded into segments 0x08 and 0x09 respectively.
  * Therefore, the segment will point at garbage data, but this does not cause issues as the data is not read from.
  */
-static TexturePtr sEyeTextures[PLAYER_FORM_MAX][PLAYER_EYES_MAX] = {
+TexturePtr sPlayerEyesTextures[PLAYER_FORM_MAX][PLAYER_EYES_MAX] = {
     // PLAYER_FORM_FIERCE_DEITY
     {
         NULL, // PLAYER_EYES_OPEN
@@ -1957,7 +1957,7 @@ static TexturePtr sEyeTextures[PLAYER_FORM_MAX][PLAYER_EYES_MAX] = {
     },
 };
 
-static TexturePtr sMouthTextures[PLAYER_FORM_MAX][PLAYER_MOUTH_MAX] = {
+TexturePtr sPlayerMouthTextures[PLAYER_FORM_MAX][PLAYER_MOUTH_MAX] = {
     // PLAYER_FORM_FIERCE_DEITY
     {
         NULL, // PLAYER_MOUTH_CLOSED
@@ -2057,7 +2057,7 @@ void Player_DrawImpl(PlayState* play, void** skeleton, Vec3s* jointTable, s32 dL
 
     // Only Human, Zora, and Goron will read the eye textures in the head limb display list.
     // Fierce Deity and Deku will point this segment to garbage data, but it will be unread from.
-    gSPSegment(&gfx[0], 0x08, Lib_SegmentedToVirtual(sEyeTextures[eyeIndex]));
+    gSPSegment(&gfx[0], 0x08, Lib_SegmentedToVirtual(sPlayerEyesTextures[playerForm][eyeIndex]));
 
     // 2S2H [Port] Hess crash fix
     if (mouthIndex >= PLAYER_MOUTH_MAX) {
@@ -2072,7 +2072,7 @@ void Player_DrawImpl(PlayState* play, void** skeleton, Vec3s* jointTable, s32 dL
 
     // Only Human and Zora will read the mouth textures in the head limb display list.
     // Goron, Fierce Deity, and Deku will point this segment to garbage data, but it will be unread from.
-    gSPSegment(&gfx[1], 0x09, Lib_SegmentedToVirtual(sMouthTextures[mouthIndex]));
+    gSPSegment(&gfx[1], 0x09, Lib_SegmentedToVirtual(sPlayerMouthTextures[playerForm][mouthIndex]));
 
     POLY_OPA_DISP = &gfx[2];
 

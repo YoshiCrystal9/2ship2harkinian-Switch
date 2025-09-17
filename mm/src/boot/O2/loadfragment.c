@@ -193,7 +193,7 @@ size_t Fragment_Load(uintptr_t vromStart, uintptr_t vromEnd, void* vramStart, vo
             // Clear BSS area (%08x-%08x)
             // "BSS領域をクリアします(%08x-%08x)\n"
         }
-        bzero((void*)end, ovlRelocs->bssSize);
+        memset(end, 0, ovlRelocs->bssSize);
     }
 
     osWritebackDCache(allocatedRamAddr, allocatedBytes);
@@ -218,6 +218,7 @@ void* Fragment_AllocateAndLoad(uintptr_t vromStart, uintptr_t vromEnd, void* vra
     if (gFragmentLogSeverity >= 3) {
         // Start loading dynamic link function
         // "\nダイナミックリンクファンクションのロードを開始します\n"
+    }
 
     allocatedRamAddr = SystemArena_MallocR(size);
     end = (uintptr_t)allocatedRamAddr + size;
@@ -270,7 +271,7 @@ void* Fragment_AllocateAndLoad(uintptr_t vromStart, uintptr_t vromEnd, void* vra
             // Clear BSS area (%08x-%08x)
             // "BSS領域をクリアします(%08x-%08x)\n"
         }
-        bzero((void*)end, ovlRelocs->bssSize);
+        memset(end, 0, ovlRelocs->bssSize);
     }
 
     osInvalICache(allocatedRamAddr, allocatedBytes);

@@ -5,7 +5,7 @@
 // Segment and Profile declarations (also used in the table below)
 // 2S2H Added columns to actor table: _humanName
 #define DEFINE_ACTOR(name, _enumValue, _allocType, _debugName, _humanName) extern ActorProfile name##_Profile;
-#define DEFINE_ACTOR_INTERNAL(name, _enumValue, _allocType, _debugName) extern ActorProfile name##_Profile;
+#define DEFINE_ACTOR_INTERNAL(name, _enumValue, _allocType, _debugName, _humanName) extern ActorProfile name##_Profile;
 #define DEFINE_ACTOR_UNSET(_enumValue)
 
 #include "tables/actor_table.h"
