@@ -5,6 +5,7 @@
 #include "z64math.h"
 #include "z64actor.h"
 #include "z64save.h"
+#include "z64view.h"
 #include "unk.h"
 
 struct CollisionPoly;
