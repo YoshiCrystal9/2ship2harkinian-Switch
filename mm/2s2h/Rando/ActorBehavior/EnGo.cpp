@@ -38,7 +38,7 @@ void Rando::ActorBehavior::InitEnGoBehavior() {
         Player* player = GET_PLAYER(gPlayState);
 
         if (cmdId == MSCRIPT_CMD_ID_CHECK_ITEM) {
-            MsgScriptCmdCheckItem* cmd = (MsgScriptCmdCheckItem*)*script;
+            MsgScriptCmdCheckItem* cmd = (MsgScriptCmdCheckItem*)script;
             s16 skip = SCRIPT_PACK_16(cmd->offsetH, cmd->offsetL);
 
             s16 jumpTarget = 0x009A;
@@ -57,7 +57,7 @@ void Rando::ActorBehavior::InitEnGoBehavior() {
         if (cmdId == MSCRIPT_CMD_ID_BEGIN_TEXT || cmdId == MSCRIPT_CMD_ID_CONTINUE_TEXT) {
 
             // Could also be MsgScriptCmdContinueText, but structs are essentially identical
-            MsgScriptCmdBeginText* cmd = (MsgScriptCmdBeginText*)*script;
+            MsgScriptCmdBeginText* cmd = (MsgScriptCmdBeginText*)script;
             u16 textId = SCRIPT_PACK_16(cmd->textIdH, cmd->textIdL);
 
             // Only override behavior if the player has yet to discover powder kegs
@@ -76,7 +76,7 @@ void Rando::ActorBehavior::InitEnGoBehavior() {
 
         // Identify text choice branch at 0x004E by skip offset values
         if (cmdId == MSCRIPT_CMD_ID_CHECK_TEXT_CHOICE) {
-            MsgScriptCmdCheckTextChoice* cmd = (MsgScriptCmdCheckTextChoice*)*script;
+            MsgScriptCmdCheckTextChoice* cmd = (MsgScriptCmdCheckTextChoice*)script;
             s16 skipChoice1 = SCRIPT_PACK_16(cmd->offset0H, cmd->offset0L);
             s16 skipChoice2 = SCRIPT_PACK_16(cmd->offset1H, cmd->offset1L);
             s16 skipChoice3 = SCRIPT_PACK_16(cmd->offset2H, cmd->offset2L);

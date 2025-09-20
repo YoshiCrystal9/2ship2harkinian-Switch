@@ -24,7 +24,7 @@ void Rando::ActorBehavior::InitEnAlBehavior() {
 
             if (cmdId == MSCRIPT_CMD_ID_OFFER_ITEM) {
                 *should = false;
-                MsgScriptCmdOfferItem* cmd = (MsgScriptCmdOfferItem*)*va_arg(args, MsgScript*);
+                MsgScriptCmdOfferItem* cmd = va_arg(args, MsgScriptCmdOfferItem*);
                 GetItemId getItemId = (GetItemId)SCRIPT_PACK_16(cmd->itemIdH, cmd->itemIdL);
                 skipCmds.clear();
                 if (getItemId == GI_MASK_KAFEIS_MASK) { // Mayor's Residence

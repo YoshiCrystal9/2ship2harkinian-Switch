@@ -26,7 +26,7 @@ void Rando::ActorBehavior::InitEnAnBehavior() {
                 skipCmds.clear();
                 skipCmds.push_back(MSCRIPT_CMD_ID_AWAIT_TEXT); // Have to skip this to prevent a crash
                 skipCmds.push_back(MSCRIPT_CMD_ID_AUTOTALK);   // And have to skip this to prevent a softlock on repeats
-                MsgScriptCmdOfferItem* cmd = (MsgScriptCmdOfferItem*)*va_arg(args, MsgScript*);
+                MsgScriptCmdOfferItem* cmd = va_arg(args, MsgScriptCmdOfferItem*);
                 GetItemId getItemId = (GetItemId)SCRIPT_PACK_16(cmd->itemIdH, cmd->itemIdL);
                 /*
                  * If the player has the Bombers' Notebook and this is the Letter to Kafei check, the game will crash

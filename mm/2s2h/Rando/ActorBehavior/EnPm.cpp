@@ -27,7 +27,7 @@ void Rando::ActorBehavior::InitEnPmBehavior() {
                      * Express Mail, so we're just going to always act as if the player does not have the Postman's Hat.
                      * This enables repeat rewards as well, which does slightly differ from vanilla.
                      */
-                    MsgScriptCmdCheckItem* cmd = (MsgScriptCmdCheckItem*)*script;
+                    MsgScriptCmdCheckItem* cmd = (MsgScriptCmdCheckItem*)script;
                     ItemId itemId = (ItemId)SCRIPT_PACK_16(cmd->itemH, cmd->itemL);
                     if (itemId == ITEM_MASK_POSTMAN) {
                         *should = false;
