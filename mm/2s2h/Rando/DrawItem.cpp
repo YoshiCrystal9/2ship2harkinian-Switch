@@ -166,7 +166,7 @@ void DrawMilkRefill() {
 
     Gfx_SetupDL25_Xlu(gPlayState->state.gfxCtx);
 
-    gSPMatrix(POLY_XLU_DISP++, Matrix_Finalize(gPlayState->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    MATRIX_FINALIZE_AND_LOAD(POLY_XLU_DISP++, gPlayState->state.gfxCtx);
     // Pattern Color
     // Milk
     gDPSetPrimColor(POLY_XLU_DISP++, 0, 0, 13, 33, 255, 255);
@@ -216,7 +216,7 @@ void DrawSmallKey(RandoItemId randoItemId) {
             break;
     }
 
-    gSPMatrix(POLY_OPA_DISP++, Matrix_Finalize(gPlayState->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    MATRIX_FINALIZE_AND_LOAD(POLY_OPA_DISP++, gPlayState->state.gfxCtx);
     gSPDisplayList(POLY_OPA_DISP++, gGiSmallKeyCopyDL);
 
     CLOSE_DISPS(gPlayState->state.gfxCtx);

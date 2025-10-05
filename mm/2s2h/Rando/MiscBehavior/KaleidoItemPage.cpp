@@ -183,7 +183,7 @@ void DrawItemCycleExtras(PlayState* play, u8 slot, u8 canCycle, u8 leftItem, u8 
             Matrix_Scale(finalScale, finalScale, 1.0f, MTXMODE_APPLY);
         }
 
-        MATRIX_FINALIZE_AND_LOAD(POLY_OPA_DISP++, gPlayState->state.gfxCtx);
+        MATRIX_FINALIZE_AND_LOAD(POLY_OPA_DISP++, play->state.gfxCtx);
 
         // Render A button indicator when hovered and not cycling
         if (!isCycling && sCycleActiveAnimTimer == 0 && pauseCtx->cursorSlot[PAUSE_ITEM] == slot &&

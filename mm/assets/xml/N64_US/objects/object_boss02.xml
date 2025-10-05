@@ -71,7 +71,7 @@
         <Animation Name="gTwinmoldHeadFlyAnim" Offset="0x9C78" />
 
         <!-- Unused Empty Texture Animation -->
-        <TextureAnimation Name="gTwinmoldUnusedTexAnim" Offset="0x9C90" />
+        <TextureAnimation Name="gTwinmoldEmpty2TexAnim" Offset="0x9C90" />
 
         <!-- Twinmold Body Limb DisplayLists -->
         <DList Name="gTwinmoldBodySegment1DL" Offset="0xECF0" />

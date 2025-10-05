@@ -6,7 +6,6 @@ extern "C" {
 #include "variables.h"
 #include "overlays/actors/ovl_En_In/z_en_in.h"
 void func_808F3C40(EnIn* enIn, PlayState* play);
-void Player_StartTalking(PlayState* play, Actor* actor);
 }
 
 void EnIn_OnOpenPurchaseText(u16* textId, bool* loadFromMessageTable) {

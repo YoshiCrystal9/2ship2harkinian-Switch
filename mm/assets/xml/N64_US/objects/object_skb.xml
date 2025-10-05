@@ -58,7 +58,7 @@
         <Limb Name="gStalchildSpineLimb" Type="Standard" EnumName="STALCHILD_LIMB_SPINE" Offset="0x5EA0" />
         <Skeleton Name="gStalchildSkel" Type="Normal" LimbType="Standard" LimbNone="STALCHILD_LIMB_NONE" LimbMax="STALCHILD_LIMB_MAX" EnumName="StalchildLimb" Offset="0x5EF8" />
         <Animation Name="gStalchildWalkAnim" Offset="0x64E0" /> <!-- Original name is "stal_baby_walk" -->
-        <!-- <Blob Name="object_skb_zeroes_unk_000064F0" Size="0x20" Offset="0x64F0" /> -->
+        <!-- <Blob Name="gStalchildEmpty4Blob" Size="0x20" Offset="0x64F0" /> -->
         <Animation Name="gStalchildSitLaughAnim" Offset="0x697C" /> <!-- Original name is "suwari_wait" -->
         <Animation Name="gStalchildSitTapToesAnim" Offset="0x6D90" /> <!-- Original name is "yankey_wait" -->
     </File>
