@@ -114,8 +114,8 @@ static const ALIGN_ASSET(2) char gTwinmoldHeadSkel[] = dgTwinmoldHeadSkel;
 #define dgTwinmoldHeadFlyAnim "__OTR__objects/object_boss02/gTwinmoldHeadFlyAnim"
 static const ALIGN_ASSET(2) char gTwinmoldHeadFlyAnim[] = dgTwinmoldHeadFlyAnim;
 
-#define dgTwinmoldUnusedTexAnim "__OTR__objects/object_boss02/gTwinmoldUnusedTexAnim"
-static const ALIGN_ASSET(2) char gTwinmoldUnusedTexAnim[] = dgTwinmoldUnusedTexAnim;
+#define dgTwinmoldEmpty2TexAnim "__OTR__objects/object_boss02/gTwinmoldEmpty2TexAnim"
+static const ALIGN_ASSET(2) char gTwinmoldEmpty2TexAnim[] = dgTwinmoldEmpty2TexAnim;
 
 #define dgTwinmoldBodySegment1DL "__OTR__objects/object_boss02/gTwinmoldBodySegment1DL"
 static const ALIGN_ASSET(2) char gTwinmoldBodySegment1DL[] = dgTwinmoldBodySegment1DL;

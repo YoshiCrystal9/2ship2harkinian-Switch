@@ -117,6 +117,9 @@ static const ALIGN_ASSET(2) char gStalchildSkel[] = dgStalchildSkel;
 #define dgStalchildWalkAnim "__OTR__objects/object_skb/gStalchildWalkAnim"
 static const ALIGN_ASSET(2) char gStalchildWalkAnim[] = dgStalchildWalkAnim;
 
+#define dgStalchildEmpty4Blob "__OTR__objects/object_skb/gStalchildEmpty4Blob"
+static const ALIGN_ASSET(2) char gStalchildEmpty4Blob[] = dgStalchildEmpty4Blob;
+
 #define dgStalchildSitLaughAnim "__OTR__objects/object_skb/gStalchildSitLaughAnim"
 static const ALIGN_ASSET(2) char gStalchildSitLaughAnim[] = dgStalchildSitLaughAnim;
 

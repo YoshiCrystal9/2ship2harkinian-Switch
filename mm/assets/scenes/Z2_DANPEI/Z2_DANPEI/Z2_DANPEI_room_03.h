@@ -57,4 +57,10 @@ static const ALIGN_ASSET(2) char Z2_DANPEI_room_03DL_001308[] = dZ2_DANPEI_room_
 #define dZ2_DANPEI_room_03DL_0008A0 "__OTR__scenes/nonmq/Z2_DANPEI_scene/Z2_DANPEI_room_03DL_0008A0"
 static const ALIGN_ASSET(2) char Z2_DANPEI_room_03DL_0008A0[] = dZ2_DANPEI_room_03DL_0008A0;
 
+#define dZ2_DANPEI_room_03DL_006E70 "__OTR__scenes/nonmq/Z2_DANPEI_scene/Z2_DANPEI_room_03DL_006E70"
+static const ALIGN_ASSET(2) char Z2_DANPEI_room_03DL_006E70[] = dZ2_DANPEI_room_03DL_006E70;
+
+#define dZ2_DANPEI_room_03DL_0096F0 "__OTR__scenes/nonmq/Z2_DANPEI_scene/Z2_DANPEI_room_03DL_0096F0"
+static const ALIGN_ASSET(2) char Z2_DANPEI_room_03DL_0096F0[] = dZ2_DANPEI_room_03DL_0096F0;
+
 #endif // Z2_DANPEI_Z2_DANPEI_ROOM_03_H

@@ -78,4 +78,10 @@ static const ALIGN_ASSET(2) char Z2_MAP_SHOP_room_00DL_005098[] = dZ2_MAP_SHOP_r
 #define dZ2_MAP_SHOP_room_00DL_0057D8 "__OTR__scenes/nonmq/Z2_MAP_SHOP_scene/Z2_MAP_SHOP_room_00DL_0057D8"
 static const ALIGN_ASSET(2) char Z2_MAP_SHOP_room_00DL_0057D8[] = dZ2_MAP_SHOP_room_00DL_0057D8;
 
+#define dZ2_MAP_SHOP_room_00DL_005738 "__OTR__scenes/nonmq/Z2_MAP_SHOP_scene/Z2_MAP_SHOP_room_00DL_005738"
+static const ALIGN_ASSET(2) char Z2_MAP_SHOP_room_00DL_005738[] = dZ2_MAP_SHOP_room_00DL_005738;
+
+#define dZ2_MAP_SHOP_room_00DL_005810 "__OTR__scenes/nonmq/Z2_MAP_SHOP_scene/Z2_MAP_SHOP_room_00DL_005810"
+static const ALIGN_ASSET(2) char Z2_MAP_SHOP_room_00DL_005810[] = dZ2_MAP_SHOP_room_00DL_005810;
+
 #endif // Z2_MAP_SHOP_Z2_MAP_SHOP_ROOM_00_H

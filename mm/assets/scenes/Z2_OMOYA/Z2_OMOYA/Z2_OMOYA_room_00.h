@@ -66,4 +66,10 @@ static const ALIGN_ASSET(2) char Z2_OMOYA_room_00DL_007A38[] = dZ2_OMOYA_room_00
 #define dZ2_OMOYA_room_00Tex_007C08 "__OTR__scenes/nonmq/Z2_OMOYA_scene/Z2_OMOYA_room_00Tex_007C08"
 static const ALIGN_ASSET(2) char Z2_OMOYA_room_00Tex_007C08[] = dZ2_OMOYA_room_00Tex_007C08;
 
+#define dZ2_OMOYA_room_00DL_007B88 "__OTR__scenes/nonmq/Z2_OMOYA_scene/Z2_OMOYA_room_00DL_007B88"
+static const ALIGN_ASSET(2) char Z2_OMOYA_room_00DL_007B88[] = dZ2_OMOYA_room_00DL_007B88;
+
+#define dZ2_OMOYA_room_00DL_0095B8 "__OTR__scenes/nonmq/Z2_OMOYA_scene/Z2_OMOYA_room_00DL_0095B8"
+static const ALIGN_ASSET(2) char Z2_OMOYA_room_00DL_0095B8[] = dZ2_OMOYA_room_00DL_0095B8;
+
 #endif // Z2_OMOYA_Z2_OMOYA_ROOM_00_H

@@ -144,4 +144,10 @@ static const ALIGN_ASSET(2) char Z2_SECOM_room_01DL_002FB0[] = dZ2_SECOM_room_01
 #define dZ2_SECOM_room_01Tex_00C288 "__OTR__scenes/nonmq/Z2_SECOM_scene/Z2_SECOM_room_01Tex_00C288"
 static const ALIGN_ASSET(2) char Z2_SECOM_room_01Tex_00C288[] = dZ2_SECOM_room_01Tex_00C288;
 
+#define dZ2_SECOM_room_01DL_00BCE8 "__OTR__scenes/nonmq/Z2_SECOM_scene/Z2_SECOM_room_01DL_00BCE8"
+static const ALIGN_ASSET(2) char Z2_SECOM_room_01DL_00BCE8[] = dZ2_SECOM_room_01DL_00BCE8;
+
+#define dZ2_SECOM_room_01DL_00F360 "__OTR__scenes/nonmq/Z2_SECOM_scene/Z2_SECOM_room_01DL_00F360"
+static const ALIGN_ASSET(2) char Z2_SECOM_room_01DL_00F360[] = dZ2_SECOM_room_01DL_00F360;
+
 #endif // Z2_SECOM_Z2_SECOM_ROOM_01_H

@@ -33,4 +33,7 @@ static const ALIGN_ASSET(2) char Z2_BOWLING_room_00DL_004900[] = dZ2_BOWLING_roo
 #define dZ2_BOWLING_room_00DL_000528 "__OTR__scenes/nonmq/Z2_BOWLING_scene/Z2_BOWLING_room_00DL_000528"
 static const ALIGN_ASSET(2) char Z2_BOWLING_room_00DL_000528[] = dZ2_BOWLING_room_00DL_000528;
 
+#define dZ2_BOWLING_room_00DL_004CF0 "__OTR__scenes/nonmq/Z2_BOWLING_scene/Z2_BOWLING_room_00DL_004CF0"
+static const ALIGN_ASSET(2) char Z2_BOWLING_room_00DL_004CF0[] = dZ2_BOWLING_room_00DL_004CF0;
+
 #endif // Z2_BOWLING_Z2_BOWLING_ROOM_00_H

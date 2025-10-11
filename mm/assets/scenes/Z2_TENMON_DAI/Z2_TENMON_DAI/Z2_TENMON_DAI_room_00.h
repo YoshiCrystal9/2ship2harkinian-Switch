@@ -93,4 +93,10 @@ static const ALIGN_ASSET(2) char Z2_TENMON_DAI_room_00DL_00A480[] = dZ2_TENMON_D
 #define dZ2_TENMON_DAI_room_00Tex_010758 "__OTR__scenes/nonmq/Z2_TENMON_DAI_scene/Z2_TENMON_DAI_room_00Tex_010758"
 static const ALIGN_ASSET(2) char Z2_TENMON_DAI_room_00Tex_010758[] = dZ2_TENMON_DAI_room_00Tex_010758;
 
+#define dZ2_TENMON_DAI_room_00DL_00BCF8 "__OTR__scenes/nonmq/Z2_TENMON_DAI_scene/Z2_TENMON_DAI_room_00DL_00BCF8"
+static const ALIGN_ASSET(2) char Z2_TENMON_DAI_room_00DL_00BCF8[] = dZ2_TENMON_DAI_room_00DL_00BCF8;
+
+#define dZ2_TENMON_DAI_room_00DL_011AF8 "__OTR__scenes/nonmq/Z2_TENMON_DAI_scene/Z2_TENMON_DAI_room_00DL_011AF8"
+static const ALIGN_ASSET(2) char Z2_TENMON_DAI_room_00DL_011AF8[] = dZ2_TENMON_DAI_room_00DL_011AF8;
+
 #endif // Z2_TENMON_DAI_Z2_TENMON_DAI_ROOM_00_H

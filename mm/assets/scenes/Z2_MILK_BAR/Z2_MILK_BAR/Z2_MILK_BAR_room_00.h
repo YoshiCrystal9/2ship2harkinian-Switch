@@ -33,6 +33,12 @@ static const ALIGN_ASSET(2) char Z2_MILK_BAR_room_00DL_009AF0[] = dZ2_MILK_BAR_r
 #define dZ2_MILK_BAR_room_00DL_00A0E8 "__OTR__scenes/nonmq/Z2_MILK_BAR_scene/Z2_MILK_BAR_room_00DL_00A0E8"
 static const ALIGN_ASSET(2) char Z2_MILK_BAR_room_00DL_00A0E8[] = dZ2_MILK_BAR_room_00DL_00A0E8;
 
+#define dZ2_MILK_BAR_room_00DL_0093C0 "__OTR__scenes/nonmq/Z2_MILK_BAR_scene/Z2_MILK_BAR_room_00DL_0093C0"
+static const ALIGN_ASSET(2) char Z2_MILK_BAR_room_00DL_0093C0[] = dZ2_MILK_BAR_room_00DL_0093C0;
+
+#define dZ2_MILK_BAR_room_00DL_00AF48 "__OTR__scenes/nonmq/Z2_MILK_BAR_scene/Z2_MILK_BAR_room_00DL_00AF48"
+static const ALIGN_ASSET(2) char Z2_MILK_BAR_room_00DL_00AF48[] = dZ2_MILK_BAR_room_00DL_00AF48;
+
 #define dZ2_MILK_BAR_room_00Set_000230DL_00A8D0 "__OTR__scenes/nonmq/Z2_MILK_BAR_scene/Z2_MILK_BAR_room_00Set_000230DL_00A8D0"
 static const ALIGN_ASSET(2) char Z2_MILK_BAR_room_00Set_000230DL_00A8D0[] = dZ2_MILK_BAR_room_00Set_000230DL_00A8D0;
 

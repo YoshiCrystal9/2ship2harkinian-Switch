@@ -36,4 +36,16 @@ static const ALIGN_ASSET(2) char Z2_CASTLE_room_03DL_002D90[] = dZ2_CASTLE_room_
 #define dZ2_CASTLE_room_03DL_002AD0 "__OTR__scenes/nonmq/Z2_CASTLE_scene/Z2_CASTLE_room_03DL_002AD0"
 static const ALIGN_ASSET(2) char Z2_CASTLE_room_03DL_002AD0[] = dZ2_CASTLE_room_03DL_002AD0;
 
+#define dZ2_CASTLE_room_03DL_000150 "__OTR__scenes/nonmq/Z2_CASTLE_scene/Z2_CASTLE_room_03DL_000150"
+static const ALIGN_ASSET(2) char Z2_CASTLE_room_03DL_000150[] = dZ2_CASTLE_room_03DL_000150;
+
+#define dZ2_CASTLE_room_03DL_003518 "__OTR__scenes/nonmq/Z2_CASTLE_scene/Z2_CASTLE_room_03DL_003518"
+static const ALIGN_ASSET(2) char Z2_CASTLE_room_03DL_003518[] = dZ2_CASTLE_room_03DL_003518;
+
+#define dZ2_CASTLE_room_03DL_005550 "__OTR__scenes/nonmq/Z2_CASTLE_scene/Z2_CASTLE_room_03DL_005550"
+static const ALIGN_ASSET(2) char Z2_CASTLE_room_03DL_005550[] = dZ2_CASTLE_room_03DL_005550;
+
+#define dZ2_CASTLE_room_03DL_005560 "__OTR__scenes/nonmq/Z2_CASTLE_scene/Z2_CASTLE_room_03DL_005560"
+static const ALIGN_ASSET(2) char Z2_CASTLE_room_03DL_005560[] = dZ2_CASTLE_room_03DL_005560;
+
 #endif // Z2_CASTLE_Z2_CASTLE_ROOM_03_H

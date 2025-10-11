@@ -36,6 +36,15 @@ static const ALIGN_ASSET(2) char Z2_TOWN_room_00DL_00C3F0[] = dZ2_TOWN_room_00DL
 #define dZ2_TOWN_room_00DL_015ED0 "__OTR__scenes/nonmq/Z2_TOWN_scene/Z2_TOWN_room_00DL_015ED0"
 static const ALIGN_ASSET(2) char Z2_TOWN_room_00DL_015ED0[] = dZ2_TOWN_room_00DL_015ED0;
 
+#define dZ2_TOWN_room_00DL_000960 "__OTR__scenes/nonmq/Z2_TOWN_scene/Z2_TOWN_room_00DL_000960"
+static const ALIGN_ASSET(2) char Z2_TOWN_room_00DL_000960[] = dZ2_TOWN_room_00DL_000960;
+
+#define dZ2_TOWN_room_00DL_012D98 "__OTR__scenes/nonmq/Z2_TOWN_scene/Z2_TOWN_room_00DL_012D98"
+static const ALIGN_ASSET(2) char Z2_TOWN_room_00DL_012D98[] = dZ2_TOWN_room_00DL_012D98;
+
+#define dZ2_TOWN_room_00DL_017668 "__OTR__scenes/nonmq/Z2_TOWN_scene/Z2_TOWN_room_00DL_017668"
+static const ALIGN_ASSET(2) char Z2_TOWN_room_00DL_017668[] = dZ2_TOWN_room_00DL_017668;
+
 #define dZ2_TOWN_room_00Set_000500DL_012CF8 "__OTR__scenes/nonmq/Z2_TOWN_scene/Z2_TOWN_room_00Set_000500DL_012CF8"
 static const ALIGN_ASSET(2) char Z2_TOWN_room_00Set_000500DL_012CF8[] = dZ2_TOWN_room_00Set_000500DL_012CF8;
 

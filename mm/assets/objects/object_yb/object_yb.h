@@ -6,6 +6,12 @@
 #define dobject_yb_Anim_000200 "__OTR__objects/object_yb/object_yb_Anim_000200"
 static const ALIGN_ASSET(2) char object_yb_Anim_000200[] = dobject_yb_Anim_000200;
 
+#define dobject_yb_Vtx_002080 "__OTR__objects/object_yb/object_yb_Vtx_002080"
+static const ALIGN_ASSET(2) char object_yb_Vtx_002080[] = dobject_yb_Vtx_002080;
+
+#define dobject_yb_Vtx_002D50 "__OTR__objects/object_yb/object_yb_Vtx_002D50"
+static const ALIGN_ASSET(2) char object_yb_Vtx_002D50[] = dobject_yb_Vtx_002D50;
+
 #define dgYbPantsAndBellyButtonDL "__OTR__objects/object_yb/gYbPantsAndBellyButtonDL"
 static const ALIGN_ASSET(2) char gYbPantsAndBellyButtonDL[] = dgYbPantsAndBellyButtonDL;
 

@@ -234,8 +234,8 @@ static const ALIGN_ASSET(2) char gTownShootingGalleryManHairTex[] = dgTownShooti
 #define dgTownShootingGalleryManSkinTex "__OTR__objects/object_shn/gTownShootingGalleryManSkinTex"
 static const ALIGN_ASSET(2) char gTownShootingGalleryManSkinTex[] = dgTownShootingGalleryManSkinTex;
 
-#define dgBurlyGuyUnused11210TexAnim "__OTR__objects/object_shn/gBurlyGuyUnused11210TexAnim"
-static const ALIGN_ASSET(2) char gBurlyGuyUnused11210TexAnim[] = dgBurlyGuyUnused11210TexAnim;
+#define dgBurlyGuyEmpty2TexAnim "__OTR__objects/object_shn/gBurlyGuyEmpty2TexAnim"
+static const ALIGN_ASSET(2) char gBurlyGuyEmpty2TexAnim[] = dgBurlyGuyEmpty2TexAnim;
 
 typedef enum BurlyGuyLimb {
     /* 0x00 */ BURLY_GUY_LIMB_NONE,

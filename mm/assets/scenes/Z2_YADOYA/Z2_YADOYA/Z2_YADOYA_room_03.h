@@ -36,6 +36,18 @@ static const ALIGN_ASSET(2) char Z2_YADOYA_room_03DL_0050A0[] = dZ2_YADOYA_room_
 #define dZ2_YADOYA_room_03DL_003888 "__OTR__scenes/nonmq/Z2_YADOYA_scene/Z2_YADOYA_room_03DL_003888"
 static const ALIGN_ASSET(2) char Z2_YADOYA_room_03DL_003888[] = dZ2_YADOYA_room_03DL_003888;
 
+#define dZ2_YADOYA_room_03DL_000230 "__OTR__scenes/nonmq/Z2_YADOYA_scene/Z2_YADOYA_room_03DL_000230"
+static const ALIGN_ASSET(2) char Z2_YADOYA_room_03DL_000230[] = dZ2_YADOYA_room_03DL_000230;
+
+#define dZ2_YADOYA_room_03DL_005008 "__OTR__scenes/nonmq/Z2_YADOYA_scene/Z2_YADOYA_room_03DL_005008"
+static const ALIGN_ASSET(2) char Z2_YADOYA_room_03DL_005008[] = dZ2_YADOYA_room_03DL_005008;
+
+#define dZ2_YADOYA_room_03DL_005090 "__OTR__scenes/nonmq/Z2_YADOYA_scene/Z2_YADOYA_room_03DL_005090"
+static const ALIGN_ASSET(2) char Z2_YADOYA_room_03DL_005090[] = dZ2_YADOYA_room_03DL_005090;
+
+#define dZ2_YADOYA_room_03DL_0050A8 "__OTR__scenes/nonmq/Z2_YADOYA_scene/Z2_YADOYA_room_03DL_0050A8"
+static const ALIGN_ASSET(2) char Z2_YADOYA_room_03DL_0050A8[] = dZ2_YADOYA_room_03DL_0050A8;
+
 #define dZ2_YADOYA_room_03Set_000170DL_001FA8 "__OTR__scenes/nonmq/Z2_YADOYA_scene/Z2_YADOYA_room_03Set_000170DL_001FA8"
 static const ALIGN_ASSET(2) char Z2_YADOYA_room_03Set_000170DL_001FA8[] = dZ2_YADOYA_room_03Set_000170DL_001FA8;
 

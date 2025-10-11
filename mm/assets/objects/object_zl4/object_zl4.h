@@ -189,6 +189,9 @@ static const ALIGN_ASSET(2) char gDmZl4OcarinaDL[] = dgDmZl4OcarinaDL;
 #define dgZl4Skel "__OTR__objects/object_zl4/gZl4Skel"
 static const ALIGN_ASSET(2) char gZl4Skel[] = dgZl4Skel;
 
+#define dgDmZl4TurningAroundAnim "__OTR__objects/object_zl4/gDmZl4TurningAroundAnim"
+static const ALIGN_ASSET(2) char gDmZl4TurningAroundAnim[] = dgDmZl4TurningAroundAnim;
+
 #define dgDmZl4HoldingFluteInFrontAnim "__OTR__objects/object_zl4/gDmZl4HoldingFluteInFrontAnim"
 static const ALIGN_ASSET(2) char gDmZl4HoldingFluteInFrontAnim[] = dgDmZl4HoldingFluteInFrontAnim;
 
@@ -200,9 +203,6 @@ static const ALIGN_ASSET(2) char gDmZl4LowerFluteAfterPlayAnim[] = dgDmZl4LowerF
 
 #define dgDmZl4PlayingFluteAnim "__OTR__objects/object_zl4/gDmZl4PlayingFluteAnim"
 static const ALIGN_ASSET(2) char gDmZl4PlayingFluteAnim[] = dgDmZl4PlayingFluteAnim;
-
-#define dgDmZl4TurningAroundAnim "__OTR__objects/object_zl4/gDmZl4TurningAroundAnim"
-static const ALIGN_ASSET(2) char gDmZl4TurningAroundAnim[] = dgDmZl4TurningAroundAnim;
 
 #define dgDmZl4FacingAwayIdleAnim "__OTR__objects/object_zl4/gDmZl4FacingAwayIdleAnim"
 static const ALIGN_ASSET(2) char gDmZl4FacingAwayIdleAnim[] = dgDmZl4FacingAwayIdleAnim;

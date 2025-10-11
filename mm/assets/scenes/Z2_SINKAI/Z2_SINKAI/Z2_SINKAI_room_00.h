@@ -66,4 +66,10 @@ static const ALIGN_ASSET(2) char Z2_SINKAI_room_00DL_007BD0[] = dZ2_SINKAI_room_
 #define dZ2_SINKAI_room_00DL_007A00 "__OTR__scenes/nonmq/Z2_SINKAI_scene/Z2_SINKAI_room_00DL_007A00"
 static const ALIGN_ASSET(2) char Z2_SINKAI_room_00DL_007A00[] = dZ2_SINKAI_room_00DL_007A00;
 
+#define dZ2_SINKAI_room_00DL_007550 "__OTR__scenes/nonmq/Z2_SINKAI_scene/Z2_SINKAI_room_00DL_007550"
+static const ALIGN_ASSET(2) char Z2_SINKAI_room_00DL_007550[] = dZ2_SINKAI_room_00DL_007550;
+
+#define dZ2_SINKAI_room_00DL_007C20 "__OTR__scenes/nonmq/Z2_SINKAI_scene/Z2_SINKAI_room_00DL_007C20"
+static const ALIGN_ASSET(2) char Z2_SINKAI_room_00DL_007C20[] = dZ2_SINKAI_room_00DL_007C20;
+
 #endif // Z2_SINKAI_Z2_SINKAI_ROOM_00_H
