@@ -96,4 +96,16 @@ static const ALIGN_ASSET(2) char Z2_TORIDE_room_00DL_00CE70[] = dZ2_TORIDE_room_
 #define dZ2_TORIDE_room_00DL_006E70 "__OTR__scenes/nonmq/Z2_TORIDE_scene/Z2_TORIDE_room_00DL_006E70"
 static const ALIGN_ASSET(2) char Z2_TORIDE_room_00DL_006E70[] = dZ2_TORIDE_room_00DL_006E70;
 
+#define dZ2_TORIDE_room_00DL_00C9E0 "__OTR__scenes/nonmq/Z2_TORIDE_scene/Z2_TORIDE_room_00DL_00C9E0"
+static const ALIGN_ASSET(2) char Z2_TORIDE_room_00DL_00C9E0[] = dZ2_TORIDE_room_00DL_00C9E0;
+
+#define dZ2_TORIDE_room_00DL_0007B0 "__OTR__scenes/nonmq/Z2_TORIDE_scene/Z2_TORIDE_room_00DL_0007B0"
+static const ALIGN_ASSET(2) char Z2_TORIDE_room_00DL_0007B0[] = dZ2_TORIDE_room_00DL_0007B0;
+
+#define dZ2_TORIDE_room_00DL_00C900 "__OTR__scenes/nonmq/Z2_TORIDE_scene/Z2_TORIDE_room_00DL_00C900"
+static const ALIGN_ASSET(2) char Z2_TORIDE_room_00DL_00C900[] = dZ2_TORIDE_room_00DL_00C900;
+
+#define dZ2_TORIDE_room_00DL_00D1D0 "__OTR__scenes/nonmq/Z2_TORIDE_scene/Z2_TORIDE_room_00DL_00D1D0"
+static const ALIGN_ASSET(2) char Z2_TORIDE_room_00DL_00D1D0[] = dZ2_TORIDE_room_00DL_00D1D0;
+
 #endif // Z2_TORIDE_Z2_TORIDE_ROOM_00_H

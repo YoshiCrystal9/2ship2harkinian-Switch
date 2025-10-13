@@ -51,4 +51,10 @@ static const ALIGN_ASSET(2) char Z2_REDEAD_room_11Tex_008778[] = dZ2_REDEAD_room
 #define dZ2_REDEAD_room_11DL_003588 "__OTR__scenes/nonmq/Z2_REDEAD_scene/Z2_REDEAD_room_11DL_003588"
 static const ALIGN_ASSET(2) char Z2_REDEAD_room_11DL_003588[] = dZ2_REDEAD_room_11DL_003588;
 
+#define dZ2_REDEAD_room_11DL_0044E8 "__OTR__scenes/nonmq/Z2_REDEAD_scene/Z2_REDEAD_room_11DL_0044E8"
+static const ALIGN_ASSET(2) char Z2_REDEAD_room_11DL_0044E8[] = dZ2_REDEAD_room_11DL_0044E8;
+
+#define dZ2_REDEAD_room_11DL_007F50 "__OTR__scenes/nonmq/Z2_REDEAD_scene/Z2_REDEAD_room_11DL_007F50"
+static const ALIGN_ASSET(2) char Z2_REDEAD_room_11DL_007F50[] = dZ2_REDEAD_room_11DL_007F50;
+
 #endif // Z2_REDEAD_Z2_REDEAD_ROOM_11_H

@@ -25,10 +25,11 @@
 #include "z_en_rd.h"
 #include "z64rumble.h"
 #include "objects/object_rd/object_rd.h"
+#include "overlays/actors/ovl_Obj_Ice_Poly/z_obj_ice_poly.h"
 
-#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_UNFRIENDLY | ACTOR_FLAG_10 | ACTOR_FLAG_400)
-
-#define THIS ((EnRd*)thisx)
+#define FLAGS                                                                                 \
+    (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_HOSTILE | ACTOR_FLAG_UPDATE_CULLING_DISABLED | \
+     ACTOR_FLAG_HOOKSHOT_PULLS_PLAYER)
 
 void EnRd_Init(Actor* thisx, PlayState* play);
 void EnRd_Destroy(Actor* thisx, PlayState* play);
@@ -97,7 +98,7 @@ typedef enum {
     /* 4 */ EN_RD_GRAB_END
 } EnRdGrabState;
 
-ActorInit En_Rd_InitVars = {
+ActorProfile En_Rd_Profile = {
     /**/ ACTOR_EN_RD,
     /**/ ACTORCAT_ENEMY,
     /**/ FLAGS,
@@ -111,7 +112,7 @@ ActorInit En_Rd_InitVars = {
 
 static ColliderCylinderInit sCylinderInit = {
     {
-        COLTYPE_HIT0,
+        COL_MATERIAL_HIT0,
         AT_NONE,
         AC_ON | AC_TYPE_PLAYER,
         OC1_ON | OC1_TYPE_ALL,
@@ -119,11 +120,11 @@ static ColliderCylinderInit sCylinderInit = {
         COLSHAPE_CYLINDER,
     },
     {
-        ELEMTYPE_UNK1,
+        ELEM_MATERIAL_UNK1,
         { 0x00000000, 0x00, 0x00 },
         { 0xF7EFFFFF, 0x00, 0x00 },
-        TOUCH_NONE | TOUCH_SFX_NORMAL,
-        BUMP_ON | BUMP_HOOKABLE,
+        ATELEM_NONE | ATELEM_SFX_NORMAL,
+        ACELEM_ON | ACELEM_HOOKABLE,
         OCELEM_ON,
     },
     { 20, 70, 0, { 0, 0, 0 } },
@@ -178,20 +179,20 @@ static DamageTable sDamageTable = {
 };
 
 static InitChainEntry sInitChain[] = {
-    ICHAIN_F32(targetArrowOffset, 2000, ICHAIN_CONTINUE),
+    ICHAIN_F32(lockOnArrowOffset, 2000, ICHAIN_CONTINUE),
     ICHAIN_VEC3F_DIV1000(scale, 10, ICHAIN_CONTINUE),
     ICHAIN_F32_DIV1000(gravity, -3500, ICHAIN_STOP),
 };
 
 void EnRd_Init(Actor* thisx, PlayState* play) {
-    EnRd* this = THIS;
+    EnRd* this = (EnRd*)thisx;
     s32 pad;
 
     Actor_ProcessInitChain(&this->actor, sInitChain);
-    this->actor.targetMode = TARGET_MODE_0;
+    this->actor.attentionRangeType = ATTENTION_RANGE_0;
     this->actor.colChkInfo.damageTable = &sDamageTable;
     ActorShape_Init(&this->actor.shape, 0.0f, NULL, 0.0f);
-    this->upperBodyYRotation = this->headYRotation = 0;
+    this->torsoRotY = this->headRotY = 0;
     this->actor.focus.pos = this->actor.world.pos;
     this->actor.focus.pos.y += 50.0f;
     this->actor.colChkInfo.mass = MASS_HEAVY;
@@ -274,12 +275,13 @@ void EnRd_Init(Actor* thisx, PlayState* play) {
 
         Actor_SpawnAsChild(&play->actorCtx, &this->actor, play, ACTOR_OBJ_ICE_POLY, this->actor.world.pos.x,
                            this->actor.world.pos.y, this->actor.world.pos.z, this->actor.world.rot.x,
-                           this->actor.world.rot.y, this->actor.world.rot.z, 0xFF4B);
+                           this->actor.world.rot.y, this->actor.world.rot.z,
+                           OBJICEPOLY_PARAMS(75, OBJICEPOLY_SWITCH_FLAG_NONE));
     }
 }
 
 void EnRd_Destroy(Actor* thisx, PlayState* play) {
-    EnRd* this = THIS;
+    EnRd* this = (EnRd*)thisx;
 
     if (gSaveContext.sunsSongState != SUNSSONG_INACTIVE) {
         gSaveContext.sunsSongState = SUNSSONG_INACTIVE;
@@ -363,8 +365,8 @@ void EnRd_SetupIdle(EnRd* this) {
 
 void EnRd_Idle(EnRd* this, PlayState* play) {
     SkelAnime_Update(&this->skelAnime);
-    Math_SmoothStepToS(&this->headYRotation, 0, 1, 100, 0);
-    Math_SmoothStepToS(&this->upperBodyYRotation, 0, 1, 100, 0);
+    Math_SmoothStepToS(&this->headRotY, 0, 1, 0x64, 0);
+    Math_SmoothStepToS(&this->torsoRotY, 0, 1, 0x64, 0);
 
     if ((EN_RD_GET_TYPE(&this->actor) == EN_RD_TYPE_CRYING) && Animation_OnFrame(&this->skelAnime, 0.0f)) {
         if (Rand_ZeroOne() >= 0.5f) {
@@ -426,8 +428,8 @@ void EnRd_SetupSquattingDance(EnRd* this) {
 
 void EnRd_SquattingDance(EnRd* this, PlayState* play) {
     SkelAnime_Update(&this->skelAnime);
-    Math_SmoothStepToS(&this->headYRotation, 0, 1, 100, 0);
-    Math_SmoothStepToS(&this->upperBodyYRotation, 0, 1, 100, 0);
+    Math_SmoothStepToS(&this->headRotY, 0, 1, 0x64, 0);
+    Math_SmoothStepToS(&this->torsoRotY, 0, 1, 0x64, 0);
 
     if (this->isMourning) {
         EnRd_SetupAttemptPlayerFreeze(this);
@@ -470,8 +472,8 @@ void EnRd_SetupClappingDance(EnRd* this) {
 
 void EnRd_ClappingDance(EnRd* this, PlayState* play) {
     SkelAnime_Update(&this->skelAnime);
-    Math_SmoothStepToS(&this->headYRotation, 0, 1, 100, 0);
-    Math_SmoothStepToS(&this->upperBodyYRotation, 0, 1, 100, 0);
+    Math_SmoothStepToS(&this->headRotY, 0, 1, 0x64, 0);
+    Math_SmoothStepToS(&this->torsoRotY, 0, 1, 0x64, 0);
 
     if (this->isMourning) {
         EnRd_SetupAttemptPlayerFreeze(this);
@@ -531,8 +533,8 @@ void EnRd_SetupPirouette(EnRd* this) {
 
 void EnRd_Pirouette(EnRd* this, PlayState* play) {
     SkelAnime_Update(&this->skelAnime);
-    Math_SmoothStepToS(&this->headYRotation, 0, 1, 100, 0);
-    Math_SmoothStepToS(&this->upperBodyYRotation, 0, 1, 100, 0);
+    Math_SmoothStepToS(&this->headRotY, 0, 1, 0x64, 0);
+    Math_SmoothStepToS(&this->torsoRotY, 0, 1, 0x64, 0);
 
     if (this->isMourning) {
         EnRd_SetupAttemptPlayerFreeze(this);
@@ -628,9 +630,9 @@ void EnRd_RiseFromCoffin(EnRd* this, PlayState* play) {
 }
 
 void EnRd_SetupWalkToPlayer(EnRd* this, PlayState* play) {
-    f32 frameCount = Animation_GetLastFrame(&gGibdoRedeadWalkAnim);
+    f32 endFrame = Animation_GetLastFrame(&gGibdoRedeadWalkAnim);
 
-    Animation_Change(&this->skelAnime, &gGibdoRedeadWalkAnim, 1.0f, 4.0f, frameCount, ANIMMODE_LOOP_INTERP, -4.0f);
+    Animation_Change(&this->skelAnime, &gGibdoRedeadWalkAnim, 1.0f, 4.0f, endFrame, ANIMMODE_LOOP_INTERP, -4.0f);
     this->actor.speed = 0.4f;
     this->action = EN_RD_ACTION_WALKING_TO_PLAYER_OR_RELEASING_GRAB;
     this->actionFunc = EnRd_WalkToPlayer;
@@ -639,13 +641,12 @@ void EnRd_SetupWalkToPlayer(EnRd* this, PlayState* play) {
 void EnRd_WalkToPlayer(EnRd* this, PlayState* play) {
     Player* player = GET_PLAYER(play);
     s32 pad;
-    s16 yaw =
-        ((this->actor.yawTowardsPlayer - this->actor.shape.rot.y) - this->headYRotation) - this->upperBodyYRotation;
+    s16 yaw = this->actor.yawTowardsPlayer - this->actor.shape.rot.y - this->headRotY - this->torsoRotY;
 
     this->skelAnime.playSpeed = this->actor.speed;
-    Math_SmoothStepToS(&this->actor.shape.rot.y, this->actor.yawTowardsPlayer, 1, 250, 0);
-    Math_SmoothStepToS(&this->headYRotation, 0, 1, 100, 0);
-    Math_SmoothStepToS(&this->upperBodyYRotation, 0, 1, 100, 0);
+    Math_SmoothStepToS(&this->actor.shape.rot.y, this->actor.yawTowardsPlayer, 1, 0xFA, 0);
+    Math_SmoothStepToS(&this->headRotY, 0, 1, 0x64, 0);
+    Math_SmoothStepToS(&this->torsoRotY, 0, 1, 0x64, 0);
     this->actor.world.rot.y = this->actor.shape.rot.y;
     SkelAnime_Update(&this->skelAnime);
 
@@ -654,14 +655,14 @@ void EnRd_WalkToPlayer(EnRd* this, PlayState* play) {
     }
 
     if ((ABS_ALT(yaw) < 0x1554) && (Actor_WorldDistXYZToActor(&this->actor, &player->actor) <= 150.0f)) {
-        if (!(player->stateFlags1 & (PLAYER_STATE1_80 | PLAYER_STATE1_2000 | PLAYER_STATE1_4000 | PLAYER_STATE1_40000 |
-                                     PLAYER_STATE1_80000 | PLAYER_STATE1_200000)) &&
+        if (!(player->stateFlags1 & (PLAYER_STATE1_DEAD | PLAYER_STATE1_2000 | PLAYER_STATE1_4000 |
+                                     PLAYER_STATE1_40000 | PLAYER_STATE1_80000 | PLAYER_STATE1_200000)) &&
             !(player->stateFlags2 & (PLAYER_STATE2_80 | PLAYER_STATE2_4000))) {
             if (this->playerStunWaitTimer == 0) {
                 if (!(this->flags & EN_RD_FLAG_CANNOT_FREEZE_PLAYER)) {
                     player->actor.freezeTimer = 40;
-                    func_80123E90(play, &this->actor);
-                    GET_PLAYER(play)->unk_A78 = &this->actor;
+                    Player_SetAutoLockOnActor(play, &this->actor);
+                    GET_PLAYER(play)->autoLockOnActor = &this->actor;
                     Rumble_Request(this->actor.xzDistToPlayer, 255, 20, 150);
                 }
                 this->playerStunWaitTimer = 60;
@@ -688,7 +689,7 @@ void EnRd_WalkToPlayer(EnRd* this, PlayState* play) {
                 EnRd_SetupWalkToHome(this, play);
             }
         } else if (play->grabPlayer(play, player)) {
-            this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
+            this->actor.flags &= ~ACTOR_FLAG_ATTENTION_ENABLED;
             EnRd_SetupGrab(this);
         }
     } else if (EN_RD_GET_TYPE(&this->actor) > EN_RD_TYPE_DOES_NOT_MOURN_IF_WALKING) {
@@ -716,13 +717,13 @@ void EnRd_SetupWalkToHome(EnRd* this, PlayState* play) {
 void EnRd_WalkToHome(EnRd* this, PlayState* play) {
     Player* player = GET_PLAYER(play);
     s32 pad;
-    s16 sp36 = Actor_WorldYawTowardPoint(&this->actor, &this->actor.home.pos);
+    s16 yaw = Actor_WorldYawTowardPoint(&this->actor, &this->actor.home.pos);
 
     if (Actor_WorldDistXYZToPoint(&this->actor, &this->actor.home.pos) >= 5.0f) {
-        Math_SmoothStepToS(&this->actor.shape.rot.y, sp36, 1, 450, 0);
+        Math_SmoothStepToS(&this->actor.shape.rot.y, yaw, 1, 0x1C2, 0);
     } else {
         this->actor.speed = 0.0f;
-        if (!Math_SmoothStepToS(&this->actor.shape.rot.y, this->actor.home.rot.y, 1, 450, 0)) {
+        if (!Math_SmoothStepToS(&this->actor.shape.rot.y, this->actor.home.rot.y, 1, 0x1C2, 0)) {
             if (EN_RD_GET_TYPE(&this->actor) != EN_RD_TYPE_CRYING) {
                 EnRd_SetupIdle(this);
             } else {
@@ -731,17 +732,17 @@ void EnRd_WalkToHome(EnRd* this, PlayState* play) {
         }
     }
 
-    Math_SmoothStepToS(&this->headYRotation, 0, 1, 100, 0);
-    Math_SmoothStepToS(&this->upperBodyYRotation, 0, 1, 100, 0);
+    Math_SmoothStepToS(&this->headRotY, 0, 1, 0x64, 0);
+    Math_SmoothStepToS(&this->torsoRotY, 0, 1, 0x64, 0);
     this->actor.world.rot.y = this->actor.shape.rot.y;
     SkelAnime_Update(&this->skelAnime);
 
-    if (!(player->stateFlags1 & (PLAYER_STATE1_80 | PLAYER_STATE1_2000 | PLAYER_STATE1_4000 | PLAYER_STATE1_40000 |
+    if (!(player->stateFlags1 & (PLAYER_STATE1_DEAD | PLAYER_STATE1_2000 | PLAYER_STATE1_4000 | PLAYER_STATE1_40000 |
                                  PLAYER_STATE1_80000 | PLAYER_STATE1_200000)) &&
         !(player->stateFlags2 & (PLAYER_STATE2_80 | PLAYER_STATE2_4000)) &&
         (player->transformation != PLAYER_FORM_GORON) && (player->transformation != PLAYER_FORM_DEKU) &&
         (Actor_WorldDistXYZToPoint(&player->actor, &this->actor.home.pos) < 150.0f)) {
-        this->actor.targetMode = TARGET_MODE_0;
+        this->actor.attentionRangeType = ATTENTION_RANGE_0;
         EnRd_SetupWalkToPlayer(this, play);
     } else if (EN_RD_GET_TYPE(&this->actor) > EN_RD_TYPE_DOES_NOT_MOURN_IF_WALKING) {
         if (this->actor.parent != NULL) {
@@ -759,9 +760,9 @@ void EnRd_WalkToHome(EnRd* this, PlayState* play) {
 }
 
 void EnRd_SetupWalkToParent(EnRd* this) {
-    f32 frameCount = Animation_GetLastFrame(&gGibdoRedeadWalkAnim);
+    f32 endFrame = Animation_GetLastFrame(&gGibdoRedeadWalkAnim);
 
-    Animation_Change(&this->skelAnime, &gGibdoRedeadWalkAnim, 0.5f, 0.0f, frameCount, ANIMMODE_LOOP_INTERP, -4.0f);
+    Animation_Change(&this->skelAnime, &gGibdoRedeadWalkAnim, 0.5f, 0.0f, endFrame, ANIMMODE_LOOP_INTERP, -4.0f);
     this->action = EN_RD_ACTION_WALKING_TO_PARENT;
     this->isMourning = true;
     this->actionFunc = EnRd_WalkToParent;
@@ -782,7 +783,7 @@ void EnRd_WalkToParent(EnRd* this, PlayState* play) {
         parentPos = this->actor.parent->world.pos;
         yaw = Actor_WorldYawTowardPoint(&this->actor, &parentPos);
 
-        Math_SmoothStepToS(&this->actor.shape.rot.y, yaw, 1, 250, 0);
+        Math_SmoothStepToS(&this->actor.shape.rot.y, yaw, 1, 0xFA, 0);
         if (Actor_WorldDistXYZToPoint(&this->actor, &parentPos) >= 45.0f) {
             this->actor.speed = 0.4f;
         } else {
@@ -793,8 +794,8 @@ void EnRd_WalkToParent(EnRd* this, PlayState* play) {
                 EnRd_SetupCrouch(this);
             }
         }
-        Math_SmoothStepToS(&this->headYRotation, 0, 1, 100, 0);
-        Math_SmoothStepToS(&this->upperBodyYRotation, 0, 1, 100, 0);
+        Math_SmoothStepToS(&this->headRotY, 0, 1, 0x64, 0);
+        Math_SmoothStepToS(&this->torsoRotY, 0, 1, 0x64, 0);
     } else {
         EnRd_SetupWalkToPlayer(this, play);
     }
@@ -836,8 +837,8 @@ void EnRd_Grab(EnRd* this, PlayState* play) {
             this->grabDamageTimer = 20;
 
         case EN_RD_GRAB_START:
-            Math_SmoothStepToS(&this->headYRotation, 0, 1, 1500, 0);
-            Math_SmoothStepToS(&this->upperBodyYRotation, 0, 1, 1500, 0);
+            Math_SmoothStepToS(&this->headRotY, 0, 1, 0x5DC, 0);
+            Math_SmoothStepToS(&this->torsoRotY, 0, 1, 0x5DC, 0);
 
         case EN_RD_GRAB_ATTACK:
             if (!(player->stateFlags2 & PLAYER_STATE2_80) || (player->unk_B62 != 0)) {
@@ -853,14 +854,15 @@ void EnRd_Grab(EnRd* this, PlayState* play) {
             }
 
             switch (player->transformation) {
+                case PLAYER_FORM_HUMAN:
+                    Math_SmoothStepToF(&this->actor.shape.yOffset, -1500.0f, 1.0f, 150.0f, 0.0f);
+                    break;
+
                 case PLAYER_FORM_FIERCE_DEITY:
                 case PLAYER_FORM_GORON:
                 case PLAYER_FORM_ZORA:
                 case PLAYER_FORM_DEKU:
-                    break;
-
-                case PLAYER_FORM_HUMAN:
-                    Math_SmoothStepToF(&this->actor.shape.yOffset, -1500.0f, 1.0f, 150.0f, 0.0f);
+                default:
                     break;
             }
 
@@ -871,7 +873,7 @@ void EnRd_Grab(EnRd* this, PlayState* play) {
             Math_SmoothStepToF(&this->actor.world.pos.z,
                                (Math_CosS(player->actor.shape.rot.y) * -25.0f) + player->actor.world.pos.z, 1.0f, 10.0f,
                                0.0f);
-            Math_SmoothStepToS(&this->actor.shape.rot.y, player->actor.shape.rot.y, 1, 6000, 0);
+            Math_SmoothStepToS(&this->actor.shape.rot.y, player->actor.shape.rot.y, 1, 0x1770, 0);
 
             if (Animation_OnFrame(&this->skelAnime, 0.0f)) {
                 Actor_PlaySfx(&this->actor, NA_SE_EN_REDEAD_ATTACK);
@@ -896,11 +898,14 @@ void EnRd_Grab(EnRd* this, PlayState* play) {
             if (player->transformation != PLAYER_FORM_FIERCE_DEITY) {
                 Math_SmoothStepToF(&this->actor.shape.yOffset, 0.0f, 1.0f, 400.0f, 0.0f);
             }
-            this->actor.targetMode = TARGET_MODE_0;
-            this->actor.flags |= ACTOR_FLAG_TARGETABLE;
+            this->actor.attentionRangeType = ATTENTION_RANGE_0;
+            this->actor.flags |= ACTOR_FLAG_ATTENTION_ENABLED;
             this->playerStunWaitTimer = 10;
             this->grabWaitTimer = 15;
             EnRd_SetupWalkToPlayer(this, play);
+            break;
+
+        default:
             break;
     }
 }
@@ -914,14 +919,13 @@ void EnRd_SetupAttemptPlayerFreeze(EnRd* this) {
 
 void EnRd_AttemptPlayerFreeze(EnRd* this, PlayState* play) {
     Player* player = GET_PLAYER(play);
-    s16 yaw =
-        ((this->actor.yawTowardsPlayer - this->actor.shape.rot.y) - this->headYRotation) - this->upperBodyYRotation;
+    s16 yaw = this->actor.yawTowardsPlayer - this->actor.shape.rot.y - this->headRotY - this->torsoRotY;
 
     if (ABS_ALT(yaw) < 0x2008) {
         if (!(this->flags & EN_RD_FLAG_CANNOT_FREEZE_PLAYER)) {
             player->actor.freezeTimer = 60;
             Rumble_Request(this->actor.xzDistToPlayer, 255, 20, 150);
-            func_80123E90(play, &this->actor);
+            Player_SetAutoLockOnActor(play, &this->actor);
         }
         Actor_PlaySfx(&this->actor, NA_SE_EN_REDEAD_AIM);
         EnRd_SetupWalkToPlayer(this, play);
@@ -943,8 +947,8 @@ void EnRd_GrabFail(EnRd* this, PlayState* play) {
     }
 
     this->actor.world.rot.y = this->actor.yawTowardsPlayer;
-    Math_SmoothStepToS(&this->headYRotation, 0, 1, 300, 0);
-    Math_SmoothStepToS(&this->upperBodyYRotation, 0, 1, 300, 0);
+    Math_SmoothStepToS(&this->headRotY, 0, 1, 0x12C, 0);
+    Math_SmoothStepToS(&this->torsoRotY, 0, 1, 0x12C, 0);
     if (SkelAnime_Update(&this->skelAnime)) {
         this->actor.world.rot.y = this->actor.shape.rot.y;
         EnRd_SetupTurnAwayAndShakeHead(this);
@@ -952,22 +956,22 @@ void EnRd_GrabFail(EnRd* this, PlayState* play) {
 }
 
 void EnRd_SetupTurnAwayAndShakeHead(EnRd* this) {
-    f32 frameCount = Animation_GetLastFrame(&gGibdoRedeadWalkAnim);
+    f32 endFrame = Animation_GetLastFrame(&gGibdoRedeadWalkAnim);
 
-    Animation_Change(&this->skelAnime, &gGibdoRedeadWalkAnim, 0.5f, 0.0f, frameCount, ANIMMODE_LOOP_INTERP, -4.0f);
+    Animation_Change(&this->skelAnime, &gGibdoRedeadWalkAnim, 0.5f, 0.0f, endFrame, ANIMMODE_LOOP_INTERP, -4.0f);
     this->action = EN_RD_ACTION_TURNING_AWAY_AND_SHAKING_HEAD;
     this->headShakeTimer = 0;
     this->actionFunc = EnRd_TurnAwayAndShakeHead;
 }
 
 void EnRd_TurnAwayAndShakeHead(EnRd* this, PlayState* play) {
-    Math_SmoothStepToS(&this->actor.world.rot.y, BINANG_ROT180(this->actor.yawTowardsPlayer), 5, 3500, 200);
+    Math_SmoothStepToS(&this->actor.world.rot.y, BINANG_ROT180(this->actor.yawTowardsPlayer), 5, 0xDAC, 0xC8);
     this->actor.shape.rot.y = this->actor.world.rot.y;
     if (this->headShakeTimer > 60) {
         EnRd_SetupWalkToHome(this, play);
         this->headShakeTimer = 0;
     } else {
-        this->headYRotation = Math_SinS(this->headShakeTimer * 4000) * (0x256F * ((60 - this->headShakeTimer) / 60.0f));
+        this->headRotY = Math_SinS(this->headShakeTimer * 4000) * (0x256F * ((60 - this->headShakeTimer) / 60.0f));
         SkelAnime_Update(&this->skelAnime);
         this->headShakeTimer++;
     }
@@ -1009,7 +1013,7 @@ void EnRd_SetupDamage(EnRd* this) {
         this->actor.speed = -2.0f;
     }
 
-    this->actor.flags |= ACTOR_FLAG_TARGETABLE;
+    this->actor.flags |= ACTOR_FLAG_ATTENTION_ENABLED;
     Actor_PlaySfx(&this->actor, NA_SE_EN_REDEAD_DAMAGE);
     this->action = EN_RD_ACTION_DAMAGE;
     this->actionFunc = EnRd_Damage;
@@ -1023,8 +1027,8 @@ void EnRd_Damage(EnRd* this, PlayState* play) {
     }
 
     this->actor.world.rot.y = this->actor.yawTowardsPlayer;
-    Math_SmoothStepToS(&this->headYRotation, 0, 1, 300, 0);
-    Math_SmoothStepToS(&this->upperBodyYRotation, 0, 1, 300, 0);
+    Math_SmoothStepToS(&this->headRotY, 0, 1, 0x12C, 0);
+    Math_SmoothStepToS(&this->torsoRotY, 0, 1, 0x12C, 0);
 
     if (SkelAnime_Update(&this->skelAnime)) {
         this->actor.world.rot.y = this->actor.shape.rot.y;
@@ -1043,7 +1047,7 @@ void EnRd_SetupDead(EnRd* this) {
     Animation_MorphToPlayOnce(&this->skelAnime, &gGibdoRedeadDeathAnim, -1.0f);
     this->action = EN_RD_ACTION_DEAD;
     this->deathTimer = 300;
-    this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
+    this->actor.flags &= ~ACTOR_FLAG_ATTENTION_ENABLED;
     this->actor.speed = 0.0f;
     Actor_PlaySfx(&this->actor, NA_SE_EN_REDEAD_DEAD);
     this->actionFunc = EnRd_Dead;
@@ -1051,11 +1055,11 @@ void EnRd_SetupDead(EnRd* this) {
 
 void EnRd_Dead(EnRd* this, PlayState* play) {
     if (this->actor.category != ACTORCAT_PROP) {
-        func_800BC154(play, &play->actorCtx, &this->actor, ACTORCAT_PROP);
+        Actor_ChangeCategory(play, &play->actorCtx, &this->actor, ACTORCAT_PROP);
     }
 
-    Math_SmoothStepToS(&this->headYRotation, 0, 1, 2000, 0);
-    Math_SmoothStepToS(&this->upperBodyYRotation, 0, 1, 2000, 0);
+    Math_SmoothStepToS(&this->headRotY, 0, 1, 0x7D0, 0);
+    Math_SmoothStepToS(&this->torsoRotY, 0, 1, 0x7D0, 0);
 
     if (SkelAnime_Update(&this->skelAnime)) {
         if (this->deathTimer == 0) {
@@ -1131,22 +1135,22 @@ void EnRd_Stunned(EnRd* this, PlayState* play) {
 }
 
 void EnRd_TurnTowardsPlayer(EnRd* this, PlayState* play) {
-    s16 headAngle = (this->actor.yawTowardsPlayer - this->actor.shape.rot.y) - this->upperBodyYRotation;
-    s16 upperBodyAngle = CLAMP(headAngle, -500, 500);
+    s16 headAngle = this->actor.yawTowardsPlayer - this->actor.shape.rot.y - this->torsoRotY;
+    s16 upperBodyAngle = CLAMP(headAngle, -0x1F4, 0x1F4);
 
-    headAngle -= this->headYRotation;
-    headAngle = CLAMP(headAngle, -500, 500);
+    headAngle -= this->headRotY;
+    headAngle = CLAMP(headAngle, -0x1F4, 0x1F4);
 
     if (BINANG_SUB(this->actor.yawTowardsPlayer, this->actor.shape.rot.y) >= 0) {
-        this->upperBodyYRotation += ABS_ALT(upperBodyAngle);
-        this->headYRotation += ABS_ALT(headAngle);
+        this->torsoRotY += ABS_ALT(upperBodyAngle);
+        this->headRotY += ABS_ALT(headAngle);
     } else {
-        this->upperBodyYRotation -= ABS_ALT(upperBodyAngle);
-        this->headYRotation -= ABS_ALT(headAngle);
+        this->torsoRotY -= ABS_ALT(upperBodyAngle);
+        this->headRotY -= ABS_ALT(headAngle);
     }
 
-    this->upperBodyYRotation = CLAMP(this->upperBodyYRotation, -0x495F, 0x495F);
-    this->headYRotation = CLAMP(this->headYRotation, -0x256F, 0x256F);
+    this->torsoRotY = CLAMP(this->torsoRotY, -0x495F, 0x495F);
+    this->headRotY = CLAMP(this->headRotY, -0x256F, 0x256F);
 }
 
 void EnRd_UpdateDamage(EnRd* this, PlayState* play) {
@@ -1168,7 +1172,7 @@ void EnRd_UpdateDamage(EnRd* this, PlayState* play) {
             return;
         }
 
-        Actor_SetDropFlag(&this->actor, &this->collider.info);
+        Actor_SetDropFlag(&this->actor, &this->collider.elem);
 
         if (player->unk_ADC != 0) {
             this->unk_3F1 = player->unk_ADD;
@@ -1261,7 +1265,7 @@ void EnRd_UpdateEffect(EnRd* this, PlayState* play) {
 }
 
 void EnRd_Update(Actor* thisx, PlayState* play) {
-    EnRd* this = THIS;
+    EnRd* this = (EnRd*)thisx;
 
     EnRd_UpdateDamage(this, play);
     if ((gSaveContext.sunsSongState != SUNSSONG_INACTIVE) && (!this->stunnedBySunsSong)) {
@@ -1301,18 +1305,18 @@ void EnRd_Update(Actor* thisx, PlayState* play) {
 
 s32 EnRd_OverrideLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3f* pos, Vec3s* rot, Actor* thisx,
                           Gfx** gfx) {
-    EnRd* this = THIS;
+    EnRd* this = (EnRd*)thisx;
 
     if (limbIndex == REDEAD_LIMB_HEAD_ROOT) {
-        rot->y += this->headYRotation;
+        rot->y += this->headRotY;
     } else if (limbIndex == REDEAD_LIMB_UPPER_BODY_ROOT) {
-        rot->y += this->upperBodyYRotation;
+        rot->y += this->torsoRotY;
     }
     return false;
 }
 
 void EnRd_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* rot, Actor* thisx, Gfx** gfx) {
-    EnRd* this = THIS;
+    EnRd* this = (EnRd*)thisx;
 
     if ((this->drawDmgEffTimer != 0) &&
         ((limbIndex == REDEAD_LIMB_LEFT_THIGH) || (limbIndex == REDEAD_LIMB_LEFT_SHIN) ||
@@ -1331,7 +1335,7 @@ void EnRd_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* rot, 
 void EnRd_Draw(Actor* thisx, PlayState* play) {
     static Vec3f sScale = { 0.25f, 0.25f, 0.25f };
     s32 pad;
-    EnRd* this = THIS;
+    EnRd* this = (EnRd*)thisx;
     Vec3f pos = this->actor.world.pos;
 
     OPEN_DISPS(play->state.gfxCtx);

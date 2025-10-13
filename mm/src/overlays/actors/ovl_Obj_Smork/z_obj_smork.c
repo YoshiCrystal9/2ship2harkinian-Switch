@@ -9,16 +9,14 @@
 #include "BenPort.h"
 #include <string.h>
 
-#define FLAGS (ACTOR_FLAG_10 | ACTOR_FLAG_20)
-
-#define THIS ((ObjSmork*)thisx)
+#define FLAGS (ACTOR_FLAG_UPDATE_CULLING_DISABLED | ACTOR_FLAG_DRAW_CULLING_DISABLED)
 
 void ObjSmork_Init(Actor* thisx, PlayState* play);
 void ObjSmork_Destroy(Actor* thisx, PlayState* play);
 void ObjSmork_Update(Actor* thisx, PlayState* play);
 void ObjSmork_Draw(Actor* thisx, PlayState* play);
 
-ActorInit Obj_Smork_InitVars = {
+ActorProfile Obj_Smork_Profile = {
     ACTOR_OBJ_SMORK,
     ACTORCAT_PROP,
     FLAGS,
@@ -36,7 +34,7 @@ static Vtx* ovl_Obj_Smork_Vtx_000C10Data;
 
 u8 func_80A3D680(s16 arg0) {
     u8 ret = 0;
-    s16 temp_f18 = TIME_TO_MINUTES_F(gSaveContext.save.time);
+    s16 temp_f18 = TIME_TO_MINUTES_F(CURRENT_TIME);
     s32 hours = temp_f18 / 60;
     s32 minutes = temp_f18 % 60;
 
@@ -126,7 +124,7 @@ void func_80A3D9C4(ObjSmork* this, PlayState* play) {
         gSPSegment(POLY_XLU_DISP++, 0x08,
                    Gfx_TwoTexScroll(play->state.gfxCtx, 0, 0, sp57, 0x20, 0x20, 1, 0, sp56, 0x20, 0x20));
         gSPSegment(POLY_XLU_DISP++, 0x09, Lib_SegmentedToVirtual(this->unk_148));
-        gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+        MATRIX_FINALIZE_AND_LOAD(POLY_XLU_DISP++, play->state.gfxCtx);
         gSPDisplayList(POLY_XLU_DISP++, object_f53_obj_DL_001C00);
 
         CLOSE_DISPS(play->state.gfxCtx);
@@ -134,7 +132,7 @@ void func_80A3D9C4(ObjSmork* this, PlayState* play) {
 }
 
 void ObjSmork_Init(Actor* thisx, PlayState* play) {
-    ObjSmork* this = THIS;
+    ObjSmork* this = (ObjSmork*)thisx;
     ovl_Obj_Smork_Vtx_000C10Data = ResourceMgr_LoadVtxArrayByName(ovl_Obj_Smork_Vtx_000C10);
 
     memcpy(this->unk_148, ovl_Obj_Smork_Vtx_000C10Data,
@@ -147,13 +145,13 @@ void ObjSmork_Destroy(Actor* thisx, PlayState* play) {
 }
 
 void ObjSmork_Update(Actor* thisx, PlayState* play) {
-    ObjSmork* this = THIS;
+    ObjSmork* this = (ObjSmork*)thisx;
 
     func_80A3D940(this);
 }
 
 void ObjSmork_Draw(Actor* thisx, PlayState* play) {
-    ObjSmork* this = THIS;
+    ObjSmork* this = (ObjSmork*)thisx;
 
     func_80A3D9C4(this, play);
 }

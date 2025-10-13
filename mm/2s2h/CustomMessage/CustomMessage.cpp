@@ -95,7 +95,7 @@ void CustomMessage::EnsureMessageEnd(std::string* msg) {
 
 CustomMessage::Entry CustomMessage::LoadVanillaMessageTableEntry(u16 textId) {
     MessageContext* msgCtx = &gPlayState->msgCtx;
-    MessageTableEntry* msgEntry = msgCtx->messageEntryTableNes;
+    MessageTableEntry* msgEntry = msgCtx->messageTableNES;
     while (msgEntry->textId != 0xFFFF) {
         if (msgEntry->textId == textId) {
             break;

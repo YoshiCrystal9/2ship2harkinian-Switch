@@ -87,6 +87,12 @@ static const ALIGN_ASSET(2) char Z2_BOTI_room_01Tex_0069E8[] = dZ2_BOTI_room_01T
 #define dZ2_BOTI_room_01DL_0088D0 "__OTR__scenes/nonmq/Z2_BOTI_scene/Z2_BOTI_room_01DL_0088D0"
 static const ALIGN_ASSET(2) char Z2_BOTI_room_01DL_0088D0[] = dZ2_BOTI_room_01DL_0088D0;
 
+#define dZ2_BOTI_room_01DL_006968 "__OTR__scenes/nonmq/Z2_BOTI_scene/Z2_BOTI_room_01DL_006968"
+static const ALIGN_ASSET(2) char Z2_BOTI_room_01DL_006968[] = dZ2_BOTI_room_01DL_006968;
+
+#define dZ2_BOTI_room_01DL_0088D8 "__OTR__scenes/nonmq/Z2_BOTI_scene/Z2_BOTI_room_01DL_0088D8"
+static const ALIGN_ASSET(2) char Z2_BOTI_room_01DL_0088D8[] = dZ2_BOTI_room_01DL_0088D8;
+
 #define dZ2_BOTI_room_01Set_0004B0DL_001230 "__OTR__scenes/nonmq/Z2_BOTI_scene/Z2_BOTI_room_01Set_0004B0DL_001230"
 static const ALIGN_ASSET(2) char Z2_BOTI_room_01Set_0004B0DL_001230[] = dZ2_BOTI_room_01Set_0004B0DL_001230;
 

@@ -12,8 +12,6 @@
 #include "sys_cfb.h"
 #include <string.h>
 
-#define THIS ((TransitionWipe4*)thisx)
-
 #define TRANS4_GET_COLORTYPE(type) (((type) >> 1) & 3)
 #define TRANS4_GET_SPEEDTYPE(type) ((type)&1)
 
@@ -32,7 +30,7 @@ void TransitionWipe4_SetColor(void* thisx, u32 color);
 void TransitionWipe4_SetEnvColor(void* thisx, u32 color);
 s32 TransitionWipe4_IsDone(void* thisx);
 
-TransitionInit TransitionWipe4_InitVars = {
+TransitionProfile TransitionWipe4_Profile = {
     TransitionWipe4_Init,     TransitionWipe4_Destroy,     TransitionWipe4_Update,
     TransitionWipe4_Draw,     TransitionWipe4_Start,       TransitionWipe4_SetType,
     TransitionWipe4_SetColor, TransitionWipe4_SetEnvColor, TransitionWipe4_IsDone,
@@ -93,19 +91,19 @@ void TransitionWipe4_Update(void* thisx, s32 updateRate) {
     }
 }
 
-// Use of THIS in this function is required to match
+// Use of ((TransitionWipe4*)thisx) in this function is required to match
 void TransitionWipe4_Draw(void* thisx, Gfx** gfxP) {
     Gfx* gfx = *gfxP;
-    VisFbuf* copyFx = &THIS->copyFx;
+    VisFbuf* copyFx = &((TransitionWipe4*)thisx)->copyFx;
 
-    copyFx->primColor.rgba = THIS->primColor.rgba;
+    copyFx->primColor.rgba = ((TransitionWipe4*)thisx)->primColor.rgba;
 
-    if (THIS->direction != 0) {
-        copyFx->scale = THIS->progress;
-        copyFx->lodProportion = 1.0f - THIS->progress;
+    if (((TransitionWipe4*)thisx)->direction != 0) {
+        copyFx->scale = ((TransitionWipe4*)thisx)->progress;
+        copyFx->lodProportion = 1.0f - ((TransitionWipe4*)thisx)->progress;
     } else {
-        copyFx->scale = 1.0f - THIS->progress;
-        copyFx->lodProportion = THIS->progress;
+        copyFx->scale = 1.0f - ((TransitionWipe4*)thisx)->progress;
+        copyFx->lodProportion = ((TransitionWipe4*)thisx)->progress;
     }
 
     //! @bug (Possibly) Since copyFx->mode is never set after being initialised to 0, the switch in VisFbuf_Draw()

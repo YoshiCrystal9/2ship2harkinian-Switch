@@ -8,8 +8,6 @@
 
 #define FLAGS 0x00000000
 
-#define THIS ((EnFish*)thisx)
-
 void EnFish_Init(Actor* thisx, PlayState* play);
 void EnFish_Destroy(Actor* thisx, PlayState* play2);
 void EnFish_Update(Actor* thisx, PlayState* play);
@@ -37,11 +35,11 @@ void func_8091F994(Actor* thisx, PlayState* play);
 static ColliderJntSphElementInit sJntSphElementsInit[1] = {
     {
         {
-            ELEMTYPE_UNK0,
+            ELEM_MATERIAL_UNK0,
             { 0x00000000, 0x00, 0x00 },
             { 0xF7CFFFFF, 0x00, 0x00 },
-            TOUCH_NONE | TOUCH_SFX_NORMAL,
-            BUMP_NONE,
+            ATELEM_NONE | ATELEM_SFX_NORMAL,
+            ACELEM_NONE,
             OCELEM_ON,
         },
         { 0, { { 0, 0, 0 }, 5 }, 100 },
@@ -50,7 +48,7 @@ static ColliderJntSphElementInit sJntSphElementsInit[1] = {
 
 static ColliderJntSphInit sJntSphInit = {
     {
-        COLTYPE_NONE,
+        COL_MATERIAL_NONE,
         AT_NONE,
         AC_NONE,
         OC1_ON | OC1_TYPE_ALL,
@@ -67,7 +65,7 @@ static Color_RGB8 D_8091FA94[] = {
     { 215, 97, 7 },
 };
 
-ActorInit En_Fish_InitVars = {
+ActorProfile En_Fish_Profile = {
     /**/ ACTOR_EN_FISH,
     /**/ ACTORCAT_ITEMACTION,
     /**/ FLAGS,
@@ -80,9 +78,9 @@ ActorInit En_Fish_InitVars = {
 };
 
 static InitChainEntry sInitChain[] = {
-    ICHAIN_F32(uncullZoneForward, 720, ICHAIN_CONTINUE),
-    ICHAIN_F32(uncullZoneScale, 40, ICHAIN_CONTINUE),
-    ICHAIN_F32(uncullZoneDownward, 40, ICHAIN_STOP),
+    ICHAIN_F32(cullingVolumeDistance, 720, ICHAIN_CONTINUE),
+    ICHAIN_F32(cullingVolumeScale, 40, ICHAIN_CONTINUE),
+    ICHAIN_F32(cullingVolumeDownward, 40, ICHAIN_STOP),
 };
 
 f32 func_8091D630(Vec3f* arg0, Vec3f* arg1) {
@@ -127,7 +125,7 @@ void func_8091D7C4(EnFish* this) {
 }
 
 void func_8091D840(Actor* thisx, PlayState* play, s32 arg2, f32 arg3) {
-    EnFish* this = THIS;
+    EnFish* this = (EnFish*)thisx;
     s32 i;
 
     for (i = 0; i < arg2; i++) {
@@ -146,32 +144,32 @@ Actor* func_8091D944(EnFish* this, PlayState* play) {
     f32 distSq;
     Actor* retActor = NULL;
     f32 minDistSq = FLT_MAX;
-    Actor* foundActor = play->actorCtx.actorLists[ACTORCAT_ITEMACTION].first;
+    Actor* actorIter = play->actorCtx.actorLists[ACTORCAT_ITEMACTION].first;
 
-    while (foundActor != NULL) {
-        if ((foundActor->id == ACTOR_EN_FISH) && (foundActor->params == ENFISH_2) &&
-            (foundActor->room == this->actor.room)) {
-            distSq = Math3D_Vec3fDistSq(&foundActor->world.pos, &this->actor.world.pos);
+    while (actorIter != NULL) {
+        if ((actorIter->id == ACTOR_EN_FISH) && (actorIter->params == ENFISH_2) &&
+            (actorIter->room == this->actor.room)) {
+            distSq = Math3D_Vec3fDistSq(&actorIter->world.pos, &this->actor.world.pos);
             if (retActor == NULL) {
-                retActor = foundActor;
+                retActor = actorIter;
                 minDistSq = distSq;
             } else if (distSq < minDistSq) {
                 minDistSq = distSq;
             }
         }
-        foundActor = foundActor->next;
+        actorIter = actorIter->next;
     }
 
     return retActor;
 }
 
-s32 func_8091DA14(EnFish* this, PlayState* play) {
+bool func_8091DA14(EnFish* this, PlayState* play) {
     return (play->sceneId == SCENE_LABO) && func_8091D944(this, play);
 }
 
 void EnFish_Init(Actor* thisx, PlayState* play) {
     s32 pad;
-    EnFish* this = THIS;
+    EnFish* this = (EnFish*)thisx;
     s16 sp36 = this->actor.params;
 
     Collider_InitJntSph(play, &this->collider);
@@ -213,7 +211,7 @@ void EnFish_Init(Actor* thisx, PlayState* play) {
     this->unk_246 = Rand_Next() >> 0x10;
 
     if (sp36 == ENFISH_0) {
-        this->actor.flags |= ACTOR_FLAG_10;
+        this->actor.flags |= ACTOR_FLAG_UPDATE_CULLING_DISABLED;
         ActorShape_Init(&this->actor.shape, 0.0f, ActorShadow_DrawCircle, 8.0f);
         func_8091E810(this);
     } else if (sp36 == ENFISH_1) {
@@ -225,7 +223,7 @@ void EnFish_Init(Actor* thisx, PlayState* play) {
 
 void EnFish_Destroy(Actor* thisx, PlayState* play2) {
     PlayState* play = play2;
-    EnFish* this = THIS;
+    EnFish* this = (EnFish*)thisx;
 
     Collider_DestroyJntSph(play, &this->collider);
 }
@@ -274,7 +272,7 @@ void func_8091DEE4(EnFish* this) {
 }
 
 void func_8091DF68(Actor* thisx, PlayState* play) {
-    EnFish* this = THIS;
+    EnFish* this = (EnFish*)thisx;
 
     func_8091DD48(this);
     Math_SmoothStepToF(&thisx->speed, 0.0f, 0.05f, 0.3f, 0.0f);
@@ -323,7 +321,7 @@ void func_8091E070(EnFish* this) {
 
 void func_8091E128(Actor* thisx, PlayState* play) {
     s32 pad;
-    EnFish* this = THIS;
+    EnFish* this = (EnFish*)thisx;
 
     func_8091DD48(this);
     Math_SmoothStepToF(&thisx->speed, 1.8f, 0.08f, 0.4f, 0.0f);
@@ -371,7 +369,7 @@ void func_8091E2E0(EnFish* this) {
 
 void func_8091E34C(Actor* thisx, PlayState* play2) {
     PlayState* play = play2;
-    EnFish* this = THIS;
+    EnFish* this = (EnFish*)thisx;
     s32 sp3C = thisx->xzDistToPlayer < 60.0f;
     s32 sp38 = this->unk_276 > 0;
     s32 pad;
@@ -444,7 +442,7 @@ void func_8091E5EC(EnFish* this) {
 }
 
 void func_8091E658(Actor* thisx, PlayState* play) {
-    EnFish* this = THIS;
+    EnFish* this = (EnFish*)thisx;
     Player* player = GET_PLAYER(play);
     s32 pad;
     Vec3f sp38;
@@ -499,7 +497,7 @@ void func_8091E810(EnFish* this) {
 }
 
 void func_8091E880(Actor* thisx, PlayState* play) {
-    EnFish* this = THIS;
+    EnFish* this = (EnFish*)thisx;
 
     Math_SmoothStepToF(&this->actor.speed, 0.0f, 0.1f, 0.1f, 0.0f);
     this->unk_26E = 0x43;
@@ -558,12 +556,12 @@ void func_8091E9A4(EnFish* this) {
 }
 
 void func_8091EAF0(Actor* thisx, PlayState* play) {
-    EnFish* this = THIS;
+    EnFish* this = (EnFish*)thisx;
     s32 sp40 = play->state.frames;
     s16 phi_v1;
 
     Math_SmoothStepToF(&this->actor.speed, Rand_ZeroOne() * 0.2f, 0.1f, 0.1f, 0.0f);
-    phi_v1 = (s16)((((sp40 >> 5) & 2) | ((sp40 >> 2) & 1)) << 0xB) * 0.3f;
+    phi_v1 = TRUNCF_BINANG((s16)((((sp40 >> 5) & 2) | ((sp40 >> 2) & 1)) << 0xB) * 0.3f);
     if (sp40 & 4) {
         phi_v1 *= -1;
     }
@@ -607,7 +605,7 @@ void func_8091ECF4(EnFish* this) {
     this->actor.gravity = 0.0f;
     this->actor.terminalVelocity = 0.0f;
     this->actor.shape.yOffset = 0.0f;
-    this->actor.flags |= ACTOR_FLAG_10;
+    this->actor.flags |= ACTOR_FLAG_UPDATE_CULLING_DISABLED;
     this->unk_240 = 200;
     func_8091D660(this);
     this->unkFunc = func_8091ED70;
@@ -616,7 +614,7 @@ void func_8091ECF4(EnFish* this) {
 }
 
 void func_8091ED70(Actor* thisx, PlayState* play) {
-    EnFish* this = THIS;
+    EnFish* this = (EnFish*)thisx;
     s32 pad;
     s16 sp2E;
 
@@ -668,7 +666,7 @@ void func_8091EF30(EnFish* this) {
     if (this->actor.velocity.y < -1.0f) {
         this->actor.velocity.y = -1.0f;
     }
-    this->actor.flags |= ACTOR_FLAG_10;
+    this->actor.flags |= ACTOR_FLAG_UPDATE_CULLING_DISABLED;
     this->actor.home.pos.x = this->actor.world.pos.x;
     this->actor.home.pos.y = this->actor.world.pos.y - 20.0f;
     this->actor.home.pos.z = this->actor.world.pos.z;
@@ -681,7 +679,7 @@ void func_8091EF30(EnFish* this) {
 }
 
 void func_8091EFE8(Actor* thisx, PlayState* play) {
-    EnFish* this = THIS;
+    EnFish* this = (EnFish*)thisx;
     s32 temp_v0_2;
     Actor* sp3C = func_8091D944(this, play);
     f32 temp_f0;
@@ -730,7 +728,7 @@ void func_8091EFE8(Actor* thisx, PlayState* play) {
     temp_v0_2 = BINANG_SUB(this->unk_268, this->actor.shape.rot.x);
     temp_v0_2 = ABS_ALT(temp_v0_2);
 
-    temp_v0_2 = temp_v0_2 / 11;
+    temp_v0_2 /= 11;
     if (temp_v0_2 > 800) {
         temp_v0_2 = 800;
     } else if (temp_v0_2 < 100) {
@@ -784,7 +782,7 @@ void func_8091F344(EnFish* this) {
 void func_8091F3BC(Actor* thisx, PlayState* play) {
     static Vec3f D_8091FADC = { 0.0f, 0.04f, 0.09f };
     static Vec3f D_8091FAE8 = { 0.5f, 0.1f, 0.15f };
-    EnFish* this = THIS;
+    EnFish* this = (EnFish*)thisx;
     s32 sp40 = play->gameplayFrames;
     Vec3f* sp3C;
     f32 phi_f0;
@@ -829,7 +827,7 @@ void func_8091F3BC(Actor* thisx, PlayState* play) {
 }
 
 void func_8091F5A4(Actor* thisx, PlayState* play) {
-    EnFish* this = THIS;
+    EnFish* this = (EnFish*)thisx;
     Actor* temp_v0_2;
     s16 temp_v0;
     s16 temp_v0_4;
@@ -867,12 +865,12 @@ void func_8091F5A4(Actor* thisx, PlayState* play) {
         }
 
         if ((this->actor.xzDistToPlayer < 70.0f) && (this->unkFunc != func_8091EFE8)) {
-            ColliderJntSphElement* element = &this->collider.elements[0];
+            ColliderJntSphElement* jntSphElem = &this->collider.elements[0];
 
-            element->dim.worldSphere.center.x = this->actor.world.pos.x;
-            element->dim.worldSphere.center.y = this->actor.world.pos.y;
-            element->dim.worldSphere.center.z = this->actor.world.pos.z;
-            element->dim.worldSphere.radius = this->unk_25C * 500.0f;
+            jntSphElem->dim.worldSphere.center.x = this->actor.world.pos.x;
+            jntSphElem->dim.worldSphere.center.y = this->actor.world.pos.y;
+            jntSphElem->dim.worldSphere.center.z = this->actor.world.pos.z;
+            jntSphElem->dim.worldSphere.radius = this->unk_25C * 500.0f;
             CollisionCheck_SetOC(play, &play->colChkCtx, &this->collider.base);
         }
 
@@ -893,7 +891,7 @@ void func_8091F5A4(Actor* thisx, PlayState* play) {
 }
 
 void func_8091F830(Actor* thisx, PlayState* play) {
-    EnFish* this = THIS;
+    EnFish* this = (EnFish*)thisx;
 
     if (this->actor.params == ENFISH_1) {
         Actor_Kill(&this->actor);
@@ -924,7 +922,7 @@ void func_8091F830(Actor* thisx, PlayState* play) {
 }
 
 void EnFish_Update(Actor* thisx, PlayState* play) {
-    EnFish* this = THIS;
+    EnFish* this = (EnFish*)thisx;
 
     if (this->unk_242 > 0) {
         this->unk_242--;
@@ -942,7 +940,7 @@ void func_8091F994(Actor* thisx, PlayState* play) {
 }
 
 void EnFish_Draw(Actor* thisx, PlayState* play) {
-    EnFish* this = THIS;
+    EnFish* this = (EnFish*)thisx;
     Color_RGB8* colour = &D_8091FA94[this->unk_278];
 
     OPEN_DISPS(play->state.gfxCtx);

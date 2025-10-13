@@ -7,16 +7,14 @@
 #include "z_en_scopecoin.h"
 #include "objects/gameplay_keep/gameplay_keep.h"
 
-#define FLAGS (ACTOR_FLAG_10 | ACTOR_FLAG_20)
-
-#define THIS ((EnScopecoin*)thisx)
+#define FLAGS (ACTOR_FLAG_UPDATE_CULLING_DISABLED | ACTOR_FLAG_DRAW_CULLING_DISABLED)
 
 void EnScopecoin_Init(Actor* thisx, PlayState* play);
 void EnScopecoin_Destroy(Actor* thisx, PlayState* play);
 void EnScopecoin_Update(Actor* thisx, PlayState* play);
 void EnScopecoin_Draw(Actor* thisx, PlayState* play);
 
-ActorInit En_Scopecoin_InitVars = {
+ActorProfile En_Scopecoin_Profile = {
     /**/ ACTOR_EN_SCOPECOIN,
     /**/ ACTORCAT_NPC,
     /**/ FLAGS,
@@ -40,7 +38,7 @@ void EnScopecoin_CheckCollectible(EnScopecoin* this, PlayState* play) {
 }
 
 void EnScopecoin_Init(Actor* thisx, PlayState* play) {
-    EnScopecoin* this = THIS;
+    EnScopecoin* this = (EnScopecoin*)thisx;
 
     Actor_SetScale(&this->actor, 0.01f);
     ActorShape_Init(&this->actor.shape, 0, ActorShadow_DrawCircle, 10.0f);
@@ -50,7 +48,7 @@ void EnScopecoin_Init(Actor* thisx, PlayState* play) {
         this->rupeeIndex = 0;
     }
 
-    if (play->actorCtx.flags & ACTORCTX_FLAG_1) {
+    if (play->actorCtx.flags & ACTORCTX_FLAG_TELESCOPE_ON) {
         if ((this->rupeeIndex == 2) || (this->rupeeIndex == 6)) {
             if (Flags_GetCollectible(play, OBJMUPICT_GET_RUPEE_FLAG(&this->actor))) {
                 Actor_Kill(&this->actor);
@@ -77,7 +75,7 @@ void EnScopecoin_Destroy(Actor* thisx, PlayState* play) {
 }
 
 void EnScopecoin_Update(Actor* thisx, PlayState* play) {
-    EnScopecoin* this = THIS;
+    EnScopecoin* this = (EnScopecoin*)thisx;
 
     this->actionFunc(this, play);
 }
@@ -87,7 +85,7 @@ static TexturePtr sRupeeTextures[] = {
 };
 
 void EnScopecoin_Draw(Actor* thisx, PlayState* play) {
-    EnScopecoin* this = THIS;
+    EnScopecoin* this = (EnScopecoin*)thisx;
     GraphicsContext* gfxCtx = play->state.gfxCtx;
 
     Gfx_SetupDL25_Opa(play->state.gfxCtx);
@@ -95,7 +93,7 @@ void EnScopecoin_Draw(Actor* thisx, PlayState* play) {
 
     OPEN_DISPS(gfxCtx);
 
-    gSPMatrix(POLY_OPA_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    MATRIX_FINALIZE_AND_LOAD(POLY_OPA_DISP++, play->state.gfxCtx);
     gSPSegment(POLY_OPA_DISP++, 0x08, Lib_SegmentedToVirtual(sRupeeTextures[this->rupeeIndex]));
     gSPDisplayList(POLY_OPA_DISP++, gRupeeDL);
 

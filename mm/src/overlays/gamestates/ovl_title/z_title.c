@@ -157,8 +157,8 @@ void ConsoleLogo_Draw(GameState* thisx) {
     Matrix_Scale(1.0f, 1.0f, 1.0f, MTXMODE_APPLY);
     Matrix_RotateZYX(0, sTitleRotation, 0, MTXMODE_APPLY);
 
-    gSPMatrix(POLY_OPA_DISP++, Matrix_NewMtx(this->state.gfxCtx), G_MTX_LOAD);
-    gSPDisplayList(POLY_OPA_DISP++, logoDL);
+    MATRIX_FINALIZE_AND_LOAD(POLY_OPA_DISP++, this->state.gfxCtx);
+    gSPDisplayList(POLY_OPA_DISP++, gNintendo64LogoNDL);
 
     Gfx_SetupDL39_Opa(this->state.gfxCtx);
 

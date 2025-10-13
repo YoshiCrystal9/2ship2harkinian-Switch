@@ -142,8 +142,8 @@ void RegisterFierceDeityAnywhere() {
      * enemies in a damaging way, such as Skulltulas and Big Octos.
      */
     COND_VB_SHOULD(VB_CHECK_BUMPER_COLLISION, CVAR, {
-        ColliderInfo* toucher = va_arg(args, ColliderInfo*);
-        if (toucher->toucher.dmgFlags & DMG_SWORD_BEAM) {
+        ColliderElement* toucher = va_arg(args, ColliderElement*);
+        if (toucher->atDmgInfo.dmgFlags & DMG_SWORD_BEAM) {
             *should = false;
         }
     });
@@ -155,8 +155,8 @@ void RegisterFierceDeityAnywhere() {
     COND_VB_SHOULD(VB_PERFORM_AC_COLLISION, CVAR, {
         Collider* at = va_arg(args, Collider*);
         Collider* ac = va_arg(args, Collider*);
-        ColliderInfo* atInfo = va_arg(args, ColliderInfo*);
-        ColliderInfo* acInfo = va_arg(args, ColliderInfo*);
+        ColliderElement* atInfo = va_arg(args, ColliderElement*);
+        ColliderElement* acInfo = va_arg(args, ColliderElement*);
         /*
          * If the AT actor is EnMThunder with a subtype > ENMTHUNDER_SUBTYPE_SPIN_REGULAR, it is a sword beam. If the AC
          * actor is not an enemy/boss and does not normally collide with sword beams, then do not handle the sword beam
@@ -164,7 +164,7 @@ void RegisterFierceDeityAnywhere() {
          */
         if (at->actor->id == ACTOR_EN_M_THUNDER && ((EnMThunder*)at->actor)->subtype > 1 &&
             ac->actor->category != ACTORCAT_ENEMY && ac->actor->category != ACTORCAT_BOSS &&
-            !(acInfo->bumper.dmgFlags & DMG_SWORD_BEAM)) {
+            !(acInfo->acDmgInfo.dmgFlags & DMG_SWORD_BEAM)) {
             *should = false;
         }
     });
@@ -176,14 +176,14 @@ void RegisterFierceDeityAnywhere() {
     COND_ID_HOOK(ShouldActorUpdate, ACTOR_EN_BIGOKUTA, CVAR, [](Actor* actor, bool* result) {
         EnBigokuta* enBigOkuta = (EnBigokuta*)actor;
         if (enBigOkuta->bodyCollider.base.acFlags & AC_HIT &&
-            enBigOkuta->bodyCollider.info.acHitInfo->toucher.dmgFlags & DMG_SWORD_BEAM) {
+            enBigOkuta->bodyCollider.elem.acHitElem->atDmgInfo.dmgFlags & DMG_SWORD_BEAM) {
             enBigOkuta->drawDmgEffType = ACTOR_DRAW_DMGEFF_BLUE_LIGHT_ORBS;
             enBigOkuta->drawDmgEffScale = 1.2f;
             enBigOkuta->drawDmgEffAlpha = 4.0f;
-            Actor_Spawn(&gPlayState->actorCtx, gPlayState, ACTOR_EN_CLEAR_TAG,
-                        enBigOkuta->bodyCollider.info.bumper.hitPos.x, enBigOkuta->bodyCollider.info.bumper.hitPos.y,
-                        enBigOkuta->bodyCollider.info.bumper.hitPos.z, 0, 0, 3,
-                        CLEAR_TAG_PARAMS(CLEAR_TAG_LARGE_LIGHT_RAYS));
+            Actor_Spawn(
+                &gPlayState->actorCtx, gPlayState, ACTOR_EN_CLEAR_TAG, enBigOkuta->bodyCollider.elem.acDmgInfo.hitPos.x,
+                enBigOkuta->bodyCollider.elem.acDmgInfo.hitPos.y, enBigOkuta->bodyCollider.elem.acDmgInfo.hitPos.z, 0,
+                0, 3, CLEAR_TAG_PARAMS(CLEAR_TAG_LARGE_LIGHT_RAYS));
         }
     });
 

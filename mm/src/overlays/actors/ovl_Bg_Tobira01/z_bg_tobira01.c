@@ -7,16 +7,14 @@
 #include "z_bg_tobira01.h"
 #include "objects/object_spot11_obj/object_spot11_obj.h"
 
-#define FLAGS (ACTOR_FLAG_10 | ACTOR_FLAG_20)
-
-#define THIS ((BgTobira01*)thisx)
+#define FLAGS (ACTOR_FLAG_UPDATE_CULLING_DISABLED | ACTOR_FLAG_DRAW_CULLING_DISABLED)
 
 void BgTobira01_Init(Actor* thisx, PlayState* play);
 void BgTobira01_Destroy(Actor* thisx, PlayState* play);
 void BgTobira01_Update(Actor* thisx, PlayState* play);
 void BgTobira01_Draw(Actor* thisx, PlayState* play);
 
-ActorInit Bg_Tobira01_InitVars = {
+ActorProfile Bg_Tobira01_Profile = {
     /**/ ACTOR_BG_TOBIRA01,
     /**/ ACTORCAT_PROP,
     /**/ FLAGS,
@@ -65,14 +63,14 @@ void BgTobira01_Action(BgTobira01* this, PlayState* play) {
         this->timer = 180;
     }
 
-    if (!(player->stateFlags1 & PLAYER_STATE1_40) && CHECK_WEEKEVENTREG(WEEKEVENTREG_GATEKEEPER_OPENED_GORON_SHRINE) &&
-        (DECR(this->timer) == 0)) {
+    if (!(player->stateFlags1 & PLAYER_STATE1_TALKING) &&
+        CHECK_WEEKEVENTREG(WEEKEVENTREG_GATEKEEPER_OPENED_GORON_SHRINE) && (DECR(this->timer) == 0)) {
         CLEAR_WEEKEVENTREG(WEEKEVENTREG_GATEKEEPER_OPENED_GORON_SHRINE);
     }
 }
 
 void BgTobira01_Init(Actor* thisx, PlayState* play) {
-    BgTobira01* this = THIS;
+    BgTobira01* this = (BgTobira01*)thisx;
 
     DynaPolyActor_Init(&this->dyna, DYNA_TRANSFORM_POS);
     DynaPolyActor_LoadMesh(play, &this->dyna, &gGoronDoorCol);
@@ -84,13 +82,13 @@ void BgTobira01_Init(Actor* thisx, PlayState* play) {
 }
 
 void BgTobira01_Destroy(Actor* thisx, PlayState* play) {
-    BgTobira01* this = THIS;
+    BgTobira01* this = (BgTobira01*)thisx;
 
     DynaPoly_DeleteBgActor(play, &play->colCtx.dyna, this->dyna.bgId);
 }
 
 void BgTobira01_Update(Actor* thisx, PlayState* play) {
-    BgTobira01* this = THIS;
+    BgTobira01* this = (BgTobira01*)thisx;
 
     this->actionFunc(this, play);
 }
@@ -99,7 +97,7 @@ void BgTobira01_Draw(Actor* thisx, PlayState* play) {
     OPEN_DISPS(play->state.gfxCtx);
 
     Gfx_SetupDL25_Opa(play->state.gfxCtx);
-    gSPMatrix(POLY_OPA_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    MATRIX_FINALIZE_AND_LOAD(POLY_OPA_DISP++, play->state.gfxCtx);
     gSPDisplayList(POLY_OPA_DISP++, gGoronDoorDL);
 
     CLOSE_DISPS(play->state.gfxCtx);

@@ -9,16 +9,14 @@
 #include "overlays/actors/ovl_En_Wallmas/z_en_wallmas.h"
 #include "overlays/actors/ovl_En_Pr2/z_en_pr2.h"
 
-#define FLAGS (ACTOR_FLAG_10 | ACTOR_FLAG_100000 | ACTOR_FLAG_CANT_LOCK_ON)
-
-#define THIS ((EnEncount1*)thisx)
+#define FLAGS (ACTOR_FLAG_UPDATE_CULLING_DISABLED | ACTOR_FLAG_FREEZE_EXCEPTION | ACTOR_FLAG_LOCK_ON_DISABLED)
 
 void EnEncount1_Init(Actor* thisx, PlayState* play);
 void EnEncount1_Update(Actor* thisx, PlayState* play);
 
 void EnEncount1_SpawnActor(EnEncount1* this, PlayState* play);
 
-ActorInit En_Encount1_InitVars = {
+ActorProfile En_Encount1_Profile = {
     /**/ ACTOR_EN_ENCOUNT1,
     /**/ ACTORCAT_PROP,
     /**/ FLAGS,
@@ -45,7 +43,7 @@ static s16 sActorParams[] = {
 };
 
 void EnEncount1_Init(Actor* thisx, PlayState* play) {
-    EnEncount1* this = THIS;
+    EnEncount1* this = (EnEncount1*)thisx;
 
     if (this->actor.params <= 0) {
         Actor_Kill(&this->actor);
@@ -71,7 +69,7 @@ void EnEncount1_Init(Actor* thisx, PlayState* play) {
         this->spawnTotalMax = -1;
         this->spawnDistanceMax = -1.0f;
     }
-    this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
+    this->actor.flags &= ~ACTOR_FLAG_ATTENTION_ENABLED;
     this->actionFunc = EnEncount1_SpawnActor;
 }
 
@@ -163,7 +161,7 @@ void EnEncount1_SpawnActor(EnEncount1* this, PlayState* play) {
 }
 
 void EnEncount1_Update(Actor* thisx, PlayState* play) {
-    EnEncount1* this = THIS;
+    EnEncount1* this = (EnEncount1*)thisx;
 
     this->actionFunc(this, play);
 }

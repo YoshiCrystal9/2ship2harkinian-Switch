@@ -8,9 +8,7 @@
 #include "objects/object_cs/object_cs.h"
 #include "2s2h/GameInteractor/GameInteractor.h"
 
-#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_FRIENDLY)
-
-#define THIS ((EnBomBowlMan*)thisx)
+#define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY)
 
 void EnBomBowlMan_Init(Actor* thisx, PlayState* play);
 void EnBomBowlMan_Destroy(Actor* thisx, PlayState* play);
@@ -38,7 +36,7 @@ s32 D_809C6100 = 0;
 
 s32 D_809C6104 = 0;
 
-ActorInit En_Bom_Bowl_Man_InitVars = {
+ActorProfile En_Bom_Bowl_Man_Profile = {
     /**/ ACTOR_EN_BOM_BOWL_MAN,
     /**/ ACTORCAT_NPC,
     /**/ FLAGS,
@@ -131,7 +129,7 @@ Vec3f D_809C61A0[] = {
 };
 
 void EnBomBowlMan_Init(Actor* thisx, PlayState* play) {
-    EnBomBowlMan* this = THIS;
+    EnBomBowlMan* this = (EnBomBowlMan*)thisx;
 
     this->actor.colChkInfo.mass = MASS_IMMOVABLE;
     ActorShape_Init(&this->actor.shape, 0.0f, ActorShadow_DrawCircle, 19.0f);
@@ -140,7 +138,7 @@ void EnBomBowlMan_Init(Actor* thisx, PlayState* play) {
                        this->morphTable, OBJECT_CS_LIMB_MAX);
     this->unk_2F6 = ENBOMBOWLMAN_GET_F0(&this->actor);
     this->unk_2F4 = ENBOMBOWLMAN_GET_F(&this->actor);
-    this->actor.targetMode = TARGET_MODE_6;
+    this->actor.attentionRangeType = ATTENTION_RANGE_6;
     Actor_SetScale(&this->actor, 0.01f);
 
     if (this->unk_2F6 == ENBOMBOWLMAN_F0_0) {
@@ -166,8 +164,8 @@ void EnBomBowlMan_Init(Actor* thisx, PlayState* play) {
                                                             !CHECK_QUEST_ITEM(QUEST_BOMBERS_NOTEBOOK),
                                                         this),
                               this)) {
-        this->csId3 = this->actor.csId;
-        if (this->csId3 == 0) {
+        this->csId = this->actor.csId;
+        if (this->csId == 0) {
             Actor_Kill(&this->actor);
         }
         func_809C52B4(this);
@@ -304,7 +302,7 @@ void func_809C4DA4(EnBomBowlMan* this, PlayState* play) {
         }
     }
 
-    if ((this->unk_2BC == 0) && (Message_GetState(&play->msgCtx) == TEXT_STATE_5) && Message_ShouldAdvance(play)) {
+    if ((this->unk_2BC == 0) && (Message_GetState(&play->msgCtx) == TEXT_STATE_EVENT) && Message_ShouldAdvance(play)) {
         Player* player = GET_PLAYER(play);
         s32 pad;
         s32 sp28 = false;
@@ -422,9 +420,9 @@ void func_809C51B4(EnBomBowlMan* this, PlayState* play) {
 
 void func_809C52B4(EnBomBowlMan* this) {
     this->actor.draw = NULL;
-    this->actor.flags |= ACTOR_FLAG_10;
-    this->actor.flags |= ACTOR_FLAG_CANT_LOCK_ON;
-    this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
+    this->actor.flags |= ACTOR_FLAG_UPDATE_CULLING_DISABLED;
+    this->actor.flags |= ACTOR_FLAG_LOCK_ON_DISABLED;
+    this->actor.flags &= ~ACTOR_FLAG_ATTENTION_ENABLED;
     this->actor.world.pos.x = 1340.0f;
     this->actor.world.pos.z = -1795.0f;
     this->unk_29C = 3;
@@ -482,7 +480,7 @@ void func_809C5524(EnBomBowlMan* this, PlayState* play) {
 }
 
 void func_809C5598(EnBomBowlMan* this, PlayState* play) {
-    if ((Message_GetState(&play->msgCtx) == TEXT_STATE_5) && Message_ShouldAdvance(play)) {
+    if ((Message_GetState(&play->msgCtx) == TEXT_STATE_EVENT) && Message_ShouldAdvance(play)) {
         Message_CloseTextbox(play);
         if ((this->actor.textId == 0x72F) || (this->actor.textId == 0x730)) {
             this->actor.textId = 0x731;
@@ -526,11 +524,11 @@ void func_809C5738(EnBomBowlMan* this, PlayState* play) {
             func_809C4B6C(this);
             if (CutsceneManager_GetCurrentCsId() == CS_ID_GLOBAL_TALK) {
                 CutsceneManager_Stop(CS_ID_GLOBAL_TALK);
-                CutsceneManager_Queue(this->csId3);
-            } else if (!CutsceneManager_IsNext(this->csId3)) {
-                CutsceneManager_Queue(this->csId3);
+                CutsceneManager_Queue(this->csId);
+            } else if (!CutsceneManager_IsNext(this->csId)) {
+                CutsceneManager_Queue(this->csId);
             } else {
-                CutsceneManager_StartWithPlayerCs(this->csId3, &this->actor);
+                CutsceneManager_StartWithPlayerCs(this->csId, &this->actor);
                 this->unk_2C2 = 2;
                 EnBomBowlMan_ChangeAnim(this, ENBOMBOWLMAN_ANIM_18, 1.0f);
             }
@@ -538,11 +536,11 @@ void func_809C5738(EnBomBowlMan* this, PlayState* play) {
     } else if (this->unk_2C2 == 1) {
         if (CutsceneManager_GetCurrentCsId() == CS_ID_GLOBAL_TALK) {
             CutsceneManager_Stop(CS_ID_GLOBAL_TALK);
-            CutsceneManager_Queue(this->csId3);
-        } else if (!CutsceneManager_IsNext(this->csId3)) {
-            CutsceneManager_Queue(this->csId3);
+            CutsceneManager_Queue(this->csId);
+        } else if (!CutsceneManager_IsNext(this->csId)) {
+            CutsceneManager_Queue(this->csId);
         } else {
-            CutsceneManager_StartWithPlayerCs(this->csId3, &this->actor);
+            CutsceneManager_StartWithPlayerCs(this->csId, &this->actor);
             this->unk_2C2 = 2;
             EnBomBowlMan_ChangeAnim(this, ENBOMBOWLMAN_ANIM_18, 1.0f);
         }
@@ -557,7 +555,7 @@ void func_809C5738(EnBomBowlMan* this, PlayState* play) {
             if (this->unk_298 >= this->path->count) {
                 SET_WEEKEVENTREG(WEEKEVENTREG_84_80);
                 CLEAR_WEEKEVENTREG(WEEKEVENTREG_83_04);
-                CutsceneManager_Stop(this->csId3);
+                CutsceneManager_Stop(this->csId);
                 Actor_Kill(&this->actor);
                 return;
             }
@@ -590,7 +588,7 @@ void func_809C59F0(EnBomBowlMan* this, PlayState* play) {
 }
 
 void func_809C5AA4(EnBomBowlMan* this, PlayState* play) {
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+    if (Actor_TalkOfferAccepted(&this->actor, &play->state)) {
         if (this->unk_2F6 == ENBOMBOWLMAN_F0_0) {
             this->actionFunc = func_809C4DA4;
         } else {
@@ -673,7 +671,7 @@ void func_809C5BF4(EnBomBowlMan* this, PlayState* play) {
 }
 
 void EnBomBowlMan_Update(Actor* thisx, PlayState* play) {
-    EnBomBowlMan* this = THIS;
+    EnBomBowlMan* this = (EnBomBowlMan*)thisx;
 
     if (this->unk_2BA != 0) {
         this->unk_2BA--;
@@ -707,7 +705,7 @@ void EnBomBowlMan_Update(Actor* thisx, PlayState* play) {
 }
 
 s32 EnBomBowlMan_OverrideLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3f* pos, Vec3s* rot, Actor* thisx) {
-    EnBomBowlMan* this = THIS;
+    EnBomBowlMan* this = (EnBomBowlMan*)thisx;
 
     if (limbIndex == OBJECT_CS_LIMB_0F) {
         *dList = NULL;
@@ -745,7 +743,7 @@ TexturePtr D_809C6220[] = {
 };
 
 void EnBomBowlMan_Draw(Actor* thisx, PlayState* play) {
-    EnBomBowlMan* this = THIS;
+    EnBomBowlMan* this = (EnBomBowlMan*)thisx;
 
     OPEN_DISPS(play->state.gfxCtx);
 

@@ -114,8 +114,8 @@ static const ALIGN_ASSET(2) char gGohtLightningModelDL[] = dgGohtLightningModelD
 #define dgGohtLightningTex "__OTR__objects/object_boss_hakugin/gGohtLightningTex"
 static const ALIGN_ASSET(2) char gGohtLightningTex[] = dgGohtLightningTex;
 
-#define dgGohtUnusedZeroesBlob "__OTR__objects/object_boss_hakugin/gGohtUnusedZeroesBlob"
-static const ALIGN_ASSET(2) char gGohtUnusedZeroesBlob[] = dgGohtUnusedZeroesBlob;
+#define dgGohtEmptyBlob "__OTR__objects/object_boss_hakugin/gGohtEmptyBlob"
+static const ALIGN_ASSET(2) char gGohtEmptyBlob[] = dgGohtEmptyBlob;
 
 #define dgGohtLightOrbTex "__OTR__objects/object_boss_hakugin/gGohtLightOrbTex"
 static const ALIGN_ASSET(2) char gGohtLightOrbTex[] = dgGohtLightOrbTex;

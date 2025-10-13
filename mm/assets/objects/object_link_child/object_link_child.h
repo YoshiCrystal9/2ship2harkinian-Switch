@@ -12,32 +12,32 @@ static const ALIGN_ASSET(2) char gLinkHumanEyesHalfTex[] = dgLinkHumanEyesHalfTe
 #define dgLinkHumanEyesClosedTex "__OTR__objects/object_link_child/gLinkHumanEyesClosedTex"
 static const ALIGN_ASSET(2) char gLinkHumanEyesClosedTex[] = dgLinkHumanEyesClosedTex;
 
-#define dgLinkHumanEyesRollRightTex "__OTR__objects/object_link_child/gLinkHumanEyesRollRightTex"
-static const ALIGN_ASSET(2) char gLinkHumanEyesRollRightTex[] = dgLinkHumanEyesRollRightTex;
+#define dgLinkHumanEyesRightTex "__OTR__objects/object_link_child/gLinkHumanEyesRightTex"
+static const ALIGN_ASSET(2) char gLinkHumanEyesRightTex[] = dgLinkHumanEyesRightTex;
 
-#define dgLinkHumanEyesRollLeftTex "__OTR__objects/object_link_child/gLinkHumanEyesRollLeftTex"
-static const ALIGN_ASSET(2) char gLinkHumanEyesRollLeftTex[] = dgLinkHumanEyesRollLeftTex;
+#define dgLinkHumanEyesLeftTex "__OTR__objects/object_link_child/gLinkHumanEyesLeftTex"
+static const ALIGN_ASSET(2) char gLinkHumanEyesLeftTex[] = dgLinkHumanEyesLeftTex;
 
-#define dgLinkHumanEyesRollUpTex "__OTR__objects/object_link_child/gLinkHumanEyesRollUpTex"
-static const ALIGN_ASSET(2) char gLinkHumanEyesRollUpTex[] = dgLinkHumanEyesRollUpTex;
+#define dgLinkHumanEyesUpTex "__OTR__objects/object_link_child/gLinkHumanEyesUpTex"
+static const ALIGN_ASSET(2) char gLinkHumanEyesUpTex[] = dgLinkHumanEyesUpTex;
 
-#define dgLinkHumanEyesRollDownTex "__OTR__objects/object_link_child/gLinkHumanEyesRollDownTex"
-static const ALIGN_ASSET(2) char gLinkHumanEyesRollDownTex[] = dgLinkHumanEyesRollDownTex;
+#define dgLinkHumanEyesDownTex "__OTR__objects/object_link_child/gLinkHumanEyesDownTex"
+static const ALIGN_ASSET(2) char gLinkHumanEyesDownTex[] = dgLinkHumanEyesDownTex;
 
-#define dobject_link_child_Tex_003800 "__OTR__objects/object_link_child/object_link_child_Tex_003800"
-static const ALIGN_ASSET(2) char object_link_child_Tex_003800[] = dobject_link_child_Tex_003800;
+#define dgLinkHumanEyesWincingTex "__OTR__objects/object_link_child/gLinkHumanEyesWincingTex"
+static const ALIGN_ASSET(2) char gLinkHumanEyesWincingTex[] = dgLinkHumanEyesWincingTex;
 
 #define dgLinkHumanMouthClosedTex "__OTR__objects/object_link_child/gLinkHumanMouthClosedTex"
 static const ALIGN_ASSET(2) char gLinkHumanMouthClosedTex[] = dgLinkHumanMouthClosedTex;
 
-#define dgLinkHumanMouthTeethTex "__OTR__objects/object_link_child/gLinkHumanMouthTeethTex"
-static const ALIGN_ASSET(2) char gLinkHumanMouthTeethTex[] = dgLinkHumanMouthTeethTex;
+#define dgLinkHumanMouthHalfTex "__OTR__objects/object_link_child/gLinkHumanMouthHalfTex"
+static const ALIGN_ASSET(2) char gLinkHumanMouthHalfTex[] = dgLinkHumanMouthHalfTex;
 
-#define dgLinkHumanMouthAngryTex "__OTR__objects/object_link_child/gLinkHumanMouthAngryTex"
-static const ALIGN_ASSET(2) char gLinkHumanMouthAngryTex[] = dgLinkHumanMouthAngryTex;
+#define dgLinkHumanMouthOpenTex "__OTR__objects/object_link_child/gLinkHumanMouthOpenTex"
+static const ALIGN_ASSET(2) char gLinkHumanMouthOpenTex[] = dgLinkHumanMouthOpenTex;
 
-#define dgLinkHumanMouthHappyTex "__OTR__objects/object_link_child/gLinkHumanMouthHappyTex"
-static const ALIGN_ASSET(2) char gLinkHumanMouthHappyTex[] = dgLinkHumanMouthHappyTex;
+#define dgLinkHumanMouthSmileTex "__OTR__objects/object_link_child/gLinkHumanMouthSmileTex"
+static const ALIGN_ASSET(2) char gLinkHumanMouthSmileTex[] = dgLinkHumanMouthSmileTex;
 
 #define dgLinkHumanSkinTLUT "__OTR__objects/object_link_child/gLinkHumanSkinTLUT"
 static const ALIGN_ASSET(2) char gLinkHumanSkinTLUT[] = dgLinkHumanSkinTLUT;

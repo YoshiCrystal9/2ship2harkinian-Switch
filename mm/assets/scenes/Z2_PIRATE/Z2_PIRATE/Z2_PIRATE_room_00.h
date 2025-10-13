@@ -18,4 +18,7 @@ static const ALIGN_ASSET(2) char Z2_PIRATE_room_00Tex_001DC0[] = dZ2_PIRATE_room
 #define dZ2_PIRATE_room_00Tex_0027C0 "__OTR__scenes/nonmq/Z2_PIRATE_scene/Z2_PIRATE_room_00Tex_0027C0"
 static const ALIGN_ASSET(2) char Z2_PIRATE_room_00Tex_0027C0[] = dZ2_PIRATE_room_00Tex_0027C0;
 
+#define dZ2_PIRATE_room_00DL_001DA8 "__OTR__scenes/nonmq/Z2_PIRATE_scene/Z2_PIRATE_room_00DL_001DA8"
+static const ALIGN_ASSET(2) char Z2_PIRATE_room_00DL_001DA8[] = dZ2_PIRATE_room_00DL_001DA8;
+
 #endif // Z2_PIRATE_Z2_PIRATE_ROOM_00_H

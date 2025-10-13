@@ -8,9 +8,9 @@
 #include "z64shrink_window.h"
 #include "overlays/actors/ovl_En_Clear_Tag/z_en_clear_tag.h"
 
-#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_UNFRIENDLY | ACTOR_FLAG_10 | ACTOR_FLAG_20)
-
-#define THIS ((Boss04*)thisx)
+#define FLAGS                                                                                 \
+    (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_HOSTILE | ACTOR_FLAG_UPDATE_CULLING_DISABLED | \
+     ACTOR_FLAG_DRAW_CULLING_DISABLED)
 
 void Boss04_Init(Actor* thisx, PlayState* play2);
 void Boss04_Destroy(Actor* thisx, PlayState* play);
@@ -64,7 +64,7 @@ static DamageTable sDamageTable = {
     /* Powder Keg     */ DMG_ENTRY(1, 0xF),
 };
 
-ActorInit Boss_04_InitVars = {
+ActorProfile Boss_04_Profile = {
     /**/ ACTOR_BOSS_04,
     /**/ ACTORCAT_BOSS,
     /**/ FLAGS,
@@ -80,11 +80,11 @@ ActorInit Boss_04_InitVars = {
 static ColliderJntSphElementInit sJntSphElementsInit1[1] = {
     {
         {
-            ELEMTYPE_UNK3,
+            ELEM_MATERIAL_UNK3,
             { 0xF7CFFFFF, 0x00, 0x08 },
             { 0xF7CFFFFF, 0x00, 0x00 },
-            TOUCH_ON | TOUCH_SFX_NORMAL,
-            BUMP_ON,
+            ATELEM_ON | ATELEM_SFX_NORMAL,
+            ACELEM_ON,
             OCELEM_ON,
         },
         { 0, { { 0, 0, 0 }, 50 }, 100 },
@@ -93,7 +93,7 @@ static ColliderJntSphElementInit sJntSphElementsInit1[1] = {
 
 static ColliderJntSphInit sJntSphInit1 = {
     {
-        COLTYPE_HIT3,
+        COL_MATERIAL_HIT3,
         AT_ON | AT_TYPE_ENEMY,
         AC_ON | AC_TYPE_PLAYER,
         OC1_ON | OC1_TYPE_PLAYER,
@@ -107,11 +107,11 @@ static ColliderJntSphInit sJntSphInit1 = {
 static ColliderJntSphElementInit sJntSphElementsInit2[1] = {
     {
         {
-            ELEMTYPE_UNK3,
+            ELEM_MATERIAL_UNK3,
             { 0xF7CFFFFF, 0x00, 0x08 },
             { 0xF7CFFFFF, 0x00, 0x00 },
-            TOUCH_ON | TOUCH_SFX_NORMAL,
-            BUMP_ON,
+            ATELEM_ON | ATELEM_SFX_NORMAL,
+            ACELEM_ON,
             OCELEM_ON,
         },
         { 0, { { 0, 0, 0 }, 70 }, 100 },
@@ -120,7 +120,7 @@ static ColliderJntSphElementInit sJntSphElementsInit2[1] = {
 
 static ColliderJntSphInit sJntSphInit2 = {
     {
-        COLTYPE_METAL,
+        COL_MATERIAL_METAL,
         AT_ON | AT_TYPE_ENEMY,
         AC_ON | AC_TYPE_PLAYER,
         OC1_ON | OC1_TYPE_PLAYER,
@@ -147,12 +147,12 @@ void Boss04_Init(Actor* thisx, PlayState* play2) {
         { 0.0f, 0.0f, 1000.0f },
     };
     PlayState* play = play2;
-    Boss04* this = THIS;
+    Boss04* this = (Boss04*)thisx;
     s32 i;
     CollisionPoly* spC0;
     Vec3f spB4;
     Vec3f spA8;
-    s32 spA4;
+    s32 bgId;
     f32 phi_f20;
     f32 phi_f24;
     Vec3f sp90;
@@ -166,7 +166,7 @@ void Boss04_Init(Actor* thisx, PlayState* play2) {
 
     this->actor.params = 0x64;
     Actor_SetScale(&this->actor, 0.1f);
-    this->actor.targetMode = TARGET_MODE_5;
+    this->actor.attentionRangeType = ATTENTION_RANGE_5;
     this->actor.hintId = TATL_HINT_ID_WART;
     this->actor.colChkInfo.health = 20;
     this->actor.colChkInfo.damageTable = &sDamageTable;
@@ -183,7 +183,7 @@ void Boss04_Init(Actor* thisx, PlayState* play2) {
         spA8.x = D_809EE1F8[i].x + this->actor.world.pos.x;
         spA8.z = D_809EE1F8[i].z + this->actor.world.pos.z;
         if (BgCheck_EntityLineTest1(&play->colCtx, &this->actor.world.pos, &spA8, &spB4, &spC0, true, false, false,
-                                    true, &spA4)) {
+                                    true, &bgId)) {
             if (i == 0) {
                 this->unk_6D8 = spB4.x;
             } else if (i == 1) {
@@ -202,7 +202,7 @@ void Boss04_Init(Actor* thisx, PlayState* play2) {
     this->actor.world.pos.z = this->unk_6F0;
     Actor_UpdateBgCheckInfo(play, &this->actor, 35.0f, 60.0f, 60.0f, UPDBGCHECKINFO_FLAG_4);
 
-    if ((KREG(64) != 0) || CHECK_EVENTINF(EVENTINF_60)) {
+    if ((KREG(64) != 0) || CHECK_EVENTINF(EVENTINF_INTRO_CS_WATCHED_WART)) {
         func_809ECD00(this, play);
         this->actor.world.pos.y = this->actor.floorHeight + 160.0f;
         phi_f24 = this->actor.floorHeight;
@@ -234,7 +234,7 @@ void Boss04_Destroy(Actor* thisx, PlayState* play) {
 
 void func_809EC544(Boss04* this) {
     this->actionFunc = func_809EC568;
-    this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
+    this->actor.flags &= ~ACTOR_FLAG_ATTENTION_ENABLED;
 }
 
 void func_809EC568(Boss04* this, PlayState* play) {
@@ -395,7 +395,7 @@ void func_809EC568(Boss04* this, PlayState* play) {
                 Cutscene_StopManual(play, &play->csCtx);
                 Player_SetCsActionWithHaltedActors(play, &this->actor, PLAYER_CSACTION_END);
                 Play_DisableMotionBlur();
-                SET_EVENTINF(EVENTINF_60);
+                SET_EVENTINF(EVENTINF_INTRO_CS_WATCHED_WART);
             }
             break;
     }
@@ -477,7 +477,7 @@ void func_809ECF58(Boss04* this, PlayState* play) {
             this->unk_2D0 = 10000.0f;
             this->unk_2C8 = 100;
         } else {
-            this->actor.world.rot.y = BINANG_ROT180((s16)Rand_ZeroFloat(8000.0f) + this->actor.world.rot.y);
+            this->actor.world.rot.y = BINANG_ROT180(TRUNCF_BINANG(Rand_ZeroFloat(8000.0f)) + this->actor.world.rot.y);
         }
 
         this->actor.speed = 0.0f;
@@ -524,7 +524,7 @@ void func_809ED224(Boss04* this) {
     this->unk_2D0 = 10000.0f;
     this->unk_2C8 = 200;
     Actor_PlaySfx(&this->actor, NA_SE_EN_ME_DEAD);
-    this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
+    this->actor.flags &= ~ACTOR_FLAG_ATTENTION_ENABLED;
     Audio_RestorePrevBgm();
     this->unk_1F6 = 10;
 }
@@ -545,7 +545,7 @@ void func_809ED2A0(Boss04* this, PlayState* play) {
     }
 
     if (this->unk_1F8 == 3) {
-        this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
+        this->actor.flags &= ~ACTOR_FLAG_ATTENTION_ENABLED;
         this->unk_700 = 0.0f;
         this->unk_6FC = 0.0f;
         this->unk_6F8 = 0.0f;
@@ -567,14 +567,13 @@ void func_809ED2A0(Boss04* this, PlayState* play) {
 }
 
 void func_809ED45C(Boss04* this, PlayState* play) {
-    ColliderJntSphElement* temp_v0;
     u8 damage;
 
-    if ((this->unk_1FE == 0) && (this->collider1.elements[0].info.bumperFlags & BUMP_HIT)) {
-        this->collider1.elements[0].info.bumperFlags &= ~BUMP_HIT;
+    if ((this->unk_1FE == 0) && (this->collider1.elements[0].base.acElemFlags & ACELEM_HIT)) {
+        this->collider1.elements[0].base.acElemFlags &= ~ACELEM_HIT;
         Actor_PlaySfx(&this->actor, NA_SE_EN_ME_DAMAGE);
         damage = this->actor.colChkInfo.damage;
-        this->actor.colChkInfo.health = this->actor.colChkInfo.health - damage;
+        this->actor.colChkInfo.health -= damage;
         if ((s8)this->actor.colChkInfo.health <= 0) {
             func_809ED224(this);
             this->unk_1FE = 100;
@@ -674,7 +673,7 @@ void func_809ED50C(Boss04* this) {
 
 void Boss04_Update(Actor* thisx, PlayState* play2) {
     PlayState* play = play2;
-    Boss04* this = THIS;
+    Boss04* this = (Boss04*)thisx;
     s16 temp_v0_8;
     s32 pad;
 
@@ -751,9 +750,9 @@ void Boss04_Update(Actor* thisx, PlayState* play2) {
         func_809ED45C(this, play);
         if (this->unk_2CC > 3000.0f) {
             CollisionCheck_SetAC(play, &play->colChkCtx, &this->collider1.base);
-            this->actor.flags |= ACTOR_FLAG_TARGETABLE;
+            this->actor.flags |= ACTOR_FLAG_ATTENTION_ENABLED;
         } else {
-            this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
+            this->actor.flags &= ~ACTOR_FLAG_ATTENTION_ENABLED;
         }
         CollisionCheck_SetOC(play, &play->colChkCtx, &this->collider2.base);
         CollisionCheck_SetAC(play, &play->colChkCtx, &this->collider2.base);
@@ -774,7 +773,7 @@ void Boss04_Update(Actor* thisx, PlayState* play2) {
 }
 
 s32 Boss04_OverrideLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3f* pos, Vec3s* rot, Actor* thisx) {
-    Boss04* this = THIS;
+    Boss04* this = (Boss04*)thisx;
 
     if (limbIndex == KREG(32)) {
         if (!(this->unk_1F4 & 3)) {
@@ -786,15 +785,15 @@ s32 Boss04_OverrideLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3f* 
     }
 
     if ((limbIndex == WART_LIMB_TOP_EYELID_ROOT) || (limbIndex == WART_LIMB_BOTTOM_EYELID_ROOT)) {
-        rot->y = (rot->y + (s16)this->unk_2CC) - 0x500;
+        rot->y = (rot->y + TRUNCF_BINANG(this->unk_2CC)) - 0x500;
     }
 
     if (limbIndex == WART_LIMB_EYE) {
         rot->y += this->unk_2D8;
         rot->z += this->unk_2D4;
         if (this->unk_2DA != 0) {
-            rot->y = (s16)(Math_SinS(this->unk_1F4 * 0x3000) * (this->unk_2DA * 500)) + rot->y;
-            rot->z = (s16)(Math_SinS(this->unk_1F4 * 0x3500) * (this->unk_2DA * 300)) + rot->z;
+            rot->y = TRUNCF_BINANG(Math_SinS(this->unk_1F4 * 0x3000) * (this->unk_2DA * 500)) + rot->y;
+            rot->z = TRUNCF_BINANG(Math_SinS(this->unk_1F4 * 0x3500) * (this->unk_2DA * 300)) + rot->z;
         }
     }
 
@@ -804,7 +803,7 @@ s32 Boss04_OverrideLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3f* 
 void Boss04_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* rot, Actor* thisx) {
     static Vec3f D_809EE228 = { 0.0f, -200.0f, 0.0f };
     static Vec3f D_809EE234 = { 0.0f, 720.0f, 0.0f };
-    Boss04* this = THIS;
+    Boss04* this = (Boss04*)thisx;
     Vec3f sp18;
 
     if (limbIndex == WART_LIMB_ROOT) {
@@ -817,7 +816,7 @@ void Boss04_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* rot
 }
 
 void Boss04_Draw(Actor* thisx, PlayState* play) {
-    Boss04* this = THIS;
+    Boss04* this = (Boss04*)thisx;
 
     OPEN_DISPS(play->state.gfxCtx);
 
@@ -845,7 +844,7 @@ void Boss04_Draw(Actor* thisx, PlayState* play) {
         Matrix_Translate(0.0f, 0.0f, -20.0f, MTXMODE_APPLY);
         Matrix_Scale(this->unk_6F8 * 1.8f, 0.0f, this->unk_700 * 2.8f, MTXMODE_APPLY);
 
-        gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+        MATRIX_FINALIZE_AND_LOAD(POLY_XLU_DISP++, play->state.gfxCtx);
         gSPDisplayList(POLY_XLU_DISP++, gWartShadowModelDL);
     }
 

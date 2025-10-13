@@ -5,7 +5,7 @@ extern "C" {
 #include "variables.h"
 
 #include "overlays/actors/ovl_En_Bom_Bowl_Man/z_en_bom_bowl_man.h"
-void Player_TalkWithPlayer(PlayState* play, Actor* actor);
+void Player_StartTalking(PlayState* play, Actor* actor);
 void func_809C4DA4(EnBomBowlMan* thisx, PlayState* play);
 void func_809C5598(EnBomBowlMan* thisx, PlayState* play);
 }
@@ -28,7 +28,7 @@ void Rando::ActorBehavior::InitEnBomBowlManBehavior() {
         player->talkActor = actor;
         player->talkActorDistance = actor->xzDistToPlayer;
         player->exchangeItemAction = PLAYER_IA_MINUS1;
-        Player_TalkWithPlayer(gPlayState, actor);
+        Player_StartTalking(gPlayState, actor);
         actor->textId = 0x735;
         SET_WEEKEVENTREG(WEEKEVENTREG_84_80);
     });

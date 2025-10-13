@@ -3,7 +3,7 @@
 
 extern "C" {
 #include "variables.h"
-void Player_TalkWithPlayer(PlayState* play, Actor* actor);
+void Player_StartTalking(PlayState* play, Actor* actor);
 }
 
 // This is the same block found for non-scripted actors in OfferGetItem.cpp
@@ -11,7 +11,7 @@ void talkToShootingGalleryNpc(Player* player, Actor* actor) {
     player->talkActor = actor;
     player->talkActorDistance = actor->xzDistToPlayer;
     player->exchangeItemAction = PLAYER_IA_MINUS1;
-    Player_TalkWithPlayer(gPlayState, actor);
+    Player_StartTalking(gPlayState, actor);
 }
 
 void Rando::ActorBehavior::InitEnSyatekiManBehavior() {
@@ -25,7 +25,7 @@ void Rando::ActorBehavior::InitEnSyatekiManBehavior() {
                 if (CURRENT_DAY == 3) {
                     // On the third day, there is additional dialog after the reward
                     talkToShootingGalleryNpc(player, actor);
-                    actor->flags |= ACTOR_FLAG_TALK_REQUESTED;
+                    actor->flags |= ACTOR_FLAG_TALK;
                 } else {
                     /*
                      * On the other two days, there is no dialog after the reward. The simplest thing to make the NPC

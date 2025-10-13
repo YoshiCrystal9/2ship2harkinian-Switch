@@ -7,16 +7,14 @@
 #include "z_en_zov.h"
 #include "overlays/actors/ovl_En_Elf/z_en_elf.h"
 
-#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_FRIENDLY)
-
-#define THIS ((EnZov*)thisx)
+#define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY)
 
 void EnZov_Init(Actor* thisx, PlayState* play);
 void EnZov_Destroy(Actor* thisx, PlayState* play);
 void EnZov_Update(Actor* thisx, PlayState* play);
 void EnZov_Draw(Actor* thisx, PlayState* play);
 
-void func_80BD1570(EnZov* this, s16 index, u8 mode);
+void EnZov_ChangeAnimMorph(EnZov* this, s16 animIndex, u8 animMode);
 void func_80BD187C(EnZov* this, PlayState* play);
 void func_80BD19FC(EnZov* this, PlayState* play);
 void func_80BD1BF0(EnZov* this, PlayState* play);
@@ -27,7 +25,7 @@ void func_80BD1DB8(EnZov* this, PlayState* play);
 void func_80BD1F1C(EnZov* this, PlayState* play);
 s32 EnZov_ValidatePictograph(PlayState* play, Actor* thisx);
 
-ActorInit En_Zov_InitVars = {
+ActorProfile En_Zov_Profile = {
     /**/ ACTOR_EN_ZOV,
     /**/ ACTORCAT_NPC,
     /**/ FLAGS,
@@ -41,7 +39,7 @@ ActorInit En_Zov_InitVars = {
 
 static ColliderCylinderInit sCylinderInit = {
     {
-        COLTYPE_NONE,
+        COL_MATERIAL_NONE,
         AT_NONE,
         AC_ON | AC_TYPE_ENEMY,
         OC1_ON | OC1_TYPE_ALL,
@@ -49,37 +47,54 @@ static ColliderCylinderInit sCylinderInit = {
         COLSHAPE_CYLINDER,
     },
     {
-        ELEMTYPE_UNK0,
+        ELEM_MATERIAL_UNK0,
         { 0x00000000, 0x00, 0x00 },
         { 0xF7CFFFFF, 0x00, 0x00 },
-        TOUCH_NONE | TOUCH_SFX_NORMAL,
-        BUMP_ON,
+        ATELEM_NONE | ATELEM_SFX_NORMAL,
+        ACELEM_ON,
         OCELEM_ON,
     },
     { 20, 40, 0, { 0, 0, 0 } },
 };
 
-static AnimationHeader* sAnimations[] = {
-    &gLuluLookDownAnim,    &gLuluPutHandsDownAnim, &gLuluLookForwardAndDownAnim, &gLuluLookAroundAnim,
-    &gLuluAngleHeadAnim,   &gLuluNodAnim,          &gLuluPutHandsDownAnim,       &gLuluLookAroundAnim,
-    &gLuluSingStartAnim,   &gLuluSingLoopAnim,     &gLuluLookForwardAndLeftAnim, &gLuluLookLeftLoopAnim,
-    &gLuluTurnAndWalkAnim, &gLuluWalkLoopAnim,
-};
+typedef enum LuluAnimation {
+    /*  -1 */ LULU_ANIM_NONE = -1,
+    /* 0x0 */ LULU_ANIM_LOOK_DOWN,
+    /* 0x1 */ LULU_ANIM_PUT_HANDS_DOWN,
+    /* 0x2 */ LULU_ANIM_LOOK_FORWARD_AND_DOWN,
+    /* 0x3 */ LULU_ANIM_LOOK_AROUND,
+    /* 0x4 */ LULU_ANIM_ANGLE_HEAD,
+    /* 0x5 */ LULU_ANIM_NOD,
+    /* 0x6 */ LULU_ANIM_PUT_HANDS_DOWN_2,
+    /* 0x7 */ LULU_ANIM_LOOK_AROUND_2,
+    /* 0x8 */ LULU_ANIM_SING_START,
+    /* 0x9 */ LULU_ANIM_SING_LOOP,
+    /* 0xA */ LULU_ANIM_LOOK_FORWARDS_AND_LEFT,
+    /* 0xB */ LULU_ANIM_LOOK_LEFT_LOOP,
+    /* 0xC */ LULU_ANIM_TURN_AND_WALK,
+    /* 0xD */ LULU_ANIM_WALK_LOOP,
+    /* 0xE */ LULU_ANIM_MAX
+} LuluAnimation;
 
-static Vec3f D_80BD2744 = { 400.0f, 600.0f, 0.0f };
-
-static Vec3f D_80BD2750 = { 400.0f, 600.0f, 0.0f };
-
-static TexturePtr sEyeTextures[] = { gLuluEyeOpenTex, gLuluEyeHalfTex, gLuluEyeClosedTex };
-
-static TexturePtr sMouthTextures[] = { gLuluMouthClosedTex, gLuluMouthOpenTex };
-
-static s8 D_80BD2770[] = {
-    1, 2, 1, 0, 0, 1, 2, 1,
+static AnimationHeader* sAnimations[LULU_ANIM_MAX] = {
+    &gLuluLookDownAnim,           // LULU_ANIM_LOOK_DOWN
+    &gLuluPutHandsDownAnim,       // LULU_ANIM_PUT_HANDS_DOWN
+    &gLuluLookForwardAndDownAnim, // LULU_ANIM_LOOK_FORWARD_AND_DOWN
+    &gLuluLookAroundAnim,         // LULU_ANIM_LOOK_AROUND
+    &gLuluAngleHeadAnim,          // LULU_ANIM_ANGLE_HEAD
+    &gLuluNodAnim,                // LULU_ANIM_NOD
+    &gLuluPutHandsDownAnim,       // LULU_ANIM_PUT_HANDS_DOWN_2
+    &gLuluLookAroundAnim,         // LULU_ANIM_LOOK_AROUND_2
+    &gLuluSingStartAnim,          // LULU_ANIM_SING_START
+    &gLuluSingLoopAnim,           // LULU_ANIM_SING_LOOP
+    &gLuluLookForwardAndLeftAnim, // LULU_ANIM_LOOK_FORWARDS_AND_LEFT
+    &gLuluLookLeftLoopAnim,       // LULU_ANIM_LOOK_LEFT_LOOP
+    &gLuluTurnAndWalkAnim,        // LULU_ANIM_TURN_AND_WALK
+    &gLuluWalkLoopAnim,           // LULU_ANIM_WALK_LOOP
 };
 
 void EnZov_Init(Actor* thisx, PlayState* play) {
-    EnZov* this = THIS;
+    EnZov* this = (EnZov*)thisx;
 
     ActorShape_Init(&this->picto.actor.shape, 0.0f, ActorShadow_DrawCircle, 20.0f);
     this->picto.actor.colChkInfo.mass = MASS_IMMOVABLE;
@@ -94,7 +109,7 @@ void EnZov_Init(Actor* thisx, PlayState* play) {
     this->cueId = -1;
     this->csIdList[0] = this->picto.actor.csId;
     this->csIdList[1] = CS_ID_GLOBAL_TALK;
-    this->unk_322 = 0;
+    this->animIndex = LULU_ANIM_LOOK_DOWN;
     this->actionFunc = func_80BD1C84;
     this->picto.validationFunc = EnZov_ValidatePictograph;
 
@@ -105,7 +120,7 @@ void EnZov_Init(Actor* thisx, PlayState* play) {
     switch (ENZOV_GET_F(&this->picto.actor)) {
         case ENZOV_F_1:
             this->actionFunc = func_80BD1F1C;
-            func_80BD1570(this, 9, ANIMMODE_LOOP);
+            EnZov_ChangeAnimMorph(this, LULU_ANIM_SING_LOOP, ANIMMODE_LOOP);
             if (!CHECK_WEEKEVENTREG(WEEKEVENTREG_CLEARED_GREAT_BAY_TEMPLE)) {
                 Actor_Kill(&this->picto.actor);
                 return;
@@ -127,7 +142,7 @@ void EnZov_Init(Actor* thisx, PlayState* play) {
 }
 
 void EnZov_Destroy(Actor* thisx, PlayState* play) {
-    EnZov* this = THIS;
+    EnZov* this = (EnZov*)thisx;
 
     Collider_DestroyCylinder(play, &this->collider);
 }
@@ -141,36 +156,37 @@ void func_80BD13DC(EnZov* this) {
     }
 }
 
-void func_80BD1440(EnZov* this, s16 arg1) {
+void func_80BD1440(EnZov* this, s16 csIdIndex) {
     func_80BD13DC(this);
-    this->csIdIndex = arg1;
+    this->csIdIndex = csIdIndex;
 }
 
-void func_80BD1470(EnZov* this, s16 index, u8 mode, f32 morphFrames) {
-    f32 frame;
+void EnZov_ChangeAnim(EnZov* this, s16 animIndex, u8 animMode, f32 morphFrames) {
+    f32 startFrame;
 
-    if (((index != this->unk_322) || (mode != ANIMMODE_LOOP)) && (index >= 0) && (index < ARRAY_COUNT(sAnimations))) {
-        switch (index) {
-            case 6:
-                frame = 30.0f;
+    if (((animIndex != this->animIndex) || (animMode != ANIMMODE_LOOP)) && (animIndex > LULU_ANIM_NONE) &&
+        (animIndex < LULU_ANIM_MAX)) {
+        switch (animIndex) {
+            case LULU_ANIM_PUT_HANDS_DOWN_2:
+                startFrame = 30.0f;
                 break;
 
-            case 7:
-                frame = 57.0f;
+            case LULU_ANIM_LOOK_AROUND_2:
+                startFrame = 57.0f;
                 break;
 
             default:
-                frame = 0.0f;
+                startFrame = 0.0f;
                 break;
         }
-        Animation_Change(&this->skelAnime, sAnimations[index], 1.0f, frame, Animation_GetLastFrame(sAnimations[index]),
-                         mode, morphFrames);
-        this->unk_322 = index;
+        Animation_Change(&this->skelAnime, sAnimations[animIndex], 1.0f, startFrame,
+                         Animation_GetLastFrame(sAnimations[animIndex]), animMode, morphFrames);
+        this->animIndex = animIndex;
     }
 }
 
-void func_80BD1570(EnZov* this, s16 index, u8 mode) {
-    func_80BD1470(this, index, mode, 5.0f);
+void EnZov_ChangeAnimMorph(EnZov* this, s16 animIndex, u8 animMode) {
+    EnZov_ChangeAnim(this, animIndex, animMode, 5.0f);
 }
 
 s32 func_80BD15A4(EnZov* this, PlayState* play) {
@@ -188,26 +204,26 @@ void func_80BD160C(EnZov* this, PlayState* play) {
         this->unk_320 &= ~2;
         if (GET_PLAYER_FORM != PLAYER_FORM_ZORA) {
             textId = 0x1024;
-            if ((this->unk_322 == 0) || (this->unk_322 == 4)) {
-                func_80BD1570(this, 4, ANIMMODE_ONCE);
+            if ((this->animIndex == LULU_ANIM_LOOK_DOWN) || (this->animIndex == LULU_ANIM_ANGLE_HEAD)) {
+                EnZov_ChangeAnimMorph(this, LULU_ANIM_ANGLE_HEAD, ANIMMODE_ONCE);
             } else {
-                func_80BD1570(this, 6, ANIMMODE_ONCE);
+                EnZov_ChangeAnimMorph(this, LULU_ANIM_PUT_HANDS_DOWN_2, ANIMMODE_ONCE);
             }
         } else if (this->unk_320 & 4) {
             textId = 0x1023;
         } else {
             textId = 0x1022;
             this->unk_320 |= 4;
-            func_80BD1570(this, 3, ANIMMODE_ONCE);
+            EnZov_ChangeAnimMorph(this, LULU_ANIM_LOOK_AROUND, ANIMMODE_ONCE);
         }
     } else if (GET_PLAYER_FORM == PLAYER_FORM_ZORA) {
-        func_80BD1570(this, 2, ANIMMODE_ONCE);
+        EnZov_ChangeAnimMorph(this, LULU_ANIM_LOOK_FORWARD_AND_DOWN, ANIMMODE_ONCE);
         this->actionFunc = func_80BD19FC;
         this->unk_324 = 10;
         func_80BD1440(this, 0);
     } else {
         textId = 0x1020;
-        func_80BD1570(this, 5, ANIMMODE_ONCE);
+        EnZov_ChangeAnimMorph(this, LULU_ANIM_NOD, ANIMMODE_ONCE);
     }
 
     this->unk_320 |= 1;
@@ -218,35 +234,35 @@ void func_80BD160C(EnZov* this, PlayState* play) {
 
 void func_80BD1764(EnZov* this) {
     if (SkelAnime_Update(&this->skelAnime)) {
-        switch (this->unk_322) {
-            case 1:
-            case 6:
-                func_80BD1570(this, 6, ANIMMODE_ONCE);
+        switch (this->animIndex) {
+            case LULU_ANIM_PUT_HANDS_DOWN:
+            case LULU_ANIM_PUT_HANDS_DOWN_2:
+                EnZov_ChangeAnimMorph(this, LULU_ANIM_PUT_HANDS_DOWN_2, ANIMMODE_ONCE);
                 break;
 
-            case 3:
-            case 7:
-                func_80BD1570(this, 7, ANIMMODE_ONCE);
+            case LULU_ANIM_LOOK_AROUND:
+            case LULU_ANIM_LOOK_AROUND_2:
+                EnZov_ChangeAnimMorph(this, LULU_ANIM_LOOK_AROUND_2, ANIMMODE_ONCE);
                 break;
 
-            case 4:
-                func_80BD1570(this, 0, ANIMMODE_LOOP);
+            case LULU_ANIM_ANGLE_HEAD:
+                EnZov_ChangeAnimMorph(this, LULU_ANIM_LOOK_DOWN, ANIMMODE_LOOP);
                 break;
 
-            case 8:
-                func_80BD1570(this, 9, ANIMMODE_LOOP);
+            case LULU_ANIM_SING_START:
+                EnZov_ChangeAnimMorph(this, LULU_ANIM_SING_LOOP, ANIMMODE_LOOP);
                 break;
 
-            case 10:
-                func_80BD1570(this, 11, ANIMMODE_LOOP);
+            case LULU_ANIM_LOOK_FORWARDS_AND_LEFT:
+                EnZov_ChangeAnimMorph(this, LULU_ANIM_LOOK_LEFT_LOOP, ANIMMODE_LOOP);
                 break;
 
-            case 12:
-                func_80BD1570(this, 13, ANIMMODE_LOOP);
+            case LULU_ANIM_TURN_AND_WALK:
+                EnZov_ChangeAnimMorph(this, LULU_ANIM_WALK_LOOP, ANIMMODE_LOOP);
                 break;
 
             default:
-                func_80BD1570(this, 0, ANIMMODE_LOOP);
+                EnZov_ChangeAnimMorph(this, LULU_ANIM_LOOK_DOWN, ANIMMODE_LOOP);
                 this->unk_320 &= ~1;
                 break;
         }
@@ -259,7 +275,7 @@ void func_80BD187C(EnZov* this, PlayState* play) {
     func_80BD1764(this);
 
     switch (Message_GetState(&play->msgCtx)) {
-        case TEXT_STATE_5:
+        case TEXT_STATE_EVENT:
             if (Message_ShouldAdvance(play)) {
                 switch (play->msgCtx.currentTextId) {
                     case 0x1022:
@@ -267,16 +283,17 @@ void func_80BD187C(EnZov* this, PlayState* play) {
                         break;
 
                     case 0x1023:
-                        if ((this->unk_322 != 6) && (this->unk_322 != 1)) {
-                            func_80BD1570(this, 1, ANIMMODE_ONCE);
+                        if ((this->animIndex != LULU_ANIM_PUT_HANDS_DOWN_2) &&
+                            (this->animIndex != LULU_ANIM_PUT_HANDS_DOWN)) {
+                            EnZov_ChangeAnimMorph(this, LULU_ANIM_PUT_HANDS_DOWN, ANIMMODE_ONCE);
                         }
                         Message_CloseTextbox(play);
                         this->actionFunc = func_80BD1C84;
                         break;
 
                     case 0x1024:
-                        if (this->unk_322 != 6) {
-                            func_80BD1570(this, 0, ANIMMODE_LOOP);
+                        if (this->animIndex != LULU_ANIM_PUT_HANDS_DOWN_2) {
+                            EnZov_ChangeAnimMorph(this, LULU_ANIM_LOOK_DOWN, ANIMMODE_LOOP);
                         }
                         Message_CloseTextbox(play);
                         this->actionFunc = func_80BD1C84;
@@ -284,7 +301,7 @@ void func_80BD187C(EnZov* this, PlayState* play) {
 
                     default:
                         this->unk_320 &= ~1;
-                        func_80BD1570(this, 0, ANIMMODE_LOOP);
+                        EnZov_ChangeAnimMorph(this, LULU_ANIM_LOOK_DOWN, ANIMMODE_LOOP);
                         Message_CloseTextbox(play);
                         this->actionFunc = func_80BD1C84;
                         break;
@@ -296,14 +313,14 @@ void func_80BD187C(EnZov* this, PlayState* play) {
             Message_CloseTextbox(play);
             this->actionFunc = func_80BD1C84;
             this->unk_320 &= ~1;
-            func_80BD1570(this, 0, ANIMMODE_LOOP);
+            EnZov_ChangeAnimMorph(this, LULU_ANIM_LOOK_DOWN, ANIMMODE_LOOP);
             break;
     }
 }
 
 void func_80BD19FC(EnZov* this, PlayState* play) {
     func_80BD1764(this);
-    if (this->unk_322 == 0) {
+    if (this->animIndex == LULU_ANIM_LOOK_DOWN) {
         if (!(this->unk_320 & 2)) {
             this->unk_320 |= 2;
             this->unk_2EE = 3;
@@ -334,20 +351,20 @@ s32 func_80BD1AE0(EnZov* this, PlayState* play) {
             this->cueId = cueId;
             switch (this->cueId) {
                 case 1:
-                    func_80BD1570(this, 0, ANIMMODE_LOOP);
+                    EnZov_ChangeAnimMorph(this, LULU_ANIM_LOOK_DOWN, ANIMMODE_LOOP);
                     break;
 
                 case 2:
-                    func_80BD1570(this, 8, ANIMMODE_ONCE);
+                    EnZov_ChangeAnimMorph(this, LULU_ANIM_SING_START, ANIMMODE_ONCE);
                     this->unk_320 |= 0x10;
                     break;
 
                 case 3:
-                    func_80BD1470(this, 10, ANIMMODE_ONCE, 0.0f);
+                    EnZov_ChangeAnim(this, LULU_ANIM_LOOK_FORWARDS_AND_LEFT, ANIMMODE_ONCE, 0.0f);
                     break;
 
                 case 4:
-                    func_80BD1570(this, 12, ANIMMODE_ONCE);
+                    EnZov_ChangeAnimMorph(this, LULU_ANIM_TURN_AND_WALK, ANIMMODE_ONCE);
                     break;
             }
         }
@@ -359,7 +376,7 @@ s32 func_80BD1AE0(EnZov* this, PlayState* play) {
 
 void func_80BD1BF0(EnZov* this, PlayState* play) {
     if (!func_80BD1AE0(this, play)) {
-        func_80BD1570(this, 0, ANIMMODE_LOOP);
+        EnZov_ChangeAnimMorph(this, LULU_ANIM_LOOK_DOWN, ANIMMODE_LOOP);
         this->actionFunc = func_80BD1C84;
     }
 }
@@ -373,7 +390,7 @@ void func_80BD1C38(EnZov* this, PlayState* play) {
 void func_80BD1C84(EnZov* this, PlayState* play) {
     func_80BD1764(this);
 
-    if (Actor_ProcessTalkRequest(&this->picto.actor, &play->state)) {
+    if (Actor_TalkOfferAccepted(&this->picto.actor, &play->state)) {
         this->actionFunc = func_80BD187C;
         func_80BD160C(this, play);
     } else if (func_80BD15A4(this, play)) {
@@ -410,7 +427,7 @@ void func_80BD1DB8(EnZov* this, PlayState* play) {
     Math_SmoothStepToS(&this->picto.actor.shape.rot.y, this->picto.actor.yawTowardsPlayer, 2, 0x1000, 0x200);
     this->picto.actor.world.rot.y = this->picto.actor.shape.rot.y;
 
-    if ((Message_GetState(&play->msgCtx) == TEXT_STATE_5) && Message_ShouldAdvance(play)) {
+    if ((Message_GetState(&play->msgCtx) == TEXT_STATE_EVENT) && Message_ShouldAdvance(play)) {
         switch (play->msgCtx.currentTextId) {
             case 0x1033:
             case 0x1034:
@@ -447,7 +464,7 @@ void func_80BD1F1C(EnZov* this, PlayState* play) {
         this->picto.actor.world.rot.y = this->picto.actor.shape.rot.y;
     }
 
-    if (Actor_ProcessTalkRequest(&this->picto.actor, &play->state)) {
+    if (Actor_TalkOfferAccepted(&this->picto.actor, &play->state)) {
         this->actionFunc = func_80BD1DB8;
         func_80BD1D30(this, play);
     } else if (func_80BD15A4(this, play)) {
@@ -457,7 +474,7 @@ void func_80BD1F1C(EnZov* this, PlayState* play) {
 
 s32 EnZov_ValidatePictograph(PlayState* play, Actor* thisx) {
     s32 ret;
-    EnZov* this = THIS;
+    EnZov* this = (EnZov*)thisx;
 
     ret = Snap_ValidatePictograph(play, &this->picto.actor, PICTO_VALID_LULU_HEAD, &this->picto.actor.focus.pos,
                                   &this->picto.actor.shape.rot, 10.0f, 300.0f, -1);
@@ -470,7 +487,7 @@ s32 EnZov_ValidatePictograph(PlayState* play, Actor* thisx) {
 
 void EnZov_Update(Actor* thisx, PlayState* play) {
     s32 pad;
-    EnZov* this = THIS;
+    EnZov* this = (EnZov*)thisx;
 
     Actor_MoveWithGravity(&this->picto.actor);
     Collider_UpdateCylinder(&this->picto.actor, &this->collider);
@@ -484,16 +501,16 @@ void EnZov_Update(Actor* thisx, PlayState* play) {
     }
 
     if ((this->unk_320 & 1) && func_80BD15A4(this, play)) {
-        Actor_TrackPlayer(play, &this->picto.actor, &this->unk_2F0, &this->unk_2F6, this->picto.actor.focus.pos);
+        Actor_TrackPlayer(play, &this->picto.actor, &this->headRot, &this->torsoRot, this->picto.actor.focus.pos);
     } else {
-        if ((this->unk_320 & 0x10) && (this->unk_322 == 0)) {
-            Math_SmoothStepToS(&this->unk_2F0.x, -0x1B58, 6, 0x1838, 0x64);
+        if ((this->unk_320 & 0x10) && (this->animIndex == LULU_ANIM_LOOK_DOWN)) {
+            Math_SmoothStepToS(&this->headRot.x, -0x1B58, 6, 0x1838, 0x64);
         } else {
-            Math_SmoothStepToS(&this->unk_2F0.x, 0, 6, 0x1838, 0x64);
+            Math_SmoothStepToS(&this->headRot.x, 0, 6, 0x1838, 0x64);
         }
-        Math_SmoothStepToS(&this->unk_2F0.y, 0, 6, 0x1838, 0x64);
-        Math_SmoothStepToS(&this->unk_2F6.x, 0, 6, 0x1838, 0x64);
-        Math_SmoothStepToS(&this->unk_2F6.y, 0, 6, 0x1838, 0x64);
+        Math_SmoothStepToS(&this->headRot.y, 0, 6, 0x1838, 0x64);
+        Math_SmoothStepToS(&this->torsoRot.x, 0, 6, 0x1838, 0x64);
+        Math_SmoothStepToS(&this->torsoRot.y, 0, 6, 0x1838, 0x64);
     }
 
     if (DECR(this->unk_2EE) == 0) {
@@ -518,23 +535,25 @@ void EnZov_Update(Actor* thisx, PlayState* play) {
 }
 
 s32 EnZov_OverrideLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3f* pos, Vec3s* rot, Actor* thisx) {
-    EnZov* this = THIS;
+    EnZov* this = (EnZov*)thisx;
 
     if (limbIndex == LULU_LIMB_HEAD) {
-        rot->x += this->unk_2F0.y;
-        if ((this->unk_320 & 0x10) && (this->unk_322 == 0)) {
-            rot->z += this->unk_2F0.x;
+        rot->x += this->headRot.y;
+        if ((this->unk_320 & 0x10) && (this->animIndex == LULU_ANIM_LOOK_DOWN)) {
+            rot->z += this->headRot.x;
         }
     }
 
     if (limbIndex == LULU_LIMB_TORSO) {
-        rot->x += this->unk_2F6.y;
+        rot->x += this->torsoRot.y;
     }
     return false;
 }
 
 void EnZov_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* rot, Actor* thisx) {
-    EnZov* this = THIS;
+    static Vec3f D_80BD2744 = { 400.0f, 600.0f, 0.0f };
+    static Vec3f D_80BD2750 = { 400.0f, 600.0f, 0.0f };
+    EnZov* this = (EnZov*)thisx;
 
     if (limbIndex == LULU_LIMB_HEAD) {
         Matrix_MultVec3f(&D_80BD2744, &this->picto.actor.focus.pos);
@@ -552,7 +571,12 @@ void EnZov_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* rot,
 }
 
 void EnZov_Draw(Actor* thisx, PlayState* play) {
-    EnZov* this = THIS;
+    static TexturePtr sEyeTextures[] = { gLuluEyeOpenTex, gLuluEyeHalfTex, gLuluEyeClosedTex };
+    static TexturePtr sMouthTextures[] = { gLuluMouthClosedTex, gLuluMouthOpenTex };
+    static s8 D_80BD2770[] = {
+        1, 2, 1, 0, 0, 1, 2, 1,
+    };
+    EnZov* this = (EnZov*)thisx;
     Gfx* gfx;
     s32 curFrame;
     s32 phi_a1;
@@ -567,20 +591,20 @@ void EnZov_Draw(Actor* thisx, PlayState* play) {
     curFrame = this->skelAnime.curFrame;
     phi_v1 = this->unk_2EC;
 
-    switch (this->unk_322) {
-        case 0:
+    switch (this->animIndex) {
+        case LULU_ANIM_LOOK_DOWN:
             if ((this->unk_2EC == 0) && !(this->unk_320 & 0x10)) {
                 phi_v1 = 1;
             }
             break;
 
-        case 5:
+        case LULU_ANIM_NOD:
             if (this->unk_2EC == 0) {
                 phi_v1 = 1;
             }
             break;
 
-        case 2:
+        case LULU_ANIM_LOOK_FORWARD_AND_DOWN:
             if (curFrame < 23) {
                 phi_v1 = 0;
             } else if (curFrame >= 26) {
@@ -592,8 +616,8 @@ void EnZov_Draw(Actor* thisx, PlayState* play) {
             }
             break;
 
-        case 3:
-        case 7:
+        case LULU_ANIM_LOOK_AROUND:
+        case LULU_ANIM_LOOK_AROUND_2:
             if (curFrame <= 50) {
                 if (curFrame < 43) {
                     phi_v1 = 0;
@@ -604,7 +628,7 @@ void EnZov_Draw(Actor* thisx, PlayState* play) {
             phi_a1 = 1;
             break;
 
-        case 4:
+        case LULU_ANIM_ANGLE_HEAD:
             if ((curFrame < 14) || (curFrame >= 24)) {
                 phi_v1 = 1;
             } else {
@@ -613,11 +637,11 @@ void EnZov_Draw(Actor* thisx, PlayState* play) {
             phi_a1 = 1;
             break;
 
-        case 8:
+        case LULU_ANIM_SING_START:
             phi_v1 = 0;
             break;
 
-        case 9:
+        case LULU_ANIM_SING_LOOP:
             phi_v1 = 0;
             phi_a1 = 1;
             break;

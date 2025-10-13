@@ -12,7 +12,7 @@ typedef void (*EffChangeActionFunc)(struct EffChange*, PlayState*);
 
 typedef struct EffChange {
     /* 0x000 */ Actor actor;
-    /* 0x144 */ KFSkelAnimeFlex skeletonInfo;
+    /* 0x144 */ KFSkelAnimeFlex kfSkelAnime;
     /* 0x174 */ Vec3s jointTable[PINK_DEKU_FLOWER_LIMB_BACK_RIGHT_PETAL];
     /* 0x198 */ Vec3s morphTable[PINK_DEKU_FLOWER_LIMB_BACK_RIGHT_PETAL];
     /* 0x1BC */ s16 step;

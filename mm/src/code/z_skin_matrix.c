@@ -1,4 +1,9 @@
-#include "global.h"
+#include "z64skin_matrix.h"
+
+#include "gfx.h"
+#include "macros.h"
+#include "z64math.h"
+
 #include "2s2h/Enhancements/FrameInterpolation/FrameInterpolation.h"
 
 MtxF sMtxFClear = { {
@@ -535,7 +540,7 @@ void SkinMatrix_SetRotateAroundVec(MtxF* mf, s16 a, f32 x, f32 y, f32 z) {
     f32 xy;
     f32 yz;
     f32 xz;
-    f32 pad;
+    s32 pad;
 
     sinA = Math_SinS(a);
     cosA = Math_CosS(a);

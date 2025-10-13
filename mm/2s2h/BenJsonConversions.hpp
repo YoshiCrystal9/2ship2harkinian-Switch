@@ -200,7 +200,7 @@ void to_json(json& j, const SavePlayerData& savePlayerData) {
         { "isDoubleMagicAcquired", savePlayerData.isDoubleMagicAcquired },
         { "doubleDefense", savePlayerData.doubleDefense },
         { "unk_1F", savePlayerData.unk_1F },
-        { "unk_20", savePlayerData.unk_20 },
+        { "unk_20", savePlayerData.owlWarpId }, // TODO: Migrate save to use the new name?
         { "owlActivationFlags", savePlayerData.owlActivationFlags },
         { "unk_24", savePlayerData.unk_24 },
         { "savedSceneId", savePlayerData.savedSceneId },
@@ -222,7 +222,7 @@ void from_json(const json& j, SavePlayerData& savePlayerData) {
     j.at("isDoubleMagicAcquired").get_to(savePlayerData.isDoubleMagicAcquired);
     j.at("doubleDefense").get_to(savePlayerData.doubleDefense);
     j.at("unk_1F").get_to(savePlayerData.unk_1F);
-    j.at("unk_20").get_to(savePlayerData.unk_20);
+    j.at("unk_20").get_to(savePlayerData.owlWarpId); // TODO: Migrate save to use the new name?
     j.at("owlActivationFlags").get_to(savePlayerData.owlActivationFlags);
     j.at("unk_24").get_to(savePlayerData.unk_24);
     j.at("savedSceneId").get_to(savePlayerData.savedSceneId);
@@ -268,7 +268,7 @@ void to_json(json& j, const SaveInfo& saveInfo) {
         { "pictoFlags1", saveInfo.pictoFlags1 },
         { "unk_E5C", saveInfo.unk_E5C },
         { "unk_E60", saveInfo.unk_E60 },
-        { "unk_E64", saveInfo.unk_E64 },
+        { "unk_E64", saveInfo.alienInfo }, // TODO: Add migration to rename this?
         { "scenesVisible", saveInfo.scenesVisible },
         { "skullTokenCount", saveInfo.skullTokenCount },
         { "unk_EA0", saveInfo.unk_EA0 },
@@ -304,7 +304,7 @@ void from_json(const json& j, SaveInfo& saveInfo) {
     j.at("pictoFlags1").get_to(saveInfo.pictoFlags1);
     j.at("unk_E5C").get_to(saveInfo.unk_E5C);
     j.at("unk_E60").get_to(saveInfo.unk_E60);
-    j.at("unk_E64").get_to(saveInfo.unk_E64);
+    j.at("unk_E64").get_to(saveInfo.alienInfo); // TODO: Add migration to rename this?
     j.at("scenesVisible").get_to(saveInfo.scenesVisible);
     j.at("skullTokenCount").get_to(saveInfo.skullTokenCount);
     j.at("unk_EA0").get_to(saveInfo.unk_EA0);
@@ -340,7 +340,7 @@ void to_json(json& j, const Save& save) {
         { "linkAge", save.linkAge },
         { "cutsceneIndex", save.cutsceneIndex },
         { "time", save.time },
-        { "owlSaveLocation", save.owlSaveLocation },
+        { "owlSaveLocation", save.owlWarpId }, // TODO: Migrate save to use the new name?
         { "isNight", save.isNight },
         { "timeSpeedOffset", save.timeSpeedOffset },
         { "day", save.day },
@@ -362,7 +362,7 @@ void from_json(const json& j, Save& save) {
     j.at("linkAge").get_to(save.linkAge);
     j.at("cutsceneIndex").get_to(save.cutsceneIndex);
     j.at("time").get_to(save.time);
-    j.at("owlSaveLocation").get_to(save.owlSaveLocation);
+    j.at("owlSaveLocation").get_to(save.owlWarpId); // TODO: Migrate save to use the new name?
     j.at("isNight").get_to(save.isNight);
     j.at("timeSpeedOffset").get_to(save.timeSpeedOffset);
     j.at("day").get_to(save.day);

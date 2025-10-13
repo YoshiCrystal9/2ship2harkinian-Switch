@@ -8,9 +8,7 @@
 #include "objects/object_osn/object_osn.h"
 #include "2s2h/GameInteractor/GameInteractor.h"
 
-#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_10)
-
-#define THIS ((EnOsn*)thisx)
+#define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_UPDATE_CULLING_DISABLED)
 
 void EnOsn_Init(Actor* thisx, PlayState* play);
 void EnOsn_Destroy(Actor* thisx, PlayState* play);
@@ -19,7 +17,7 @@ void EnOsn_Draw(Actor* thisx, PlayState* play);
 
 void EnOsn_Idle(EnOsn* this, PlayState* play);
 void EnOsn_StartCutscene(EnOsn* this, PlayState* play);
-void EnOsn_HandleCsAction(EnOsn* this, PlayState* play);
+void EnOsn_HandleCutscene(EnOsn* this, PlayState* play);
 void EnOsn_Talk(EnOsn* this, PlayState* play);
 
 #define OSN_STATE_SPECIAL_CONVERSTATION (1 << 0)
@@ -50,6 +48,18 @@ void EnOsn_Talk(EnOsn* this, PlayState* play);
 #define OSN_MASK_TEXT_ALL_NIGHT (1 << 18)
 #define OSN_MASK_TEXT_ROMANI (1 << 19)
 
+ActorProfile En_Osn_Profile = {
+    /**/ ACTOR_EN_OSN,
+    /**/ ACTORCAT_NPC,
+    /**/ FLAGS,
+    /**/ OBJECT_OSN,
+    /**/ sizeof(EnOsn),
+    /**/ EnOsn_Init,
+    /**/ EnOsn_Destroy,
+    /**/ EnOsn_Update,
+    /**/ EnOsn_Draw,
+};
+
 typedef enum {
     /*  0 */ OSN_ANIM_IDLE,
     /*  1 */ OSN_ANIM_ARMS_OUT,
@@ -79,49 +89,38 @@ typedef enum {
     /* 25 */ OSN_ANIM_MAX
 } OsnAnimation;
 
-ActorInit En_Osn_InitVars = {
-    /**/ ACTOR_EN_OSN,
-    /**/ ACTORCAT_NPC,
-    /**/ FLAGS,
-    /**/ OBJECT_OSN,
-    /**/ sizeof(EnOsn),
-    /**/ EnOsn_Init,
-    /**/ EnOsn_Destroy,
-    /**/ EnOsn_Update,
-    /**/ EnOsn_Draw,
-};
-
-static AnimationInfo sAnimationInfo[] = {
-    { &gHappyMaskSalesmanIdleAnim, 1.0f, 0.0f, 0.0f, ANIMMODE_LOOP, 0.0f },
-    { &gHappyMaskSalesmanArmsOutAnim, 1.0f, 0.0f, 0.0f, ANIMMODE_LOOP, 0.0f },
-    { &gHappyMaskSalesmanBowingAnim, 1.0f, 0.0f, 0.0f, ANIMMODE_LOOP, 0.0f },
-    { &gHappyMaskSalesmanReminisceAnim, 1.0f, 0.0f, 0.0f, ANIMMODE_LOOP, 0.0f },
-    { &gHappyMaskSalesmanHandsClaspedAnim, 1.0f, 0.0f, 0.0f, ANIMMODE_LOOP, 0.0f },
-    { &gHappyMaskSalesmanBelieveAnim, 1.0f, 0.0f, 0.0f, ANIMMODE_LOOP, 0.0f },
-    { &gHappyMaskSalesmanThinkAnim, 1.0f, 0.0f, 0.0f, ANIMMODE_LOOP, 0.0f },
-    { &gHappyMaskSalesmanShakeHeadAnim, 1.0f, 0.0f, 0.0f, ANIMMODE_LOOP, 0.0f },
-    { &gHappyMaskSalesmanOrganTalkAnim, 1.0f, 1.0f, 39.0f, ANIMMODE_LOOP, 0.0f },
-    { &gHappyMaskSalesmanOrganPlayAnim, 1.0f, 1.0f, 70.0f, ANIMMODE_LOOP, 0.0f },
-    { &gHappyMaskSalesmanShakeAnim, 1.0f, 0.0f, 0.0f, ANIMMODE_LOOP, 0.0f },
-    { &gHappyMaskSalesmanChokeAnim, 1.0f, 0.0f, 0.0f, ANIMMODE_LOOP, 0.0f },
-    { &gHappyMaskSalesmanDespairAnim, 1.0f, 0.0f, 0.0f, ANIMMODE_LOOP, 0.0f },
-    { &gHappyMaskSalesmanFastBowsAnim, 1.0f, 0.0f, 0.0f, ANIMMODE_LOOP, 0.0f },
-    { &gHappyMaskSalesmanHandOutAnim, 1.0f, 0.0f, 0.0f, ANIMMODE_LOOP, 0.0f },
-    { &gHappyMaskSalesmanLyingDownAnim, 0.0f, 0.0f, 0.0f, ANIMMODE_ONCE, 0.0f },
-    { &gHappyMaskSalesmanLyingDownAnim, 0.0f, 1.0f, 1.0f, ANIMMODE_ONCE, 0.0f },
-    { &gHappyMaskSalesmanMaskLookAtAnim, 1.0f, 0.0f, 0.0f, ANIMMODE_LOOP, 0.0f },
-    { &gHappyMaskSalesmanTurnAroundStartAnim, 1.0f, 0.0f, 0.0f, ANIMMODE_ONCE, 0.0f },
-    { &gHappyMaskSalesmanTurnAroundLoopAnim, 1.0f, 0.0f, 0.0f, ANIMMODE_LOOP, 0.0f },
-    { &gHappyMaskSalesmanWalkAwayAnim, 1.0f, 0.0f, 0.0f, ANIMMODE_ONCE, 0.0f },
+static AnimationInfo sAnimationInfo[OSN_ANIM_MAX] = {
+    { &gHappyMaskSalesmanIdleAnim, 1.0f, 0.0f, 0.0f, ANIMMODE_LOOP, 0.0f },            // OSN_ANIM_IDLE
+    { &gHappyMaskSalesmanArmsOutAnim, 1.0f, 0.0f, 0.0f, ANIMMODE_LOOP, 0.0f },         // OSN_ANIM_ARMS_OUT
+    { &gHappyMaskSalesmanBowingAnim, 1.0f, 0.0f, 0.0f, ANIMMODE_LOOP, 0.0f },          // OSN_ANIM_BOWING
+    { &gHappyMaskSalesmanReminisceAnim, 1.0f, 0.0f, 0.0f, ANIMMODE_LOOP, 0.0f },       // OSN_ANIM_REMINISCE
+    { &gHappyMaskSalesmanHandsClaspedAnim, 1.0f, 0.0f, 0.0f, ANIMMODE_LOOP, 0.0f },    // OSN_ANIM_HANDS_CLASPED
+    { &gHappyMaskSalesmanBelieveAnim, 1.0f, 0.0f, 0.0f, ANIMMODE_LOOP, 0.0f },         // OSN_ANIM_BELIEVE
+    { &gHappyMaskSalesmanThinkAnim, 1.0f, 0.0f, 0.0f, ANIMMODE_LOOP, 0.0f },           // OSN_ANIM_THINK
+    { &gHappyMaskSalesmanShakeHeadAnim, 1.0f, 0.0f, 0.0f, ANIMMODE_LOOP, 0.0f },       // OSN_ANIM_SHAKE_HEAD
+    { &gHappyMaskSalesmanOrganTalkAnim, 1.0f, 1.0f, 39.0f, ANIMMODE_LOOP, 0.0f },      // OSN_ANIM_ORGAN_TALK
+    { &gHappyMaskSalesmanOrganPlayAnim, 1.0f, 1.0f, 70.0f, ANIMMODE_LOOP, 0.0f },      // OSN_ANIM_ORGAN_PLAY
+    { &gHappyMaskSalesmanShakeAnim, 1.0f, 0.0f, 0.0f, ANIMMODE_LOOP, 0.0f },           // OSN_ANIM_SHAKE
+    { &gHappyMaskSalesmanChokeAnim, 1.0f, 0.0f, 0.0f, ANIMMODE_LOOP, 0.0f },           // OSN_ANIM_CHOKE
+    { &gHappyMaskSalesmanDespairAnim, 1.0f, 0.0f, 0.0f, ANIMMODE_LOOP, 0.0f },         // OSN_ANIM_DESPAIR
+    { &gHappyMaskSalesmanFastBowsAnim, 1.0f, 0.0f, 0.0f, ANIMMODE_LOOP, 0.0f },        // OSN_ANIM_FAST_BOWS
+    { &gHappyMaskSalesmanHandOutAnim, 1.0f, 0.0f, 0.0f, ANIMMODE_LOOP, 0.0f },         // OSN_ANIM_HAND_OUT
+    { &gHappyMaskSalesmanLyingDownAnim, 0.0f, 0.0f, 0.0f, ANIMMODE_ONCE, 0.0f },       // OSN_ANIM_LYING_DOWN_FACE_UP
+    { &gHappyMaskSalesmanLyingDownAnim, 0.0f, 1.0f, 1.0f, ANIMMODE_ONCE, 0.0f },       // OSN_ANIM_LYING_DOWN_FACE_DOWN
+    { &gHappyMaskSalesmanMaskLookAtAnim, 1.0f, 0.0f, 0.0f, ANIMMODE_LOOP, 0.0f },      // OSN_ANIM_MASK_LOOK_AT
+    { &gHappyMaskSalesmanTurnAroundStartAnim, 1.0f, 0.0f, 0.0f, ANIMMODE_ONCE, 0.0f }, // OSN_ANIM_TURN_AROUND_START
+    { &gHappyMaskSalesmanTurnAroundLoopAnim, 1.0f, 0.0f, 0.0f, ANIMMODE_LOOP, 0.0f },  // OSN_ANIM_TURN_AROUND_LOOP
+    { &gHappyMaskSalesmanWalkAwayAnim, 1.0f, 0.0f, 0.0f, ANIMMODE_ONCE, 0.0f },        // OSN_ANIM_WALK_AWAY
+    // OSN_ANIM_MASK_LOOK_FROM_START
     { &gHappyMaskSalesmanMaskLookFromStartAnim, 1.0f, 0.0f, 0.0f, ANIMMODE_ONCE, 0.0f },
-    { &gHappyMaskSalesmanMaskLookFromLoopAnim, 1.0f, 0.0f, 0.0f, ANIMMODE_LOOP, 0.0f },
-    { &gHappyMaskSalesmanHandOutAnim, 1.0f, 0.0f, 0.0f, ANIMMODE_LOOP, 0.0f },
-    { &gHappyMaskSalesmanWalkAwayAnim, 0.0f, 77.0f, 0.0f, ANIMMODE_ONCE, 0.0f },
+    { &gHappyMaskSalesmanMaskLookFromLoopAnim, 1.0f, 0.0f, 0.0f, ANIMMODE_LOOP, 0.0f }, // OSN_ANIM_MASK_LOOK_FROM_LOOP
+    { &gHappyMaskSalesmanHandOutAnim, 1.0f, 0.0f, 0.0f, ANIMMODE_LOOP, 0.0f },          // OSN_ANIM_HAND_OUT_2
+    { &gHappyMaskSalesmanWalkAwayAnim, 0.0f, 77.0f, 0.0f, ANIMMODE_ONCE, 0.0f },        // OSN_ANIM_WALK_AWAY_END
 };
 
 static ColliderCylinderInit sCylinderInit = {
     {
-        COLTYPE_NONE,
+        COL_MATERIAL_NONE,
         AT_NONE,
         AC_NONE,
         OC1_ON | OC1_TYPE_ALL,
@@ -129,11 +128,11 @@ static ColliderCylinderInit sCylinderInit = {
         COLSHAPE_CYLINDER,
     },
     {
-        ELEMTYPE_UNK0,
+        ELEM_MATERIAL_UNK0,
         { 0x00000000, 0x00, 0x00 },
         { 0xF7CFFFFF, 0x00, 0x00 },
-        TOUCH_NONE | TOUCH_SFX_NORMAL,
-        BUMP_ON,
+        ATELEM_NONE | ATELEM_SFX_NORMAL,
+        ACELEM_ON,
         OCELEM_ON,
     },
     { 30, 40, 0, { 0, 0, 0 } },
@@ -177,7 +176,7 @@ static DamageTable sDamageTable = {
 };
 
 static InitChainEntry sInitChain[] = {
-    ICHAIN_U8(targetMode, TARGET_MODE_0, ICHAIN_STOP),
+    ICHAIN_U8(attentionRangeType, ATTENTION_RANGE_0, ICHAIN_STOP),
 };
 
 void EnOsn_UpdateCollider(EnOsn* this, PlayState* play) {
@@ -257,9 +256,9 @@ s32 EnOsn_GetMaskText(PlayState* play) {
 
 void EnOsn_TurnAround(EnOsn* this) {
     s16 curFrame = this->skelAnime.curFrame;
-    s16 lastFrame = Animation_GetLastFrame(sAnimationInfo[this->animIndex].animation);
+    s16 endFrame = Animation_GetLastFrame(sAnimationInfo[this->animIndex].animation);
 
-    if ((this->animIndex == OSN_ANIM_TURN_AROUND_START) && (curFrame == lastFrame)) {
+    if ((this->animIndex == OSN_ANIM_TURN_AROUND_START) && (curFrame == endFrame)) {
         this->animIndex = OSN_ANIM_TURN_AROUND_LOOP;
         Actor_ChangeAnimationByInfo(&this->skelAnime, sAnimationInfo, OSN_ANIM_TURN_AROUND_LOOP);
     }
@@ -267,9 +266,9 @@ void EnOsn_TurnAround(EnOsn* this) {
 
 void EnOsn_LookFromMask(EnOsn* this) {
     s16 curFrame = this->skelAnime.curFrame;
-    s16 lastFrame = Animation_GetLastFrame(sAnimationInfo[this->animIndex].animation);
+    s16 endFrame = Animation_GetLastFrame(sAnimationInfo[this->animIndex].animation);
 
-    if ((this->animIndex == OSN_ANIM_MASK_LOOK_FROM_START) && (curFrame == lastFrame)) {
+    if ((this->animIndex == OSN_ANIM_MASK_LOOK_FROM_START) && (curFrame == endFrame)) {
         this->animIndex = OSN_ANIM_MASK_LOOK_FROM_LOOP;
         Actor_ChangeAnimationByInfo(&this->skelAnime, sAnimationInfo, OSN_ANIM_MASK_LOOK_FROM_LOOP);
     }
@@ -277,9 +276,9 @@ void EnOsn_LookFromMask(EnOsn* this) {
 
 void EnOsn_FadeOut(EnOsn* this) {
     s16 curFrame = this->skelAnime.curFrame;
-    s16 lastFrame = Animation_GetLastFrame(sAnimationInfo[this->animIndex].animation);
+    s16 endFrame = Animation_GetLastFrame(sAnimationInfo[this->animIndex].animation);
 
-    if (curFrame == lastFrame) {
+    if (curFrame == endFrame) {
         this->alpha -= 8;
         if (this->alpha < 8) {
             this->alpha = 0;
@@ -434,8 +433,7 @@ s32 EnOsn_GetInitialMaskText(EnOsn* this, PlayState* play) {
             break;
     }
     this->stateFlags |= OSN_STATE_END_CONVERSATION;
-    if ((gSaveContext.save.day == 3) && (gSaveContext.save.time >= CLOCK_TIME(5, 0)) &&
-        (gSaveContext.save.time < CLOCK_TIME(6, 0))) {
+    if ((gSaveContext.save.day == 3) && (CURRENT_TIME >= CLOCK_TIME(5, 0)) && (CURRENT_TIME < CLOCK_TIME(6, 0))) {
         return 0x2006;
     }
     return 0x1FCD;
@@ -450,8 +448,8 @@ s32 EnOsn_GetInitialText(EnOsn* this, PlayState* play) {
             this->stateFlags |= OSN_STATE_END_CONVERSATION;
             if ((gSaveContext.save.saveInfo.inventory.items[SLOT_OCARINA] != ITEM_NONE) &&
                 (INV_CONTENT(ITEM_MASK_DEKU) == ITEM_MASK_DEKU)) {
-                if ((gSaveContext.save.day == 3) && (gSaveContext.save.time >= CLOCK_TIME(5, 0)) &&
-                    (gSaveContext.save.time < CLOCK_TIME(6, 0))) {
+                if ((gSaveContext.save.day == 3) && (CURRENT_TIME >= CLOCK_TIME(5, 0)) &&
+                    (CURRENT_TIME < CLOCK_TIME(6, 0))) {
                     return 0x2006;
                 }
                 return 0x1FCD;
@@ -462,8 +460,8 @@ s32 EnOsn_GetInitialText(EnOsn* this, PlayState* play) {
         if (player->transformation == PLAYER_FORM_DEKU) {
             if (this->stateFlags & OSN_STATE_MET_DEKU) {
                 this->stateFlags |= OSN_STATE_END_CONVERSATION;
-                if ((gSaveContext.save.day == 3) && (gSaveContext.save.time >= CLOCK_TIME(5, 0)) &&
-                    (gSaveContext.save.time < CLOCK_TIME(6, 0))) {
+                if ((gSaveContext.save.day == 3) && (CURRENT_TIME >= CLOCK_TIME(5, 0)) &&
+                    (CURRENT_TIME < CLOCK_TIME(6, 0))) {
                     return 0x2006;
                 }
                 return 0x1FCD;
@@ -475,8 +473,8 @@ s32 EnOsn_GetInitialText(EnOsn* this, PlayState* play) {
         if (player->transformation == PLAYER_FORM_GORON) {
             if (this->stateFlags & OSN_STATE_MET_GORON) {
                 this->stateFlags |= OSN_STATE_END_CONVERSATION;
-                if ((gSaveContext.save.day == 3) && (gSaveContext.save.time >= CLOCK_TIME(5, 0)) &&
-                    (gSaveContext.save.time < CLOCK_TIME(6, 0))) {
+                if ((gSaveContext.save.day == 3) && (CURRENT_TIME >= CLOCK_TIME(5, 0)) &&
+                    (CURRENT_TIME < CLOCK_TIME(6, 0))) {
                     return 0x2006;
                 } else {
                     return 0x1FCD;
@@ -494,8 +492,8 @@ s32 EnOsn_GetInitialText(EnOsn* this, PlayState* play) {
         if (player->transformation == PLAYER_FORM_ZORA) {
             if (this->stateFlags & OSN_STATE_MET_ZORA) {
                 this->stateFlags |= OSN_STATE_END_CONVERSATION;
-                if ((gSaveContext.save.day == 3) && (gSaveContext.save.time >= CLOCK_TIME(5, 0)) &&
-                    (gSaveContext.save.time < CLOCK_TIME(6, 0))) {
+                if ((gSaveContext.save.day == 3) && (CURRENT_TIME >= CLOCK_TIME(5, 0)) &&
+                    (CURRENT_TIME < CLOCK_TIME(6, 0))) {
                     return 0x2006;
                 }
                 return 0x1FCD;
@@ -512,8 +510,8 @@ s32 EnOsn_GetInitialText(EnOsn* this, PlayState* play) {
         if (Player_GetMask(play) == PLAYER_MASK_NONE) {
             if (this->stateFlags & OSN_STATE_MET_HUMAN) {
                 this->stateFlags |= OSN_STATE_END_CONVERSATION;
-                if ((gSaveContext.save.day == 3) && (gSaveContext.save.time >= CLOCK_TIME(5, 0)) &&
-                    (gSaveContext.save.time < CLOCK_TIME(6, 0))) {
+                if ((gSaveContext.save.day == 3) && (CURRENT_TIME >= CLOCK_TIME(5, 0)) &&
+                    (CURRENT_TIME < CLOCK_TIME(6, 0))) {
                     return 0x2006;
                 }
                 return 0x1FCD;
@@ -526,8 +524,7 @@ s32 EnOsn_GetInitialText(EnOsn* this, PlayState* play) {
     }
 
     this->stateFlags |= OSN_STATE_END_CONVERSATION;
-    if ((gSaveContext.save.day == 3) && (gSaveContext.save.time >= CLOCK_TIME(5, 0)) &&
-        (gSaveContext.save.time < CLOCK_TIME(6, 0))) {
+    if ((gSaveContext.save.day == 3) && (CURRENT_TIME >= CLOCK_TIME(5, 0)) && (CURRENT_TIME < CLOCK_TIME(6, 0))) {
         return 0x2004;
     }
 
@@ -545,8 +542,8 @@ void EnOsn_HandleConversation(EnOsn* this, PlayState* play) {
             break;
 
         case 0x1FCA:
-            if ((gSaveContext.save.day == 3) && (gSaveContext.save.time >= CLOCK_TIME(5, 0)) &&
-                (gSaveContext.save.time < CLOCK_TIME(6, 0))) {
+            if ((gSaveContext.save.day == 3) && (CURRENT_TIME >= CLOCK_TIME(5, 0)) &&
+                (CURRENT_TIME < CLOCK_TIME(6, 0))) {
                 this->textId = 0x2007;
             } else {
                 this->textId = 0x1FCB;
@@ -712,7 +709,7 @@ void EnOsn_ChooseAction(EnOsn* this, PlayState* play) {
 
     Actor_ChangeAnimationByInfo(&this->skelAnime, sAnimationInfo, OSN_ANIM_IDLE);
     if (!isSwitchFlagSet) {
-        this->actionFunc = EnOsn_HandleCsAction;
+        this->actionFunc = EnOsn_HandleCutscene;
     } else {
         this->actionFunc = EnOsn_Idle;
     }
@@ -725,7 +722,7 @@ void EnOsn_Idle(EnOsn* this, PlayState* play) {
                               (gSaveContext.save.saveInfo.inventory.items[SLOT_OCARINA] != ITEM_NONE) &&
                                   !CHECK_QUEST_ITEM(QUEST_SONG_HEALING),
                               this)) {
-        if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+        if (Actor_TalkOfferAccepted(&this->actor, &play->state)) {
             if (GameInteractor_Should(VB_OSN_TEACH_SONG_OF_HEALING, true, this)) {
                 this->actionFunc = EnOsn_StartCutscene;
             }
@@ -734,7 +731,7 @@ void EnOsn_Idle(EnOsn* this, PlayState* play) {
             Actor_OfferTalkNearColChkInfoCylinder(&this->actor, play);
             this->actor.textId = 0xFFFF;
         }
-    } else if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+    } else if (Actor_TalkOfferAccepted(&this->actor, &play->state)) {
         this->textId = EnOsn_GetInitialText(this, play);
         Message_StartTextbox(play, this->textId, &this->actor);
         this->actionFunc = EnOsn_Talk;
@@ -746,7 +743,7 @@ void EnOsn_Idle(EnOsn* this, PlayState* play) {
 void EnOsn_StartCutscene(EnOsn* this, PlayState* play) {
     if (CutsceneManager_IsNext(this->csId)) {
         CutsceneManager_Start(this->csId, &this->actor);
-        this->actionFunc = EnOsn_HandleCsAction;
+        this->actionFunc = EnOsn_HandleCutscene;
     } else {
         if (CutsceneManager_GetCurrentCsId() == CS_ID_GLOBAL_TALK) {
             CutsceneManager_Stop(CS_ID_GLOBAL_TALK);
@@ -755,7 +752,7 @@ void EnOsn_StartCutscene(EnOsn* this, PlayState* play) {
     }
 }
 
-void EnOsn_HandleCsAction(EnOsn* this, PlayState* play) {
+void EnOsn_HandleCutscene(EnOsn* this, PlayState* play) {
     u8 pad;
     s32 cueChannel;
 
@@ -890,7 +887,7 @@ void EnOsn_HandleCsAction(EnOsn* this, PlayState* play) {
 void EnOsn_Talk(EnOsn* this, PlayState* play) {
     u8 talkState = Message_GetState(&play->msgCtx);
 
-    if (((talkState == TEXT_STATE_DONE) || (talkState == TEXT_STATE_5)) && Message_ShouldAdvance(play)) {
+    if (((talkState == TEXT_STATE_DONE) || (talkState == TEXT_STATE_EVENT)) && Message_ShouldAdvance(play)) {
         if (this->stateFlags & OSN_STATE_END_CONVERSATION) {
             this->stateFlags &= ~OSN_STATE_END_CONVERSATION;
             play->msgCtx.msgMode = MSGMODE_TEXT_CLOSING;
@@ -907,7 +904,7 @@ void EnOsn_DoNothing(EnOsn* this, PlayState* play) {
 
 void EnOsn_Init(Actor* thisx, PlayState* play) {
     s32 pad;
-    EnOsn* this = THIS;
+    EnOsn* this = (EnOsn*)thisx;
 
     Actor_ProcessInitChain(&this->actor, sInitChain);
     ActorShape_Init(&this->actor.shape, 0.0f, ActorShadow_DrawCircle, 20.0f);
@@ -919,8 +916,8 @@ void EnOsn_Init(Actor* thisx, PlayState* play) {
 
     switch (ENOSN_GET_TYPE(&this->actor)) {
         case OSN_TYPE_CHOOSE:
-            if (((gSaveContext.save.entrance == ENTRANCE(CLOCK_TOWER_INTERIOR, 2)) ||
-                 (gSaveContext.save.entrance == ENTRANCE(CLOCK_TOWER_INTERIOR, 3))) ||
+            if ((gSaveContext.save.entrance == ENTRANCE(CLOCK_TOWER_INTERIOR, 2)) ||
+                (gSaveContext.save.entrance == ENTRANCE(CLOCK_TOWER_INTERIOR, 3)) ||
                 (gSaveContext.save.entrance == ENTRANCE(CLOCK_TOWER_INTERIOR, 6))) {
                 this->stateFlags |= OSN_STATE_SPECIAL_CONVERSTATION;
             }
@@ -928,7 +925,7 @@ void EnOsn_Init(Actor* thisx, PlayState* play) {
             if (play->sceneId == SCENE_INSIDETOWER) {
                 if ((gSaveContext.save.entrance == ENTRANCE(CLOCK_TOWER_INTERIOR, 2)) ||
                     (gSaveContext.save.entrance == ENTRANCE(CLOCK_TOWER_INTERIOR, 6))) {
-                    this->actionFunc = EnOsn_HandleCsAction;
+                    this->actionFunc = EnOsn_HandleCutscene;
                 } else if (gSaveContext.save.entrance == ENTRANCE(CLOCK_TOWER_INTERIOR, 3)) {
                     EnOsn_InitCutscene(this);
                     this->actionFunc = EnOsn_StartCutscene;
@@ -953,8 +950,8 @@ void EnOsn_Init(Actor* thisx, PlayState* play) {
             break;
 
         case OSN_TYPE_CUTSCENE:
-            this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
-            this->actionFunc = EnOsn_HandleCsAction;
+            this->actor.flags &= ~ACTOR_FLAG_ATTENTION_ENABLED;
+            this->actionFunc = EnOsn_HandleCutscene;
             break;
 
         default:
@@ -964,7 +961,7 @@ void EnOsn_Init(Actor* thisx, PlayState* play) {
 }
 
 void EnOsn_Destroy(Actor* thisx, PlayState* play) {
-    EnOsn* this = THIS;
+    EnOsn* this = (EnOsn*)thisx;
 
     SkelAnime_Free(&this->skelAnime, play);
     Collider_DestroyCylinder(play, &this->collider);
@@ -972,7 +969,7 @@ void EnOsn_Destroy(Actor* thisx, PlayState* play) {
 
 void EnOsn_Update(Actor* thisx, PlayState* play) {
     s32 pad;
-    EnOsn* this = THIS;
+    EnOsn* this = (EnOsn*)thisx;
     u32 isSwitchFlagSet = Flags_GetSwitch(play, 0);
 
     this->actionFunc(this, play);
@@ -981,12 +978,12 @@ void EnOsn_Update(Actor* thisx, PlayState* play) {
 
     if (ENOSN_GET_TYPE(&this->actor) == OSN_TYPE_CHOOSE) {
         if (isSwitchFlagSet) {
-            this->actor.flags |= ACTOR_FLAG_TARGETABLE;
+            this->actor.flags |= ACTOR_FLAG_ATTENTION_ENABLED;
             EnOsn_UpdateCollider(this, play);
             this->actor.draw = EnOsn_Draw;
         } else {
             this->actor.draw = NULL;
-            this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
+            this->actor.flags &= ~ACTOR_FLAG_ATTENTION_ENABLED;
         }
     }
 
@@ -1015,6 +1012,7 @@ void EnOsn_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* rot,
     if (limbIndex == HAPPY_MASK_SALESMAN_LIMB_HEAD) {
         Matrix_MultVec3f(&headOffset, &this->actor.focus.pos);
     }
+
     if (((this->animIndex == OSN_ANIM_MASK_LOOK_AT) || (this->animIndex == OSN_ANIM_MASK_LOOK_FROM_START) ||
          (this->animIndex == OSN_ANIM_MASK_LOOK_FROM_LOOP)) &&
         (limbIndex == HAPPY_MASK_SALESMAN_LIMB_LEFT_HAND)) {
@@ -1024,7 +1022,7 @@ void EnOsn_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* rot,
         Matrix_RotateYS(leftHandRot.y, MTXMODE_APPLY);
         Matrix_RotateZS(leftHandRot.z, MTXMODE_APPLY);
 
-        gSPMatrix((*gfx)++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+        MATRIX_FINALIZE_AND_LOAD((*gfx)++, play->state.gfxCtx);
         gSPDisplayList((*gfx)++, &gHappyMaskSalesmanMajorasMaskDL);
         Matrix_Pop();
     }
@@ -1037,7 +1035,7 @@ void EnOsn_Draw(Actor* thisx, PlayState* play) {
     static TexturePtr sSmileTex = gHappyMaskSalesmanSmileTex;
     static TexturePtr sFrownTex = gHappyMaskSalesmanFrownTex;
     s32 pad;
-    EnOsn* this = THIS;
+    EnOsn* this = (EnOsn*)thisx;
 
     OPEN_DISPS(play->state.gfxCtx);
 

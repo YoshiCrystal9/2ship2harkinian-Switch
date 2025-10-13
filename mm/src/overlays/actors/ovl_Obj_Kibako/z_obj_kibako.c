@@ -9,9 +9,7 @@
 #include "objects/object_kibako/object_kibako.h"
 #include "GameInteractor/GameInteractor.h"
 
-#define FLAGS (ACTOR_FLAG_10 | ACTOR_FLAG_CAN_PRESS_SWITCH)
-
-#define THIS ((ObjKibako*)thisx)
+#define FLAGS (ACTOR_FLAG_UPDATE_CULLING_DISABLED | ACTOR_FLAG_CAN_PRESS_SWITCHES)
 
 void ObjKibako_Init(Actor* thisx, PlayState* play2);
 void ObjKibako_Destroy(Actor* thisx, PlayState* play2);
@@ -37,7 +35,7 @@ static s16 D_80927384 = 0;
 static s16 D_80927388 = 0;
 static s16 D_8092738C = 0;
 
-ActorInit Obj_Kibako_InitVars = {
+ActorProfile Obj_Kibako_Profile = {
     /**/ ACTOR_OBJ_KIBAKO,
     /**/ ACTORCAT_PROP,
     /**/ FLAGS,
@@ -51,7 +49,7 @@ ActorInit Obj_Kibako_InitVars = {
 
 static ColliderCylinderInit sCylinderInit = {
     {
-        COLTYPE_NONE,
+        COL_MATERIAL_NONE,
         AT_ON | AT_TYPE_PLAYER,
         AC_ON | AC_TYPE_PLAYER,
         OC1_ON | OC1_TYPE_ALL,
@@ -59,11 +57,11 @@ static ColliderCylinderInit sCylinderInit = {
         COLSHAPE_CYLINDER,
     },
     {
-        ELEMTYPE_UNK0,
+        ELEM_MATERIAL_UNK0,
         { 0x00400000, 0x00, 0x02 },
         { 0x058BC79C, 0x00, 0x00 },
-        TOUCH_ON | TOUCH_SFX_NONE,
-        BUMP_ON,
+        ATELEM_ON | ATELEM_SFX_NONE,
+        ACELEM_ON,
         OCELEM_ON,
     },
     { 15, 30, 0, { 0, 0, 0 } },
@@ -78,8 +76,8 @@ static Gfx* sDisplayLists[] = { gameplay_dangeon_keep_DL_007890, gSmallCrateDL }
 static InitChainEntry sInitChain[] = {
     ICHAIN_F32_DIV1000(gravity, -1500, ICHAIN_CONTINUE),
     ICHAIN_F32_DIV1000(terminalVelocity, -18000, ICHAIN_CONTINUE),
-    ICHAIN_F32(uncullZoneScale, 60, ICHAIN_CONTINUE),
-    ICHAIN_F32(uncullZoneDownward, 60, ICHAIN_STOP),
+    ICHAIN_F32(cullingVolumeScale, 60, ICHAIN_CONTINUE),
+    ICHAIN_F32(cullingVolumeDownward, 60, ICHAIN_STOP),
 };
 
 void ObjKibako_SpawnCollectible(ObjKibako* this, PlayState* play) {
@@ -139,16 +137,16 @@ void func_80926394(ObjKibako* this, PlayState* play) {
 
 void ObjKibako_Init(Actor* thisx, PlayState* play2) {
     PlayState* play = play2;
-    ObjKibako* this = THIS;
+    ObjKibako* this = (ObjKibako*)thisx;
     s32 objectIndex;
 
     objectIndex = KIBAKO_BANK_INDEX(thisx);
     Actor_ProcessInitChain(&this->actor, sInitChain);
     Actor_SetScale(&this->actor, 0.15f);
     if (objectIndex == 0) {
-        this->actor.uncullZoneForward = 4000.0f;
+        this->actor.cullingVolumeDistance = 4000.0f;
     } else {
-        this->actor.uncullZoneForward = 800.0f;
+        this->actor.cullingVolumeDistance = 800.0f;
     }
     Collider_InitCylinder(play, &this->collider);
     Collider_SetCylinder(play, &this->collider, &this->actor, &sCylinderInit);
@@ -165,7 +163,7 @@ void ObjKibako_Init(Actor* thisx, PlayState* play2) {
 
 void ObjKibako_Destroy(Actor* thisx, PlayState* play2) {
     PlayState* play = play2;
-    ObjKibako* this = THIS;
+    ObjKibako* this = (ObjKibako*)thisx;
 
     Collider_DestroyCylinder(play, &this->collider);
 }
@@ -219,8 +217,8 @@ void ObjKibako_WaterBreak(ObjKibako* this, PlayState* play) {
 
     pos.y = worldPos->y + this->actor.depthInWater;
     for (angle = 0, i = 0; i < 5; i++, angle += 0x3333) {
-        pos.x = (Math_SinS(((s32)(Rand_ZeroOne() * 6000.0f)) + angle) * 15.0f) + worldPos->x;
-        pos.z = (Math_CosS(((s32)(Rand_ZeroOne() * 6000.0f)) + angle) * 15.0f) + worldPos->z;
+        pos.x = worldPos->x + (Math_SinS(((s32)(Rand_ZeroOne() * 6000.0f)) + angle) * 15.0f);
+        pos.z = worldPos->z + (Math_CosS(((s32)(Rand_ZeroOne() * 6000.0f)) + angle) * 15.0f);
         EffectSsGSplash_Spawn(play, &pos, NULL, NULL, 0, 350);
     }
     pos.x = worldPos->x;
@@ -356,7 +354,7 @@ void ObjKibako_Held(ObjKibako* this, PlayState* play) {
         } else {
             Actor_MoveWithGravity(&this->actor);
             ObjKibako_SetupThrown(this);
-            this->actor.flags &= ~ACTOR_FLAG_CAN_PRESS_SWITCH;
+            this->actor.flags &= ~ACTOR_FLAG_CAN_PRESS_SWITCHES;
         }
         Actor_UpdateBgCheckInfo(play, &this->actor, 18.0f, 15.0f, 0.0f,
                                 UPDBGCHECKINFO_FLAG_1 | UPDBGCHECKINFO_FLAG_4 | UPDBGCHECKINFO_FLAG_40);
@@ -426,7 +424,7 @@ void ObjKibako_Thrown(ObjKibako* this, PlayState* play) {
 }
 
 void ObjKibako_Update(Actor* thisx, PlayState* play) {
-    ObjKibako* this = THIS;
+    ObjKibako* this = (ObjKibako*)thisx;
 
     this->actionFunc(this, play);
     ObjKibako_SetShadow(this);

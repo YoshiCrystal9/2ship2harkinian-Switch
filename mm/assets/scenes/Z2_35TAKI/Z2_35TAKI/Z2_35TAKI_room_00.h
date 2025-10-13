@@ -96,4 +96,16 @@ static const ALIGN_ASSET(2) char Z2_35TAKI_room_00DL_001F18[] = dZ2_35TAKI_room_
 #define dZ2_35TAKI_room_00DL_018158 "__OTR__scenes/nonmq/Z2_35TAKI_scene/Z2_35TAKI_room_00DL_018158"
 static const ALIGN_ASSET(2) char Z2_35TAKI_room_00DL_018158[] = dZ2_35TAKI_room_00DL_018158;
 
+#define dZ2_35TAKI_room_00DL_017400 "__OTR__scenes/nonmq/Z2_35TAKI_scene/Z2_35TAKI_room_00DL_017400"
+static const ALIGN_ASSET(2) char Z2_35TAKI_room_00DL_017400[] = dZ2_35TAKI_room_00DL_017400;
+
+#define dZ2_35TAKI_room_00DL_000C00 "__OTR__scenes/nonmq/Z2_35TAKI_scene/Z2_35TAKI_room_00DL_000C00"
+static const ALIGN_ASSET(2) char Z2_35TAKI_room_00DL_000C00[] = dZ2_35TAKI_room_00DL_000C00;
+
+#define dZ2_35TAKI_room_00DL_017350 "__OTR__scenes/nonmq/Z2_35TAKI_scene/Z2_35TAKI_room_00DL_017350"
+static const ALIGN_ASSET(2) char Z2_35TAKI_room_00DL_017350[] = dZ2_35TAKI_room_00DL_017350;
+
+#define dZ2_35TAKI_room_00DL_018CB8 "__OTR__scenes/nonmq/Z2_35TAKI_scene/Z2_35TAKI_room_00DL_018CB8"
+static const ALIGN_ASSET(2) char Z2_35TAKI_room_00DL_018CB8[] = dZ2_35TAKI_room_00DL_018CB8;
+
 #endif // Z2_35TAKI_Z2_35TAKI_ROOM_00_H

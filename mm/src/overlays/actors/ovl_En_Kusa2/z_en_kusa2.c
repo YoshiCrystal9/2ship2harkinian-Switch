@@ -13,9 +13,7 @@
 #include "2s2h/ShipUtils.h"
 #include <string.h>
 
-#define FLAGS (ACTOR_FLAG_10 | ACTOR_FLAG_800000)
-
-#define THIS ((EnKusa2*)thisx)
+#define FLAGS (ACTOR_FLAG_UPDATE_CULLING_DISABLED | ACTOR_FLAG_THROW_ONLY)
 
 void EnKusa2_Init(Actor* thisx, PlayState* play);
 void EnKusa2_Destroy(Actor* thisx, PlayState* play);
@@ -59,7 +57,7 @@ s16 D_80A60B0C;
 s16 D_80A60B0E;
 s16 D_80A60B10;
 
-ActorInit En_Kusa2_InitVars = {
+ActorProfile En_Kusa2_Profile = {
     /**/ ACTOR_EN_KUSA2,
     /**/ ACTORCAT_PROP,
     /**/ FLAGS,
@@ -74,7 +72,7 @@ ActorInit En_Kusa2_InitVars = {
 
 static ColliderCylinderInit sCylinderInit = {
     {
-        COLTYPE_NONE,
+        COL_MATERIAL_NONE,
         AT_NONE,
         AC_ON | AC_TYPE_PLAYER,
         OC1_ON | OC1_TYPE_PLAYER | OC1_TYPE_2,
@@ -82,17 +80,17 @@ static ColliderCylinderInit sCylinderInit = {
         COLSHAPE_CYLINDER,
     },
     {
-        ELEMTYPE_UNK0,
+        ELEM_MATERIAL_UNK0,
         { 0x00000000, 0x00, 0x00 },
         { 0x0580C71C, 0x00, 0x00 },
-        TOUCH_NONE | TOUCH_SFX_NORMAL,
-        BUMP_ON,
+        ATELEM_NONE | ATELEM_SFX_NORMAL,
+        ACELEM_ON,
         OCELEM_ON,
     },
     { 6, 44, 0, { 0, 0, 0 } },
 };
 
-u8 D_80A5EAEC = 1;
+u8 D_80A5EAEC = true;
 s16 D_80A5EAF0 = 0;
 Vec3s D_80A5EAF4 = { 0, 0, 0 };
 Vec3s D_80A5EAFC = { 0, 0, 0 };
@@ -259,15 +257,15 @@ void func_80A5B954(MtxF* matrix, f32 arg1) {
 
 s32 func_80A5BA58(EnKusa2* this, PlayState* play) {
     Vec3f sp24;
-    s32 sp20;
+    s32 bgId;
 
     sp24.x = this->actor.world.pos.x;
     sp24.y = this->actor.world.pos.y + 30.0f;
     sp24.z = this->actor.world.pos.z;
     this->actor.floorHeight =
-        BgCheck_EntityRaycastFloor5(&play->colCtx, &this->actor.floorPoly, &sp20, &this->actor, &sp24);
+        BgCheck_EntityRaycastFloor5(&play->colCtx, &this->actor.floorPoly, &bgId, &this->actor, &sp24);
     if (this->actor.floorHeight > BGCHECK_Y_MIN) {
-        this->actor.floorBgId = sp20;
+        this->actor.floorBgId = bgId;
         this->actor.world.pos.y = this->actor.floorHeight;
         Math_Vec3f_Copy(&this->actor.home.pos, &this->actor.world.pos);
         return true;
@@ -291,7 +289,7 @@ void func_80A5BB40(EnKusa2* this, PlayState* play, s32 arg2) {
     f32 temp_f24;
     s16 temp_s0;
 
-    if (this->actor.flags & ACTOR_FLAG_40) {
+    if (this->actor.flags & ACTOR_FLAG_INSIDE_CULLING_VOLUME) {
         for (i = 0; i <= arg2; i++) {
             temp_s0 = Rand_S16Offset(-16000, 32000) + this->actor.world.rot.y;
             temp_f20 = Math_SinS(temp_s0);
@@ -344,8 +342,8 @@ void func_80A5BDB0(EnKusa2* this, PlayState* play) {
     sp50.y = this->actor.world.pos.y + this->actor.depthInWater;
 
     for (phi_s0 = 0, i = 0; i < 4; i++, phi_s0 += 0x4000) {
-        sp50.x = (Math_SinS((s32)(Rand_ZeroOne() * 7200.0f) + phi_s0) * 15.0f) + this->actor.world.pos.x;
-        sp50.z = (Math_CosS((s32)(Rand_ZeroOne() * 7200.0f) + phi_s0) * 15.0f) + this->actor.world.pos.z;
+        sp50.x = this->actor.world.pos.x + (Math_SinS((s32)(Rand_ZeroOne() * 7200.0f) + phi_s0) * 15.0f);
+        sp50.z = this->actor.world.pos.z + (Math_CosS((s32)(Rand_ZeroOne() * 7200.0f) + phi_s0) * 15.0f);
         EffectSsGSplash_Spawn(play, &sp50, NULL, NULL, 0, 190);
     }
 
@@ -385,7 +383,7 @@ s32 func_80A5BFD8(EnKusa2* this, PlayState* play) {
         s32 pad;
 
         func_80A5CF44(this);
-        func_80A5BD14(this, play, (this->collider.info.acHitInfo->toucher.dmgFlags & 0x1000000) ? 1 : 0);
+        func_80A5BD14(this, play, (this->collider.elem.acHitElem->atDmgInfo.dmgFlags & 0x1000000) ? 1 : 0);
         SoundSource_PlaySfxAtFixedWorldPos(play, &this->actor.world.pos, 20, NA_SE_EV_PLANT_BROKEN);
         func_80A5BD94(this);
         Actor_Kill(&this->actor);
@@ -415,9 +413,11 @@ EnKusa2UnkBssSubStruct2* func_80A5C0B8(EnKusa2UnkBssStruct* arg0) {
     EnKusa2UnkBssSubStruct2* phi_v1 = &arg0->unk_0480[0];
 
     for (i = 1; i < ARRAY_COUNT(D_80A5F1C0.unk_0480); i++) {
-        if (phi_v1->unk_2C > arg0->unk_0480[i].unk_2C) {
-            phi_v1 = &arg0->unk_0480[i];
-            if (1) {}
+        EnKusa2UnkBssSubStruct2* iter = &arg0->unk_0480[i];
+
+        if (iter->unk_2C < phi_v1->unk_2C) {
+            phi_v1 = iter;
+
             if (phi_v1->unk_2C <= 0) {
                 break;
             }
@@ -581,7 +581,7 @@ void func_80A5C70C(EnKusa2UnkBssSubStruct* arg0) {
 }
 
 void func_80A5C718(EnKusa2UnkBssSubStruct* arg0) {
-    Math_ScaledStepToS(&arg0->unk_20, arg0->unk_22, 1200);
+    Math_ScaledStepToS(&arg0->unk_20, arg0->unk_22, 0x4B0);
 
     if ((arg0->unk_1C > 0.0f) && (Rand_ZeroOne() < 0.05f)) {
         arg0->unk_1C = -arg0->unk_1C;
@@ -855,24 +855,24 @@ void func_80A5D178(EnKusa2* this) {
 }
 
 static InitChainEntry sInitChain[] = {
-    ICHAIN_F32_DIV1000(gravity, -2000, ICHAIN_CONTINUE), ICHAIN_F32_DIV1000(terminalVelocity, -17000, ICHAIN_CONTINUE),
-    ICHAIN_VEC3F_DIV1000(scale, 400, ICHAIN_CONTINUE),   ICHAIN_F32(uncullZoneForward, 1200, ICHAIN_CONTINUE),
-    ICHAIN_F32(uncullZoneScale, 100, ICHAIN_CONTINUE),   ICHAIN_F32(uncullZoneDownward, 100, ICHAIN_STOP),
+    ICHAIN_F32_DIV1000(gravity, -2000, ICHAIN_CONTINUE),  ICHAIN_F32_DIV1000(terminalVelocity, -17000, ICHAIN_CONTINUE),
+    ICHAIN_VEC3F_DIV1000(scale, 400, ICHAIN_CONTINUE),    ICHAIN_F32(cullingVolumeDistance, 1200, ICHAIN_CONTINUE),
+    ICHAIN_F32(cullingVolumeScale, 100, ICHAIN_CONTINUE), ICHAIN_F32(cullingVolumeDownward, 100, ICHAIN_STOP),
 };
 
 void EnKusa2_Init(Actor* thisx, PlayState* play) {
     s32 pad;
-    EnKusa2* this = THIS;
+    EnKusa2* this = (EnKusa2*)thisx;
 
     Actor_ProcessInitChain(&this->actor, sInitChain);
     if (!ENKUSA2_GET_1(&this->actor)) {
         this->actor.update = func_80A5E604;
         this->actor.draw = NULL;
-        this->actor.flags |= ACTOR_FLAG_20;
-        func_800BC154(play, &play->actorCtx, &this->actor, 1);
+        this->actor.flags |= ACTOR_FLAG_DRAW_CULLING_DISABLED;
+        Actor_ChangeCategory(play, &play->actorCtx, &this->actor, ACTORCAT_BG);
         this->unk_1BE = 0;
-        if (D_80A5EAEC != 0) {
-            D_80A5EAEC = 0;
+        if (D_80A5EAEC) {
+            D_80A5EAEC = false;
             D_80A60900 = play->gameplayFrames;
             func_80A5CAD4(&D_80A5F1C0);
             D_80A60B08 = Rand_Next() >> 0x10;
@@ -903,7 +903,7 @@ void EnKusa2_Init(Actor* thisx, PlayState* play) {
 }
 
 void EnKusa2_Destroy(Actor* thisx, PlayState* play) {
-    EnKusa2* this = THIS;
+    EnKusa2* this = (EnKusa2*)thisx;
 
     if (ENKUSA2_GET_1(&this->actor) == 1) {
         Collider_DestroyCylinder(play, &this->collider);
@@ -1033,7 +1033,7 @@ void func_80A5D964(EnKusa2* this) {
 void func_80A5D9C8(EnKusa2* this, PlayState* play) {
     s32 pad;
     Vec3f sp30;
-    s32 sp2C;
+    s32 bgId;
 
     D_80A5EAF4.x += 11000;
     D_80A5EAF4.y += 17000;
@@ -1078,7 +1078,7 @@ void func_80A5D9C8(EnKusa2* this, PlayState* play) {
         }
 
         this->actor.floorHeight =
-            BgCheck_EntityRaycastFloor5(&play->colCtx, &this->actor.floorPoly, &sp2C, &this->actor, &sp30);
+            BgCheck_EntityRaycastFloor5(&play->colCtx, &this->actor.floorPoly, &bgId, &this->actor, &sp30);
     }
 }
 
@@ -1300,7 +1300,7 @@ void func_80A5E4BC(EnKusa2* this, PlayState* play) {
 
 void func_80A5E604(Actor* thisx, PlayState* play) {
     s32 pad;
-    EnKusa2* this = THIS;
+    EnKusa2* this = (EnKusa2*)thisx;
 
     this->actionFunc(this, play);
 
@@ -1309,7 +1309,7 @@ void func_80A5E604(Actor* thisx, PlayState* play) {
     } else {
         this->actor.draw = func_80A5E6F0;
 
-        if (play->roomCtx.curRoom.behaviorType1 == ROOM_BEHAVIOR_TYPE1_0) {
+        if (play->roomCtx.curRoom.type == ROOM_TYPE_NORMAL) {
             func_80A5B508();
         }
         func_80A5CAF4(&D_80A5F1C0);
@@ -1318,7 +1318,7 @@ void func_80A5E604(Actor* thisx, PlayState* play) {
 }
 
 void EnKusa2_Update(Actor* thisx, PlayState* play) {
-    EnKusa2* this = THIS;
+    EnKusa2* this = (EnKusa2*)thisx;
 
     if ((this->unk_1C0 != NULL) && (this->unk_1C0->actor.update == NULL)) {
         this->unk_1C0 = NULL;
@@ -1334,7 +1334,7 @@ void func_80A5E6F0(Actor* thisx, PlayState* play) {
         gKakeraLeafTipDL,
         gKakeraLeafMiddleDL,
     };
-    EnKusa2* this = THIS;
+    EnKusa2* this = (EnKusa2*)thisx;
     s32 i;
 
     OPEN_DISPS(play->state.gfxCtx);
@@ -1350,7 +1350,7 @@ void func_80A5E6F0(Actor* thisx, PlayState* play) {
             Matrix_SetTranslateRotateYXZ(s->unk_04.x, s->unk_04.y, s->unk_04.z, &s->unk_20);
             Matrix_Scale(s->unk_00, s->unk_00, s->unk_00, MTXMODE_APPLY);
 
-            gSPMatrix(POLY_OPA_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+            MATRIX_FINALIZE_AND_LOAD(POLY_OPA_DISP++, play->state.gfxCtx);
             gSPDisplayList(POLY_OPA_DISP++, D_80A5EB68[i & 1]);
             FrameInterpolation_RecordCloseChild();
         }
@@ -1364,7 +1364,7 @@ void func_80A5E80C(PlayState* play, s32 arg1) {
 
     Gfx_SetupDL25_Xlu(play->state.gfxCtx);
 
-    gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    MATRIX_FINALIZE_AND_LOAD(POLY_XLU_DISP++, play->state.gfxCtx);
     gDPSetPrimColor(POLY_XLU_DISP++, 0, 0, 255, 255, 255, arg1);
     gSPDisplayList(POLY_XLU_DISP++, gKusaBushType2DL);
 
@@ -1372,12 +1372,12 @@ void func_80A5E80C(PlayState* play, s32 arg1) {
 }
 
 void EnKusa2_Draw(Actor* thisx, PlayState* play) {
-    EnKusa2* this = THIS;
+    EnKusa2* this = (EnKusa2*)thisx;
 
     Ship_ExtendedCullingActorAdjustProjectedZ(&this->actor);
 
     if (this->actor.projectedPos.z <= 1200.0f) {
-        if ((play->roomCtx.curRoom.behaviorType1 == ROOM_BEHAVIOR_TYPE1_0) && (this->actor.projectedPos.z > -150.0f) &&
+        if ((play->roomCtx.curRoom.type == ROOM_TYPE_NORMAL) && (this->actor.projectedPos.z > -150.0f) &&
             (this->actor.projectedPos.z < 400.0f)) {
             func_80A5B954(&D_80A60908[this->unk_1CE], 0.0015f);
         }
@@ -1401,7 +1401,7 @@ void func_80A5E9B4(Actor* thisx, PlayState* play) {
 }
 
 void func_80A5EA48(Actor* thisx, PlayState* play) {
-    EnKusa2* this = THIS;
+    EnKusa2* this = (EnKusa2*)thisx;
 
     if (this->unk_1CF == 0xFF) {
         Gfx_DrawDListOpa(play, gKusaBushType1DL);

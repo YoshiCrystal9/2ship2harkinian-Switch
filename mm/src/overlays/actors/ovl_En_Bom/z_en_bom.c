@@ -9,9 +9,7 @@
 #include "overlays/actors/ovl_En_Clear_Tag/z_en_clear_tag.h"
 #include "objects/gameplay_keep/gameplay_keep.h"
 
-#define FLAGS (ACTOR_FLAG_10 | ACTOR_FLAG_20)
-
-#define THIS ((EnBom*)thisx)
+#define FLAGS (ACTOR_FLAG_UPDATE_CULLING_DISABLED | ACTOR_FLAG_DRAW_CULLING_DISABLED)
 
 void EnBom_Init(Actor* thisx, PlayState* play);
 void EnBom_Destroy(Actor* thisx, PlayState* play);
@@ -34,7 +32,7 @@ typedef struct {
 
 PowderKegFuseSegment sPowderKegFuseSegments[16];
 
-ActorInit En_Bom_InitVars = {
+ActorProfile En_Bom_Profile = {
     /**/ ACTOR_EN_BOM,
     /**/ ACTORCAT_EXPLOSIVES,
     /**/ FLAGS,
@@ -50,7 +48,7 @@ static f32 enBomScales[] = { 0.01f, 0.03f };
 
 static ColliderCylinderInit sCylinderInit = {
     {
-        COLTYPE_HIT0,
+        COL_MATERIAL_HIT0,
         AT_NONE,
         AC_ON | AC_TYPE_PLAYER | AC_TYPE_OTHER,
         OC1_ON | OC1_TYPE_ALL,
@@ -58,11 +56,11 @@ static ColliderCylinderInit sCylinderInit = {
         COLSHAPE_CYLINDER,
     },
     {
-        ELEMTYPE_UNK2,
+        ELEM_MATERIAL_UNK2,
         { 0x00000000, 0x00, 0x00 },
         { 0x00013828, 0x00, 0x00 },
-        TOUCH_NONE | TOUCH_SFX_NORMAL,
-        BUMP_ON,
+        ATELEM_NONE | ATELEM_SFX_NORMAL,
+        ACELEM_ON,
         OCELEM_ON,
     },
     { 6, 11, 14, { 0, 0, 0 } },
@@ -71,11 +69,11 @@ static ColliderCylinderInit sCylinderInit = {
 static ColliderJntSphElementInit sJntSphElementsInit1[1] = {
     {
         {
-            ELEMTYPE_UNK0,
+            ELEM_MATERIAL_UNK0,
             { 0x00000008, 0x00, 0x02 },
             { 0x00000000, 0x00, 0x00 },
-            TOUCH_ON | TOUCH_SFX_NONE,
-            BUMP_NONE,
+            ATELEM_ON | ATELEM_SFX_NONE,
+            ACELEM_NONE,
             OCELEM_NONE,
         },
         { 0, { { 0, 0, 0 }, 0 }, 100 },
@@ -84,7 +82,7 @@ static ColliderJntSphElementInit sJntSphElementsInit1[1] = {
 
 static ColliderJntSphInit sJntSphInit1 = {
     {
-        COLTYPE_HIT0,
+        COL_MATERIAL_HIT0,
         AT_ON | AT_TYPE_ALL,
         AC_NONE,
         OC1_NONE,
@@ -98,11 +96,11 @@ static ColliderJntSphInit sJntSphInit1 = {
 static ColliderJntSphElementInit sJntSphElementsInit2[1] = {
     {
         {
-            ELEMTYPE_UNK0,
+            ELEM_MATERIAL_UNK0,
             { 0x80000008, 0x00, 0x04 },
             { 0x00000000, 0x00, 0x00 },
-            TOUCH_ON | TOUCH_SFX_NONE,
-            BUMP_NONE,
+            ATELEM_ON | ATELEM_SFX_NONE,
+            ACELEM_NONE,
             OCELEM_NONE,
         },
         { 0, { { 0, 0, 0 }, 0 }, 100 },
@@ -111,7 +109,7 @@ static ColliderJntSphElementInit sJntSphElementsInit2[1] = {
 
 static ColliderJntSphInit sJntSphInit2 = {
     {
-        COLTYPE_HIT0,
+        COL_MATERIAL_HIT0,
         AT_ON | AT_TYPE_ALL,
         AC_NONE,
         OC1_NONE,
@@ -124,12 +122,12 @@ static ColliderJntSphInit sJntSphInit2 = {
 
 static InitChainEntry sInitChain[] = {
     ICHAIN_VEC3F(scale, 0, ICHAIN_CONTINUE),
-    ICHAIN_F32(targetArrowOffset, 2000, ICHAIN_CONTINUE),
+    ICHAIN_F32(lockOnArrowOffset, 2000, ICHAIN_CONTINUE),
     ICHAIN_F32_DIV1000(gravity, -4000, ICHAIN_STOP),
 };
 
 void EnBom_Init(Actor* thisx, PlayState* play) {
-    EnBom* this = THIS;
+    EnBom* this = (EnBom*)thisx;
     s32 params;
 
     Actor_ProcessInitChain(&this->actor, sInitChain);
@@ -162,7 +160,7 @@ void EnBom_Init(Actor* thisx, PlayState* play) {
         func_80872648(play, &this->actor.world.pos);
     }
 
-    this->collider2Elements[0].info.toucher.damage += ENBOM_GET_FF00(thisx);
+    this->collider2Elements[0].base.atDmgInfo.damage += ENBOM_GET_FF00(thisx);
     this->actor.shape.rot.z &= 0xFF;
     if (ENBOM_GET_80(&this->actor)) {
         this->actor.shape.rot.z |= 0xFF00;
@@ -172,7 +170,7 @@ void EnBom_Init(Actor* thisx, PlayState* play) {
     this->collider2.elements[0].dim.worldSphere.center.y = this->actor.world.pos.y;
     this->collider2.elements[0].dim.worldSphere.center.z = this->actor.world.pos.z;
 
-    this->actor.flags |= ACTOR_FLAG_100000;
+    this->actor.flags |= ACTOR_FLAG_FREEZE_EXCEPTION;
 
     if (Actor_HasParent(&this->actor, play)) {
         this->actionFunc = EnBom_WaitForRelease;
@@ -185,7 +183,7 @@ void EnBom_Init(Actor* thisx, PlayState* play) {
 }
 
 void EnBom_Destroy(Actor* thisx, PlayState* play) {
-    EnBom* this = THIS;
+    EnBom* this = (EnBom*)thisx;
 
     Collider_DestroyJntSph(play, &this->collider2);
     Collider_DestroyCylinder(play, &this->collider1);
@@ -281,7 +279,7 @@ void EnBom_Move(EnBom* this, PlayState* play) {
                 temp = BINANG_ROT180(temp);
             }
             Math_ScaledStepToS(&this->actor.shape.rot.y, temp, this->actor.speed * 100.0f);
-            this->unk_1FA += (s16)(this->actor.speed * 800.0f);
+            this->unk_1FA += TRUNCF_BINANG(this->actor.speed * 800.0f);
         }
 
         if (this->actor.bgCheckFlags & BGCHECKFLAG_GROUND_TOUCH) {
@@ -290,7 +288,7 @@ void EnBom_Move(EnBom* this, PlayState* play) {
                 if ((floorType == FLOOR_TYPE_4) || (floorType == FLOOR_TYPE_14) || (floorType == FLOOR_TYPE_15)) {
                     this->actor.velocity.y = 0.0f;
                 } else {
-                    this->actor.velocity.y = this->actor.velocity.y * sp58->z;
+                    this->actor.velocity.y *= sp58->z;
                 }
                 this->actor.bgCheckFlags &= ~BGCHECKFLAG_GROUND;
             }
@@ -303,11 +301,11 @@ void EnBom_Move(EnBom* this, PlayState* play) {
 }
 
 void EnBom_WaitForRelease(EnBom* this, PlayState* play) {
-    // if parent is NULL bomb has been released
+    // if parent pointer is NULL, the bomb has been released
     if (Actor_HasNoParent(&this->actor, play)) {
         this->actionFunc = EnBom_Move;
         this->actor.room = play->roomCtx.curRoom.num;
-        this->actor.flags &= ~ACTOR_FLAG_100000;
+        this->actor.flags &= ~ACTOR_FLAG_FREEZE_EXCEPTION;
         this->actor.bgCheckFlags &= ~BGCHECKFLAG_GROUND;
         Math_Vec3s_ToVec3f(&this->actor.prevPos, &this->actor.home.rot);
         if (this->isPowderKeg) {
@@ -320,7 +318,7 @@ void EnBom_WaitForRelease(EnBom* this, PlayState* play) {
             gSaveContext.powderKegTimer = this->timer;
         }
     }
-    Math_ScaledStepToS(&this->unk_1FA, 0, 2000);
+    Math_ScaledStepToS(&this->unk_1FA, 0, 0x7D0);
 }
 
 void EnBom_Explode(EnBom* this, PlayState* play) {
@@ -335,19 +333,19 @@ void EnBom_Explode(EnBom* this, PlayState* play) {
     Vec3f spC0;
     Vec3f spB4;
     CollisionPoly* spB0;
-    s32 spAC;
+    s32 bgId;
     Vec3f spA0;
     Vec3f sp94;
     Vec3f sp88;
     Color_RGBA8 sp84;
     Color_RGBA8 sp80;
 
-    if (this->collider2.elements->dim.modelSphere.radius == 0) {
-        this->actor.flags |= ACTOR_FLAG_20;
+    if (this->collider2.elements[0].dim.modelSphere.radius == 0) {
+        this->actor.flags |= ACTOR_FLAG_DRAW_CULLING_DISABLED;
         Rumble_Request(this->actor.xzDistToPlayer, 255, 20, 150);
     }
 
-    this->collider2.elements->dim.worldSphere.radius = D_80872E8C[this->isPowderKeg];
+    this->collider2.elements[0].dim.worldSphere.radius = D_80872E8C[this->isPowderKeg];
     if (this->timer == 7) {
         this->collider2.base.atFlags &= ~AT_TYPE_ENEMY;
     }
@@ -394,8 +392,8 @@ void EnBom_Explode(EnBom* this, PlayState* play) {
             spB4.x = this->actor.world.pos.x + spC0.x;
             spB4.y = this->actor.world.pos.y + 500.0f;
             spB4.z = this->actor.world.pos.z + spC0.z;
-            if (BgCheck_EntityRaycastFloor3(&play->colCtx, &spB0, &spAC, &spB4) != BGCHECK_Y_MIN) {
-                floorType = SurfaceType_GetFloorType(&play->colCtx, spB0, spAC);
+            if (BgCheck_EntityRaycastFloor3(&play->colCtx, &spB0, &bgId, &spB4) != BGCHECK_Y_MIN) {
+                floorType = SurfaceType_GetFloorType(&play->colCtx, spB0, bgId);
                 temp_f20 = BgCheck_EntityRaycastFloor1(&play->colCtx, &spB0, &spB4);
 
                 if ((floorType == FLOOR_TYPE_4) || (floorType == FLOOR_TYPE_15) || (floorType == FLOOR_TYPE_14)) {
@@ -434,7 +432,7 @@ void EnBom_Update(Actor* thisx, PlayState* play) {
     Vec3f effPos;
     Vec3f dustAccel = { 0.0f, 0.6f, 0.0f };
     Color_RGBA8 dustColor = { 255, 255, 255, 255 };
-    EnBom* this = THIS;
+    EnBom* this = (EnBom*)thisx;
     s32 pad;
     Player* player = GET_PLAYER(play);
 
@@ -557,7 +555,7 @@ void EnBom_Update(Actor* thisx, PlayState* play) {
                 Camera_AddQuake(&play->mainCamera, 2, 11, 8);
                 thisx->params = BOMB_TYPE_EXPLOSION;
                 this->timer = 10;
-                thisx->flags |= (ACTOR_FLAG_20 | ACTOR_FLAG_100000);
+                thisx->flags |= (ACTOR_FLAG_DRAW_CULLING_DISABLED | ACTOR_FLAG_FREEZE_EXCEPTION);
                 this->actionFunc = EnBom_Explode;
                 if (this->isPowderKeg) {
                     gSaveContext.powderKegTimer = 0;
@@ -615,7 +613,7 @@ static Vec3f D_80872F04 = { 0.0f, 0.0f, 0.0f };
 
 void EnBom_Draw(Actor* thisx, PlayState* play) {
     s32 pad;
-    EnBom* this = THIS;
+    EnBom* this = (EnBom*)thisx;
 
     OPEN_DISPS(play->state.gfxCtx);
 
@@ -628,13 +626,13 @@ void EnBom_Draw(Actor* thisx, PlayState* play) {
             func_800B8050(&this->actor, play, 0);
             Matrix_MultVec3f(&D_80872EE0, &this->actor.home.pos);
 
-            gSPMatrix(POLY_OPA_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+            MATRIX_FINALIZE_AND_LOAD(POLY_OPA_DISP++, play->state.gfxCtx);
             gSPDisplayList(POLY_OPA_DISP++, gBombCapDL);
 
             Matrix_ReplaceRotation(&play->billboardMtxF);
             Matrix_RotateXS(0x4000, MTXMODE_APPLY);
 
-            gSPMatrix(POLY_OPA_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+            MATRIX_FINALIZE_AND_LOAD(POLY_OPA_DISP++, play->state.gfxCtx);
             gDPPipeSync(POLY_OPA_DISP++);
             gDPSetEnvColor(POLY_OPA_DISP++, (s8)this->unk_1F4, 0, 40, 255);
             gDPSetPrimColor(POLY_OPA_DISP++, 0, 0, (s8)this->unk_1F4, 0, 40, 255);
@@ -658,7 +656,7 @@ void EnBom_Draw(Actor* thisx, PlayState* play) {
             Matrix_MultVec3f(&D_80872F04, &sp4C);
 
             gDPSetEnvColor(POLY_OPA_DISP++, 255, 255, 255, 255);
-            gSPMatrix(POLY_OPA_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+            MATRIX_FINALIZE_AND_LOAD(POLY_OPA_DISP++, play->state.gfxCtx);
             gSPDisplayList(POLY_OPA_DISP++, gPowderKegBarrelDL);
             gSPDisplayList(POLY_OPA_DISP++, gPowderKegGoronSkullDL);
 
@@ -706,7 +704,7 @@ void func_808726DC(PlayState* play, Vec3f* arg1, Vec3f* arg2, Vec3f* arg3, s32 a
     for (i = 0; i < spB0; i++, fuseSegmentPtr++, fuseSegmentPtr2++, arg4 -= 240) {
         f32 phi_f22;
         CollisionPoly* spA0;
-        s32 sp9C;
+        s32 bgId;
         Vec3f sp90;
 
         if (arg4 >= 240) {
@@ -756,7 +754,7 @@ void func_808726DC(PlayState* play, Vec3f* arg1, Vec3f* arg2, Vec3f* arg3, s32 a
 
         sp90.y += 50.0f;
 
-        temp_f2 = BgCheck_EntityRaycastFloor3(&play->colCtx, &spA0, &sp9C, &sp90) - fuseSegmentPtr2->pos.y;
+        temp_f2 = BgCheck_EntityRaycastFloor3(&play->colCtx, &spA0, &bgId, &sp90) - fuseSegmentPtr2->pos.y;
         if (temp_f2 >= 0.0f) {
             spC0.y += temp_f2;
             if (phi_f22 < spC0.y) {
@@ -803,7 +801,7 @@ void EnBom_DrawKeg(PlayState* play, s32 timer) {
     Matrix_RotateZYX(fuseSegmentPtr->rotX, fuseSegmentPtr->rotY, 0, MTXMODE_APPLY);
     Matrix_Scale(0.01f, 0.01f, 0.01f, MTXMODE_APPLY);
 
-    gSPMatrix(POLY_OPA_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    MATRIX_FINALIZE_AND_LOAD(POLY_OPA_DISP++, play->state.gfxCtx);
 
     // 2S2H [Port] This was originally a static DL in the OTR file. The normal texture is too small to be rendered by
     // Fast3D and causes a crash. This adds a custom texture in the OTR file and changes the DList to use the new size.
@@ -828,7 +826,7 @@ void EnBom_DrawKeg(PlayState* play, s32 timer) {
         Matrix_RotateZYX(fuseSegmentPtr2->rotX, fuseSegmentPtr2->rotY, 0, MTXMODE_APPLY);
         Matrix_Scale(0.01f, 0.01f, 0.01f, MTXMODE_APPLY);
 
-        gSPMatrix(POLY_OPA_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+        MATRIX_FINALIZE_AND_LOAD(POLY_OPA_DISP++, play->state.gfxCtx);
 
         if ((i % 2) == 0) {
             gSPDisplayList(POLY_OPA_DISP++, gPowderKegFuseModel1DL);

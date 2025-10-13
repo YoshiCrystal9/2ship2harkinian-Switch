@@ -8,13 +8,11 @@
 
 #define FLAGS 0x00000000
 
-#define THIS ((EnMFire1*)thisx)
-
 void EnMFire1_Init(Actor* thisx, PlayState* play);
 void EnMFire1_Destroy(Actor* thisx, PlayState* play);
 void EnMFire1_Update(Actor* thisx, PlayState* play);
 
-ActorInit En_M_Fire1_InitVars = {
+ActorProfile En_M_Fire1_Profile = {
     /**/ ACTOR_EN_M_FIRE1,
     /**/ ACTORCAT_MISC,
     /**/ FLAGS,
@@ -28,7 +26,7 @@ ActorInit En_M_Fire1_InitVars = {
 
 static ColliderCylinderInit sCylinderInit = {
     {
-        COLTYPE_NONE,
+        COL_MATERIAL_NONE,
         AT_ON | AT_TYPE_PLAYER,
         AC_NONE,
         OC1_NONE,
@@ -36,35 +34,35 @@ static ColliderCylinderInit sCylinderInit = {
         COLSHAPE_CYLINDER,
     },
     {
-        ELEMTYPE_UNK2,
+        ELEM_MATERIAL_UNK2,
         { 0x00000001, 0x00, 0x01 },
         { 0xF7CFFFFF, 0x00, 0x00 },
-        TOUCH_ON | TOUCH_SFX_NONE,
-        BUMP_NONE,
+        ATELEM_ON | ATELEM_SFX_NONE,
+        ACELEM_NONE,
         OCELEM_NONE,
     },
     { 100, 100, 0, { 0, 0, 0 } },
 };
 
 void EnMFire1_Init(Actor* thisx, PlayState* play) {
-    EnMFire1* this = THIS;
+    EnMFire1* this = (EnMFire1*)thisx;
     s32 pad;
 
     Collider_InitCylinder(play, &this->collider);
     Collider_SetCylinder(play, &this->collider, &this->actor, &sCylinderInit);
     if (this->actor.params != 0) {
-        this->collider.info.toucher.dmgFlags = 0x40000;
+        this->collider.elem.atDmgInfo.dmgFlags = 0x40000;
     }
 }
 
 void EnMFire1_Destroy(Actor* thisx, PlayState* play) {
-    EnMFire1* this = THIS;
+    EnMFire1* this = (EnMFire1*)thisx;
 
     Collider_DestroyCylinder(play, &this->collider);
 }
 
 void EnMFire1_Update(Actor* thisx, PlayState* play) {
-    EnMFire1* this = THIS;
+    EnMFire1* this = (EnMFire1*)thisx;
     s32 pad;
 
     if (Math_StepToF(&this->timer, 1.0f, 0.2f)) {

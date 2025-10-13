@@ -8,9 +8,7 @@
 #include "z64quake.h"
 #include "assets/objects/object_ikana_obj/object_ikana_obj.h"
 
-#define FLAGS (ACTOR_FLAG_10)
-
-#define THIS ((BgIkanaDharma*)thisx)
+#define FLAGS (ACTOR_FLAG_UPDATE_CULLING_DISABLED)
 
 void BgIkanaDharma_Init(Actor* thisx, PlayState* play2);
 void BgIkanaDharma_Destroy(Actor* thisx, PlayState* play);
@@ -25,7 +23,7 @@ void BgIkanaDharma_StartCutscene(BgIkanaDharma* this, PlayState* play);
 void BgIkanaDharma_SetupWaitForCutsceneToEnd(BgIkanaDharma* this);
 void BgIkanaDharma_WaitForCutsceneToEnd(BgIkanaDharma* this, PlayState* play);
 
-ActorInit Bg_Ikana_Dharma_InitVars = {
+ActorProfile Bg_Ikana_Dharma_Profile = {
     /**/ ACTOR_BG_IKANA_DHARMA,
     /**/ ACTORCAT_BG,
     /**/ FLAGS,
@@ -40,7 +38,7 @@ ActorInit Bg_Ikana_Dharma_InitVars = {
 
 static ColliderCylinderInit sCylinderInit = {
     {
-        COLTYPE_NONE,
+        COL_MATERIAL_NONE,
         AT_NONE,
         AC_ON | AC_TYPE_PLAYER,
         OC1_NONE,
@@ -48,20 +46,20 @@ static ColliderCylinderInit sCylinderInit = {
         COLSHAPE_CYLINDER,
     },
     {
-        ELEMTYPE_UNK0,
+        ELEM_MATERIAL_UNK0,
         { 0x00000000, 0x00, 0x00 },
         { 0x00000100, 0x00, 0x00 },
-        TOUCH_NONE | TOUCH_SFX_NORMAL,
-        BUMP_ON,
+        ATELEM_NONE | ATELEM_SFX_NORMAL,
+        ACELEM_ON,
         OCELEM_NONE,
     },
     { 98, 10, 25, { 0, 0, 0 } },
 };
 
 static InitChainEntry sInitChain[] = {
-    ICHAIN_F32(uncullZoneForward, 4000, ICHAIN_CONTINUE),
-    ICHAIN_F32(uncullZoneScale, 320, ICHAIN_CONTINUE),
-    ICHAIN_F32(uncullZoneDownward, 320, ICHAIN_CONTINUE),
+    ICHAIN_F32(cullingVolumeDistance, 4000, ICHAIN_CONTINUE),
+    ICHAIN_F32(cullingVolumeScale, 320, ICHAIN_CONTINUE),
+    ICHAIN_F32(cullingVolumeDownward, 320, ICHAIN_CONTINUE),
     ICHAIN_F32_DIV1000(gravity, -1100, ICHAIN_STOP),
 };
 
@@ -97,7 +95,7 @@ void BgIkanaDharma_SpawnEffects(BgIkanaDharma* this, PlayState* play) {
 
 void BgIkanaDharma_Init(Actor* thisx, PlayState* play2) {
     PlayState* play = play2;
-    BgIkanaDharma* this = THIS;
+    BgIkanaDharma* this = (BgIkanaDharma*)thisx;
 
     Actor_ProcessInitChain(&this->dyna.actor, sInitChain);
     this->dyna.actor.scale.x = 0.3f;
@@ -128,7 +126,7 @@ void BgIkanaDharma_Init(Actor* thisx, PlayState* play2) {
 }
 
 void BgIkanaDharma_Destroy(Actor* thisx, PlayState* play) {
-    BgIkanaDharma* this = THIS;
+    BgIkanaDharma* this = (BgIkanaDharma*)thisx;
 
     DynaPoly_DeleteBgActor(play, &play->colCtx.dyna, this->dyna.bgId);
     Collider_DestroyCylinder(play, &this->collider);
@@ -162,8 +160,8 @@ void BgIkanaDharma_WaitForHit(BgIkanaDharma* this, PlayState* play) {
         this->dyna.actor.speed = 20.0f;
         Actor_PlaySfx(&this->dyna.actor, NA_SE_EV_DARUMA_VANISH);
         BgIkanaDharma_SetupStartCutscene(this);
-    } else if (CHECK_FLAG_ALL(this->dyna.actor.flags, ACTOR_FLAG_40) && (sFirstHitBgIkanaDharma == NULL) &&
-               (this->dyna.actor.xzDistToPlayer < 420.0f)) {
+    } else if (CHECK_FLAG_ALL(this->dyna.actor.flags, ACTOR_FLAG_INSIDE_CULLING_VOLUME) &&
+               (sFirstHitBgIkanaDharma == NULL) && (this->dyna.actor.xzDistToPlayer < 420.0f)) {
         tempAngle1 = BINANG_SUB(this->dyna.actor.yawTowardsPlayer, player->actor.shape.rot.y);
         tempAngle1 = ABS_ALT(tempAngle1);
 
@@ -217,7 +215,7 @@ void BgIkanaDharma_WaitForCutsceneToEnd(BgIkanaDharma* this, PlayState* play) {
 }
 
 void BgIkanaDharma_Update(Actor* thisx, PlayState* play) {
-    BgIkanaDharma* this = THIS;
+    BgIkanaDharma* this = (BgIkanaDharma*)thisx;
 
     this->actionFunc(this, play);
     if (this->actionFunc == BgIkanaDharma_WaitForHit) {
@@ -260,7 +258,7 @@ void BgIkanaDharma_Update(Actor* thisx, PlayState* play) {
 }
 
 void BgIkanaDharma_Draw(Actor* thisx, PlayState* play) {
-    BgIkanaDharma* this = THIS;
+    BgIkanaDharma* this = (BgIkanaDharma*)thisx;
 
     Gfx_DrawDListOpa(play, gStoneTowerTemplePunchablePillarDL);
 }

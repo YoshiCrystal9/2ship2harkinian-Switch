@@ -9,15 +9,13 @@
 
 #define FLAGS 0x00000000
 
-#define THIS ((EnTagObj*)thisx)
-
 void EnTagObj_Init(Actor* thisx, PlayState* play);
 void EnTagObj_Destroy(Actor* thisx, PlayState* play);
 void EnTagObj_Update(Actor* thisx, PlayState* play);
 
 static ColliderCylinderInit sUnusedColliderInit = {
     {
-        COLTYPE_NONE,
+        COL_MATERIAL_NONE,
         AT_NONE,
         AC_ON | AC_TYPE_PLAYER,
         OC1_NONE,
@@ -25,17 +23,17 @@ static ColliderCylinderInit sUnusedColliderInit = {
         COLSHAPE_CYLINDER,
     },
     {
-        ELEMTYPE_UNK0,
+        ELEM_MATERIAL_UNK0,
         { 0x00000000, 0x00, 0x00 },
         { 0xF7CFFFFF, 0x00, 0x00 },
-        TOUCH_NONE | TOUCH_SFX_NORMAL,
-        BUMP_ON,
+        ATELEM_NONE | ATELEM_SFX_NORMAL,
+        ACELEM_ON,
         OCELEM_NONE,
     },
     { 20, 30, 0, { 0, 0, 0 } },
 };
 
-ActorInit En_Tag_Obj_InitVars = {
+ActorProfile En_Tag_Obj_Profile = {
     /**/ ACTOR_EN_TAG_OBJ,
     /**/ ACTORCAT_PROP,
     /**/ FLAGS,
@@ -48,7 +46,7 @@ ActorInit En_Tag_Obj_InitVars = {
 };
 
 void EnTagObj_Init(Actor* thisx, PlayState* play) {
-    EnTagObj* this = THIS;
+    EnTagObj* this = (EnTagObj*)thisx;
 
     this->hasSpawnedSeahorse = false;
 }
@@ -57,7 +55,7 @@ void EnTagObj_Destroy(Actor* thisx, PlayState* play) {
 }
 
 void EnTagObj_Update(Actor* thisx, PlayState* play) {
-    EnTagObj* this = THIS;
+    EnTagObj* this = (EnTagObj*)thisx;
 
     if (!this->hasSpawnedSeahorse) {
         Actor_Spawn(&play->actorCtx, play, ACTOR_EN_OT, this->actor.world.pos.x, this->actor.world.pos.y,

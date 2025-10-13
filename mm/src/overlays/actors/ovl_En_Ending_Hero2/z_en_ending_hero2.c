@@ -6,9 +6,7 @@
 
 #include "z_en_ending_hero2.h"
 
-#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_FRIENDLY)
-
-#define THIS ((EnEndingHero2*)thisx)
+#define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY)
 
 void EnEndingHero2_Init(Actor* thisx, PlayState* play);
 void EnEndingHero2_Destroy(Actor* thisx, PlayState* play);
@@ -18,7 +16,7 @@ void EnEndingHero2_Draw(Actor* thisx, PlayState* play);
 void EnEndingHero2_SetupIdle(EnEndingHero2* this);
 void EnEndingHero2_Idle(EnEndingHero2* this, PlayState* play);
 
-ActorInit En_Ending_Hero2_InitVars = {
+ActorProfile En_Ending_Hero2_Profile = {
     /**/ ACTOR_EN_ENDING_HERO2,
     /**/ ACTORCAT_NPC,
     /**/ FLAGS,
@@ -31,11 +29,11 @@ ActorInit En_Ending_Hero2_InitVars = {
 };
 
 void EnEndingHero2_Init(Actor* thisx, PlayState* play) {
-    EnEndingHero2* this = THIS;
+    EnEndingHero2* this = (EnEndingHero2*)thisx;
 
     this->actor.colChkInfo.mass = MASS_IMMOVABLE;
     Actor_SetScale(&this->actor, 0.01f);
-    this->actor.targetMode = TARGET_MODE_6;
+    this->actor.attentionRangeType = ATTENTION_RANGE_6;
     this->actor.gravity = -3.0f;
     SkelAnime_InitFlex(play, &this->skelAnime, &object_bai_Skel_007908, &object_bai_Anim_0011C0, this->jointTable,
                        this->morphTable, OBJECT_BAI_LIMB_MAX);
@@ -56,7 +54,7 @@ void EnEndingHero2_Idle(EnEndingHero2* this, PlayState* play) {
 }
 
 void EnEndingHero2_Update(Actor* thisx, PlayState* play) {
-    EnEndingHero2* this = THIS;
+    EnEndingHero2* this = (EnEndingHero2*)thisx;
 
     this->actionFunc(this, play);
     Actor_MoveWithGravity(&this->actor);
@@ -66,7 +64,7 @@ void EnEndingHero2_Update(Actor* thisx, PlayState* play) {
 }
 
 void EnEndingHero2_Draw(Actor* thisx, PlayState* play) {
-    EnEndingHero2* this = THIS;
+    EnEndingHero2* this = (EnEndingHero2*)thisx;
 
     Gfx_SetupDL25_Opa(play->state.gfxCtx);
     Gfx_SetupDL25_Xlu(play->state.gfxCtx);

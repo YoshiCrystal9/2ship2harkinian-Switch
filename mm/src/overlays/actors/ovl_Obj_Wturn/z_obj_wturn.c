@@ -6,9 +6,7 @@
 
 #include "z_obj_wturn.h"
 
-#define FLAGS (ACTOR_FLAG_10 | ACTOR_FLAG_100000 | ACTOR_FLAG_2000000)
-
-#define THIS ((ObjWturn*)thisx)
+#define FLAGS (ACTOR_FLAG_UPDATE_CULLING_DISABLED | ACTOR_FLAG_FREEZE_EXCEPTION | ACTOR_FLAG_UPDATE_DURING_OCARINA)
 
 void ObjWturn_Init(Actor* thisx, PlayState* play);
 void ObjWturn_Update(Actor* thisx, PlayState* play);
@@ -22,7 +20,7 @@ void func_808A7BA0(ObjWturn* this, PlayState* play);
 void func_808A7C04(ObjWturn* this, PlayState* play);
 void func_808A7C78(ObjWturn* this, PlayState* play);
 
-ActorInit Obj_Wturn_InitVars = {
+ActorProfile Obj_Wturn_Profile = {
     /**/ ACTOR_OBJ_WTURN,
     /**/ ACTORCAT_ITEMACTION,
     /**/ FLAGS,
@@ -35,7 +33,7 @@ ActorInit Obj_Wturn_InitVars = {
 };
 
 void ObjWturn_Init(Actor* thisx, PlayState* play) {
-    ObjWturn* this = THIS;
+    ObjWturn* this = (ObjWturn*)thisx;
 
     func_808A7954(this);
 }
@@ -91,10 +89,10 @@ void func_808A7AAC(ObjWturn* this, PlayState* play) {
 }
 
 void func_808A7BA0(ObjWturn* this, PlayState* play) {
-    if (Math_ScaledStepToS(&this->actor.shape.rot.z, -0x8000, 0x0200)) {
+    if (Math_ScaledStepToS(&this->actor.shape.rot.z, -0x8000, 0x200)) {
         func_808A7C04(this, play);
     }
-    Actor_PlaySfx_FlaggedCentered3(&this->actor, NA_SE_EV_EARTHQUAKE - SFX_FLAG);
+    Actor_PlaySfx_FlaggedCentered2(&this->actor, NA_SE_EV_EARTHQUAKE - SFX_FLAG);
     Play_SetCameraRoll(play, this->subCamId, this->actor.shape.rot.z);
 }
 
@@ -132,7 +130,7 @@ void func_808A7C78(ObjWturn* this, PlayState* play) {
 }
 
 void ObjWturn_Update(Actor* thisx, PlayState* play) {
-    ObjWturn* this = THIS;
+    ObjWturn* this = (ObjWturn*)thisx;
 
     this->actionFunc(this, play);
 }

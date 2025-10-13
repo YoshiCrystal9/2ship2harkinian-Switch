@@ -7,9 +7,7 @@
 #include "z_bg_ikana_bombwall.h"
 #include "objects/object_ikana_obj/object_ikana_obj.h"
 
-#define FLAGS (ACTOR_FLAG_10000000)
-
-#define THIS ((BgIkanaBombwall*)thisx)
+#define FLAGS (ACTOR_FLAG_UCODE_POINT_LIGHT_ENABLED)
 
 void BgIkanaBombwall_Init(Actor* thisx, PlayState* play);
 void BgIkanaBombwall_Destroy(Actor* thisx, PlayState* play);
@@ -25,7 +23,7 @@ void func_80BD503C(BgIkanaBombwall* this, PlayState* play);
 void func_80BD5118(BgIkanaBombwall* this);
 void func_80BD5134(BgIkanaBombwall* this, PlayState* play);
 
-ActorInit Bg_Ikana_Bombwall_InitVars = {
+ActorProfile Bg_Ikana_Bombwall_Profile = {
     /**/ ACTOR_BG_IKANA_BOMBWALL,
     /**/ ACTORCAT_BG,
     /**/ FLAGS,
@@ -39,7 +37,7 @@ ActorInit Bg_Ikana_Bombwall_InitVars = {
 
 static ColliderCylinderInit sCylinderInit1 = {
     {
-        COLTYPE_NONE,
+        COL_MATERIAL_NONE,
         AT_NONE,
         AC_ON | AC_TYPE_PLAYER,
         OC1_NONE,
@@ -47,11 +45,11 @@ static ColliderCylinderInit sCylinderInit1 = {
         COLSHAPE_CYLINDER,
     },
     {
-        ELEMTYPE_UNK0,
+        ELEM_MATERIAL_UNK0,
         { 0x00000000, 0x00, 0x00 },
         { 0x00000008, 0x00, 0x00 },
-        TOUCH_NONE | TOUCH_SFX_NORMAL,
-        BUMP_ON,
+        ATELEM_NONE | ATELEM_SFX_NORMAL,
+        ACELEM_ON,
         OCELEM_NONE,
     },
     { 80, 80, 0, { 0, 0, 0 } },
@@ -59,7 +57,7 @@ static ColliderCylinderInit sCylinderInit1 = {
 
 static ColliderCylinderInit sCylinderInit2 = {
     {
-        COLTYPE_NONE,
+        COL_MATERIAL_NONE,
         AT_NONE,
         AC_ON | AC_TYPE_PLAYER,
         OC1_NONE,
@@ -67,11 +65,11 @@ static ColliderCylinderInit sCylinderInit2 = {
         COLSHAPE_CYLINDER,
     },
     {
-        ELEMTYPE_UNK0,
+        ELEM_MATERIAL_UNK0,
         { 0x00000000, 0x00, 0x00 },
         { 0x00000008, 0x00, 0x00 },
-        TOUCH_NONE | TOUCH_SFX_NORMAL,
-        BUMP_ON,
+        ATELEM_NONE | ATELEM_SFX_NORMAL,
+        ACELEM_ON,
         OCELEM_NONE,
     },
     { 50, 20, 0, { 0, 0, 0 } },
@@ -85,9 +83,9 @@ s16 D_80BD52C8[] = {
 };
 
 static InitChainEntry sInitChain[] = {
-    ICHAIN_F32(uncullZoneForward, 4000, ICHAIN_CONTINUE),
-    ICHAIN_F32(uncullZoneScale, 500, ICHAIN_CONTINUE),
-    ICHAIN_F32(uncullZoneDownward, 500, ICHAIN_CONTINUE),
+    ICHAIN_F32(cullingVolumeDistance, 4000, ICHAIN_CONTINUE),
+    ICHAIN_F32(cullingVolumeScale, 500, ICHAIN_CONTINUE),
+    ICHAIN_F32(cullingVolumeDownward, 500, ICHAIN_CONTINUE),
     ICHAIN_VEC3F_DIV1000(scale, 1000, ICHAIN_STOP),
 };
 
@@ -99,9 +97,9 @@ Gfx* D_80BD52E0[] = {
 void func_80BD4720(BgIkanaBombwall* this, PlayState* play) {
     s32 i;
     Vec3f pos;
-    Vec3f vel;
+    Vec3f velocity;
     Vec3f posOffset;
-    Vec3f velOffset;
+    Vec3f velocityOffset;
     f32 offsetPosX;
     f32 offsetPosY;
     s16 scale;
@@ -126,12 +124,12 @@ void func_80BD4720(BgIkanaBombwall* this, PlayState* play) {
         posOffset.y = offsetPosY;
         posOffset.z = (Rand_ZeroOne() * 20.0f) - 10.0f;
 
-        velOffset.x = ((Rand_ZeroOne() - 0.5f) * 5.0f) + (offsetPosX * (4.0f / 75.0f));
-        velOffset.y = (Rand_ZeroOne() * 7.0f) - 2.0f;
-        velOffset.z = (Rand_ZeroOne() * 4.0f) - 2.0f;
+        velocityOffset.x = ((Rand_ZeroOne() - 0.5f) * 5.0f) + (offsetPosX * (4.0f / 75.0f));
+        velocityOffset.y = (Rand_ZeroOne() * 7.0f) - 2.0f;
+        velocityOffset.z = (Rand_ZeroOne() * 4.0f) - 2.0f;
 
         Matrix_MultVec3f(&posOffset, &pos);
-        Matrix_MultVec3f(&velOffset, &vel);
+        Matrix_MultVec3f(&velocityOffset, &velocity);
 
         pos.x += this->dyna.actor.world.pos.x;
         pos.y += this->dyna.actor.world.pos.y;
@@ -162,7 +160,7 @@ void func_80BD4720(BgIkanaBombwall* this, PlayState* play) {
             gravity = -450;
         }
 
-        EffectSsKakera_Spawn(play, &pos, &vel, &pos, gravity, phi_s0, 30, 0, 0, scale, phi_t0, 0, 50, -1,
+        EffectSsKakera_Spawn(play, &pos, &velocity, &pos, gravity, phi_s0, 30, 0, 0, scale, phi_t0, 0, 50, -1,
                              OBJECT_IKANA_OBJ, object_ikana_obj_DL_000288);
     }
 
@@ -172,7 +170,7 @@ void func_80BD4720(BgIkanaBombwall* this, PlayState* play) {
 void func_80BD4A14(BgIkanaBombwall* this, PlayState* play) {
     s32 i;
     Vec3f pos;
-    Vec3f vel;
+    Vec3f velocity;
     f32 temp_fs0;
     f32 temp_fs1;
     f32 temp_fs3;
@@ -197,9 +195,9 @@ void func_80BD4A14(BgIkanaBombwall* this, PlayState* play) {
         pos.y = this->dyna.actor.world.pos.y;
         pos.z = (temp_fs1 * temp_fs3) + this->dyna.actor.world.pos.z;
 
-        vel.x = ((Rand_ZeroOne() - 0.5f) * 3.0f * temp_fs0) + ((temp_fs0 * temp_fs3) * (1.0f / 30.0f));
-        vel.y = (Rand_ZeroOne() * 18.0f) + 4.0f;
-        vel.z = ((Rand_ZeroOne() - 0.5f) * 3.0f * temp_fs1) + ((temp_fs1 * temp_fs3) * (1.0f / 30.0f));
+        velocity.x = ((Rand_ZeroOne() - 0.5f) * 3.0f * temp_fs0) + ((temp_fs0 * temp_fs3) * (1.0f / 30.0f));
+        velocity.y = (Rand_ZeroOne() * 18.0f) + 4.0f;
+        velocity.z = ((Rand_ZeroOne() - 0.5f) * 3.0f * temp_fs1) + ((temp_fs1 * temp_fs3) * (1.0f / 30.0f));
 
         scale = (Rand_Next() & 3) + (i >> 1) + 6;
 
@@ -218,7 +216,7 @@ void func_80BD4A14(BgIkanaBombwall* this, PlayState* play) {
             gravity = -400;
         }
 
-        EffectSsKakera_Spawn(play, &pos, &vel, &pos, gravity, phi_v0, 30, 0, 0, scale, phi_v1, 0, 50, -1,
+        EffectSsKakera_Spawn(play, &pos, &velocity, &pos, gravity, phi_v0, 30, 0, 0, scale, phi_v1, 0, 50, -1,
                              OBJECT_IKANA_OBJ, object_ikana_obj_DL_000288);
 
         if ((i & 3) == 0) {
@@ -230,7 +228,7 @@ void func_80BD4A14(BgIkanaBombwall* this, PlayState* play) {
 
 void BgIkanaBombwall_Init(Actor* thisx, PlayState* play) {
     s32 pad;
-    BgIkanaBombwall* this = THIS;
+    BgIkanaBombwall* this = (BgIkanaBombwall*)thisx;
     s32 sp2C = BGIKANABOMBWALL_GET_100(&this->dyna.actor);
     CollisionHeader* colHeader;
     ColliderCylinderInit* cylinderInit;
@@ -264,7 +262,7 @@ void BgIkanaBombwall_Init(Actor* thisx, PlayState* play) {
 }
 
 void BgIkanaBombwall_Destroy(Actor* thisx, PlayState* play) {
-    BgIkanaBombwall* this = THIS;
+    BgIkanaBombwall* this = (BgIkanaBombwall*)thisx;
 
     DynaPoly_DeleteBgActor(play, &play->colCtx.dyna, this->dyna.bgId);
     Collider_DestroyCylinder(play, &this->collider);
@@ -315,7 +313,7 @@ void func_80BD4F9C(BgIkanaBombwall* this, PlayState* play) {
 }
 
 void func_80BD4FF8(BgIkanaBombwall* this) {
-    this->dyna.actor.flags |= ACTOR_FLAG_10;
+    this->dyna.actor.flags |= ACTOR_FLAG_UPDATE_CULLING_DISABLED;
     CutsceneManager_Queue(this->dyna.actor.csId);
     this->actionFunc = func_80BD503C;
 }
@@ -352,7 +350,7 @@ void func_80BD5134(BgIkanaBombwall* this, PlayState* play) {
             CutsceneManager_Stop(this->dyna.actor.csId);
             Actor_Kill(&this->dyna.actor);
         }
-    } else if (this->dyna.actor.csId >= 0) {
+    } else if (this->dyna.actor.csId > CS_ID_NONE) {
         if (CutsceneManager_GetCurrentCsId() != this->dyna.actor.csId) {
             Actor_Kill(&this->dyna.actor);
         }
@@ -362,7 +360,7 @@ void func_80BD5134(BgIkanaBombwall* this, PlayState* play) {
 }
 
 void BgIkanaBombwall_Update(Actor* thisx, PlayState* play) {
-    BgIkanaBombwall* this = THIS;
+    BgIkanaBombwall* this = (BgIkanaBombwall*)thisx;
 
     this->actionFunc(this, play);
 }

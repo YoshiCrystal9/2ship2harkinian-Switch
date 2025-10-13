@@ -3,14 +3,14 @@
 
 #include "align_asset_macro.h"
 
-#define dobject_kitan_Anim_000CE8 "__OTR__objects/object_kitan/object_kitan_Anim_000CE8"
-static const ALIGN_ASSET(2) char object_kitan_Anim_000CE8[] = dobject_kitan_Anim_000CE8;
+#define dgKeatonChuckleAnim "__OTR__objects/object_kitan/gKeatonChuckleAnim"
+static const ALIGN_ASSET(2) char gKeatonChuckleAnim[] = dgKeatonChuckleAnim;
 
-#define dobject_kitan_Anim_00190C "__OTR__objects/object_kitan/object_kitan_Anim_00190C"
-static const ALIGN_ASSET(2) char object_kitan_Anim_00190C[] = dobject_kitan_Anim_00190C;
+#define dgKeatonCelebrateAnim "__OTR__objects/object_kitan/gKeatonCelebrateAnim"
+static const ALIGN_ASSET(2) char gKeatonCelebrateAnim[] = dgKeatonCelebrateAnim;
 
-#define dobject_kitan_Anim_002770 "__OTR__objects/object_kitan/object_kitan_Anim_002770"
-static const ALIGN_ASSET(2) char object_kitan_Anim_002770[] = dobject_kitan_Anim_002770;
+#define dgKeatonIdleAnim "__OTR__objects/object_kitan/gKeatonIdleAnim"
+static const ALIGN_ASSET(2) char gKeatonIdleAnim[] = dgKeatonIdleAnim;
 
 #define dobject_kitan_DL_004C40 "__OTR__objects/object_kitan/object_kitan_DL_004C40"
 static const ALIGN_ASSET(2) char object_kitan_DL_004C40[] = dobject_kitan_DL_004C40;
@@ -90,32 +90,32 @@ static const ALIGN_ASSET(2) char object_kitan_Tex_007C68[] = dobject_kitan_Tex_0
 #define dobject_kitan_Tex_007D68 "__OTR__objects/object_kitan/object_kitan_Tex_007D68"
 static const ALIGN_ASSET(2) char object_kitan_Tex_007D68[] = dobject_kitan_Tex_007D68;
 
-#define dobject_kitan_Skel_007FA8 "__OTR__objects/object_kitan/object_kitan_Skel_007FA8"
-static const ALIGN_ASSET(2) char object_kitan_Skel_007FA8[] = dobject_kitan_Skel_007FA8;
+#define dgKeatonSkel "__OTR__objects/object_kitan/gKeatonSkel"
+static const ALIGN_ASSET(2) char gKeatonSkel[] = dgKeatonSkel;
 
-typedef enum ObjectKitanLimb {
-    /* 0x00 */ OBJECT_KITAN_LIMB_NONE,
-    /* 0x01 */ OBJECT_KITAN_LIMB_01,
-    /* 0x02 */ OBJECT_KITAN_LIMB_02,
-    /* 0x03 */ OBJECT_KITAN_LIMB_03,
-    /* 0x04 */ OBJECT_KITAN_LIMB_04,
-    /* 0x05 */ OBJECT_KITAN_LIMB_05,
-    /* 0x06 */ OBJECT_KITAN_LIMB_06,
-    /* 0x07 */ OBJECT_KITAN_LIMB_07,
-    /* 0x08 */ OBJECT_KITAN_LIMB_08,
-    /* 0x09 */ OBJECT_KITAN_LIMB_09,
-    /* 0x0A */ OBJECT_KITAN_LIMB_0A,
-    /* 0x0B */ OBJECT_KITAN_LIMB_0B,
-    /* 0x0C */ OBJECT_KITAN_LIMB_0C,
-    /* 0x0D */ OBJECT_KITAN_LIMB_0D,
-    /* 0x0E */ OBJECT_KITAN_LIMB_0E,
-    /* 0x0F */ OBJECT_KITAN_LIMB_0F,
-    /* 0x10 */ OBJECT_KITAN_LIMB_10,
-    /* 0x11 */ OBJECT_KITAN_LIMB_11,
-    /* 0x12 */ OBJECT_KITAN_LIMB_12,
-    /* 0x13 */ OBJECT_KITAN_LIMB_13,
-    /* 0x14 */ OBJECT_KITAN_LIMB_14,
-    /* 0x15 */ OBJECT_KITAN_LIMB_MAX
-} ObjectKitanLimb;
+typedef enum KeatonLimb {
+    /* 0x00 */ KEATON_LIMB_NONE,
+    /* 0x01 */ KEATON_LIMB_LOWER_BODY,
+    /* 0x02 */ KEATON_LIMB_UPPER_BODY,
+    /* 0x03 */ KEATON_LIMB_HEAD,
+    /* 0x04 */ KEATON_LIMB_LEFT_SHOULDER,
+    /* 0x05 */ KEATON_LIMB_LEFT_ARM,
+    /* 0x06 */ KEATON_LIMB_RIGHT_SHOULDER,
+    /* 0x07 */ KEATON_LIMB_RIGHT_ARM,
+    /* 0x08 */ KEATON_LIMB_RIGHT_LEG,
+    /* 0x09 */ KEATON_LIMB_RIGHT_FOOT,
+    /* 0x0A */ KEATON_LIMB_LEFT_LEG,
+    /* 0x0B */ KEATON_LIMB_LEFT_FOOT,
+    /* 0x0C */ KEATON_LIMB_RIGHT_TAIL_BASE,
+    /* 0x0D */ KEATON_LIMB_RIGHT_TAIL_MID,
+    /* 0x0E */ KEATON_LIMB_RIGHT_TAIL_END,
+    /* 0x0F */ KEATON_LIMB_MIDDLE_TAIL_BASE,
+    /* 0x10 */ KEATON_LIMB_MIDDLE_TAIL_MID,
+    /* 0x11 */ KEATON_LIMB_MIDDLE_TAIL_END,
+    /* 0x12 */ KEATON_LIMB_LEFT_TAIL_BASE,
+    /* 0x13 */ KEATON_LIMB_LEFT_TAIL_MID,
+    /* 0x14 */ KEATON_LIMB_LEFT_TAIL_END,
+    /* 0x15 */ KEATON_LIMB_MAX
+} KeatonLimb;
 
 #endif // OBJECTS_OBJECT_KITAN_H

@@ -8,9 +8,9 @@
 #include "z_en_warp_tag.h"
 #include "objects/gameplay_dangeon_keep/gameplay_dangeon_keep.h"
 
-#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_10 | ACTOR_FLAG_2000000 | ACTOR_FLAG_CANT_LOCK_ON)
-
-#define THIS ((EnWarptag*)thisx)
+#define FLAGS                                                                                               \
+    (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_UPDATE_CULLING_DISABLED | ACTOR_FLAG_UPDATE_DURING_OCARINA | \
+     ACTOR_FLAG_LOCK_ON_DISABLED)
 
 void EnWarptag_Init(Actor* thisx, PlayState* play);
 void EnWarptag_Destroy(Actor* thisx, PlayState* play);
@@ -24,7 +24,7 @@ void EnWarpTag_Unused809C0A20(EnWarptag* this, PlayState* play);
 void EnWarpTag_RespawnPlayer(EnWarptag* this, PlayState* play);
 void EnWarpTag_GrottoReturn(EnWarptag* this, PlayState* play);
 
-ActorInit En_Warp_tag_InitVars = {
+ActorProfile En_Warp_tag_Profile = {
     /**/ ACTOR_EN_WARP_TAG,
     /**/ ACTORCAT_ITEMACTION,
     /**/ FLAGS,
@@ -48,13 +48,13 @@ static InitChainEntry sInitChain[] = {
 };
 
 void EnWarptag_Init(Actor* thisx, PlayState* play) {
-    EnWarptag* this = THIS;
+    EnWarptag* this = (EnWarptag*)thisx;
 
     Actor_ProcessInitChain(&this->dyna.actor, sInitChain);
     Actor_SetFocus(&this->dyna.actor, 0.0f);
 
     if (WARPTAG_GET_3C0_MAX(thisx) == WARPTAG_3C0_MAX) {
-        this->dyna.actor.flags &= ~ACTOR_FLAG_TARGETABLE;
+        this->dyna.actor.flags &= ~ACTOR_FLAG_ATTENTION_ENABLED;
 
         if (WARPTAG_GET_INVISIBLE(&this->dyna.actor)) {
             this->actionFunc = EnWarpTag_WaitForPlayer;
@@ -74,7 +74,7 @@ void EnWarptag_Init(Actor* thisx, PlayState* play) {
 }
 
 void EnWarptag_Destroy(Actor* thisx, PlayState* play) {
-    EnWarptag* this = THIS;
+    EnWarptag* this = (EnWarptag*)thisx;
     if (this->dyna.actor.draw != NULL) {
         DynaPoly_DeleteBgActor(play, &play->colCtx.dyna, this->dyna.bgId);
     }
@@ -110,17 +110,12 @@ void EnWarpTag_WaitForPlayer(EnWarptag* this, PlayState* play) {
  * Unused ActionFunc: assigned in EnWarpTag_Init, no known variants use.
  */
 void EnWarpTag_Unused809C09A0(EnWarptag* this, PlayState* play) {
-    if (func_800B8718(&this->dyna.actor, &play->state)) {
-        // func above: checks for ACTOR_FLAG_20000000, returns true and resets if set, else return false
-        //   this actor doesnt have that flag set default, or in init, and this is called shortly after init
-        //   and I doubt its set externally by another actor, so I believe this is unused
-        // might be a bug, they might have meant to set actor flag (0x2000 0000) up above but mistyped (0x200 0000)
-        // also WARPTAG_GET_3C0 should always return 2C0 -> 0xF for all known in-game uses, which is OOB
+    if (Actor_OcarinaInteractionAccepted(&this->dyna.actor, &play->state)) {
         Message_DisplayOcarinaStaff(play, D_809C1000[WARPTAG_GET_3C0(&this->dyna.actor)]);
         this->actionFunc = EnWarpTag_Unused809C0A20;
 
     } else {
-        func_800B8804(&this->dyna.actor, play, 50.0f); // updates player->unk_A90
+        Actor_OfferOcarinaInteractionNearby(&this->dyna.actor, play, 50.0f);
     }
 }
 
@@ -204,18 +199,18 @@ void EnWarpTag_RespawnPlayer(EnWarptag* this, PlayState* play) {
                 newRespawnPos.z = playerActorEntry->pos.z;
 
                 if (WARPTAG_GET_3C0_MAX(&this->dyna.actor) == WARPTAG_3C0_MAX) {
-                    playerParams = PLAYER_PARAMS(0xFF, PLAYER_INITMODE_9);
+                    playerParams = PLAYER_PARAMS(0xFF, PLAYER_START_MODE_9);
                 } else { // not used by any known variant
-                    playerParams = PLAYER_PARAMS(0xFF, PLAYER_INITMODE_8);
+                    playerParams = PLAYER_PARAMS(0xFF, PLAYER_START_MODE_8);
                 }
 
                 // why are we getting player home rotation from the room data? doesnt player have home.rot.y?
                 // especially because we are converting from deg to binang, but isnt home.rot.y already in binang??
-                Play_SetRespawnData(&play->state, RESPAWN_MODE_DOWN, entrance,
-                                    play->setupEntranceList[playerSpawnIndex].room, playerParams, &newRespawnPos,
+                Play_SetRespawnData(play, RESPAWN_MODE_DOWN, entrance, play->setupEntranceList[playerSpawnIndex].room,
+                                    playerParams, &newRespawnPos,
                                     DEG_TO_BINANG_ALT((playerActorEntry->rot.y >> 7) & 0x1FF));
 
-                func_80169EFC(&play->state);
+                func_80169EFC(play);
                 gSaveContext.respawnFlag = -5;
                 Play_DisableMotionBlur();
             }
@@ -254,7 +249,7 @@ void EnWarpTag_GrottoReturn(EnWarptag* this, PlayState* play) {
 }
 
 void EnWarptag_Update(Actor* thisx, PlayState* play) {
-    EnWarptag* this = THIS;
+    EnWarptag* this = (EnWarptag*)thisx;
     this->actionFunc(this, play);
 }
 
@@ -266,7 +261,7 @@ void EnWarpTag_Draw(Actor* thisx, PlayState* play) {
 
     Gfx_SetupDL25_Opa(play->state.gfxCtx);
     AnimatedMat_Draw(play, Lib_SegmentedToVirtual(gWarpTagRainbowTexAnim));
-    gSPMatrix(POLY_OPA_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    MATRIX_FINALIZE_AND_LOAD(POLY_OPA_DISP++, play->state.gfxCtx);
 
     gSPDisplayList(POLY_OPA_DISP++, gWarpTagGoronTrialBaseDL);
 

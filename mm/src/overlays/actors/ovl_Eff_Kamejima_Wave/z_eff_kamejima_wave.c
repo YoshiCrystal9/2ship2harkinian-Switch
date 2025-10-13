@@ -3,15 +3,13 @@
  * Overlay: ovl_Eff_Kamejima_Wave
  * Description: Wave Created by Turtle Awakening
  */
-
+#include "prevent_bss_reordering.h"
 #include "z_eff_kamejima_wave.h"
 #include "objects/object_kamejima/object_kamejima.h"
 
 #include "2s2h/BenPort.h"
 
-#define FLAGS (ACTOR_FLAG_10)
-
-#define THIS ((EffKamejimaWave*)thisx)
+#define FLAGS (ACTOR_FLAG_UPDATE_CULLING_DISABLED)
 
 void EffKamejimaWave_Init(Actor* thisx, PlayState* play);
 void EffKamejimaWave_Destroy(Actor* thisx, PlayState* play);
@@ -24,7 +22,7 @@ void func_80BCEBC0(EffKamejimaWave* this, PlayState* play);
 void func_80BCED34(EffKamejimaWave* this, PlayState* play);
 void EffKamejimaWave_SetVtxAlpha(u8 alpha);
 
-ActorInit Eff_Kamejima_Wave_InitVars = {
+ActorProfile Eff_Kamejima_Wave_Profile = {
     /**/ ACTOR_EFF_KAMEJIMA_WAVE,
     /**/ ACTORCAT_ITEMACTION,
     /**/ FLAGS,
@@ -47,7 +45,7 @@ s16 sVtxAlpha;
 AnimatedMaterial* D_80BCF1C4;
 
 void EffKamejimaWave_Init(Actor* thisx, PlayState* play) {
-    EffKamejimaWave* this = THIS;
+    EffKamejimaWave* this = (EffKamejimaWave*)thisx;
 
     Actor_SetScale(&this->actor, 0.2f);
     this->actor.scale.y = 0.0f;
@@ -133,7 +131,7 @@ void func_80BCEDE0(EffKamejimaWave* this, PlayState* play) {
 }
 
 void EffKamejimaWave_Update(Actor* thisx, PlayState* play) {
-    EffKamejimaWave* this = THIS;
+    EffKamejimaWave* this = (EffKamejimaWave*)thisx;
 
     this->actionFunc(this, play);
 }
@@ -163,7 +161,7 @@ void EffKamejimaWave_Draw(Actor* thisx, PlayState* play) {
 
     Gfx_SetupDL25_Xlu(play->state.gfxCtx);
     Matrix_Scale(6.0f, 5.0f, 5.0f, MTXMODE_APPLY);
-    gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    MATRIX_FINALIZE_AND_LOAD(POLY_XLU_DISP++, play->state.gfxCtx);
     AnimatedMat_Draw(play, D_80BCF1C4);
     gDPSetPrimColor(POLY_XLU_DISP++, 0, 0x80, primColor.r, primColor.g, primColor.b, 255);
     gDPSetEnvColor(POLY_XLU_DISP++, envColor.r, envColor.g, envColor.b, 255);

@@ -16,7 +16,7 @@ void Rando::ActorBehavior::InitEnGinkoBehavior() {
 
         if (GameInteractor_Should(VB_PASS_FIRST_BANK_THRESHOLD,
                                   (HS_GET_BANK_RUPEES() >= 200) && (enGinkoMan->previousBankValue < 200), enGinkoMan)) {
-            SET_WEEKEVENTREG(WEEKEVENTREG_10_08);
+            SET_WEEKEVENTREG(WEEKEVENTREG_RECEIVED_BANK_WALLET_UPGRADE);
         }
 
         if (GameInteractor_Should(VB_PASS_INTEREST_BANK_THRESHOLD,
@@ -27,7 +27,7 @@ void Rando::ActorBehavior::InitEnGinkoBehavior() {
         }
 
         if (GameInteractor_Should(VB_PASS_SECOND_BANK_THRESHOLD, HS_GET_BANK_RUPEES() >= 5000, enGinkoMan)) {
-            SET_WEEKEVENTREG(WEEKEVENTREG_59_08);
+            SET_WEEKEVENTREG(WEEKEVENTREG_RECEIVED_BANK_HEART_PIECE);
         }
 
         *should = false;

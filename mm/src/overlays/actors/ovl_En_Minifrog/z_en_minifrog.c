@@ -8,9 +8,7 @@
 #include "objects/gameplay_keep/gameplay_keep.h"
 #include "2s2h/GameInteractor/GameInteractor.h"
 
-#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_10)
-
-#define THIS ((EnMinifrog*)thisx)
+#define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_UPDATE_CULLING_DISABLED)
 
 void EnMinifrog_Init(Actor* thisx, PlayState* play);
 void EnMinifrog_Destroy(Actor* thisx, PlayState* play);
@@ -26,7 +24,7 @@ void EnMinifrog_UpdateMissingFrog(Actor* thisx, PlayState* play);
 void EnMinifrog_YellowFrogDialog(EnMinifrog* this, PlayState* play);
 void EnMinifrog_SetupYellowFrogDialog(EnMinifrog* this, PlayState* play);
 
-ActorInit En_Minifrog_InitVars = {
+ActorProfile En_Minifrog_Profile = {
     /**/ ACTOR_EN_MINIFROG,
     /**/ ACTORCAT_NPC,
     /**/ FLAGS,
@@ -40,7 +38,7 @@ ActorInit En_Minifrog_InitVars = {
 
 static ColliderCylinderInit sCylinderInit = {
     {
-        COLTYPE_NONE,
+        COL_MATERIAL_NONE,
         AT_NONE,
         AC_NONE,
         OC1_ON | OC1_TYPE_ALL,
@@ -48,11 +46,11 @@ static ColliderCylinderInit sCylinderInit = {
         COLSHAPE_CYLINDER,
     },
     {
-        ELEMTYPE_UNK1,
+        ELEM_MATERIAL_UNK1,
         { 0xF7CFFFFF, 0x00, 0x00 },
         { 0xF7CFFFFF, 0x00, 0x00 },
-        TOUCH_NONE | TOUCH_SFX_NORMAL,
-        BUMP_NONE,
+        ATELEM_NONE | ATELEM_SFX_NORMAL,
+        ACELEM_NONE,
         OCELEM_ON,
     },
     { 12, 14, 0, { 0, 0, 0 } },
@@ -73,42 +71,40 @@ static u16 sIsFrogReturnedFlags[] = {
     WEEKEVENTREG_33_02, // FROG_WHITE
 };
 
-static s32 sIsInitialized = false;
+static s32 sTexturesDesegmented = false;
 
 static InitChainEntry sInitChain[] = {
     ICHAIN_F32_DIV1000(gravity, -800, ICHAIN_STOP),
 };
 
 void EnMinifrog_Init(Actor* thisx, PlayState* play) {
-    EnMinifrog* this = THIS;
-    int i;
+    EnMinifrog* this = (EnMinifrog*)thisx;
+    s32 i;
 
-    Actor_ProcessInitChain(&this->actor, sInitChain);
-    ActorShape_Init(&this->actor.shape, 0.0f, ActorShadow_DrawCircle, 15.0f);
+    Actor_ProcessInitChain(thisx, sInitChain);
+    ActorShape_Init(&thisx->shape, 0.0f, ActorShadow_DrawCircle, 15.0f);
     SkelAnime_InitFlex(play, &this->skelAnime, &gFrogSkel, &gFrogIdleAnim, this->jointTable, this->morphTable,
                        FROG_LIMB_MAX);
-    CollisionCheck_SetInfo(&this->actor.colChkInfo, NULL, &sColChkInfoInit);
-    Collider_InitAndSetCylinder(play, &this->collider, &this->actor, &sCylinderInit);
+    CollisionCheck_SetInfo(&thisx->colChkInfo, NULL, &sColChkInfoInit);
+    Collider_InitAndSetCylinder(play, &this->collider, thisx, &sCylinderInit);
 
-    if (!sIsInitialized) {
+    if (!sTexturesDesegmented) {
         for (i = 0; i < ARRAY_COUNT(sEyeTextures); i++) {
             sEyeTextures[i] = Lib_SegmentedToVirtual(sEyeTextures[i]);
         }
-        sIsInitialized = true;
+        sTexturesDesegmented = true;
     }
 
-    this->frogIndex = (this->actor.params & 0xF);
+    this->frogIndex = (thisx->params & 0xF);
     if (this->frogIndex >= 5) {
         this->frogIndex = FROG_YELLOW;
     }
 
-    this->actor.speed = 0.0f;
+    thisx->speed = 0.0f;
     this->actionFunc = EnMinifrog_Idle;
     this->jumpState = FROG_STATE_GROUND;
     this->flags = 0;
     this->timer = 0;
-
-    if (1) {}
 
     if (!EN_FROG_IS_RETURNED(&this->actor)) {
         if ((this->frogIndex == FROG_YELLOW) ||
@@ -119,36 +115,36 @@ void EnMinifrog_Init(Actor* thisx, PlayState* play) {
 
         this->timer = 30;
         this->actionFunc = EnMinifrog_SpawnGrowAndShrink;
-        this->actor.textId = 0xD81;
-        this->actor.colChkInfo.mass = 30;
+        thisx->textId = 0xD81;
+        thisx->colChkInfo.mass = 30;
     } else { // Frogs in mountain village
         if (this->frogIndex == FROG_YELLOW) {
-            this->actor.textId = 0;
+            thisx->textId = 0;
             this->actionFunc = EnMinifrog_SetupYellowFrogDialog;
 
             if (!CHECK_WEEKEVENTREG(WEEKEVENTREG_34_01)) {
-                this->actor.flags |= ACTOR_FLAG_10000;
+                thisx->flags |= ACTOR_FLAG_TALK_OFFER_AUTO_ACCEPTED;
             }
 
-            this->actor.home.rot.x = this->actor.home.rot.z = 0;
+            thisx->home.rot.x = thisx->home.rot.z = 0;
             this->frog = NULL;
         } else {
             this->frog = EnMinifrog_GetFrog(play);
-            this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
+            thisx->flags &= ~ACTOR_FLAG_ATTENTION_ENABLED;
 
             // Frog has been returned
             if (CHECK_WEEKEVENTREG(sIsFrogReturnedFlags[this->frogIndex])) {
                 this->actionFunc = EnMinifrog_SetupNextFrogInit;
             } else {
-                this->actor.draw = NULL;
-                this->actor.update = EnMinifrog_UpdateMissingFrog;
+                thisx->draw = NULL;
+                thisx->update = EnMinifrog_UpdateMissingFrog;
             }
         }
     }
 }
 
 void EnMinifrog_Destroy(Actor* thisx, PlayState* play) {
-    EnMinifrog* this = THIS;
+    EnMinifrog* this = (EnMinifrog*)thisx;
 
     Collider_DestroyCylinder(play, &this->collider);
     if (this->flags & 0x100) {
@@ -258,7 +254,7 @@ void EnMinifrog_ReturnFrogCutscene(EnMinifrog* this, PlayState* play) {
     EnMinifrog_TurnToPlayer(this);
     EnMinifrog_Jump(this);
 
-    if ((Message_GetState(&play->msgCtx) == TEXT_STATE_5) && Message_ShouldAdvance(play)) {
+    if ((Message_GetState(&play->msgCtx) == TEXT_STATE_EVENT) && Message_ShouldAdvance(play)) {
         EnMinifrog_SetJumpState(this);
 
         switch (play->msgCtx.currentTextId) {
@@ -325,7 +321,7 @@ void EnMinifrog_Idle(EnMinifrog* this, PlayState* play) {
     EnMinifrog_TurnToPlayer(this);
     EnMinifrog_Jump(this);
     EnMinifrog_JumpTimer(this);
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+    if (Actor_TalkOfferAccepted(&this->actor, &play->state)) {
         this->actionFunc = EnMinifrog_ReturnFrogCutscene;
         if (this->actor.csId != CS_ID_NONE) {
             this->flags |= 1;
@@ -345,8 +341,8 @@ void EnMinifrog_SetupNextFrogInit(EnMinifrog* this, PlayState* play) {
     if (nextFrog != NULL) {
         missingFrog = nextFrog->frog;
         if (nextFrog->frog != NULL) {
-            this->actor.home.rot.y =
-                (s16)Actor_WorldYawTowardActor(&this->actor, &missingFrog->actor); // Set home to missing frog
+            // Set home to missing frog
+            this->actor.home.rot.y = Actor_WorldYawTowardActor(&this->actor, &missingFrog->actor);
             EnMinifrog_TurnToMissingFrog(this);
         } else {
             EnMinifrog_TurnToPlayer(this);
@@ -473,7 +469,7 @@ void EnMinifrog_BeginChoirCutscene(EnMinifrog* this, PlayState* play) {
 void EnMinifrog_EndChoir(EnMinifrog* this, PlayState* play) {
     EnMinifrog_TurnToPlayer(this);
     EnMinifrog_Jump(this);
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+    if (Actor_TalkOfferAccepted(&this->actor, &play->state)) {
         Message_StartTextbox(play, 0xD7E, &this->actor);
         this->actionFunc = EnMinifrog_YellowFrogDialog;
     } else {
@@ -487,7 +483,7 @@ void EnMinifrog_GetFrogHP(EnMinifrog* this, PlayState* play) {
     if (Actor_HasParent(&this->actor, play)) {
         this->actor.parent = NULL;
         this->actionFunc = EnMinifrog_EndChoir;
-        this->actor.flags |= ACTOR_FLAG_10000;
+        this->actor.flags |= ACTOR_FLAG_TALK_OFFER_AUTO_ACCEPTED;
         Actor_OfferTalkExchange(&this->actor, play, 1000.0f, 1000.0f, PLAYER_IA_NONE);
     } else {
         Actor_OfferGetItem(&this->actor, play, GI_HEART_PIECE, 10000.0f, 50.0f);
@@ -518,13 +514,13 @@ void EnMinifrog_YellowFrogDialog(EnMinifrog* this, PlayState* play) {
             }
             break;
 
-        case TEXT_STATE_5:
+        case TEXT_STATE_EVENT:
             if (Message_ShouldAdvance(play)) {
                 EnMinifrog_SetJumpState(this);
                 switch (play->msgCtx.currentTextId) {
                     case 0xD76:
                         Message_ContinueTextbox(play, play->msgCtx.currentTextId + 1);
-                        this->actor.flags &= ~ACTOR_FLAG_10000;
+                        this->actor.flags &= ~ACTOR_FLAG_TALK_OFFER_AUTO_ACCEPTED;
                         SET_WEEKEVENTREG(WEEKEVENTREG_34_01);
                         break;
 
@@ -541,11 +537,11 @@ void EnMinifrog_YellowFrogDialog(EnMinifrog* this, PlayState* play) {
                         break;
 
                     case 0xD7C:
-                        if (CHECK_WEEKEVENTREG(WEEKEVENTREG_35_80)) { // Obtained Heart Piece
+                        if (CHECK_WEEKEVENTREG(WEEKEVENTREG_RECEIVED_FROG_CHOIR_HEART_PIECE)) {
                             Message_ContinueTextbox(play, 0xD7E);
                         } else {
                             Message_ContinueTextbox(play, 0xD7D); // Get Heart Piece
-                            SET_WEEKEVENTREG(WEEKEVENTREG_35_80);
+                            SET_WEEKEVENTREG(WEEKEVENTREG_RECEIVED_FROG_CHOIR_HEART_PIECE);
                         }
                         break;
 
@@ -560,7 +556,7 @@ void EnMinifrog_YellowFrogDialog(EnMinifrog* this, PlayState* play) {
                     default:
                         Message_CloseTextbox(play);
                         this->actionFunc = EnMinifrog_SetupYellowFrogDialog;
-                        this->actor.flags &= ~ACTOR_FLAG_10000;
+                        this->actor.flags &= ~ACTOR_FLAG_TALK_OFFER_AUTO_ACCEPTED;
                         break;
                 }
             }
@@ -577,7 +573,7 @@ void EnMinifrog_SetupYellowFrogDialog(EnMinifrog* this, PlayState* play) {
     EnMinifrog_TurnToPlayer(this);
     EnMinifrog_Jump(this);
     EnMinifrog_JumpTimer(this);
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+    if (Actor_TalkOfferAccepted(&this->actor, &play->state)) {
         this->actionFunc = EnMinifrog_YellowFrogDialog;
         if (!CHECK_WEEKEVENTREG(WEEKEVENTREG_34_01)) {
             Message_StartTextbox(play, 0xD76, &this->actor);
@@ -586,14 +582,14 @@ void EnMinifrog_SetupYellowFrogDialog(EnMinifrog* this, PlayState* play) {
         }
     } else if ((this->actor.xzDistToPlayer < 150.0f) &&
                (Player_IsFacingActor(&this->actor, 0x3000, play) ||
-                CHECK_FLAG_ALL(this->actor.flags, ACTOR_FLAG_10000)) &&
+                CHECK_FLAG_ALL(this->actor.flags, ACTOR_FLAG_TALK_OFFER_AUTO_ACCEPTED)) &&
                Player_GetMask(play) == PLAYER_MASK_DON_GERO) {
         Actor_OfferTalk(&this->actor, play, 160.0f);
     }
 }
 
 void EnMinifrog_Update(Actor* thisx, PlayState* play) {
-    EnMinifrog* this = THIS;
+    EnMinifrog* this = (EnMinifrog*)thisx;
     s32 pad;
 
     this->actionFunc(this, play);
@@ -607,7 +603,7 @@ void EnMinifrog_Update(Actor* thisx, PlayState* play) {
 }
 
 void EnMinifrog_UpdateMissingFrog(Actor* thisx, PlayState* play) {
-    EnMinifrog* this = THIS;
+    EnMinifrog* this = (EnMinifrog*)thisx;
     EnMinifrog* missingFrog;
 
     missingFrog = this->frog;
@@ -629,13 +625,13 @@ s32 EnMinifrog_OverrideLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec
 }
 
 void EnMinifrog_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* rot, Actor* thisx) {
-    EnMinifrog* this = THIS;
+    EnMinifrog* this = (EnMinifrog*)thisx;
 
     if ((limbIndex == FROG_LIMB_RIGHT_EYE) || (limbIndex == FROG_LIMB_LEFT_EYE)) {
         OPEN_DISPS(play->state.gfxCtx);
 
         Matrix_ReplaceRotation(&play->billboardMtxF);
-        gSPMatrix(POLY_OPA_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+        MATRIX_FINALIZE_AND_LOAD(POLY_OPA_DISP++, play->state.gfxCtx);
         gSPDisplayList(POLY_OPA_DISP++, *dList);
 
         CLOSE_DISPS(play->state.gfxCtx);
@@ -655,7 +651,7 @@ static Color_RGBA8 sFrogEnvColors[] = {
 };
 
 void EnMinifrog_Draw(Actor* thisx, PlayState* play) {
-    EnMinifrog* this = THIS;
+    EnMinifrog* this = (EnMinifrog*)thisx;
     Color_RGBA8* envColor;
 
     OPEN_DISPS(play->state.gfxCtx);

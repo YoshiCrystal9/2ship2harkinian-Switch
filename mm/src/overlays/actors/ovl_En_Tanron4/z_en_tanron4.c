@@ -6,9 +6,7 @@
 
 #include "z_en_tanron4.h"
 
-#define FLAGS (ACTOR_FLAG_10 | ACTOR_FLAG_2000000)
-
-#define THIS ((EnTanron4*)thisx)
+#define FLAGS (ACTOR_FLAG_UPDATE_CULLING_DISABLED | ACTOR_FLAG_UPDATE_DURING_OCARINA)
 
 void EnTanron4_Init(Actor* thisx, PlayState* play2);
 void EnTanron4_Destroy(Actor* thisx, PlayState* play);
@@ -21,17 +19,17 @@ void EnTanron4_SetupFlyNearActor(EnTanron4* this);
 void EnTanron4_FlyNearHome(EnTanron4* this, PlayState* play);
 void EnTanron4_FlyNearActor(EnTanron4* this, PlayState* play);
 
-typedef enum {
+typedef enum SeagullFlyState {
     /* 0 */ SEAGULL_FLY_FLAP,
     /* 1 */ SEAGULL_FLY_GLIDE
 } SeagullFlyState;
 
-typedef enum {
+typedef enum SeagullTimer {
     /* 0 */ SEAGULL_TIMER_FLY_STATE,
     /* 1 */ SEAGULL_TIMER_CHOOSE_TARGET
 } SeagullTimer;
 
-ActorInit En_Tanron4_InitVars = {
+ActorProfile En_Tanron4_Profile = {
     /**/ ACTOR_EN_TANRON4,
     /**/ ACTORCAT_ITEMACTION,
     /**/ FLAGS,
@@ -45,14 +43,14 @@ ActorInit En_Tanron4_InitVars = {
 
 void EnTanron4_Init(Actor* thisx, PlayState* play2) {
     PlayState* play = play2;
-    EnTanron4* this = THIS;
+    EnTanron4* this = (EnTanron4*)thisx;
 
     SkelAnime_InitFlex(play, &this->skelAnime, &gSeagullSkel, &gSeagullFlapAnim, this->jointTable, this->morphTable,
                        SEAGULL_LIMB_RIGHT_WING_MAX);
 
-    thisx->flags &= ~ACTOR_FLAG_TARGETABLE;
+    thisx->flags &= ~ACTOR_FLAG_ATTENTION_ENABLED;
     thisx->speed = 3.0f + KREG(48);
-    thisx->uncullZoneForward = 10000.0f + KREG(70);
+    thisx->cullingVolumeDistance = 10000.0f + KREG(70);
     this->randRollTimer = Rand_ZeroFloat(10.0f);
 
     if (thisx->params == SEAGULL_FOLLOW_ACTOR) {
@@ -72,7 +70,7 @@ void EnTanron4_Init(Actor* thisx, PlayState* play2) {
             }
         }
 
-        if ((gSaveContext.save.time > CLOCK_TIME(20, 0)) || (gSaveContext.save.time < CLOCK_TIME(4, 0))) {
+        if ((CURRENT_TIME > CLOCK_TIME(20, 0)) || (CURRENT_TIME < CLOCK_TIME(4, 0))) {
             this->timeInfluence = 1500.0f;
             thisx->world.pos.y += 1500.0f;
         }
@@ -98,14 +96,14 @@ void EnTanron4_FlyNearHome(EnTanron4* this, PlayState* play) {
 
     // `timeInfluence` controls both the height of the seagulls and when they are visible.
     // They fly higher in the sky as the night goes on, and they disapear as dawn approaches.
-    if ((gSaveContext.save.time > CLOCK_TIME(20, 0)) || (gSaveContext.save.time < CLOCK_TIME(4, 0))) {
+    if ((CURRENT_TIME > CLOCK_TIME(20, 0)) || (CURRENT_TIME < CLOCK_TIME(4, 0))) {
         Math_ApproachF(&this->timeInfluence, 1500.0f, 1.0f, 1.0f);
     } else {
         Math_ApproachZeroF(&this->timeInfluence, 1.0f, 1.0f);
     }
 
     xDiff = this->targetPos.x - this->actor.world.pos.x;
-    yDiff = (this->targetPos.y + this->timeInfluence) - this->actor.world.pos.y;
+    yDiff = this->targetPos.y + this->timeInfluence - this->actor.world.pos.y;
     zDiff = this->targetPos.z - this->actor.world.pos.z;
 
     distToTarget = sqrtf(SQ(xDiff) + SQ(zDiff));
@@ -158,6 +156,9 @@ void EnTanron4_FlyNearHome(EnTanron4* this, PlayState* play) {
                 Animation_MorphToLoop(&this->skelAnime, &gSeagullFlapAnim, -10.0f + KREG(43));
                 this->skelAnime.curFrame = 2.0f + KREG(42);
             }
+            break;
+
+        default:
             break;
     }
 
@@ -237,6 +238,9 @@ void EnTanron4_FlyNearActor(EnTanron4* this, PlayState* play) {
                 this->skelAnime.curFrame = 2.0f + KREG(42);
             }
             break;
+
+        default:
+            break;
     }
 
     this->actor.shape.rot.x = -this->actor.world.rot.x;
@@ -247,7 +251,7 @@ void EnTanron4_FlyNearActor(EnTanron4* this, PlayState* play) {
 }
 
 void EnTanron4_Update(Actor* thisx, PlayState* play) {
-    EnTanron4* this = THIS;
+    EnTanron4* this = (EnTanron4*)thisx;
 
     Actor_SetScale(&this->actor, 0.001f * KREG(16) + 0.01f);
 
@@ -270,7 +274,7 @@ void EnTanron4_Update(Actor* thisx, PlayState* play) {
 }
 
 void EnTanron4_Draw(Actor* thisx, PlayState* play) {
-    EnTanron4* this = THIS;
+    EnTanron4* this = (EnTanron4*)thisx;
 
     if (this->timeInfluence < 1400.0f) {
         Matrix_RotateZS(this->roll, MTXMODE_APPLY);

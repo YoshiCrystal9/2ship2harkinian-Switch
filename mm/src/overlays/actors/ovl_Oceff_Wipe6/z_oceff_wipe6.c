@@ -7,16 +7,14 @@
 #include "z_oceff_wipe6.h"
 #include "BenPort.h"
 
-#define FLAGS (ACTOR_FLAG_10 | ACTOR_FLAG_2000000)
-
-#define THIS ((OceffWipe6*)thisx)
+#define FLAGS (ACTOR_FLAG_UPDATE_CULLING_DISABLED | ACTOR_FLAG_UPDATE_DURING_OCARINA)
 
 void OceffWipe6_Init(Actor* thisx, PlayState* play);
 void OceffWipe6_Destroy(Actor* thisx, PlayState* play);
 void OceffWipe6_Update(Actor* thisx, PlayState* play);
 void OceffWipe6_Draw(Actor* thisx, PlayState* play);
 
-ActorInit Oceff_Wipe6_InitVars = {
+ActorProfile Oceff_Wipe6_Profile = {
     ACTOR_OCEFF_WIPE6,
     ACTORCAT_ITEMACTION,
     FLAGS,
@@ -33,7 +31,7 @@ ActorInit Oceff_Wipe6_InitVars = {
 static Vtx* gOceff6VtxData;
 
 void OceffWipe6_Init(Actor* thisx, PlayState* play) {
-    OceffWipe6* this = THIS;
+    OceffWipe6* this = (OceffWipe6*)thisx;
 
     gOceff6VtxData = ResourceMgr_LoadVtxByName(gOceff6Vtx);
 
@@ -48,7 +46,7 @@ void OceffWipe6_Destroy(Actor* thisx, PlayState* play) {
 }
 
 void OceffWipe6_Update(Actor* thisx, PlayState* play) {
-    OceffWipe6* this = THIS;
+    OceffWipe6* this = (OceffWipe6*)thisx;
 
     this->actor.world.pos = GET_ACTIVE_CAM(play)->eye;
     if (this->counter < 100) {
@@ -59,7 +57,7 @@ void OceffWipe6_Update(Actor* thisx, PlayState* play) {
 }
 
 void OceffWipe6_Draw(Actor* thisx, PlayState* play) {
-    OceffWipe6* this = THIS;
+    OceffWipe6* this = (OceffWipe6*)thisx;
     f32 z;
     u8 alpha;
     s32 i;
@@ -107,7 +105,7 @@ void OceffWipe6_Draw(Actor* thisx, PlayState* play) {
     Matrix_ReplaceRotation(&play->billboardMtxF);
     Matrix_RotateXS(0x708, MTXMODE_APPLY);
     Matrix_Translate(0.0f, 0.0f, -z, MTXMODE_APPLY);
-    gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    MATRIX_FINALIZE_AND_LOAD(POLY_XLU_DISP++, play->state.gfxCtx);
     AnimatedMat_Draw(play, ovl_Oceff_Wipe6_Matanimheader_000338);
     gSPDisplayList(POLY_XLU_DISP++, gOceff6DL);
 

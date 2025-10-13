@@ -8,9 +8,7 @@
 #include "objects/gameplay_keep/gameplay_keep.h"
 #include "objects/object_syokudai/object_syokudai.h"
 
-#define FLAGS (ACTOR_FLAG_10)
-
-#define THIS ((ObjJgameLight*)thisx)
+#define FLAGS (ACTOR_FLAG_UPDATE_CULLING_DISABLED)
 
 typedef enum {
     /* 0 */ OBJJGAMELIGHT_NONE,
@@ -27,7 +25,7 @@ void func_80C15474(ObjJgameLight* this, PlayState* play);
 void ObjJgameLight_UpdateCollision(ObjJgameLight* this, PlayState* play);
 void func_80C15718(ObjJgameLight* this, PlayState* play);
 
-ActorInit Obj_Jgame_Light_InitVars = {
+ActorProfile Obj_Jgame_Light_Profile = {
     /**/ ACTOR_OBJ_JGAME_LIGHT,
     /**/ ACTORCAT_PROP,
     /**/ FLAGS,
@@ -41,7 +39,7 @@ ActorInit Obj_Jgame_Light_InitVars = {
 
 static ColliderCylinderInit sCylinderInit = {
     {
-        COLTYPE_METAL,
+        COL_MATERIAL_METAL,
         AT_NONE,
         AC_ON | AC_HARD | AC_TYPE_PLAYER,
         OC1_ON | OC1_TYPE_ALL,
@@ -49,11 +47,11 @@ static ColliderCylinderInit sCylinderInit = {
         COLSHAPE_CYLINDER,
     },
     {
-        ELEMTYPE_UNK2,
+        ELEM_MATERIAL_UNK2,
         { 0x00100000, 0x00, 0x00 },
         { 0xF6CFFFFF, 0x00, 0x00 },
-        TOUCH_NONE | TOUCH_SFX_NORMAL,
-        BUMP_ON | BUMP_HOOKABLE,
+        ATELEM_NONE | ATELEM_SFX_NORMAL,
+        ACELEM_ON | ACELEM_HOOKABLE,
         OCELEM_ON,
     },
     { 12, 45, 0, { 0, 0, 0 } },
@@ -62,7 +60,7 @@ static ColliderCylinderInit sCylinderInit = {
 #include "assets/overlays/ovl_Obj_Jgame_Light/ovl_Obj_Jgame_Light.h"
 
 void ObjJgameLight_Init(Actor* thisx, PlayState* play) {
-    ObjJgameLight* this = THIS;
+    ObjJgameLight* this = (ObjJgameLight*)thisx;
     LightInfo* lights = &this->lightInfo;
 
     Actor_SetScale(&this->actor, 1.0f);
@@ -84,7 +82,7 @@ void ObjJgameLight_Init(Actor* thisx, PlayState* play) {
 }
 
 void ObjJgameLight_Destroy(Actor* thisx, PlayState* play) {
-    ObjJgameLight* this = THIS;
+    ObjJgameLight* this = (ObjJgameLight*)thisx;
 
     Collider_DestroyCylinder(play, &this->collider);
     LightContext_RemoveLight(play, &play->lightCtx, this->lightNode);
@@ -158,7 +156,7 @@ void func_80C15718(ObjJgameLight* this, PlayState* play) {
 }
 
 void ObjJgameLight_Update(Actor* thisx, PlayState* play) {
-    ObjJgameLight* this = THIS;
+    ObjJgameLight* this = (ObjJgameLight*)thisx;
 
     func_80C15718(this, play);
     func_80C15474(this, play);
@@ -168,12 +166,12 @@ void ObjJgameLight_Update(Actor* thisx, PlayState* play) {
 
 void ObjJgameLight_Draw(Actor* thisx, PlayState* play) {
     s32 pad;
-    ObjJgameLight* this = THIS;
+    ObjJgameLight* this = (ObjJgameLight*)thisx;
 
     OPEN_DISPS(play->state.gfxCtx);
 
     Gfx_SetupDL25_Opa(play->state.gfxCtx);
-    gSPMatrix(POLY_OPA_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    MATRIX_FINALIZE_AND_LOAD(POLY_OPA_DISP++, play->state.gfxCtx);
     gSPDisplayList(POLY_OPA_DISP++, &gObjectSyokudaiTypeSwitchCausesFlameDL);
     if (this->alpha > 0) {
         Gfx_SetupDL25_Xlu(play->state.gfxCtx);
@@ -182,7 +180,7 @@ void ObjJgameLight_Draw(Actor* thisx, PlayState* play) {
         } else {
             gDPSetPrimColor(POLY_XLU_DISP++, 0, 0, 210, 64, 32, this->alpha);
         }
-        gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+        MATRIX_FINALIZE_AND_LOAD(POLY_XLU_DISP++, play->state.gfxCtx);
         if (this->signal == OBJJGAMELIGHT_CORRECT) {
             gSPDisplayList(POLY_XLU_DISP++, gObjJgameLightCorrectDL);
         } else if (this->signal == OBJJGAMELIGHT_INCORRECT) {
@@ -203,7 +201,7 @@ void ObjJgameLight_Draw(Actor* thisx, PlayState* play) {
         Matrix_RotateYS(((Camera_GetCamDirYaw(GET_ACTIVE_CAM(play)) - this->actor.shape.rot.y) + 0x8000),
                         MTXMODE_APPLY);
         Matrix_Scale(scale, scale, scale, MTXMODE_APPLY);
-        gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+        MATRIX_FINALIZE_AND_LOAD(POLY_XLU_DISP++, play->state.gfxCtx);
         gSPDisplayList(POLY_XLU_DISP++, gEffFire1DL);
     }
     CLOSE_DISPS(play->state.gfxCtx);

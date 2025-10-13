@@ -9,9 +9,9 @@
 
 #include "z_en_ds2n.h"
 
-#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_10 | ACTOR_FLAG_2000000)
-
-#define THIS ((EnDs2n*)thisx)
+#define FLAGS                                                                                  \
+    (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_UPDATE_CULLING_DISABLED | \
+     ACTOR_FLAG_UPDATE_DURING_OCARINA)
 
 void EnDs2n_Init(Actor* thisx, PlayState* play);
 void EnDs2n_Destroy(Actor* thisx, PlayState* play);
@@ -20,7 +20,7 @@ void EnDs2n_Draw(Actor* thisx, PlayState* play);
 
 void EnDs2n_Idle(EnDs2n* this, PlayState* play);
 
-ActorInit En_Ds2n_InitVars = {
+ActorProfile En_Ds2n_Profile = {
     /**/ ACTOR_EN_DS2N,
     /**/ ACTORCAT_NPC,
     /**/ FLAGS,
@@ -68,7 +68,7 @@ void EnDs2n_UpdateEyes(EnDs2n* this) {
 }
 
 void EnDs2n_Init(Actor* thisx, PlayState* play) {
-    EnDs2n* this = THIS;
+    EnDs2n* this = (EnDs2n*)thisx;
 
     ActorShape_Init(&this->actor.shape, 0.0f, ActorShadow_DrawCircle, 20.0f);
     SkelAnime_InitFlex(play, &this->skelAnime, &gDs2nSkel, &gDs2nIdleAnim, NULL, NULL, 0);
@@ -76,24 +76,24 @@ void EnDs2n_Init(Actor* thisx, PlayState* play) {
 }
 
 void EnDs2n_Destroy(Actor* thisx, PlayState* play) {
-    EnDs2n* this = THIS;
+    EnDs2n* this = (EnDs2n*)thisx;
 
     SkelAnime_Free(&this->skelAnime, play);
 }
 
 void EnDs2n_Update(Actor* thisx, PlayState* play) {
-    EnDs2n* this = THIS;
+    EnDs2n* this = (EnDs2n*)thisx;
 
     this->actionFunc(this, play);
     Actor_MoveWithGravity(&this->actor);
     SkelAnime_Update(&this->skelAnime);
 
-    Actor_TrackPlayer(play, &this->actor, &this->headRot, &this->chestRot, this->actor.focus.pos);
+    Actor_TrackPlayer(play, &this->actor, &this->headRot, &this->torsoRot, this->actor.focus.pos);
     EnDs2n_UpdateEyes(this);
 }
 
 s32 EnDs2n_OverrideLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3f* pos, Vec3s* rot, Actor* thisx) {
-    EnDs2n* this = THIS;
+    EnDs2n* this = (EnDs2n*)thisx;
 
     if (limbIndex == DS2N_LIMB_HEAD) {
         Matrix_RotateXS(this->headRot.y, MTXMODE_APPLY);
@@ -103,13 +103,13 @@ s32 EnDs2n_OverrideLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3f* 
 }
 
 void EnDs2n_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* rot, Actor* thisx) {
-    EnDs2n* this = THIS;
+    EnDs2n* this = (EnDs2n*)thisx;
     Vec3f focusOffset = { 0.0f, 0.0f, 0.0f };
 
     if ((limbIndex == DS2N_LIMB_HIPS) || (limbIndex == DS2N_LIMB_LEFT_UPPER_ARM) ||
         (limbIndex == DS2N_LIMB_RIGHT_UPPER_ARM)) {
-        rot->y += (s16)Math_SinS(this->fidgetTableY[limbIndex]) * 200;
-        rot->z += (s16)Math_CosS(this->fidgetTableZ[limbIndex]) * 200;
+        rot->y += TRUNCF_BINANG(Math_SinS(this->fidgetTableY[limbIndex])) * 200;
+        rot->z += TRUNCF_BINANG(Math_CosS(this->fidgetTableZ[limbIndex])) * 200;
     }
 
     if (limbIndex == DS2N_LIMB_HEAD) {
@@ -120,7 +120,7 @@ void EnDs2n_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* rot
 static TexturePtr sEyeTextures[] = { gDs2nEyeOpenTex, gDs2nEyeHalfTex, gDs2nEyeClosedTex };
 
 void EnDs2n_Draw(Actor* thisx, PlayState* play) {
-    EnDs2n* this = THIS;
+    EnDs2n* this = (EnDs2n*)thisx;
 
     OPEN_DISPS(play->state.gfxCtx);
 

@@ -6,9 +6,7 @@
 
 #include "z_obj_demo.h"
 
-#define FLAGS (ACTOR_FLAG_10)
-
-#define THIS ((ObjDemo*)thisx)
+#define FLAGS (ACTOR_FLAG_UPDATE_CULLING_DISABLED)
 
 void ObjDemo_Init(Actor* thisx, PlayState* play);
 void ObjDemo_Update(Actor* thisx, PlayState* play);
@@ -17,7 +15,7 @@ void func_80983678(ObjDemo* this, PlayState* play);
 void func_80983704(ObjDemo* this, PlayState* play);
 void func_80983634(PlayState* play);
 
-ActorInit Obj_Demo_InitVars = {
+ActorProfile Obj_Demo_Profile = {
     /**/ ACTOR_OBJ_DEMO,
     /**/ ACTORCAT_PROP,
     /**/ FLAGS,
@@ -30,7 +28,7 @@ ActorInit Obj_Demo_InitVars = {
 };
 
 void ObjDemo_Init(Actor* thisx, PlayState* play) {
-    ObjDemo* this = THIS;
+    ObjDemo* this = (ObjDemo*)thisx;
 
     thisx->params = OBJDEMO_GET_SWITCH_FLAG_MASK(thisx);
     if ((OBJDEMO_GET_SWITCH_FLAG(thisx) != 0xFF) && Flags_GetSwitch(play, OBJDEMO_GET_SWITCH_FLAG(thisx))) {
@@ -106,7 +104,7 @@ void func_80983704(ObjDemo* this, PlayState* play) {
 }
 
 void ObjDemo_Update(Actor* thisx, PlayState* play) {
-    ObjDemo* this = THIS;
+    ObjDemo* this = (ObjDemo*)thisx;
 
     if ((OBJDEMO_GET_SWITCH_FLAG(&this->actor) != 0xFF) &&
         Flags_GetSwitch(play, OBJDEMO_GET_SWITCH_FLAG(&this->actor))) {

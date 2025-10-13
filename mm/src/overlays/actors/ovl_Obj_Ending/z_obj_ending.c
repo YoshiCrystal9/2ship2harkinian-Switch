@@ -7,15 +7,13 @@
 #include "z_obj_ending.h"
 #include "objects/object_ending_obj/object_ending_obj.h"
 
-#define FLAGS (ACTOR_FLAG_10 | ACTOR_FLAG_20)
-
-#define THIS ((ObjEnding*)thisx)
+#define FLAGS (ACTOR_FLAG_UPDATE_CULLING_DISABLED | ACTOR_FLAG_DRAW_CULLING_DISABLED)
 
 void ObjEnding_Init(Actor* thisx, PlayState* play);
 void ObjEnding_Update(Actor* thisx, PlayState* play);
 void ObjEnding_Draw(Actor* thisx, PlayState* play);
 
-ActorInit Obj_Ending_InitVars = {
+ActorProfile Obj_Ending_Profile = {
     /**/ ACTOR_OBJ_ENDING,
     /**/ ACTORCAT_BG,
     /**/ FLAGS,
@@ -37,7 +35,7 @@ static InitChainEntry sInitChain[] = {
 };
 
 void ObjEnding_Init(Actor* thisx, PlayState* play) {
-    ObjEnding* this = THIS;
+    ObjEnding* this = (ObjEnding*)thisx;
     AnimatedMaterial* animMat;
 
     Actor_ProcessInitChain(thisx, sInitChain);
@@ -52,7 +50,7 @@ void ObjEnding_Update(Actor* thisx, PlayState* play) {
 }
 
 void ObjEnding_Draw(Actor* thisx, PlayState* play) {
-    ObjEnding* this = THIS;
+    ObjEnding* this = (ObjEnding*)thisx;
     Gfx* dl1;
     Gfx* dl2;
 

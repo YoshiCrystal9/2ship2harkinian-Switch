@@ -7,16 +7,14 @@
 #include "z_oceff_wipe7.h"
 #include "BenPort.h"
 
-#define FLAGS (ACTOR_FLAG_10 | ACTOR_FLAG_2000000)
-
-#define THIS ((OceffWipe7*)thisx)
+#define FLAGS (ACTOR_FLAG_UPDATE_CULLING_DISABLED | ACTOR_FLAG_UPDATE_DURING_OCARINA)
 
 void OceffWipe7_Init(Actor* thisx, PlayState* play);
 void OceffWipe7_Destroy(Actor* thisx, PlayState* play);
 void OceffWipe7_Update(Actor* thisx, PlayState* play);
 void OceffWipe7_Draw(Actor* thisx, PlayState* play);
 
-ActorInit Oceff_Wipe7_InitVars = {
+ActorProfile Oceff_Wipe7_Profile = {
     ACTOR_OCEFF_WIPE7,
     ACTORCAT_ITEMACTION,
     FLAGS,
@@ -30,12 +28,12 @@ ActorInit Oceff_Wipe7_InitVars = {
 
 #include "assets/overlays/ovl_Oceff_Wipe7/ovl_Oceff_Wipe7.h"
 
-s32 D_80BCEB10;
+static s32 sBssPad;
 
 static Vtx* sSongofHealingEffectFrustrumVtxData;
 
 void OceffWipe7_Init(Actor* thisx, PlayState* play) {
-    OceffWipe7* this = THIS;
+    OceffWipe7* this = (OceffWipe7*)thisx;
     sSongofHealingEffectFrustrumVtxData = ResourceMgr_LoadVtxByName(sSongofHealingEffectFrustrumVtx);
 
     Actor_SetScale(&this->actor, 1.0f);
@@ -44,14 +42,14 @@ void OceffWipe7_Init(Actor* thisx, PlayState* play) {
 }
 
 void OceffWipe7_Destroy(Actor* thisx, PlayState* play) {
-    OceffWipe7* this = THIS;
+    OceffWipe7* this = (OceffWipe7*)thisx;
 
     Magic_Reset(play);
     play->msgCtx.ocarinaSongEffectActive = false;
 }
 
 void OceffWipe7_Update(Actor* thisx, PlayState* play) {
-    OceffWipe7* this = THIS;
+    OceffWipe7* this = (OceffWipe7*)thisx;
 
     this->actor.world.pos = GET_ACTIVE_CAM(play)->eye;
     if (this->counter < 100) {
@@ -62,7 +60,7 @@ void OceffWipe7_Update(Actor* thisx, PlayState* play) {
 }
 
 void OceffWipe7_Draw(Actor* thisx, PlayState* play) {
-    OceffWipe7* this = THIS;
+    OceffWipe7* this = (OceffWipe7*)thisx;
     f32 z;
     u8 alpha;
     s32 i;
@@ -108,7 +106,7 @@ void OceffWipe7_Draw(Actor* thisx, PlayState* play) {
     Matrix_ReplaceRotation(&play->billboardMtxF);
     Matrix_RotateXS(0x708, MTXMODE_APPLY);
     Matrix_Translate(0.0f, 0.0f, -z, MTXMODE_APPLY);
-    gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    MATRIX_FINALIZE_AND_LOAD(POLY_XLU_DISP++, play->state.gfxCtx);
     AnimatedMat_Draw(play, sSongofHealingEffectTexAnim);
     gSPDisplayList(POLY_XLU_DISP++, sSongOfHealingEffectFrustumDL);
 

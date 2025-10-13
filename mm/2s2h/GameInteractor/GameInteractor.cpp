@@ -395,7 +395,7 @@ void ProcessEvents(Actor* actor) {
     }
 
     // If player is dead, stop
-    if (player->stateFlags1 & PLAYER_STATE1_80) {
+    if (player->stateFlags1 & PLAYER_STATE1_DEAD) {
         return;
     }
 
@@ -420,8 +420,8 @@ void ProcessEvents(Actor* actor) {
         // If the player is climbing or in the air, deliver the item without a cutscene but freeze the player
         if (!e->showGetItemCutscene ||
             (player->stateFlags1 &
-             (PLAYER_STATE1_1000 | PLAYER_STATE1_2000 | PLAYER_STATE1_4000 | PLAYER_STATE1_40000 | PLAYER_STATE1_80000 |
-              PLAYER_STATE1_100000 | PLAYER_STATE1_200000 | PLAYER_STATE1_8000000)) ||
+             (PLAYER_STATE1_CHARGING_SPIN_ATTACK | PLAYER_STATE1_2000 | PLAYER_STATE1_4000 | PLAYER_STATE1_40000 |
+              PLAYER_STATE1_80000 | PLAYER_STATE1_100000 | PLAYER_STATE1_200000 | PLAYER_STATE1_8000000)) ||
             (Player_GetExplosiveHeld(player) > PLAYER_EXPLOSIVE_NONE)) {
             enItem00 = CustomItem::Spawn(
                 player->actor.world.pos.x, player->actor.world.pos.y, player->actor.world.pos.z, 0,

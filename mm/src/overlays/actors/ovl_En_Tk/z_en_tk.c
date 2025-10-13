@@ -7,11 +7,8 @@
 #include "z_en_tk.h"
 #include "overlays/actors/ovl_Bg_Danpei_Movebg/z_bg_danpei_movebg.h"
 #include "overlays/actors/ovl_En_Door/z_en_door.h"
-#include "objects/object_tk/object_tk.h"
 
-#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_FRIENDLY)
-
-#define THIS ((EnTk*)thisx)
+#define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY)
 
 void EnTk_Init(Actor* thisx, PlayState* play);
 void EnTk_Destroy(Actor* thisx, PlayState* play);
@@ -70,7 +67,7 @@ static u8 D_80AEF800[] = {
     /* 0xE */ SCHEDULE_CMD_RET_NONE(),
 };
 
-ActorInit En_Tk_InitVars = {
+ActorProfile En_Tk_Profile = {
     /**/ ACTOR_EN_TK,
     /**/ ACTORCAT_NPC,
     /**/ FLAGS,
@@ -85,7 +82,7 @@ ActorInit En_Tk_InitVars = {
 
 static ColliderCylinderInit sCylinderInit = {
     {
-        COLTYPE_NONE,
+        COL_MATERIAL_NONE,
         AT_NONE,
         AC_NONE,
         OC1_ON | OC1_TYPE_ALL,
@@ -93,11 +90,11 @@ static ColliderCylinderInit sCylinderInit = {
         COLSHAPE_CYLINDER,
     },
     {
-        ELEMTYPE_UNK0,
+        ELEM_MATERIAL_UNK0,
         { 0x00000000, 0x00, 0x00 },
         { 0x00000000, 0x00, 0x00 },
-        TOUCH_NONE | TOUCH_SFX_NORMAL,
-        BUMP_NONE,
+        ATELEM_NONE | ATELEM_SFX_NORMAL,
+        ACELEM_NONE,
         OCELEM_ON,
     },
     { 30, 52, 0, { 0, 0, 0 } },
@@ -110,11 +107,28 @@ static u32 D_80AEF85C[] = {
     0xFF000000,
 };
 
-static AnimationSpeedInfo D_80AEF868[] = {
-    { &object_tk_Anim_001FA8, 1.0f, ANIMMODE_LOOP, -10.0f }, { &object_tk_Anim_001FA8, 2.0f, ANIMMODE_LOOP, -10.0f },
-    { &object_tk_Anim_0030A4, 1.0f, ANIMMODE_LOOP, -10.0f }, { &object_tk_Anim_001144, 1.0f, ANIMMODE_ONCE, -10.0f },
-    { &object_tk_Anim_003724, 1.0f, ANIMMODE_ONCE, -10.0f }, { &object_tk_Anim_003FB8, 1.0f, ANIMMODE_LOOP, -10.0f },
-    { &object_tk_Anim_0020C8, 1.0f, ANIMMODE_LOOP, -10.0f }, { &object_tk_Anim_003B10, 1.0f, ANIMMODE_LOOP, -10.0f },
+typedef enum EnTkAnimation {
+    /* -1 */ ENTK_ANIM_NONE = -1,
+    /*  0 */ ENTK_ANIM_0,
+    /*  1 */ ENTK_ANIM_1,
+    /*  2 */ ENTK_ANIM_2,
+    /*  3 */ ENTK_ANIM_3,
+    /*  4 */ ENTK_ANIM_4,
+    /*  5 */ ENTK_ANIM_5,
+    /*  6 */ ENTK_ANIM_6,
+    /*  7 */ ENTK_ANIM_7,
+    /*  8 */ ENTK_ANIM_MAX
+} EnTkAnimation;
+
+static AnimationSpeedInfo sAnimationSpeedInfo[ENTK_ANIM_MAX] = {
+    { &object_tk_Anim_001FA8, 1.0f, ANIMMODE_LOOP, -10.0f }, // ENTK_ANIM_0
+    { &object_tk_Anim_001FA8, 2.0f, ANIMMODE_LOOP, -10.0f }, // ENTK_ANIM_1
+    { &object_tk_Anim_0030A4, 1.0f, ANIMMODE_LOOP, -10.0f }, // ENTK_ANIM_2
+    { &object_tk_Anim_001144, 1.0f, ANIMMODE_ONCE, -10.0f }, // ENTK_ANIM_3
+    { &object_tk_Anim_003724, 1.0f, ANIMMODE_ONCE, -10.0f }, // ENTK_ANIM_4
+    { &object_tk_Anim_003FB8, 1.0f, ANIMMODE_LOOP, -10.0f }, // ENTK_ANIM_5
+    { &object_tk_Anim_0020C8, 1.0f, ANIMMODE_LOOP, -10.0f }, // ENTK_ANIM_6
+    { &object_tk_Anim_003B10, 1.0f, ANIMMODE_LOOP, -10.0f }, // ENTK_ANIM_7
 };
 
 static s32 D_80AEF8E8[2] = { 0, 0 };
@@ -153,48 +167,48 @@ void func_80AEC460(EnTk* this) {
     }
 }
 
-f32 func_80AEC524(f32 arg0) {
-    f32 temp_f0;
+f32 func_80AEC524(f32 animCurFrame) {
+    f32 lerp;
     f32 ret;
-    s32 temp_a0;
-    s32 temp_a1;
+    s32 index2;
+    s32 index1;
 
-    while ((arg0 >= ARRAY_COUNT(D_80AEF8F0)) || (arg0 < 0.0f)) {
-        if (arg0 >= ARRAY_COUNT(D_80AEF8F0)) {
-            arg0 -= ARRAY_COUNT(D_80AEF8F0);
-        } else if (arg0 < 0.0f) {
-            arg0 += ARRAY_COUNT(D_80AEF8F0);
+    while ((animCurFrame >= ARRAY_COUNT(D_80AEF8F0)) || (animCurFrame < 0.0f)) {
+        if (animCurFrame >= ARRAY_COUNT(D_80AEF8F0)) {
+            animCurFrame -= ARRAY_COUNT(D_80AEF8F0);
+        } else if (animCurFrame < 0.0f) {
+            animCurFrame += ARRAY_COUNT(D_80AEF8F0);
         }
     }
 
-    // temp_f0 always becomes 0
-    temp_a1 = arg0;
-    temp_a0 = temp_a1 + 1;
-    temp_f0 = arg0 - temp_a1;
+    // lerp always becomes 0
+    index1 = animCurFrame;
+    index2 = index1 + 1;
+    lerp = animCurFrame - index1;
 
-    if (arg0 != temp_a1) {
-        if (temp_a0 >= ARRAY_COUNT(D_80AEF8F0)) {
-            temp_a0 -= ARRAY_COUNT(D_80AEF8F0);
-            ret = (((D_80AEF8F0[temp_a0] + D_80AEF8F0[ARRAY_COUNT(D_80AEF8F0) - 1]) - D_80AEF8F0[temp_a1]) * temp_f0) +
-                  D_80AEF8F0[temp_a1];
+    if (index1 != animCurFrame) {
+        if (index2 >= ARRAY_COUNT(D_80AEF8F0)) {
+            index2 -= ARRAY_COUNT(D_80AEF8F0);
+            ret = LERPIMP_ALT(D_80AEF8F0[index1], D_80AEF8F0[index2] + D_80AEF8F0[ARRAY_COUNT(D_80AEF8F0) - 1], lerp);
         } else {
-            ret = ((D_80AEF8F0[temp_a0] - D_80AEF8F0[temp_a1]) * temp_f0) + D_80AEF8F0[temp_a1];
+            ret = LERPIMP_ALT(D_80AEF8F0[index1], D_80AEF8F0[index2], lerp);
         }
     } else {
-        ret = D_80AEF8F0[temp_a1];
+        ret = D_80AEF8F0[index1];
     }
     return ret;
 }
 
-void func_80AEC658(SkelAnime* skelAnime, f32 arg1, f32 arg2, f32* arg3, f32* arg4) {
-    static f32 D_80AEF9B4[] = { 0.95f, 0.0f,  0.0f,  0.0f,  0.0f,  0.0f,  0.0f,  0.0f,  0.0f,  0.0f,
-                                0.0f,  0.0f,  1.0f,  1.25f, 1.48f, 1.68f, 1.77f, 1.88f, 1.88f, 1.84f,
-                                1.77f, 1.62f, 1.43f, 1.22f, 0.93f, 0.0f,  0.0f,  0.0f,  0.0f,  0.0f,
-                                0.0f,  0.0f,  0.0f,  0.0f,  0.0f,  0.0f,  0.0f,  0.96f, 1.23f, 1.5f,
-                                1.66f, 1.79f, 1.88f, 1.89f, 1.88f, 1.81f, 1.67f, 1.46f, 1.24f };
+void func_80AEC658(SkelAnime* skelAnime, f32 animCurFrame, f32 arg2, f32* arg3, f32* arg4) {
+    static f32 D_80AEF9B4[] = {
+        0.95f, 0.0f,  0.0f,  0.0f,  0.0f,  0.0f,  0.0f,  0.0f,  0.0f,  0.0f,  0.0f,  0.0f,  1.0f,
+        1.25f, 1.48f, 1.68f, 1.77f, 1.88f, 1.88f, 1.84f, 1.77f, 1.62f, 1.43f, 1.22f, 0.93f, 0.0f,
+        0.0f,  0.0f,  0.0f,  0.0f,  0.0f,  0.0f,  0.0f,  0.0f,  0.0f,  0.0f,  0.0f,  0.96f, 1.23f,
+        1.5f,  1.66f, 1.79f, 1.88f, 1.89f, 1.88f, 1.81f, 1.67f, 1.46f, 1.24f,
+    };
 
     *arg3 = D_80AEF9B4[(s32)skelAnime->curFrame] * 0.5f * skelAnime->playSpeed * arg2;
-    *arg4 = (func_80AEC524(skelAnime->curFrame) - func_80AEC524(arg1)) * arg2;
+    *arg4 = (func_80AEC524(skelAnime->curFrame) - func_80AEC524(animCurFrame)) * arg2;
 
     while (*arg4 < 0.0f) {
         *arg4 += D_80AEF8F0[(s32)skelAnime->animLength - 1] * arg2;
@@ -203,7 +217,7 @@ void func_80AEC658(SkelAnime* skelAnime, f32 arg1, f32 arg2, f32* arg3, f32* arg
 
 void EnTk_Init(Actor* thisx, PlayState* play) {
     s32 pad;
-    EnTk* this = THIS;
+    EnTk* this = (EnTk*)thisx;
 
     this->unk_2B0 = ENTK_GET_F(&this->actor);
     this->switchFlag = ENTK_GET_SWITCH_FLAG(&this->actor);
@@ -220,20 +234,21 @@ void EnTk_Init(Actor* thisx, PlayState* play) {
     }
 
     if ((this->unk_2B0 == 1) || (this->unk_2B0 == 3)) {
-        this->actor.flags &= ~(ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_FRIENDLY);
+        this->actor.flags &= ~(ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY);
         this->actor.update = func_80AEF2C8;
         this->actor.draw = NULL;
         return;
     }
 
     ActorShape_Init(&this->actor.shape, 0.0f, ActorShadow_DrawCircle, 24.0f);
-    SkelAnime_InitFlex(play, &this->skelAnime, &object_tk_Skel_00B9E8, NULL, this->jointTable, this->morphTable, 18);
+    SkelAnime_InitFlex(play, &this->skelAnime, &object_tk_Skel_00B9E8, NULL, this->jointTable, this->morphTable,
+                       OBJECT_TK_LIMB_MAX);
     Animation_Change(&this->skelAnime, &object_tk_Anim_0030A4, 1.0f, 0.0f,
                      Animation_GetLastFrame(&object_tk_Anim_0030A4), ANIMMODE_LOOP, 0.0f);
     this->unk_318 = 0;
-    this->unk_2D4 = -1;
+    this->animIndex = ENTK_ANIM_NONE;
     Actor_SetScale(&this->actor, 0.01f);
-    this->actor.targetMode = TARGET_MODE_1;
+    this->actor.attentionRangeType = ATTENTION_RANGE_1;
     this->actor.colChkInfo.mass = MASS_IMMOVABLE;
 
     if (this->unk_2B0 == 2) {
@@ -247,8 +262,8 @@ void EnTk_Init(Actor* thisx, PlayState* play) {
     this->actor.world.rot.y = this->actor.yawTowardsPlayer;
     this->actor.gravity = -1.0f;
     this->actor.shape.rot.y = this->actor.world.rot.y;
-    this->actor.flags |= ACTOR_FLAG_10;
-    SubS_ChangeAnimationBySpeedInfo(&this->skelAnime, D_80AEF868, 0, &this->unk_2D4);
+    this->actor.flags |= ACTOR_FLAG_UPDATE_CULLING_DISABLED;
+    SubS_ChangeAnimationBySpeedInfo(&this->skelAnime, sAnimationSpeedInfo, ENTK_ANIM_0, &this->animIndex);
     SubS_FillCutscenesList(&this->actor, this->csIdList, ARRAY_COUNT(this->csIdList));
 
     switch (this->unk_2B0) {
@@ -279,19 +294,19 @@ void EnTk_Init(Actor* thisx, PlayState* play) {
 }
 
 void EnTk_Destroy(Actor* thisx, PlayState* play) {
-    EnTk* this = THIS;
+    EnTk* this = (EnTk*)thisx;
 
     Collider_DestroyCylinder(play, &this->collider);
 }
 
 void func_80AECA3C(EnTk* this, PlayState* play) {
     this->unk_316 = 0;
-    SubS_ChangeAnimationBySpeedInfo(&this->skelAnime, D_80AEF868, 2, &this->unk_2D4);
+    SubS_ChangeAnimationBySpeedInfo(&this->skelAnime, sAnimationSpeedInfo, ENTK_ANIM_2, &this->animIndex);
     this->actionFunc = func_80AECA90;
 }
 
 void func_80AECA90(EnTk* this, PlayState* play) {
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+    if (Actor_TalkOfferAccepted(&this->actor, &play->state)) {
         play->msgCtx.msgMode = MSGMODE_NONE;
         play->msgCtx.msgLength = 0;
         func_80AEDE10(this, play);
@@ -302,9 +317,9 @@ void func_80AECA90(EnTk* this, PlayState* play) {
 
 void func_80AECB0C(EnTk* this, PlayState* play) {
     this->actor.speed = 0.0f;
-    this->unk_3CC = 0xFF;
+    this->scheduleResult = 0xFF;
     this->unk_2DC = 0.0f;
-    SubS_ChangeAnimationBySpeedInfo(&this->skelAnime, D_80AEF868, 0, &this->unk_2D4);
+    SubS_ChangeAnimationBySpeedInfo(&this->skelAnime, sAnimationSpeedInfo, ENTK_ANIM_0, &this->animIndex);
     this->actionFunc = func_80AECB6C;
 }
 
@@ -314,11 +329,11 @@ void func_80AECB6C(EnTk* this, PlayState* play) {
     s32 temp3;
     f32 sp48;
     f32 sp44;
-    ScheduleOutput sp34;
-    u8 temp4;
+    ScheduleOutput scheduleOutput;
+    u8 scheduleResult;
 
     this->actor.textId = 0;
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+    if (Actor_TalkOfferAccepted(&this->actor, &play->state)) {
         play->msgCtx.msgMode = MSGMODE_NONE;
         play->msgCtx.msgLength = 0;
         func_80AED4F8(this, play);
@@ -332,11 +347,11 @@ void func_80AECB6C(EnTk* this, PlayState* play) {
     }
 
     if (this->unk_2CA & 0x10) {
-        SubS_ChangeAnimationBySpeedInfo(&this->skelAnime, D_80AEF868, 5, &this->unk_2D4);
+        SubS_ChangeAnimationBySpeedInfo(&this->skelAnime, sAnimationSpeedInfo, ENTK_ANIM_5, &this->animIndex);
         sp48 = 1.0f;
         sp44 = 22.0f;
     } else {
-        func_80AEC658(&this->skelAnime, this->unk_320, 1.0f, &sp48, &sp44);
+        func_80AEC658(&this->skelAnime, this->animCurFrame, 1.0f, &sp48, &sp44);
     }
 
     temp2 = R_TIME_SPEED * sp44;
@@ -348,35 +363,36 @@ void func_80AECB6C(EnTk* this, PlayState* play) {
     this->unk_2DC -= temp3;
     this->unk_2E0 += R_TIME_SPEED;
 
-    if (Schedule_RunScript(play, D_80AEF800, &sp34)) {
-        if ((this->unk_3CC != sp34.result) && !func_80AED354(this, play, &sp34)) {
+    if (Schedule_RunScript(play, D_80AEF800, &scheduleOutput)) {
+        if ((this->scheduleResult != scheduleOutput.result) && !func_80AED354(this, play, &scheduleOutput)) {
             return;
         }
-        temp4 = sp34.result;
+        scheduleResult = scheduleOutput.result;
     } else {
-        sp34.result = 0;
-        temp4 = sp34.result;
+        scheduleOutput.result = 0;
+        scheduleResult = scheduleOutput.result;
     }
 
-    if (!temp4 && (this->unk_3CC != 0)) {
+    if (!scheduleResult && (this->scheduleResult != 0)) {
         this->actor.draw = NULL;
-        this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
-    } else if (temp4 && (this->unk_3CC == 0)) {
-        this->actor.flags |= ACTOR_FLAG_TARGETABLE;
+        this->actor.flags &= ~ACTOR_FLAG_ATTENTION_ENABLED;
+    } else if (scheduleResult && (this->scheduleResult == 0)) {
+        this->actor.flags |= ACTOR_FLAG_ATTENTION_ENABLED;
         this->actor.draw = EnTk_Draw;
     }
 
-    this->unk_3CC = sp34.result;
+    this->scheduleResult = scheduleOutput.result;
     func_80AECE0C(this, play);
 
     if (this->unk_3CE & 8) {
-        this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
+        this->actor.flags &= ~ACTOR_FLAG_ATTENTION_ENABLED;
         this->actor.draw = NULL;
     }
 }
 
 void func_80AECE0C(EnTk* this, PlayState* play) {
-    if (this->unk_3CC != 0) {
+    if (this->scheduleResult != 0) {
+        //! FAKE:
         if (1) {}
         func_80AECE60(this, play);
     }
@@ -473,7 +489,7 @@ s32 func_80AECE60(EnTk* this, PlayState* play) {
     if ((door != NULL) && (this->unk_2CA & 0x400)) {
         Vec3f sp5C;
 
-        Actor_OffsetOfPointInActorCoords(&this->actor, &sp5C, &door->knobDoor.dyna.actor.world.pos);
+        Actor_WorldToActorCoords(&this->actor, &sp5C, &door->knobDoor.dyna.actor.world.pos);
         door->openTimer = 2;
         if (sp5C.z < -20.0f) {
             this->unk_2CA &= ~0x400;
@@ -504,7 +520,7 @@ s32 func_80AED354(EnTk* this, PlayState* play, ScheduleOutput* scheduleOutput) {
 }
 
 s32 func_80AED38C(EnTk* this, PlayState* play, ScheduleOutput* scheduleOutput) {
-    u16 sp1E = SCHEDULE_TIME_NOW;
+    u16 sp1E = SCRIPT_TIME_NOW;
     u8 pathIndex = ENTK_GET_PATH_INDEX(&this->actor);
     u16 phi_a1;
     s32 index = scheduleOutput->result - 1;
@@ -515,7 +531,7 @@ s32 func_80AED38C(EnTk* this, PlayState* play, ScheduleOutput* scheduleOutput) {
         return false;
     }
 
-    if ((this->unk_3CC <= 0) && (this->unk_3CC != 0) && (this->timePathTimeSpeed >= 0)) {
+    if ((this->scheduleResult <= 0) && (this->scheduleResult != 0) && (this->timePathTimeSpeed >= 0)) {
         phi_a1 = sp1E;
     } else {
         phi_a1 = scheduleOutput->time0;
@@ -532,7 +548,7 @@ s32 func_80AED38C(EnTk* this, PlayState* play, ScheduleOutput* scheduleOutput) {
 }
 
 void func_80AED4F8(EnTk* this, PlayState* play) {
-    SubS_ChangeAnimationBySpeedInfo(&this->skelAnime, D_80AEF868, 2, &this->unk_2D4);
+    SubS_ChangeAnimationBySpeedInfo(&this->skelAnime, sAnimationSpeedInfo, ENTK_ANIM_2, &this->animIndex);
     this->actionFunc = func_80AED610;
 }
 
@@ -540,11 +556,11 @@ void func_80AED544(EnTk* this, PlayState* play) {
     if (!CHECK_WEEKEVENTREG(WEEKEVENTREG_31_10)) {
         Message_StartTextbox(play, 0x13FE, &this->actor);
         SET_WEEKEVENTREG(WEEKEVENTREG_31_10);
-    } else if (gSaveContext.save.time < CLOCK_TIME(9, 0)) {
+    } else if (CURRENT_TIME < CLOCK_TIME(9, 0)) {
         Message_StartTextbox(play, 0x13FF, &this->actor);
-    } else if (gSaveContext.save.time < CLOCK_TIME(12, 0)) {
+    } else if (CURRENT_TIME < CLOCK_TIME(12, 0)) {
         Message_StartTextbox(play, 0x1400, &this->actor);
-    } else if (gSaveContext.save.time < CLOCK_TIME(15, 0)) {
+    } else if (CURRENT_TIME < CLOCK_TIME(15, 0)) {
         Message_StartTextbox(play, 0x1401, &this->actor);
     } else {
         Message_StartTextbox(play, 0x1402, &this->actor);
@@ -552,15 +568,16 @@ void func_80AED544(EnTk* this, PlayState* play) {
 }
 
 void func_80AED610(EnTk* this, PlayState* play) {
-    if ((this->unk_2D4 == 4) && Animation_OnFrame(&this->skelAnime, this->skelAnime.endFrame)) {
-        SubS_ChangeAnimationBySpeedInfo(&this->skelAnime, D_80AEF868, 7, &this->unk_2D4);
+    if ((this->animIndex == ENTK_ANIM_4) && Animation_OnFrame(&this->skelAnime, this->skelAnime.endFrame)) {
+        SubS_ChangeAnimationBySpeedInfo(&this->skelAnime, sAnimationSpeedInfo, ENTK_ANIM_7, &this->animIndex);
     }
 
     switch (Message_GetState(&play->msgCtx)) {
         case TEXT_STATE_NONE:
             if (Math_ScaledStepToS(&this->actor.shape.rot.y, this->actor.yawTowardsPlayer - 0x1555, 0x71C)) {
                 if (Player_GetMask(play) == PLAYER_MASK_CAPTAIN) {
-                    SubS_ChangeAnimationBySpeedInfo(&this->skelAnime, D_80AEF868, 4, &this->unk_2D4);
+                    SubS_ChangeAnimationBySpeedInfo(&this->skelAnime, sAnimationSpeedInfo, ENTK_ANIM_4,
+                                                    &this->animIndex);
                     Message_StartTextbox(play, 0x13FD, &this->actor);
                 } else if (CURRENT_DAY != 2) {
                     func_80AED544(this, play);
@@ -574,19 +591,20 @@ void func_80AED610(EnTk* this, PlayState* play) {
                 break;
             }
 
-        case TEXT_STATE_1:
+        case TEXT_STATE_NEXT:
         case TEXT_STATE_CLOSING:
-        case TEXT_STATE_3:
+        case TEXT_STATE_FADING:
             break;
 
         case TEXT_STATE_CHOICE:
-        case TEXT_STATE_5:
+        case TEXT_STATE_EVENT:
         case TEXT_STATE_DONE:
             if (Message_ShouldAdvance(play)) {
                 switch (play->msgCtx.currentTextId) {
                     case 0x13FD:
                         this->unk_2CA |= 0x10;
-                        SubS_ChangeAnimationBySpeedInfo(&this->skelAnime, D_80AEF868, 0, &this->unk_2D4);
+                        SubS_ChangeAnimationBySpeedInfo(&this->skelAnime, sAnimationSpeedInfo, ENTK_ANIM_0,
+                                                        &this->animIndex);
                         this->skelAnime.playSpeed = 10.0f;
                         this->actionFunc = func_80AECB6C;
                         break;
@@ -622,11 +640,15 @@ void func_80AED610(EnTk* this, PlayState* play) {
                     case 0x1411:
                     case 0x1412:
                     default:
-                        SubS_ChangeAnimationBySpeedInfo(&this->skelAnime, D_80AEF868, 0, &this->unk_2D4);
+                        SubS_ChangeAnimationBySpeedInfo(&this->skelAnime, sAnimationSpeedInfo, ENTK_ANIM_0,
+                                                        &this->animIndex);
                         this->actionFunc = func_80AECB6C;
                         break;
                 }
             }
+            break;
+
+        default:
             break;
     }
 }
@@ -635,11 +657,11 @@ void func_80AED898(EnTk* this, PlayState* play) {
     this->unk_316 = 0;
     this->actor.speed = 0.0f;
     if (this->unk_2CA & 0x1000) {
-        if ((this->unk_2D4 == 4) && Animation_OnFrame(&this->skelAnime, this->skelAnime.endFrame)) {
-            SubS_ChangeAnimationBySpeedInfo(&this->skelAnime, D_80AEF868, 7, &this->unk_2D4);
+        if ((this->animIndex == ENTK_ANIM_4) && Animation_OnFrame(&this->skelAnime, this->skelAnime.endFrame)) {
+            SubS_ChangeAnimationBySpeedInfo(&this->skelAnime, sAnimationSpeedInfo, ENTK_ANIM_7, &this->animIndex);
         }
     } else {
-        SubS_ChangeAnimationBySpeedInfo(&this->skelAnime, D_80AEF868, 2, &this->unk_2D4);
+        SubS_ChangeAnimationBySpeedInfo(&this->skelAnime, sAnimationSpeedInfo, ENTK_ANIM_2, &this->animIndex);
     }
     this->actionFunc = func_80AED940;
 }
@@ -649,7 +671,7 @@ void func_80AED940(EnTk* this, PlayState* play) {
     Actor* actor;
     Vec3f sp44;
 
-    if ((this->unk_2D4 != 4) && (this->unk_2D4 != 7)) {
+    if ((this->animIndex != ENTK_ANIM_4) && (this->animIndex != ENTK_ANIM_7)) {
         s16 temp_v0 = (this->actor.shape.rot.y - this->actor.yawTowardsPlayer) + 0x1555;
 
         if (ABS(temp_v0) < 0x1800) {
@@ -668,8 +690,8 @@ void func_80AED940(EnTk* this, PlayState* play) {
         }
     }
 
-    if ((this->unk_2D4 == 4) && Animation_OnFrame(&this->skelAnime, this->skelAnime.endFrame)) {
-        SubS_ChangeAnimationBySpeedInfo(&this->skelAnime, D_80AEF868, 7, &this->unk_2D4);
+    if ((this->animIndex == ENTK_ANIM_4) && Animation_OnFrame(&this->skelAnime, this->skelAnime.endFrame)) {
+        SubS_ChangeAnimationBySpeedInfo(&this->skelAnime, sAnimationSpeedInfo, ENTK_ANIM_7, &this->animIndex);
     }
 
     if (!(this->unk_2CA & 0x40)) {
@@ -690,9 +712,9 @@ void func_80AED940(EnTk* this, PlayState* play) {
         } while (actor != NULL);
     }
 
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+    if (Actor_TalkOfferAccepted(&this->actor, &play->state)) {
         this->unk_2CA &= ~0x80;
-        this->actor.flags &= ~ACTOR_FLAG_10000;
+        this->actor.flags &= ~ACTOR_FLAG_TALK_OFFER_AUTO_ACCEPTED;
         play->msgCtx.msgMode = MSGMODE_NONE;
         play->msgCtx.msgLength = 0;
         func_80AEDE10(this, play);
@@ -710,7 +732,7 @@ void func_80AEDBEC(EnTk* this, PlayState* play) {
     this->actor.params = -1;
     this->csLength = 0;
     this->actor.speed = 0.0f;
-    SubS_ChangeAnimationBySpeedInfo(&this->skelAnime, D_80AEF868, 2, &this->unk_2D4);
+    SubS_ChangeAnimationBySpeedInfo(&this->skelAnime, sAnimationSpeedInfo, ENTK_ANIM_2, &this->animIndex);
     this->actionFunc = func_80AEDC4C;
 }
 
@@ -725,7 +747,7 @@ void func_80AEDC4C(EnTk* this, PlayState* play) {
 
 void func_80AEDCBC(EnTk* this, PlayState* play) {
     this->actor.speed = 10.0f;
-    SubS_ChangeAnimationBySpeedInfo(&this->skelAnime, D_80AEF868, 5, &this->unk_2D4);
+    SubS_ChangeAnimationBySpeedInfo(&this->skelAnime, sAnimationSpeedInfo, ENTK_ANIM_5, &this->animIndex);
     Math_Vec3f_Copy(&this->actor.world.pos, &this->unk_2EC);
     Math_Vec3f_Copy(&this->actor.prevPos, &this->unk_2EC);
     Math_Vec3s_Copy(&this->actor.world.rot, &this->unk_2F8);
@@ -744,8 +766,8 @@ void func_80AEDD4C(EnTk* this, PlayState* play) {
 
 void func_80AEDDA0(EnTk* this, PlayState* play) {
     this->actor.speed = 0.0f;
-    SubS_ChangeAnimationBySpeedInfo(&this->skelAnime, D_80AEF868, 2, &this->unk_2D4);
-    this->actor.flags |= ACTOR_FLAG_10000;
+    SubS_ChangeAnimationBySpeedInfo(&this->skelAnime, sAnimationSpeedInfo, ENTK_ANIM_2, &this->animIndex);
+    this->actor.flags |= ACTOR_FLAG_TALK_OFFER_AUTO_ACCEPTED;
     this->unk_2CA |= 0x80;
     this->actionFunc = func_80AED940;
 }
@@ -774,12 +796,17 @@ void func_80AEDE10(EnTk* this, PlayState* play) {
 
                 case 4:
                     Message_StartTextbox(play, 0x140F, &this->actor);
-                    SubS_ChangeAnimationBySpeedInfo(&this->skelAnime, D_80AEF868, 2, &this->unk_2D4);
+                    SubS_ChangeAnimationBySpeedInfo(&this->skelAnime, sAnimationSpeedInfo, ENTK_ANIM_2,
+                                                    &this->animIndex);
                     break;
 
                 case 3:
                     Message_StartTextbox(play, 0x1410, &this->actor);
-                    SubS_ChangeAnimationBySpeedInfo(&this->skelAnime, D_80AEF868, 2, &this->unk_2D4);
+                    SubS_ChangeAnimationBySpeedInfo(&this->skelAnime, sAnimationSpeedInfo, ENTK_ANIM_2,
+                                                    &this->animIndex);
+                    break;
+
+                default:
                     break;
             }
             break;
@@ -787,14 +814,17 @@ void func_80AEDE10(EnTk* this, PlayState* play) {
         case 2:
             this->unk_2E6 = 0x1414;
             break;
+
+        default:
+            break;
     }
 
     this->actionFunc = func_80AEDF5C;
 }
 
 void func_80AEDF5C(EnTk* this, PlayState* play) {
-    if ((this->unk_2D4 == 4) && Animation_OnFrame(&this->skelAnime, this->skelAnime.endFrame)) {
-        SubS_ChangeAnimationBySpeedInfo(&this->skelAnime, D_80AEF868, 7, &this->unk_2D4);
+    if ((this->animIndex == ENTK_ANIM_4) && Animation_OnFrame(&this->skelAnime, this->skelAnime.endFrame)) {
+        SubS_ChangeAnimationBySpeedInfo(&this->skelAnime, sAnimationSpeedInfo, ENTK_ANIM_7, &this->animIndex);
     }
 
     switch (Message_GetState(&play->msgCtx)) {
@@ -810,9 +840,11 @@ void func_80AEDF5C(EnTk* this, PlayState* play) {
                         !Math_SmoothStepToS(&this->unk_31C, 0, 3, 0x71C, 10) &&
                         (this->actor.shape.rot.y == (s16)(this->actor.yawTowardsPlayer - 0x1555))) {
                         if (this->unk_2E6 == 0x1404) {
-                            SubS_ChangeAnimationBySpeedInfo(&this->skelAnime, D_80AEF868, 4, &this->unk_2D4);
+                            SubS_ChangeAnimationBySpeedInfo(&this->skelAnime, sAnimationSpeedInfo, ENTK_ANIM_4,
+                                                            &this->animIndex);
                         } else {
-                            SubS_ChangeAnimationBySpeedInfo(&this->skelAnime, D_80AEF868, 2, &this->unk_2D4);
+                            SubS_ChangeAnimationBySpeedInfo(&this->skelAnime, sAnimationSpeedInfo, ENTK_ANIM_2,
+                                                            &this->animIndex);
                         }
                         Message_StartTextbox(play, this->unk_2E6, &this->actor);
                     }
@@ -821,16 +853,20 @@ void func_80AEDF5C(EnTk* this, PlayState* play) {
                 case 0x1414:
                     Message_StartTextbox(play, this->unk_2E6, &this->actor);
                     break;
+
+                default:
+                    break;
             }
             break;
 
-        case TEXT_STATE_1:
+        case TEXT_STATE_NEXT:
         case TEXT_STATE_CLOSING:
-        case TEXT_STATE_3:
+        case TEXT_STATE_FADING:
+        default:
             break;
 
         case TEXT_STATE_CHOICE:
-        case TEXT_STATE_5:
+        case TEXT_STATE_EVENT:
         case TEXT_STATE_DONE:
             if (Message_ShouldAdvance(play)) {
                 switch (play->msgCtx.currentTextId) {
@@ -893,6 +929,9 @@ void func_80AEDF5C(EnTk* this, PlayState* play) {
                     case 0x1414:
                         func_80AECA3C(this, play);
                         break;
+
+                    default:
+                        break;
                 }
             }
             break;
@@ -949,7 +988,7 @@ void func_80AEE414(EnTk* this, PlayState* play) {
 
 void func_80AEE478(EnTk* this, PlayState* play) {
     this->unk_310 = 2;
-    SubS_ChangeAnimationBySpeedInfo(&this->skelAnime, D_80AEF868, 3, &this->unk_2D4);
+    SubS_ChangeAnimationBySpeedInfo(&this->skelAnime, sAnimationSpeedInfo, ENTK_ANIM_3, &this->animIndex);
     this->actionFunc = func_80AEE4D0;
 }
 
@@ -1076,7 +1115,7 @@ s32 func_80AEEA4C(EnTk* this, PlayState* play) {
         ret = 3;
     } else if (this->actor.xyzDistToPlayerSq < SQ(60.0f)) {
         ret = 0;
-    } else if (this->actor.isLockedOn || (play->actorCtx.targetCtx.arrowPointedActor == &this->actor) ||
+    } else if (this->actor.isLockedOn || (play->actorCtx.attention.arrowHoverActor == &this->actor) ||
                (this->actor.xyzDistToPlayerSq < SQ(80.0f))) {
         ret = 1;
     } else {
@@ -1109,13 +1148,16 @@ void func_80AEEAD4(EnTk* this, PlayState* play) {
             case 4:
                 func_80AEF1C4(this, play);
                 break;
+
+            default:
+                break;
         }
         this->unk_2D0 = sp24;
     }
 }
 
 void func_80AEEB88(EnTk* this, PlayState* play) {
-    s32 sp74;
+    s32 bgId;
     Vec3f sp68;
     s32 i;
     f32 temp;
@@ -1129,7 +1171,7 @@ void func_80AEEB88(EnTk* this, PlayState* play) {
         sp68.z += this->actor.world.pos.z;
 
         temp =
-            BgCheck_EntityRaycastFloor3(&play->colCtx, &this->actor.floorPoly, &sp74, &sp68) - this->actor.world.pos.y;
+            BgCheck_EntityRaycastFloor3(&play->colCtx, &this->actor.floorPoly, &bgId, &sp68) - this->actor.world.pos.y;
         if (temp <= -80.0f) {
             break;
         }
@@ -1142,7 +1184,7 @@ void func_80AEEB88(EnTk* this, PlayState* play) {
     }
 
     this->unk_2C6 = 100;
-    SubS_ChangeAnimationBySpeedInfo(&this->skelAnime, D_80AEF868, 1, &this->unk_2D4);
+    SubS_ChangeAnimationBySpeedInfo(&this->skelAnime, sAnimationSpeedInfo, ENTK_ANIM_1, &this->animIndex);
     this->unk_30C = func_80AEED38;
 }
 
@@ -1183,10 +1225,10 @@ void func_80AEED38(EnTk* this, PlayState* play) {
     }
 
     if (this->unk_2CA & 0x200) {
-        SubS_ChangeAnimationBySpeedInfo(&this->skelAnime, D_80AEF868, 2, &this->unk_2D4);
+        SubS_ChangeAnimationBySpeedInfo(&this->skelAnime, sAnimationSpeedInfo, ENTK_ANIM_2, &this->animIndex);
     } else {
-        SubS_ChangeAnimationBySpeedInfo(&this->skelAnime, D_80AEF868, 1, &this->unk_2D4);
-        func_80AEC658(&this->skelAnime, this->unk_320, 1.0f, &this->actor.speed, &sp64);
+        SubS_ChangeAnimationBySpeedInfo(&this->skelAnime, sAnimationSpeedInfo, ENTK_ANIM_1, &this->animIndex);
+        func_80AEC658(&this->skelAnime, this->animCurFrame, 1.0f, &this->actor.speed, &sp64);
     }
 
     if (this->actor.speed > 0.5f) {
@@ -1202,7 +1244,7 @@ void func_80AEED38(EnTk* this, PlayState* play) {
 }
 
 void func_80AEF048(EnTk* this, PlayState* play) {
-    SubS_ChangeAnimationBySpeedInfo(&this->skelAnime, D_80AEF868, 1, &this->unk_2D4);
+    SubS_ChangeAnimationBySpeedInfo(&this->skelAnime, sAnimationSpeedInfo, ENTK_ANIM_1, &this->animIndex);
     this->unk_30C = func_80AEF094;
 }
 
@@ -1210,10 +1252,10 @@ void func_80AEF094(EnTk* this, PlayState* play) {
     f32 sp2C;
 
     if (this->unk_2CA & 0x200) {
-        SubS_ChangeAnimationBySpeedInfo(&this->skelAnime, D_80AEF868, 2, &this->unk_2D4);
+        SubS_ChangeAnimationBySpeedInfo(&this->skelAnime, sAnimationSpeedInfo, ENTK_ANIM_2, &this->animIndex);
     } else {
-        SubS_ChangeAnimationBySpeedInfo(&this->skelAnime, D_80AEF868, 1, &this->unk_2D4);
-        func_80AEC658(&this->skelAnime, this->unk_320, 1.0f, &this->actor.speed, &sp2C);
+        SubS_ChangeAnimationBySpeedInfo(&this->skelAnime, sAnimationSpeedInfo, ENTK_ANIM_1, &this->animIndex);
+        func_80AEC658(&this->skelAnime, this->animCurFrame, 1.0f, &this->actor.speed, &sp2C);
     }
 
     if (this->actor.speed >= 0.5f) {
@@ -1224,7 +1266,7 @@ void func_80AEF094(EnTk* this, PlayState* play) {
 
 void func_80AEF15C(EnTk* this, PlayState* play) {
     this->actor.speed = 0.0f;
-    SubS_ChangeAnimationBySpeedInfo(&this->skelAnime, D_80AEF868, 2, &this->unk_2D4);
+    SubS_ChangeAnimationBySpeedInfo(&this->skelAnime, sAnimationSpeedInfo, ENTK_ANIM_2, &this->animIndex);
     this->unk_30C = func_80AEF1B4;
 }
 
@@ -1232,7 +1274,7 @@ void func_80AEF1B4(EnTk* this, PlayState* play) {
 }
 
 void func_80AEF1C4(EnTk* this, PlayState* play) {
-    SubS_ChangeAnimationBySpeedInfo(&this->skelAnime, D_80AEF868, 2, &this->unk_2D4);
+    SubS_ChangeAnimationBySpeedInfo(&this->skelAnime, sAnimationSpeedInfo, ENTK_ANIM_2, &this->animIndex);
     this->unk_30C = func_80AEF210;
 }
 
@@ -1241,7 +1283,7 @@ void func_80AEF210(EnTk* this, PlayState* play) {
 
 void func_80AEF220(EnTk* this, PlayState* play) {
     this->actor.speed = 0.0f;
-    SubS_ChangeAnimationBySpeedInfo(&this->skelAnime, D_80AEF868, 2, &this->unk_2D4);
+    SubS_ChangeAnimationBySpeedInfo(&this->skelAnime, sAnimationSpeedInfo, ENTK_ANIM_2, &this->animIndex);
     this->unk_30C = func_80AEF278;
 }
 
@@ -1255,17 +1297,17 @@ void func_80AEF2C8(Actor* thisx, PlayState* play) {
 
 void func_80AEF2D8(Actor* thisx, PlayState* play) {
     s32 pad;
-    EnTk* this = THIS;
+    EnTk* this = (EnTk*)thisx;
 
     if (this->actor.draw != NULL) {
         Collider_UpdateCylinder(&this->actor, &this->collider);
         CollisionCheck_SetOC(play, &play->colChkCtx, &this->collider.base);
     }
 
-    this->unk_320 = this->skelAnime.curFrame;
+    this->animCurFrame = this->skelAnime.curFrame;
     SkelAnime_Update(&this->skelAnime);
 
-    if ((this->actor.draw != NULL) && ((this->unk_2D4 == 0) || (this->unk_2D4 == 1)) &&
+    if ((this->actor.draw != NULL) && ((this->animIndex == ENTK_ANIM_0) || (this->animIndex == ENTK_ANIM_1)) &&
         (Animation_OnFrame(&this->skelAnime, 0.0f) || Animation_OnFrame(&this->skelAnime, 24.0f))) {
         Actor_PlaySfx(&this->actor, NA_SE_EN_GOLON_WALK);
     }
@@ -1279,15 +1321,15 @@ void func_80AEF2D8(Actor* thisx, PlayState* play) {
 
 void EnTk_Update(Actor* thisx, PlayState* play) {
     s32 pad;
-    EnTk* this = THIS;
+    EnTk* this = (EnTk*)thisx;
 
     Collider_UpdateCylinder(&this->actor, &this->collider);
     CollisionCheck_SetOC(play, &play->colChkCtx, &this->collider.base);
-    this->unk_320 = this->skelAnime.curFrame;
+    this->animCurFrame = this->skelAnime.curFrame;
     SkelAnime_Update(&this->skelAnime);
     func_80AEC460(this);
 
-    if (((this->unk_2D4 == 0) || (this->unk_2D4 == 1)) &&
+    if (((this->animIndex == ENTK_ANIM_0) || (this->animIndex == ENTK_ANIM_1)) &&
         (Animation_OnFrame(&this->skelAnime, 0.0f) || Animation_OnFrame(&this->skelAnime, 24.0f))) {
         Actor_PlaySfx(&this->actor, NA_SE_EN_GOLON_WALK);
     }
@@ -1299,8 +1341,8 @@ void EnTk_Update(Actor* thisx, PlayState* play) {
 
         if (platform != NULL) {
             if (platform->dyna.actor.id == ACTOR_BG_DANPEI_MOVEBG) {
-                platform->flags |= 1;
-                if (platform->flags & 2) {
+                platform->flags |= DANPEI_MOVEBG_FLAG_1;
+                if (platform->flags & DANPEI_MOVEBG_FLAG_2) {
                     this->unk_2CA |= 1;
                 }
             }
@@ -1334,7 +1376,7 @@ void EnTk_Update(Actor* thisx, PlayState* play) {
 }
 
 void func_80AEF5F4(Actor* thisx, PlayState* play) {
-    EnTk* this = THIS;
+    EnTk* this = (EnTk*)thisx;
 
     this->unk_316 += 0x46C8;
     this->unk_318 = Math_SinS(this->unk_316) * 900.0f;
@@ -1342,9 +1384,9 @@ void func_80AEF5F4(Actor* thisx, PlayState* play) {
 }
 
 s32 EnTk_OverrideLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3f* pos, Vec3s* rot, Actor* thisx) {
-    EnTk* this = THIS;
+    EnTk* this = (EnTk*)thisx;
 
-    if (limbIndex == 16) {
+    if (limbIndex == OBJECT_TK_LIMB_10) {
         rot->z += this->unk_31A;
         rot->y += this->unk_31C;
     }
@@ -1353,15 +1395,15 @@ s32 EnTk_OverrideLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3f* po
 
 void EnTk_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* rot, Actor* thisx) {
     static Vec3f D_80AEFA84 = { 0.0f, 0.0f, 4600.0f };
-    EnTk* this = THIS;
+    EnTk* this = (EnTk*)thisx;
 
     if (this->unk_2B0 != 2) {
         switch (limbIndex) {
-            case 16:
+            case OBJECT_TK_LIMB_10:
                 Matrix_MultZero(&this->actor.focus.pos);
                 break;
 
-            case 14:
+            case OBJECT_TK_LIMB_0E:
                 Matrix_MultVec3f(&D_80AEFA84, &this->unk_2B4);
 
                 OPEN_DISPS(play->state.gfxCtx);
@@ -1370,6 +1412,9 @@ void EnTk_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* rot, 
 
                 CLOSE_DISPS(play->state.gfxCtx);
 
+                break;
+
+            default:
                 break;
         }
     }
@@ -1382,7 +1427,7 @@ void EnTk_Draw(Actor* thisx, PlayState* play) {
         object_tk_Tex_005390,
     };
     s32 pad;
-    EnTk* this = THIS;
+    EnTk* this = (EnTk*)thisx;
 
     OPEN_DISPS(play->state.gfxCtx);
 

@@ -6,9 +6,7 @@
 
 #include "z_obj_danpeilift.h"
 
-#define FLAGS (ACTOR_FLAG_10)
-
-#define THIS ((ObjDanpeilift*)thisx)
+#define FLAGS (ACTOR_FLAG_UPDATE_CULLING_DISABLED)
 
 void ObjDanpeilift_Init(Actor* thisx, PlayState* play);
 void ObjDanpeilift_Destroy(Actor* thisx, PlayState* play);
@@ -21,7 +19,7 @@ void ObjDanpeilift_Move(ObjDanpeilift* this, PlayState* play);
 void ObjDanpeilift_Teleport(ObjDanpeilift* this, PlayState* play);
 void ObjDanpeilift_Wait(ObjDanpeilift* this, PlayState* play);
 
-ActorInit Obj_Danpeilift_InitVars = {
+ActorProfile Obj_Danpeilift_Profile = {
     /**/ ACTOR_OBJ_DANPEILIFT,
     /**/ ACTORCAT_BG,
     /**/ FLAGS,
@@ -34,20 +32,20 @@ ActorInit Obj_Danpeilift_InitVars = {
 };
 
 static InitChainEntry sInitChain[] = {
-    ICHAIN_F32(uncullZoneForward, 4000, ICHAIN_CONTINUE),
-    ICHAIN_F32(uncullZoneScale, 200, ICHAIN_CONTINUE),
-    ICHAIN_F32(uncullZoneDownward, 400, ICHAIN_CONTINUE),
+    ICHAIN_F32(cullingVolumeDistance, 4000, ICHAIN_CONTINUE),
+    ICHAIN_F32(cullingVolumeScale, 200, ICHAIN_CONTINUE),
+    ICHAIN_F32(cullingVolumeDownward, 400, ICHAIN_CONTINUE),
     ICHAIN_VEC3F_DIV1000(scale, 100, ICHAIN_STOP),
 };
 
 void ObjDanpeilift_UpdatePosition(ObjDanpeilift* this, s32 index) {
-    Math_Vec3s_ToVec3f(&this->dyna.actor.world.pos, &this->points[index]);
+    Math_Vec3s_ToVec3f(&this->dyna.actor.world.pos, &this->pathPoints[index]);
 }
 
 void ObjDanpeilift_Init(Actor* thisx, PlayState* play) {
     Path* path;
     ObjDanpeiliftActionFunc tempActionFunc;
-    ObjDanpeilift* this = THIS;
+    ObjDanpeilift* this = (ObjDanpeilift*)thisx;
 
     Actor_ProcessInitChain(&this->dyna.actor, sInitChain);
     this->dyna.actor.shape.rot.x = 0;
@@ -72,14 +70,14 @@ void ObjDanpeilift_Init(Actor* thisx, PlayState* play) {
         this->curPoint = OBJDANPEILIFT_GET_STARTING_POINT(thisx);
         this->endPoint = path->count - 1;
         this->direction = 1;
-        this->points = Lib_SegmentedToVirtual(path->points);
+        this->pathPoints = Lib_SegmentedToVirtual(path->points);
         ObjDanpeilift_UpdatePosition(this, this->curPoint);
         this->actionFunc = ObjDanpeilift_Move;
     }
 }
 
 void ObjDanpeilift_Destroy(Actor* thisx, PlayState* play) {
-    ObjDanpeilift* this = THIS;
+    ObjDanpeilift* this = (ObjDanpeilift*)thisx;
     DynaPoly_DeleteBgActor(play, &play->colCtx.dyna, this->dyna.bgId);
 }
 
@@ -96,7 +94,7 @@ void ObjDanpeilift_Move(ObjDanpeilift* this, PlayState* play) {
     s32 isPosUpdated;
     Vec3s* endPoint;
 
-    Math_Vec3s_ToVec3f(&nextPoint, this->points + this->curPoint + this->direction);
+    Math_Vec3s_ToVec3f(&nextPoint, this->pathPoints + this->curPoint + this->direction);
     Math_Vec3f_Diff(&nextPoint, &thisx->world.pos, &thisx->velocity);
     speed = Math3D_Vec3fMagnitude(&thisx->velocity);
     if ((speed < (this->speed * 8.0f)) && (this->speed > 2.0f)) {
@@ -125,10 +123,10 @@ void ObjDanpeilift_Move(ObjDanpeilift* this, PlayState* play) {
                 this->waitTimer = 10;
                 this->actionFunc = ObjDanpeilift_Wait;
             } else {
-                endPoint = &this->points[this->endPoint];
+                endPoint = &this->pathPoints[this->endPoint];
                 this->curPoint = this->direction > 0 ? 0 : this->endPoint;
-                if ((this->points[0].x != endPoint->x) || (this->points[0].y != endPoint->y) ||
-                    (this->points[0].z != endPoint->z)) {
+                if ((this->pathPoints[0].x != endPoint->x) || (this->pathPoints[0].y != endPoint->y) ||
+                    (this->pathPoints[0].z != endPoint->z)) {
                     this->actionFunc = ObjDanpeilift_Teleport;
                     DynaPoly_DisableCollision(play, &play->colCtx.dyna, this->dyna.bgId);
                     isPosUpdated = false;
@@ -160,7 +158,7 @@ void ObjDanpeilift_Wait(ObjDanpeilift* this, PlayState* play) {
 
 void ObjDanpeilift_Update(Actor* thisx, PlayState* play) {
     f32 step;
-    ObjDanpeilift* this = THIS;
+    ObjDanpeilift* this = (ObjDanpeilift*)thisx;
 
     this->actionFunc(this, play);
     Actor_SetFocus(&this->dyna.actor, 10.0f);

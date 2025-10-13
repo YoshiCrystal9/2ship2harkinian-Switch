@@ -15,4 +15,10 @@ static const ALIGN_ASSET(2) char KAKUSIANA_room_05Tex_000C78[] = dKAKUSIANA_room
 #define dKAKUSIANA_room_05DL_000770 "__OTR__scenes/nonmq/KAKUSIANA_scene/KAKUSIANA_room_05DL_000770"
 static const ALIGN_ASSET(2) char KAKUSIANA_room_05DL_000770[] = dKAKUSIANA_room_05DL_000770;
 
+#define dKAKUSIANA_room_05DL_000C60 "__OTR__scenes/nonmq/KAKUSIANA_scene/KAKUSIANA_room_05DL_000C60"
+static const ALIGN_ASSET(2) char KAKUSIANA_room_05DL_000C60[] = dKAKUSIANA_room_05DL_000C60;
+
+#define dKAKUSIANA_room_05DL_0016E0 "__OTR__scenes/nonmq/KAKUSIANA_scene/KAKUSIANA_room_05DL_0016E0"
+static const ALIGN_ASSET(2) char KAKUSIANA_room_05DL_0016E0[] = dKAKUSIANA_room_05DL_0016E0;
+
 #endif // KAKUSIANA_KAKUSIANA_ROOM_05_H

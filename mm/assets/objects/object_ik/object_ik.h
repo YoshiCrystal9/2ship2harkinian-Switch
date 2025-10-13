@@ -36,8 +36,8 @@ static const ALIGN_ASSET(2) char gIronKnuckleRunAnim[] = dgIronKnuckleRunAnim;
 #define dgIronKnuckleWalkAnim "__OTR__objects/object_ik/gIronKnuckleWalkAnim"
 static const ALIGN_ASSET(2) char gIronKnuckleWalkAnim[] = dgIronKnuckleWalkAnim;
 
-#define dgObjectIkVtx_009740 "__OTR__objects/object_ik/gObjectIkVtx_009740"
-static const ALIGN_ASSET(2) char gObjectIkVtx_009740[] = dgObjectIkVtx_009740;
+#define dgObjectIkVtx_0062B0 "__OTR__objects/object_ik/gObjectIkVtx_0062B0"
+static const ALIGN_ASSET(2) char gObjectIkVtx_0062B0[] = dgObjectIkVtx_0062B0;
 
 #define dgIronKnuckleArmorFrontDL "__OTR__objects/object_ik/gIronKnuckleArmorFrontDL"
 static const ALIGN_ASSET(2) char gIronKnuckleArmorFrontDL[] = dgIronKnuckleArmorFrontDL;
@@ -164,6 +164,9 @@ static const ALIGN_ASSET(2) char gIronKnuckleAxeTLUT[] = dgIronKnuckleAxeTLUT;
 
 #define dgIronKnuckleFireTex "__OTR__objects/object_ik/gIronKnuckleFireTex"
 static const ALIGN_ASSET(2) char gIronKnuckleFireTex[] = dgIronKnuckleFireTex;
+
+#define dgIronKnuckleFireTex_Overflow "__OTR__objects/object_ik/gIronKnuckleFireTex_Overflow"
+static const ALIGN_ASSET(2) char gIronKnuckleFireTex_Overflow[] = dgIronKnuckleFireTex_Overflow;
 
 #define dgIronKnuckleRivet2Tex "__OTR__objects/object_ik/gIronKnuckleRivet2Tex"
 static const ALIGN_ASSET(2) char gIronKnuckleRivet2Tex[] = dgIronKnuckleRivet2Tex;

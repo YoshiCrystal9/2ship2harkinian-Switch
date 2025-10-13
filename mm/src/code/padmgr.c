@@ -34,9 +34,12 @@
 #include "global.h"
 #include "PR/controller.h"
 #include "PR/os_motor.h"
+
+#include "controller.h"
 #include "fault.h"
 #include <stdio.h>
 #include <string.h>
+#include "z64voice.h"
 // extern FaultMgr gFaultMgr;
 
 #define PADMGR_RETRACE_MSG (1 << 0)
@@ -530,7 +533,7 @@ void PadMgr_InitVoice(void) {
             } else {
                 sPadMgrInstance->ctrlrType[i] = PADMGR_CONT_VOICE;
                 sVoiceInitStatus = VOICE_INIT_SUCCESS;
-                func_801A4EB0();
+                AudioVoice_Noop();
             }
         }
     }

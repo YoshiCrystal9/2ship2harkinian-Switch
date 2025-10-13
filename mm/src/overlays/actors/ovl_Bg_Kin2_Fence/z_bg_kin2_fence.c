@@ -7,9 +7,7 @@
 #include "z_bg_kin2_fence.h"
 #include "objects/object_kin2_obj/object_kin2_obj.h"
 
-#define FLAGS (ACTOR_FLAG_10)
-
-#define THIS ((BgKin2Fence*)thisx)
+#define FLAGS (ACTOR_FLAG_UPDATE_CULLING_DISABLED)
 
 void BgKin2Fence_Init(Actor* thisx, PlayState* play);
 void BgKin2Fence_Destroy(Actor* thisx, PlayState* play);
@@ -27,7 +25,7 @@ void BgKin2Fence_RaiseFence(BgKin2Fence* this, PlayState* play);
 void BgKin2Fence_SetupDoNothing(BgKin2Fence* this);
 void BgKin2Fence_DoNothing(BgKin2Fence* this, PlayState* play);
 
-ActorInit Bg_Kin2_Fence_InitVars = {
+ActorProfile Bg_Kin2_Fence_Profile = {
     /**/ ACTOR_BG_KIN2_FENCE,
     /**/ ACTORCAT_BG,
     /**/ FLAGS,
@@ -42,44 +40,44 @@ ActorInit Bg_Kin2_Fence_InitVars = {
 static ColliderJntSphElementInit sJntSphElementsInit[4] = {
     {
         {
-            ELEMTYPE_UNK4,
+            ELEM_MATERIAL_UNK4,
             { 0x00000000, 0x00, 0x00 },
             { 0x00003820, 0x00, 0x00 },
-            TOUCH_NONE | TOUCH_SFX_NORMAL,
-            BUMP_ON,
+            ATELEM_NONE | ATELEM_SFX_NORMAL,
+            ACELEM_ON,
             OCELEM_NONE,
         },
         { 0, { { -2040, 1400, 350 }, 28 }, 100 },
     },
     {
         {
-            ELEMTYPE_UNK4,
+            ELEM_MATERIAL_UNK4,
             { 0x00000000, 0x00, 0x00 },
             { 0x00003820, 0x00, 0x00 },
-            TOUCH_NONE | TOUCH_SFX_NORMAL,
-            BUMP_ON,
+            ATELEM_NONE | ATELEM_SFX_NORMAL,
+            ACELEM_ON,
             OCELEM_NONE,
         },
         { 0, { { -1140, 1400, 350 }, 28 }, 100 },
     },
     {
         {
-            ELEMTYPE_UNK4,
+            ELEM_MATERIAL_UNK4,
             { 0x00000000, 0x00, 0x00 },
             { 0x00003820, 0x00, 0x00 },
-            TOUCH_NONE | TOUCH_SFX_NORMAL,
-            BUMP_ON,
+            ATELEM_NONE | ATELEM_SFX_NORMAL,
+            ACELEM_ON,
             OCELEM_NONE,
         },
         { 0, { { 1140, 1400, 350 }, 28 }, 100 },
     },
     {
         {
-            ELEMTYPE_UNK4,
+            ELEM_MATERIAL_UNK4,
             { 0x00000000, 0x00, 0x00 },
             { 0x00003820, 0x00, 0x00 },
-            TOUCH_NONE | TOUCH_SFX_NORMAL,
-            BUMP_ON,
+            ATELEM_NONE | ATELEM_SFX_NORMAL,
+            ACELEM_ON,
             OCELEM_NONE,
         },
         { 0, { { 2040, 1400, 350 }, 28 }, 100 },
@@ -88,7 +86,7 @@ static ColliderJntSphElementInit sJntSphElementsInit[4] = {
 
 static ColliderJntSphInit sJntSphInit = {
     {
-        COLTYPE_NONE,
+        COL_MATERIAL_NONE,
         AT_NONE,
         AC_ON | AC_TYPE_PLAYER,
         OC1_NONE,
@@ -99,38 +97,27 @@ static ColliderJntSphInit sJntSphInit = {
     sJntSphElementsInit,
 };
 
-static Vec3f eyeSparkleSpawnPositions[][2] = {
-    { { -215.0f, 139.0f, 50.0f }, { -193.0f, 139.0f, 50.0f } },
-
-    { { -125.0f, 139.0f, 50.0f }, { -103.0f, 139.0f, 50.0f } },
-
-    { { 103.0f, 139.0f, 50.0f }, { 125.0f, 139.0f, 50.0f } },
-
-    { { 193.0f, 139.0f, 50.0f }, { 215.0f, 139.0f, 50.0f } },
-};
-
-static Color_RGBA8 primColor = { 255, 255, 255, 0 };
-static Color_RGBA8 envColor = { 0, 128, 128, 0 };
-
-static InitChainEntry sInitChain[] = {
-    ICHAIN_F32(uncullZoneForward, 2000, ICHAIN_CONTINUE),
-    ICHAIN_F32(uncullZoneScale, 100, ICHAIN_CONTINUE),
-    ICHAIN_F32(uncullZoneDownward, 100, ICHAIN_CONTINUE),
-    ICHAIN_VEC3F_DIV1000(scale, 100, ICHAIN_STOP),
-};
-
 s32 BgKin2Fence_CheckHitMask(BgKin2Fence* this) {
     s32 i;
 
     for (i = 0; i < ARRAY_COUNT(this->colliderElements); i++) {
-        if (this->collider.elements[i].info.bumperFlags & BUMP_HIT) {
+        if (this->collider.elements[i].base.acElemFlags & ACELEM_HIT) {
             return i;
         }
     }
     return -1;
 }
 
+static Vec3f sEyeSparkleSpawnPositions[][2] = {
+    { { -215.0f, 139.0f, 50.0f }, { -193.0f, 139.0f, 50.0f } },
+    { { -125.0f, 139.0f, 50.0f }, { -103.0f, 139.0f, 50.0f } },
+    { { 103.0f, 139.0f, 50.0f }, { 125.0f, 139.0f, 50.0f } },
+    { { 193.0f, 139.0f, 50.0f }, { 215.0f, 139.0f, 50.0f } },
+};
+
 void BgKin2Fence_SpawnEyeSparkles(BgKin2Fence* this, PlayState* play, s32 mask) {
+    static Color_RGBA8 sPrimColor = { 255, 255, 255, 0 };
+    static Color_RGBA8 sEnvColor = { 0, 128, 128, 0 };
     s32 i;
     Vec3f sp58;
     s32 pad[2];
@@ -139,13 +126,20 @@ void BgKin2Fence_SpawnEyeSparkles(BgKin2Fence* this, PlayState* play, s32 mask) 
                                  this->dyna.actor.world.pos.z, &this->dyna.actor.shape.rot);
 
     for (i = 0; i < 2; i++) {
-        Matrix_MultVec3f(&eyeSparkleSpawnPositions[mask][i], &sp58);
-        EffectSsKirakira_SpawnDispersed(play, &sp58, &gZeroVec3f, &gZeroVec3f, &primColor, &envColor, 6000, -10);
+        Matrix_MultVec3f(&sEyeSparkleSpawnPositions[mask][i], &sp58);
+        EffectSsKirakira_SpawnDispersed(play, &sp58, &gZeroVec3f, &gZeroVec3f, &sPrimColor, &sEnvColor, 6000, -10);
     }
 }
 
+static InitChainEntry sInitChain[] = {
+    ICHAIN_F32(cullingVolumeDistance, 2000, ICHAIN_CONTINUE),
+    ICHAIN_F32(cullingVolumeScale, 100, ICHAIN_CONTINUE),
+    ICHAIN_F32(cullingVolumeDownward, 100, ICHAIN_CONTINUE),
+    ICHAIN_VEC3F_DIV1000(scale, 100, ICHAIN_STOP),
+};
+
 void BgKin2Fence_Init(Actor* thisx, PlayState* play) {
-    BgKin2Fence* this = THIS;
+    BgKin2Fence* this = (BgKin2Fence*)thisx;
     s32 i = 0;
 
     Actor_ProcessInitChain(&this->dyna.actor, sInitChain);
@@ -169,7 +163,7 @@ void BgKin2Fence_Init(Actor* thisx, PlayState* play) {
 }
 
 void BgKin2Fence_Destroy(Actor* thisx, PlayState* play) {
-    BgKin2Fence* this = THIS;
+    BgKin2Fence* this = (BgKin2Fence*)thisx;
 
     DynaPoly_DeleteBgActor(play, &play->colCtx.dyna, this->dyna.bgId);
     Collider_DestroyJntSph(play, &this->collider);
@@ -257,7 +251,7 @@ void BgKin2Fence_DoNothing(BgKin2Fence* this, PlayState* play) {
 }
 
 void BgKin2Fence_Update(Actor* thisx, PlayState* play) {
-    BgKin2Fence* this = THIS;
+    BgKin2Fence* this = (BgKin2Fence*)thisx;
 
     this->actionFunc(this, play);
 }

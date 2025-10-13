@@ -45,6 +45,15 @@ static const ALIGN_ASSET(2) char object_ds2_Tex_002DD8[] = dobject_ds2_Tex_002DD
 #define dobject_ds2_Tex_002ED8 "__OTR__objects/object_ds2/object_ds2_Tex_002ED8"
 static const ALIGN_ASSET(2) char object_ds2_Tex_002ED8[] = dobject_ds2_Tex_002ED8;
 
+#define dobject_ds2_Tex_0030D8 "__OTR__objects/object_ds2/object_ds2_Tex_0030D8"
+static const ALIGN_ASSET(2) char object_ds2_Tex_0030D8[] = dobject_ds2_Tex_0030D8;
+
+#define dobject_ds2_Tex_0034D8 "__OTR__objects/object_ds2/object_ds2_Tex_0034D8"
+static const ALIGN_ASSET(2) char object_ds2_Tex_0034D8[] = dobject_ds2_Tex_0034D8;
+
+#define dobject_ds2_Tex_0038D8 "__OTR__objects/object_ds2/object_ds2_Tex_0038D8"
+static const ALIGN_ASSET(2) char object_ds2_Tex_0038D8[] = dobject_ds2_Tex_0038D8;
+
 #define dobject_ds2_Tex_003CD8 "__OTR__objects/object_ds2/object_ds2_Tex_003CD8"
 static const ALIGN_ASSET(2) char object_ds2_Tex_003CD8[] = dobject_ds2_Tex_003CD8;
 

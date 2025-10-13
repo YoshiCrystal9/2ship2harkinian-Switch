@@ -7,16 +7,14 @@
 #include "z_bg_ingate.h"
 #include "objects/object_sichitai_obj/object_sichitai_obj.h"
 
-#define FLAGS (ACTOR_FLAG_10 | ACTOR_FLAG_20)
-
-#define THIS ((BgIngate*)thisx)
+#define FLAGS (ACTOR_FLAG_UPDATE_CULLING_DISABLED | ACTOR_FLAG_DRAW_CULLING_DISABLED)
 
 void BgIngate_Init(Actor* thisx, PlayState* play2);
 void BgIngate_Destroy(Actor* thisx, PlayState* play);
 void BgIngate_Update(Actor* thisx, PlayState* play);
 void BgIngate_Draw(Actor* thisx, PlayState* play);
 
-Actor* BgIngate_FindActor(BgIngate* this, PlayState* play, u8 actorCat, s16 actorId);
+Actor* BgIngate_FindActor(BgIngate* this, PlayState* play, u8 actorCategory, s16 actorId);
 s32 func_80953BEC(BgIngate* this);
 void func_80953B40(BgIngate* this);
 void func_80953F8C(BgIngate* this, PlayState* play);
@@ -26,7 +24,7 @@ void func_809542A0(BgIngate* this, PlayState* play);
 void func_80954340(BgIngate* this, PlayState* play);
 void func_809543D4(BgIngate* this, PlayState* play);
 
-ActorInit Bg_Ingate_InitVars = {
+ActorProfile Bg_Ingate_Profile = {
     /**/ ACTOR_BG_INGATE,
     /**/ ACTORCAT_BG,
     /**/ FLAGS,
@@ -43,30 +41,32 @@ ActorInit Bg_Ingate_InitVars = {
  *
  * @param this
  * @param play
- * @param actorCat - Category of Actor
+ * @param actorCategory - Category of Actor
  * @param actorId - ID of actor to search for
  * @return Actor*
  */
-Actor* BgIngate_FindActor(BgIngate* this, PlayState* play, u8 actorCat, s16 actorId) {
-    Actor* foundActor = NULL;
-    Actor* tempActor;
+Actor* BgIngate_FindActor(BgIngate* this, PlayState* play, u8 actorCategory, s16 actorId) {
+    Actor* actorIter = NULL;
 
     while (true) {
-        foundActor = SubS_FindActor(play, foundActor, actorCat, actorId);
+        actorIter = SubS_FindActor(play, actorIter, actorCategory, actorId);
 
-        if ((foundActor == NULL) || (((this != (BgIngate*)foundActor)) && (foundActor->update != NULL))) {
+        if (actorIter == NULL) {
             break;
         }
 
-        tempActor = foundActor->next;
-        if (tempActor == NULL) {
-            foundActor = NULL;
+        if ((this != (BgIngate*)actorIter) && (actorIter->update != NULL)) {
             break;
         }
-        foundActor = tempActor;
+
+        if (actorIter->next == NULL) {
+            actorIter = NULL;
+            break;
+        }
+        actorIter = actorIter->next;
     }
 
-    return foundActor;
+    return actorIter;
 }
 
 void func_80953B40(BgIngate* this) {
@@ -162,7 +162,7 @@ void func_80953F14(BgIngate* this, PlayState* play) {
 
     player->actor.shape.rot.y = this->dyna.actor.shape.rot.y;
     player->actor.world.rot.y = player->actor.shape.rot.y;
-    player->currentYaw = player->actor.shape.rot.y;
+    player->yaw = player->actor.shape.rot.y;
     player->actor.focus.rot.y = player->actor.shape.rot.y;
     this->unk160 |= 0x10;
     func_80953DA8(this, play);
@@ -272,7 +272,7 @@ void func_80954340(BgIngate* this, PlayState* play) {
 void func_809543D4(BgIngate* this, PlayState* play) {
     u8 talkState = Message_GetState(&play->msgCtx);
 
-    if (((talkState == TEXT_STATE_CHOICE) || (talkState == TEXT_STATE_5)) && Message_ShouldAdvance(play)) {
+    if (((talkState == TEXT_STATE_CHOICE) || (talkState == TEXT_STATE_EVENT)) && Message_ShouldAdvance(play)) {
         switch (this->dyna.actor.textId) {
             case 0x9E4:
                 this->dyna.actor.textId = 0x9E5;
@@ -315,7 +315,7 @@ void func_809543D4(BgIngate* this, PlayState* play) {
 
 void BgIngate_Init(Actor* thisx, PlayState* play2) {
     PlayState* play = play2;
-    BgIngate* this = THIS;
+    BgIngate* this = (BgIngate*)thisx;
     s32 phi_a2;
     Vec3s* sp38;
     Vec3f sp2C;
@@ -368,7 +368,7 @@ void BgIngate_Init(Actor* thisx, PlayState* play2) {
 }
 
 void BgIngate_Destroy(Actor* thisx, PlayState* play) {
-    BgIngate* this = THIS;
+    BgIngate* this = (BgIngate*)thisx;
 
     if (this->unk160 & 8) {
         DynaPoly_DeleteBgActor(play, &play->colCtx.dyna, this->dyna.bgId);
@@ -376,7 +376,7 @@ void BgIngate_Destroy(Actor* thisx, PlayState* play) {
 }
 
 void BgIngate_Update(Actor* thisx, PlayState* play) {
-    BgIngate* this = THIS;
+    BgIngate* this = (BgIngate*)thisx;
 
     this->actionFunc(this, play);
 }
@@ -385,7 +385,7 @@ void BgIngate_Draw(Actor* thisx, PlayState* play) {
     OPEN_DISPS(play->state.gfxCtx);
 
     Gfx_SetupDL25_Opa(play->state.gfxCtx);
-    gSPMatrix(POLY_OPA_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    MATRIX_FINALIZE_AND_LOAD(POLY_OPA_DISP++, play->state.gfxCtx);
     gSPDisplayList(POLY_OPA_DISP++, gSichitaiBoatDL);
 
     CLOSE_DISPS(play->state.gfxCtx);

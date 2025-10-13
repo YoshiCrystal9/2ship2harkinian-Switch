@@ -7,9 +7,9 @@
 #include "z_en_dragon.h"
 #include "overlays/actors/ovl_En_Ot/z_en_ot.h"
 
-#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_UNFRIENDLY | ACTOR_FLAG_10 | ACTOR_FLAG_20)
-
-#define THIS ((EnDragon*)thisx)
+#define FLAGS                                                                                 \
+    (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_HOSTILE | ACTOR_FLAG_UPDATE_CULLING_DISABLED | \
+     ACTOR_FLAG_DRAW_CULLING_DISABLED)
 
 void EnDragon_Init(Actor* thisx, PlayState* play);
 void EnDragon_Destroy(Actor* thisx, PlayState* play);
@@ -45,7 +45,7 @@ typedef enum {
 
 static s32 sNumPythonsDead = 0;
 
-ActorInit En_Dragon_InitVars = {
+ActorProfile En_Dragon_Profile = {
     /**/ ACTOR_EN_DRAGON,
     /**/ ACTORCAT_ENEMY,
     /**/ FLAGS,
@@ -101,88 +101,88 @@ static DamageTable sDamageTable = {
 static ColliderJntSphElementInit sJntSphElementsInit[8] = {
     {
         {
-            ELEMTYPE_UNK1,
+            ELEM_MATERIAL_UNK1,
             { 0xF7CFFFFF, 0x00, 0x00 },
             { 0xF7CFFFFF, 0x00, 0x00 },
-            TOUCH_NONE | TOUCH_SFX_NORMAL,
-            BUMP_ON,
+            ATELEM_NONE | ATELEM_SFX_NORMAL,
+            ACELEM_ON,
             OCELEM_ON,
         },
         { DEEP_PYTHON_LIMB_HEAD, { { 0, 0, 0 }, 0 }, 1 },
     },
     {
         {
-            ELEMTYPE_UNK1,
+            ELEM_MATERIAL_UNK1,
             { 0xF7CFFFFF, 0x00, 0x00 },
             { 0xF7CFFFFF, 0x00, 0x00 },
-            TOUCH_NONE | TOUCH_SFX_NORMAL,
-            BUMP_ON,
+            ATELEM_NONE | ATELEM_SFX_NORMAL,
+            ACELEM_ON,
             OCELEM_ON,
         },
         { DEEP_PYTHON_LIMB_COLLAR, { { 0, 0, 0 }, 0 }, 1 },
     },
     {
         {
-            ELEMTYPE_UNK1,
+            ELEM_MATERIAL_UNK1,
             { 0xF7CFFFFF, 0x00, 0x00 },
             { 0xF7CFFFFF, 0x00, 0x00 },
-            TOUCH_NONE | TOUCH_SFX_NORMAL,
-            BUMP_ON,
+            ATELEM_NONE | ATELEM_SFX_NORMAL,
+            ACELEM_ON,
             OCELEM_ON,
         },
         { DEEP_PYTHON_LIMB_COLLAR, { { 0, 0, 0 }, 0 }, 1 },
     },
     {
         {
-            ELEMTYPE_UNK1,
+            ELEM_MATERIAL_UNK1,
             { 0xF7CFFFFF, 0x00, 0x00 },
             { 0xF7CFFFFF, 0x00, 0x00 },
-            TOUCH_NONE | TOUCH_SFX_NORMAL,
-            BUMP_ON,
+            ATELEM_NONE | ATELEM_SFX_NORMAL,
+            ACELEM_ON,
             OCELEM_ON,
         },
         { DEEP_PYTHON_LIMB_BODY_SEGMENT_1, { { 0, 0, 0 }, 0 }, 1 },
     },
     {
         {
-            ELEMTYPE_UNK1,
+            ELEM_MATERIAL_UNK1,
             { 0xF7CFFFFF, 0x00, 0x00 },
             { 0xF7CFFFFF, 0x00, 0x00 },
-            TOUCH_NONE | TOUCH_SFX_NORMAL,
-            BUMP_ON,
+            ATELEM_NONE | ATELEM_SFX_NORMAL,
+            ACELEM_ON,
             OCELEM_ON,
         },
         { DEEP_PYTHON_LIMB_BODY_SEGMENT_1, { { 0, 0, 0 }, 0 }, 1 },
     },
     {
         {
-            ELEMTYPE_UNK1,
+            ELEM_MATERIAL_UNK1,
             { 0xF7CFFFFF, 0x00, 0x00 },
             { 0xF7CFFFFF, 0x00, 0x00 },
-            TOUCH_NONE | TOUCH_SFX_NORMAL,
-            BUMP_ON,
+            ATELEM_NONE | ATELEM_SFX_NORMAL,
+            ACELEM_ON,
             OCELEM_ON,
         },
         { DEEP_PYTHON_LIMB_BODY_SEGMENT_2, { { 0, 0, 0 }, 0 }, 1 },
     },
     {
         {
-            ELEMTYPE_UNK1,
+            ELEM_MATERIAL_UNK1,
             { 0xF7CFFFFF, 0x00, 0x00 },
             { 0xF7CFFFFF, 0x00, 0x00 },
-            TOUCH_NONE | TOUCH_SFX_NORMAL,
-            BUMP_ON,
+            ATELEM_NONE | ATELEM_SFX_NORMAL,
+            ACELEM_ON,
             OCELEM_ON,
         },
         { DEEP_PYTHON_LIMB_BODY_SEGMENT_2, { { 0, 0, 0 }, 0 }, 1 },
     },
     {
         {
-            ELEMTYPE_UNK1,
+            ELEM_MATERIAL_UNK1,
             { 0xF7CFFFFF, 0x00, 0x00 },
             { 0xF7CFFFFF, 0x00, 0x00 },
-            TOUCH_NONE | TOUCH_SFX_NORMAL,
-            BUMP_ON,
+            ATELEM_NONE | ATELEM_SFX_NORMAL,
+            ACELEM_ON,
             OCELEM_ON,
         },
         { DEEP_PYTHON_LIMB_BODY_SEGMENT_2, { { 0, 0, 0 }, 0 }, 1 },
@@ -191,7 +191,7 @@ static ColliderJntSphElementInit sJntSphElementsInit[8] = {
 
 static ColliderJntSphInit sJntSphInit = {
     {
-        COLTYPE_HIT6,
+        COL_MATERIAL_HIT6,
         AT_NONE,
         AC_ON | AC_TYPE_PLAYER,
         OC1_ON | OC1_TYPE_PLAYER,
@@ -203,14 +203,14 @@ static ColliderJntSphInit sJntSphInit = {
 };
 
 void EnDragon_Init(Actor* thisx, PlayState* play) {
-    EnDragon* this = THIS;
+    EnDragon* this = (EnDragon*)thisx;
 
     SkelAnime_InitFlex(play, &this->skelAnime, &gDeepPythonSkel, &gDeepPythonSmallSideSwayAnim, this->jointTable,
                        this->morphTable, DEEP_PYTHON_LIMB_MAX);
 
     this->actor.colChkInfo.health = 4;
     this->actor.colChkInfo.damageTable = &sDamageTable;
-    this->actor.targetMode = TARGET_MODE_10;
+    this->actor.attentionRangeType = ATTENTION_RANGE_10;
     Collider_InitAndSetJntSph(play, &this->collider, &this->actor, &sJntSphInit, this->colliderElements);
 
     this->collider.elements[0].dim.scale = this->collider.elements[1].dim.scale = this->collider.elements[2].dim.scale =
@@ -240,13 +240,13 @@ void EnDragon_Init(Actor* thisx, PlayState* play) {
     this->action = DEEP_PYTHON_ACTION_IDLE;
     this->actor.hintId = TATL_HINT_ID_DEEP_PYTHON;
     this->scale = 0.5f;
-    this->actor.flags &= ~ACTOR_FLAG_CANT_LOCK_ON;
+    this->actor.flags &= ~ACTOR_FLAG_LOCK_ON_DISABLED;
 
     EnDragon_SetupRetreatOrIdle(this);
 }
 
 void EnDragon_Destroy(Actor* thisx, PlayState* play) {
-    EnDragon* this = THIS;
+    EnDragon* this = (EnDragon*)thisx;
 
     Collider_DestroyJntSph(play, &this->collider);
 }
@@ -621,9 +621,9 @@ void EnDragon_Attack(EnDragon* this, PlayState* play) {
     }
 
     if (((this->state != DEEP_PYTHON_ATTACK_STATE_START) && (curFrame >= this->animEndFrame)) ||
-        (!(player->stateFlags2 & PLAYER_STATE2_80)) || ((this->collider.elements[0].info.bumperFlags & BUMP_HIT)) ||
-        (this->collider.elements[1].info.bumperFlags & BUMP_HIT) ||
-        (this->collider.elements[2].info.bumperFlags & BUMP_HIT)) {
+        !(player->stateFlags2 & PLAYER_STATE2_80) || (this->collider.elements[0].base.acElemFlags & ACELEM_HIT) ||
+        (this->collider.elements[1].base.acElemFlags & ACELEM_HIT) ||
+        (this->collider.elements[2].base.acElemFlags & ACELEM_HIT)) {
         player->actor.parent = NULL;
         this->grabWaitTimer = 30;
         CutsceneManager_Stop(this->grabCsId);
@@ -631,7 +631,7 @@ void EnDragon_Attack(EnDragon* this, PlayState* play) {
             player->av2.actionVar2 = 100;
         }
 
-        this->actor.flags &= ~ACTOR_FLAG_100000;
+        this->actor.flags &= ~ACTOR_FLAG_FREEZE_EXCEPTION;
 
         if ((this->state != DEEP_PYTHON_ATTACK_STATE_START) && (curFrame >= this->animEndFrame)) {
             this->timer = 3;
@@ -687,9 +687,9 @@ void EnDragon_Dead(EnDragon* this, PlayState* play) {
     sNumPythonsDead++;
     if (sNumPythonsDead >= (BREG(39) + 8)) {
         Math_Vec3f_Copy(&seahorsePos, &this->actor.parent->world.pos);
-        seahorsePos.x += (Math_SinS((this->actor.parent->world.rot.y + 0x8000)) * (500.0f + BREG(38)));
+        seahorsePos.x += Math_SinS(this->actor.parent->world.rot.y + 0x8000) * (500.0f + BREG(38));
         seahorsePos.y += -100.0f + BREG(33);
-        seahorsePos.z += (Math_CosS((this->actor.parent->world.rot.y + 0x8000)) * (500.0f + BREG(38)));
+        seahorsePos.z += Math_CosS(this->actor.parent->world.rot.y + 0x8000) * (500.0f + BREG(38));
         if (Actor_SpawnAsChildAndCutscene(&play->actorCtx, play, ACTOR_EN_OT, seahorsePos.x, seahorsePos.y,
                                           seahorsePos.z, 0, this->actor.shape.rot.y, 0,
                                           SEAHORSE_PARAMS(SEAHORSE_TYPE_1, 0, 0), this->actor.csId,
@@ -738,12 +738,12 @@ void EnDragon_UpdateDamage(EnDragon* this, PlayState* play) {
     PlayerImpactType playerImpactType;
 
     if (this->action == DEEP_PYTHON_ACTION_EXTEND) {
-        if ((this->collider.elements[2].info.bumperFlags & BUMP_HIT) ||
-            (this->collider.elements[3].info.bumperFlags & BUMP_HIT) ||
-            (this->collider.elements[4].info.bumperFlags & BUMP_HIT) ||
-            (this->collider.elements[5].info.bumperFlags & BUMP_HIT) ||
-            (this->collider.elements[6].info.bumperFlags & BUMP_HIT) ||
-            (this->collider.elements[7].info.bumperFlags & BUMP_HIT)) {
+        if ((this->collider.elements[2].base.acElemFlags & ACELEM_HIT) ||
+            (this->collider.elements[3].base.acElemFlags & ACELEM_HIT) ||
+            (this->collider.elements[4].base.acElemFlags & ACELEM_HIT) ||
+            (this->collider.elements[5].base.acElemFlags & ACELEM_HIT) ||
+            (this->collider.elements[6].base.acElemFlags & ACELEM_HIT) ||
+            (this->collider.elements[7].base.acElemFlags & ACELEM_HIT)) {
             Actor_ApplyDamage(&this->actor);
             Actor_SetColorFilter(&this->actor, COLORFILTER_COLORFLAG_RED, 255, COLORFILTER_BUFFLAG_OPA, 25);
             if (this->actor.colChkInfo.health > 0) {
@@ -752,9 +752,9 @@ void EnDragon_UpdateDamage(EnDragon* this, PlayState* play) {
             } else {
                 Enemy_StartFinishingBlow(play, &this->actor);
                 Actor_PlaySfx(&this->actor, NA_SE_EN_UTSUBO_DEAD);
-                this->actor.flags |= ACTOR_FLAG_CANT_LOCK_ON;
-                this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
-                this->actor.flags |= ACTOR_FLAG_100000;
+                this->actor.flags |= ACTOR_FLAG_LOCK_ON_DISABLED;
+                this->actor.flags &= ~ACTOR_FLAG_ATTENTION_ENABLED;
+                this->actor.flags |= ACTOR_FLAG_FREEZE_EXCEPTION;
                 this->action = DEEP_PYTHON_ACTION_SETUP_DEAD;
                 this->actionFunc = EnDragon_SetupDead;
             }
@@ -762,19 +762,19 @@ void EnDragon_UpdateDamage(EnDragon* this, PlayState* play) {
     }
 
     if ((this->action == DEEP_PYTHON_ACTION_EXTEND) && (this->grabWaitTimer == 0) &&
-        (player->invincibilityTimer == 0) && (this->collider.elements[0].info.ocElemFlags & OCELEM_HIT) &&
+        (player->invincibilityTimer == 0) && (this->collider.elements[0].base.ocElemFlags & OCELEM_HIT) &&
         !((Actor_GetPlayerImpact(play, 1000.0f, &this->actor.world.pos, &playerImpactType) >= 0.0f) &&
           (playerImpactType == PLAYER_IMPACT_ZORA_BARRIER))) {
         this->actor.speed = 0.0f;
         this->action = DEEP_PYTHON_ACTION_GRAB;
-        this->actor.flags |= ACTOR_FLAG_100000;
+        this->actor.flags |= ACTOR_FLAG_FREEZE_EXCEPTION;
         this->actionFunc = EnDragon_SetupGrab;
     }
 }
 
 void EnDragon_Update(Actor* thisx, PlayState* play) {
     s32 pad;
-    EnDragon* this = THIS;
+    EnDragon* this = (EnDragon*)thisx;
 
     if (this->retreatTimer != 0) {
         this->retreatTimer--;
@@ -812,7 +812,7 @@ void EnDragon_Update(Actor* thisx, PlayState* play) {
 }
 
 s32 EnDragon_OverrideLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3f* pos, Vec3s* rot, Actor* thisx) {
-    EnDragon* this = THIS;
+    EnDragon* this = (EnDragon*)thisx;
 
     if (limbIndex == DEEP_PYTHON_LIMB_JAW) {
         rot->x += this->jawXRotation;
@@ -824,7 +824,7 @@ s32 EnDragon_OverrideLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3f
 }
 
 void EnDragon_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* rot, Actor* thisx) {
-    EnDragon* this = THIS;
+    EnDragon* this = (EnDragon*)thisx;
     Vec3f playerGrabOffsetFromJawPos = { 350.0f, -120.0f, -60.0f };
 
     if (limbIndex == DEEP_PYTHON_LIMB_JAW) {
@@ -843,7 +843,7 @@ void EnDragon_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* r
 }
 
 void EnDragon_Draw(Actor* thisx, PlayState* play) {
-    EnDragon* this = THIS;
+    EnDragon* this = (EnDragon*)thisx;
 
     Gfx_SetupDL25_Opa(play->state.gfxCtx);
     Gfx_SetupDL25_Xlu(play->state.gfxCtx);

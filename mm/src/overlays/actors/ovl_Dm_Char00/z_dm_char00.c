@@ -10,9 +10,7 @@
 #include "z64animation.h"
 #include "BenPort.h"
 
-#define FLAGS (ACTOR_FLAG_10 | ACTOR_FLAG_20)
-
-#define THIS ((DmChar00*)thisx)
+#define FLAGS (ACTOR_FLAG_UPDATE_CULLING_DISABLED | ACTOR_FLAG_DRAW_CULLING_DISABLED)
 
 void DmChar00_Init(Actor* thisx, PlayState* play);
 void DmChar00_Destroy(Actor* thisx, PlayState* play);
@@ -22,7 +20,7 @@ void DmChar00_Draw(Actor* thisx, PlayState* play2);
 void func_80AA67F8(DmChar00* this, PlayState* play);
 void func_80AA695C(DmChar00* this, PlayState* play);
 
-ActorInit Dm_Char00_InitVars = {
+ActorProfile Dm_Char00_Profile = {
     /**/ ACTOR_DM_CHAR00,
     /**/ ACTORCAT_ITEMACTION,
     /**/ FLAGS,
@@ -666,7 +664,7 @@ void func_80AA5EBC(DmChar00* this, PlayState* play) {
 
 void DmChar00_Init(Actor* thisx, PlayState* play) {
     s32 pad;
-    DmChar00* this = THIS;
+    DmChar00* this = (DmChar00*)thisx;
 
     if ((play->sceneId == SCENE_LOST_WOODS) && !Cutscene_IsPlaying(play)) {
         Actor_Kill(thisx);
@@ -675,7 +673,7 @@ void DmChar00_Init(Actor* thisx, PlayState* play) {
     this->unk_240 = D_80AA77A8[DMCHAR00_GET(thisx)];
     this->unk_250 = D_80AA77D8[DMCHAR00_GET(thisx)];
 
-    thisx->targetArrowOffset = 3000.0f;
+    thisx->lockOnArrowOffset = 3000.0f;
     this->cueId = 99;
     this->unk_262 = DMCHAR00_GET_F800(thisx);
 
@@ -1025,7 +1023,7 @@ void func_80AA695C(DmChar00* this, PlayState* play) {
 }
 
 void DmChar00_Update(Actor* thisx, PlayState* play) {
-    DmChar00* this = THIS;
+    DmChar00* this = (DmChar00*)thisx;
 
     SkelAnime_Update(&this->skelAnime);
 
@@ -1038,7 +1036,7 @@ void DmChar00_Update(Actor* thisx, PlayState* play) {
 
 s32 DmChar00_OverrideLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3f* pos, Vec3s* rot, Actor* thisx,
                               Gfx** gfx) {
-    DmChar00* this = THIS;
+    DmChar00* this = (DmChar00*)thisx;
     f32 sp28;
     Vec3f sp1C;
 
@@ -1053,7 +1051,7 @@ s32 DmChar00_OverrideLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3f
 
 void DmChar00_Draw(Actor* thisx, PlayState* play2) {
     PlayState* play = play2;
-    DmChar00* this = THIS;
+    DmChar00* this = (DmChar00*)thisx;
     s32 phi_a0;
     s32 pad;
     Gfx* gfx = GRAPH_ALLOC(play->state.gfxCtx, 4 * sizeof(Gfx));
@@ -1068,12 +1066,13 @@ void DmChar00_Draw(Actor* thisx, PlayState* play2) {
 
     Gfx_SetupDL27_Xlu(play->state.gfxCtx);
 
-    do {
-        phi_a0 = (this->unk_262 * 50) & 511;
-        if (phi_a0 >= 256) {
-            phi_a0 = 511 - phi_a0;
-        }
-    } while (0);
+    //! FAKE:
+    if (1) {}
+
+    phi_a0 = (this->unk_262 * 50) % 512U;
+    if (phi_a0 >= 256) {
+        phi_a0 = 511 - phi_a0;
+    }
 
     gSPSegment(POLY_XLU_DISP++, 0x08, &gfx[0]);
 

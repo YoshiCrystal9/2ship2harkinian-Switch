@@ -8,7 +8,7 @@
 extern "C" {
 #include "overlays/actors/ovl_En_Rz/z_en_rz.h"
 void func_80BFC270(EnRz* enRz, PlayState* play);
-void Player_TalkWithPlayer(PlayState* play, Actor* actor);
+void Player_StartTalking(PlayState* play, Actor* actor);
 }
 
 #define CVAR_NAME "gEnhancements.Cutscenes.SkipStoryCutscenes"
@@ -26,8 +26,8 @@ void RegisterSkipRosaSistersDance() {
                     // The function for yielding the Heart Piece and changing other state information
                     enRz->actionFunc = func_80BFC270;
                     // Queue the item check, as Actor_OfferGetItem won't work normally
-                    // WEEKEVENTREG_75_80 is set once player completes this notebook entry.
-                    if (!CHECK_WEEKEVENTREG(WEEKEVENTREG_75_80) && !IS_RANDO) {
+                    // WEEKEVENTREG_RECEIVED_ROSA_SISTERS_HEART_PIECE is set once player completes this notebook entry.
+                    if (!CHECK_WEEKEVENTREG(WEEKEVENTREG_RECEIVED_ROSA_SISTERS_HEART_PIECE) && !IS_RANDO) {
                         GameInteractor::Instance->events.emplace_back(GIEventGiveItem{
                             .showGetItemCutscene = true,
                             .param = GID_HEART_PIECE,
@@ -46,7 +46,7 @@ void RegisterSkipRosaSistersDance() {
                     player->talkActor = actor;
                     player->talkActorDistance = actor->xzDistToPlayer;
                     player->exchangeItemAction = PLAYER_IA_MINUS1;
-                    Player_TalkWithPlayer(gPlayState, actor);
+                    Player_StartTalking(gPlayState, actor);
                     *should = false;
                 } else if (*csId == 12) { // The sisters applaud Link
                     Actor* actor = va_arg(args, Actor*);
@@ -55,7 +55,7 @@ void RegisterSkipRosaSistersDance() {
                      * this cutscene plays. If we're skipping the cutscene, we have to set it again to prevent the
                      * dialog from hanging. This does not affect vanilla.
                      */
-                    actor->flags |= ACTOR_FLAG_TALK_REQUESTED;
+                    actor->flags |= ACTOR_FLAG_TALK;
                     *should = false;
                 }
             }

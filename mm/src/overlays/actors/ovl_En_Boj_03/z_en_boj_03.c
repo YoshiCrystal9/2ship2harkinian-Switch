@@ -6,16 +6,14 @@
 
 #include "z_en_boj_03.h"
 
-#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_10)
-
-#define THIS ((EnBoj03*)thisx)
+#define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_UPDATE_CULLING_DISABLED)
 
 void EnBoj03_Init(Actor* thisx, PlayState* play);
 void EnBoj03_Destroy(Actor* thisx, PlayState* play);
 void EnBoj03_Update(Actor* thisx, PlayState* play);
 void EnBoj03_Draw(Actor* thisx, PlayState* play);
 
-ActorInit En_Boj_03_InitVars = {
+ActorProfile En_Boj_03_Profile = {
     /**/ ACTOR_EN_BOJ_03,
     /**/ ACTORCAT_NPC,
     /**/ FLAGS,

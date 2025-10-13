@@ -1175,7 +1175,7 @@ void ObjGrass_RandoDrawOpa(ObjGrass* objGrass, ObjGrassElement* grassElem, s32 j
         ObjGrass_OverrideMatrixCurrent(&objGrass->distortionMtx[j]);
     }
 
-    gSPMatrix(POLY_OPA_DISP++, Matrix_NewMtx(gPlayState->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    MATRIX_FINALIZE_AND_LOAD(POLY_OPA_DISP++, gPlayState->state.gfxCtx);
     gSPDisplayList(POLY_OPA_DISP++, GetObjGrassDList(randoCheckId));
     gSPDisplayList(POLY_OPA_DISP++, (Gfx*)gObjGrass_D_809AA9F0);
     CLOSE_DISPS(gPlayState->state.gfxCtx);
@@ -1188,7 +1188,7 @@ void ObjGrass_RandoDrawXlu(ObjGrass* objGrass, ObjGrassElement* grassElem, Rando
     Matrix_SetTranslateRotateYXZ(grassElem->pos.x, grassElem->pos.y, grassElem->pos.z, &rot);
     Matrix_Scale(objGrass->actor.scale.x, objGrass->actor.scale.y, objGrass->actor.scale.z, MTXMODE_APPLY);
 
-    gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(gPlayState->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    MATRIX_FINALIZE_AND_LOAD(POLY_XLU_DISP++, gPlayState->state.gfxCtx);
     gDPSetPrimColor(POLY_XLU_DISP++, 0, 0, 255, 255, 255, grassElem->alpha);
     gSPDisplayList(POLY_XLU_DISP++, GetObjGrassXluDList(randoCheckId));
     gSPDisplayList(POLY_XLU_DISP++, (Gfx*)gObjGrass_D_809AAA68);

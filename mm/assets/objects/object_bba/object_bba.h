@@ -3,164 +3,164 @@
 
 #include "align_asset_macro.h"
 
-#define dgBbaUpperLegsDL "__OTR__objects/object_bba/gBbaUpperLegsDL"
-static const ALIGN_ASSET(2) char gBbaUpperLegsDL[] = dgBbaUpperLegsDL;
+#define dgBombShopLadyUpperLegsDL "__OTR__objects/object_bba/gBombShopLadyUpperLegsDL"
+static const ALIGN_ASSET(2) char gBombShopLadyUpperLegsDL[] = dgBombShopLadyUpperLegsDL;
 
-#define dgBbaRightHandDL "__OTR__objects/object_bba/gBbaRightHandDL"
-static const ALIGN_ASSET(2) char gBbaRightHandDL[] = dgBbaRightHandDL;
+#define dgBombShopLadyRightHandDL "__OTR__objects/object_bba/gBombShopLadyRightHandDL"
+static const ALIGN_ASSET(2) char gBombShopLadyRightHandDL[] = dgBombShopLadyRightHandDL;
 
-#define dgBbaRightForearmDL "__OTR__objects/object_bba/gBbaRightForearmDL"
-static const ALIGN_ASSET(2) char gBbaRightForearmDL[] = dgBbaRightForearmDL;
+#define dgBombShopLadyRightForearmDL "__OTR__objects/object_bba/gBombShopLadyRightForearmDL"
+static const ALIGN_ASSET(2) char gBombShopLadyRightForearmDL[] = dgBombShopLadyRightForearmDL;
 
-#define dgBbaRightUpperArmDL "__OTR__objects/object_bba/gBbaRightUpperArmDL"
-static const ALIGN_ASSET(2) char gBbaRightUpperArmDL[] = dgBbaRightUpperArmDL;
+#define dgBombShopLadyRightUpperArmDL "__OTR__objects/object_bba/gBombShopLadyRightUpperArmDL"
+static const ALIGN_ASSET(2) char gBombShopLadyRightUpperArmDL[] = dgBombShopLadyRightUpperArmDL;
 
-#define dgBbaLeftHandDL "__OTR__objects/object_bba/gBbaLeftHandDL"
-static const ALIGN_ASSET(2) char gBbaLeftHandDL[] = dgBbaLeftHandDL;
+#define dgBombShopLadyLeftHandDL "__OTR__objects/object_bba/gBombShopLadyLeftHandDL"
+static const ALIGN_ASSET(2) char gBombShopLadyLeftHandDL[] = dgBombShopLadyLeftHandDL;
 
-#define dgBbaLeftForearmDL "__OTR__objects/object_bba/gBbaLeftForearmDL"
-static const ALIGN_ASSET(2) char gBbaLeftForearmDL[] = dgBbaLeftForearmDL;
+#define dgBombShopLadyLeftForearmDL "__OTR__objects/object_bba/gBombShopLadyLeftForearmDL"
+static const ALIGN_ASSET(2) char gBombShopLadyLeftForearmDL[] = dgBombShopLadyLeftForearmDL;
 
-#define dgBbaLeftUpperArmDL "__OTR__objects/object_bba/gBbaLeftUpperArmDL"
-static const ALIGN_ASSET(2) char gBbaLeftUpperArmDL[] = dgBbaLeftUpperArmDL;
+#define dgBombShopLadyLeftUpperArmDL "__OTR__objects/object_bba/gBombShopLadyLeftUpperArmDL"
+static const ALIGN_ASSET(2) char gBombShopLadyLeftUpperArmDL[] = dgBombShopLadyLeftUpperArmDL;
 
-#define dgBbaTorsoDL "__OTR__objects/object_bba/gBbaTorsoDL"
-static const ALIGN_ASSET(2) char gBbaTorsoDL[] = dgBbaTorsoDL;
+#define dgBombShopLadyTorsoDL "__OTR__objects/object_bba/gBombShopLadyTorsoDL"
+static const ALIGN_ASSET(2) char gBombShopLadyTorsoDL[] = dgBombShopLadyTorsoDL;
 
-#define dgBbaBagDL "__OTR__objects/object_bba/gBbaBagDL"
-static const ALIGN_ASSET(2) char gBbaBagDL[] = dgBbaBagDL;
+#define dgBombShopLadyBagDL "__OTR__objects/object_bba/gBombShopLadyBagDL"
+static const ALIGN_ASSET(2) char gBombShopLadyBagDL[] = dgBombShopLadyBagDL;
 
-#define dgBbaNeckDL "__OTR__objects/object_bba/gBbaNeckDL"
-static const ALIGN_ASSET(2) char gBbaNeckDL[] = dgBbaNeckDL;
+#define dgBombShopLadyNeckDL "__OTR__objects/object_bba/gBombShopLadyNeckDL"
+static const ALIGN_ASSET(2) char gBombShopLadyNeckDL[] = dgBombShopLadyNeckDL;
 
-#define dgBbaHeadDL "__OTR__objects/object_bba/gBbaHeadDL"
-static const ALIGN_ASSET(2) char gBbaHeadDL[] = dgBbaHeadDL;
+#define dgBombShopLadyHeadDL "__OTR__objects/object_bba/gBombShopLadyHeadDL"
+static const ALIGN_ASSET(2) char gBombShopLadyHeadDL[] = dgBombShopLadyHeadDL;
 
-#define dgBbaMiddleLegsDL "__OTR__objects/object_bba/gBbaMiddleLegsDL"
-static const ALIGN_ASSET(2) char gBbaMiddleLegsDL[] = dgBbaMiddleLegsDL;
+#define dgBombShopLadyMiddleLegsDL "__OTR__objects/object_bba/gBombShopLadyMiddleLegsDL"
+static const ALIGN_ASSET(2) char gBombShopLadyMiddleLegsDL[] = dgBombShopLadyMiddleLegsDL;
 
-#define dgBbaLowerLegsDL "__OTR__objects/object_bba/gBbaLowerLegsDL"
-static const ALIGN_ASSET(2) char gBbaLowerLegsDL[] = dgBbaLowerLegsDL;
+#define dgBombShopLadyLowerLegsDL "__OTR__objects/object_bba/gBombShopLadyLowerLegsDL"
+static const ALIGN_ASSET(2) char gBombShopLadyLowerLegsDL[] = dgBombShopLadyLowerLegsDL;
 
-#define dgBbaFeetDL "__OTR__objects/object_bba/gBbaFeetDL"
-static const ALIGN_ASSET(2) char gBbaFeetDL[] = dgBbaFeetDL;
+#define dgBombShopLadyFeetDL "__OTR__objects/object_bba/gBombShopLadyFeetDL"
+static const ALIGN_ASSET(2) char gBombShopLadyFeetDL[] = dgBombShopLadyFeetDL;
 
-#define dgBbaSwayAnim "__OTR__objects/object_bba/gBbaSwayAnim"
-static const ALIGN_ASSET(2) char gBbaSwayAnim[] = dgBbaSwayAnim;
+#define dgBombShopLadySwayAnim "__OTR__objects/object_bba/gBombShopLadySwayAnim"
+static const ALIGN_ASSET(2) char gBombShopLadySwayAnim[] = dgBombShopLadySwayAnim;
 
-#define dgBbaKnockedOverAnim "__OTR__objects/object_bba/gBbaKnockedOverAnim"
-static const ALIGN_ASSET(2) char gBbaKnockedOverAnim[] = dgBbaKnockedOverAnim;
+#define dgBombShopLadyKnockedOverAnim "__OTR__objects/object_bba/gBombShopLadyKnockedOverAnim"
+static const ALIGN_ASSET(2) char gBombShopLadyKnockedOverAnim[] = dgBombShopLadyKnockedOverAnim;
 
-#define dgBbaLyingDownAnim "__OTR__objects/object_bba/gBbaLyingDownAnim"
-static const ALIGN_ASSET(2) char gBbaLyingDownAnim[] = dgBbaLyingDownAnim;
+#define dgBombShopLadyLyingDownAnim "__OTR__objects/object_bba/gBombShopLadyLyingDownAnim"
+static const ALIGN_ASSET(2) char gBombShopLadyLyingDownAnim[] = dgBombShopLadyLyingDownAnim;
 
-#define dgBbaIdleHoldingBagAnim "__OTR__objects/object_bba/gBbaIdleHoldingBagAnim"
-static const ALIGN_ASSET(2) char gBbaIdleHoldingBagAnim[] = dgBbaIdleHoldingBagAnim;
+#define dgBombShopLadyIdleHoldingBagAnim "__OTR__objects/object_bba/gBombShopLadyIdleHoldingBagAnim"
+static const ALIGN_ASSET(2) char gBombShopLadyIdleHoldingBagAnim[] = dgBombShopLadyIdleHoldingBagAnim;
 
-#define dgBbaSkel "__OTR__objects/object_bba/gBbaSkel"
-static const ALIGN_ASSET(2) char gBbaSkel[] = dgBbaSkel;
+#define dgBombShopLadySkel "__OTR__objects/object_bba/gBombShopLadySkel"
+static const ALIGN_ASSET(2) char gBombShopLadySkel[] = dgBombShopLadySkel;
 
-#define dgBbaIdleAnim "__OTR__objects/object_bba/gBbaIdleAnim"
-static const ALIGN_ASSET(2) char gBbaIdleAnim[] = dgBbaIdleAnim;
+#define dgBombShopLadyIdleAnim "__OTR__objects/object_bba/gBombShopLadyIdleAnim"
+static const ALIGN_ASSET(2) char gBombShopLadyIdleAnim[] = dgBombShopLadyIdleAnim;
 
-#define dgBbaWalkingHoldingBagAnim "__OTR__objects/object_bba/gBbaWalkingHoldingBagAnim"
-static const ALIGN_ASSET(2) char gBbaWalkingHoldingBagAnim[] = dgBbaWalkingHoldingBagAnim;
+#define dgBombShopLadyWalkingHoldingBagAnim "__OTR__objects/object_bba/gBombShopLadyWalkingHoldingBagAnim"
+static const ALIGN_ASSET(2) char gBombShopLadyWalkingHoldingBagAnim[] = dgBombShopLadyWalkingHoldingBagAnim;
 
-#define dgBbaTLUT "__OTR__objects/object_bba/gBbaTLUT"
-static const ALIGN_ASSET(2) char gBbaTLUT[] = dgBbaTLUT;
+#define dgBombShopLadyTLUT "__OTR__objects/object_bba/gBombShopLadyTLUT"
+static const ALIGN_ASSET(2) char gBombShopLadyTLUT[] = dgBombShopLadyTLUT;
 
-#define dgBbaHairSkin2Tex "__OTR__objects/object_bba/gBbaHairSkin2Tex"
-static const ALIGN_ASSET(2) char gBbaHairSkin2Tex[] = dgBbaHairSkin2Tex;
+#define dgBombShopLadyHairSkin2Tex "__OTR__objects/object_bba/gBombShopLadyHairSkin2Tex"
+static const ALIGN_ASSET(2) char gBombShopLadyHairSkin2Tex[] = dgBombShopLadyHairSkin2Tex;
 
-#define dgBbaEar2Tex "__OTR__objects/object_bba/gBbaEar2Tex"
-static const ALIGN_ASSET(2) char gBbaEar2Tex[] = dgBbaEar2Tex;
+#define dgBombShopLadyEar2Tex "__OTR__objects/object_bba/gBombShopLadyEar2Tex"
+static const ALIGN_ASSET(2) char gBombShopLadyEar2Tex[] = dgBombShopLadyEar2Tex;
 
-#define dgBbaNostril2Tex "__OTR__objects/object_bba/gBbaNostril2Tex"
-static const ALIGN_ASSET(2) char gBbaNostril2Tex[] = dgBbaNostril2Tex;
+#define dgBombShopLadyNostril2Tex "__OTR__objects/object_bba/gBombShopLadyNostril2Tex"
+static const ALIGN_ASSET(2) char gBombShopLadyNostril2Tex[] = dgBombShopLadyNostril2Tex;
 
-#define dgBbaEye2Tex "__OTR__objects/object_bba/gBbaEye2Tex"
-static const ALIGN_ASSET(2) char gBbaEye2Tex[] = dgBbaEye2Tex;
+#define dgBombShopLadyEye2Tex "__OTR__objects/object_bba/gBombShopLadyEye2Tex"
+static const ALIGN_ASSET(2) char gBombShopLadyEye2Tex[] = dgBombShopLadyEye2Tex;
 
-#define dgBbaWrinkles2Tex "__OTR__objects/object_bba/gBbaWrinkles2Tex"
-static const ALIGN_ASSET(2) char gBbaWrinkles2Tex[] = dgBbaWrinkles2Tex;
+#define dgBombShopLadyWrinkles2Tex "__OTR__objects/object_bba/gBombShopLadyWrinkles2Tex"
+static const ALIGN_ASSET(2) char gBombShopLadyWrinkles2Tex[] = dgBombShopLadyWrinkles2Tex;
 
-#define dgBbaCheek2Tex "__OTR__objects/object_bba/gBbaCheek2Tex"
-static const ALIGN_ASSET(2) char gBbaCheek2Tex[] = dgBbaCheek2Tex;
+#define dgBombShopLadyCheek2Tex "__OTR__objects/object_bba/gBombShopLadyCheek2Tex"
+static const ALIGN_ASSET(2) char gBombShopLadyCheek2Tex[] = dgBombShopLadyCheek2Tex;
 
-#define dgBbaSkin2Tex "__OTR__objects/object_bba/gBbaSkin2Tex"
-static const ALIGN_ASSET(2) char gBbaSkin2Tex[] = dgBbaSkin2Tex;
+#define dgBombShopLadySkin2Tex "__OTR__objects/object_bba/gBombShopLadySkin2Tex"
+static const ALIGN_ASSET(2) char gBombShopLadySkin2Tex[] = dgBombShopLadySkin2Tex;
 
-#define dgBbaForehead2Tex "__OTR__objects/object_bba/gBbaForehead2Tex"
-static const ALIGN_ASSET(2) char gBbaForehead2Tex[] = dgBbaForehead2Tex;
+#define dgBombShopLadyForehead2Tex "__OTR__objects/object_bba/gBombShopLadyForehead2Tex"
+static const ALIGN_ASSET(2) char gBombShopLadyForehead2Tex[] = dgBombShopLadyForehead2Tex;
 
-#define dgBbaFingers2Tex "__OTR__objects/object_bba/gBbaFingers2Tex"
-static const ALIGN_ASSET(2) char gBbaFingers2Tex[] = dgBbaFingers2Tex;
+#define dgBombShopLadyFingers2Tex "__OTR__objects/object_bba/gBombShopLadyFingers2Tex"
+static const ALIGN_ASSET(2) char gBombShopLadyFingers2Tex[] = dgBombShopLadyFingers2Tex;
 
-#define dgBbaShirt2Tex "__OTR__objects/object_bba/gBbaShirt2Tex"
-static const ALIGN_ASSET(2) char gBbaShirt2Tex[] = dgBbaShirt2Tex;
+#define dgBombShopLadyShirt2Tex "__OTR__objects/object_bba/gBombShopLadyShirt2Tex"
+static const ALIGN_ASSET(2) char gBombShopLadyShirt2Tex[] = dgBombShopLadyShirt2Tex;
 
-#define dgBbaBag2Tex "__OTR__objects/object_bba/gBbaBag2Tex"
-static const ALIGN_ASSET(2) char gBbaBag2Tex[] = dgBbaBag2Tex;
+#define dgBombShopLadyBag2Tex "__OTR__objects/object_bba/gBombShopLadyBag2Tex"
+static const ALIGN_ASSET(2) char gBombShopLadyBag2Tex[] = dgBombShopLadyBag2Tex;
 
-#define dgBbaSkirt2Tex "__OTR__objects/object_bba/gBbaSkirt2Tex"
-static const ALIGN_ASSET(2) char gBbaSkirt2Tex[] = dgBbaSkirt2Tex;
+#define dgBombShopLadySkirt2Tex "__OTR__objects/object_bba/gBombShopLadySkirt2Tex"
+static const ALIGN_ASSET(2) char gBombShopLadySkirt2Tex[] = dgBombShopLadySkirt2Tex;
 
-#define dgBbaSkinTex "__OTR__objects/object_bba/gBbaSkinTex"
-static const ALIGN_ASSET(2) char gBbaSkinTex[] = dgBbaSkinTex;
+#define dgBombShopLadySkinTex "__OTR__objects/object_bba/gBombShopLadySkinTex"
+static const ALIGN_ASSET(2) char gBombShopLadySkinTex[] = dgBombShopLadySkinTex;
 
-#define dgBbaWrinklesTex "__OTR__objects/object_bba/gBbaWrinklesTex"
-static const ALIGN_ASSET(2) char gBbaWrinklesTex[] = dgBbaWrinklesTex;
+#define dgBombShopLadyWrinklesTex "__OTR__objects/object_bba/gBombShopLadyWrinklesTex"
+static const ALIGN_ASSET(2) char gBombShopLadyWrinklesTex[] = dgBombShopLadyWrinklesTex;
 
-#define dgBbaHairSkinTex "__OTR__objects/object_bba/gBbaHairSkinTex"
-static const ALIGN_ASSET(2) char gBbaHairSkinTex[] = dgBbaHairSkinTex;
+#define dgBombShopLadyHairSkinTex "__OTR__objects/object_bba/gBombShopLadyHairSkinTex"
+static const ALIGN_ASSET(2) char gBombShopLadyHairSkinTex[] = dgBombShopLadyHairSkinTex;
 
-#define dgBbaNostrilTex "__OTR__objects/object_bba/gBbaNostrilTex"
-static const ALIGN_ASSET(2) char gBbaNostrilTex[] = dgBbaNostrilTex;
+#define dgBombShopLadyNostrilTex "__OTR__objects/object_bba/gBombShopLadyNostrilTex"
+static const ALIGN_ASSET(2) char gBombShopLadyNostrilTex[] = dgBombShopLadyNostrilTex;
 
-#define dgBbaEarTex "__OTR__objects/object_bba/gBbaEarTex"
-static const ALIGN_ASSET(2) char gBbaEarTex[] = dgBbaEarTex;
+#define dgBombShopLadyEarTex "__OTR__objects/object_bba/gBombShopLadyEarTex"
+static const ALIGN_ASSET(2) char gBombShopLadyEarTex[] = dgBombShopLadyEarTex;
 
-#define dgBbaFingersTex "__OTR__objects/object_bba/gBbaFingersTex"
-static const ALIGN_ASSET(2) char gBbaFingersTex[] = dgBbaFingersTex;
+#define dgBombShopLadyFingersTex "__OTR__objects/object_bba/gBombShopLadyFingersTex"
+static const ALIGN_ASSET(2) char gBombShopLadyFingersTex[] = dgBombShopLadyFingersTex;
 
-#define dgBbaBagTex "__OTR__objects/object_bba/gBbaBagTex"
-static const ALIGN_ASSET(2) char gBbaBagTex[] = dgBbaBagTex;
+#define dgBombShopLadyBagTex "__OTR__objects/object_bba/gBombShopLadyBagTex"
+static const ALIGN_ASSET(2) char gBombShopLadyBagTex[] = dgBombShopLadyBagTex;
 
-#define dgBbaSkirtTex "__OTR__objects/object_bba/gBbaSkirtTex"
-static const ALIGN_ASSET(2) char gBbaSkirtTex[] = dgBbaSkirtTex;
+#define dgBombShopLadySkirtTex "__OTR__objects/object_bba/gBombShopLadySkirtTex"
+static const ALIGN_ASSET(2) char gBombShopLadySkirtTex[] = dgBombShopLadySkirtTex;
 
-#define dgBbaEyeTex "__OTR__objects/object_bba/gBbaEyeTex"
-static const ALIGN_ASSET(2) char gBbaEyeTex[] = dgBbaEyeTex;
+#define dgBombShopLadyEyeTex "__OTR__objects/object_bba/gBombShopLadyEyeTex"
+static const ALIGN_ASSET(2) char gBombShopLadyEyeTex[] = dgBombShopLadyEyeTex;
 
-#define dgBbaCheekTex "__OTR__objects/object_bba/gBbaCheekTex"
-static const ALIGN_ASSET(2) char gBbaCheekTex[] = dgBbaCheekTex;
+#define dgBombShopLadyCheekTex "__OTR__objects/object_bba/gBombShopLadyCheekTex"
+static const ALIGN_ASSET(2) char gBombShopLadyCheekTex[] = dgBombShopLadyCheekTex;
 
-#define dgBbaForeheadTex "__OTR__objects/object_bba/gBbaForeheadTex"
-static const ALIGN_ASSET(2) char gBbaForeheadTex[] = dgBbaForeheadTex;
+#define dgBombShopLadyForeheadTex "__OTR__objects/object_bba/gBombShopLadyForeheadTex"
+static const ALIGN_ASSET(2) char gBombShopLadyForeheadTex[] = dgBombShopLadyForeheadTex;
 
-#define dgBbaShirtTex "__OTR__objects/object_bba/gBbaShirtTex"
-static const ALIGN_ASSET(2) char gBbaShirtTex[] = dgBbaShirtTex;
+#define dgBombShopLadyShirtTex "__OTR__objects/object_bba/gBombShopLadyShirtTex"
+static const ALIGN_ASSET(2) char gBombShopLadyShirtTex[] = dgBombShopLadyShirtTex;
 
-typedef enum BbaLimb {
-    /* 0x00 */ BBA_LIMB_NONE,
-    /* 0x01 */ BBA_LIMB_UPPER_LEGS,
-    /* 0x02 */ BBA_LIMB_MIDDLE_LEGS,
-    /* 0x03 */ BBA_LIMB_LOWER_LEGS,
-    /* 0x04 */ BBA_LIMB_FEET,
-    /* 0x05 */ BBA_LIMB_UPPER_ROOT,
-    /* 0x06 */ BBA_LIMB_NECK,
-    /* 0x07 */ BBA_LIMB_HEAD,
-    /* 0x08 */ BBA_LIMB_BAG,
-    /* 0x09 */ BBA_LIMB_TORSO,
-    /* 0x0A */ BBA_LIMB_LEFT_UPPER_ARM,
-    /* 0x0B */ BBA_LIMB_LEFT_LOWER_ARM_ROOT,
-    /* 0x0C */ BBA_LIMB_LEFT_FOREARM,
-    /* 0x0D */ BBA_LIMB_LEFT_HAND,
-    /* 0x0E */ BBA_LIMB_RIGHT_UPPER_ARM,
-    /* 0x0F */ BBA_LIMB_RIGHT_LOWER_ARM_ROOT,
-    /* 0x10 */ BBA_LIMB_RIGHT_FOREARM,
-    /* 0x11 */ BBA_LIMB_RIGHT_HAND,
-    /* 0x12 */ BBA_LIMB_MAX
-} BbaLimb;
+typedef enum BombShopLadyLimb {
+    /* 0x00 */ BOMB_SHOP_LADY_LIMB_NONE,
+    /* 0x01 */ BOMB_SHOP_LADY_LIMB_UPPER_LEGS,
+    /* 0x02 */ BOMB_SHOP_LADY_LIMB_MIDDLE_LEGS,
+    /* 0x03 */ BOMB_SHOP_LADY_LIMB_LOWER_LEGS,
+    /* 0x04 */ BOMB_SHOP_LADY_LIMB_FEET,
+    /* 0x05 */ BOMB_SHOP_LADY_LIMB_UPPER_ROOT,
+    /* 0x06 */ BOMB_SHOP_LADY_LIMB_NECK,
+    /* 0x07 */ BOMB_SHOP_LADY_LIMB_HEAD,
+    /* 0x08 */ BOMB_SHOP_LADY_LIMB_BAG,
+    /* 0x09 */ BOMB_SHOP_LADY_LIMB_TORSO,
+    /* 0x0A */ BOMB_SHOP_LADY_LIMB_LEFT_UPPER_ARM,
+    /* 0x0B */ BOMB_SHOP_LADY_LIMB_LEFT_LOWER_ARM_ROOT,
+    /* 0x0C */ BOMB_SHOP_LADY_LIMB_LEFT_FOREARM,
+    /* 0x0D */ BOMB_SHOP_LADY_LIMB_LEFT_HAND,
+    /* 0x0E */ BOMB_SHOP_LADY_LIMB_RIGHT_UPPER_ARM,
+    /* 0x0F */ BOMB_SHOP_LADY_LIMB_RIGHT_LOWER_ARM_ROOT,
+    /* 0x10 */ BOMB_SHOP_LADY_LIMB_RIGHT_FOREARM,
+    /* 0x11 */ BOMB_SHOP_LADY_LIMB_RIGHT_HAND,
+    /* 0x12 */ BOMB_SHOP_LADY_LIMB_MAX
+} BombShopLadyLimb;
 
 #endif // OBJECTS_OBJECT_BBA_H

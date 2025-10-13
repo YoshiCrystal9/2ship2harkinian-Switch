@@ -210,6 +210,9 @@ static const ALIGN_ASSET(2) char gameplay_keep_Tex_00C830[] = dgameplay_keep_Tex
 #define dgameplay_keep_Tex_00CA30 "__OTR__objects/gameplay_keep/gameplay_keep_Tex_00CA30"
 static const ALIGN_ASSET(2) char gameplay_keep_Tex_00CA30[] = dgameplay_keep_Tex_00CA30;
 
+#define dgameplay_keep_Tex_00CA30_Overflow "__OTR__objects/gameplay_keep/gameplay_keep_Tex_00CA30_Overflow"
+static const ALIGN_ASSET(2) char gameplay_keep_Tex_00CA30_Overflow[] = dgameplay_keep_Tex_00CA30_Overflow;
+
 #define dgDekuStickTex "__OTR__objects/gameplay_keep/gDekuStickTex"
 static const ALIGN_ASSET(2) char gDekuStickTex[] = dgDekuStickTex;
 
@@ -2535,8 +2538,8 @@ static const ALIGN_ASSET(2) char gCompassArrowDL[] = dgCompassArrowDL;
 #define dgameplay_keep_DL_01ED90 "__OTR__objects/gameplay_keep/gameplay_keep_DL_01ED90"
 static const ALIGN_ASSET(2) char gameplay_keep_DL_01ED90[] = dgameplay_keep_DL_01ED90;
 
-#define dgZTargetArrowDL "__OTR__objects/gameplay_keep/gZTargetArrowDL"
-static const ALIGN_ASSET(2) char gZTargetArrowDL[] = dgZTargetArrowDL;
+#define dgLockOnArrowDL "__OTR__objects/gameplay_keep/gLockOnArrowDL"
+static const ALIGN_ASSET(2) char gLockOnArrowDL[] = dgLockOnArrowDL;
 
 #define dgameplay_keep_Tex_01F200 "__OTR__objects/gameplay_keep/gameplay_keep_Tex_01F200"
 static const ALIGN_ASSET(2) char gameplay_keep_Tex_01F200[] = dgameplay_keep_Tex_01F200;
@@ -2562,14 +2565,14 @@ static const ALIGN_ASSET(2) char gBoulderFragmentsDL[] = dgBoulderFragmentsDL;
 #define dgBoulderFragmentsTex "__OTR__objects/gameplay_keep/gBoulderFragmentsTex"
 static const ALIGN_ASSET(2) char gBoulderFragmentsTex[] = dgBoulderFragmentsTex;
 
-#define dgameplay_keep_Anim_0204B4 "__OTR__objects/gameplay_keep/gameplay_keep_Anim_0204B4"
-static const ALIGN_ASSET(2) char gameplay_keep_Anim_0204B4[] = dgameplay_keep_Anim_0204B4;
+#define dgDoorHumanOpenLeftAnim "__OTR__objects/gameplay_keep/gDoorHumanOpenLeftAnim"
+static const ALIGN_ASSET(2) char gDoorHumanOpenLeftAnim[] = dgDoorHumanOpenLeftAnim;
 
-#define dgameplay_keep_Anim_0205A0 "__OTR__objects/gameplay_keep/gameplay_keep_Anim_0205A0"
-static const ALIGN_ASSET(2) char gameplay_keep_Anim_0205A0[] = dgameplay_keep_Anim_0205A0;
+#define dgDoorHumanOpenRightAnim "__OTR__objects/gameplay_keep/gDoorHumanOpenRightAnim"
+static const ALIGN_ASSET(2) char gDoorHumanOpenRightAnim[] = dgDoorHumanOpenRightAnim;
 
-#define dgameplay_keep_Anim_020658 "__OTR__objects/gameplay_keep/gameplay_keep_Anim_020658"
-static const ALIGN_ASSET(2) char gameplay_keep_Anim_020658[] = dgameplay_keep_Anim_020658;
+#define dgDoorFierceDeityZoraOpenLeftAnim "__OTR__objects/gameplay_keep/gDoorFierceDeityZoraOpenLeftAnim"
+static const ALIGN_ASSET(2) char gDoorFierceDeityZoraOpenLeftAnim[] = dgDoorFierceDeityZoraOpenLeftAnim;
 
 #define dgameplay_keep_DL_020B30 "__OTR__objects/gameplay_keep/gameplay_keep_DL_020B30"
 static const ALIGN_ASSET(2) char gameplay_keep_DL_020B30[] = dgameplay_keep_DL_020B30;
@@ -2595,26 +2598,26 @@ static const ALIGN_ASSET(2) char gameplay_keep_Tex_0226E8[] = dgameplay_keep_Tex
 #define dgDoorSkel "__OTR__objects/gameplay_keep/gDoorSkel"
 static const ALIGN_ASSET(2) char gDoorSkel[] = dgDoorSkel;
 
-#define dgameplay_keep_Anim_022BE8 "__OTR__objects/gameplay_keep/gameplay_keep_Anim_022BE8"
-static const ALIGN_ASSET(2) char gameplay_keep_Anim_022BE8[] = dgameplay_keep_Anim_022BE8;
+#define dgDoorFierceDeityZoraOpenRightAnim "__OTR__objects/gameplay_keep/gDoorFierceDeityZoraOpenRightAnim"
+static const ALIGN_ASSET(2) char gDoorFierceDeityZoraOpenRightAnim[] = dgDoorFierceDeityZoraOpenRightAnim;
 
-#define dgameplay_keep_Anim_022CA8 "__OTR__objects/gameplay_keep/gameplay_keep_Anim_022CA8"
-static const ALIGN_ASSET(2) char gameplay_keep_Anim_022CA8[] = dgameplay_keep_Anim_022CA8;
+#define dgDoorGoronOpenLeftAnim "__OTR__objects/gameplay_keep/gDoorGoronOpenLeftAnim"
+static const ALIGN_ASSET(2) char gDoorGoronOpenLeftAnim[] = dgDoorGoronOpenLeftAnim;
 
-#define dgameplay_keep_Anim_022D90 "__OTR__objects/gameplay_keep/gameplay_keep_Anim_022D90"
-static const ALIGN_ASSET(2) char gameplay_keep_Anim_022D90[] = dgameplay_keep_Anim_022D90;
+#define dgDoorGoronOpenRightAnim "__OTR__objects/gameplay_keep/gDoorGoronOpenRightAnim"
+static const ALIGN_ASSET(2) char gDoorGoronOpenRightAnim[] = dgDoorGoronOpenRightAnim;
 
-#define dgameplay_keep_Anim_022E68 "__OTR__objects/gameplay_keep/gameplay_keep_Anim_022E68"
-static const ALIGN_ASSET(2) char gameplay_keep_Anim_022E68[] = dgameplay_keep_Anim_022E68;
+#define dgDoorDekuOpenLeftAnim "__OTR__objects/gameplay_keep/gDoorDekuOpenLeftAnim"
+static const ALIGN_ASSET(2) char gDoorDekuOpenLeftAnim[] = dgDoorDekuOpenLeftAnim;
 
-#define dgameplay_keep_zeroes_unk_00022E78 "__OTR__objects/gameplay_keep/gameplay_keep_zeroes_unk_00022E78"
-static const ALIGN_ASSET(2) char gameplay_keep_zeroes_unk_00022E78[] = dgameplay_keep_zeroes_unk_00022E78;
+#define dgGameplayKeepEmptyBlob "__OTR__objects/gameplay_keep/gGameplayKeepEmptyBlob"
+static const ALIGN_ASSET(2) char gGameplayKeepEmptyBlob[] = dgGameplayKeepEmptyBlob;
 
-#define dgameplay_keep_Anim_022FF0 "__OTR__objects/gameplay_keep/gameplay_keep_Anim_022FF0"
-static const ALIGN_ASSET(2) char gameplay_keep_Anim_022FF0[] = dgameplay_keep_Anim_022FF0;
+#define dgDoorDekuOpenRightAnim "__OTR__objects/gameplay_keep/gDoorDekuOpenRightAnim"
+static const ALIGN_ASSET(2) char gDoorDekuOpenRightAnim[] = dgDoorDekuOpenRightAnim;
 
-#define dgDoorCol "__OTR__objects/gameplay_keep/gDoorCol"
-static const ALIGN_ASSET(2) char gDoorCol[] = dgDoorCol;
+#define dgFramedDoorCol "__OTR__objects/gameplay_keep/gFramedDoorCol"
+static const ALIGN_ASSET(2) char gFramedDoorCol[] = dgFramedDoorCol;
 
 #define dgEffDustDL "__OTR__objects/gameplay_keep/gEffDustDL"
 static const ALIGN_ASSET(2) char gEffDustDL[] = dgEffDustDL;
@@ -3095,6 +3098,9 @@ static const ALIGN_ASSET(2) char gameplay_keep_Tex_044BB0[] = dgameplay_keep_Tex
 
 #define dgEffIceFragmentTex "__OTR__objects/gameplay_keep/gEffIceFragmentTex"
 static const ALIGN_ASSET(2) char gEffIceFragmentTex[] = dgEffIceFragmentTex;
+
+#define dgEffIceFragmentTex_Overflow "__OTR__objects/gameplay_keep/gEffIceFragmentTex_Overflow"
+static const ALIGN_ASSET(2) char gEffIceFragmentTex_Overflow[] = dgEffIceFragmentTex_Overflow;
 
 #define dgameplay_keep_Tex_0453B0 "__OTR__objects/gameplay_keep/gameplay_keep_Tex_0453B0"
 static const ALIGN_ASSET(2) char gameplay_keep_Tex_0453B0[] = dgameplay_keep_Tex_0453B0;
@@ -3753,8 +3759,8 @@ static const ALIGN_ASSET(2) char gSunSparkleModelDL[] = dgSunSparkleModelDL;
 #define dgSunDL "__OTR__objects/gameplay_keep/gSunDL"
 static const ALIGN_ASSET(2) char gSunDL[] = dgSunDL;
 
-#define dgZTargetLockOnTriangleDL "__OTR__objects/gameplay_keep/gZTargetLockOnTriangleDL"
-static const ALIGN_ASSET(2) char gZTargetLockOnTriangleDL[] = dgZTargetLockOnTriangleDL;
+#define dgLockOnReticleTriangleDL "__OTR__objects/gameplay_keep/gLockOnReticleTriangleDL"
+static const ALIGN_ASSET(2) char gLockOnReticleTriangleDL[] = dgLockOnReticleTriangleDL;
 
 #define dgSongOfTimeClockDL "__OTR__objects/gameplay_keep/gSongOfTimeClockDL"
 static const ALIGN_ASSET(2) char gSongOfTimeClockDL[] = dgSongOfTimeClockDL;
@@ -3810,23 +3816,26 @@ static const ALIGN_ASSET(2) char gameplay_keep_Tex_07F2E8[] = dgameplay_keep_Tex
 #define dgameplay_keep_DL_080FC0 "__OTR__objects/gameplay_keep/gameplay_keep_DL_080FC0"
 static const ALIGN_ASSET(2) char gameplay_keep_DL_080FC0[] = dgameplay_keep_DL_080FC0;
 
-#define dgameplay_keep_DL_080FC8 "__OTR__objects/gameplay_keep/gameplay_keep_DL_080FC8"
-static const ALIGN_ASSET(2) char gameplay_keep_DL_080FC8[] = dgameplay_keep_DL_080FC8;
+#define dgSoaringWarpCsWindCapsuleDL "__OTR__objects/gameplay_keep/gSoaringWarpCsWindCapsuleDL"
+static const ALIGN_ASSET(2) char gSoaringWarpCsWindCapsuleDL[] = dgSoaringWarpCsWindCapsuleDL;
 
-#define dgameplay_keep_Tex_0813A0 "__OTR__objects/gameplay_keep/gameplay_keep_Tex_0813A0"
-static const ALIGN_ASSET(2) char gameplay_keep_Tex_0813A0[] = dgameplay_keep_Tex_0813A0;
+#define dgSoaringWarpCsWindCapsuleTex "__OTR__objects/gameplay_keep/gSoaringWarpCsWindCapsuleTex"
+static const ALIGN_ASSET(2) char gSoaringWarpCsWindCapsuleTex[] = dgSoaringWarpCsWindCapsuleTex;
 
-#define dgameplay_keep_Matanimheader_0815D0 "__OTR__objects/gameplay_keep/gameplay_keep_Matanimheader_0815D0"
-static const ALIGN_ASSET(2) char gameplay_keep_Matanimheader_0815D0[] = dgameplay_keep_Matanimheader_0815D0;
+#define dgSoaringWarpCsWindCapsuleTexAnim "__OTR__objects/gameplay_keep/gSoaringWarpCsWindCapsuleTexAnim"
+static const ALIGN_ASSET(2) char gSoaringWarpCsWindCapsuleTexAnim[] = dgSoaringWarpCsWindCapsuleTexAnim;
 
-#define dgameplay_keep_DL_081620 "__OTR__objects/gameplay_keep/gameplay_keep_DL_081620"
-static const ALIGN_ASSET(2) char gameplay_keep_DL_081620[] = dgameplay_keep_DL_081620;
+#define dgSoaringWarpCsEmptyDL "__OTR__objects/gameplay_keep/gSoaringWarpCsEmptyDL"
+static const ALIGN_ASSET(2) char gSoaringWarpCsEmptyDL[] = dgSoaringWarpCsEmptyDL;
 
-#define dgameplay_keep_DL_081628 "__OTR__objects/gameplay_keep/gameplay_keep_DL_081628"
-static const ALIGN_ASSET(2) char gameplay_keep_DL_081628[] = dgameplay_keep_DL_081628;
+#define dgSoaringWarpCsFeatherDL "__OTR__objects/gameplay_keep/gSoaringWarpCsFeatherDL"
+static const ALIGN_ASSET(2) char gSoaringWarpCsFeatherDL[] = dgSoaringWarpCsFeatherDL;
 
-#define dgameplay_keep_Tex_0816C0 "__OTR__objects/gameplay_keep/gameplay_keep_Tex_0816C0"
-static const ALIGN_ASSET(2) char gameplay_keep_Tex_0816C0[] = dgameplay_keep_Tex_0816C0;
+#define dgSoaringWarpCsFeatherTex "__OTR__objects/gameplay_keep/gSoaringWarpCsFeatherTex"
+static const ALIGN_ASSET(2) char gSoaringWarpCsFeatherTex[] = dgSoaringWarpCsFeatherTex;
+
+#define dgameplay_keep_Blob_081AC0 "__OTR__objects/gameplay_keep/gameplay_keep_Blob_081AC0"
+static const ALIGN_ASSET(2) char gameplay_keep_Blob_081AC0[] = dgameplay_keep_Blob_081AC0;
 
 #define dgGameplayKeepKFAnim_83534 "__OTR__objects/gameplay_keep/gGameplayKeepKFAnim_83534"
 static const ALIGN_ASSET(2) char gGameplayKeepKFAnim_83534[] = dgGameplayKeepKFAnim_83534;
@@ -3920,6 +3929,9 @@ static const ALIGN_ASSET(2) char gameplay_keep_DL_085418[] = dgameplay_keep_DL_0
 
 #define dgameplay_keep_DL_085490 "__OTR__objects/gameplay_keep/gameplay_keep_DL_085490"
 static const ALIGN_ASSET(2) char gameplay_keep_DL_085490[] = dgameplay_keep_DL_085490;
+
+#define dgameplay_keep_Blob_085510 "__OTR__objects/gameplay_keep/gameplay_keep_Blob_085510"
+static const ALIGN_ASSET(2) char gameplay_keep_Blob_085510[] = dgameplay_keep_Blob_085510;
 
 #define dgGameplayKeepKFSkel_85640 "__OTR__objects/gameplay_keep/gGameplayKeepKFSkel_85640"
 static const ALIGN_ASSET(2) char gGameplayKeepKFSkel_85640[] = dgGameplayKeepKFSkel_85640;

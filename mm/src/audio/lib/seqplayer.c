@@ -827,7 +827,7 @@ s32 AudioScript_SeqLayerProcessScriptStep4(SequenceLayer* layer, s32 cmd) {
     u8 semitone = cmd;
     u16 sfxId;
     s32 semitone2;
-    s32 vel;
+    s32 velocity;
     f32 time;
     f32 tuning;
     s32 speed2;
@@ -902,10 +902,10 @@ s32 AudioScript_SeqLayerProcessScriptStep4(SequenceLayer* layer, s32 cmd) {
 
             if (layer->portamento.mode != PORTAMENTO_MODE_OFF) {
                 portamento = &layer->portamento;
-                vel = (semitone > layer->portamentoTargetNote) ? semitone : layer->portamentoTargetNote;
+                velocity = (semitone > layer->portamentoTargetNote) ? semitone : layer->portamentoTargetNote;
 
                 if (instrument != NULL) {
-                    tunedSample = AudioPlayback_GetInstrumentTunedSample(instrument, vel);
+                    tunedSample = AudioPlayback_GetInstrumentTunedSample(instrument, velocity);
                     sameTunedSample = (layer->tunedSample == tunedSample);
                     layer->tunedSample = tunedSample;
                     tuning = tunedSample->tuning;
@@ -1542,16 +1542,14 @@ void AudioScript_SequenceChannelProcessScript(SequenceChannel* channel) {
                 case 0xE7: // channel:
                     cmdArgU16 = (u16)cmdArgs[0];
                     data = &seqPlayer->seqData[cmdArgU16];
-                    channel->muteFlags = data[0];
-                    data += 3;
-                    channel->noteAllocPolicy = data[-2];
-                    AudioScript_SetChannelPriorities(channel, data[-1]);
-                    channel->transposition = (s8)data[0];
-                    data += 4;
-                    channel->newPan = data[-3];
-                    channel->panChannelWeight = data[-2];
-                    channel->targetReverbVol = data[-1];
-                    channel->reverbIndex = data[0];
+                    channel->muteFlags = *data++;
+                    channel->noteAllocPolicy = *data++;
+                    AudioScript_SetChannelPriorities(channel, *data++);
+                    channel->transposition = (s8)*data++;
+                    channel->newPan = *data++;
+                    channel->panChannelWeight = *data++;
+                    channel->targetReverbVol = *data++;
+                    channel->reverbIndex = *data++;
                     //! @bug: Not marking reverb state as changed
                     channel->changes.s.pan = true;
                     break;

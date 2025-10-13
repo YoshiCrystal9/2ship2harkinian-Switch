@@ -7,9 +7,7 @@
 #include "z_obj_fireshield.h"
 #include "objects/gameplay_keep/gameplay_keep.h"
 
-#define FLAGS (ACTOR_FLAG_10)
-
-#define THIS ((ObjFireshield*)thisx)
+#define FLAGS (ACTOR_FLAG_UPDATE_CULLING_DISABLED)
 
 void ObjFireshield_Init(Actor* thisx, PlayState* play);
 void ObjFireshield_Destroy(Actor* thisx, PlayState* play);
@@ -22,7 +20,7 @@ void func_80A4CC54(ObjFireshield* this);
 void func_80A4CCBC(ObjFireshield* this);
 void func_80A4CD28(ObjFireshield* this);
 
-ActorInit Obj_Fireshield_InitVars = {
+ActorProfile Obj_Fireshield_Profile = {
     /**/ ACTOR_OBJ_FIRESHIELD,
     /**/ ACTORCAT_PROP,
     /**/ FLAGS,
@@ -36,7 +34,7 @@ ActorInit Obj_Fireshield_InitVars = {
 
 static ColliderCylinderInit sCylinderInit = {
     {
-        COLTYPE_NONE,
+        COL_MATERIAL_NONE,
         AT_ON | AT_TYPE_ENEMY,
         AC_NONE,
         OC1_ON | OC1_TYPE_PLAYER,
@@ -44,11 +42,11 @@ static ColliderCylinderInit sCylinderInit = {
         COLSHAPE_CYLINDER,
     },
     {
-        ELEMTYPE_UNK0,
+        ELEM_MATERIAL_UNK0,
         { 0x20000000, 0x01, 0x04 },
         { 0x00000000, 0x00, 0x00 },
-        TOUCH_ON | TOUCH_SFX_NONE,
-        BUMP_NONE,
+        ATELEM_ON | ATELEM_SFX_NONE,
+        ACELEM_NONE,
         OCELEM_ON,
     },
     { 28, 144, 0, { 0, 0, 0 } },
@@ -71,13 +69,13 @@ s32 D_80A4D884[] = { 0, 0, 0, 0 };
 s32 D_80A4D894[] = { 0, 0, 0, 0 };
 
 static InitChainEntry sInitChain[] = {
-    ICHAIN_F32(uncullZoneForward, 4000, ICHAIN_CONTINUE),
-    ICHAIN_F32(uncullZoneDownward, 400, ICHAIN_CONTINUE),
+    ICHAIN_F32(cullingVolumeDistance, 4000, ICHAIN_CONTINUE),
+    ICHAIN_F32(cullingVolumeDownward, 400, ICHAIN_CONTINUE),
     ICHAIN_VEC3F_DIV1000(scale, 100, ICHAIN_STOP),
 };
 
 void func_80A4CA90(ObjFireshield* this) {
-    if (this->actor.csId >= 0) {
+    if (this->actor.csId > CS_ID_NONE) {
         this->actionFunc = func_80A4CABC;
     } else {
         this->actionFunc = func_80A4CC54;
@@ -140,7 +138,7 @@ void func_80A4CD28(ObjFireshield* this) {
 
 void func_80A4CD34(Actor* thisx, PlayState* play) {
     s32 pad;
-    ObjFireshield* this = THIS;
+    ObjFireshield* this = (ObjFireshield*)thisx;
     s32 isSwitchFlagSet = Flags_GetSwitch(play, OBJFIRESHIELD_GET_FLAGS(&this->actor));
     s32 phi_v1;
     s32 phi_a0;
@@ -268,7 +266,7 @@ void func_80A4D1CC(void) {
 }
 
 void ObjFireshield_Init(Actor* thisx, PlayState* play) {
-    ObjFireshield* this = THIS;
+    ObjFireshield* this = (ObjFireshield*)thisx;
     s32 temp = 0x8000;
     ObjFireshieldStruct* sp2C = &D_80A4D84C[OBJFIRESHIELD_GET_C000(&this->actor)];
     s32 sp28 = OBJFIRESHIELD_GET_ROTX(&this->actor);
@@ -289,7 +287,7 @@ void ObjFireshield_Init(Actor* thisx, PlayState* play) {
     this->actor.scale.z = this->actor.scale.x;
     this->actor.scale.y = 0.05f;
 
-    this->actor.uncullZoneScale = sp2C->unk_04;
+    this->actor.cullingVolumeScale = sp2C->unk_04;
     this->unk_1A4 = Rand_ZeroOne() * 128.0f;
 
     if ((this->actor.home.rot.z * 10) < 0) {
@@ -309,14 +307,14 @@ void ObjFireshield_Init(Actor* thisx, PlayState* play) {
 }
 
 void ObjFireshield_Destroy(Actor* thisx, PlayState* play) {
-    ObjFireshield* this = THIS;
+    ObjFireshield* this = (ObjFireshield*)thisx;
 
     Collider_DestroyCylinder(play, &this->collider);
 }
 
 void ObjFireshield_Update(Actor* thisx, PlayState* play) {
     s32 pad;
-    ObjFireshield* this = THIS;
+    ObjFireshield* this = (ObjFireshield*)thisx;
     s32 sp44 = OBJFIRESHIELD_GET_ROTX(&this->actor);
     s32 sp40 = OBJFIRESHIELD_GET_FLAGS(&this->actor);
     s32 temp_a0;
@@ -365,11 +363,11 @@ void ObjFireshield_Update(Actor* thisx, PlayState* play) {
         Actor_PlaySfx_Flagged(thisx, NA_SE_EV_BURNING - SFX_FLAG);
 
         if (player->transformation == PLAYER_FORM_GORON) {
-            this->collider.info.toucher.damage = 0;
-            this->collider.info.toucher.effect = 0;
+            this->collider.elem.atDmgInfo.damage = 0;
+            this->collider.elem.atDmgInfo.effect = 0;
         } else {
-            this->collider.info.toucher.damage = 4;
-            this->collider.info.toucher.effect = 1;
+            this->collider.elem.atDmgInfo.damage = 4;
+            this->collider.elem.atDmgInfo.effect = 1;
         }
 
         Collider_UpdateCylinder(thisx, &this->collider);
@@ -379,7 +377,7 @@ void ObjFireshield_Update(Actor* thisx, PlayState* play) {
 }
 
 void ObjFireshield_Draw(Actor* thisx, PlayState* play) {
-    ObjFireshield* this = THIS;
+    ObjFireshield* this = (ObjFireshield*)thisx;
 
     OPEN_DISPS(play->state.gfxCtx);
 
@@ -390,7 +388,7 @@ void ObjFireshield_Draw(Actor* thisx, PlayState* play) {
     gSPSegment(POLY_XLU_DISP++, 0x08,
                Gfx_TwoTexScroll(play->state.gfxCtx, 0, this->unk_1A4 & 0x7F, 0, 0x20, 0x40, 1, 0,
                                 (this->unk_1A4 * -15) & 0xFF, 0x20, 0x40));
-    gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    MATRIX_FINALIZE_AND_LOAD(POLY_XLU_DISP++, play->state.gfxCtx);
     gSPDisplayList(POLY_XLU_DISP++, gameplay_keep_DL_02E510);
 
     CLOSE_DISPS(play->state.gfxCtx);

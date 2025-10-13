@@ -1,14 +1,18 @@
-#include "global.h"
 #include <string.h>
+#include "z64transition.h"
 
-#define THIS ((TransitionFade*)thisx)
+#include "gfx.h"
+#include "regs.h"
+#include "z64math.h"
+#include "z64save.h"
+#include "macros.h"
 
-typedef enum {
+typedef enum TransitionFadeDirection {
     /* 0 */ TRANS_FADE_DIR_IN,
     /* 1 */ TRANS_FADE_DIR_OUT
 } TransitionFadeDirection;
 
-typedef enum {
+typedef enum TransitionFadeType {
     /* 0 */ TRANS_FADE_TYPE_NONE,
     /* 1 */ TRANS_FADE_TYPE_ONE_WAY,
     /* 2 */ TRANS_FADE_TYPE_FLASH
@@ -25,14 +29,14 @@ static Gfx sTransFadeSetupDL[] = {
     gsSPEndDisplayList(),
 };
 
-TransitionInit TransitionFade_InitVars = {
+TransitionProfile TransitionFade_Profile = {
     TransitionFade_Init,   TransitionFade_Destroy, TransitionFade_Update,   TransitionFade_Draw,
     TransitionFade_Start,  TransitionFade_SetType, TransitionFade_SetColor, NULL,
     TransitionFade_IsDone,
 };
 
 void TransitionFade_Start(void* thisx) {
-    TransitionFade* this = THIS;
+    TransitionFade* this = (TransitionFade*)thisx;
 
     switch (this->type) {
         case TRANS_FADE_TYPE_NONE:
@@ -54,7 +58,7 @@ void TransitionFade_Start(void* thisx) {
 }
 
 void* TransitionFade_Init(void* thisx) {
-    TransitionFade* this = THIS;
+    TransitionFade* this = (TransitionFade*)thisx;
 
     memset(this, 0, sizeof(TransitionFade));
     return this;
@@ -66,7 +70,7 @@ void TransitionFade_Destroy(void* thisx) {
 void TransitionFade_Update(void* thisx, s32 updateRate) {
     s32 alpha;
     s16 newAlpha;
-    TransitionFade* this = THIS;
+    TransitionFade* this = (TransitionFade*)thisx;
 
     switch (this->type) {
         case TRANS_FADE_TYPE_NONE:
@@ -74,7 +78,7 @@ void TransitionFade_Update(void* thisx, s32 updateRate) {
 
         case TRANS_FADE_TYPE_ONE_WAY:
             //! FAKE:
-            THIS->timer += updateRate;
+            ((TransitionFade*)thisx)->timer += updateRate;
 
             if (this->timer >= ((void)0, gSaveContext.transFadeDuration)) {
                 this->timer = ((void)0, gSaveContext.transFadeDuration);
@@ -109,7 +113,7 @@ void TransitionFade_Update(void* thisx, s32 updateRate) {
 }
 
 void TransitionFade_Draw(void* thisx, Gfx** gfxP) {
-    TransitionFade* this = THIS;
+    TransitionFade* this = (TransitionFade*)thisx;
     Gfx* gfx;
     Color_RGBA8_u32* color = &this->color;
 
@@ -123,19 +127,19 @@ void TransitionFade_Draw(void* thisx, Gfx** gfxP) {
 }
 
 s32 TransitionFade_IsDone(void* thisx) {
-    TransitionFade* this = THIS;
+    TransitionFade* this = (TransitionFade*)thisx;
 
     return this->isDone;
 }
 
 void TransitionFade_SetColor(void* thisx, u32 color) {
-    TransitionFade* this = THIS;
+    TransitionFade* this = (TransitionFade*)thisx;
 
     this->color.rgba = color;
 }
 
 void TransitionFade_SetType(void* thisx, s32 type) {
-    TransitionFade* this = THIS;
+    TransitionFade* this = (TransitionFade*)thisx;
 
     if (type == TRANS_INSTANCE_TYPE_FILL_OUT) {
         this->type = TRANS_FADE_TYPE_ONE_WAY;

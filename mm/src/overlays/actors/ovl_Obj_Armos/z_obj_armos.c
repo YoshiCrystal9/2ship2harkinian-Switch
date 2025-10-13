@@ -7,9 +7,7 @@
 #include "z_obj_armos.h"
 #include "objects/gameplay_keep/gameplay_keep.h"
 
-#define FLAGS (ACTOR_FLAG_10 | ACTOR_FLAG_CAN_PRESS_SWITCH)
-
-#define THIS ((ObjArmos*)thisx)
+#define FLAGS (ACTOR_FLAG_UPDATE_CULLING_DISABLED | ACTOR_FLAG_CAN_PRESS_SWITCHES)
 
 void ObjArmos_Init(Actor* thisx, PlayState* play);
 void ObjArmos_Destroy(Actor* thisx, PlayState* play);
@@ -23,7 +21,7 @@ void func_809A562C(ObjArmos* this, PlayState* play);
 void func_809A57D8(ObjArmos* this);
 void func_809A57F4(ObjArmos* this, PlayState* play);
 
-ActorInit Obj_Armos_InitVars = {
+ActorProfile Obj_Armos_Profile = {
     /**/ ACTOR_OBJ_ARMOS,
     /**/ ACTORCAT_PROP,
     /**/ FLAGS,
@@ -39,12 +37,14 @@ s16 D_809A5BB0[] = { 1, -1, 0, 0 };
 s16 D_809A5BB8[] = { 0, 0, 1, -1 };
 
 static InitChainEntry sInitChain[] = {
-    ICHAIN_F32(uncullZoneForward, 4000, ICHAIN_CONTINUE), ICHAIN_F32(uncullZoneScale, 120, ICHAIN_CONTINUE),
-    ICHAIN_F32(uncullZoneDownward, 250, ICHAIN_CONTINUE), ICHAIN_F32_DIV1000(gravity, -4000, ICHAIN_CONTINUE),
+    ICHAIN_F32(cullingVolumeDistance, 4000, ICHAIN_CONTINUE),
+    ICHAIN_F32(cullingVolumeScale, 120, ICHAIN_CONTINUE),
+    ICHAIN_F32(cullingVolumeDownward, 250, ICHAIN_CONTINUE),
+    ICHAIN_F32_DIV1000(gravity, -4000, ICHAIN_CONTINUE),
     ICHAIN_VEC3F_DIV1000(scale, 10, ICHAIN_STOP),
 };
 
-s32 func_809A4E00(ObjArmos* this, PlayState* play, s16 arg2) {
+bool func_809A4E00(ObjArmos* this, PlayState* play, s16 arg2) {
     return !DynaPolyActor_ValidateMove(play, &this->dyna, 30, arg2, 1) ||
            !DynaPolyActor_ValidateMove(play, &this->dyna, 30, arg2, 28);
 }
@@ -75,7 +75,7 @@ s32 func_809A4E68(ObjArmos* this) {
     return -1;
 }
 
-s32 func_809A4F00(ObjArmos* this, s32 arg1) {
+bool func_809A4F00(ObjArmos* this, s32 arg1) {
     s32 temp_v0 = OBJARMOS_GET_ROTZ_7(&this->dyna.actor);
 
     if (temp_v0 == OBJARMOS_ROT_7_0) {
@@ -117,7 +117,7 @@ s32 func_809A4F00(ObjArmos* this, s32 arg1) {
     return false;
 }
 
-s32 func_809A500C(ObjArmos* this, s32 arg1) {
+bool func_809A500C(ObjArmos* this, s32 arg1) {
     s32 temp_v0 = OBJARMOS_GET_ROTZ_7(&this->dyna.actor);
     s32 temp_v1 = OBJARMOS_GET_ROTX_F(&this->dyna.actor);
     s32 temp;
@@ -178,10 +178,10 @@ void func_809A518C(ObjArmos* this, s32 arg1) {
 
 void ObjArmos_Init(Actor* thisx, PlayState* play) {
     s32 pad;
-    ObjArmos* this = THIS;
+    ObjArmos* this = (ObjArmos*)thisx;
     s32 sp44 = OBJARMOS_GET_ROTZ_7(&this->dyna.actor);
     s32 sp40 = OBJARMOS_GET_ROTX_F(&this->dyna.actor);
-    f32 sp3C = Animation_GetLastFrame(&gArmosPushedBackAnim);
+    f32 endFrame = Animation_GetLastFrame(&gArmosPushedBackAnim);
 
     Actor_ProcessInitChain(&this->dyna.actor, sInitChain);
 
@@ -194,7 +194,7 @@ void ObjArmos_Init(Actor* thisx, PlayState* play) {
     SkelAnime_Init(play, &this->skelAnime, &object_am_Skel_005948, &gArmosPushedBackAnim, this->jointTable,
                    this->morphTable, OBJECT_AM_LIMB_MAX);
 
-    Animation_Change(&this->skelAnime, &gArmosPushedBackAnim, 0.0f, sp3C, sp3C, ANIMMODE_ONCE, 0.0f);
+    Animation_Change(&this->skelAnime, &gArmosPushedBackAnim, 0.0f, endFrame, endFrame, ANIMMODE_ONCE, 0.0f);
 
     if (sp40 == 0) {
         func_809A57D8(this);
@@ -220,7 +220,7 @@ void ObjArmos_Init(Actor* thisx, PlayState* play) {
 }
 
 void ObjArmos_Destroy(Actor* thisx, PlayState* play) {
-    ObjArmos* this = THIS;
+    ObjArmos* this = (ObjArmos*)thisx;
 
     DynaPoly_DeleteBgActor(play, &play->colCtx.dyna, this->dyna.bgId);
 }
@@ -316,8 +316,8 @@ void func_809A57F4(ObjArmos* this, PlayState* play) {
 
 void ObjArmos_Update(Actor* thisx, PlayState* play2) {
     PlayState* play = play2;
-    ObjArmos* this = THIS;
-    s32 sp2C;
+    ObjArmos* this = (ObjArmos*)thisx;
+    s32 bgId;
 
     this->actionFunc(this, play);
     this->dyna.actor.world.pos.y = this->dyna.actor.home.pos.y;
@@ -334,7 +334,7 @@ void ObjArmos_Update(Actor* thisx, PlayState* play2) {
         this->unk_250.y = this->dyna.actor.world.pos.y + 20.0f;
         this->unk_250.z = (Math_CosS(this->dyna.actor.shape.rot.y) * -9.0f) + this->dyna.actor.world.pos.z;
 
-        this->dyna.actor.floorHeight = BgCheck_EntityRaycastFloor5(&play->colCtx, &this->dyna.actor.floorPoly, &sp2C,
+        this->dyna.actor.floorHeight = BgCheck_EntityRaycastFloor5(&play->colCtx, &this->dyna.actor.floorPoly, &bgId,
                                                                    &this->dyna.actor, &this->unk_250);
     }
 }
@@ -377,7 +377,7 @@ void func_809A5A3C(ObjArmos* this, PlayState* play) {
         Matrix_Put(&sp48);
         Matrix_Scale(0.6f, 1.0f, 0.6f, MTXMODE_APPLY);
 
-        gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+        MATRIX_FINALIZE_AND_LOAD(POLY_XLU_DISP++, play->state.gfxCtx);
         gSPDisplayList(POLY_XLU_DISP++, gCircleShadowDL);
 
         CLOSE_DISPS(play->state.gfxCtx);
@@ -385,7 +385,7 @@ void func_809A5A3C(ObjArmos* this, PlayState* play) {
 }
 
 void ObjArmos_Draw(Actor* thisx, PlayState* play) {
-    ObjArmos* this = THIS;
+    ObjArmos* this = (ObjArmos*)thisx;
 
     func_809A5960(this, play);
     func_809A5A3C(this, play);

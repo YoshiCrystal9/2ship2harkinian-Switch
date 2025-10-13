@@ -9,9 +9,7 @@
 
 #include "2s2h/BenGui/CosmeticEditor.h"
 
-#define FLAGS (ACTOR_FLAG_10 | ACTOR_FLAG_2000000)
-
-#define THIS ((ArrowLight*)thisx)
+#define FLAGS (ACTOR_FLAG_UPDATE_CULLING_DISABLED | ACTOR_FLAG_UPDATE_DURING_OCARINA)
 
 void ArrowLight_Init(Actor* thisx, PlayState* play);
 void ArrowLight_Destroy(Actor* thisx, PlayState* play);
@@ -23,7 +21,7 @@ void ArrowLight_Fly(ArrowLight* this, PlayState* play);
 
 #include "overlays/ovl_Arrow_Light/ovl_Arrow_Light.h"
 
-ActorInit Arrow_Light_InitVars = {
+ActorProfile Arrow_Light_Profile = {
     /**/ ACTOR_ARROW_LIGHT,
     /**/ ACTORCAT_ITEMACTION,
     /**/ FLAGS,
@@ -36,7 +34,7 @@ ActorInit Arrow_Light_InitVars = {
 };
 
 static InitChainEntry sInitChain[] = {
-    ICHAIN_F32(uncullZoneForward, 2000, ICHAIN_STOP),
+    ICHAIN_F32(cullingVolumeDistance, 2000, ICHAIN_STOP),
 };
 
 void ArrowLight_SetupAction(ArrowLight* this, ArrowLightActionFunc actionFunc) {
@@ -170,7 +168,7 @@ void ArrowLight_Fly(ArrowLight* this, PlayState* play) {
 }
 
 void ArrowLight_Update(Actor* thisx, PlayState* play) {
-    ArrowLight* this = THIS;
+    ArrowLight* this = (ArrowLight*)thisx;
 
     if ((play->msgCtx.msgMode == MSGMODE_E) || (play->msgCtx.msgMode == MSGMODE_SONG_PLAYED)) {
         Actor_Kill(&this->actor);
@@ -220,7 +218,7 @@ void ArrowLight_Draw(Actor* thisx, PlayState* play) {
         Matrix_Scale(this->radius * 0.2f, this->height * 4.0f, this->radius * 0.2f, MTXMODE_APPLY);
         Matrix_Translate(0.0f, -700.0f, 0.0f, MTXMODE_APPLY);
 
-        gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+        MATRIX_FINALIZE_AND_LOAD(POLY_XLU_DISP++, play->state.gfxCtx);
         gSPDisplayList(POLY_XLU_DISP++, gLightArrowMaterialDL);
         gSPDisplayList(POLY_XLU_DISP++,
                        Gfx_TwoTexScroll(play->state.gfxCtx, 0, 511 - ((frames * 5) % 512), 0, 4, 32, 1,

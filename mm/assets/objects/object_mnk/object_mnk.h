@@ -249,6 +249,9 @@ static const ALIGN_ASSET(2) char object_mnk_Tex_019820[] = dobject_mnk_Tex_01982
 #define dobject_mnk_Tex_019920 "__OTR__objects/object_mnk/object_mnk_Tex_019920"
 static const ALIGN_ASSET(2) char object_mnk_Tex_019920[] = dobject_mnk_Tex_019920;
 
+#define dobject_mnk_Matanimheader_019A20 "__OTR__objects/object_mnk/object_mnk_Matanimheader_019A20"
+static const ALIGN_ASSET(2) char object_mnk_Matanimheader_019A20[] = dobject_mnk_Matanimheader_019A20;
+
 #define dgMonkeySkel "__OTR__objects/object_mnk/gMonkeySkel"
 static const ALIGN_ASSET(2) char gMonkeySkel[] = dgMonkeySkel;
 

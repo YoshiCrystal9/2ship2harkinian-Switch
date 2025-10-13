@@ -8,9 +8,7 @@
 #include "overlays/actors/ovl_Demo_Effect/z_demo_effect.h"
 #include "2s2h/GameInteractor/GameInteractor.h"
 
-#define FLAGS (ACTOR_FLAG_10 | ACTOR_FLAG_20 | ACTOR_FLAG_2000000)
-
-#define THIS ((BgDyYoseizo*)thisx)
+#define FLAGS (ACTOR_FLAG_UPDATE_CULLING_DISABLED | ACTOR_FLAG_DRAW_CULLING_DISABLED | ACTOR_FLAG_UPDATE_DURING_OCARINA)
 
 void BgDyYoseizo_Init(Actor* thisx, PlayState* play);
 void BgDyYoseizo_Destroy(Actor* thisx, PlayState* play);
@@ -26,7 +24,7 @@ void BgDyYoseizo_SpawnEffect(BgDyYoseizo* this, Vec3f* initPos, Vec3f* initVeloc
 void BgDyYoseizo_UpdateEffects(BgDyYoseizo* this, PlayState* play);
 void BgDyYoseizo_DrawEffects(BgDyYoseizo* this, PlayState* play);
 
-ActorInit Bg_Dy_Yoseizo_InitVars = {
+ActorProfile Bg_Dy_Yoseizo_Profile = {
     /**/ ACTOR_BG_DY_YOSEIZO,
     /**/ ACTORCAT_PROP,
     /**/ FLAGS,
@@ -64,7 +62,7 @@ static AnimationHeader* sAnimations[GREATFAIRY_ANIM_MAX] = {
 };
 
 void BgDyYoseizo_Init(Actor* thisx, PlayState* play) {
-    BgDyYoseizo* this = THIS;
+    BgDyYoseizo* this = (BgDyYoseizo*)thisx;
 
     this->unk2EC = this->actor.world.pos.y + 40.0f;
     this->actor.focus.pos = this->actor.world.pos;
@@ -543,7 +541,7 @@ void func_80A0BB08(BgDyYoseizo* this, PlayState* play) {
 }
 
 void BgDyYoseizo_Update(Actor* thisx, PlayState* play) {
-    BgDyYoseizo* this = THIS;
+    BgDyYoseizo* this = (BgDyYoseizo*)thisx;
 
     this->actionFunc(this, play);
     Actor_MoveWithGravity(&this->actor);
@@ -554,7 +552,7 @@ void BgDyYoseizo_Update(Actor* thisx, PlayState* play) {
 }
 
 s32 BgDyYoseizo_OverrideLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3f* pos, Vec3s* rot, Actor* thisx) {
-    BgDyYoseizo* this = THIS;
+    BgDyYoseizo* this = (BgDyYoseizo*)thisx;
 
     if (limbIndex == GREAT_FAIRY_LIMB_TORSO) {
         rot->x += this->torsoRot.y;
@@ -582,7 +580,7 @@ void BgDyYoseizo_Draw(Actor* thisx, PlayState* play) {
         gGreatFairyMouthClosedTex,
         gGreatFairyMouthOpenTex,
     };
-    BgDyYoseizo* this = THIS;
+    BgDyYoseizo* this = (BgDyYoseizo*)thisx;
     GreatFairyAppearance appearance = GREAT_FAIRY_APPEARANCE_MAGIC;
 
     // The differing eyes and hair colours
@@ -761,7 +759,7 @@ void BgDyYoseizo_DrawEffects(BgDyYoseizo* this, PlayState* play) {
             Matrix_Scale(effect->scale, effect->scale * stretchFactor, 1.0f, MTXMODE_APPLY);
             Matrix_RotateZS(effect->roll, MTXMODE_APPLY);
 
-            gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+            MATRIX_FINALIZE_AND_LOAD(POLY_XLU_DISP++, gfxCtx);
             gSPDisplayList(POLY_XLU_DISP++, gGreatFairyParticleDL);
         }
     }

@@ -19,6 +19,7 @@ s32 Object_SpawnPersistent(ObjectContext* objectCtx, s16 id) {
     objectCtx->slots[objectCtx->numEntries].id = id;
     size = gObjectTable[id].vromEnd - gObjectTable[id].vromStart;
 
+    //! FAKE:
     if (1) {}
 
     if (size != 0) {
@@ -111,7 +112,7 @@ s32 Object_GetSlot(ObjectContext* objectCtx, s16 objectId) {
         }
     }
 
-    return CVarGetInteger("gDeveloperTools.DisableObjectDependency", 0) ? 0 : -1;
+    return CVarGetInteger("gDeveloperTools.DisableObjectDependency", 0) ? 0 : OBJECT_SLOT_NONE;
 }
 
 s32 Object_IsLoaded(ObjectContext* objectCtx, s32 slot) {
@@ -165,9 +166,9 @@ void Scene_CommandSpawnList(PlayState* play, SceneCmd* cmd) {
 
     play->linkActorEntry =
         (ActorEntry*)Lib_SegmentedToVirtual(cmd->spawnList.segment) + play->setupEntranceList[play->curSpawn].spawn;
-    if ((PLAYER_GET_INITMODE(play->linkActorEntry) == PLAYER_INITMODE_TELESCOPE) ||
-        ((gSaveContext.respawnFlag == 2) &&
-         (gSaveContext.respawn[RESPAWN_MODE_RETURN].playerParams == PLAYER_PARAMS(0xFF, PLAYER_INITMODE_TELESCOPE)))) {
+    if ((PLAYER_GET_START_MODE(play->linkActorEntry) == PLAYER_START_MODE_TELESCOPE) ||
+        ((gSaveContext.respawnFlag == 2) && (gSaveContext.respawn[RESPAWN_MODE_RETURN].playerParams ==
+                                             PLAYER_PARAMS(0xFF, PLAYER_START_MODE_TELESCOPE)))) {
         // Skull Kid Object
         Object_SpawnPersistent(&play->objectCtx, OBJECT_STK);
         return;
@@ -178,7 +179,7 @@ void Scene_CommandSpawnList(PlayState* play, SceneCmd* cmd) {
     play->objectCtx.numEntries = loadedCount;
     play->objectCtx.numPersistentEntries = loadedCount;
     playerObjectId = gPlayerFormObjectIds[GET_PLAYER_FORM];
-    gActorOverlayTable[0].initInfo->objectId = playerObjectId;
+    gActorOverlayTable[ACTOR_PLAYER].profile->objectId = playerObjectId;
     Object_SpawnPersistent(&play->objectCtx, playerObjectId);
 
     play->objectCtx.slots[play->objectCtx.numEntries].segment = objectPtr;
@@ -223,8 +224,8 @@ void Scene_CommandCollisionHeader(PlayState* play, SceneCmd* cmd) {
 
 // SceneTableEntry Header Command 0x04: Room List
 void Scene_CommandRoomList(PlayState* play, SceneCmd* cmd) {
-    play->numRooms = cmd->roomList.num;
-    play->roomList = Lib_SegmentedToVirtual(cmd->roomList.segment);
+    play->roomList.count = cmd->roomList.num;
+    play->roomList.romFiles = Lib_SegmentedToVirtual(cmd->roomList.segment);
 }
 
 // SceneTableEntry Header Command 0x06: Entrance List
@@ -254,8 +255,8 @@ void Scene_CommandSpecialFiles(PlayState* play, SceneCmd* cmd) {
 
 // SceneTableEntry Header Command 0x08: Room Behavior
 void Scene_CommandRoomBehavior(PlayState* play, SceneCmd* cmd) {
-    play->roomCtx.curRoom.behaviorType1 = cmd->roomBehavior.gpFlag1;
-    play->roomCtx.curRoom.behaviorType2 = cmd->roomBehavior.gpFlag2 & 0xFF;
+    play->roomCtx.curRoom.type = cmd->roomBehavior.gpFlag1;
+    play->roomCtx.curRoom.environmentType = cmd->roomBehavior.gpFlag2 & 0xFF;
     play->roomCtx.curRoom.lensMode = (cmd->roomBehavior.gpFlag2 >> 8) & 1;
     play->msgCtx.unk12044 = (cmd->roomBehavior.gpFlag2 >> 0xA) & 1;
     play->roomCtx.curRoom.enablePosLights = (cmd->roomBehavior.gpFlag2 >> 0xB) & 1;
@@ -415,12 +416,12 @@ void Scene_CommandTimeSettings(PlayState* play, SceneCmd* cmd) {
         R_TIME_SPEED = play->envCtx.sceneTimeSpeed;
     }
 
-    play->envCtx.sunPos.x = -(Math_SinS(((void)0, gSaveContext.save.time) - CLOCK_TIME(12, 0)) * 120.0f) * 25.0f;
-    play->envCtx.sunPos.y = (Math_CosS(((void)0, gSaveContext.save.time) - CLOCK_TIME(12, 0)) * 120.0f) * 25.0f;
-    play->envCtx.sunPos.z = (Math_CosS(((void)0, gSaveContext.save.time) - CLOCK_TIME(12, 0)) * 20.0f) * 25.0f;
+    play->envCtx.sunPos.x = -(Math_SinS(CURRENT_TIME - CLOCK_TIME(12, 0)) * 120.0f) * 25.0f;
+    play->envCtx.sunPos.y = (Math_CosS(CURRENT_TIME - CLOCK_TIME(12, 0)) * 120.0f) * 25.0f;
+    play->envCtx.sunPos.z = (Math_CosS(CURRENT_TIME - CLOCK_TIME(12, 0)) * 20.0f) * 25.0f;
 
     if ((play->envCtx.sceneTimeSpeed == 0) && (gSaveContext.save.cutsceneIndex < 0xFFF0)) {
-        gSaveContext.skyboxTime = gSaveContext.save.time;
+        gSaveContext.skyboxTime = CURRENT_TIME;
 
         if ((gSaveContext.skyboxTime >= CLOCK_TIME(4, 0)) && (gSaveContext.skyboxTime < CLOCK_TIME(6, 30))) {
             gSaveContext.skyboxTime = CLOCK_TIME(5, 0);
@@ -455,10 +456,10 @@ void Scene_CommandExitList(PlayState* play, SceneCmd* cmd) {
 void Scene_Command09(PlayState* play, SceneCmd* cmd) {
 }
 
-// SceneTableEntry Header Command 0x15: Sound Settings=
+// SceneTableEntry Header Command 0x15: Sound Settings
 void Scene_CommandSoundSettings(PlayState* play, SceneCmd* cmd) {
-    play->sequenceCtx.seqId = cmd->soundSettings.seqId;
-    play->sequenceCtx.ambienceId = cmd->soundSettings.ambienceId;
+    play->sceneSequences.seqId = cmd->soundSettings.seqId;
+    play->sceneSequences.ambienceId = cmd->soundSettings.ambienceId;
 
     if (gSaveContext.seqId == (u8)NA_BGM_DISABLED ||
         AudioSeq_GetActiveSeqId(SEQ_PLAYER_BGM_MAIN) == NA_BGM_FINAL_HOURS) {
@@ -471,7 +472,7 @@ void Scene_CommandEchoSetting(PlayState* play, SceneCmd* cmd) {
     play->roomCtx.curRoom.echo = cmd->echoSettings.echo;
 }
 
-// SceneTableEntry Header Command 0x18: Alternate Header List=
+// SceneTableEntry Header Command 0x18: Alternate Header List
 void Scene_CommandAltHeaderList(PlayState* play, SceneCmd* cmd) {
     SceneCmd** altHeaderList;
     SceneCmd* altHeader;

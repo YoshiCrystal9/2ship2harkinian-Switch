@@ -6,7 +6,7 @@ extern "C" {
 #include "variables.h"
 #include "overlays/actors/ovl_En_Scopenuts/z_en_scopenuts.h"
 
-void Player_TalkWithPlayer(PlayState* play, Actor* actor);
+void Player_StartTalking(PlayState* play, Actor* actor);
 void func_80BCB980(EnScopenuts* enScopenuts, PlayState* play);
 }
 
@@ -18,12 +18,12 @@ void Rando::ActorBehavior::InitEnScopenutsBehavior() {
         if (actor->id == ACTOR_EN_SCOPENUTS) {
             EnScopenuts* enScopenuts = (EnScopenuts*)actor;
             *should = false;
-            SET_WEEKEVENTREG(WEEKEVENTREG_53_02);
+            SET_WEEKEVENTREG(WEEKEVENTREG_RECEIVED_BUSINESS_SCRUB_HEART_PIECE);
             actor->parent = &player->actor;
             player->talkActor = actor;
             player->talkActorDistance = actor->xzDistToPlayer;
             player->exchangeItemAction = PLAYER_IA_MINUS1;
-            Player_TalkWithPlayer(gPlayState, actor);
+            Player_StartTalking(gPlayState, actor);
             enScopenuts->actionFunc = func_80BCB980;
         }
     });

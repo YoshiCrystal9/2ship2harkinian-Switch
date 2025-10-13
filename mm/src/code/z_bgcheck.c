@@ -1,9 +1,7 @@
-#include "prevent_bss_reordering.h"
 #include "global.h"
 #include "fault.h"
 #include "fixed_point.h"
 #include "vt.h"
-#include "overlays/kaleido_scope/ovl_kaleido_scope/z_kaleido_scope.h"
 
 #include <stdio.h>
 #include "2s2h/BenPort.h"
@@ -2778,12 +2776,13 @@ void DynaPoly_EnableFloorCollision(PlayState* play, DynaCollisionContext* dyna, 
 void DynaPoly_DeleteBgActor(PlayState* play, DynaCollisionContext* dyna, s32 bgId) {
     DynaPolyActor* actor;
 
-    if (DynaPoly_IsBgIdBgActor(bgId) == false) {
+    if (!DynaPoly_IsBgIdBgActor(bgId)) {
         return;
     }
-    actor = DynaPoly_GetActor(&play->colCtx, bgId);
-    if (actor != NULL) {
 
+    actor = DynaPoly_GetActor(&play->colCtx, bgId);
+
+    if (actor != NULL) {
         actor->bgId = BGACTOR_NEG_ONE;
         dyna->bgActors[bgId].actor = NULL;
         dyna->bgActorFlags[bgId] |= BGACTOR_1;
@@ -2877,7 +2876,7 @@ void DynaPoly_AddBgActorToLookup(PlayState* play, DynaCollisionContext* dyna, s3
     pos.y += actor->shape.yOffset * actor->scale.y;
 
     //! FAKE:
-    if (pbgdata && pbgdata) {}
+    if (1) {}
 
     ScaleRotPos_SetValue(&dyna->bgActors[bgId].curTransform, &actor->scale, &actor->shape.rot, &pos);
 
@@ -3580,17 +3579,17 @@ s32 BgCheck_SphVsDynaWall(CollisionContext* colCtx, u16 xpFlags, f32* outX, f32*
             continue;
         }
 
-        bgActor->boundingSphere.radius += (s16)radius;
+        bgActor->boundingSphere.radius += TRUNCF_BINANG(radius);
 
         r = bgActor->boundingSphere.radius;
         dx = bgActor->boundingSphere.center.x - resultPos.x;
         dz = bgActor->boundingSphere.center.z - resultPos.z;
         if ((SQ(r) < SQ(dx) + SQ(dz)) || (!Math3D_XYInSphere(&bgActor->boundingSphere, resultPos.x, resultPos.y) &&
                                           !Math3D_YZInSphere(&bgActor->boundingSphere, resultPos.y, resultPos.z))) {
-            bgActor->boundingSphere.radius -= (s16)radius;
+            bgActor->boundingSphere.radius -= TRUNCF_BINANG(radius);
             continue;
         }
-        bgActor->boundingSphere.radius -= (s16)radius;
+        bgActor->boundingSphere.radius -= TRUNCF_BINANG(radius);
         if (BgCheck_SphVsDynaWallInBgActor(colCtx, xpFlags, &colCtx->dyna,
                                            &(colCtx->dyna.bgActors + i)->dynaLookup.wall, outX, outZ, outPoly, outBgId,
                                            &resultPos, radius, i, actor)) {

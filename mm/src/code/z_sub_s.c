@@ -16,9 +16,10 @@ Vec3f gOneVec3f = { 1.0f, 1.0f, 1.0f };
 s32 D_801C5DBC[] = { 0, 1 }; // Unused
 
 /**
- * Finds the first EnDoor instance with doorType == ENDOOR_TYPE_5 and the specified switchFlag.
+ * Finds the first EnDoor instance of type `ENDOOR_TYPE_SCHEDULE` and the specified schType (a value from the
+ * EnDoorScheduleType enum).
  */
-EnDoor* SubS_FindDoor(PlayState* play, s32 switchFlag) {
+EnDoor* SubS_FindScheduleDoor(PlayState* play, s32 schType) {
     Actor* actor = NULL;
     EnDoor* door;
 
@@ -26,11 +27,11 @@ EnDoor* SubS_FindDoor(PlayState* play, s32 switchFlag) {
         actor = SubS_FindActor(play, actor, ACTORCAT_DOOR, ACTOR_EN_DOOR);
         door = (EnDoor*)actor;
 
-        if (actor == NULL) {
+        if (door == NULL) {
             break;
         }
 
-        if ((door->doorType == ENDOOR_TYPE_5) && (door->switchFlag == (u8)switchFlag)) {
+        if ((door->doorType == ENDOOR_TYPE_SCHEDULE) && (door->typeVar.schType == (u8)schType)) {
             break;
         }
 
@@ -122,10 +123,10 @@ Gfx* SubS_DrawTransformFlex(PlayState* play, void** skeleton, Vec3s* jointTable,
     gSPSegment(gfx++, 0x0D, mtx);
     Matrix_Push();
     rootLimb = Lib_SegmentedToVirtual(skeleton[0]);
-    pos.x = jointTable->x;
-    pos.y = jointTable->y;
-    pos.z = jointTable->z;
-    rot = jointTable[1];
+    pos.x = jointTable[LIMB_ROOT_POS].x;
+    pos.y = jointTable[LIMB_ROOT_POS].y;
+    pos.z = jointTable[LIMB_ROOT_POS].z;
+    rot = jointTable[LIMB_ROOT_ROT];
     newDlist = rootLimb->dList;
     limbDList = rootLimb->dList;
 
@@ -548,7 +549,7 @@ s32 SubS_ChangeAnimationByInfoS(SkelAnime* skelAnime, AnimationInfoS* animationI
         endFrame = Animation_GetLastFrame(&anim->common);
     }
     startFrame = animationInfo->startFrame;
-    if (startFrame >= endFrame || startFrame < 0) {
+    if ((startFrame >= endFrame) || (startFrame < 0)) {
         return false;
     }
     if (animationInfo->playSpeed < 0.0f) {
@@ -576,7 +577,7 @@ s32 SubS_HasReachedPoint(Actor* actor, Path* path, s32 pointIndex) {
     if (index == 0) {
         diffX = points[1].x - points[0].x;
         diffZ = points[1].z - points[0].z;
-    } else if (index == count - 1) {
+    } else if (index == (count - 1)) {
         diffX = points[count - 1].x - points[count - 2].x;
         diffZ = points[count - 1].z - points[count - 2].z;
     } else {
@@ -595,9 +596,9 @@ s32 SubS_HasReachedPoint(Actor* actor, Path* path, s32 pointIndex) {
 Path* SubS_GetDayDependentPath(PlayState* play, u8 pathIndex, u8 pathIndexNone, s32* startPointIndex) {
     Path* path = NULL;
     s32 found = false;
-    s32 time = (((s16)TIME_TO_MINUTES_F(gSaveContext.save.time) % 60) +
-                ((s16)TIME_TO_MINUTES_F(gSaveContext.save.time) / 60) * 60) /
-               30;
+    s16 time1 = TRUNCF_BINANG(TIME_TO_MINUTES_F(CURRENT_TIME));
+    s16 time2 = TRUNCF_BINANG(TIME_TO_MINUTES_F(CURRENT_TIME));
+    s32 time = ((time1 % 60) + (time2 / 60) * 60) / 30;
     s32 day = CURRENT_DAY;
 
     if (pathIndex == pathIndexNone) {
@@ -833,11 +834,11 @@ s32 SubS_CopyPointFromPathCheckBounds(Path* path, s32 pointIndex, Vec3f* dst) {
  */
 s32 SubS_Offer(Actor* actor, PlayState* play, f32 xzRange, f32 yRange, s32 itemId, SubSOfferMode mode) {
     s32 canAccept = false;
-    s16 x;
-    s16 y;
+    s16 screenPosX;
+    s16 screenPosY;
     f32 xzDistToPlayerTemp;
 
-    Actor_GetScreenPos(play, actor, &x, &y);
+    Actor_GetScreenPos(play, actor, &screenPosX, &screenPosY);
 
     switch (mode) {
         case SUBS_OFFER_MODE_GET_ITEM:
@@ -854,7 +855,8 @@ s32 SubS_Offer(Actor* actor, PlayState* play, f32 xzRange, f32 yRange, s32 itemI
 
         case SUBS_OFFER_MODE_ONSCREEN:
             //! @bug: Both x and y conditionals are always true, || should be an &&
-            if (((x >= 0) || (x < SCREEN_WIDTH)) && ((y >= 0) || (y < SCREEN_HEIGHT))) {
+            if (((screenPosX >= 0) || (screenPosX < SCREEN_WIDTH)) &&
+                ((screenPosY >= 0) || (screenPosY < SCREEN_HEIGHT))) {
                 canAccept = Actor_OfferTalkExchange(actor, play, xzRange, yRange, itemId);
             }
             break;
@@ -864,25 +866,27 @@ s32 SubS_Offer(Actor* actor, PlayState* play, f32 xzRange, f32 yRange, s32 itemI
             xzRange = actor->xzDistToPlayer + 1.0f;
             xzDistToPlayerTemp = actor->xzDistToPlayer;
             actor->xzDistToPlayer = 0.0f;
-            actor->flags |= ACTOR_FLAG_10000;
+            actor->flags |= ACTOR_FLAG_TALK_OFFER_AUTO_ACCEPTED;
             canAccept = Actor_OfferTalkExchange(actor, play, xzRange, yRange, itemId);
             actor->xzDistToPlayer = xzDistToPlayerTemp;
             break;
 
         case SUBS_OFFER_MODE_AUTO_TARGETED:
             //! @bug: Both x and y conditionals are always true, || should be an &&
-            if (((x >= 0) || (x < SCREEN_WIDTH)) && ((y >= 0) || (y < SCREEN_HEIGHT)) &&
-                (fabsf(actor->playerHeightRel) <= yRange) && (actor->xzDistToPlayer <= xzRange) && actor->isLockedOn) {
-                actor->flags |= ACTOR_FLAG_10000;
+            if (((screenPosX >= 0) || (screenPosX < SCREEN_WIDTH)) &&
+                ((screenPosY >= 0) || (screenPosY < SCREEN_HEIGHT)) && (fabsf(actor->playerHeightRel) <= yRange) &&
+                (actor->xzDistToPlayer <= xzRange) && actor->isLockedOn) {
+                actor->flags |= ACTOR_FLAG_TALK_OFFER_AUTO_ACCEPTED;
                 canAccept = Actor_OfferTalkExchange(actor, play, xzRange, yRange, itemId);
             }
             break;
 
         case SUBS_OFFER_MODE_AUTO_NEARBY_ONSCREEN:
             //! @bug: Both x and y conditionals are always true, || should be an &&
-            if (((x >= 0) || (x < SCREEN_WIDTH)) && ((y >= 0) || (y < SCREEN_HEIGHT)) &&
-                (fabsf(actor->playerHeightRel) <= yRange) && (actor->xzDistToPlayer <= xzRange)) {
-                actor->flags |= ACTOR_FLAG_10000;
+            if (((screenPosX >= 0) || (screenPosX < SCREEN_WIDTH)) &&
+                ((screenPosY >= 0) || (screenPosY < SCREEN_HEIGHT)) && (fabsf(actor->playerHeightRel) <= yRange) &&
+                (actor->xzDistToPlayer <= xzRange)) {
+                actor->flags |= ACTOR_FLAG_TALK_OFFER_AUTO_ACCEPTED;
                 canAccept = Actor_OfferTalkExchange(actor, play, xzRange, yRange, itemId);
             }
             break;
@@ -1016,7 +1020,7 @@ void SubS_DrawShadowTex(Actor* actor, GameState* gameState, u8* tex) {
     gDPSetEnvColor(POLY_OPA_DISP++, 0, 0, 0, 0);
     Matrix_Translate(actor->world.pos.x, 0.0f, actor->world.pos.z, MTXMODE_NEW);
     Matrix_Scale(0.6f, 1.0f, 0.6f, MTXMODE_APPLY);
-    gSPMatrix(POLY_OPA_DISP++, Matrix_NewMtx(gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    MATRIX_FINALIZE_AND_LOAD(POLY_OPA_DISP++, gfxCtx);
     gSPDisplayList(POLY_OPA_DISP++, gShadowMaterialDL);
     gDPLoadTextureBlock(POLY_OPA_DISP++, tex, G_IM_FMT_I, G_IM_SIZ_8b, SUBS_SHADOW_TEX_WIDTH, SUBS_SHADOW_TEX_HEIGHT, 0,
                         G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMIRROR | G_TX_CLAMP, 6, 6, G_TX_NOLOD, G_TX_NOLOD);
@@ -1152,12 +1156,12 @@ s32 SubS_MoveActorToPoint(Actor* actor, Vec3f* point, s16 rotStep) {
     f32 distSqBefore;
     f32 distSqAfter;
 
-    Actor_OffsetOfPointInActorCoords(actor, &offsetBefore, point);
+    Actor_WorldToActorCoords(actor, &offsetBefore, point);
     Math_SmoothStepToS(&actor->world.rot.y, SubS_GetDistSqAndOrientPoints(point, &actor->world.pos, &distSqBefore), 4,
                        rotStep, 1);
     actor->shape.rot.y = actor->world.rot.y;
     Actor_MoveWithGravity(actor);
-    Actor_OffsetOfPointInActorCoords(actor, &offsetAfter, point);
+    Actor_WorldToActorCoords(actor, &offsetAfter, point);
     SubS_GetDistSqAndOrientPoints(point, &actor->world.pos, &distSqAfter);
     return ((offsetBefore.z > 0.0f) && (offsetAfter.z <= 0.0f)) ? true : false;
 }
@@ -1561,7 +1565,7 @@ s32 SubS_OfferTalkExchangeCustom(Actor* actor, PlayState* play, f32 xzRange, f32
     return canAccept;
 }
 
-s32 SubS_ActorAndPlayerFaceEachOther(PlayState* play, Actor* actor, void* data) {
+s32 SubS_ArePlayerAndActorFacing(PlayState* play, Actor* actor, void* data) {
     Player* player = GET_PLAYER(play);
     Vec3s* yawRanges = (Vec3s*)data;
     s16 playerYaw = ABS(BINANG_SUB(Actor_WorldYawTowardActor(&player->actor, actor), player->actor.shape.rot.y));
@@ -1587,7 +1591,7 @@ s32 SubS_OfferTalkExchangeFacing(Actor* actor, PlayState* play, f32 xzRange, f32
     yawRanges.x = playerYawRange;
     yawRanges.y = actorYawRange;
     return SubS_OfferTalkExchangeCustom(actor, play, xzRange, yRange, exchangeItemAction, &yawRanges,
-                                        SubS_ActorAndPlayerFaceEachOther);
+                                        SubS_ArePlayerAndActorFacing);
 }
 
 /**

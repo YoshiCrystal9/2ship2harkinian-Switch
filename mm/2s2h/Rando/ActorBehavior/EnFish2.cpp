@@ -5,7 +5,7 @@
 extern "C" {
 #include "variables.h"
 #include "src/overlays/actors/ovl_En_Fish2/z_en_fish2.h"
-void Player_TalkWithPlayer(PlayState* play, Actor* actor);
+void Player_StartTalking(PlayState* play, Actor* actor);
 }
 
 void Rando::ActorBehavior::InitEnFish2Behavior() {

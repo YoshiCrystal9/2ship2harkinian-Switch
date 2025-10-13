@@ -7,9 +7,7 @@
 #include "z_obj_lupygamelift.h"
 #include "objects/object_raillift/object_raillift.h"
 
-#define FLAGS (ACTOR_FLAG_10 | ACTOR_FLAG_20)
-
-#define THIS ((ObjLupygamelift*)thisx)
+#define FLAGS (ACTOR_FLAG_UPDATE_CULLING_DISABLED | ACTOR_FLAG_DRAW_CULLING_DISABLED)
 
 void ObjLupygamelift_Init(Actor* thisx, PlayState* play);
 void ObjLupygamelift_Destroy(Actor* thisx, PlayState* play);
@@ -21,7 +19,7 @@ void func_80AF04D8(ObjLupygamelift* this, PlayState* play);
 void func_80AF0514(ObjLupygamelift* this);
 void func_80AF0530(ObjLupygamelift* this, PlayState* play);
 
-ActorInit Obj_Lupygamelift_InitVars = {
+ActorProfile Obj_Lupygamelift_Profile = {
     /**/ ACTOR_OBJ_LUPYGAMELIFT,
     /**/ ACTORCAT_BG,
     /**/ FLAGS,
@@ -34,15 +32,15 @@ ActorInit Obj_Lupygamelift_InitVars = {
 };
 
 static InitChainEntry sInitChain[] = {
-    ICHAIN_F32(uncullZoneForward, 4000, ICHAIN_CONTINUE),
-    ICHAIN_F32(uncullZoneScale, 200, ICHAIN_CONTINUE),
-    ICHAIN_F32(uncullZoneDownward, 400, ICHAIN_CONTINUE),
+    ICHAIN_F32(cullingVolumeDistance, 4000, ICHAIN_CONTINUE),
+    ICHAIN_F32(cullingVolumeScale, 200, ICHAIN_CONTINUE),
+    ICHAIN_F32(cullingVolumeDownward, 400, ICHAIN_CONTINUE),
     ICHAIN_VEC3F_DIV1000(scale, 100, ICHAIN_STOP),
 };
 
 void ObjLupygamelift_Init(Actor* thisx, PlayState* play) {
     s32 pad;
-    ObjLupygamelift* this = THIS;
+    ObjLupygamelift* this = (ObjLupygamelift*)thisx;
     Path* path;
     s32 params;
 
@@ -71,7 +69,7 @@ void ObjLupygamelift_Init(Actor* thisx, PlayState* play) {
     if (this->pointIndex >= this->count) {
         this->pointIndex = 0;
     }
-    this->points = Lib_SegmentedToVirtual(path->points);
+    this->pathPoints = Lib_SegmentedToVirtual(path->points);
     Actor_SpawnAsChild(&play->actorCtx, &this->dyna.actor, play, ACTOR_OBJ_ETCETERA, this->dyna.actor.world.pos.x,
                        this->dyna.actor.world.pos.y, this->dyna.actor.world.pos.z, this->dyna.actor.shape.rot.x,
                        this->dyna.actor.shape.rot.y, this->dyna.actor.shape.rot.z, 0);
@@ -86,7 +84,7 @@ void ObjLupygamelift_Init(Actor* thisx, PlayState* play) {
 }
 
 void ObjLupygamelift_Destroy(Actor* thisx, PlayState* play) {
-    ObjLupygamelift* this = THIS;
+    ObjLupygamelift* this = (ObjLupygamelift*)thisx;
 
     DynaPoly_DeleteBgActor(play, &play->colCtx.dyna, this->dyna.bgId);
 }
@@ -138,9 +136,9 @@ void func_80AF0530(ObjLupygamelift* this, PlayState* play) {
     f32 distRemaining;
     Vec3f target;
 
-    target.x = this->points[this->pointIndex].x;
-    target.y = this->points[this->pointIndex].y;
-    target.z = this->points[this->pointIndex].z;
+    target.x = this->pathPoints[this->pointIndex].x;
+    target.y = this->pathPoints[this->pointIndex].y;
+    target.z = this->pathPoints[this->pointIndex].z;
     distRemaining = Math_Vec3f_StepTo(&this->dyna.actor.world.pos, &target, this->dyna.actor.speed);
     if (distRemaining > 30.0f) {
         Math_SmoothStepToF(&this->dyna.actor.speed, this->targetSpeedXZ, 0.5f, 5.0f, 0.1f);
@@ -164,7 +162,7 @@ void func_80AF0530(ObjLupygamelift* this, PlayState* play) {
 }
 
 void ObjLupygamelift_Update(Actor* thisx, PlayState* play) {
-    ObjLupygamelift* this = THIS;
+    ObjLupygamelift* this = (ObjLupygamelift*)thisx;
 
     this->actionFunc(this, play);
 }

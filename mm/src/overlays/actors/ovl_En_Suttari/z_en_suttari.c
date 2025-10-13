@@ -11,9 +11,7 @@
 #include "overlays/effects/ovl_Effect_Ss_Solder_Srch_Ball/z_eff_ss_solder_srch_ball.h"
 #include "2s2h/GameInteractor/GameInteractor.h"
 
-#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_10)
-
-#define THIS ((EnSuttari*)thisx)
+#define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_UPDATE_CULLING_DISABLED)
 
 void EnSuttari_Init(Actor* thisx, PlayState* play);
 void EnSuttari_Destroy(Actor* thisx, PlayState* play);
@@ -39,7 +37,7 @@ void func_80BADE14(EnSuttari* this, PlayState* play);
 void func_80BADE8C(EnSuttari* this, PlayState* play);
 void func_80BADF3C(EnSuttari* this, PlayState* play);
 
-ActorInit En_Suttari_InitVars = {
+ActorProfile En_Suttari_Profile = {
     /**/ ACTOR_EN_SUTTARI,
     /**/ ACTORCAT_NPC,
     /**/ FLAGS,
@@ -51,21 +49,35 @@ ActorInit En_Suttari_InitVars = {
     /**/ EnSuttari_Draw,
 };
 
-static AnimationInfo sAnimationInfo[] = {
-    { &object_boj_Anim_00071C, 1.0f, 0.0f, 0.0f, ANIMMODE_LOOP, 0.0f },
-    { &object_boj_Anim_0128F4, 1.0f, 0.0f, 0.0f, ANIMMODE_LOOP, 0.0f },
-    { &object_boj_Anim_011F84, 1.0f, 0.0f, 0.0f, ANIMMODE_LOOP, 0.0f },
-    { &object_boj_Anim_012E84, 1.0f, 0.0f, 0.0f, ANIMMODE_LOOP, -6.0f },
-    { &object_boj_Anim_01139C, 1.0f, 0.0f, 0.0f, ANIMMODE_LOOP, 0.0f },
-    { &object_boj_Anim_00071C, 2.0f, 0.0f, 0.0f, ANIMMODE_LOOP, 0.0f },
-    { &object_boj_Anim_011F84, 2.0f, 0.0f, 0.0f, ANIMMODE_LOOP, 0.0f },
-    { &object_boj_Anim_011C38, 1.0f, 0.0f, 0.0f, ANIMMODE_ONCE, 0.0f },
-    { &object_boj_Anim_010BDC, 1.0f, 0.0f, 0.0f, ANIMMODE_LOOP, 0.0f },
+typedef enum SuttariAnimation {
+    /* -1 */ SUTTARI_ANIM_NONE = -1,
+    /*  0 */ SUTTARI_ANIM_0,
+    /*  1 */ SUTTARI_ANIM_1,
+    /*  2 */ SUTTARI_ANIM_2,
+    /*  3 */ SUTTARI_ANIM_3,
+    /*  4 */ SUTTARI_ANIM_4,
+    /*  5 */ SUTTARI_ANIM_5,
+    /*  6 */ SUTTARI_ANIM_6,
+    /*  7 */ SUTTARI_ANIM_7,
+    /*  8 */ SUTTARI_ANIM_8,
+    /*  9 */ SUTTARI_ANIM_MAX
+} SuttariAnimation;
+
+static AnimationInfo sAnimationInfo[SUTTARI_ANIM_MAX] = {
+    { &object_boj_Anim_00071C, 1.0f, 0.0f, 0.0f, ANIMMODE_LOOP, 0.0f },  // SUTTARI_ANIM_0
+    { &object_boj_Anim_0128F4, 1.0f, 0.0f, 0.0f, ANIMMODE_LOOP, 0.0f },  // SUTTARI_ANIM_1
+    { &object_boj_Anim_011F84, 1.0f, 0.0f, 0.0f, ANIMMODE_LOOP, 0.0f },  // SUTTARI_ANIM_2
+    { &object_boj_Anim_012E84, 1.0f, 0.0f, 0.0f, ANIMMODE_LOOP, -6.0f }, // SUTTARI_ANIM_3
+    { &object_boj_Anim_01139C, 1.0f, 0.0f, 0.0f, ANIMMODE_LOOP, 0.0f },  // SUTTARI_ANIM_4
+    { &object_boj_Anim_00071C, 2.0f, 0.0f, 0.0f, ANIMMODE_LOOP, 0.0f },  // SUTTARI_ANIM_5
+    { &object_boj_Anim_011F84, 2.0f, 0.0f, 0.0f, ANIMMODE_LOOP, 0.0f },  // SUTTARI_ANIM_6
+    { &object_boj_Anim_011C38, 1.0f, 0.0f, 0.0f, ANIMMODE_ONCE, 0.0f },  // SUTTARI_ANIM_7
+    { &object_boj_Anim_010BDC, 1.0f, 0.0f, 0.0f, ANIMMODE_LOOP, 0.0f },  // SUTTARI_ANIM_8
 };
 
 static ColliderCylinderInit sCylinderInit = {
     {
-        COLTYPE_NONE,
+        COL_MATERIAL_NONE,
         AT_NONE,
         AC_ON | AC_TYPE_PLAYER,
         OC1_ON | OC1_TYPE_ALL,
@@ -73,11 +85,11 @@ static ColliderCylinderInit sCylinderInit = {
         COLSHAPE_CYLINDER,
     },
     {
-        ELEMTYPE_UNK1,
+        ELEM_MATERIAL_UNK1,
         { 0x00000000, 0x00, 0x00 },
         { 0xF7CFFFFF, 0x00, 0x00 },
-        TOUCH_NONE | TOUCH_SFX_NORMAL,
-        BUMP_ON,
+        ATELEM_NONE | ATELEM_SFX_NORMAL,
+        ACELEM_ON,
         OCELEM_ON,
     },
     { 18, 64, 0, { 0, 0, 0 } },
@@ -131,7 +143,7 @@ static TrackOptionsSet sTrackOptions = {
 
 static u8 D_80BAE820[] = {
     /* 0x00 */ SCHEDULE_CMD_CHECK_NOT_IN_DAY_S(2, 0x80 - 0x04),
-    /* 0x04 */ SCHEDULE_CMD_CHECK_FLAG_S(WEEKEVENTREG_RECOVERED_STOLEN_BOMB_BAG, 0x7F - 0x08),
+    /* 0x04 */ SCHEDULE_CMD_CHECK_WEEK_EVENT_REG_S(WEEKEVENTREG_RECOVERED_STOLEN_BOMB_BAG, 0x7F - 0x08),
     /* 0x08 */ SCHEDULE_CMD_CHECK_NOT_IN_SCENE_S(SCENE_ICHIBA, 0x3D - 0x0C),
     /* 0x0C */ SCHEDULE_CMD_CHECK_TIME_RANGE_S(0, 0, 0, 25, 0x37 - 0x12),
     /* 0x12 */ SCHEDULE_CMD_CHECK_TIME_RANGE_S(0, 25, 0, 30, 0x31 - 0x18),
@@ -234,8 +246,8 @@ void EnSuttari_TriggerTransition(PlayState* play, u16 entrance) {
 }
 
 void EnSuttari_AdvanceTime(void) {
-    gSaveContext.save.time = ((void)0, gSaveContext.save.time) + (u16)R_TIME_SPEED;
-    gSaveContext.save.time = ((void)0, gSaveContext.save.time) + (u16)((void)0, gSaveContext.save.timeSpeedOffset);
+    gSaveContext.save.time = CURRENT_TIME + (u16)R_TIME_SPEED;
+    gSaveContext.save.time = CURRENT_TIME + (u16)((void)0, gSaveContext.save.timeSpeedOffset);
 }
 
 s32 func_80BAA904(EnSuttari* this, PlayState* play) {
@@ -254,7 +266,7 @@ s32 func_80BAA904(EnSuttari* this, PlayState* play) {
 
 void func_80BAA9B4(EnSuttari* this) {
     s16 curFrame = this->skelAnime.curFrame;
-    s16 frameCount = Animation_GetLastFrame(sAnimationInfo[this->animIndex].animation);
+    s16 endFrame = Animation_GetLastFrame(sAnimationInfo[this->animIndex].animation);
 
     switch (this->textId) {
         case 0x1454:
@@ -265,15 +277,15 @@ void func_80BAA9B4(EnSuttari* this) {
         case 0x1459:
         case 0x145A:
         case 0x145B:
-            if ((this->animIndex != 8) && (curFrame == frameCount)) {
-                this->animIndex = 8;
+            if ((this->animIndex != SUTTARI_ANIM_8) && (curFrame == endFrame)) {
+                this->animIndex = SUTTARI_ANIM_8;
                 Actor_ChangeAnimationByInfo(&this->skelAnime, sAnimationInfo, this->animIndex);
             }
             break;
 
         default:
-            if ((this->animIndex != 1) && (curFrame == frameCount)) {
-                this->animIndex = 1;
+            if ((this->animIndex != SUTTARI_ANIM_1) && (curFrame == endFrame)) {
+                this->animIndex = SUTTARI_ANIM_1;
                 Actor_ChangeAnimationByInfo(&this->skelAnime, sAnimationInfo, this->animIndex);
             }
     }
@@ -282,7 +294,7 @@ void func_80BAA9B4(EnSuttari* this) {
 void func_80BAAA94(EnSuttari* this) {
     switch (this->textId) {
         case 0x29E5:
-            this->animIndex = 1;
+            this->animIndex = SUTTARI_ANIM_1;
             Actor_ChangeAnimationByInfo(&this->skelAnime, sAnimationInfo, this->animIndex);
             break;
 
@@ -299,12 +311,12 @@ void func_80BAAA94(EnSuttari* this) {
             break;
 
         case 0x29EC:
-            this->animIndex = 7;
+            this->animIndex = SUTTARI_ANIM_7;
             Actor_ChangeAnimationByInfo(&this->skelAnime, sAnimationInfo, this->animIndex);
             break;
 
         case 0x29ED:
-            this->animIndex = 1;
+            this->animIndex = SUTTARI_ANIM_1;
             Actor_ChangeAnimationByInfo(&this->skelAnime, sAnimationInfo, this->animIndex);
             break;
 
@@ -454,13 +466,13 @@ void func_80BAAB78(EnSuttari* this, PlayState* play) {
 
 void func_80BAAF1C(EnSuttari* this) {
     s16 curFrame = this->skelAnime.curFrame;
-    s16 frameCount = Animation_GetLastFrame(sAnimationInfo[this->animIndex].animation);
+    s16 endFrame = Animation_GetLastFrame(sAnimationInfo[this->animIndex].animation);
 
-    if (this->animIndex == 5) {
-        this->animIndex = 3;
+    if (this->animIndex == SUTTARI_ANIM_5) {
+        this->animIndex = SUTTARI_ANIM_3;
         Actor_ChangeAnimationByInfo(&this->skelAnime, sAnimationInfo, this->animIndex);
-    } else if ((this->animIndex == 3) && (curFrame == frameCount)) {
-        this->animIndex = 6;
+    } else if ((this->animIndex == SUTTARI_ANIM_3) && (curFrame == endFrame)) {
+        this->animIndex = SUTTARI_ANIM_6;
         Actor_ChangeAnimationByInfo(&this->skelAnime, sAnimationInfo, this->animIndex);
         this->flags1 &= ~0x100;
     }
@@ -468,9 +480,9 @@ void func_80BAAF1C(EnSuttari* this) {
 
 void func_80BAAFDC(EnSuttari* this, PlayState* play) {
     if ((this->actor.xzDistToPlayer < 500.0f) && (this->actor.playerHeightRel < 100.0f)) {
-        Vec3f effectVelOffset = { 0.0f, 0.0f, 0.0f };
+        Vec3f effectVelocityOffset = { 0.0f, 0.0f, 0.0f };
         Vec3f effectPos;
-        Vec3f effectVel;
+        Vec3f effectVelocity;
 
         Math_Vec3f_Copy(&effectPos, &this->actor.world.pos);
         effectPos.x += Math_SinS(this->actor.world.rot.y + this->unk3F4) * 10.0f;
@@ -478,11 +490,11 @@ void func_80BAAFDC(EnSuttari* this, PlayState* play) {
         effectPos.z += Math_CosS(this->actor.world.rot.y + this->unk3F4) * 10.0f;
         Matrix_Push();
         Matrix_RotateYS(this->actor.shape.rot.y, MTXMODE_NEW);
-        effectVelOffset.z = 20.0f;
-        Matrix_MultVec3f(&effectVelOffset, &effectVel);
+        effectVelocityOffset.z = 20.0f;
+        Matrix_MultVec3f(&effectVelocityOffset, &effectVelocity);
         Matrix_Pop();
         if (!this->playerDetected) {
-            EffectSsSolderSrchBall_Spawn(play, &effectPos, &effectVel, &gZeroVec3f, 50, &this->playerDetected,
+            EffectSsSolderSrchBall_Spawn(play, &effectPos, &effectVelocity, &gZeroVec3f, 50, &this->playerDetected,
                                          SOLDERSRCHBALL_INVISIBLE);
         }
         if (this->playerDetected == true) {
@@ -501,9 +513,9 @@ void func_80BAAFDC(EnSuttari* this, PlayState* play) {
 
 void func_80BAB1A0(EnSuttari* this, PlayState* play) {
     if ((this->actor.xzDistToPlayer < 500.0f) && (this->actor.playerHeightRel < 100.0f)) {
-        Vec3f effectVelOffset = { 0.0f, 0.0f, 0.0f };
+        Vec3f effectVelocityOffset = { 0.0f, 0.0f, 0.0f };
         Vec3f effectPos;
-        Vec3f effectVel;
+        Vec3f effectVelocity;
 
         Math_Vec3f_Copy(&effectPos, &this->actor.world.pos);
         effectPos.x += Math_SinS(this->actor.world.rot.y + this->unk3F4) * 350.0f;
@@ -511,11 +523,11 @@ void func_80BAB1A0(EnSuttari* this, PlayState* play) {
         effectPos.z += Math_CosS(this->actor.world.rot.y + this->unk3F4) * 350.0f;
         Matrix_Push();
         Matrix_RotateYS(this->actor.shape.rot.y, MTXMODE_NEW);
-        effectVelOffset.z = 20.0f;
-        Matrix_MultVec3f(&effectVelOffset, &effectVel);
+        effectVelocityOffset.z = 20.0f;
+        Matrix_MultVec3f(&effectVelocityOffset, &effectVelocity);
         Matrix_Pop();
         if (!this->playerDetected) {
-            EffectSsSolderSrchBall_Spawn(play, &effectPos, &effectVel, &gZeroVec3f, 50, &this->playerDetected,
+            EffectSsSolderSrchBall_Spawn(play, &effectPos, &effectVelocity, &gZeroVec3f, 50, &this->playerDetected,
                                          SOLDERSRCHBALL_INVISIBLE);
         }
         if (this->playerDetected == true) {
@@ -542,7 +554,7 @@ void func_80BAB374(EnSuttari* this, PlayState* play) {
         sp38.x = Rand_CenteredFloat(15.0f) + this->actor.world.pos.x;
         sp38.y = this->actor.world.pos.y;
         sp38.z = Rand_CenteredFloat(15.0f) + this->actor.world.pos.z;
-        Actor_SpawnFloorDustRing(play, &this->actor, &sp38, 10.0f, 0, 2.0f, 0, 0, 0);
+        Actor_SpawnFloorDustRing(play, &this->actor, &sp38, 10.0f, 0, 2.0f, 0, 0, false);
     }
 }
 
@@ -603,64 +615,71 @@ s16 EnSuttari_GetDistSqAndOrient(Path* path, s32 index, Vec3f* pos, f32* distSq)
     return RAD_TO_BINANG(Math_Atan2F_XY(diffZ, diffX));
 }
 
-s32 func_80BAB758(EnSuttari* this, Path* path, s32 arg2) {
-    Vec3s* sp5C = Lib_SegmentedToVirtual(path->points);
-    s32 sp58 = path->count;
-    s32 index = arg2;
-    s32 ret = false;
-    f32 sp54;
-    f32 sp48;
-    f32 sp44;
-    f32 sp40;
-    f32 sp3C;
-    Vec3f sp30;
+s32 EnSuttari_HasReachedPointForward(EnSuttari* this, Path* path, s32 pointIndex) {
+    Vec3s* points = Lib_SegmentedToVirtual(path->points);
+    s32 count = path->count;
+    s32 index = pointIndex;
+    s32 reached = false;
+    f32 diffX;
+    f32 diffZ;
+    f32 px;
+    f32 pz;
+    f32 d;
+    Vec3f point;
 
-    Math_Vec3s_ToVec3f(&sp30, &sp5C[index]);
+    Math_Vec3s_ToVec3f(&point, &points[index]);
+
     if (index == 0) {
-        sp54 = sp5C[1].x - sp5C[0].x;
-        sp48 = sp5C[1].z - sp5C[0].z;
-    } else if (index == sp58 - 1) {
-        sp54 = sp5C[sp58 - 1].x - sp5C[sp58 - 2].x;
-        sp48 = sp5C[sp58 - 1].z - sp5C[sp58 - 2].z;
+        diffX = points[1].x - points[0].x;
+        diffZ = points[1].z - points[0].z;
+    } else if (index == (count - 1)) {
+        diffX = points[count - 1].x - points[count - 2].x;
+        diffZ = points[count - 1].z - points[count - 2].z;
     } else {
-        sp54 = sp5C[index + 1].x - sp5C[index - 1].x;
-        sp48 = sp5C[index + 1].z - sp5C[index - 1].z;
+        diffX = points[index + 1].x - points[index - 1].x;
+        diffZ = points[index + 1].z - points[index - 1].z;
     }
-    Math3D_RotateXZPlane(&sp30, RAD_TO_BINANG(Math_FAtan2F(sp54, sp48)), &sp44, &sp40, &sp3C);
-    if (((sp44 * this->actor.world.pos.x) + (sp40 * this->actor.world.pos.z) + sp3C) > 0.0f) {
-        ret = true;
+    Math3D_RotateXZPlane(&point, RAD_TO_BINANG(Math_FAtan2F(diffX, diffZ)), &px, &pz, &d);
+
+    if (((px * this->actor.world.pos.x) + (pz * this->actor.world.pos.z) + d) > 0.0f) {
+        reached = true;
     }
-    return ret;
+
+    return reached;
 }
 
-s32 func_80BAB8F4(EnSuttari* this, Path* path, s32 arg2) {
-    Vec3s* sp5C = Lib_SegmentedToVirtual(path->points);
-    s32 sp58 = path->count;
-    s32 index = arg2;
-    s32 ret = false;
-    f32 sp54;
-    f32 sp48;
-    f32 sp44;
-    f32 sp40;
-    f32 sp3C;
-    Vec3f sp30;
+s32 EnSuttari_HasReachedPointReverse(EnSuttari* this, Path* path, s32 pointIndex) {
+    Vec3s* points = Lib_SegmentedToVirtual(path->points);
+    s32 count = path->count;
+    s32 index = pointIndex;
+    s32 reached = false;
+    f32 diffX;
+    f32 diffZ;
+    f32 px;
+    f32 pz;
+    f32 d;
+    Vec3f point;
 
-    Math_Vec3s_ToVec3f(&sp30, &sp5C[index]);
+    Math_Vec3s_ToVec3f(&point, &points[index]);
+
     if (index == 0) {
-        sp54 = sp5C[0].x - sp5C[1].x;
-        sp48 = sp5C[0].z - sp5C[1].z;
-    } else if (index == sp58 - 1) {
-        sp54 = sp5C[sp58 - 2].x - sp5C[sp58 - 1].x;
-        sp48 = sp5C[sp58 - 2].z - sp5C[sp58 - 1].z;
+        diffX = points[0].x - points[1].x;
+        diffZ = points[0].z - points[1].z;
+    } else if (index == (count - 1)) {
+        diffX = points[count - 2].x - points[count - 1].x;
+        diffZ = points[count - 2].z - points[count - 1].z;
     } else {
-        sp54 = sp5C[index - 1].x - sp5C[index + 1].x;
-        sp48 = sp5C[index - 1].z - sp5C[index + 1].z;
+        diffX = points[index - 1].x - points[index + 1].x;
+        diffZ = points[index - 1].z - points[index + 1].z;
     }
-    Math3D_RotateXZPlane(&sp30, RAD_TO_BINANG(Math_FAtan2F(sp54, sp48)), &sp44, &sp40, &sp3C);
-    if (((sp44 * this->actor.world.pos.x) + (sp40 * this->actor.world.pos.z) + sp3C) > 0.0f) {
-        ret = true;
+
+    Math3D_RotateXZPlane(&point, RAD_TO_BINANG(Math_FAtan2F(diffX, diffZ)), &px, &pz, &d);
+
+    if (((px * this->actor.world.pos.x) + (pz * this->actor.world.pos.z) + d) > 0.0f) {
+        reached = true;
     }
-    return ret;
+
+    return reached;
 }
 
 void func_80BABA90(EnSuttari* this, s32 arg1, u8 arg2) {
@@ -678,7 +697,7 @@ void func_80BABA90(EnSuttari* this, s32 arg1, u8 arg2) {
         }
         Math_SmoothStepToS(&this->actor.world.rot.y, target, 4, 0x3E8, 1);
         this->actor.shape.rot.y = this->actor.world.rot.y;
-        if (func_80BAB758(this, this->paths[arg1], this->unk1F4[arg1])) {
+        if (EnSuttari_HasReachedPointForward(this, this->paths[arg1], this->unk1F4[arg1])) {
             if (this->unk1F4[arg1] >= (this->paths[arg1]->count - 1)) {
                 if (arg2 == 0) {
                     this->unk1F4[arg1] = 0;
@@ -703,7 +722,7 @@ void func_80BABB90(EnSuttari* this, s32 arg1) {
         }
         Math_SmoothStepToS(&this->actor.world.rot.y, target, 1, 0xBB8, 0);
         this->actor.shape.rot.y = this->actor.world.rot.y;
-        if (func_80BAB8F4(this, this->paths[arg1], this->unk1F4[arg1])) {
+        if (EnSuttari_HasReachedPointReverse(this, this->paths[arg1], this->unk1F4[arg1])) {
             if (this->unk1F4[arg1] <= 0) {
                 this->unk1F4[arg1] = -0x63;
             } else {
@@ -714,7 +733,7 @@ void func_80BABB90(EnSuttari* this, s32 arg1) {
 }
 
 s32 func_80BABC48(EnSuttari* this, PlayState* play, ScheduleOutput* scheduleOutput) {
-    u16 sp26 = SCHEDULE_TIME_NOW;
+    u16 sp26 = SCRIPT_TIME_NOW;
     u16 phi_a0;
     u8 pathIndex = ENSUTTARI_GET_PATH_INDEX(&this->actor);
     u16 tmp;
@@ -725,7 +744,7 @@ s32 func_80BABC48(EnSuttari* this, PlayState* play, ScheduleOutput* scheduleOutp
     if (this->timePath == NULL) {
         return 0;
     }
-    if ((this->unk428 != 0) && (this->unk428 < 0xC) && (this->timePathTimeSpeed >= 0)) {
+    if ((this->scheduleResult != 0) && (this->scheduleResult < 0xC) && (this->timePathTimeSpeed >= 0)) {
         phi_a0 = sp26;
     } else {
         phi_a0 = scheduleOutput->time0;
@@ -746,23 +765,23 @@ s32 func_80BABC48(EnSuttari* this, PlayState* play, ScheduleOutput* scheduleOutp
 
 s32 func_80BABDD8(EnSuttari* this, PlayState* play, ScheduleOutput* scheduleOutput) {
     s32 pad;
-    EnDoor* sp48;
+    EnDoor* door;
     u8 pathIndex = ENSUTTARI_GET_PATH_INDEX(&this->actor);
-    u16 sp44 = SCHEDULE_TIME_NOW;
+    u16 sp44 = SCRIPT_TIME_NOW;
     Vec3f sp38;
     Vec3f sp2C;
     Vec3s* sp28;
     s32 sp24;
 
-    if ((this->unk428 == 10) || (this->unk428 == 11) || (this->unk428 == 2)) {
+    if ((this->scheduleResult == 10) || (this->scheduleResult == 11) || (this->scheduleResult == 2)) {
         return false;
     }
-    sp48 = (EnDoor*)SubS_FindNearestActor(&this->actor, play, ACTORCAT_DOOR, ACTOR_EN_DOOR);
+    door = (EnDoor*)SubS_FindNearestActor(&this->actor, play, ACTORCAT_DOOR, ACTOR_EN_DOOR);
     sp24 = D_80BAE8F8[scheduleOutput->result];
-    if ((sp48 != NULL) && (sp24 >= 0)) {
+    if ((door != NULL) && (sp24 >= 0)) {
         this->timePath = SubS_GetAdditionalPath(play, pathIndex, sp24);
     }
-    if ((sp48 == NULL) || (this->timePath == NULL)) {
+    if ((door == NULL) || (this->timePath == NULL)) {
         return false;
     }
     sp28 = Lib_SegmentedToVirtual(this->timePath->points);
@@ -771,7 +790,7 @@ s32 func_80BABDD8(EnSuttari* this, PlayState* play, ScheduleOutput* scheduleOutp
     this->unk434 = sp44 - scheduleOutput->time0;
     this->unk436 = scheduleOutput->time1 - scheduleOutput->time0;
     if ((scheduleOutput->result != 10) && (scheduleOutput->result != 11)) {
-        sp48->openTimer = 75;
+        door->openTimer = 75;
     }
     Math_Vec3f_Copy(&this->unk438, &sp38);
     Math_Vec3f_Copy(&this->unk444, &sp2C);
@@ -885,9 +904,9 @@ s32 func_80BAC220(EnSuttari* this, PlayState* play) {
 void func_80BAC2FC(EnSuttari* this, PlayState* play) {
     Player* player = GET_PLAYER(play);
     s16 curFrame = this->skelAnime.curFrame;
-    s16 frameCount = Animation_GetLastFrame(sAnimationInfo[this->animIndex].animation);
+    s16 endFrame = Animation_GetLastFrame(sAnimationInfo[this->animIndex].animation);
 
-    switch (this->unk428) {
+    switch (this->scheduleResult) {
         case 12:
         case 13:
             this->flags1 |= 0x80;
@@ -895,8 +914,8 @@ void func_80BAC2FC(EnSuttari* this, PlayState* play) {
             break;
 
         case 15:
-            if ((this->animIndex == 1) && (curFrame == frameCount)) {
-                this->animIndex = 2;
+            if ((this->animIndex == SUTTARI_ANIM_1) && (curFrame == endFrame)) {
+                this->animIndex = SUTTARI_ANIM_2;
                 Actor_ChangeAnimationByInfo(&this->skelAnime, sAnimationInfo, this->animIndex);
             }
             if (!CHECK_WEEKEVENTREG(WEEKEVENTREG_83_04) && !(this->flags1 & 0x1000)) {
@@ -931,8 +950,8 @@ void func_80BAC2FC(EnSuttari* this, PlayState* play) {
             this->flags1 |= 0x80;
             this->flags1 |= 0x20;
             this->enFsn->flags &= ~ENFSN_HAGGLE;
-            if (this->animIndex != 2) {
-                this->animIndex = 2;
+            if (this->animIndex != SUTTARI_ANIM_2) {
+                this->animIndex = SUTTARI_ANIM_2;
                 Actor_ChangeAnimationByInfo(&this->skelAnime, sAnimationInfo, this->animIndex);
             }
             func_80BAC220(this, play);
@@ -967,8 +986,8 @@ void func_80BAC2FC(EnSuttari* this, PlayState* play) {
 
         case 4:
             if (!CHECK_WEEKEVENTREG(WEEKEVENTREG_RECOVERED_STOLEN_BOMB_BAG)) {
-                if ((this->animIndex == 2) || (this->animIndex == 1)) {
-                    this->animIndex = 5;
+                if ((this->animIndex == SUTTARI_ANIM_2) || (this->animIndex == SUTTARI_ANIM_1)) {
+                    this->animIndex = SUTTARI_ANIM_5;
                     Actor_ChangeAnimationByInfo(&this->skelAnime, sAnimationInfo, this->animIndex);
                 }
                 this->flags1 |= 0x10;
@@ -994,28 +1013,28 @@ void func_80BAC2FC(EnSuttari* this, PlayState* play) {
 void func_80BAC6E8(EnSuttari* this, PlayState* play) {
     ActorShape_Init(&this->actor.shape, 0.0f, NULL, 0.0f);
     SkelAnime_InitFlex(play, &this->skelAnime, &object_boj_Skel_00C240, &object_boj_Anim_00071C, this->jointTable,
-                       this->morphTable, 16);
+                       this->morphTable, OBJECT_BOJ_LIMB_MAX);
     this->actor.draw = EnSuttari_Draw;
-    this->actor.flags |= ACTOR_FLAG_TARGETABLE;
+    this->actor.flags |= ACTOR_FLAG_ATTENTION_ENABLED;
     if (play->sceneId == SCENE_IKANA) {
         this->flags1 |= 1;
         if ((gSaveContext.save.day == 1) || (gSaveContext.save.day == 2)) {
-            this->animIndex = 2;
+            this->animIndex = SUTTARI_ANIM_2;
             Actor_ChangeAnimationByInfo(&this->skelAnime, sAnimationInfo, this->animIndex);
             this->flags1 |= 0x80;
             this->actionFunc = func_80BACA14;
             return;
-        } else if ((gSaveContext.save.day == 3) && (gSaveContext.save.time <= CLOCK_TIME(19, 0)) &&
+        } else if ((gSaveContext.save.day == 3) && (CURRENT_TIME <= CLOCK_TIME(19, 0)) &&
                    !CHECK_WEEKEVENTREG(WEEKEVENTREG_61_08) &&
                    !CHECK_WEEKEVENTREG(WEEKEVENTREG_RECOVERED_STOLEN_BOMB_BAG) &&
                    CHECK_WEEKEVENTREG(WEEKEVENTREG_51_08)) {
-            this->animIndex = 2;
+            this->animIndex = SUTTARI_ANIM_2;
             Actor_ChangeAnimationByInfo(&this->skelAnime, sAnimationInfo, this->animIndex);
             this->actionFunc = func_80BACEE0;
             return;
         }
     } else if (play->sceneId == SCENE_BACKTOWN) {
-        if ((gSaveContext.save.time >= CLOCK_TIME(0, 20)) && (gSaveContext.save.time < CLOCK_TIME(6, 00))) {
+        if ((CURRENT_TIME >= CLOCK_TIME(0, 20)) && (CURRENT_TIME < CLOCK_TIME(6, 0))) {
             Actor_Kill(&this->actor);
         }
 
@@ -1026,7 +1045,7 @@ void func_80BAC6E8(EnSuttari* this, PlayState* play) {
         this->csIdList[1] = CutsceneManager_GetAdditionalCsId(this->csIdList[0]);
         this->flags1 |= 0x80;
         this->flags1 |= 8;
-        this->animIndex = 1;
+        this->animIndex = SUTTARI_ANIM_1;
         Actor_ChangeAnimationByInfo(&this->skelAnime, sAnimationInfo, this->animIndex);
         this->actionFunc = func_80BAD004;
         return;
@@ -1035,7 +1054,7 @@ void func_80BAC6E8(EnSuttari* this, PlayState* play) {
             Actor_Kill(&this->actor);
             return;
         }
-        this->animIndex = 0;
+        this->animIndex = SUTTARI_ANIM_0;
         Actor_ChangeAnimationByInfo(&this->skelAnime, sAnimationInfo, this->animIndex);
         this->flags1 |= 2;
         this->actionFunc = func_80BAD5F8;
@@ -1045,7 +1064,7 @@ void func_80BAC6E8(EnSuttari* this, PlayState* play) {
             Actor_Kill(&this->actor);
             return;
         }
-        this->animIndex = 0;
+        this->animIndex = SUTTARI_ANIM_0;
         Actor_ChangeAnimationByInfo(&this->skelAnime, sAnimationInfo, this->animIndex);
         this->csIdList[0] = this->actor.csId;
         this->csIdList[1] = CutsceneManager_GetAdditionalCsId(this->csIdList[0]);
@@ -1064,8 +1083,8 @@ void func_80BAC6E8(EnSuttari* this, PlayState* play) {
 void func_80BACA14(EnSuttari* this, PlayState* play) {
     Player* player = GET_PLAYER(play);
 
-    if ((this->animIndex == 1) || (this->animIndex == 8)) {
-        this->animIndex = 2;
+    if ((this->animIndex == SUTTARI_ANIM_1) || (this->animIndex == SUTTARI_ANIM_8)) {
+        this->animIndex = SUTTARI_ANIM_2;
         Actor_ChangeAnimationByInfo(&this->skelAnime, sAnimationInfo, this->animIndex);
     }
     func_80BABA90(this, 0, 0);
@@ -1077,7 +1096,7 @@ void func_80BACA14(EnSuttari* this, PlayState* play) {
         }
     } else if ((player->transformation == PLAYER_FORM_HUMAN) &&
                (GET_CUR_EQUIP_VALUE(EQUIP_TYPE_SWORD) != EQUIP_VALUE_SWORD_NONE)) {
-        if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+        if (Actor_TalkOfferAccepted(&this->actor, &play->state)) {
             this->unk3F2 = this->headRot.y;
             func_80BAAB78(this, play);
             this->actionFunc = func_80BADA9C;
@@ -1159,16 +1178,16 @@ void func_80BACEE0(EnSuttari* this, PlayState* play) {
 
     this->timePathTimeSpeed = R_TIME_SPEED + ((void)0, gSaveContext.save.timeSpeedOffset);
     if (!Schedule_RunScript(play, D_80BAE820, &scheduleOutput) ||
-        ((this->unk428 != scheduleOutput.result) && !func_80BABF64(this, play, &scheduleOutput))) {
-        this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
+        ((this->scheduleResult != scheduleOutput.result) && !func_80BABF64(this, play, &scheduleOutput))) {
+        this->actor.flags &= ~ACTOR_FLAG_ATTENTION_ENABLED;
         scheduleOutput.result = 0;
     } else {
-        this->actor.flags |= ACTOR_FLAG_TARGETABLE;
+        this->actor.flags |= ACTOR_FLAG_ATTENTION_ENABLED;
     }
-    this->unk428 = scheduleOutput.result;
+    this->scheduleResult = scheduleOutput.result;
     func_80BAC2FC(this, play);
     func_80BAB434(this);
-    if (this->unk428 == 5) {
+    if (this->scheduleResult == 5) {
         SET_WEEKEVENTREG(WEEKEVENTREG_58_80);
         this->actionFunc = func_80BADDB4;
         this->actor.speed = 0.0f;
@@ -1183,27 +1202,30 @@ void func_80BAD004(EnSuttari* this, PlayState* play) {
 
     this->timePathTimeSpeed = R_TIME_SPEED + ((void)0, gSaveContext.save.timeSpeedOffset);
     if (!Schedule_RunScript(play, D_80BAE820, &scheduleOutput) ||
-        ((this->unk428 != scheduleOutput.result) && !func_80BABF64(this, play, &scheduleOutput))) {
-        this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
+        ((this->scheduleResult != scheduleOutput.result) && !func_80BABF64(this, play, &scheduleOutput))) {
+        this->actor.flags &= ~ACTOR_FLAG_ATTENTION_ENABLED;
         scheduleOutput.result = 0;
     } else {
-        this->actor.flags |= ACTOR_FLAG_TARGETABLE;
+        this->actor.flags |= ACTOR_FLAG_ATTENTION_ENABLED;
     }
-    this->unk428 = scheduleOutput.result;
+
+    this->scheduleResult = scheduleOutput.result;
     func_80BAC2FC(this, play);
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+
+    if (Actor_TalkOfferAccepted(&this->actor, &play->state)) {
         Message_StartTextbox(play, 0x2A3A, &this->actor);
         this->actionFunc = func_80BAD130;
     } else if ((this->actor.xzDistToPlayer < 200.0f) || this->actor.isLockedOn) {
         Actor_OfferTalkNearColChkInfoCylinder(&this->actor, play);
     }
+
     Actor_MoveWithGravity(&this->actor);
 }
 
 void func_80BAD130(EnSuttari* this, PlayState* play) {
     u8 talkState = Message_GetState(&play->msgCtx);
 
-    if (((talkState == TEXT_STATE_5) || (talkState == TEXT_STATE_DONE)) && Message_ShouldAdvance(play)) {
+    if (((talkState == TEXT_STATE_EVENT) || (talkState == TEXT_STATE_DONE)) && Message_ShouldAdvance(play)) {
         play->msgCtx.msgMode = MSGMODE_TEXT_CLOSING;
         play->msgCtx.stateTimer = 4;
         if (this->flags1 & 8) {
@@ -1234,7 +1256,7 @@ void func_80BAD230(EnSuttari* this, PlayState* play) {
 }
 
 void func_80BAD2B4(EnSuttari* this, PlayState* play) {
-    if ((Message_GetState(&play->msgCtx) == TEXT_STATE_5) && Message_ShouldAdvance(play)) {
+    if ((Message_GetState(&play->msgCtx) == TEXT_STATE_EVENT) && Message_ShouldAdvance(play)) {
         if (this->textId == 0x2A30) {
             CutsceneManager_Stop(this->csIdList[0]);
             CutsceneManager_Queue(this->csIdList[1]);
@@ -1254,13 +1276,13 @@ void func_80BAD380(EnSuttari* this, PlayState* play) {
     u8 talkState = Message_GetState(&play->msgCtx);
     Player* player = GET_PLAYER(play);
 
-    if ((player->stateFlags1 & PLAYER_STATE1_40) && (play->msgCtx.currentTextId != 0x2A31)) {
+    if ((player->stateFlags1 & PLAYER_STATE1_TALKING) && (play->msgCtx.currentTextId != 0x2A31)) {
         this->flags1 |= 0x8000;
         this->actor.speed = 0.0f;
     } else {
         this->flags1 &= ~0x8000;
         func_80BABA90(this, 1, 1);
-        if ((this->flags1 & 0x4000) && (talkState == TEXT_STATE_5) && Message_ShouldAdvance(play)) {
+        if ((this->flags1 & 0x4000) && (talkState == TEXT_STATE_EVENT) && Message_ShouldAdvance(play)) {
             this->flags2 &= ~0x10;
             player->stateFlags1 &= ~PLAYER_STATE1_10000000;
             this->flags1 &= ~0x4000;
@@ -1302,21 +1324,21 @@ void func_80BAD380(EnSuttari* this, PlayState* play) {
 void func_80BAD5F8(EnSuttari* this, PlayState* play) {
     ScheduleOutput scheduleOutput;
     s16 curFrame = this->skelAnime.curFrame;
-    s16 frameCount = Animation_GetLastFrame(sAnimationInfo[this->animIndex].animation);
+    s16 endFrame = Animation_GetLastFrame(sAnimationInfo[this->animIndex].animation);
 
-    if ((curFrame == frameCount) && (this->animIndex == 0) && (this->flags1 & 0x20)) {
-        this->animIndex = 2;
+    if ((curFrame == endFrame) && (this->animIndex == SUTTARI_ANIM_0) && (this->flags1 & 0x20)) {
+        this->animIndex = SUTTARI_ANIM_2;
         Actor_ChangeAnimationByInfo(&this->skelAnime, sAnimationInfo, this->animIndex);
     }
     this->timePathTimeSpeed = R_TIME_SPEED + ((void)0, gSaveContext.save.timeSpeedOffset);
     if (!Schedule_RunScript(play, D_80BAE820, &scheduleOutput) ||
-        ((this->unk428 != scheduleOutput.result) && !func_80BABF64(this, play, &scheduleOutput))) {
-        this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
+        ((this->scheduleResult != scheduleOutput.result) && !func_80BABF64(this, play, &scheduleOutput))) {
+        this->actor.flags &= ~ACTOR_FLAG_ATTENTION_ENABLED;
         scheduleOutput.result = 0;
     } else {
-        this->actor.flags |= ACTOR_FLAG_TARGETABLE;
+        this->actor.flags |= ACTOR_FLAG_ATTENTION_ENABLED;
     }
-    this->unk428 = scheduleOutput.result;
+    this->scheduleResult = scheduleOutput.result;
     func_80BAC2FC(this, play);
     if ((this->unk430 == 1) && (this->timePath->additionalPathIndex == ADDITIONAL_PATH_INDEX_NONE)) {
         Actor_Kill(&this->actor);
@@ -1324,7 +1346,7 @@ void func_80BAD5F8(EnSuttari* this, PlayState* play) {
     }
     func_80BAB434(this);
     if ((this->flags1 & 0x20) && (this->unk430 == 0) && (scheduleOutput.result != 7)) {
-        if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+        if (Actor_TalkOfferAccepted(&this->actor, &play->state)) {
             Message_StartTextbox(play, 0x2A02, &this->actor);
             this->actionFunc = func_80BAD130;
         } else if ((this->actor.xzDistToPlayer < 100.0f) || this->actor.isLockedOn) {
@@ -1337,31 +1359,31 @@ void func_80BAD5F8(EnSuttari* this, PlayState* play) {
 void func_80BAD7F8(EnSuttari* this, PlayState* play) {
     ScheduleOutput scheduleOutput;
     s16 curFrame = this->skelAnime.curFrame;
-    s16 frameCount = Animation_GetLastFrame(sAnimationInfo[this->animIndex].animation);
+    s16 endFrame = Animation_GetLastFrame(sAnimationInfo[this->animIndex].animation);
 
     if (this->enFsn == NULL) {
         this->enFsn = (EnFsn*)EnSuttari_GetActorById(play, ACTOR_EN_FSN);
     } else {
-        if ((this->flags1 & 0x2000) && (this->animIndex == 1) && (curFrame == frameCount)) {
-            this->animIndex = 2;
+        if ((this->flags1 & 0x2000) && (this->animIndex == SUTTARI_ANIM_1) && (curFrame == endFrame)) {
+            this->animIndex = SUTTARI_ANIM_2;
             Actor_ChangeAnimationByInfo(&this->skelAnime, sAnimationInfo, this->animIndex);
         }
         this->timePathTimeSpeed = R_TIME_SPEED + ((void)0, gSaveContext.save.timeSpeedOffset);
         if (!Schedule_RunScript(play, D_80BAE820, &scheduleOutput) ||
-            ((this->unk428 != scheduleOutput.result) && !func_80BABF64(this, play, &scheduleOutput))) {
-            this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
+            ((this->scheduleResult != scheduleOutput.result) && !func_80BABF64(this, play, &scheduleOutput))) {
+            this->actor.flags &= ~ACTOR_FLAG_ATTENTION_ENABLED;
             scheduleOutput.result = 0;
         } else {
-            this->actor.flags |= ACTOR_FLAG_TARGETABLE;
+            this->actor.flags |= ACTOR_FLAG_ATTENTION_ENABLED;
         }
-        this->unk428 = scheduleOutput.result;
+        this->scheduleResult = scheduleOutput.result;
         func_80BAC2FC(this, play);
         if ((this->unk430 == 1) && (this->timePath->additionalPathIndex == ADDITIONAL_PATH_INDEX_NONE)) {
             Actor_Kill(&this->actor);
             return;
         }
         if ((this->flags1 & 0x20) && (scheduleOutput.result != 9)) {
-            if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+            if (Actor_TalkOfferAccepted(&this->actor, &play->state)) {
                 Message_StartTextbox(play, 0x2A02, &this->actor);
                 this->actionFunc = func_80BAD130;
             } else if ((this->actor.xzDistToPlayer < 100.0f) || this->actor.isLockedOn) {
@@ -1373,12 +1395,12 @@ void func_80BAD7F8(EnSuttari* this, PlayState* play) {
 }
 
 void func_80BADA08(EnSuttari* this, PlayState* play) {
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
-        this->actor.flags &= ~ACTOR_FLAG_10000;
+    if (Actor_TalkOfferAccepted(&this->actor, &play->state)) {
+        this->actor.flags &= ~ACTOR_FLAG_TALK_OFFER_AUTO_ACCEPTED;
         func_80BAAB78(this, play);
         SET_WEEKEVENTREG(WEEKEVENTREG_81_04);
     } else if (this->actor.xzDistToPlayer < 500.0f) {
-        this->actor.flags |= ACTOR_FLAG_10000;
+        this->actor.flags |= ACTOR_FLAG_TALK_OFFER_AUTO_ACCEPTED;
         Actor_OfferTalk(&this->actor, play, 500.0f);
     }
 }
@@ -1386,16 +1408,16 @@ void func_80BADA08(EnSuttari* this, PlayState* play) {
 void func_80BADA9C(EnSuttari* this, PlayState* play) {
     u8 talkstate = Message_GetState(&play->msgCtx);
     s16 curFrame = this->skelAnime.curFrame;
-    s16 frameCount = Animation_GetLastFrame(sAnimationInfo[this->animIndex].animation);
+    s16 endFrame = Animation_GetLastFrame(sAnimationInfo[this->animIndex].animation);
 
     if (this->flags1 & 1) {
         this->unk3F2 = this->headRot.y;
         func_80BAA9B4(this);
-    } else if ((this->animIndex == 7) && (curFrame == frameCount)) {
-        this->animIndex = 1;
+    } else if ((this->animIndex == SUTTARI_ANIM_7) && (curFrame == endFrame)) {
+        this->animIndex = SUTTARI_ANIM_1;
         Actor_ChangeAnimationByInfo(&this->skelAnime, sAnimationInfo, this->animIndex);
     }
-    if (talkstate == TEXT_STATE_5) {
+    if (talkstate == TEXT_STATE_EVENT) {
         if (Message_ShouldAdvance(play)) {
             if (this->flags1 & 0x400) {
                 if (this->textId == 0x29EE) {
@@ -1478,12 +1500,12 @@ void func_80BADE14(EnSuttari* this, PlayState* play) {
 void func_80BADE8C(EnSuttari* this, PlayState* play) {
     this->unk3F2 = this->headRot.y;
     Math_SmoothStepToS(&this->actor.shape.rot.y, this->actor.yawTowardsPlayer, 1, 0xBB8, 0);
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
-        this->actor.flags &= ~ACTOR_FLAG_10000;
+    if (Actor_TalkOfferAccepted(&this->actor, &play->state)) {
+        this->actor.flags &= ~ACTOR_FLAG_TALK_OFFER_AUTO_ACCEPTED;
         Message_StartTextbox(play, 0x2A3A, &this->actor);
         this->actionFunc = func_80BAD130;
     } else {
-        this->actor.flags |= ACTOR_FLAG_10000;
+        this->actor.flags |= ACTOR_FLAG_TALK_OFFER_AUTO_ACCEPTED;
         Actor_OfferTalk(&this->actor, play, 500.0f);
     }
 }
@@ -1501,7 +1523,7 @@ void func_80BADF3C(EnSuttari* this, PlayState* play) {
 }
 
 void EnSuttari_Init(Actor* thisx, PlayState* play) {
-    EnSuttari* this = THIS;
+    EnSuttari* this = (EnSuttari*)thisx;
     s32 pad;
 
     if (CHECK_WEEKEVENTREG(WEEKEVENTREG_SAKON_DEAD)) {
@@ -1511,7 +1533,7 @@ void EnSuttari_Init(Actor* thisx, PlayState* play) {
     Collider_InitCylinder(play, &this->collider);
     Collider_InitAndSetCylinder(play, &this->collider, &this->actor, &sCylinderInit);
     CollisionCheck_SetInfo2(&this->actor.colChkInfo, &sDamageTable, &sColChkInfoInit2);
-    this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
+    this->actor.flags &= ~ACTOR_FLAG_ATTENTION_ENABLED;
     EnSuttari_GetPaths(this, play);
     Actor_SetScale(&this->actor, 0.01f);
     this->actionFunc = func_80BAC6E8;
@@ -1519,7 +1541,7 @@ void EnSuttari_Init(Actor* thisx, PlayState* play) {
 }
 
 void EnSuttari_Destroy(Actor* thisx, PlayState* play) {
-    EnSuttari* this = THIS;
+    EnSuttari* this = (EnSuttari*)thisx;
 
     if ((play->sceneId == SCENE_BACKTOWN) && !(this->flags2 & 4)) {
         SEQCMD_STOP_SEQUENCE(SEQ_PLAYER_BGM_MAIN, 20);
@@ -1528,7 +1550,7 @@ void EnSuttari_Destroy(Actor* thisx, PlayState* play) {
 }
 
 void EnSuttari_Update(Actor* thisx, PlayState* play) {
-    EnSuttari* this = THIS;
+    EnSuttari* this = (EnSuttari*)thisx;
     s32 pad;
     Player* player = GET_PLAYER(play);
 
@@ -1542,12 +1564,12 @@ void EnSuttari_Update(Actor* thisx, PlayState* play) {
     if (this->flags2 & 2) {
         EnSuttari_AdvanceTime();
     }
-    if (this->unk428 != 0) {
-        if ((this->animIndex == 2) || (this->animIndex == 6)) {
+    if (this->scheduleResult != 0) {
+        if ((this->animIndex == SUTTARI_ANIM_2) || (this->animIndex == SUTTARI_ANIM_6)) {
             if (Animation_OnFrame(&this->skelAnime, 8.0f) || Animation_OnFrame(&this->skelAnime, 16.0f)) {
                 Actor_PlaySfx(&this->actor, NA_SE_EV_PAMERA_WALK);
             }
-        } else if ((this->animIndex == 0) || (this->animIndex == 5)) {
+        } else if ((this->animIndex == SUTTARI_ANIM_0) || (this->animIndex == SUTTARI_ANIM_5)) {
             if (Animation_OnFrame(&this->skelAnime, 8.0f) || Animation_OnFrame(&this->skelAnime, 17.0f)) {
                 Actor_PlaySfx(&this->actor, NA_SE_EV_PAMERA_WALK);
             }
@@ -1556,9 +1578,9 @@ void EnSuttari_Update(Actor* thisx, PlayState* play) {
 }
 
 s32 EnSuttari_OverrideLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3f* pos, Vec3s* rot, Actor* thisx) {
-    EnSuttari* this = THIS;
+    EnSuttari* this = (EnSuttari*)thisx;
 
-    if (limbIndex == 15) {
+    if (limbIndex == OBJECT_BOJ_LIMB_0F) {
         *dList = object_boj_DL_00AF90;
         if (!(this->flags1 & 4)) {
             Matrix_Translate(1500.0f, 0.0f, 0.0f, MTXMODE_APPLY);
@@ -1567,13 +1589,13 @@ s32 EnSuttari_OverrideLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3
             Matrix_Translate(-1500.0f, 0.0f, 0.0f, MTXMODE_APPLY);
         }
     }
-    if (limbIndex == 8) {
+    if (limbIndex == OBJECT_BOJ_LIMB_08) {
         Matrix_RotateXS(-this->torsoRot.y, MTXMODE_APPLY);
         Matrix_RotateZS(-this->torsoRot.x, MTXMODE_APPLY);
     }
-    if ((limbIndex == 8) || (limbIndex == 9) || (limbIndex == 0xC)) {
-        rot->y += (s16)(Math_SinS(this->fidgetTableY[limbIndex]) * 200.0f);
-        rot->z += (s16)(Math_CosS(this->fidgetTableZ[limbIndex]) * 200.0f);
+    if ((limbIndex == OBJECT_BOJ_LIMB_08) || (limbIndex == OBJECT_BOJ_LIMB_09) || (limbIndex == OBJECT_BOJ_LIMB_0C)) {
+        rot->y += TRUNCF_BINANG(Math_SinS(this->fidgetTableY[limbIndex]) * 200.0f);
+        rot->z += TRUNCF_BINANG(Math_CosS(this->fidgetTableZ[limbIndex]) * 200.0f);
     }
     return false;
 }
@@ -1581,14 +1603,14 @@ s32 EnSuttari_OverrideLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3
 void EnSuttari_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* rot, Actor* thisx) {
     static Vec3f D_80BAE950 = { 0.0f, 0.0f, 0.0f };
     static Vec3f D_80BAE95C = { 2000.0f, -1000.0f, 0.0f };
-    EnSuttari* this = THIS;
+    EnSuttari* this = (EnSuttari*)thisx;
     s32 pad;
     MtxF* curState;
     Actor* bombBag;
 
     if (((this->flags1 & 8) && (this->flags1 & 0x10)) || ((this->flags1 & 2) && !(this->flags1 & 0x20)) ||
         ((this->flags1 & 4) && !(this->flags1 & 0x20))) {
-        if (limbIndex == 8) {
+        if (limbIndex == OBJECT_BOJ_LIMB_08) {
             curState = Matrix_GetCurrent();
             Matrix_MultVec3f(&D_80BAE95C, &this->unk3F8);
             if (this->actor.child == NULL) {
@@ -1611,7 +1633,7 @@ void EnSuttari_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* 
             }
         }
     }
-    if (limbIndex == 15) {
+    if (limbIndex == OBJECT_BOJ_LIMB_0F) {
         Matrix_MultVec3f(&D_80BAE950, &this->actor.focus.pos);
     }
 }
@@ -1620,7 +1642,7 @@ void EnSuttari_TransformLimbDraw(PlayState* play, s32 limbIndex, Actor* thisx) {
 }
 
 void EnSuttari_Draw(Actor* thisx, PlayState* play) {
-    EnSuttari* this = THIS;
+    EnSuttari* this = (EnSuttari*)thisx;
     s32 pad;
     Vec3f pos;
     Vec3f scale;

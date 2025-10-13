@@ -37,12 +37,11 @@ void RegisterSkipLearningSongOfHealing() {
         // Transform the player into human form if we're not in rando
         if (!IS_RANDO) {
             s16 objectId = OBJECT_LINK_NUTS;
-            gActorOverlayTable[ACTOR_PLAYER].initInfo->objectId = objectId;
+            gActorOverlayTable[ACTOR_PLAYER].profile->objectId = objectId;
             func_8012F73C(&gPlayState->objectCtx, player->actor.objectSlot, objectId);
             player->actor.objectSlot = Object_GetSlot(&gPlayState->objectCtx, GAMEPLAY_KEEP);
             gSaveContext.save.playerForm = PLAYER_FORM_HUMAN;
-            s32 objectSlot =
-                Object_GetSlot(&gPlayState->objectCtx, gActorOverlayTable[ACTOR_PLAYER].initInfo->objectId);
+            s32 objectSlot = Object_GetSlot(&gPlayState->objectCtx, gActorOverlayTable[ACTOR_PLAYER].profile->objectId);
             player->actor.objectSlot = objectSlot;
             player->actor.shape.rot.z = GET_PLAYER_FORM + 1;
             player->actor.init = PlayerCall_Init;

@@ -163,7 +163,7 @@ void* AudioLoad_DmaSampleData(uintptr_t devAddr, size_t size, s32 arg2, u8* dmaI
     s32 bufferPos;
     u32 i;
 
-    if ((arg2 != 0) || (*dmaIndexRef >= gAudioCtx.sampleDmaListSize1)) {
+    if (arg2 || (*dmaIndexRef >= gAudioCtx.sampleDmaListSize1)) {
         for (i = gAudioCtx.sampleDmaListSize1; i < gAudioCtx.sampleDmaCount; i++) {
             dma = &gAudioCtx.sampleDmas[i];
             bufferPos = devAddr - dma->devAddr;
@@ -186,11 +186,11 @@ void* AudioLoad_DmaSampleData(uintptr_t devAddr, size_t size, s32 arg2, u8* dmaI
             }
         }
 
-        if (arg2 == 0) {
+        if (!arg2) {
             goto search_short_lived;
         }
 
-        if (gAudioCtx.sampleDmaReuseQueue2RdPos != gAudioCtx.sampleDmaReuseQueue2WrPos && arg2 != 0) {
+        if ((gAudioCtx.sampleDmaReuseQueue2RdPos != gAudioCtx.sampleDmaReuseQueue2WrPos) && arg2) {
             // Allocate a DMA from reuse queue 2, unless full.
             dmaIndex = gAudioCtx.sampleDmaReuseQueue2[gAudioCtx.sampleDmaReuseQueue2RdPos];
             gAudioCtx.sampleDmaReuseQueue2RdPos++;
@@ -467,6 +467,7 @@ s32 AudioLoad_SyncLoadSample(Sample* sample, s32 fontId) {
             sample->sampleAddr = sampleAddr;
         }
     }
+    //! @bug Missing return, but the return value is never used so it's fine.
 }
 
 s32 AudioLoad_SyncLoadInstrument(s32 fontId, s32 instId, s32 drumId) {
@@ -483,7 +484,7 @@ s32 AudioLoad_SyncLoadInstrument(s32 fontId, s32 instId, s32 drumId) {
         if (instrument->normalRangeHi != 0x7F) {
             return AudioLoad_SyncLoadSample(instrument->highPitchTunedSample.sample, fontId);
         }
-        // TODO: is this missing return UB?
+        //! @bug Missing return, but the return value is never used so it's fine.
     } else if (instId == 0x7F) {
         Drum* drum = AudioPlayback_GetDrum(fontId, drumId);
 
@@ -493,7 +494,7 @@ s32 AudioLoad_SyncLoadInstrument(s32 fontId, s32 instId, s32 drumId) {
         AudioLoad_SyncLoadSample(drum->tunedSample.sample, fontId);
         return 0;
     }
-    // TODO: is this missing return UB?
+    //! @bug Missing return, but the return value is never used so it's fine.
 }
 
 void AudioLoad_AsyncLoad(s32 tableType, s32 id, s32 nChunks, s32 retData, OSMesgQueue* retQueue) {
@@ -994,7 +995,7 @@ void* AudioLoad_AsyncLoadInner(s32 tableType, s32 id, s32 nChunks, s32 retData, 
     s32 loadStatus;
     SoundFont* soundFont;
     u32 realId = AudioLoad_GetRealTableIndex(tableType, id);
-    u32 pad;
+    s32 pad;
 
     switch (tableType) {
         case SEQUENCE_TABLE:
@@ -1680,7 +1681,7 @@ void AudioLoad_ProcessAsyncLoadUnkMedium(AudioAsyncLoad* asyncLoad, s32 resetSta
 void AudioLoad_FinishAsyncLoad(AudioAsyncLoad* asyncLoad) {
     u32 retMsg = asyncLoad->retMsg;
     u32 fontId;
-    u32 pad;
+    s32 pad;
     OSMesg doneMsg;
     u32 sampleBankId1;
     u32 sampleBankId2;
@@ -1769,7 +1770,7 @@ void AudioLoad_ProcessAsyncLoad(AudioAsyncLoad* asyncLoad, s32 resetStatus) {
 
     asyncLoad->bytesRemaining -= asyncLoad->chunkSize;
     asyncLoad->curDevAddr += asyncLoad->chunkSize;
-    asyncLoad->curRamAddr = asyncLoad->curRamAddr + asyncLoad->chunkSize;
+    asyncLoad->curRamAddr += asyncLoad->chunkSize;
 }
 
 void AudioLoad_AsyncDma(AudioAsyncLoad* asyncLoad, size_t size) {

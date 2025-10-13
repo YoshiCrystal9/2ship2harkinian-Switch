@@ -6,9 +6,7 @@
 
 #include "z_elf_msg2.h"
 
-#define FLAGS (ACTOR_FLAG_10)
-
-#define THIS ((ElfMsg2*)thisx)
+#define FLAGS (ACTOR_FLAG_UPDATE_CULLING_DISABLED)
 
 void ElfMsg2_Init(Actor* thisx, PlayState* play);
 void ElfMsg2_Destroy(Actor* thisx, PlayState* play);
@@ -18,7 +16,7 @@ s32 func_8096EE50(ElfMsg2* this);
 void func_8096EF98(ElfMsg2* this, PlayState* play);
 void func_8096EFD0(ElfMsg2* this, PlayState* play);
 
-ActorInit Elf_Msg2_InitVars = {
+ActorProfile Elf_Msg2_Profile = {
     /**/ ACTOR_ELF_MSG2,
     /**/ ACTORCAT_BG,
     /**/ FLAGS,
@@ -32,7 +30,7 @@ ActorInit Elf_Msg2_InitVars = {
 
 static InitChainEntry sInitChain[] = {
     ICHAIN_VEC3F_DIV1000(scale, 200, ICHAIN_CONTINUE),
-    ICHAIN_F32(uncullZoneForward, 1000, ICHAIN_STOP),
+    ICHAIN_F32(cullingVolumeDistance, 1000, ICHAIN_STOP),
 };
 
 void ElfMsg2_SetupAction(ElfMsg2* this, ElfMsg2ActionFunc actionFunc) {
@@ -72,18 +70,18 @@ s32 func_8096EC4C(ElfMsg2* this, PlayState* play) {
 }
 
 void ElfMsg2_Init(Actor* thisx, PlayState* play) {
-    ElfMsg2* this = THIS;
+    ElfMsg2* this = (ElfMsg2*)thisx;
 
     if (!func_8096EC4C(this, play)) {
         if ((this->actor.home.rot.x > 0) && (this->actor.home.rot.x < 8)) {
-            this->actor.targetMode = this->actor.home.rot.x - 1;
+            this->actor.attentionRangeType = this->actor.home.rot.x - 1;
         }
         Actor_ProcessInitChain(&this->actor, sInitChain);
         if (this->actor.home.rot.y < 0) {
             ElfMsg2_SetupAction(this, func_8096EFD0);
         } else {
             ElfMsg2_SetupAction(this, func_8096EF98);
-            this->actor.flags |= (ACTOR_FLAG_40000 | ACTOR_FLAG_TARGETABLE);
+            this->actor.flags |= (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_TALK_WITH_C_UP);
             this->actor.textId = func_8096EE50(this);
         }
         this->actor.shape.rot.z = 0;
@@ -128,7 +126,7 @@ void func_8096EE64(ElfMsg2* this, PlayState* play) {
 }
 
 void func_8096EF98(ElfMsg2* this, PlayState* play) {
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+    if (Actor_TalkOfferAccepted(&this->actor, &play->state)) {
         ElfMsg2_SetupAction(this, func_8096EE64);
     }
 }
@@ -137,13 +135,13 @@ void func_8096EFD0(ElfMsg2* this, PlayState* play) {
     if ((this->actor.home.rot.y < 0) && (this->actor.home.rot.y >= -0x80) &&
         Flags_GetSwitch(play, -this->actor.home.rot.y - 1)) {
         ElfMsg2_SetupAction(this, func_8096EF98);
-        this->actor.flags |= (ACTOR_FLAG_40000 | ACTOR_FLAG_TARGETABLE);
+        this->actor.flags |= (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_TALK_WITH_C_UP);
         this->actor.textId = func_8096EE50(this);
     }
 }
 
 void ElfMsg2_Update(Actor* thisx, PlayState* play) {
-    ElfMsg2* this = THIS;
+    ElfMsg2* this = (ElfMsg2*)thisx;
 
     if (!func_8096EC4C(this, play)) {
         this->actionFunc(this, play);

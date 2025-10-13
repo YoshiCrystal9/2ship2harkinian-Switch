@@ -5,20 +5,20 @@ extern "C" {
 #include "variables.h"
 #include "src/overlays/actors/ovl_En_Trt/z_en_trt.h"
 #include "src/overlays/actors/ovl_En_Trt2/z_en_trt2.h"
-void Player_TalkWithPlayer(PlayState* play, Actor* actor);
+void Player_StartTalking(PlayState* play, Actor* actor);
 void EnTrt_ItemGiven(EnTrt* enTrt, PlayState* play);
 }
 
 void EnTrt_CompleteDialogue(Actor* actor) {
     EnTrt* refActor = (EnTrt*)actor;
-    Player_TalkWithPlayer(gPlayState, &refActor->actor);
+    Player_StartTalking(gPlayState, &refActor->actor);
     refActor->actionFunc = EnTrt_ItemGiven;
 }
 
 void EnTrt2_CompleteDialogue(Actor* actor) {
     EnTrt2* refActor = (EnTrt2*)actor;
     refActor->unk_3B2 = 13;
-    Player_TalkWithPlayer(gPlayState, &refActor->actor);
+    Player_StartTalking(gPlayState, &refActor->actor);
 }
 
 void Rando::ActorBehavior::InitEnTrtBehavior() {

@@ -9,9 +9,7 @@
 
 #include "2s2h/BenPort.h"
 
-#define FLAGS (ACTOR_FLAG_10 | ACTOR_FLAG_20)
-
-#define THIS ((DemoSyoten*)thisx)
+#define FLAGS (ACTOR_FLAG_UPDATE_CULLING_DISABLED | ACTOR_FLAG_DRAW_CULLING_DISABLED)
 
 void DemoSyoten_Init(Actor* thisx, PlayState* play);
 void DemoSyoten_Destroy(Actor* thisx, PlayState* play);
@@ -27,7 +25,7 @@ void func_80C17008(DemoSyoten* this, PlayState* play);
 void func_80C173B4(Actor* thisx, PlayState* play);
 void func_80C17690(Actor* thisx, PlayState* play);
 
-ActorInit Demo_Syoten_InitVars = {
+ActorProfile Demo_Syoten_Profile = {
     /**/ ACTOR_DEMO_SYOTEN,
     /**/ ACTORCAT_ITEMACTION,
     /**/ FLAGS,
@@ -61,7 +59,7 @@ Color_RGBA8 D_80C17834[] = {
 
 void DemoSyoten_Init(Actor* thisx, PlayState* play) {
     s32 pad;
-    DemoSyoten* this = THIS;
+    DemoSyoten* this = (DemoSyoten*)thisx;
 
     Actor_SetScale(&this->actor, 0.3f);
 
@@ -75,9 +73,9 @@ void DemoSyoten_Init(Actor* thisx, PlayState* play) {
 
     switch (DEMOSYOTEN_GET_F(&this->actor)) {
         case DEMOSYOTEN_F_0:
-            Keyframe_InitFlex(&this->unk_144, gSyotenKFSkel_1328, gSyotenKFAnim_023C, this->unk_174, this->unk_2A6,
-                              NULL);
-            Keyframe_FlexPlayLoop(&this->unk_144, gSyotenKFAnim_023C);
+            Keyframe_InitFlex(&this->kfSkelAnime, gSyotenKFSkel_1328, gSyotenKFAnim_023C, this->jointTable,
+                              this->morphTable, NULL);
+            Keyframe_FlexPlayLoop(&this->kfSkelAnime, gSyotenKFAnim_023C);
             this->actor.draw = NULL;
             this->actionFunc = func_80C16A74;
             this->actor.child =
@@ -130,10 +128,10 @@ void DemoSyoten_Init(Actor* thisx, PlayState* play) {
 }
 
 void DemoSyoten_Destroy(Actor* thisx, PlayState* play) {
-    DemoSyoten* this = THIS;
+    DemoSyoten* this = (DemoSyoten*)thisx;
 
     if (DEMOSYOTEN_GET_F(&this->actor) == DEMOSYOTEN_F_0) {
-        Keyframe_DestroyFlex(&this->unk_144);
+        Keyframe_DestroyFlex(&this->kfSkelAnime);
     }
 }
 
@@ -143,10 +141,10 @@ void func_80C16760(DemoSyoten* this, PlayState* play) {
     Vec3f sp2C;
 
     this->unk_3EC = 0;
-    if (DEMOSYOTEN_GET_7E00(&this->actor) != DEMOSYOTEN_7E00_3F) {
-        this->unk_3E8 = &play->setupPathList[DEMOSYOTEN_GET_7E00(&this->actor)];
-        if (this->unk_3E8 != NULL) {
-            points = Lib_SegmentedToVirtual(this->unk_3E8->points);
+    if (DEMOSYOTEN_GET_PATH_INDEX(&this->actor) != DEMOSYOTEN_PATH_INDEX_NONE) {
+        this->path = &play->setupPathList[DEMOSYOTEN_GET_PATH_INDEX(&this->actor)];
+        if (this->path != NULL) {
+            points = Lib_SegmentedToVirtual(this->path->points);
             Math_Vec3s_ToVec3f(&this->actor.world.pos, &points[0]);
             this->unk_3EC++;
             points++;
@@ -155,13 +153,13 @@ void func_80C16760(DemoSyoten* this, PlayState* play) {
             this->actor.world.rot.x = Math_Vec3f_Pitch(&this->actor.world.pos, &sp2C);
         }
     } else {
-        this->unk_3E8 = NULL;
+        this->path = NULL;
     }
 }
 
 s32 func_80C16818(DemoSyoten* this) {
     s32 pad;
-    Path* path = this->unk_3E8;
+    Path* path = this->path;
     Vec3s* points;
     Vec3f sp28;
 
@@ -169,7 +167,7 @@ s32 func_80C16818(DemoSyoten* this) {
         return true;
     }
 
-    points = Lib_SegmentedToVirtual(this->unk_3E8->points);
+    points = Lib_SegmentedToVirtual(this->path->points);
     points += this->unk_3EC;
     Math_Vec3s_ToVec3f(&sp28, points);
     this->actor.world.rot.y = Math_Vec3f_Yaw(&this->actor.world.pos, &sp28);
@@ -183,14 +181,14 @@ s32 func_80C16818(DemoSyoten* this) {
 
 void func_80C168D0(DemoSyoten* this, PlayState* play) {
     s32 pad;
-    Path* path = this->unk_3E8;
+    Path* path = this->path;
     Vec3s* points;
     Vec3f worldPos;
     Vec3f projectedPos;
     f32 invW;
 
     if (path != NULL) {
-        points = Lib_SegmentedToVirtual(this->unk_3E8->points);
+        points = Lib_SegmentedToVirtual(this->path->points);
         points += this->unk_3EC;
         Math_Vec3s_ToVec3f(&worldPos, points);
         Actor_GetProjectedPos(play, &worldPos, &projectedPos, &invW);
@@ -223,7 +221,7 @@ void func_80C16A64(DemoSyoten* this, PlayState* play) {
 void func_80C16A74(DemoSyoten* this, PlayState* play) {
     u16 cueId;
 
-    Keyframe_UpdateFlex(&this->unk_144);
+    Keyframe_UpdateFlex(&this->kfSkelAnime);
     if (Cutscene_IsCueInChannel(play, this->cueType)) {
         if ((play->csCtx.curFrame >= 160) && (play->csCtx.curFrame < 322)) {
             Actor_PlaySfx_Flagged(&this->actor, NA_SE_EV_IKANA_SOUL_LV - SFX_FLAG);
@@ -249,6 +247,9 @@ void func_80C16A74(DemoSyoten* this, PlayState* play) {
 
                 case 4:
                     this->actor.draw = NULL;
+                    break;
+
+                default:
                     break;
             }
         }
@@ -317,7 +318,7 @@ void func_80C16BD4(DemoSyoten* this, PlayState* play) {
             case 4:
                 this->actor.speed =
                     play->csCtx.actorCues[Cutscene_GetCueChannel(play, this->cueType)]->rot.z * 0.005493164f;
-                if (this->unk_3EC < this->unk_3E8->count) {
+                if (this->unk_3EC < this->path->count) {
                     if (func_80C16818(this)) {
                         this->unk_3EC++;
                     }
@@ -430,18 +431,19 @@ void func_80C17008(DemoSyoten* this, PlayState* play) {
 }
 
 void DemoSyoten_Update(Actor* thisx, PlayState* play) {
-    DemoSyoten* this = THIS;
+    DemoSyoten* this = (DemoSyoten*)thisx;
 
     this->actionFunc(this, play);
 }
 
-s32 func_80C170F8(PlayState* play, UNK_TYPE arg1, s32 arg2, UNK_TYPE arg3, UNK_TYPE arg4, Actor* thisx) {
+s32 DemoSyoten_OverrideLimbDraw(PlayState* play, KFSkelAnimeFlex* kfSkelAnime, s32 limbIndex, Gfx** dList, u8* flags,
+                                void* thisx, Vec3f* scale, Vec3s* rot, Vec3f* pos) {
     GraphicsContext* gfxCtx = play->state.gfxCtx;
-    DemoSyoten* this = THIS;
+    DemoSyoten* this = (DemoSyoten*)thisx;
 
     OPEN_DISPS(gfxCtx);
 
-    switch (arg2) {
+    switch (limbIndex) {
         case 2:
             gDPPipeSync(POLY_XLU_DISP++);
             gDPSetPrimColor(POLY_XLU_DISP++, 0, 0x80, 255, 240, 140, (s32)(this->unk_3D8 * 150.0f));
@@ -481,17 +483,17 @@ s32 func_80C170F8(PlayState* play, UNK_TYPE arg1, s32 arg2, UNK_TYPE arg3, UNK_T
 
 void func_80C173B4(Actor* thisx, PlayState* play) {
     s32 pad;
-    DemoSyoten* this = THIS;
-    Mtx* mtx;
+    DemoSyoten* this = (DemoSyoten*)thisx;
+    Mtx* mtxStack;
 
     AnimatedMat_DrawXlu(play, Lib_SegmentedToVirtual(&object_syoten_Matanimheader_001298));
 
-    mtx = GRAPH_ALLOC(play->state.gfxCtx, this->unk_144.skeleton->dListCount * sizeof(Mtx));
+    mtxStack = GRAPH_ALLOC(play->state.gfxCtx, this->kfSkelAnime.skeleton->dListCount * sizeof(Mtx));
 
-    if (mtx != NULL) {
+    if (mtxStack != NULL) {
         Gfx_SetupDL25_Xlu(play->state.gfxCtx);
         Matrix_Mult(&play->billboardMtxF, MTXMODE_APPLY);
-        Keyframe_DrawFlex(play, &this->unk_144, mtx, (void*)func_80C170F8, 0, &this->actor);
+        Keyframe_DrawFlex(play, &this->kfSkelAnime, mtxStack, DemoSyoten_OverrideLimbDraw, NULL, &this->actor);
     }
 }
 
@@ -512,7 +514,7 @@ void func_80C17468(PlayState* play) {
 
 void DemoSyoten_Draw(Actor* thisx, PlayState* play) {
     s32 pad;
-    DemoSyoten* this = THIS;
+    DemoSyoten* this = (DemoSyoten*)thisx;
 
     OPEN_DISPS(play->state.gfxCtx);
 
@@ -542,7 +544,7 @@ void DemoSyoten_Draw(Actor* thisx, PlayState* play) {
     }
 
     if (this->unk_3DC != NULL) {
-        gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+        MATRIX_FINALIZE_AND_LOAD(POLY_XLU_DISP++, play->state.gfxCtx);
         gSPDisplayList(POLY_XLU_DISP++, this->unk_3DC);
     }
 
@@ -551,7 +553,7 @@ void DemoSyoten_Draw(Actor* thisx, PlayState* play) {
 
 void func_80C17690(Actor* thisx, PlayState* play) {
     s32 pad;
-    DemoSyoten* this = THIS;
+    DemoSyoten* this = (DemoSyoten*)thisx;
 
     OPEN_DISPS(play->state.gfxCtx);
 
@@ -562,7 +564,7 @@ void func_80C17690(Actor* thisx, PlayState* play) {
         func_80C17468(play);
     }
 
-    gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    MATRIX_FINALIZE_AND_LOAD(POLY_XLU_DISP++, play->state.gfxCtx);
 
     AnimatedMat_DrawStepXlu(play, this->unk_3E0, this->unk_3E6);
 

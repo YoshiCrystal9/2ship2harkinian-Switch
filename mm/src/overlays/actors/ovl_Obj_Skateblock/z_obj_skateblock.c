@@ -8,9 +8,7 @@
 #include "objects/gameplay_dangeon_keep/gameplay_dangeon_keep.h"
 #include "2s2h/GameInteractor/GameInteractor.h"
 
-#define FLAGS (ACTOR_FLAG_10)
-
-#define THIS ((ObjSkateblock*)thisx)
+#define FLAGS (ACTOR_FLAG_UPDATE_CULLING_DISABLED)
 
 void ObjSkateblock_Init(Actor* thisx, PlayState* play);
 void ObjSkateblock_Destroy(Actor* thisx, PlayState* play);
@@ -28,7 +26,7 @@ void func_80A2273C(ObjSkateblock* this, PlayState* play);
 void func_80A227A4(ObjSkateblock* this);
 void func_80A227C0(ObjSkateblock* this, PlayState* play);
 
-ActorInit Obj_Skateblock_InitVars = {
+ActorProfile Obj_Skateblock_Profile = {
     /**/ ACTOR_OBJ_SKATEBLOCK,
     /**/ ACTORCAT_BG,
     /**/ FLAGS,
@@ -73,9 +71,9 @@ Color_RGBA8 D_80A22AD8 = { 250, 250, 250, 255 };
 Color_RGBA8 D_80A22ADC = { 180, 180, 180, 255 };
 
 static InitChainEntry sInitChain[] = {
-    ICHAIN_F32_DIV1000(gravity, -1700, ICHAIN_CONTINUE), ICHAIN_F32_DIV1000(terminalVelocity, -20000, ICHAIN_CONTINUE),
-    ICHAIN_VEC3F_DIV1000(scale, 100, ICHAIN_CONTINUE),   ICHAIN_F32(uncullZoneForward, 4000, ICHAIN_CONTINUE),
-    ICHAIN_F32(uncullZoneScale, 150, ICHAIN_CONTINUE),   ICHAIN_F32(uncullZoneDownward, 200, ICHAIN_STOP),
+    ICHAIN_F32_DIV1000(gravity, -1700, ICHAIN_CONTINUE),  ICHAIN_F32_DIV1000(terminalVelocity, -20000, ICHAIN_CONTINUE),
+    ICHAIN_VEC3F_DIV1000(scale, 100, ICHAIN_CONTINUE),    ICHAIN_F32(cullingVolumeDistance, 4000, ICHAIN_CONTINUE),
+    ICHAIN_F32(cullingVolumeScale, 150, ICHAIN_CONTINUE), ICHAIN_F32(cullingVolumeDownward, 200, ICHAIN_STOP),
 };
 
 f32 D_80A22AF8[] = { 14.0f, -14.0f, 14.0f, -14.0f };
@@ -222,7 +220,7 @@ s32 func_80A216D4(ObjSkateblock* this, PlayState* play, f32 arg2, Vec3f* arg3) {
     Vec3f spB0;
     f32 temp_f20;
     f32 temp_f24;
-    s32 spA4;
+    s32 bgId;
     CollisionPoly* spA0;
     s32 ret;
     f32 temp_f26;
@@ -258,7 +256,7 @@ s32 func_80A216D4(ObjSkateblock* this, PlayState* play, f32 arg2, Vec3f* arg3) {
         spC8.y = spD4.y;
         spC8.z = temp_f26 + spD4.z;
 
-        if (BgCheck_EntityLineTest3(&play->colCtx, &spD4, &spC8, &spB0, &spA0, true, false, false, true, &spA4,
+        if (BgCheck_EntityLineTest3(&play->colCtx, &spD4, &spC8, &spB0, &spA0, true, false, false, true, &bgId,
                                     &this->dyna.actor, 0.0f)) {
             temp_f2 = Math3D_Vec3fDistSq(&spD4, &spB0);
             if (temp_f2 < temp_f20) {
@@ -293,7 +291,7 @@ s32 func_80A21990(ObjSkateblock* this, PlayState* play, Vec3f* arg2) {
     Vec3f spC8;
     f32 temp_f0;
     f32 temp_f12;
-    s32 spBC;
+    s32 bgId;
     CollisionPoly* spB8;
     s32 ret;
     f32 temp_f26;
@@ -331,7 +329,7 @@ s32 func_80A21990(ObjSkateblock* this, PlayState* play, Vec3f* arg2) {
         spE0.y = spEC.y;
         spE0.z = temp_f30 + spEC.z;
 
-        if (BgCheck_EntityLineTest3(&play->colCtx, &spEC, &spE0, &spC8, &spB8, true, false, false, true, &spBC,
+        if (BgCheck_EntityLineTest3(&play->colCtx, &spEC, &spE0, &spC8, &spB8, true, false, false, true, &bgId,
                                     &this->dyna.actor, 0.0f)) {
             temp_f0 = Math3D_Vec3fDistSq(&spEC, &spC8);
             if (temp_f0 < phi_f22) {
@@ -452,7 +450,7 @@ void func_80A21F74(ObjSkateblock* this, PlayState* play) {
 
     this->unk_17C++;
 
-    if (this->dyna.actor.flags & ACTOR_FLAG_40) {
+    if (this->dyna.actor.flags & ACTOR_FLAG_INSIDE_CULLING_VOLUME) {
         if (this->unk_17C >= 46) {
             phi_f22 = 1.0f;
         } else {
@@ -487,7 +485,7 @@ void func_80A21F74(ObjSkateblock* this, PlayState* play) {
 }
 
 void ObjSkateblock_Init(Actor* thisx, PlayState* play) {
-    ObjSkateblock* this = THIS;
+    ObjSkateblock* this = (ObjSkateblock*)thisx;
 
     Actor_ProcessInitChain(&this->dyna.actor, sInitChain);
     DynaPolyActor_Init(&this->dyna, DYNA_TRANSFORM_POS);
@@ -502,7 +500,7 @@ void ObjSkateblock_Init(Actor* thisx, PlayState* play) {
 }
 
 void ObjSkateblock_Destroy(Actor* thisx, PlayState* play) {
-    ObjSkateblock* this = THIS;
+    ObjSkateblock* this = (ObjSkateblock*)thisx;
 
     DynaPoly_DeleteBgActor(play, &play->colCtx.dyna, this->dyna.bgId);
 }
@@ -673,7 +671,7 @@ void func_80A227C0(ObjSkateblock* this, PlayState* play) {
 }
 
 void ObjSkateblock_Update(Actor* thisx, PlayState* play) {
-    ObjSkateblock* this = THIS;
+    ObjSkateblock* this = (ObjSkateblock*)thisx;
 
     D_80A22A10 &= ~(1 << this->unk_1C0);
     this->actionFunc(this, play);
@@ -682,7 +680,7 @@ void ObjSkateblock_Update(Actor* thisx, PlayState* play) {
 
 void ObjSkateblock_Draw(Actor* thisx, PlayState* play) {
     s32 pad;
-    ObjSkateblock* this = THIS;
+    ObjSkateblock* this = (ObjSkateblock*)thisx;
     Color_RGB8* sp2C = &D_80A22B08[OBJSKAEBLOCK_GET_F(&this->dyna.actor)];
 
     OPEN_DISPS(play->state.gfxCtx);
@@ -690,7 +688,7 @@ void ObjSkateblock_Draw(Actor* thisx, PlayState* play) {
     Gfx_SetupDL25_Opa(play->state.gfxCtx);
     AnimatedMat_DrawStep(play, D_80A22A18, 0);
 
-    gSPMatrix(POLY_OPA_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    MATRIX_FINALIZE_AND_LOAD(POLY_OPA_DISP++, play->state.gfxCtx);
     gDPSetPrimColor(POLY_OPA_DISP++, 0xFF, 0xFF, sp2C->r, sp2C->g, sp2C->b, 255);
     gSPDisplayList(POLY_OPA_DISP++, gameplay_dangeon_keep_DL_0182A8);
 

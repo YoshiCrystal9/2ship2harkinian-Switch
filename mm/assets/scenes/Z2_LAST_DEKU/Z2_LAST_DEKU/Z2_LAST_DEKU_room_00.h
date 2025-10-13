@@ -90,4 +90,7 @@ static const ALIGN_ASSET(2) char Z2_LAST_DEKU_room_00TLUT_00DA40[] = dZ2_LAST_DE
 #define dZ2_LAST_DEKU_room_00Tex_007A40 "__OTR__scenes/nonmq/Z2_LAST_DEKU_scene/Z2_LAST_DEKU_room_00Tex_007A40"
 static const ALIGN_ASSET(2) char Z2_LAST_DEKU_room_00Tex_007A40[] = dZ2_LAST_DEKU_room_00Tex_007A40;
 
+#define dZ2_LAST_DEKU_room_00DL_005A00 "__OTR__scenes/nonmq/Z2_LAST_DEKU_scene/Z2_LAST_DEKU_room_00DL_005A00"
+static const ALIGN_ASSET(2) char Z2_LAST_DEKU_room_00DL_005A00[] = dZ2_LAST_DEKU_room_00DL_005A00;
+
 #endif // Z2_LAST_DEKU_Z2_LAST_DEKU_ROOM_00_H

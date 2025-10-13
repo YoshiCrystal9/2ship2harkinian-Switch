@@ -1,21 +1,18 @@
 #include "prevent_bss_reordering.h"
 #include "global.h"
+#include "z64pause_menu.h"
 
-#define FLAGS                                                                                          \
-    (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_10 | ACTOR_FLAG_20 | ACTOR_FLAG_200000 | \
-     ACTOR_FLAG_2000000 | ACTOR_FLAG_CAN_PRESS_SWITCH | ACTOR_FLAG_80000000)
+#define FLAGS                                                                                  \
+    (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_UPDATE_CULLING_DISABLED | \
+     ACTOR_FLAG_DRAW_CULLING_DISABLED | ACTOR_FLAG_UPDATE_DURING_SOARING_AND_SOT_CS |          \
+     ACTOR_FLAG_UPDATE_DURING_OCARINA | ACTOR_FLAG_CAN_PRESS_SWITCHES | ACTOR_FLAG_MINIMAP_ICON_ENABLED)
 
 ActorFunc sPlayerCallInitFunc;
 ActorFunc sPlayerCallDestroyFunc;
 ActorFunc sPlayerCallUpdateFunc;
 ActorFunc sPlayerCallDrawFunc;
 
-void PlayerCall_Init(Actor* thisx, PlayState* play);
-void PlayerCall_Destroy(Actor* thisx, PlayState* play);
-void PlayerCall_Update(Actor* thisx, PlayState* play);
-void PlayerCall_Draw(Actor* thisx, PlayState* play);
-
-ActorInit Player_InitVars = {
+ActorProfile Player_Profile = {
     /**/ ACTOR_PLAYER,
     /**/ ACTORCAT_PLAYER,
     /**/ FLAGS,

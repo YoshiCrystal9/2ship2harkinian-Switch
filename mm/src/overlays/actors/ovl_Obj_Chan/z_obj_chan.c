@@ -14,9 +14,7 @@
 #include "objects/object_obj_chan/object_obj_chan.h"
 #include "objects/object_tsubo/object_tsubo.h"
 
-#define FLAGS (ACTOR_FLAG_10 | ACTOR_FLAG_20)
-
-#define THIS ((ObjChan*)thisx)
+#define FLAGS (ACTOR_FLAG_UPDATE_CULLING_DISABLED | ACTOR_FLAG_DRAW_CULLING_DISABLED)
 
 #define OBJCHAN_ROTATION_SPEED 364 // == (65536 * 2/360) i.e. 2 degrees per second
 
@@ -29,7 +27,7 @@ void ObjChan_Reset(void);
 void ObjChan_ChandelierAction(ObjChan* this, PlayState* play);
 void ObjChan_PotAction(ObjChan* this, PlayState* play);
 
-ActorInit Obj_Chan_InitVars = {
+ActorProfile Obj_Chan_Profile = {
     /**/ ACTOR_OBJ_CHAN,
     /**/ ACTORCAT_BG,
     /**/ FLAGS,
@@ -44,7 +42,7 @@ ActorInit Obj_Chan_InitVars = {
 
 static ColliderCylinderInit sObjChanCylinderInit = {
     {
-        COLTYPE_HARD,
+        COL_MATERIAL_HARD,
         AT_NONE,
         AC_ON | AC_TYPE_PLAYER,
         OC1_NONE,
@@ -52,11 +50,11 @@ static ColliderCylinderInit sObjChanCylinderInit = {
         COLSHAPE_CYLINDER,
     },
     {
-        ELEMTYPE_UNK1,
+        ELEM_MATERIAL_UNK1,
         { 0x00000000, 0x00, 0x00 },
         { 0xF7CFFFFF, 0x00, 0x00 },
-        TOUCH_NONE | TOUCH_SFX_NORMAL,
-        BUMP_ON,
+        ATELEM_NONE | ATELEM_SFX_NORMAL,
+        ACELEM_ON,
         OCELEM_NONE,
     },
     { 48, 76, -60, { 0, 0, 0 } },
@@ -81,7 +79,7 @@ static s32 sObjChanLoaded;
 
 void ObjChan_Init(Actor* thisx, PlayState* play) {
     s32 pad;
-    ObjChan* this = THIS;
+    ObjChan* this = (ObjChan*)thisx;
 
     if (OBJCHAN_SUBTYPE(&this->actor) == OBJCHAN_SUBTYPE_CHANDELIER) {
         if (sObjChanLoaded) {
@@ -113,7 +111,7 @@ void ObjChan_Init(Actor* thisx, PlayState* play) {
 }
 
 void ObjChan_Destroy(Actor* thisx, PlayState* play) {
-    ObjChan* this = THIS;
+    ObjChan* this = (ObjChan*)thisx;
 
     Collider_DestroyCylinder(play, &this->collider);
 }
@@ -163,15 +161,16 @@ void ObjChan_InitChandelier(ObjChan* this, PlayState* play) {
     Vec3f childPos;
     Vec3s childRot;
     CollisionPoly* sp94;
-    s32 sp90;
+    s32 bgId;
     Vec3f sp84;
 
     Math_Vec3f_Copy(&this->unk1C0, &thisx->world.pos);
 
     Math_Vec3f_Copy(&sp84, &thisx->world.pos);
     sp84.y += 1600.0f;
+
     if (BgCheck_EntityLineTest1(&play->colCtx, &thisx->world.pos, &sp84, &this->unk1C0, &sp94, false, false, true, true,
-                                &sp90)) {
+                                &bgId)) {
         this->unk1CC = thisx->world.pos.y - this->unk1C0.y;
     } else {
         Actor_Kill(thisx);
@@ -225,9 +224,9 @@ void ObjChan_ChandelierAction(ObjChan* this, PlayState* play) {
     if (this->unk1D0 > 0.0f) {
         this->unk1D4 += 0x190;
         if (this->unk1D0 <= 400.0f) {
-            this->unk1D0 = this->unk1D0 * 0.99f;
+            this->unk1D0 *= 0.99f;
         } else {
-            this->unk1D0 = this->unk1D0 - 1.0f;
+            this->unk1D0 -= 1.0f;
         }
         if (this->unk1D0 < 0.0f) {
             this->unk1D4 = 0;
@@ -262,7 +261,7 @@ void ObjChan_ChandelierAction(ObjChan* this, PlayState* play) {
             Math_Vec3f_ToVec3s(&pot->collider.dim.pos, &pot->actor.world.pos);
         }
     }
-    if ((this->collider.base.acFlags & AC_HIT) && (this->collider.info.acHitInfo->toucher.dmgFlags & 0x800)) {
+    if ((this->collider.base.acFlags & AC_HIT) && (this->collider.elem.acHitElem->atDmgInfo.dmgFlags & 0x800)) {
         Flags_SetSwitch(play, OBJCHAN_GET_SWITCH_FLAG(thisx));
     }
     if (Flags_GetSwitch(play, OBJCHAN_GET_SWITCH_FLAG(thisx))) {
@@ -298,7 +297,7 @@ void ObjChan_PotAction(ObjChan* this, PlayState* play) {
     s32 phi_v1;
 
     potBreaks = false;
-    if ((this->collider.base.acFlags & AC_HIT) && (this->collider.info.acHitInfo->toucher.dmgFlags & 0x4004000)) {
+    if ((this->collider.base.acFlags & AC_HIT) && (this->collider.elem.acHitElem->atDmgInfo.dmgFlags & 0x4004000)) {
         potBreaks = true;
     }
     if (this->stateFlags & OBJCHAN_STATE_ON_FIRE) {
@@ -366,7 +365,7 @@ void ObjChan_CreateSmashEffects(ObjChan* this, PlayState* play) {
 }
 
 void ObjChan_Update(Actor* thisx, PlayState* play) {
-    ObjChan* this = THIS;
+    ObjChan* this = (ObjChan*)thisx;
 
     this->actionFunc(this, play);
     CollisionCheck_SetAC(play, &play->colChkCtx, &this->collider.base);
@@ -374,7 +373,7 @@ void ObjChan_Update(Actor* thisx, PlayState* play) {
 
 void ObjChan_Draw(Actor* thisx, PlayState* play) {
     s32 pad;
-    ObjChan* this = THIS;
+    ObjChan* this = (ObjChan*)thisx;
     Gfx* opa;
     Gfx* xlu;
 
@@ -383,12 +382,12 @@ void ObjChan_Draw(Actor* thisx, PlayState* play) {
     Matrix_RotateYS(this->rotation, MTXMODE_APPLY);
 
     opa = Gfx_SetupDL(POLY_OPA_DISP, SETUPDL_25);
-    gSPMatrix(&opa[0], Matrix_NewMtx(play->state.gfxCtx), G_MTX_LOAD);
+    MATRIX_FINALIZE_AND_LOAD(&opa[0], play->state.gfxCtx);
     gSPDisplayList(&opa[1], gChandelierCenterDL);
     POLY_OPA_DISP = &opa[2];
 
     xlu = Gfx_SetupDL71(POLY_XLU_DISP);
-    gSPMatrix(&xlu[0], Matrix_NewMtx(play->state.gfxCtx), G_MTX_LOAD);
+    MATRIX_FINALIZE_AND_LOAD(&xlu[0], play->state.gfxCtx);
     gSPDisplayList(&xlu[1], gChandelierPotHolderDL);
     POLY_XLU_DISP = &xlu[2];
 
@@ -402,14 +401,14 @@ void ObjChan_Draw(Actor* thisx, PlayState* play) {
 }
 
 void ObjChan_DrawPot(Actor* thisx, PlayState* play) {
-    ObjChan* this = THIS;
+    ObjChan* this = (ObjChan*)thisx;
     s32 pad;
     Gfx* dl;
 
     OPEN_DISPS(play->state.gfxCtx);
 
     dl = Gfx_SetupDL(POLY_OPA_DISP, SETUPDL_25);
-    gSPMatrix(&dl[0], Matrix_NewMtx(play->state.gfxCtx), G_MTX_LOAD);
+    MATRIX_FINALIZE_AND_LOAD(&dl[0], play->state.gfxCtx);
     gSPDisplayList(&dl[1], gChandelierPotDL);
     POLY_OPA_DISP = &dl[2];
 
@@ -435,7 +434,7 @@ void ObjChan_DrawFire(ObjChan* this, PlayState* play) {
     Matrix_Translate(0.0f, sObjChanFlameYOffset[OBJCHAN_SUBTYPE(&this->actor)], 0.0f, MTXMODE_APPLY);
 
     dl = Gfx_SetupDL71(POLY_XLU_DISP);
-    gSPMatrix(&dl[0], Matrix_NewMtx(play->state.gfxCtx), G_MTX_LOAD);
+    MATRIX_FINALIZE_AND_LOAD(&dl[0], play->state.gfxCtx);
     gSPSegment(&dl[1], 0x08, Gfx_TwoTexScroll(play->state.gfxCtx, 0, 0, 0, 32, 64, 1, 0, -sp4C * 20, 32, 128));
     gDPSetPrimColor(&dl[2], 128, 128, 255, 255, 0, 255);
     gDPSetEnvColor(&dl[3], 255, 0, 0, 0);

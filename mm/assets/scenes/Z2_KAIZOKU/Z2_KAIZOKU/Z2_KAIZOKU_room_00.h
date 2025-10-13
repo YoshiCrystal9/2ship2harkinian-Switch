@@ -69,6 +69,12 @@ static const ALIGN_ASSET(2) char Z2_KAIZOKU_room_00DL_0016E0[] = dZ2_KAIZOKU_roo
 #define dZ2_KAIZOKU_room_00DL_000D30 "__OTR__scenes/nonmq/Z2_KAIZOKU_scene/Z2_KAIZOKU_room_00DL_000D30"
 static const ALIGN_ASSET(2) char Z2_KAIZOKU_room_00DL_000D30[] = dZ2_KAIZOKU_room_00DL_000D30;
 
+#define dZ2_KAIZOKU_room_00DL_013F30 "__OTR__scenes/nonmq/Z2_KAIZOKU_scene/Z2_KAIZOKU_room_00DL_013F30"
+static const ALIGN_ASSET(2) char Z2_KAIZOKU_room_00DL_013F30[] = dZ2_KAIZOKU_room_00DL_013F30;
+
+#define dZ2_KAIZOKU_room_00DL_013E78 "__OTR__scenes/nonmq/Z2_KAIZOKU_scene/Z2_KAIZOKU_room_00DL_013E78"
+static const ALIGN_ASSET(2) char Z2_KAIZOKU_room_00DL_013E78[] = dZ2_KAIZOKU_room_00DL_013E78;
+
 #define dZ2_KAIZOKU_room_00Set_000420DL_013CD0 "__OTR__scenes/nonmq/Z2_KAIZOKU_scene/Z2_KAIZOKU_room_00Set_000420DL_013CD0"
 static const ALIGN_ASSET(2) char Z2_KAIZOKU_room_00Set_000420DL_013CD0[] = dZ2_KAIZOKU_room_00Set_000420DL_013CD0;
 

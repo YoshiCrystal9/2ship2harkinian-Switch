@@ -6,9 +6,7 @@
 
 #include "z_en_sda.h"
 
-#define FLAGS (ACTOR_FLAG_10 | ACTOR_FLAG_20)
-
-#define THIS ((EnSda*)thisx)
+#define FLAGS (ACTOR_FLAG_UPDATE_CULLING_DISABLED | ACTOR_FLAG_DRAW_CULLING_DISABLED)
 
 void EnSda_Init(Actor* thisx, PlayState* play);
 void EnSda_Destroy(Actor* thisx, PlayState* play);
@@ -20,7 +18,7 @@ void func_80947668(u8* shadowTexture, Player* player, PlayState* play);
 
 Vec3f D_80947EA0[16];
 
-ActorInit En_Sda_InitVars = {
+ActorProfile En_Sda_Profile = {
     /**/ ACTOR_EN_SDA,
     /**/ ACTORCAT_BOSS,
     /**/ FLAGS,
@@ -79,7 +77,7 @@ void EnSda_Destroy(Actor* thisx, PlayState* play) {
 }
 
 void EnSda_Update(Actor* thisx, PlayState* play) {
-    EnSda* this = THIS;
+    EnSda* this = (EnSda*)thisx;
     Player* player;
 
     if (this->actor.params == ENSDA_1) {
@@ -91,7 +89,7 @@ void EnSda_Update(Actor* thisx, PlayState* play) {
 }
 
 void EnSda_Draw(Actor* thisx, PlayState* play) {
-    EnSda* this = THIS;
+    EnSda* this = (EnSda*)thisx;
     Player* player;
     u8* shadowTex = GRAPH_ALLOC(play->state.gfxCtx, 64 * 64);
 
@@ -123,6 +121,7 @@ void func_809469C0(Player* player, u8* shadowTexture, f32 arg2) {
     Vec3f sp7C;
 
     for (i = 0; i < 16; i++) {
+        // TODO: match with a continue
         if ((arg2 == 0.0f) || ((j = D_80947ACC[i]) >= 0)) {
             if (arg2 > 0.0f) {
                 lerp.x = D_80947EA0[i].x + (D_80947EA0[j].x - D_80947EA0[i].x) * arg2;
@@ -145,10 +144,10 @@ void func_809469C0(Player* player, u8* shadowTexture, f32 arg2) {
             temp_t1 = sp7C.y * 64.0f;
 
             if (D_80947AEC[i] == 2) {
-                for (j = 0, phi_a3 = -0x180; j < 12; j++, phi_a3 += 0x40) {
+                for (j = 0, phi_a3 = -384; j < 12; j++, phi_a3 += 64) {
                     for (phi_a0 = -D_80947A98[j]; phi_a0 < D_80947A98[j]; phi_a0++) {
                         temp_v1 = temp_t0 + phi_a0;
-                        if ((temp_v1 >= 0) && (temp_v1 < 0x40)) {
+                        if ((temp_v1 >= 0) && (temp_v1 < 64)) {
                             temp_v0 = temp_t1 + phi_a3;
                             if ((temp_v0 >= 0) && (temp_v0 < 0x1000)) {
                                 shadowTexture[temp_v1 + temp_v0] = 255;
@@ -157,10 +156,10 @@ void func_809469C0(Player* player, u8* shadowTexture, f32 arg2) {
                     }
                 }
             } else if (D_80947AEC[i] == 1) {
-                for (j = 0, phi_a3 = -0x100; j < 8; j++, phi_a3 += 0x40) {
+                for (j = 0, phi_a3 = -256; j < 8; j++, phi_a3 += 64) {
                     for (phi_a0 = -D_80947A88[j]; phi_a0 < D_80947A88[j]; phi_a0++) {
                         temp_v1 = temp_t0 + phi_a0;
-                        if ((temp_v1 >= 0) && (temp_v1 < 0x40)) {
+                        if ((temp_v1 >= 0) && (temp_v1 < 64)) {
                             temp_v0 = temp_t1 + phi_a3;
                             if ((temp_v0 >= 0) && (temp_v0 < 0x1000)) {
                                 shadowTexture[temp_v1 + temp_v0] = 255;
@@ -169,10 +168,10 @@ void func_809469C0(Player* player, u8* shadowTexture, f32 arg2) {
                     }
                 }
             } else if (D_80947AEC[i] == 0) {
-                for (j = 0, phi_a3 = -0xC0; j < 7; j++, phi_a3 += 0x40) {
+                for (j = 0, phi_a3 = -192; j < 7; j++, phi_a3 += 64) {
                     for (phi_a0 = -D_80947A78[j]; phi_a0 < D_80947A78[j] - 1; phi_a0++) {
                         temp_v1 = temp_t0 + phi_a0;
-                        if ((temp_v1 >= 0) && (temp_v1 < 0x40)) {
+                        if ((temp_v1 >= 0) && (temp_v1 < 64)) {
                             temp_v0 = temp_t1 + phi_a3;
                             if ((temp_v0 >= 0) && (temp_v0 < 0x1000)) {
                                 shadowTexture[temp_v1 + temp_v0] = 255;
@@ -181,10 +180,10 @@ void func_809469C0(Player* player, u8* shadowTexture, f32 arg2) {
                     }
                 }
             } else if (D_80947AEC[i] == 4) {
-                for (j = 0, phi_a3 = -0x1C0; j < 14; j++, phi_a3 += 0x40) {
+                for (j = 0, phi_a3 = -448; j < 14; j++, phi_a3 += 64) {
                     for (phi_a0 = -D_80947AB0[j]; phi_a0 < D_80947AB0[j]; phi_a0++) {
                         temp_v1 = temp_t0 + phi_a0;
-                        if ((temp_v1 >= 0) && (temp_v1 < 0x40)) {
+                        if ((temp_v1 >= 0) && (temp_v1 < 64)) {
                             temp_v0 = temp_t1 + phi_a3;
                             if ((temp_v0 >= 0) && (temp_v0 < 0x1000)) {
                                 shadowTexture[temp_v1 + temp_v0] = 255;
@@ -193,10 +192,10 @@ void func_809469C0(Player* player, u8* shadowTexture, f32 arg2) {
                     }
                 }
             } else {
-                for (j = 0, phi_a3 = -0x80; j < 6; j++, phi_a3 += 0x40) {
+                for (j = 0, phi_a3 = -128; j < 6; j++, phi_a3 += 64) {
                     for (phi_a0 = -D_80947A6C[j]; phi_a0 < D_80947A6C[j] - 1; phi_a0++) {
                         temp_v1 = temp_t0 + phi_a0;
-                        if ((temp_v1 >= 0) && (temp_v1 < 0x40)) {
+                        if ((temp_v1 >= 0) && (temp_v1 < 64)) {
                             temp_v0 = temp_t1 + phi_a3;
                             if ((temp_v0 >= 0) && (temp_v0 < 0x1000)) {
                                 shadowTexture[temp_v1 + temp_v0] = 255;
@@ -342,7 +341,7 @@ void func_80947668(u8* shadowTexture, Player* player, PlayState* play) {
     Matrix_Translate(tempx, 0.0f, tempz, MTXMODE_APPLY);
     Matrix_Scale(((BREG(56) - 250) / 1000.0f) + 0.6f, 1.0f, ((BREG(59) - 250) / 1000.0f) + 0.6f, MTXMODE_APPLY);
 
-    gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    MATRIX_FINALIZE_AND_LOAD(POLY_XLU_DISP++, play->state.gfxCtx);
     gSPDisplayList(POLY_XLU_DISP++, ovl_En_Sda_DL_1498);
     gDPLoadTextureBlock(POLY_XLU_DISP++, shadowTexture, G_IM_FMT_I, G_IM_SIZ_8b, 64, 64, 0, G_TX_NOMIRROR | G_TX_CLAMP,
                         G_TX_NOMIRROR | G_TX_CLAMP, 6, 6, G_TX_NOLOD, G_TX_NOLOD);
@@ -350,7 +349,7 @@ void func_80947668(u8* shadowTexture, Player* player, PlayState* play) {
 
     for (i = 0; i < KREG(78); i++) {
         Matrix_Scale((KREG(79) / 100.0f) + 1.0f, 1.0f, (KREG(79) / 100.0f) + 1.0f, MTXMODE_APPLY);
-        gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+        MATRIX_FINALIZE_AND_LOAD(POLY_XLU_DISP++, play->state.gfxCtx);
         gSPDisplayList(POLY_XLU_DISP++, ovl_En_Sda_DL_14B8);
     }
 

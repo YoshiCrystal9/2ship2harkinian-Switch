@@ -53,7 +53,7 @@ void MiniFrog_IdleWithoutCs(EnMinifrog* enMinifrog, PlayState* play) {
     EnMinifrog_TurnToPlayer(enMinifrog);
     EnMinifrog_Jump(enMinifrog);
     EnMinifrog_JumpTimer(enMinifrog);
-    if (Actor_ProcessTalkRequest(&enMinifrog->actor, &play->state)) {
+    if (Actor_TalkOfferAccepted(&enMinifrog->actor, &play->state)) {
         play->msgCtx.currentTextId = enMinifrog->actor.textId;
         enMinifrog->actionFunc = MiniFrog_TalkAndVanish;
     } else if ((enMinifrog->actor.xzDistToPlayer < 100.0f) && Player_IsFacingActor(&enMinifrog->actor, 0x3000, play) &&

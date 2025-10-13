@@ -7,9 +7,9 @@
 #include "z_en_jgame_tsn.h"
 #include "overlays/actors/ovl_Obj_Jgame_Light/z_obj_jgame_light.h"
 
-#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_10 | ACTOR_FLAG_2000000)
-
-#define THIS ((EnJgameTsn*)thisx)
+#define FLAGS                                                                                  \
+    (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_UPDATE_CULLING_DISABLED | \
+     ACTOR_FLAG_UPDATE_DURING_OCARINA)
 
 void EnJgameTsn_Init(Actor* thisx, PlayState* play);
 void EnJgameTsn_Destroy(Actor* thisx, PlayState* play);
@@ -36,7 +36,7 @@ void func_80C147B4(EnJgameTsn* this, PlayState* play);
 s32 func_80C149B0(PlayState* play, EnJgameTsnStruct* arg1);
 s32 func_80C14BCC(EnJgameTsn* this, PlayState* play);
 
-ActorInit En_Jgame_Tsn_InitVars = {
+ActorProfile En_Jgame_Tsn_Profile = {
     /**/ ACTOR_EN_JGAME_TSN,
     /**/ ACTORCAT_NPC,
     /**/ FLAGS,
@@ -64,7 +64,7 @@ static AnimationInfo sAnimationInfo[ENJGAMETSN_ANIM_MAX] = {
 
 static ColliderCylinderInit sCylinderInit = {
     {
-        COLTYPE_NONE,
+        COL_MATERIAL_NONE,
         AT_NONE,
         AC_ON | AC_TYPE_ENEMY,
         OC1_ON | OC1_TYPE_ALL,
@@ -72,11 +72,11 @@ static ColliderCylinderInit sCylinderInit = {
         COLSHAPE_CYLINDER,
     },
     {
-        ELEMTYPE_UNK0,
+        ELEM_MATERIAL_UNK0,
         { 0x00000000, 0x00, 0x00 },
         { 0xF7CFFFFF, 0x00, 0x00 },
-        TOUCH_NONE | TOUCH_SFX_NORMAL,
-        BUMP_ON,
+        ATELEM_NONE | ATELEM_SFX_NORMAL,
+        ACELEM_ON,
         OCELEM_ON,
     },
     { 30, 40, 0, { 0, 0, 0 } },
@@ -89,7 +89,7 @@ TexturePtr D_80C150A4[] = {
 
 void EnJgameTsn_Init(Actor* thisx, PlayState* play) {
     s32 pad;
-    EnJgameTsn* this = THIS;
+    EnJgameTsn* this = (EnJgameTsn*)thisx;
 
     ActorShape_Init(&this->actor.shape, 0.0f, ActorShadow_DrawCircle, 36.0f);
     SkelAnime_InitFlex(play, &this->skelAnime, &object_tsn_Skel_008AB8, &object_tsn_Anim_0092FC, this->jointTable,
@@ -98,12 +98,12 @@ void EnJgameTsn_Init(Actor* thisx, PlayState* play) {
     Collider_InitCylinder(play, &this->collider);
     Collider_SetCylinder(play, &this->collider, &this->actor, &sCylinderInit);
 
-    this->actor.targetMode = TARGET_MODE_6;
+    this->actor.attentionRangeType = ATTENTION_RANGE_6;
     this->actor.colChkInfo.mass = MASS_IMMOVABLE;
     this->actor.velocity.y = 0.0f;
 
     if (gSaveContext.save.entrance == ENTRANCE(GREAT_BAY_COAST, 13)) {
-        this->actor.flags |= ACTOR_FLAG_10000;
+        this->actor.flags |= ACTOR_FLAG_TALK_OFFER_AUTO_ACCEPTED;
     }
 
     this->unk_2F8 = 0;
@@ -116,7 +116,7 @@ void EnJgameTsn_Init(Actor* thisx, PlayState* play) {
 }
 
 void func_80C13A2C(EnJgameTsn* this, PlayState* play) {
-    Path* path = &play->setupPathList[ENJGAMETSN_GET_FF(&this->actor)];
+    Path* path = &play->setupPathList[ENJGAMETSN_GET_PATH_INDEX(&this->actor)];
     s32 i;
 
     if (path == NULL) {
@@ -146,7 +146,7 @@ void func_80C13A2C(EnJgameTsn* this, PlayState* play) {
 }
 
 void EnJgameTsn_Destroy(Actor* thisx, PlayState* play) {
-    EnJgameTsn* this = THIS;
+    EnJgameTsn* this = (EnJgameTsn*)thisx;
 
     Collider_DestroyCylinder(play, &this->collider);
     CLEAR_WEEKEVENTREG(WEEKEVENTREG_90_20);
@@ -160,9 +160,9 @@ void func_80C13B74(EnJgameTsn* this) {
 void func_80C13BB8(EnJgameTsn* this, PlayState* play) {
     Player* player = GET_PLAYER(play);
 
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
-        if (this->actor.flags & ACTOR_FLAG_10000) {
-            this->actor.flags &= ~ACTOR_FLAG_10000;
+    if (Actor_TalkOfferAccepted(&this->actor, &play->state)) {
+        if (this->actor.flags & ACTOR_FLAG_TALK_OFFER_AUTO_ACCEPTED) {
+            this->actor.flags &= ~ACTOR_FLAG_TALK_OFFER_AUTO_ACCEPTED;
             if (gSaveContext.timerCurTimes[TIMER_ID_MINIGAME_2] > SECONDS_TO_TIMER(0)) {
                 Actor_ChangeAnimationByInfo(&this->skelAnime, sAnimationInfo, ENJGAMETSN_ANIM_1);
                 Message_StartTextbox(play, 0x10A2, &this->actor);
@@ -176,8 +176,8 @@ void func_80C13BB8(EnJgameTsn* this, PlayState* play) {
                 Message_StartTextbox(play, 0x10A3, &this->actor);
                 this->unk_300 = 0x10A3;
             }
-        } else if (((gSaveContext.save.time > CLOCK_TIME(4, 0)) && (gSaveContext.save.time < CLOCK_TIME(7, 0))) ||
-                   ((gSaveContext.save.time > CLOCK_TIME(16, 0)) && (gSaveContext.save.time < CLOCK_TIME(19, 0)))) {
+        } else if (((CURRENT_TIME > CLOCK_TIME(4, 0)) && (CURRENT_TIME < CLOCK_TIME(7, 0))) ||
+                   ((CURRENT_TIME > CLOCK_TIME(16, 0)) && (CURRENT_TIME < CLOCK_TIME(19, 0)))) {
             Message_StartTextbox(play, 0x1094, &this->actor);
             this->unk_300 = 0x1094;
         } else if (this->unk_2F8 == 0) {
@@ -191,7 +191,7 @@ void func_80C13BB8(EnJgameTsn* this, PlayState* play) {
             this->unk_300 = 0x1096;
         }
         func_80C14030(this);
-    } else if (this->actor.flags & ACTOR_FLAG_10000) {
+    } else if (this->actor.flags & ACTOR_FLAG_TALK_OFFER_AUTO_ACCEPTED) {
         Actor_OfferTalk(&this->actor, play, 200.0f);
     } else {
         Actor_OfferTalk(&this->actor, play, 80.0f);
@@ -210,15 +210,15 @@ void func_80C13BB8(EnJgameTsn* this, PlayState* play) {
 }
 
 void func_80C13E6C(EnJgameTsn* this) {
-    this->actor.flags |= ACTOR_FLAG_10000;
+    this->actor.flags |= ACTOR_FLAG_TALK_OFFER_AUTO_ACCEPTED;
     this->actionFunc = func_80C13E90;
 }
 
 void func_80C13E90(EnJgameTsn* this, PlayState* play) {
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
-        this->actor.flags &= ~ACTOR_FLAG_10000;
-        if (((gSaveContext.save.time > CLOCK_TIME(4, 0)) && (gSaveContext.save.time < CLOCK_TIME(7, 0))) ||
-            ((gSaveContext.save.time > CLOCK_TIME(16, 0)) && (gSaveContext.save.time < CLOCK_TIME(19, 0)))) {
+    if (Actor_TalkOfferAccepted(&this->actor, &play->state)) {
+        this->actor.flags &= ~ACTOR_FLAG_TALK_OFFER_AUTO_ACCEPTED;
+        if (((CURRENT_TIME > CLOCK_TIME(4, 0)) && (CURRENT_TIME < CLOCK_TIME(7, 0))) ||
+            ((CURRENT_TIME > CLOCK_TIME(16, 0)) && (CURRENT_TIME < CLOCK_TIME(19, 0)))) {
             Actor_ChangeAnimationByInfo(&this->skelAnime, sAnimationInfo, ENJGAMETSN_ANIM_2);
             Message_StartTextbox(play, 0x1094, &this->actor);
             this->unk_300 = 0x1094;
@@ -260,16 +260,16 @@ void func_80C14030(EnJgameTsn* this) {
 void func_80C14044(EnJgameTsn* this, PlayState* play) {
     switch (Message_GetState(&play->msgCtx)) {
         case TEXT_STATE_NONE:
-        case TEXT_STATE_1:
+        case TEXT_STATE_NEXT:
         case TEXT_STATE_CLOSING:
-        case TEXT_STATE_3:
+        case TEXT_STATE_FADING:
             break;
 
         case TEXT_STATE_CHOICE:
             func_80C14684(this, play);
             break;
 
-        case TEXT_STATE_5:
+        case TEXT_STATE_EVENT:
             func_80C147B4(this, play);
             break;
 
@@ -391,11 +391,11 @@ void func_80C14540(EnJgameTsn* this) {
 
 void func_80C14554(EnJgameTsn* this, PlayState* play) {
     if (Actor_HasParent(&this->actor, play)) {
-        if (!CHECK_WEEKEVENTREG(WEEKEVENTREG_82_10)) {
-            SET_WEEKEVENTREG(WEEKEVENTREG_82_10);
+        if (!CHECK_WEEKEVENTREG(WEEKEVENTREG_RECEIVED_FISHERMANS_JUMPING_GAME_HEART_PIECE)) {
+            SET_WEEKEVENTREG(WEEKEVENTREG_RECEIVED_FISHERMANS_JUMPING_GAME_HEART_PIECE);
         }
         func_80C145FC(this);
-    } else if (CHECK_WEEKEVENTREG(WEEKEVENTREG_82_10)) {
+    } else if (CHECK_WEEKEVENTREG(WEEKEVENTREG_RECEIVED_FISHERMANS_JUMPING_GAME_HEART_PIECE)) {
         Actor_OfferGetItem(&this->actor, play, GI_RUPEE_PURPLE, 500.0f, 100.0f);
     } else {
         Actor_OfferGetItem(&this->actor, play, GI_HEART_PIECE, 500.0f, 100.0f);
@@ -407,7 +407,7 @@ void func_80C145FC(EnJgameTsn* this) {
 }
 
 void func_80C14610(EnJgameTsn* this, PlayState* play) {
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+    if (Actor_TalkOfferAccepted(&this->actor, &play->state)) {
         Message_StartTextbox(play, 0x10A4, &this->actor);
         this->unk_300 = 0x10A4;
         func_80C14030(this);
@@ -601,7 +601,7 @@ void func_80C14D14(EnJgameTsn* this, PlayState* play) {
 }
 
 void func_80C14D58(EnJgameTsn* this, PlayState* play) {
-    Actor_TrackPlayer(play, &this->actor, &this->unk_2EC, &this->unk_2F2, this->actor.focus.pos);
+    Actor_TrackPlayer(play, &this->actor, &this->headRot, &this->torsoRot, this->actor.focus.pos);
 
     if (DECR(this->unk_2FA) == 0) {
         this->unk_2FA = Rand_S16Offset(60, 60);
@@ -615,7 +615,7 @@ void func_80C14D58(EnJgameTsn* this, PlayState* play) {
 }
 
 void EnJgameTsn_Update(Actor* thisx, PlayState* play) {
-    EnJgameTsn* this = THIS;
+    EnJgameTsn* this = (EnJgameTsn*)thisx;
 
     this->actionFunc(this, play);
 
@@ -625,14 +625,14 @@ void EnJgameTsn_Update(Actor* thisx, PlayState* play) {
 }
 
 s32 EnJgamesTsn_OverrideLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3f* pos, Vec3s* rot, Actor* thisx) {
-    EnJgameTsn* this = THIS;
-    s16 temp_v0 = this->unk_2EC.x >> 1;
+    EnJgameTsn* this = (EnJgameTsn*)thisx;
+    s16 temp_v0 = this->headRot.x >> 1;
 
     if (limbIndex == OBJECT_TSN_LIMB_0F) {
-        rot->x += this->unk_2EC.y;
+        rot->x += this->headRot.y;
         rot->z += temp_v0;
     } else if (limbIndex == OBJECT_TSN_LIMB_08) {
-        rot->x += this->unk_2F2.y;
+        rot->x += this->torsoRot.y;
         rot->z += temp_v0;
     }
     return false;
@@ -645,7 +645,7 @@ void EnJgamesTsn_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s
 }
 
 void EnJgameTsn_Draw(Actor* thisx, PlayState* play) {
-    EnJgameTsn* this = THIS;
+    EnJgameTsn* this = (EnJgameTsn*)thisx;
 
     OPEN_DISPS(play->state.gfxCtx);
 

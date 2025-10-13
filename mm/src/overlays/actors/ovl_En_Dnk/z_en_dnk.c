@@ -6,9 +6,7 @@
 
 #include "z_en_dnk.h"
 
-#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_FRIENDLY)
-
-#define THIS ((EnDnk*)thisx)
+#define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY)
 
 void EnDnk_Init(Actor* thisx, PlayState* play);
 void EnDnk_Destroy(Actor* thisx, PlayState* play);
@@ -22,7 +20,7 @@ void func_80A52134(EnDnk* this, PlayState* play);
 
 static s16 D_80A521A0 = 0;
 
-ActorInit En_Dnk_InitVars = {
+ActorProfile En_Dnk_Profile = {
     /**/ ACTOR_EN_DNK,
     /**/ ACTORCAT_NPC,
     /**/ FLAGS,
@@ -37,7 +35,7 @@ ActorInit En_Dnk_InitVars = {
 
 static ColliderCylinderInit sCylinderInit = {
     {
-        COLTYPE_HIT0,
+        COL_MATERIAL_HIT0,
         AT_NONE,
         AC_ON | AC_TYPE_PLAYER,
         OC1_ON | OC1_TYPE_ALL,
@@ -45,11 +43,11 @@ static ColliderCylinderInit sCylinderInit = {
         COLSHAPE_CYLINDER,
     },
     {
-        ELEMTYPE_UNK1,
+        ELEM_MATERIAL_UNK1,
         { 0x00000000, 0x00, 0x00 },
         { 0xF7CFFFFF, 0x00, 0x00 },
-        TOUCH_NONE | TOUCH_SFX_NORMAL,
-        BUMP_ON,
+        ATELEM_NONE | ATELEM_SFX_NORMAL,
+        ACELEM_ON,
         OCELEM_ON,
     },
     { 18, 46, 0, { 0, 0, 0 } },
@@ -177,8 +175,8 @@ s32 EnDnk_ChangeAnim(SkelAnime* skelAnime, s16 animIndex) {
     s16 endFrame;
     s32 didAnimChange = false;
 
-    if (animIndex >= 0) {
-        if (animIndex < ARRAY_COUNT(sAnimationInfo)) {
+    if (animIndex > ENDNK_ANIM_NONE) {
+        if (animIndex < ENDNK_ANIM_MAX) {
             didAnimChange = true;
             endFrame = sAnimationInfo[animIndex].frameCount;
             if (endFrame < 0) {
@@ -241,12 +239,12 @@ void func_80A51648(EnDnk* this, PlayState* play) {
         Collider_SetCylinder(play, &this->collider, &this->actor, &sCylinderInit);
         CollisionCheck_SetInfo2(&this->actor.colChkInfo, &sDamageTable, &sColChkInfoInit);
         if (ENDNK_GET_3C(&this->actor) == 4) {
-            this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
-            this->actor.flags |= (ACTOR_FLAG_10 | ACTOR_FLAG_20);
+            this->actor.flags &= ~ACTOR_FLAG_ATTENTION_ENABLED;
+            this->actor.flags |= (ACTOR_FLAG_UPDATE_CULLING_DISABLED | ACTOR_FLAG_DRAW_CULLING_DISABLED);
             this->actionFunc = EnDnk_HandleCutscene;
             Actor_SetScale(&this->actor, 0.1f);
         } else {
-            this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
+            this->actor.flags &= ~ACTOR_FLAG_ATTENTION_ENABLED;
             this->actionFunc = EnDnk_DoNothing;
             Actor_SetScale(&this->actor, 0.01f);
         }
@@ -263,7 +261,7 @@ void EnDnk_DoNothing(EnDnk* this, PlayState* play) {
 }
 
 void EnDnk_Init(Actor* thisx, PlayState* play) {
-    EnDnk* this = THIS;
+    EnDnk* this = (EnDnk*)thisx;
 
     this->objectSlot = OBJECT_SLOT_NONE;
 
@@ -292,13 +290,13 @@ void EnDnk_Init(Actor* thisx, PlayState* play) {
 }
 
 void EnDnk_Destroy(Actor* thisx, PlayState* play) {
-    EnDnk* this = THIS;
+    EnDnk* this = (EnDnk*)thisx;
 
     Collider_DestroyCylinder(play, &this->collider);
 }
 
 void EnDnk_Update(Actor* thisx, PlayState* play) {
-    EnDnk* this = THIS;
+    EnDnk* this = (EnDnk*)thisx;
     s32 pad;
 
     this->actionFunc(this, play);
@@ -311,16 +309,16 @@ void EnDnk_Update(Actor* thisx, PlayState* play) {
     func_80A52134(this, play);
 }
 
-s32 func_80A51A78(PlayState* play, s32 limbIndex, Gfx** dList, Vec3f* pos, Vec3s* rot, Actor* thisx) {
-    EnDnk* this = THIS;
+s32 EnDnk_OverrideLimbDraw2(PlayState* play, s32 limbIndex, Gfx** dList, Vec3f* pos, Vec3s* rot, Actor* thisx) {
+    EnDnk* this = (EnDnk*)thisx;
 
     this->unk_260[limbIndex] = *dList;
     *dList = NULL;
     return false;
 }
 
-void func_80A51AA4(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* rot, Actor* thisx) {
-    EnDnk* this = THIS;
+void EnDnk_PostLimbDraw2(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* rot, Actor* thisx) {
+    EnDnk* this = (EnDnk*)thisx;
     MtxF sp5C;
     Vec3f sp50 = gZeroVec3f;
     Vec3f sp44;
@@ -360,7 +358,7 @@ void func_80A51AA4(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* rot, Acto
 
     OPEN_DISPS(play->state.gfxCtx);
 
-    gSPMatrix(POLY_OPA_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    MATRIX_FINALIZE_AND_LOAD(POLY_OPA_DISP++, play->state.gfxCtx);
     gSPDisplayList(POLY_OPA_DISP++, this->unk_260[limbIndex]);
 
     CLOSE_DISPS(play->state.gfxCtx);
@@ -381,22 +379,22 @@ void func_80A51CB8(EnDnk* this, PlayState* play) {
     gSPSegment(POLY_OPA_DISP++, 0x08, Lib_SegmentedToVirtual(D_80A5245C[this->unk_2A0]));
     gDPPipeSync(POLY_OPA_DISP++);
 
-    SkelAnime_DrawOpa(play, this->skelAnime.skeleton, this->skelAnime.jointTable, func_80A51A78, func_80A51AA4,
-                      &this->actor);
+    SkelAnime_DrawOpa(play, this->skelAnime.skeleton, this->skelAnime.jointTable, EnDnk_OverrideLimbDraw2,
+                      EnDnk_PostLimbDraw2, &this->actor);
 
     CLOSE_DISPS(play->state.gfxCtx);
 }
 
-s32 func_80A51D78(PlayState* play, s32 limbIndex, Gfx** dList, Vec3f* pos, Vec3s* rot, Actor* thisx) {
-    EnDnk* this = THIS;
+s32 EnDnk_OverrideLimbDraw1(PlayState* play, s32 limbIndex, Gfx** dList, Vec3f* pos, Vec3s* rot, Actor* thisx) {
+    EnDnk* this = (EnDnk*)thisx;
 
     this->unk_260[limbIndex] = *dList;
     *dList = NULL;
     return false;
 }
 
-void func_80A51DA4(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* rot, Actor* thisx) {
-    EnDnk* this = THIS;
+void EnDnk_PostLimbDraw1(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* rot, Actor* thisx) {
+    EnDnk* this = (EnDnk*)thisx;
     MtxF sp5C;
     Vec3f sp50 = gZeroVec3f;
     Vec3f sp44;
@@ -439,7 +437,7 @@ void func_80A51DA4(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* rot, Acto
 
     OPEN_DISPS(play->state.gfxCtx);
 
-    gSPMatrix(POLY_OPA_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    MATRIX_FINALIZE_AND_LOAD(POLY_OPA_DISP++, play->state.gfxCtx);
     gSPDisplayList(POLY_OPA_DISP++, this->unk_260[limbIndex]);
 
     CLOSE_DISPS(play->state.gfxCtx);
@@ -447,12 +445,12 @@ void func_80A51DA4(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* rot, Acto
 
 void func_80A51FC0(EnDnk* this, PlayState* play) {
     Gfx_SetupDL25_Opa(play->state.gfxCtx);
-    SkelAnime_DrawOpa(play, this->skelAnime.skeleton, this->skelAnime.jointTable, func_80A51D78, func_80A51DA4,
-                      &this->actor);
+    SkelAnime_DrawOpa(play, this->skelAnime.skeleton, this->skelAnime.jointTable, EnDnk_OverrideLimbDraw1,
+                      EnDnk_PostLimbDraw1, &this->actor);
 }
 
 void func_80A52018(Actor* thisx, PlayState* play) {
-    EnDnk* this = THIS;
+    EnDnk* this = (EnDnk*)thisx;
 
     switch (ENDNK_GET_3(thisx)) {
         case ENDNK_GET_3_0:

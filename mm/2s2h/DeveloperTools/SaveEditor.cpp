@@ -39,8 +39,8 @@ void TransitionFade_SetColor(void* thisx, u32 color);
 void ObjTokeiStep_SetupOpen(ObjTokeiStep* objTokeiStep);
 void ObjTokeiStep_DrawOpen(Actor* actor, PlayState* play);
 void ObjTokeiStep_DoNothing(ObjTokeiStep* objTokeiStep, PlayState* play);
-void func_80A42198(EnTest4* thisx);
-void func_80A425E4(EnTest4* thisx, PlayState* play);
+void EnTest4_GetBellTimeOnDay3(EnTest4* thisx);
+void EnTest4_GetBellTimeAndShrinkScreenBeforeDay3(EnTest4* thisx, PlayState* play);
 }
 
 bool safeMode = true;
@@ -178,7 +178,7 @@ EnTest4* FindEnTest4Actor() {
 
 void UpdateGameTime(u16 gameTime) {
     bool newTimeIsNight = (gameTime > CLOCK_TIME(18, 0)) || (gameTime < CLOCK_TIME(6, 0));
-    bool prevTimeIsNight = (gSaveContext.save.time > CLOCK_TIME(18, 0)) || (gSaveContext.save.time < CLOCK_TIME(6, 0));
+    bool prevTimeIsNight = (CURRENT_TIME > CLOCK_TIME(18, 0)) || (CURRENT_TIME < CLOCK_TIME(6, 0));
 
     gSaveContext.save.time = gameTime;
 
@@ -194,7 +194,7 @@ void UpdateGameTime(u16 gameTime) {
     if (newTimeIsNight != prevTimeIsNight) {
         // AMBIENCE_ID_13 is used to persist a scenes sequence through night, so we shouldn't
         // change anything if thats active
-        if (gPlayState->sequenceCtx.ambienceId != AMBIENCE_ID_13) {
+        if (gPlayState->sceneSequences.ambienceId != AMBIENCE_ID_13) {
             SEQCMD_STOP_SEQUENCE(SEQ_PLAYER_AMBIENCE, 0);
             SEQCMD_STOP_SEQUENCE(SEQ_PLAYER_BGM_MAIN, 240);
             gSaveContext.seqId = NA_BGM_DISABLED;
@@ -211,15 +211,15 @@ void UpdateGameTime(u16 gameTime) {
     // Update EnTest4 actor to be in sync with the new time
     // This ensures that day transitions are not triggered with the change
     if (enTest4 != NULL) {
-        enTest4->unk_146 = gameTime;
-        enTest4->lastBellTime = gameTime;
-        enTest4->csIdIndex = newTimeIsNight ? 0 : 1;
+        enTest4->prevTime = gameTime;
+        enTest4->prevBellTime = gameTime;
+        enTest4->daytimeIndex = newTimeIsNight ? 0 : 1;
 
         // Sets the nextBellTime based on the new current time
         if (CURRENT_DAY == 3) {
-            func_80A42198(enTest4);
+            EnTest4_GetBellTimeOnDay3(enTest4);
         } else {
-            func_80A425E4(enTest4, gPlayState);
+            EnTest4_GetBellTimeAndShrinkScreenBeforeDay3(enTest4, gPlayState);
         }
 
         // Unset any screen scaling from the above funcs
@@ -228,7 +228,7 @@ void UpdateGameTime(u16 gameTime) {
     }
 
     // Open the Clock Tower rooftop
-    if (((CURRENT_DAY == 3) && (gSaveContext.save.time < CLOCK_TIME(6, 0)))) {
+    if (((CURRENT_DAY == 3) && (CURRENT_TIME < CLOCK_TIME(6, 0)))) {
         ObjTokeiStep* objTokeiStep = (ObjTokeiStep*)Actor_FindNearby(gPlayState, &GET_PLAYER(gPlayState)->actor,
                                                                      ACTOR_OBJ_TOKEI_STEP, ACTORCAT_BG, 99999.9f);
         if (objTokeiStep != NULL && objTokeiStep->actionFunc == ObjTokeiStep_DoNothing) {
@@ -381,8 +381,8 @@ void DrawGeneralTab() {
     static u16 minTime = 0;
     static u16 maxTime = 0xFFFF;
     // Get current time and format as digital string
-    u16 curMinutes = (s32)TIME_TO_MINUTES_F(gSaveContext.save.time) % 60;
-    u16 curHours = (s32)TIME_TO_MINUTES_F(gSaveContext.save.time) / 60;
+    u16 curMinutes = (s32)TIME_TO_MINUTES_F(CURRENT_TIME) % 60;
+    u16 curHours = (s32)TIME_TO_MINUTES_F(CURRENT_TIME) / 60;
     std::string minutes = (curMinutes < 10 ? "0" : "") + std::to_string(curMinutes);
     std::string hours = "";
     std::string ampm = "";
@@ -398,7 +398,7 @@ void DrawGeneralTab() {
     hours += std::to_string(curHours);
     std::string timeString = hours + ":" + minutes + ampm + " (0x%x)";
 
-    u16 gameTime = gSaveContext.save.time;
+    u16 gameTime = CURRENT_TIME;
     if (ImGui::SliderScalar("##timeInput", ImGuiDataType_U16, &gameTime, &minTime, &maxTime, timeString.c_str())) {
         UpdateGameTime(gameTime);
     }
@@ -452,7 +452,7 @@ void DrawGeneralTab() {
         const auto& skip = timeSkipAmounts.at(i);
         if (UIWidgets::Button(skip.second,
                               { .size = UIWidgets::Sizes::Inline, .color = UIWidgets::Colors::LightBlue })) {
-            UpdateGameTime(gSaveContext.save.time + CLOCK_TIME(0, skip.first));
+            UpdateGameTime(CURRENT_TIME + CLOCK_TIME(0, skip.first));
         }
         if (i < timeSkipAmounts.size() - 1) {
             ImGui::SameLine();
@@ -470,7 +470,7 @@ void DrawGeneralTab() {
             // Inverting setup actors forces half-day actors to kill/respawn for new day
             gPlayState->numSetupActors = -gPlayState->numSetupActors;
             // Load environment values for new day
-            func_800FEAF4(&gPlayState->envCtx);
+            Environment_NewDay(&gPlayState->envCtx);
             // Clear weather from day 2
             gWeatherMode = WEATHER_MODE_CLEAR;
             gPlayState->envCtx.lightningState = LIGHTNING_OFF;
@@ -508,12 +508,12 @@ void DrawGeneralTab() {
         gSaveContext.save.saveInfo.playerData.isMagicAcquired = false;
         gSaveContext.save.saveInfo.playerData.isDoubleMagicAcquired = false;
     }
-    bool spinAttack = CHECK_WEEKEVENTREG(WEEKEVENTREG_OBTAINED_GREAT_SPIN_ATTACK);
+    bool spinAttack = CHECK_WEEKEVENTREG(WEEKEVENTREG_RECEIVED_GREAT_SPIN_ATTACK);
     if (UIWidgets::Checkbox("Spin Lv2", &spinAttack, { .color = UIWidgets::Colors::DarkGreen })) {
         if (spinAttack) {
-            SET_WEEKEVENTREG(WEEKEVENTREG_OBTAINED_GREAT_SPIN_ATTACK);
+            SET_WEEKEVENTREG(WEEKEVENTREG_RECEIVED_GREAT_SPIN_ATTACK);
         } else {
-            CLEAR_WEEKEVENTREG(WEEKEVENTREG_OBTAINED_GREAT_SPIN_ATTACK);
+            CLEAR_WEEKEVENTREG(WEEKEVENTREG_RECEIVED_GREAT_SPIN_ATTACK);
         }
     }
     ImGui::SameLine();
@@ -1278,7 +1278,7 @@ void DrawDungeonItemTab() {
     ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(8.0f, 8.0f));
     ImGui::BeginChild("dungeonTab", ImVec2(0, 0), true);
 
-    for (int i = DUNGEON_INDEX_WOODFALL_TEMPLE; i <= DUNGEON_INDEX_STONE_TOWER_TEMPLE; i++) {
+    for (int i = DUNGEON_SCENE_INDEX_WOODFALL_TEMPLE; i <= DUNGEON_SCENE_INDEX_STONE_TOWER_TEMPLE; i++) {
         std::string stray_id = "Stray" + std::to_string(i);
         std::string map_id = "Map" + std::to_string(i);
         std::string comp_id = "Compass" + std::to_string(i);
@@ -1428,7 +1428,7 @@ void DrawPlayerTab() {
         ImGui::Text("Link's Speed");
         UIWidgets::PushStyleCombobox(formColor);
         ImGui::PushItemWidth(ImGui::GetFontSize() * 6);
-        ImGui::InputScalar("Linear Velocity", ImGuiDataType_Float, &player->linearVelocity);
+        ImGui::InputScalar("XZ Speed", ImGuiDataType_Float, &player->speedXZ);
         ImGui::InputScalar("Y Velocity", ImGuiDataType_Float, &player->actor.velocity.y);
         ImGui::InputScalar("Ledge Height", ImGuiDataType_Float, &player->yDistToLedge);
         ImGui::InputScalar("Invincibility Timer", ImGuiDataType_S16, &player->invincibilityTimer);
@@ -1451,12 +1451,12 @@ void DrawPlayerTab() {
                 if (i != PLAYER_FORM_HUMAN) {
                     gSaveContext.save.equippedMask = PLAYER_MASK_FIERCE_DEITY + i;
                 }
-                gActorOverlayTable[ACTOR_PLAYER].initInfo->objectId = objectId;
+                gActorOverlayTable[ACTOR_PLAYER].profile->objectId = objectId;
                 func_8012F73C(&gPlayState->objectCtx, player->actor.objectSlot, objectId);
                 player->actor.objectSlot = Object_GetSlot(&gPlayState->objectCtx, GAMEPLAY_KEEP);
                 gSaveContext.save.playerForm = i;
                 s32 objectSlot =
-                    Object_GetSlot(&gPlayState->objectCtx, gActorOverlayTable[ACTOR_PLAYER].initInfo->objectId);
+                    Object_GetSlot(&gPlayState->objectCtx, gActorOverlayTable[ACTOR_PLAYER].profile->objectId);
                 player->actor.objectSlot = objectSlot;
                 player->actor.shape.rot.z = GET_PLAYER_FORM + 1;
                 player->actor.init = PlayerCall_Init;

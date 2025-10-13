@@ -6,16 +6,14 @@
 
 #include "z_en_fire_rock.h"
 
-#define FLAGS (ACTOR_FLAG_10 | ACTOR_FLAG_20)
-
-#define THIS ((EnFireRock*)thisx)
+#define FLAGS (ACTOR_FLAG_UPDATE_CULLING_DISABLED | ACTOR_FLAG_DRAW_CULLING_DISABLED)
 
 void EnFireRock_Init(Actor* thisx, PlayState* play);
 void EnFireRock_Destroy(Actor* thisx, PlayState* play);
 void EnFireRock_Update(Actor* thisx, PlayState* play);
 void EnFireRock_Draw(Actor* thisx, PlayState* play);
 
-ActorInit En_Fire_Rock_InitVars = {
+ActorProfile En_Fire_Rock_Profile = {
     /**/ ACTOR_EN_FIRE_ROCK,
     /**/ ACTORCAT_ENEMY,
     /**/ FLAGS,

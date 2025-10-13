@@ -10,8 +10,6 @@
 
 #define FLAGS 0x00000000
 
-#define THIS ((EnItem00*)thisx)
-
 void EnItem00_Init(Actor* thisx, PlayState* play);
 void EnItem00_Destroy(Actor* thisx, PlayState* play);
 void EnItem00_Update(Actor* thisx, PlayState* play);
@@ -28,7 +26,7 @@ void EnItem00_DrawSprite(EnItem00* this, PlayState* play);
 void EnItem00_DrawHeartContainer(EnItem00* this, PlayState* play);
 void EnItem00_DrawHeartPiece(EnItem00* this, PlayState* play);
 
-ActorInit En_Item00_InitVars = {
+ActorProfile En_Item00_Profile = {
     /**/ ACTOR_EN_ITEM00,
     /**/ ACTORCAT_MISC,
     /**/ FLAGS,
@@ -42,7 +40,7 @@ ActorInit En_Item00_InitVars = {
 
 static ColliderCylinderInit sCylinderInit = {
     {
-        COLTYPE_NONE,
+        COL_MATERIAL_NONE,
         AT_NONE,
         AC_ON | AT_TYPE_PLAYER,
         OC1_NONE,
@@ -50,18 +48,18 @@ static ColliderCylinderInit sCylinderInit = {
         COLSHAPE_CYLINDER,
     },
     {
-        ELEMTYPE_UNK0,
+        ELEM_MATERIAL_UNK0,
         { 0x00000000, 0x00, 0x00 },
         { 0x00000010, 0x00, 0x00 },
-        TOUCH_NONE | TOUCH_SFX_NORMAL,
-        BUMP_ON,
+        ATELEM_NONE | ATELEM_SFX_NORMAL,
+        ACELEM_ON,
         OCELEM_NONE,
     },
     { 10, 30, 0, { 0, 0, 0 } },
 };
 
 static InitChainEntry sInitChain[] = {
-    ICHAIN_F32(targetArrowOffset, 2000, ICHAIN_STOP),
+    ICHAIN_F32(lockOnArrowOffset, 2000, ICHAIN_STOP),
 };
 
 static s32 sBssPad;
@@ -76,7 +74,7 @@ void EnItem00_SetObject(EnItem00* this, PlayState* play, f32* shadowOffset, f32*
 }
 
 void EnItem00_Init(Actor* thisx, PlayState* play) {
-    EnItem00* this = THIS;
+    EnItem00* this = (EnItem00*)thisx;
     s32 pad;
     f32 shadowOffset = 980.0f;
     f32 shadowScale = 6.0f;
@@ -314,7 +312,7 @@ void EnItem00_Init(Actor* thisx, PlayState* play) {
 }
 
 void EnItem00_Destroy(Actor* thisx, PlayState* play) {
-    EnItem00* this = THIS;
+    EnItem00* this = (EnItem00*)thisx;
 
     Collider_DestroyCylinder(play, &this->collider);
 }
@@ -332,21 +330,21 @@ void func_800A640C(EnItem00* this, PlayState* play) {
     if ((this->actor.params <= ITEM00_RUPEE_RED) ||
         ((this->actor.params == ITEM00_RECOVERY_HEART) && (this->unk152 < 0)) ||
         (this->actor.params == ITEM00_HEART_PIECE) || (this->actor.params == ITEM00_HEART_CONTAINER)) {
-        this->actor.shape.rot.y = this->actor.shape.rot.y + 960;
+        this->actor.shape.rot.y += 0x3C0;
     } else if ((this->actor.params >= ITEM00_SHIELD_HERO) && (this->actor.params != ITEM00_DEKU_NUTS_10) &&
                (this->actor.params < ITEM00_BOMBS_0)) {
         if (this->unk152 == -1) {
-            if (!Math_SmoothStepToS(&this->actor.shape.rot.x, this->actor.world.rot.x - 0x4000, 2, 3000, 1500)) {
+            if (!Math_SmoothStepToS(&this->actor.shape.rot.x, this->actor.world.rot.x - 0x4000, 2, 0xBB8, 0x5DC)) {
                 this->unk152 = -2;
             }
-        } else if (!Math_SmoothStepToS(&this->actor.shape.rot.x, -0x4000 - this->actor.world.rot.x, 2, 3000, 1500)) {
+        } else if (!Math_SmoothStepToS(&this->actor.shape.rot.x, -0x4000 - this->actor.world.rot.x, 2, 0xBB8, 0x5DC)) {
             this->unk152 = -1;
         }
 
-        Math_SmoothStepToS(&this->actor.world.rot.x, 0, 2, 2500, 500);
+        Math_SmoothStepToS(&this->actor.world.rot.x, 0, 2, 0x9C4, 0x1F4);
     } else if ((this->actor.params == ITEM00_MAP) || (this->actor.params == ITEM00_COMPASS)) {
         this->unk152 = -1;
-        this->actor.shape.rot.y = this->actor.shape.rot.y + 960;
+        this->actor.shape.rot.y += 0x3C0;
     }
 
     if ((this->actor.params == ITEM00_HEART_PIECE) || (this->actor.params == ITEM00_HEART_CONTAINER)) {
@@ -384,7 +382,7 @@ void func_800A6650(EnItem00* this, PlayState* play) {
     Vec3f pos;
 
     if (this->actor.params <= ITEM00_RUPEE_RED) {
-        this->actor.shape.rot.y = this->actor.shape.rot.y + 960;
+        this->actor.shape.rot.y += 0x3C0;
     }
 
     if ((play->gameplayFrames & 1) != 0) {
@@ -398,7 +396,7 @@ void func_800A6650(EnItem00* this, PlayState* play) {
         if (this->actor.velocity.y > -2.0f) {
             this->actionFunc = func_800A640C;
         } else {
-            this->actor.velocity.y = this->actor.velocity.y * -0.8f;
+            this->actor.velocity.y *= -0.8f;
             this->actor.bgCheckFlags &= ~BGCHECKFLAG_GROUND;
         }
     }
@@ -418,7 +416,7 @@ void func_800A6780(EnItem00* this, PlayState* play) {
             if (this->actor.velocity.y < -1.5f) {
                 this->actor.velocity.y = -1.5f;
             }
-            this->actor.home.rot.z += (s16)((this->actor.velocity.y + 3.0f) * 1000.0f);
+            this->actor.home.rot.z += TRUNCF_BINANG((this->actor.velocity.y + 3.0f) * 1000.0f);
             this->actor.world.pos.x +=
                 (Math_CosS(this->actor.yawTowardsPlayer) * (-3.0f * Math_CosS(this->actor.home.rot.z)));
             this->actor.world.pos.z +=
@@ -491,7 +489,7 @@ void func_800A6A40(EnItem00* this, PlayState* play) {
 }
 
 void EnItem00_Update(Actor* thisx, PlayState* play) {
-    EnItem00* this = THIS;
+    EnItem00* this = (EnItem00*)thisx;
     s32 pad;
     Player* player = GET_PLAYER(play);
     s32 sp38 = player->stateFlags3 & PLAYER_STATE3_1000;
@@ -709,7 +707,7 @@ void EnItem00_Update(Actor* thisx, PlayState* play) {
 
 void EnItem00_Draw(Actor* thisx, PlayState* play) {
     s32 pad;
-    EnItem00* this = THIS;
+    EnItem00* this = (EnItem00*)thisx;
 
     if (!(this->unk14E & this->unk150)) {
         // 2S2H [Interpolation] Skip interpolation when the item moves from the ground to over the player head
@@ -812,7 +810,7 @@ void EnItem00_DrawRupee(EnItem00* this, PlayState* play) {
         texIndex = this->actor.params - 0x10;
     }
 
-    gSPMatrix(POLY_OPA_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_MODELVIEW | G_MTX_LOAD);
+    MATRIX_FINALIZE_AND_LOAD(POLY_OPA_DISP++, play->state.gfxCtx);
 
     gSPSegment(POLY_OPA_DISP++, 0x08, Lib_SegmentedToVirtual(sRupeeTextures[texIndex]));
 
@@ -858,7 +856,7 @@ void EnItem00_DrawSprite(EnItem00* this, PlayState* play) {
 
     gSPSegment(POLY_OPA_DISP++, 0x08, Lib_SegmentedToVirtual(sItemDropTextures[texIndex]));
 
-    gSPMatrix(POLY_OPA_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_MODELVIEW | G_MTX_LOAD);
+    MATRIX_FINALIZE_AND_LOAD(POLY_OPA_DISP++, play->state.gfxCtx);
 
     gSPDisplayList(POLY_OPA_DISP++, gItemDropDL);
 
@@ -874,7 +872,7 @@ void EnItem00_DrawHeartContainer(EnItem00* this, PlayState* play) {
         Gfx_SetupDL25_Xlu(play->state.gfxCtx);
         Matrix_Scale(20.0f, 20.0f, 20.0f, MTXMODE_APPLY);
 
-        gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_MODELVIEW | G_MTX_LOAD);
+        MATRIX_FINALIZE_AND_LOAD(POLY_XLU_DISP++, play->state.gfxCtx);
 
         gSPDisplayList(POLY_XLU_DISP++, gGiHeartBorderDL);
         gSPDisplayList(POLY_XLU_DISP++, gGiHeartContainerDL);
@@ -891,7 +889,7 @@ void EnItem00_DrawHeartPiece(EnItem00* this, PlayState* play) {
     Gfx_SetupDL25_Xlu(play->state.gfxCtx);
     func_800B8118(&this->actor, play, 0);
 
-    gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_MODELVIEW | G_MTX_LOAD);
+    MATRIX_FINALIZE_AND_LOAD(POLY_XLU_DISP++, play->state.gfxCtx);
 
     gSPDisplayList(POLY_XLU_DISP++, gHeartPieceInteriorDL);
 
@@ -1446,7 +1444,7 @@ void Item_DropCollectibleRandom(PlayState* play, Actor* fromActor, Vec3f* spawnP
                             spawnedActor->actor.world.rot.y = Rand_ZeroOne() * 40000.0f;
                             Actor_SetScale(&spawnedActor->actor, 0.0f);
                             spawnedActor->actionFunc = func_800A6780;
-                            spawnedActor->actor.flags = spawnedActor->actor.flags | ACTOR_FLAG_10;
+                            spawnedActor->actor.flags |= ACTOR_FLAG_UPDATE_CULLING_DISABLED;
                             if ((spawnedActor->actor.params != ITEM00_SMALL_KEY) &&
                                 (spawnedActor->actor.params != ITEM00_HEART_PIECE) &&
                                 (spawnedActor->actor.params != ITEM00_HEART_CONTAINER)) {
@@ -1493,6 +1491,6 @@ s32 func_800A817C(s32 index) {
     return D_801AE214[index];
 }
 
-s32 Item_CanDropBigFairy(PlayState* play, s32 index, s32 collectibleFlag) {
+bool Item_CanDropBigFairy(PlayState* play, s32 index, s32 collectibleFlag) {
     return (func_800A8150(index) == ITEM00_BIG_FAIRY) && (!Flags_GetCollectible(play, collectibleFlag));
 }

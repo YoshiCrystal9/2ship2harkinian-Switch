@@ -137,7 +137,7 @@ void HandleAutoSave() {
         // Create owl save
         gSaveContext.save.isOwlSave = true;
         gSaveContext.save.shipSaveInfo.pauseSaveEntrance = SavingEnhancements_GetSaveEntrance();
-        Play_SaveCycleSceneFlags(&gPlayState->state);
+        Play_SaveCycleSceneFlags(gPlayState);
         gSaveContext.save.saveInfo.playerData.savedSceneId = gPlayState->sceneId;
         func_8014546C(&gPlayState->sramCtx);
         Sram_SetFlashPagesOwlSave(&gPlayState->sramCtx,

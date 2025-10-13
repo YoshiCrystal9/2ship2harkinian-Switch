@@ -1,20 +1,19 @@
 /*
  * File: z_en_fr.c
  * Overlay: ovl_En_Fr
- * Description:
+ * Description: Invisible spot that triggers a slow camera drift towards the spot while player is moving.
+ *              Unused in game.
  */
 
 #include "z_en_fr.h"
 
-#define FLAGS (ACTOR_FLAG_40000000)
-
-#define THIS ((EnFr*)thisx)
+#define FLAGS (ACTOR_FLAG_CAMERA_DRIFT_ENABLED)
 
 void EnFr_Init(Actor* thisx, PlayState* play);
 void EnFr_Destroy(Actor* thisx, PlayState* play);
 void EnFr_Update(Actor* thisx, PlayState* play);
 
-ActorInit En_Fr_InitVars = {
+ActorProfile En_Fr_Profile = {
     /**/ ACTOR_EN_FR,
     /**/ ACTORCAT_ITEMACTION,
     /**/ FLAGS,
@@ -27,21 +26,21 @@ ActorInit En_Fr_InitVars = {
 };
 
 void EnFr_Init(Actor* thisx, PlayState* play) {
-    EnFr* this = THIS;
+    EnFr* this = (EnFr*)thisx;
 
     if (Flags_GetSwitch(play, ENFR_GET_SWITCH_FLAG(&this->actor))) {
         Actor_Kill(&this->actor);
         return;
     }
 
-    this->actor.targetMode = ENFR_GET_TARGETMODE(&this->actor);
+    this->actor.attentionRangeType = ENFR_GET_ATTENTION_RANGE_TYPE(&this->actor);
 }
 
 void EnFr_Destroy(Actor* thisx, PlayState* play) {
 }
 
 void EnFr_Update(Actor* thisx, PlayState* play) {
-    EnFr* this = THIS;
+    EnFr* this = (EnFr*)thisx;
 
     if (Flags_GetSwitch(play, ENFR_GET_SWITCH_FLAG(&this->actor))) {
         Actor_Kill(&this->actor);
@@ -49,8 +48,8 @@ void EnFr_Update(Actor* thisx, PlayState* play) {
     }
 
     if (this->actor.xyzDistToPlayerSq < SQ(IREG(29))) {
-        this->actor.flags &= ~ACTOR_FLAG_40000000;
+        this->actor.flags &= ~ACTOR_FLAG_CAMERA_DRIFT_ENABLED;
     } else {
-        this->actor.flags |= ACTOR_FLAG_40000000;
+        this->actor.flags |= ACTOR_FLAG_CAMERA_DRIFT_ENABLED;
     }
 }

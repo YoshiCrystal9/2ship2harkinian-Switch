@@ -6,6 +6,12 @@
 #define dZ2_IKANA_room_01DL_000418 "__OTR__scenes/nonmq/Z2_IKANA_scene/Z2_IKANA_room_01DL_000418"
 static const ALIGN_ASSET(2) char Z2_IKANA_room_01DL_000418[] = dZ2_IKANA_room_01DL_000418;
 
+#define dZ2_IKANA_room_01DL_000340 "__OTR__scenes/nonmq/Z2_IKANA_scene/Z2_IKANA_room_01DL_000340"
+static const ALIGN_ASSET(2) char Z2_IKANA_room_01DL_000340[] = dZ2_IKANA_room_01DL_000340;
+
+#define dZ2_IKANA_room_01DL_000478 "__OTR__scenes/nonmq/Z2_IKANA_scene/Z2_IKANA_room_01DL_000478"
+static const ALIGN_ASSET(2) char Z2_IKANA_room_01DL_000478[] = dZ2_IKANA_room_01DL_000478;
+
 #define dZ2_IKANA_room_01Set_000100DL_000418 "__OTR__scenes/nonmq/Z2_IKANA_scene/Z2_IKANA_room_01Set_000100DL_000418"
 static const ALIGN_ASSET(2) char Z2_IKANA_room_01Set_000100DL_000418[] = dZ2_IKANA_room_01Set_000100DL_000418;
 

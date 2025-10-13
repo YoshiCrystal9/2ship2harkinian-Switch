@@ -8,9 +8,7 @@
 
 #include "2s2h/GameInteractor/GameInteractor.h"
 
-#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_FRIENDLY)
-
-#define THIS ((EnGk*)thisx)
+#define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY)
 
 void EnGk_Init(Actor* thisx, PlayState* play);
 void EnGk_Destroy(Actor* thisx, PlayState* play);
@@ -34,7 +32,7 @@ void func_80B5253C(EnGk* this, PlayState* play);
 void func_80B525E0(EnGk* this, PlayState* play);
 void func_80B52654(EnGk* this, PlayState* play);
 
-ActorInit En_Gk_InitVars = {
+ActorProfile En_Gk_Profile = {
     /**/ ACTOR_EN_GK,
     /**/ ACTORCAT_NPC,
     /**/ FLAGS,
@@ -48,7 +46,7 @@ ActorInit En_Gk_InitVars = {
 
 static ColliderCylinderInit sCylinderInit = {
     {
-        COLTYPE_NONE,
+        COL_MATERIAL_NONE,
         AT_NONE,
         AC_NONE,
         OC1_ON | OC1_TYPE_ALL,
@@ -56,11 +54,11 @@ static ColliderCylinderInit sCylinderInit = {
         COLSHAPE_CYLINDER,
     },
     {
-        ELEMTYPE_UNK0,
+        ELEM_MATERIAL_UNK0,
         { 0x00000000, 0x00, 0x00 },
         { 0xF7CFFFFF, 0x00, 0x00 },
-        TOUCH_NONE | TOUCH_SFX_NORMAL,
-        BUMP_ON,
+        ATELEM_NONE | ATELEM_SFX_NORMAL,
+        ACELEM_ON,
         OCELEM_ON,
     },
     { 24, 32, 0, { 0, 0, 0 } },
@@ -204,7 +202,7 @@ u16 func_80B50410(EnGk* this, PlayState* play) {
         if (player->transformation == PLAYER_FORM_GORON) {
             if (!CHECK_WEEKEVENTREG(WEEKEVENTREG_41_04)) {
                 if (this->unk_31C == 0xE88) {
-                    if (!CHECK_WEEKEVENTREG(WEEKEVENTREG_41_08) || Inventory_HasEmptyBottle()) {
+                    if (!CHECK_WEEKEVENTREG(WEEKEVENTREG_RECEIVED_GORON_RACE_BOTTLE) || Inventory_HasEmptyBottle()) {
                         return 0xE89;
                     }
                     SET_WEEKEVENTREG(WEEKEVENTREG_41_04);
@@ -215,7 +213,7 @@ u16 func_80B50410(EnGk* this, PlayState* play) {
             }
 
             if ((this->unk_31C == 0xE8D) || (this->unk_31C == 0xE98)) {
-                if (!CHECK_WEEKEVENTREG(WEEKEVENTREG_41_08) || Inventory_HasEmptyBottle()) {
+                if (!CHECK_WEEKEVENTREG(WEEKEVENTREG_RECEIVED_GORON_RACE_BOTTLE) || Inventory_HasEmptyBottle()) {
                     return 0xE89;
                 }
                 SET_WEEKEVENTREG(WEEKEVENTREG_41_04);
@@ -288,11 +286,11 @@ s32 func_80B50854(EnGk* this, PlayState* play) {
     Player* player = GET_PLAYER(play);
 
     if (!(this->unk_1E4 & 0x40)) {
-        if (player->stateFlags2 & PLAYER_STATE2_8000000) {
+        if (player->stateFlags2 & PLAYER_STATE2_USING_OCARINA) {
             this->unk_1E4 |= 0x40;
             Audio_PlaySfx(NA_SE_SY_TRE_BOX_APPEAR);
         }
-    } else if (!(player->stateFlags2 & PLAYER_STATE2_8000000)) {
+    } else if (!(player->stateFlags2 & PLAYER_STATE2_USING_OCARINA)) {
         this->unk_1E4 &= ~0x40;
     }
 
@@ -391,36 +389,38 @@ void func_80B50B38(EnGk* this, PlayState* play) {
     }
 }
 
-s32 func_80B50C78(EnGk* this, Path* path, s32 arg2_) {
-    Vec3s* sp5C = Lib_SegmentedToVirtual(path->points);
-    s32 sp58 = path->count;
-    s32 arg2 = arg2_;
-    s32 ret = false;
-    f32 phi_f12;
-    f32 phi_f14;
-    f32 sp44;
-    f32 sp40;
-    f32 sp3C;
-    Vec3f sp30;
+s32 EnGk_HasReachedPoint(EnGk* this, Path* path, s32 pointIndex) {
+    Vec3s* points = Lib_SegmentedToVirtual(path->points);
+    s32 count = path->count;
+    s32 index = pointIndex;
+    s32 reached = false;
+    f32 diffX;
+    f32 diffZ;
+    f32 px;
+    f32 pz;
+    f32 d;
+    Vec3f point;
 
-    Math_Vec3s_ToVec3f(&sp30, &sp5C[arg2]);
-    if (arg2 == 0) {
-        phi_f12 = sp5C[1].x - sp5C[0].x;
-        phi_f14 = sp5C[1].z - sp5C[0].z;
-    } else if ((sp58 - 1) == arg2) {
-        phi_f12 = sp5C[sp58 - 1].x - sp5C[sp58 - 2].x;
-        phi_f14 = sp5C[sp58 - 1].z - sp5C[sp58 - 2].z;
+    Math_Vec3s_ToVec3f(&point, &points[index]);
+
+    if (index == 0) {
+        diffX = points[1].x - points[0].x;
+        diffZ = points[1].z - points[0].z;
+    } else if (index == (count - 1)) {
+        diffX = points[count - 1].x - points[count - 2].x;
+        diffZ = points[count - 1].z - points[count - 2].z;
     } else {
-        phi_f12 = sp5C[arg2 + 1].x - sp5C[arg2 - 1].x;
-        phi_f14 = sp5C[arg2 + 1].z - sp5C[arg2 - 1].z;
+        diffX = points[index + 1].x - points[index - 1].x;
+        diffZ = points[index + 1].z - points[index - 1].z;
     }
 
-    Math3D_RotateXZPlane(&sp30, RAD_TO_BINANG(Math_FAtan2F(phi_f12, phi_f14)), &sp44, &sp40, &sp3C);
+    Math3D_RotateXZPlane(&point, RAD_TO_BINANG(Math_FAtan2F(diffX, diffZ)), &px, &pz, &d);
 
-    if (((this->actor.world.pos.x * sp44) + (sp40 * this->actor.world.pos.z) + sp3C) > 0.0f) {
-        ret = true;
+    if (((px * this->actor.world.pos.x) + (pz * this->actor.world.pos.z) + d) > 0.0f) {
+        reached = true;
     }
-    return ret;
+
+    return reached;
 }
 
 f32 func_80B50E14(Path* path, s32 arg1, Vec3f* arg2, Vec3s* arg3) {
@@ -681,7 +681,7 @@ void func_80B51760(EnGk* this, PlayState* play) {
             return;
         }
 
-        if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+        if (Actor_TalkOfferAccepted(&this->actor, &play->state)) {
             this->unk_1E4 |= 4;
             this->unk_31C = func_80B50410(this, play);
             Message_StartTextbox(play, this->unk_31C, &this->actor);
@@ -705,7 +705,7 @@ void func_80B51760(EnGk* this, PlayState* play) {
 void func_80B51970(EnGk* this, PlayState* play) {
     u8 talkState = Message_GetState(&play->msgCtx);
 
-    if (((talkState == TEXT_STATE_DONE) || (talkState == TEXT_STATE_5)) && Message_ShouldAdvance(play)) {
+    if (((talkState == TEXT_STATE_DONE) || (talkState == TEXT_STATE_EVENT)) && Message_ShouldAdvance(play)) {
         if ((this->unk_31C == 0xE84) || (this->unk_31C == 0xE99)) {
             CutsceneManager_Stop(this->csId);
             this->csId = CutsceneManager_GetAdditionalCsId(this->csId);
@@ -856,7 +856,7 @@ void func_80B51EA4(EnGk* this, PlayState* play) {
         Math_SmoothStepToS(&this->actor.world.rot.y, sp38.y, 5, 0x1000, 0x100);
         this->actor.shape.rot.y = this->actor.world.rot.y;
         sp36 = this->actor.shape.rot.y - sp38.y;
-        if (func_80B50C78(this, this->path, this->unk_1EC)) {
+        if (EnGk_HasReachedPoint(this, this->path, this->unk_1EC)) {
             if (this->unk_1EC >= (this->path->count - 1)) {
                 CutsceneManager_Stop(this->csId);
                 Actor_Kill(&this->actor);
@@ -897,7 +897,7 @@ void func_80B5202C(EnGk* this, PlayState* play) {
     }
 
     if (!func_80B50854(this, play)) {
-        if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+        if (Actor_TalkOfferAccepted(&this->actor, &play->state)) {
             SET_WEEKEVENTREG(WEEKEVENTREG_24_80);
             this->actionFunc = func_80B51698;
         } else if ((this->actor.xzDistToPlayer < 100.0f) || this->actor.isLockedOn) {
@@ -923,7 +923,7 @@ void func_80B5202C(EnGk* this, PlayState* play) {
 }
 
 void func_80B5216C(EnGk* this, PlayState* play) {
-    if ((Message_GetState(&play->msgCtx) == TEXT_STATE_5) && Message_ShouldAdvance(play)) {
+    if ((Message_GetState(&play->msgCtx) == TEXT_STATE_EVENT) && Message_ShouldAdvance(play)) {
         play->msgCtx.msgMode = MSGMODE_TEXT_CLOSING;
         play->msgCtx.stateTimer = 4;
         this->actionFunc = func_80B51698;
@@ -958,7 +958,7 @@ void func_80B5227C(EnGk* this, PlayState* play) {
 }
 
 void func_80B52340(EnGk* this, PlayState* play) {
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+    if (Actor_TalkOfferAccepted(&this->actor, &play->state)) {
         this->unk_1E4 |= 4;
         if (CHECK_EVENTINF(EVENTINF_11)) {
             this->unk_31C = 0xE90;
@@ -968,9 +968,9 @@ void func_80B52340(EnGk* this, PlayState* play) {
             this->actionFunc = func_80B52430;
         }
         Message_StartTextbox(play, this->unk_31C, &this->actor);
-        this->actor.flags &= ~ACTOR_FLAG_10000;
+        this->actor.flags &= ~ACTOR_FLAG_TALK_OFFER_AUTO_ACCEPTED;
     } else {
-        this->actor.flags |= ACTOR_FLAG_10000;
+        this->actor.flags |= ACTOR_FLAG_TALK_OFFER_AUTO_ACCEPTED;
         Actor_OfferTalk(&this->actor, play, 100.0f);
     }
     Math_SmoothStepToS(&this->actor.shape.rot.y, this->actor.yawTowardsPlayer, 5, 0x1000, 0x100);
@@ -1012,7 +1012,7 @@ void func_80B52430(EnGk* this, PlayState* play) {
 void func_80B5253C(EnGk* this, PlayState* play) {
     s32 getItemId;
 
-    if (CHECK_WEEKEVENTREG(WEEKEVENTREG_41_08)) {
+    if (CHECK_WEEKEVENTREG(WEEKEVENTREG_RECEIVED_GORON_RACE_BOTTLE)) {
         getItemId = GI_GOLD_DUST_2;
     } else {
         getItemId = GI_GOLD_DUST;
@@ -1021,7 +1021,7 @@ void func_80B5253C(EnGk* this, PlayState* play) {
     if (Actor_HasParent(&this->actor, play)) {
         this->actor.parent = NULL;
         if (getItemId == GI_GOLD_DUST) {
-            SET_WEEKEVENTREG(WEEKEVENTREG_41_08);
+            SET_WEEKEVENTREG(WEEKEVENTREG_RECEIVED_GORON_RACE_BOTTLE);
         }
         this->actionFunc = func_80B525E0;
     } else {
@@ -1030,7 +1030,7 @@ void func_80B5253C(EnGk* this, PlayState* play) {
 }
 
 void func_80B525E0(EnGk* this, PlayState* play) {
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+    if (Actor_TalkOfferAccepted(&this->actor, &play->state)) {
         this->unk_31C = 0xE92;
         Message_StartTextbox(play, this->unk_31C, &this->actor);
         this->actionFunc = func_80B52430;
@@ -1056,7 +1056,7 @@ void func_80B52654(EnGk* this, PlayState* play) {
 
 void EnGk_Init(Actor* thisx, PlayState* play) {
     s32 pad;
-    EnGk* this = THIS;
+    EnGk* this = (EnGk*)thisx;
 
     SkelAnime_InitFlex(play, &this->skelAnime, &object_gk_Skel_0079C0, &object_gk_Anim_00787C, this->jointTable,
                        this->morphTable, OBJECT_GK_LIMB_MAX);
@@ -1102,16 +1102,16 @@ void EnGk_Init(Actor* thisx, PlayState* play) {
         if (!CHECK_WEEKEVENTREG(WEEKEVENTREG_CALMED_GORON_ELDERS_SON)) {
             this->actionFunc = func_80B51FD0;
             this->actor.draw = NULL;
-            this->actor.flags |= ACTOR_FLAG_10;
-            this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
+            this->actor.flags |= ACTOR_FLAG_UPDATE_CULLING_DISABLED;
+            this->actor.flags &= ~ACTOR_FLAG_ATTENTION_ENABLED;
         } else {
             Actor_Kill(&this->actor);
         }
     } else if (!CHECK_WEEKEVENTREG(WEEKEVENTREG_CALMED_GORON_ELDERS_SON)) {
         this->animIndex = ENGK_ANIM_0;
         this->csId = this->actor.csId;
-        this->actor.flags |= ACTOR_FLAG_10;
-        this->actor.flags |= ACTOR_FLAG_2000000;
+        this->actor.flags |= ACTOR_FLAG_UPDATE_CULLING_DISABLED;
+        this->actor.flags |= ACTOR_FLAG_UPDATE_DURING_OCARINA;
         Actor_ChangeAnimationByInfo(&this->skelAnime, sAnimationInfo, ENGK_ANIM_0);
         this->actionFunc = func_80B5202C;
     } else {
@@ -1120,13 +1120,13 @@ void EnGk_Init(Actor* thisx, PlayState* play) {
 }
 
 void EnGk_Destroy(Actor* thisx, PlayState* play) {
-    EnGk* this = THIS;
+    EnGk* this = (EnGk*)thisx;
 
     Collider_DestroyCylinder(play, &this->collider);
 }
 
 void EnGk_Update(Actor* thisx, PlayState* play) {
-    EnGk* this = THIS;
+    EnGk* this = (EnGk*)thisx;
 
     this->actionFunc(this, play);
 
@@ -1134,7 +1134,7 @@ void EnGk_Update(Actor* thisx, PlayState* play) {
         ((ENGK_GET_F(&this->actor) == ENGK_F_0) && !CHECK_WEEKEVENTREG(WEEKEVENTREG_CALMED_GORON_ELDERS_SON))) {
         func_80B507A0(this, play);
         SkelAnime_Update(&this->skelAnime);
-        Actor_TrackPlayer(play, &this->actor, &this->unk_1D8, &this->unk_1DE, this->actor.focus.pos);
+        Actor_TrackPlayer(play, &this->actor, &this->headRot, &this->torsoRot, this->actor.focus.pos);
         if (ENGK_GET_F(&this->actor) == ENGK_F_1) {
             func_80B5123C(this, play);
         }
@@ -1151,7 +1151,7 @@ s32 EnGk_OverrideLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3f* po
 }
 
 void EnGk_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* rot, Actor* thisx) {
-    EnGk* this = THIS;
+    EnGk* this = (EnGk*)thisx;
     Vec3f sp58 = { 0.0f, 0.0f, 0.0f };
     Vec3f sp4C = { 0.0f, 0.0f, 0.0f };
     Vec3f sp40 = { 0.0f, 0.0f, 0.0f };
@@ -1214,7 +1214,7 @@ void EnGk_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* rot, 
 }
 
 void EnGk_TransformLimbDraw(PlayState* play, s32 limbIndex, Actor* thisx) {
-    EnGk* this = THIS;
+    EnGk* this = (EnGk*)thisx;
     s32 phi_v0;
     s32 phi_v1;
 
@@ -1286,7 +1286,7 @@ TexturePtr D_80B533E4[] = {
 
 void EnGk_Draw(Actor* thisx, PlayState* play) {
     s32 pad;
-    EnGk* this = THIS;
+    EnGk* this = (EnGk*)thisx;
     Vec3f pos;
     Vec3f scale;
 
@@ -1297,7 +1297,7 @@ void EnGk_Draw(Actor* thisx, PlayState* play) {
     if ((ENGK_GET_F(&this->actor) == ENGK_F_0) && CHECK_WEEKEVENTREG(WEEKEVENTREG_CALMED_GORON_ELDERS_SON)) {
         Matrix_RotateXS(-0x4000, MTXMODE_APPLY);
 
-        gSPMatrix(POLY_OPA_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+        MATRIX_FINALIZE_AND_LOAD(POLY_OPA_DISP++, play->state.gfxCtx);
         gSPDisplayList(POLY_OPA_DISP++, object_gk_DL_006688);
         gSPDisplayList(POLY_OPA_DISP++, object_gk_DL_006680);
 

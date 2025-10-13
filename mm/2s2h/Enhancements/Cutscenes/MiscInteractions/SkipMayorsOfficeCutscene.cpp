@@ -4,7 +4,7 @@
 
 extern "C" {
 #include "overlays/actors/ovl_En_Dt/z_en_dt.h"
-void func_80BEA394(EnDt* enDt, PlayState* play);
+void EnDt_UpdateMeetingCutscene(EnDt* enDt, PlayState* play);
 }
 
 #define CVAR_NAME "gEnhancements.Cutscenes.SkipMiscInteractions"
@@ -25,17 +25,17 @@ void RegisterSkipMayorsOfficeCutscene() {
                                                  99999.9f);
             if (enDt != nullptr) {
                 if (*csId == 17) { // Argument scenes without Couples Mask
-                    enDt->actionFunc = func_80BEA394;
-                    enDt->unk_26E = 26;
-                    enDt->unk_270 = 2;
-                    enDt->unk_256 = 8;
+                    enDt->actionFunc = EnDt_UpdateMeetingCutscene;
+                    enDt->csIdIndex = 26;
+                    enDt->cutsceneState = 2; // EN_DT_CS_STATE_PLAYING
+                    enDt->textIdIndex = 8;
                     *should = false;
                 } else if (*csId == 21) { // Couples Mask scene
                     // Set flags to trigger scene transition and reward
-                    enDt->actionFunc = func_80BEA394;
-                    enDt->unk_244 = 0;
-                    enDt->unk_256 = 20;
-                    enDt->unk_270 = 0;
+                    enDt->actionFunc = EnDt_UpdateMeetingCutscene;
+                    enDt->timer = 0;
+                    enDt->textIdIndex = 20;
+                    enDt->cutsceneState = 0; // EN_DT_CS_STATE_NONE
                     *should = false;
                 }
             }

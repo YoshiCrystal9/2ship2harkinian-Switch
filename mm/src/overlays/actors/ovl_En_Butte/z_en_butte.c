@@ -11,8 +11,6 @@
 
 #define FLAGS 0x00000000
 
-#define THIS ((EnButte*)thisx)
-
 void EnButte_Init(Actor* thisx, PlayState* play);
 void EnButte_Destroy(Actor* thisx, PlayState* play2);
 void EnButte_Update(Actor* thisx, PlayState* play);
@@ -30,11 +28,11 @@ void func_8091D090(EnButte* this, PlayState* play);
 static ColliderJntSphElementInit sJntSphElementsInit[1] = {
     {
         {
-            ELEMTYPE_UNK0,
+            ELEM_MATERIAL_UNK0,
             { 0x00000000, 0x00, 0x00 },
             { 0xF7CFFFFF, 0x00, 0x00 },
-            TOUCH_NONE | TOUCH_SFX_NORMAL,
-            BUMP_NONE,
+            ATELEM_NONE | ATELEM_SFX_NORMAL,
+            ACELEM_NONE,
             OCELEM_ON,
         },
         { 0, { { 0, 0, 0 }, 5 }, 100 },
@@ -43,7 +41,7 @@ static ColliderJntSphElementInit sJntSphElementsInit[1] = {
 
 static ColliderJntSphInit sJntSphInit = {
     {
-        COLTYPE_NONE,
+        COL_MATERIAL_NONE,
         AT_NONE,
         AC_NONE,
         OC1_ON | OC1_TYPE_PLAYER | OC1_TYPE_1,
@@ -54,7 +52,7 @@ static ColliderJntSphInit sJntSphInit = {
     sJntSphElementsInit,
 };
 
-ActorInit En_Butte_InitVars = {
+ActorProfile En_Butte_Profile = {
     /**/ ACTOR_EN_BUTTE,
     /**/ ACTORCAT_ITEMACTION,
     /**/ FLAGS,
@@ -95,9 +93,9 @@ Vec3f D_8091D3A4 = { 0.0f, 0.0f, -3.0f };
 
 static InitChainEntry sInitChain[] = {
     ICHAIN_VEC3F_DIV1000(scale, 10, ICHAIN_CONTINUE),
-    ICHAIN_F32(uncullZoneForward, 700, ICHAIN_CONTINUE),
-    ICHAIN_F32(uncullZoneScale, 20, ICHAIN_CONTINUE),
-    ICHAIN_F32(uncullZoneDownward, 60, ICHAIN_STOP),
+    ICHAIN_F32(cullingVolumeDistance, 700, ICHAIN_CONTINUE),
+    ICHAIN_F32(cullingVolumeScale, 20, ICHAIN_CONTINUE),
+    ICHAIN_F32(cullingVolumeDownward, 60, ICHAIN_STOP),
 };
 
 f32 D_8091D3C0[] = { 50.0f, 80.0f, 100.0f };
@@ -153,7 +151,7 @@ void func_8091C178(EnButte* this, PlayState* play) {
                                  this->actor.focus.pos.z + sp4C.z, &sp40);
     Matrix_Scale(D_8091D39C, D_8091D39C, D_8091D39C, MTXMODE_APPLY);
 
-    gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    MATRIX_FINALIZE_AND_LOAD(POLY_XLU_DISP++, play->state.gfxCtx);
     gDPSetPrimColor(POLY_XLU_DISP++, 0x80, 0x80, 200, 200, 180, sp48);
     gDPSetEnvColor(POLY_XLU_DISP++, 200, 200, 210, 255);
     gSPDisplayList(POLY_XLU_DISP++, gEffFlash1DL);
@@ -163,7 +161,7 @@ void func_8091C178(EnButte* this, PlayState* play) {
 
 void EnButte_Init(Actor* thisx, PlayState* play) {
     s32 pad;
-    EnButte* this = THIS;
+    EnButte* this = (EnButte*)thisx;
 
     if (BUTTERFLY_GET(&this->actor) == BUTTERFLY_MINUS1) {
         this->actor.params = BUTTERFLY_0;
@@ -175,7 +173,7 @@ void EnButte_Init(Actor* thisx, PlayState* play) {
     Actor_ProcessInitChain(&this->actor, sInitChain);
 
     if ((BUTTERFLY_GET_1(&this->actor) & 0xFF) == BUTTERFLY_1) {
-        this->actor.uncullZoneScale = 200.0f;
+        this->actor.cullingVolumeScale = 200.0f;
     }
 
     SkelAnime_Init(play, &this->skelAnime, &gameplay_field_keep_Skel_002FA0, &gameplay_field_keep_Anim_001D20,
@@ -199,7 +197,7 @@ void EnButte_Init(Actor* thisx, PlayState* play) {
 
 void EnButte_Destroy(Actor* thisx, PlayState* play2) {
     PlayState* play = play2;
-    EnButte* this = THIS;
+    EnButte* this = (EnButte*)thisx;
 
     Collider_DestroyJntSph(play, &this->collider);
 }
@@ -221,7 +219,7 @@ void func_8091C6B4(EnButte* this) {
     s16 temp_v0 = temp_a1 - this->actor.shape.rot.y;
 
     Math_ScaledStepToS(&this->actor.shape.rot.y, temp_a1, ABS_ALT(temp_v0) >> 3);
-    this->actor.shape.rot.x = (s16)(Math_SinS(this->unk_258) * 600.0f) - 0x2320;
+    this->actor.shape.rot.x = TRUNCF_BINANG(Math_SinS(this->unk_258) * 600.0f) - 0x2320;
 }
 
 void func_8091C748(EnButte* this) {
@@ -272,7 +270,7 @@ void func_8091C794(EnButte* this, PlayState* play) {
             sp38 = 0.4f;
         }
     } else {
-        this->actor.world.rot.y += (s16)(Math_SinS(this->unk_254) * 100.0f);
+        this->actor.world.rot.y += TRUNCF_BINANG(Math_SinS(this->unk_254) * 100.0f);
     }
 
     func_8091C6B4(this);
@@ -329,7 +327,7 @@ void func_8091CBB4(EnButte* this, PlayState* play) {
         yaw = Math_Vec3f_Yaw(&this->actor.world.pos, &sp48);
         if (Math_ScaledStepToS(&this->actor.world.rot.y, yaw + (s32)(Rand_ZeroOne() * D_8091D3F0), 0x7D0)) {
             if ((play->gameplayFrames & 0x30) == 0x30) {
-                this->actor.world.rot.y += (s16)(Math_SinS(this->unk_254) * 60.0f);
+                this->actor.world.rot.y += TRUNCF_BINANG(Math_SinS(this->unk_254) * 60.0f);
             }
         } else {
             sp40 = 0.3f;
@@ -368,7 +366,7 @@ void func_8091CBB4(EnButte* this, PlayState* play) {
 
 void func_8091CF64(EnButte* this) {
     this->unk_24C = 9;
-    this->actor.flags |= ACTOR_FLAG_10;
+    this->actor.flags |= ACTOR_FLAG_UPDATE_CULLING_DISABLED;
     this->skelAnime.playSpeed = 1.0f;
     func_8091C124();
     this->actionFunc = func_8091CFB4;
@@ -402,7 +400,7 @@ void func_8091D090(EnButte* this, PlayState* play) {
 }
 
 void EnButte_Update(Actor* thisx, PlayState* play) {
-    EnButte* this = THIS;
+    EnButte* this = (EnButte*)thisx;
 
     if ((this->actor.child != NULL) && (this->actor.child->update == NULL) && (&this->actor != this->actor.child)) {
         this->actor.child = NULL;
@@ -432,11 +430,11 @@ void EnButte_Update(Actor* thisx, PlayState* play) {
         Actor_MoveWithGravity(&this->actor);
         Math_StepToF(&this->actor.world.pos.y, this->unk_25C, 0.6f);
         if (this->actor.xyzDistToPlayerSq < 5000.0f) {
-            ColliderJntSphElement* element = &this->collider.elements[0];
+            ColliderJntSphElement* jntSphElem = &this->collider.elements[0];
 
-            element->dim.worldSphere.center.x = this->actor.world.pos.x;
-            element->dim.worldSphere.center.y = this->actor.world.pos.y;
-            element->dim.worldSphere.center.z = this->actor.world.pos.z;
+            jntSphElem->dim.worldSphere.center.x = this->actor.world.pos.x;
+            jntSphElem->dim.worldSphere.center.y = this->actor.world.pos.y;
+            jntSphElem->dim.worldSphere.center.z = this->actor.world.pos.z;
             CollisionCheck_SetOC(play, &play->colChkCtx, &this->collider.base);
         }
         Actor_SetFocus(&this->actor, this->actor.shape.yOffset * this->actor.scale.y);
@@ -444,7 +442,7 @@ void EnButte_Update(Actor* thisx, PlayState* play) {
 }
 
 void EnButte_Draw(Actor* thisx, PlayState* play) {
-    EnButte* this = THIS;
+    EnButte* this = (EnButte*)thisx;
 
     if (this->unk_250 != 0) {
         Gfx_SetupDL25_Opa(play->state.gfxCtx);

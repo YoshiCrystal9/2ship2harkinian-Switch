@@ -128,7 +128,7 @@ void Rando::ActorBehavior::InitDmStkBehavior() {
                 Actor_OfferTalk(&dmStk->actor, gPlayState, 200.0f);
             }
 
-            if (Actor_ProcessTalkRequest(&dmStk->actor, &gPlayState->state)) {
+            if (Actor_TalkOfferAccepted(&dmStk->actor, &gPlayState->state)) {
                 Message_StartTextbox(gPlayState, 0x2013, &dmStk->actor);
                 if ((Message_GetState(&gPlayState->msgCtx) == TEXT_STATE_DONE) && Message_ShouldAdvance(gPlayState)) {
                     Message_CloseTextbox(gPlayState);

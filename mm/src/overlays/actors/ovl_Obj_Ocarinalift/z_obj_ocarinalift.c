@@ -7,9 +7,7 @@
 #include "z_obj_ocarinalift.h"
 #include "objects/object_raillift/object_raillift.h"
 
-#define FLAGS (ACTOR_FLAG_10)
-
-#define THIS ((ObjOcarinalift*)thisx)
+#define FLAGS (ACTOR_FLAG_UPDATE_CULLING_DISABLED)
 
 void ObjOcarinalift_Init(Actor* thisx, PlayState* play);
 void ObjOcarinalift_Destroy(Actor* thisx, PlayState* play);
@@ -31,7 +29,7 @@ void func_80AC9B5C(ObjOcarinalift* this, PlayState* play);
 void func_80AC9C20(ObjOcarinalift* this);
 void func_80AC9C48(ObjOcarinalift* this, PlayState* play);
 
-ActorInit Obj_Ocarinalift_InitVars = {
+ActorProfile Obj_Ocarinalift_Profile = {
     /**/ ACTOR_OBJ_OCARINALIFT,
     /**/ ACTORCAT_BG,
     /**/ FLAGS,
@@ -44,18 +42,20 @@ ActorInit Obj_Ocarinalift_InitVars = {
 };
 
 static InitChainEntry sInitChain[] = {
-    ICHAIN_U8(targetMode, TARGET_MODE_2, ICHAIN_CONTINUE), ICHAIN_F32(uncullZoneForward, 4000, ICHAIN_CONTINUE),
-    ICHAIN_F32(uncullZoneScale, 200, ICHAIN_CONTINUE),     ICHAIN_F32(uncullZoneDownward, 300, ICHAIN_CONTINUE),
+    ICHAIN_U8(attentionRangeType, ATTENTION_RANGE_2, ICHAIN_CONTINUE),
+    ICHAIN_F32(cullingVolumeDistance, 4000, ICHAIN_CONTINUE),
+    ICHAIN_F32(cullingVolumeScale, 200, ICHAIN_CONTINUE),
+    ICHAIN_F32(cullingVolumeDownward, 300, ICHAIN_CONTINUE),
     ICHAIN_VEC3F_DIV1000(scale, 100, ICHAIN_STOP),
 };
 
 void func_80AC94C0(ObjOcarinalift* this, s32 arg1) {
-    Math_Vec3s_ToVec3f(&this->dyna.actor.world.pos, &this->unk170[arg1]);
+    Math_Vec3s_ToVec3f(&this->dyna.actor.world.pos, &this->pathPoints[arg1]);
 }
 
 void ObjOcarinalift_Init(Actor* thisx, PlayState* play) {
     Path* path;
-    ObjOcarinalift* this = THIS;
+    ObjOcarinalift* this = (ObjOcarinalift*)thisx;
 
     Actor_ProcessInitChain(thisx, sInitChain);
     this->dyna.actor.shape.rot.x = 0;
@@ -68,11 +68,11 @@ void ObjOcarinalift_Init(Actor* thisx, PlayState* play) {
     if (this->unk160 < 0.01f) {
         func_80AC9680(this);
     } else {
-        path = &play->setupPathList[OBJOCARINALIFT_GET_7F(&this->dyna.actor)];
+        path = &play->setupPathList[OBJOCARINALIFT_GET_PATH_INDEX(&this->dyna.actor)];
         this->unk168 = OBJOCARINALIFT_GET_1F(&this->dyna.actor);
         this->unk164 = path->count - 1;
         this->unk16C = 1;
-        this->unk170 = Lib_SegmentedToVirtual(path->points);
+        this->pathPoints = Lib_SegmentedToVirtual(path->points);
         func_80AC94C0(this, this->unk168);
         if ((OBJOCARINALIFT_GET_C(&this->dyna.actor) != OBJOCARINALIFT_PARAM_1) &&
             Flags_GetSwitch(play, OBJOCARINALIFT_GET_SWITCH_FLAG(&this->dyna.actor))) {
@@ -84,13 +84,13 @@ void ObjOcarinalift_Init(Actor* thisx, PlayState* play) {
 }
 
 void ObjOcarinalift_Destroy(Actor* thisx, PlayState* play) {
-    ObjOcarinalift* this = THIS;
+    ObjOcarinalift* this = (ObjOcarinalift*)thisx;
 
     DynaPoly_DeleteBgActor(play, &play->colCtx.dyna, this->dyna.bgId);
 }
 
 void func_80AC9680(ObjOcarinalift* this) {
-    this->dyna.actor.flags &= ~ACTOR_FLAG_10;
+    this->dyna.actor.flags &= ~ACTOR_FLAG_UPDATE_CULLING_DISABLED;
     this->actionFunc = func_80AC96A4;
 }
 
@@ -113,7 +113,7 @@ void func_80AC96D0(ObjOcarinalift* this, PlayState* play) {
     Vec3s* temp_v1_2;
 
     Actor_PlaySfx_Flagged(thisx, NA_SE_EV_PLATE_LIFT_LEVEL - SFX_FLAG);
-    Math_Vec3s_ToVec3f(&sp48, this->unk170 + this->unk168 + this->unk16C);
+    Math_Vec3s_ToVec3f(&sp48, this->pathPoints + this->unk168 + this->unk16C);
     Math_Vec3f_Diff(&sp48, &thisx->world.pos, &thisx->velocity);
     magnitude = Math3D_Vec3fMagnitude(&thisx->velocity);
 
@@ -142,7 +142,7 @@ void func_80AC96D0(ObjOcarinalift* this, PlayState* play) {
                 this->timer = 10;
                 func_80AC9A68(this);
             } else {
-                temp_v1_2 = this->unk170 + this->unk164;
+                temp_v1_2 = &this->pathPoints[this->unk164];
 
                 if (this->unk16C > 0) {
                     this->unk168 = 0;
@@ -150,8 +150,8 @@ void func_80AC96D0(ObjOcarinalift* this, PlayState* play) {
                     this->unk168 = this->unk164;
                 }
 
-                if (((this->unk170->x != temp_v1_2->x) || (this->unk170->y != temp_v1_2->y)) ||
-                    (this->unk170->z != temp_v1_2->z)) {
+                if (((this->pathPoints[0].x != temp_v1_2->x) || (this->pathPoints[0].y != temp_v1_2->y)) ||
+                    (this->pathPoints[0].z != temp_v1_2->z)) {
                     func_80AC99C0(this);
                     DynaPoly_DisableCollision(play, &play->colCtx.dyna, this->dyna.bgId);
                     sp34 = false;
@@ -197,16 +197,17 @@ void func_80AC9A7C(ObjOcarinalift* this, PlayState* play) {
 }
 
 void func_80AC9AB8(ObjOcarinalift* this) {
-    this->dyna.actor.flags |= (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_2000000 | ACTOR_FLAG_CANT_LOCK_ON);
+    this->dyna.actor.flags |=
+        (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_UPDATE_DURING_OCARINA | ACTOR_FLAG_LOCK_ON_DISABLED);
     this->actionFunc = func_80AC9AE0;
 }
 
 void func_80AC9AE0(ObjOcarinalift* this, PlayState* play) {
-    if (func_800B8718(&this->dyna.actor, &play->state)) {
+    if (Actor_OcarinaInteractionAccepted(&this->dyna.actor, &play->state)) {
         Message_DisplayOcarinaStaff(play, OCARINA_ACTION_FREE_PLAY);
         func_80AC9B48(this);
     } else if (DynaPolyActor_IsPlayerOnTop(&this->dyna)) {
-        func_800B8804(&this->dyna.actor, play, 40.0f);
+        Actor_OfferOcarinaInteractionNearby(&this->dyna.actor, play, 40.0f);
     }
 }
 
@@ -215,7 +216,7 @@ void func_80AC9B48(ObjOcarinalift* this) {
 }
 
 void func_80AC9B5C(ObjOcarinalift* this, PlayState* play) {
-    if (func_800B886C(&this->dyna.actor, play)) {
+    if (Actor_NoOcarinaInteraction(&this->dyna.actor, play)) {
         if (play->msgCtx.ocarinaMode == OCARINA_MODE_END) {
             if (play->msgCtx.lastPlayedSong == 0) {
                 if (OBJOCARINALIFT_GET_C(&this->dyna.actor) != OBJOCARINALIFT_PARAM_1) {
@@ -234,7 +235,8 @@ void func_80AC9B5C(ObjOcarinalift* this, PlayState* play) {
 }
 
 void func_80AC9C20(ObjOcarinalift* this) {
-    this->dyna.actor.flags &= ~(ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_2000000 | ACTOR_FLAG_CANT_LOCK_ON);
+    this->dyna.actor.flags &=
+        ~(ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_UPDATE_DURING_OCARINA | ACTOR_FLAG_LOCK_ON_DISABLED);
     this->actionFunc = func_80AC9C48;
 }
 
@@ -249,7 +251,7 @@ void func_80AC9C48(ObjOcarinalift* this, PlayState* play) {
 }
 
 void ObjOcarinalift_Update(Actor* thisx, PlayState* play) {
-    ObjOcarinalift* this = THIS;
+    ObjOcarinalift* this = (ObjOcarinalift*)thisx;
 
     this->actionFunc(this, play);
     Actor_SetFocus(&this->dyna.actor, 10.0f);
@@ -262,7 +264,7 @@ void ObjOcarinalift_Update(Actor* thisx, PlayState* play) {
 }
 
 void ObjOcarinalift_Draw(Actor* thisx, PlayState* play) {
-    ObjOcarinalift* this = THIS;
+    ObjOcarinalift* this = (ObjOcarinalift*)thisx;
 
     Gfx_DrawDListOpa(play, object_raillift_DL_001E40);
     Gfx_DrawDListXlu(play, object_raillift_DL_001DB0);

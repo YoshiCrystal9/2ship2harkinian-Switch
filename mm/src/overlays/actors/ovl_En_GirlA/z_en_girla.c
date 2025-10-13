@@ -6,16 +6,14 @@
 
 #include "z_en_girla.h"
 
-#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_10)
-
-#define THIS ((EnGirlA*)thisx)
+#define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_UPDATE_CULLING_DISABLED)
 
 void EnGirlA_Init(Actor* thisx, PlayState* play);
 void EnGirlA_Destroy(Actor* thisx, PlayState* play);
 void EnGirlA_Update(Actor* thisx, PlayState* play);
 void EnGirlA_Draw(Actor* thisx, PlayState* play);
 
-void EnGirlA_InitalUpdate(EnGirlA* this, PlayState* play);
+void EnGirlA_InitialUpdate(EnGirlA* this, PlayState* play);
 void EnGirlA_Update2(EnGirlA* this, PlayState* play);
 
 s32 EnGirlA_CanBuyPotionRed(PlayState* play, EnGirlA* this);
@@ -51,7 +49,7 @@ void EnGirlA_BuyShieldMirror(PlayState* play, EnGirlA* this);
 
 void EnGirlA_BuyFanfare(PlayState* play, EnGirlA* this);
 
-ActorInit En_GirlA_InitVars = {
+ActorProfile En_GirlA_Profile = {
     /**/ ACTOR_EN_GIRLA,
     /**/ ACTORCAT_PROP,
     /**/ FLAGS,
@@ -172,11 +170,11 @@ void EnGirlA_InitObjIndex(EnGirlA* this, PlayState* play) {
     }
 
     this->actor.params = params;
-    this->mainActionFunc = EnGirlA_InitalUpdate;
+    this->mainActionFunc = EnGirlA_InitialUpdate;
 }
 
 void EnGirlA_Init(Actor* thisx, PlayState* play) {
-    EnGirlA* this = THIS;
+    EnGirlA* this = (EnGirlA*)thisx;
 
     EnGirlA_InitObjIndex(this, play);
 }
@@ -560,12 +558,12 @@ s32 EnGirlA_TrySetMaskItemDescription(EnGirlA* this, PlayState* play) {
     return false;
 }
 
-void EnGirlA_InitalUpdate(EnGirlA* this, PlayState* play) {
+void EnGirlA_InitialUpdate(EnGirlA* this, PlayState* play) {
     s16 params = this->actor.params;
     ShopItemEntry* shopItem = &sShopItemEntries[params];
 
     if (Object_IsLoaded(&play->objectCtx, this->objectSlot)) {
-        this->actor.flags &= ~ACTOR_FLAG_10;
+        this->actor.flags &= ~ACTOR_FLAG_UPDATE_CULLING_DISABLED;
         this->actor.objectSlot = this->objectSlot;
         this->actor.textId = shopItem->descriptionTextId;
         this->choiceTextId = shopItem->choiceTextId;
@@ -585,7 +583,7 @@ void EnGirlA_InitalUpdate(EnGirlA* this, PlayState* play) {
         this->itemParams = shopItem->params;
         this->drawFunc = shopItem->drawFunc;
         this->getItemDrawId = shopItem->getItemDrawId;
-        this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
+        this->actor.flags &= ~ACTOR_FLAG_ATTENTION_ENABLED;
         Actor_SetScale(&this->actor, 0.25f);
         this->actor.shape.yOffset = 24.0f;
         this->actor.shape.shadowScale = 4.0f;
@@ -616,13 +614,13 @@ void EnGirlA_Update2(EnGirlA* this, PlayState* play) {
 }
 
 void EnGirlA_Update(Actor* thisx, PlayState* play) {
-    EnGirlA* this = THIS;
+    EnGirlA* this = (EnGirlA*)thisx;
 
     this->mainActionFunc(this, play);
 }
 
 void EnGirlA_Draw(Actor* thisx, PlayState* play) {
-    EnGirlA* this = THIS;
+    EnGirlA* this = (EnGirlA*)thisx;
 
     Matrix_RotateYS(this->rotY, MTXMODE_APPLY);
     if (this->drawFunc != NULL) {

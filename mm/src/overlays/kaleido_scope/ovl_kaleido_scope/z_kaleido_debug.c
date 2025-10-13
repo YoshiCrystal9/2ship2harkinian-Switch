@@ -175,12 +175,12 @@ s16 sRowFirstSections[] = {
     INV_EDITOR_SECTION_DOUBLE_DEFENSE,
 };
 
-void KaleidoScope_DrawInventoryEditorText(Gfx** gfxp) {
+void KaleidoScope_DrawInventoryEditorText(Gfx** gfxP) {
     GfxPrint printer;
     s32 pad[2];
 
     GfxPrint_Init(&printer);
-    GfxPrint_Open(&printer, *gfxp);
+    GfxPrint_Open(&printer, *gfxP);
 
     // Rupees
     GfxPrint_SetPos(&printer, 4, 2);
@@ -317,7 +317,7 @@ void KaleidoScope_DrawInventoryEditorText(Gfx** gfxp) {
     GfxPrint_SetPos(&printer, 23, 27);
     GfxPrint_Printf(&printer, "%s", "ﾊﾞｰｽﾞ");
 
-    *gfxp = GfxPrint_Close(&printer);
+    *gfxP = GfxPrint_Close(&printer);
     GfxPrint_Destroy(&printer);
 }
 // 2S2H [Port] (and in the function) don't do pointer math and access the list of digits directly.
@@ -1008,13 +1008,13 @@ void KaleidoScope_UpdateInventoryEditor(PlayState* play) {
             } else if (sCurSection == INV_EDITOR_SECTION_NOTEBOOK) {
                 // Bombers Notebook
                 if (CHECK_BTN_ALL(input->press.button, BTN_CUP) || CHECK_BTN_ALL(input->press.button, BTN_CLEFT)) {
-                    gSaveContext.save.saveInfo.inventory.questItems ^= gBitFlags[QUEST_BOMBERS_NOTEBOOK];
+                    TOGGLE_QUEST_ITEM(QUEST_BOMBERS_NOTEBOOK);
                 }
 
             } else if (sCurSection == INV_EDITOR_SECTION_LULLABY_INTRO) {
                 // Goron Lullaby Intro
                 if (CHECK_BTN_ALL(input->press.button, BTN_CUP) || CHECK_BTN_ALL(input->press.button, BTN_CLEFT)) {
-                    gSaveContext.save.saveInfo.inventory.questItems ^= gBitFlags[QUEST_SONG_LULLABY_INTRO];
+                    TOGGLE_QUEST_ITEM(QUEST_SONG_LULLABY_INTRO);
                 }
 
             } else if (sCurSection < INV_EDITOR_SECTION_LULLABY_INTRO) {
@@ -1023,7 +1023,7 @@ void KaleidoScope_UpdateInventoryEditor(PlayState* play) {
                 //! have also been taken
                 slot = sCurSection - INV_EDITOR_SECTION_BOSS;
                 if (CHECK_BTN_ALL(input->press.button, BTN_CUP) || CHECK_BTN_ALL(input->press.button, BTN_CLEFT)) {
-                    gSaveContext.save.saveInfo.inventory.questItems ^= gBitFlags[slot];
+                    TOGGLE_QUEST_ITEM(slot);
                 }
 
             } else if (sCurSection < INV_EDITOR_SECTION_DUNGEON_ITEMS) {

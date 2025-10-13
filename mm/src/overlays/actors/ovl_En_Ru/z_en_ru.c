@@ -6,18 +6,14 @@
 
 #include "z_en_ru.h"
 
-#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_10)
-
-#define THIS ((EnRu*)thisx)
+#define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_UPDATE_CULLING_DISABLED)
 
 void EnRu_Init(Actor* thisx, PlayState* play);
 void EnRu_Destroy(Actor* thisx, PlayState* play);
 void EnRu_Update(Actor* thisx, PlayState* play);
 void EnRu_Draw(Actor* thisx, PlayState* play);
 
-void EnRu_DoNothing(EnRu* this, PlayState* play);
-
-ActorInit En_Ru_InitVars = {
+ActorProfile En_Ru_Profile = {
     /**/ ACTOR_EN_RU,
     /**/ ACTORCAT_NPC,
     /**/ FLAGS,
@@ -31,7 +27,7 @@ ActorInit En_Ru_InitVars = {
 
 static ColliderCylinderInit sCylinderInit = {
     {
-        COLTYPE_HIT0,
+        COL_MATERIAL_HIT0,
         AT_NONE,
         AC_ON | AC_TYPE_PLAYER,
         OC1_ON | OC1_TYPE_ALL,
@@ -39,11 +35,11 @@ static ColliderCylinderInit sCylinderInit = {
         COLSHAPE_CYLINDER,
     },
     {
-        ELEMTYPE_UNK1,
+        ELEM_MATERIAL_UNK1,
         { 0x00000000, 0x00, 0x00 },
         { 0xF7CFFFFF, 0x00, 0x00 },
-        TOUCH_NONE | TOUCH_SFX_NORMAL,
-        BUMP_ON,
+        ATELEM_NONE | ATELEM_SFX_NORMAL,
+        ACELEM_ON,
         OCELEM_ON,
     },
     { 18, 64, 0, { 0, 0, 0 } },
@@ -86,15 +82,28 @@ static DamageTable sDamageTable = {
     /* Powder Keg     */ DMG_ENTRY(0, 0x0),
 };
 
-static AnimationInfoS sAnimationInfo[] = {
-    { &gAdultRutoIdleAnim, 1.0f, 0, -1, ANIMMODE_LOOP, 0 },
-    { &gAdultRutoIdleAnim, 1.0f, 0, -1, ANIMMODE_LOOP, -4 },
-    { &gAdultRutoRaisingArmsUpAnim, 1.0f, 0, -1, ANIMMODE_LOOP, -4 },
-    { &gAdultRutoCrossingArmsAnim, 1.0f, 0, -1, ANIMMODE_LOOP, -4 },
-    { &gAdultRutoLookingDownLeftAnim, 1.0f, 0, -1, ANIMMODE_LOOP, -4 },
-    { &gAdultRutoIdleHandsOnHipsAnim, 1.0f, 0, -1, ANIMMODE_LOOP, -4 },
-    { &gAdultRutoHeadTurnDownLeftAnim, 1.0f, 0, -1, ANIMMODE_LOOP, -4 },
-    { &gAdultRutoSwimmingUpAnim, 1.0f, 0, -1, ANIMMODE_LOOP, -4 },
+typedef enum AdultRutoAnimation {
+    /* -1 */ ADULT_RUTO_ANIM_NONE = -1,
+    /*  0 */ ADULT_RUTO_ANIM_IDLE,
+    /*  1 */ ADULT_RUTO_ANIM_IDLE_MORPH,
+    /*  2 */ ADULT_RUTO_ANIM_RAISING_ARMS_UP,
+    /*  3 */ ADULT_RUTO_ANIM_CROSSING_ARMS,
+    /*  4 */ ADULT_RUTO_ANIM_LOOKING_DOWN_LEFT,
+    /*  5 */ ADULT_RUTO_ANIM_HANDS_ON_HIPS,
+    /*  6 */ ADULT_RUTO_ANIM_TURN_DOWN_LEFT,
+    /*  7 */ ADULT_RUTO_ANIM_SWIMMING_UP,
+    /*  8 */ ADULT_RUTO_ANIM_MAX
+} AdultRutoAnimation;
+
+static AnimationInfoS sAnimationInfo[ADULT_RUTO_ANIM_MAX] = {
+    { &gAdultRutoIdleAnim, 1.0f, 0, -1, ANIMMODE_LOOP, 0 },              // ADULT_RUTO_ANIM_IDLE
+    { &gAdultRutoIdleAnim, 1.0f, 0, -1, ANIMMODE_LOOP, -4 },             // ADULT_RUTO_ANIM_IDLE_MORPH
+    { &gAdultRutoRaisingArmsUpAnim, 1.0f, 0, -1, ANIMMODE_LOOP, -4 },    // ADULT_RUTO_ANIM_RAISING_ARMS_UP
+    { &gAdultRutoCrossingArmsAnim, 1.0f, 0, -1, ANIMMODE_LOOP, -4 },     // ADULT_RUTO_ANIM_CROSSING_ARMS
+    { &gAdultRutoLookingDownLeftAnim, 1.0f, 0, -1, ANIMMODE_LOOP, -4 },  // ADULT_RUTO_ANIM_LOOKING_DOWN_LEFT
+    { &gAdultRutoIdleHandsOnHipsAnim, 1.0f, 0, -1, ANIMMODE_LOOP, -4 },  // ADULT_RUTO_ANIM_HANDS_ON_HIPS
+    { &gAdultRutoHeadTurnDownLeftAnim, 1.0f, 0, -1, ANIMMODE_LOOP, -4 }, // ADULT_RUTO_ANIM_TURN_DOWN_LEFT
+    { &gAdultRutoSwimmingUpAnim, 1.0f, 0, -1, ANIMMODE_LOOP, -4 },       // ADULT_RUTO_ANIM_SWIMMING_UP
 };
 
 static s8 sLimbToBodyParts[RU2_LIMB_MAX] = {
@@ -159,28 +168,24 @@ static u8 sShadowSizes[RU_BODYPART_MAX] = {
     0, // RU_BODYPART_14
 };
 
-static TrackOptionsSet sTrackOptions = {
-    { 0xFA0, 4, 1, 3 }, { 0x1770, 4, 1, 6 }, { 0xFA0, 4, 1, 3 }, { 0x1770, 4, 1, 6 }
-};
-
 s32 EnRu_ChangeAnim(SkelAnime* skelAnime, s16 animIndex) {
-    s16 lastFrame;
-    s32 ret = false;
+    s16 endFrame;
+    s32 didAnimChange = false;
 
-    if ((animIndex >= 0) && (animIndex < ARRAY_COUNT(sAnimationInfo))) {
-        lastFrame = sAnimationInfo[animIndex].frameCount;
+    if ((animIndex > ADULT_RUTO_ANIM_NONE) && (animIndex < ADULT_RUTO_ANIM_MAX)) {
+        endFrame = sAnimationInfo[animIndex].frameCount;
 
-        ret = true;
-        if (lastFrame < 0) {
-            lastFrame = Animation_GetLastFrame(sAnimationInfo[animIndex].animation);
+        didAnimChange = true;
+        if (endFrame < 0) {
+            endFrame = Animation_GetLastFrame(sAnimationInfo[animIndex].animation);
         }
 
         Animation_Change(skelAnime, sAnimationInfo[animIndex].animation, sAnimationInfo[animIndex].playSpeed,
-                         sAnimationInfo[animIndex].startFrame, lastFrame, sAnimationInfo[animIndex].mode,
+                         sAnimationInfo[animIndex].startFrame, endFrame, sAnimationInfo[animIndex].mode,
                          sAnimationInfo[animIndex].morphFrames);
     }
 
-    return ret;
+    return didAnimChange;
 }
 
 // En_Zo has a copy of this function
@@ -241,6 +246,10 @@ void EnRu_UpdateCollider(EnRu* this, PlayState* play) {
     CollisionCheck_SetOC(play, &play->colChkCtx, &this->collider.base);
 }
 
+static TrackOptionsSet sTrackOptions = {
+    { 0xFA0, 4, 1, 3 }, { 0x1770, 4, 1, 6 }, { 0xFA0, 4, 1, 3 }, { 0x1770, 4, 1, 6 }
+};
+
 void EnRu_UpdateModel(EnRu* this, PlayState* play) {
     Player* player = GET_PLAYER(play);
 
@@ -275,11 +284,11 @@ void EnRu_DoNothing(EnRu* this, PlayState* play) {
 
 void EnRu_Init(Actor* thisx, PlayState* play) {
     s32 pad;
-    EnRu* this = THIS;
+    EnRu* this = (EnRu*)thisx;
 
     ActorShape_Init(&this->actor.shape, 0.0f, NULL, 0.0f);
     SkelAnime_InitFlex(play, &this->skelAnime, &gAdultRutoSkel, NULL, this->jointTable, this->morphTable, RU2_LIMB_MAX);
-    EnRu_ChangeAnim(&this->skelAnime, 0);
+    EnRu_ChangeAnim(&this->skelAnime, ADULT_RUTO_ANIM_IDLE);
     Collider_InitCylinder(play, &this->collider);
     Collider_SetCylinder(play, &this->collider, &this->actor, &sCylinderInit);
     CollisionCheck_SetInfo2(&this->actor.colChkInfo, &sDamageTable, &sColChkInfoInit);
@@ -291,23 +300,24 @@ void EnRu_Init(Actor* thisx, PlayState* play) {
 }
 
 void EnRu_Destroy(Actor* thisx, PlayState* play) {
-    EnRu* this = THIS;
+    EnRu* this = (EnRu*)thisx;
 
     Collider_DestroyCylinder(play, &this->collider);
 }
 
 void EnRu_Update(Actor* thisx, PlayState* play) {
-    EnRu* this = THIS;
+    EnRu* this = (EnRu*)thisx;
 
     this->actionFunc(this, play);
+
     Actor_UpdateBgCheckInfo(play, &this->actor, 0.0f, 0.0f, 0.0f, UPDBGCHECKINFO_FLAG_4);
     EnRu_UpdateModel(this, play);
     EnRu_UpdateCollider(this, play);
 }
 
-s32 EnRu_OverrideLimbdraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3f* pos, Vec3s* rot, Actor* thisx,
+s32 EnRu_OverrideLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3f* pos, Vec3s* rot, Actor* thisx,
                           Gfx** gfx) {
-    EnRu* this = THIS;
+    EnRu* this = (EnRu*)thisx;
 
     if (limbIndex == RU2_LIMB_HEAD) {
         Matrix_Translate(1500.0f, 0.0f, 0.0f, MTXMODE_APPLY);
@@ -323,15 +333,15 @@ s32 EnRu_OverrideLimbdraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3f* po
 
     if ((limbIndex == RU2_LIMB_TORSO) || (limbIndex == RU2_LIMB_LEFT_UPPER_ARM) ||
         (limbIndex == RU2_LIMB_RIGHT_UPPER_ARM)) {
-        rot->y += (s16)(Math_SinS(this->fidgetTableY[limbIndex]) * 200.0f);
-        rot->z += (s16)(Math_CosS(this->fidgetTableZ[limbIndex]) * 200.0f);
+        rot->y += TRUNCF_BINANG(Math_SinS(this->fidgetTableY[limbIndex]) * 200.0f);
+        rot->z += TRUNCF_BINANG(Math_CosS(this->fidgetTableZ[limbIndex]) * 200.0f);
     }
 
     return false;
 }
 
-void EnRu_PostLimbdraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* rot, Actor* thisx, Gfx** gfx) {
-    EnRu* this = THIS;
+void EnRu_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* rot, Actor* thisx, Gfx** gfx) {
+    EnRu* this = (EnRu*)thisx;
     Vec3f headFocus = { 800.0f, 0, 0 };
     Vec3f bodyPartPos = { 0, 0, 0 };
 
@@ -361,7 +371,7 @@ static Gfx sTransparencyDlist[] = {
 };
 
 void EnRu_Draw(Actor* thisx, PlayState* play) {
-    EnRu* this = THIS;
+    EnRu* this = (EnRu*)thisx;
     u8* shadowTex = GRAPH_ALLOC(play->state.gfxCtx, SUBS_SHADOW_TEX_SIZE);
     u8* shadowTexIter;
     s32 i;
@@ -384,7 +394,7 @@ void EnRu_Draw(Actor* thisx, PlayState* play) {
 
     POLY_OPA_DISP =
         SkelAnime_DrawFlex(play, this->skelAnime.skeleton, this->skelAnime.jointTable, this->skelAnime.dListCount,
-                           EnRu_OverrideLimbdraw, EnRu_PostLimbdraw, &this->actor, POLY_OPA_DISP);
+                           EnRu_OverrideLimbDraw, EnRu_PostLimbDraw, &this->actor, POLY_OPA_DISP);
 
     Matrix_RotateXS(0, MTXMODE_NEW);
 

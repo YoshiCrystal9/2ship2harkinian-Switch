@@ -26,7 +26,7 @@ void EffectSsBomb2_DrawFade(PlayState* play, u32 index, EffectSs* this);
 void EffectSsBomb2_DrawLayered(PlayState* play, u32 index, EffectSs* this);
 void EffectSsBomb2_Update(PlayState* play, u32 index, EffectSs* this);
 
-EffectSsInit Effect_Ss_Bomb2_InitVars = {
+EffectSsProfile Effect_Ss_Bomb2_Profile = {
     EFFECT_SS_BOMB2,
     EffectSsBomb2_Init,
 };
@@ -150,8 +150,7 @@ void EffectSsBomb2_DrawLayered(PlayState* play, u32 index, EffectSs* this) {
                 Matrix_Translate(0.0f, 0.0f, depth, MTXMODE_APPLY);
                 Matrix_RotateZF((this->life * 0.02f) + 180.0f, MTXMODE_APPLY);
                 Matrix_Scale(layer2Scale, layer2Scale, layer2Scale, MTXMODE_APPLY);
-                gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(play->state.gfxCtx),
-                          G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+                MATRIX_FINALIZE_AND_LOAD(POLY_XLU_DISP++, play->state.gfxCtx);
                 gSPDisplayList(POLY_XLU_DISP++, gEffBombExplosion3DL);
                 layer2Scale -= 0.15f;
             }
@@ -175,21 +174,21 @@ void EffectSsBomb2_Update(PlayState* play, u32 index, EffectSs* this) {
 
     if ((this->life < 23) && (this->life > 13)) {
         divisor = this->life - 13;
-        this->rPrimColorR = func_800B096C(this->rPrimColorR, 255, divisor);
-        this->rPrimColorG = func_800B096C(this->rPrimColorG, 255, divisor);
-        this->rPrimColorB = func_800B096C(this->rPrimColorB, 150, divisor);
-        this->rPrimColorA = func_800B096C(this->rPrimColorA, 255, divisor);
-        this->rEnvColorR = func_800B096C(this->rEnvColorR, 150, divisor);
-        this->rEnvColorG = func_800B096C(this->rEnvColorG, 0, divisor);
-        this->rEnvColorB = func_800B096C(this->rEnvColorB, 0, divisor);
+        this->rPrimColorR = EffectSs_LerpInv(this->rPrimColorR, 255, divisor);
+        this->rPrimColorG = EffectSs_LerpInv(this->rPrimColorG, 255, divisor);
+        this->rPrimColorB = EffectSs_LerpInv(this->rPrimColorB, 150, divisor);
+        this->rPrimColorA = EffectSs_LerpInv(this->rPrimColorA, 255, divisor);
+        this->rEnvColorR = EffectSs_LerpInv(this->rEnvColorR, 150, divisor);
+        this->rEnvColorG = EffectSs_LerpInv(this->rEnvColorG, 0, divisor);
+        this->rEnvColorB = EffectSs_LerpInv(this->rEnvColorB, 0, divisor);
     } else if ((this->life < 14) && (this->life > -1)) {
         divisor = this->life + 1;
-        this->rPrimColorR = func_800B096C(this->rPrimColorR, 50, divisor);
-        this->rPrimColorG = func_800B096C(this->rPrimColorG, 50, divisor);
-        this->rPrimColorB = func_800B096C(this->rPrimColorB, 50, divisor);
-        this->rPrimColorA = func_800B096C(this->rPrimColorA, 150, divisor);
-        this->rEnvColorR = func_800B096C(this->rEnvColorR, 10, divisor);
-        this->rEnvColorG = func_800B096C(this->rEnvColorG, 10, divisor);
-        this->rEnvColorB = func_800B096C(this->rEnvColorB, 10, divisor);
+        this->rPrimColorR = EffectSs_LerpInv(this->rPrimColorR, 50, divisor);
+        this->rPrimColorG = EffectSs_LerpInv(this->rPrimColorG, 50, divisor);
+        this->rPrimColorB = EffectSs_LerpInv(this->rPrimColorB, 50, divisor);
+        this->rPrimColorA = EffectSs_LerpInv(this->rPrimColorA, 150, divisor);
+        this->rEnvColorR = EffectSs_LerpInv(this->rEnvColorR, 10, divisor);
+        this->rEnvColorG = EffectSs_LerpInv(this->rEnvColorG, 10, divisor);
+        this->rEnvColorB = EffectSs_LerpInv(this->rEnvColorB, 10, divisor);
     }
 }

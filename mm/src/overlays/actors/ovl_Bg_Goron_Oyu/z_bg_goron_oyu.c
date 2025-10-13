@@ -7,9 +7,7 @@
 #include "z_bg_goron_oyu.h"
 #include "objects/object_oyu/object_oyu.h"
 
-#define FLAGS (ACTOR_FLAG_10 | ACTOR_FLAG_20)
-
-#define THIS ((BgGoronOyu*)thisx)
+#define FLAGS (ACTOR_FLAG_UPDATE_CULLING_DISABLED | ACTOR_FLAG_DRAW_CULLING_DISABLED)
 
 void BgGoronOyu_Init(Actor* thisx, PlayState* play);
 void BgGoronOyu_Destroy(Actor* thisx, PlayState* play);
@@ -23,7 +21,7 @@ void BgGoronOyu_UpdateWaterBoxInfo(BgGoronOyu* this, PlayState* play);
 void BgGoronOyu_SpawnEffects(BgGoronOyu* this, PlayState* play);
 void func_80B40160(BgGoronOyu* this, PlayState* play);
 
-ActorInit Bg_Goron_Oyu_InitVars = {
+ActorProfile Bg_Goron_Oyu_Profile = {
     /**/ ACTOR_BG_GORON_OYU,
     /**/ ACTORCAT_BG,
     /**/ FLAGS,
@@ -89,8 +87,8 @@ void func_80B401F8(BgGoronOyu* this, PlayState* play) {
     player = GET_PLAYER(play);
     Math_Vec3f_DistXYZAndStoreDiff(&this->waterBoxPos, &player->actor.world.pos, &dist);
 
-    if (dist.x >= 0.0f && dist.x <= this->waterBoxXLength && dist.z >= 0.0f && dist.z <= this->waterBoxZLength &&
-        fabsf(dist.y) < 100.0f && player->actor.depthInWater > 12.0f) {
+    if ((dist.x >= 0.0f) && (dist.x <= this->waterBoxXLength) && (dist.z >= 0.0f) &&
+        (dist.z <= this->waterBoxZLength) && (fabsf(dist.y) < 100.0f) && (player->actor.depthInWater > 12.0f)) {
         Actor_OfferGetItem(&this->dyna.actor, play, GI_MAX, this->dyna.actor.xzDistToPlayer,
                            fabsf(this->dyna.actor.playerHeightRel));
     }
@@ -148,7 +146,7 @@ void BgGoronOyu_SpawnEffects(BgGoronOyu* this, PlayState* play) {
 
 void BgGoronOyu_Init(Actor* thisx, PlayState* play) {
     s32 pad;
-    BgGoronOyu* this = THIS;
+    BgGoronOyu* this = (BgGoronOyu*)thisx;
     CollisionHeader* colHeader = NULL;
 
     Actor_SetScale(&this->dyna.actor, 0.1f);
@@ -169,13 +167,13 @@ void BgGoronOyu_Init(Actor* thisx, PlayState* play) {
 }
 
 void BgGoronOyu_Destroy(Actor* thisx, PlayState* play) {
-    BgGoronOyu* this = THIS;
+    BgGoronOyu* this = (BgGoronOyu*)thisx;
 
     DynaPoly_DeleteBgActor(play, &play->colCtx.dyna, this->dyna.bgId);
 }
 
 void BgGoronOyu_Update(Actor* thisx, PlayState* play) {
-    BgGoronOyu* this = THIS;
+    BgGoronOyu* this = (BgGoronOyu*)thisx;
 
     this->actionFunc(this, play);
     BgGoronOyu_SpawnEffects(this, play);
@@ -186,7 +184,7 @@ void BgGoronOyu_Draw(Actor* thisx, PlayState* play) {
 
     Gfx_SetupDL25_Xlu(play->state.gfxCtx);
     AnimatedMat_Draw(play, Lib_SegmentedToVirtual(gGoronGraveyardHotSpringWaterTexAnim));
-    gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    MATRIX_FINALIZE_AND_LOAD(POLY_XLU_DISP++, play->state.gfxCtx);
     gSPDisplayList(POLY_XLU_DISP++, &gGoronGraveyardHotSpringWaterEmptyDL);
     gSPDisplayList(POLY_XLU_DISP++, &gGoronGraveyardHotSpringWaterDL);
 

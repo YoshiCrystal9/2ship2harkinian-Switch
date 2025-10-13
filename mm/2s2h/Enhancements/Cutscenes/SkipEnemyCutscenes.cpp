@@ -16,25 +16,24 @@ extern "C" {
 void EnDeath_PlayCutscene(EnDeath* enDeath, PlayState* play);
 void EnDeath_DeathCutscenePart1(EnDeath* enDeath, PlayState* play);
 void EnDeath_SetupDeathCutscenePart2(EnDeath* enDeath, PlayState* play);
-void func_809F2EE8(Boss06* boss06, PlayState* play);
-void func_809F24C8(Boss06* boss06, PlayState* play);
-void func_809B3E9C(EnKnight* enKnight, PlayState* play);
-void func_809B71DC(EnKnight* enKnight, PlayState* play);
-void func_809B6764(EnKnight* enKnight, PlayState* play);
+void Boss06_CurtainDestroyed(Boss06* boss06, PlayState* play);
+void Boss06_CurtainBurningCutscene(Boss06* boss06, PlayState* play);
+void EnKnight_SetupWait(EnKnight* enKnight, PlayState* play);
+void EnKnight_IgosSitting(EnKnight* enKnight, PlayState* play);
 void EnWiz_SetupDisappear(EnWiz* enWiz);
 void EnBigpo_SetupIdleFlying(EnBigpo* enBigpo);
 void EnBigpo_DrawMainBigpo(Actor* actor, PlayState* play);
 void EnBigslime_CallMinislime(EnBigslime* enBigslime, PlayState* play);
 void EnBigslime_GekkoSfxOutsideBigslime(EnBigslime* enBigslime, u16 sfxId);
-void func_80B872A4(EnKaizoku* enKaizoku);
+void EnKaizoku_SetupReady(EnKaizoku* enKaizoku);
 void EnKaizoku_Draw(Actor* actor, PlayState* play);
-void func_80B8971C(EnKaizoku* enKaizoku, PlayState* play);
-void func_80B86B58(EnKaizoku* enKaizoku);
-void func_80B86B74(EnKaizoku* enKaizoku, PlayState* play);
+void EnKaizoku_DefeatKnockdown(EnKaizoku* enKaizoku, PlayState* play);
+void EnKaizoku_SetupPlayerWinCutscene(EnKaizoku* enKaizoku);
+void EnKaizoku_PlayerWinCutscene(EnKaizoku* enKaizoku, PlayState* play);
 void EnKaizoku_ChangeAnim(EnKaizoku* enKaizoku, EnKaizokuAnimation animIndex);
 void EnWiz_SetupSecondPhaseCutscene(EnWiz* enWiz, PlayState* play);
-extern EnKnight* D_809BEFD4;
-extern EnKnight* D_809BEFD8;
+extern EnKnight* sThinKnightInstance;
+extern EnKnight* sWideKnightInstance;
 }
 
 #define CVAR_NAME "gEnhancements.Cutscenes.SkipEnemyCutscenes"
@@ -49,39 +48,42 @@ static s16 worldRotY = 0;
 
 void RegisterSkipEnemyIntros() {
     // Odolwa
-    COND_ID_HOOK(ShouldActorInit, ACTOR_BOSS_01, CVAR, [](Actor* actor, bool* should) { SET_EVENTINF(EVENTINF_54); });
+    COND_ID_HOOK(ShouldActorInit, ACTOR_BOSS_01, CVAR,
+                 [](Actor* actor, bool* should) { SET_EVENTINF(EVENTINF_INTRO_CS_WATCHED_ODOLWA); });
 
     // Goht
     COND_ID_HOOK(ShouldActorInit, ACTOR_BOSS_HAKUGIN, CVAR, [](Actor* actor, bool* should) {
         /*
-         * EVENTINF_62 gets set after seeing the boss lair intro cutscene.
-         * EVENTINF_53 gets set after melting the ice (not skipped here, as that would skip the ice melting
-         * requirement).
+         * EVENTINF_ENTR_CS_WATCHED_GOHT gets set after seeing the boss lair intro cutscene.
+         * EVENTINF_INTRO_CS_WATCHED_GOHT gets set after melting the ice (not skipped here, as that would skip the ice
+         * melting requirement).
          */
-        SET_EVENTINF(EVENTINF_62);
+        SET_EVENTINF(EVENTINF_ENTR_CS_WATCHED_GOHT);
     });
 
     // Gyorg
-    COND_ID_HOOK(ShouldActorInit, ACTOR_BOSS_03, CVAR, [](Actor* actor, bool* should) { SET_EVENTINF(EVENTINF_56); });
+    COND_ID_HOOK(ShouldActorInit, ACTOR_BOSS_03, CVAR,
+                 [](Actor* actor, bool* should) { SET_EVENTINF(EVENTINF_INTRO_CS_WATCHED_GYORG); });
 
     // Twinmold
-    COND_ID_HOOK(ShouldActorInit, ACTOR_BOSS_02, CVAR, [](Actor* actor, bool* should) { SET_EVENTINF(EVENTINF_55); });
+    COND_ID_HOOK(ShouldActorInit, ACTOR_BOSS_02, CVAR,
+                 [](Actor* actor, bool* should) { SET_EVENTINF(EVENTINF_INTRO_CS_WATCHED_TWINMOLD); });
 
     // Majora
     COND_ID_HOOK(ShouldActorInit, ACTOR_BOSS_07, CVAR,
-                 [](Actor* actor, bool* should) { gSaveContext.eventInf[6] |= 2; });
+                 [](Actor* actor, bool* should) { SET_EVENTINF(EVENTINF_INTRO_CS_WATCHED_MAJORA); });
 
     // Igos du Ikana (and lackeys)
     COND_ID_HOOK(ShouldActorInit, ACTOR_EN_KNIGHT, CVAR, [](Actor* actor, bool* should) {
         // In the credits, this sceneLayer will be 1. Do not set this flag in that case, or things will break.
         if (gSaveContext.sceneLayer == 0) {
-            SET_EVENTINF(EVENTINF_57);
+            SET_EVENTINF(EVENTINF_INTRO_CS_WATCHED_IGOS_DU_IKANA);
         }
     });
 
     // Gomess
     COND_ID_HOOK(ShouldActorInit, ACTOR_EN_DEATH, CVAR,
-                 [](Actor* actor, bool* should) { gSaveContext.eventInf[6] |= 8; });
+                 [](Actor* actor, bool* should) { SET_EVENTINF(EVENTINF_INTRO_CS_WATCHED_GOMESS); });
 
     // Stone Tower Temple Garo Master
     COND_ID_HOOK(ShouldActorInit, ACTOR_EN_JSO2, CVAR, [](Actor* actor, bool* should) {
@@ -106,7 +108,8 @@ void RegisterSkipEnemyIntros() {
     });
 
     // Wart
-    COND_ID_HOOK(ShouldActorInit, ACTOR_BOSS_04, CVAR, [](Actor* actor, bool* should) { SET_EVENTINF(EVENTINF_60); });
+    COND_ID_HOOK(ShouldActorInit, ACTOR_BOSS_04, CVAR,
+                 [](Actor* actor, bool* should) { SET_EVENTINF(EVENTINF_INTRO_CS_WATCHED_WART); });
 
     // Big Poe (Beneath the Well)
     COND_ID_HOOK(OnActorInit, ACTOR_EN_BIGPO, CVAR, [](Actor* actor) {
@@ -135,22 +138,22 @@ void RegisterSkipEnemyIntros() {
             // Pirate already defeated, don't do anything
             return;
         }
-        enKaizoku->unk_59C = 0;
-        enKaizoku->picto.actor.flags &= ~ACTOR_FLAG_100000;
-        enKaizoku->picto.actor.flags &= ~ACTOR_FLAG_CANT_LOCK_ON;
-        enKaizoku->picto.actor.flags |= ACTOR_FLAG_TARGETABLE;
+        enKaizoku->cutsceneState = 0;
+        enKaizoku->picto.actor.flags &= ~ACTOR_FLAG_FREEZE_EXCEPTION;
+        enKaizoku->picto.actor.flags &= ~ACTOR_FLAG_LOCK_ON_DISABLED;
+        enKaizoku->picto.actor.flags |= ACTOR_FLAG_ATTENTION_ENABLED;
         enKaizoku->picto.actor.draw = EnKaizoku_Draw;
         enKaizoku->picto.actor.gravity = -2.0f;
-        // Swords
-        enKaizoku->unk_2F8.y = 1.0f;
-        enKaizoku->unk_2F8.z = 1.0f;
-        enKaizoku->unk_304.x = 1.0f;
-        enKaizoku->unk_304.y = 1.0f;
-        enKaizoku->unk_304.z = 1.0f;
-        enKaizoku->unk_2D8 = 0; // Flag for updating animation
+        enKaizoku->swordScaleRight.x = 1.0f;
+        enKaizoku->swordScaleRight.y = 1.0f;
+        enKaizoku->swordScaleRight.z = 1.0f;
+        enKaizoku->swordScaleLeft.x = 1.0f;
+        enKaizoku->swordScaleLeft.y = 1.0f;
+        enKaizoku->swordScaleLeft.z = 1.0f;
+        enKaizoku->animationsDisabled = 0; // Flag for updating animation
         Audio_SetMainBgmVolume(0x7F, 0);
         Audio_PlayBgm_StorePrevBgm(NA_BGM_MINI_BOSS);
-        func_80B872A4(enKaizoku);
+        EnKaizoku_SetupReady(enKaizoku);
     });
 
     // Wizrobe
@@ -290,10 +293,10 @@ void RegisterSkipEnemyCutscenes() {
 
     COND_ID_HOOK(ShouldActorUpdate, ACTOR_EN_KAIZOKU, CVAR, [](Actor* actor, bool* should) {
         EnKaizoku* enKaizoku = (EnKaizoku*)actor;
-        if (enKaizoku->actionFunc == func_80B8971C) { // Defeat cutscene
+        if (enKaizoku->actionFunc == EnKaizoku_DefeatKnockdown) {
             // Stop pirate from constantly rotating to face the player
             enKaizoku->picto.actor.yawTowardsPlayer = enKaizoku->picto.actor.shape.rot.y;
-        } else if (enKaizoku->actionFunc == func_80B86B74) { // Deku Nut escape
+        } else if (enKaizoku->actionFunc == EnKaizoku_PlayerWinCutscene) {
             // Store player's rotation values to prevent player from rotating to face the pirate
             Player* player = GET_PLAYER(gPlayState);
             shapeRotY = player->actor.shape.rot.y;
@@ -303,14 +306,14 @@ void RegisterSkipEnemyCutscenes() {
 
     COND_ID_HOOK(OnActorUpdate, ACTOR_EN_KAIZOKU, CVAR, [](Actor* actor) {
         EnKaizoku* enKaizoku = (EnKaizoku*)actor;
-        if (enKaizoku->actionFunc == func_80B8971C) { // Defeat cutscene
+        if (enKaizoku->actionFunc == EnKaizoku_DefeatKnockdown) {
             if (enKaizoku->skelAnime.curFrame >= 25.0f) {
-                enKaizoku->unk_2D8 = 0;
-                enKaizoku->unk_59C = 2; // Skip actor+player position change
-                func_80B86B58(enKaizoku);
-                EnKaizoku_ChangeAnim(enKaizoku, EN_KAIZOKU_ANIM_18); // Throw Deku Nut
+                enKaizoku->animationsDisabled = false;
+                enKaizoku->cutsceneState = 2; // Skip actor+player position change
+                EnKaizoku_SetupPlayerWinCutscene(enKaizoku);
+                EnKaizoku_ChangeAnim(enKaizoku, KAIZOKU_ANIM_THROW_FLASH);
             }
-        } else if (enKaizoku->actionFunc == func_80B86B74) { // Deku Nut escape
+        } else if (enKaizoku->actionFunc == EnKaizoku_PlayerWinCutscene) {
             // Restore player's rotation; do not constantly face pirate
             Player* player = GET_PLAYER(gPlayState);
             player->actor.shape.rot.y = shapeRotY;
@@ -334,20 +337,20 @@ void RegisterSkipEnemyCutscenes() {
     COND_ID_HOOK(OnActorUpdate, ACTOR_BOSS_06, CVAR, [](Actor* actor) {
         Boss06* boss06 = (Boss06*)actor;
         // Igos du Ikana curtain burning. Just instantly snap to the post-burned state
-        if (boss06->actionFunc == func_809F24C8) {
-            boss06->unk_1C9 = 2;
-            boss06->unk_1CA = 0;
-            boss06->unk_1B4 = 0.0f;
-            boss06->unk_1B0 = 0.0f;
-            boss06->unk_144 = 2;
-            boss06->unk_1A4 = 0.0f;
-            boss06->unk_1A0 = 0.0f;
-            boss06->unk_1DC = 18.0f;
-            boss06->unk_1E0 = 255.0f;
-            boss06->unk_19C = 1.0f;
+        if (boss06->actionFunc == Boss06_CurtainBurningCutscene) {
+            boss06->csState = 2; // BOSS06_CS_STATE_PAN_OVER_LIGHT_RAY
+            boss06->csFrameCount = 0;
+            boss06->arrowHitPos.y = 0.0f;
+            boss06->arrowHitPos.x = 0.0f;
+            boss06->drawFlags = 2; // BOSS06_DRAWFLAG_LIGHT_RAY
+            boss06->lightRayBaseOffsetZ = 0.0f;
+            boss06->lightRayTopVerticesOffset = 0.0f;
+            boss06->lightOrbScale = 18.0f;
+            boss06->lightOrbAlphaFactor = 255.0f;
+            boss06->lightRayBrightness = 1.0f;
             Actor_SpawnAsChild(&gPlayState->actorCtx, actor, gPlayState, ACTOR_MIR_RAY2, actor->world.pos.x,
                                actor->world.pos.y - 200.0f, actor->world.pos.z - 170.0f, 15, 0, 0, 1);
-            boss06->actionFunc = func_809F2EE8;
+            boss06->actionFunc = Boss06_CurtainDestroyed;
         }
     });
 
@@ -355,18 +358,19 @@ void RegisterSkipEnemyCutscenes() {
     COND_ID_HOOK(ShouldActorUpdate, ACTOR_EN_KNIGHT, CVAR, [](Actor* actor, bool* should) {
         EnKnight* enKnight = (EnKnight*)actor;
         // Killed two lackeys, so ready Igos for battle
-        if (enKnight->actionFunc == func_809B6764) {
+        if (enKnight->actionFunc == EnKnight_IgosSitting) {
             // This is Igos, and the two lackeys have been slain. Skip cutscene, start next phase
-            if (D_809BEFD4->actor.draw == NULL && D_809BEFD8->actor.draw == NULL) {
-                enKnight->unk17A = enKnight->unk178 = enKnight->unk176 = enKnight->unk174 = 0;
-                enKnight->unk684 = 0;
-                enKnight->unk6A4 = 0.0f;
-                enKnight->unk46C = enKnight->unk470 = 1.0f; // Show sword and shield
-                enKnight->unk688 = 0;
-                func_809B3E9C(enKnight, gPlayState);
-                enKnight->unk14A[2] = 0x12C;
-                enKnight->unk152 = 1;
-                enKnight->actor.flags |= 1;
+            if (sThinKnightInstance->actor.draw == NULL && sWideKnightInstance->actor.draw == NULL) {
+                enKnight->rightLegLowerRotation = enKnight->leftLegLowerRotation = enKnight->rightLegUpperRotation =
+                    enKnight->leftLegUpperRotation = 0;
+                enKnight->csTimer = 0;
+                enKnight->csStepValue = 0.0f;
+                enKnight->swordScale = enKnight->shieldScale = 1.0f;
+                enKnight->csState = 0;
+                EnKnight_SetupWait(enKnight, gPlayState);
+                enKnight->timers[2] = 300;
+                enKnight->doBgChecks = true;
+                enKnight->actor.flags |= ACTOR_FLAG_ATTENTION_ENABLED;
                 enKnight->actor.gravity = -1.5f;
             }
         }

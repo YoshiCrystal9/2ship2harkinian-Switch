@@ -36,9 +36,9 @@
 
 #include "2s2h/BenPort.h"
 
-#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_UNFRIENDLY | ACTOR_FLAG_10 | ACTOR_FLAG_20)
-
-#define THIS ((Boss01*)thisx)
+#define FLAGS                                                                                 \
+    (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_HOSTILE | ACTOR_FLAG_UPDATE_CULLING_DISABLED | \
+     ACTOR_FLAG_DRAW_CULLING_DISABLED)
 
 #define ODOLWA_EFFECT_COUNT 100
 
@@ -238,8 +238,8 @@ typedef enum {
     // Deals damage and has no special effect.
     /* 0xD */ ODOLWA_DMGEFF_DAMAGE,
 
-    // Deals damage and checks the timer that tracks how long Odolwa should be in his damaged state. If the timer is 7
-    // or more, it will reset the timer to 20 frames keep Odolwa in the damaged state for longer. If the timer is 6 or
+    // Deals damage and checks the timer that tracks how long Odolwa should be in his damaged state. If the timer is 5
+    // or more, it will reset the timer to 20 frames keep Odolwa in the damaged state for longer. If the timer is 4 or
     // less, it will disable Odolwa's collision for 20 frames to ensure he can jump away without taking further damage.
     /* 0xE */ ODOLWA_DMGEFF_DAMAGE_TIMER_CHECK,
 
@@ -348,33 +348,33 @@ static DamageTable sBugDamageTable = {
 static ColliderJntSphElementInit sSwordColliderJntSphElementsInit[3] = {
     {
         {
-            ELEMTYPE_UNK2,
+            ELEM_MATERIAL_UNK2,
             { 0xF7CFFFFF, 0x04, 0x04 },
             { 0xF7CFFFFF, 0x00, 0x00 },
-            TOUCH_ON | TOUCH_SFX_NORMAL,
-            BUMP_ON,
+            ATELEM_ON | ATELEM_SFX_NORMAL,
+            ACELEM_ON,
             OCELEM_ON,
         },
         { ODOLWA_LIMB_NONE, { { 0, 0, 0 }, 35 }, 100 },
     },
     {
         {
-            ELEMTYPE_UNK2,
+            ELEM_MATERIAL_UNK2,
             { 0xF7CFFFFF, 0x04, 0x04 },
             { 0xF7CFFFFF, 0x00, 0x00 },
-            TOUCH_ON | TOUCH_SFX_NORMAL,
-            BUMP_ON,
+            ATELEM_ON | ATELEM_SFX_NORMAL,
+            ACELEM_ON,
             OCELEM_ON,
         },
         { ODOLWA_LIMB_NONE, { { 0, 0, 0 }, 35 }, 100 },
     },
     {
         {
-            ELEMTYPE_UNK2,
+            ELEM_MATERIAL_UNK2,
             { 0xF7CFFFFF, 0x04, 0x04 },
             { 0xF7CFFFFF, 0x00, 0x00 },
-            TOUCH_ON | TOUCH_SFX_NORMAL,
-            BUMP_ON,
+            ATELEM_ON | ATELEM_SFX_NORMAL,
+            ACELEM_ON,
             OCELEM_ON,
         },
         { ODOLWA_LIMB_NONE, { { 0, 0, 0 }, 70 }, 100 },
@@ -383,7 +383,7 @@ static ColliderJntSphElementInit sSwordColliderJntSphElementsInit[3] = {
 
 static ColliderJntSphInit sSwordColliderJntSphInit = {
     {
-        COLTYPE_METAL,
+        COL_MATERIAL_METAL,
         AT_ON | AT_TYPE_ENEMY,
         AC_ON | AC_HARD | AC_TYPE_PLAYER,
         OC1_ON | OC1_TYPE_PLAYER,
@@ -398,11 +398,11 @@ static ColliderJntSphInit sSwordColliderJntSphInit = {
 static ColliderJntSphElementInit sShieldColliderJntSphElementsInit[1] = {
     {
         {
-            ELEMTYPE_UNK2,
+            ELEM_MATERIAL_UNK2,
             { 0xF7CFFFFF, 0x00, 0x04 },
             { 0xF7CFFFFF, 0x00, 0x00 },
-            TOUCH_ON | TOUCH_SFX_NORMAL,
-            BUMP_ON,
+            ATELEM_ON | ATELEM_SFX_NORMAL,
+            ACELEM_ON,
             OCELEM_ON,
         },
         { ODOLWA_LIMB_NONE, { { 0, 0, 0 }, 36 }, 100 },
@@ -411,7 +411,7 @@ static ColliderJntSphElementInit sShieldColliderJntSphElementsInit[1] = {
 
 static ColliderJntSphInit sShieldColliderJntSphInit = {
     {
-        COLTYPE_METAL,
+        COL_MATERIAL_METAL,
         AT_ON | AT_TYPE_ENEMY,
         AC_ON | AC_HARD | AC_TYPE_PLAYER,
         OC1_ON | OC1_TYPE_PLAYER,
@@ -426,121 +426,121 @@ static ColliderJntSphInit sShieldColliderJntSphInit = {
 static ColliderJntSphElementInit sBodyColliderJntSphElementsInit[11] = {
     {
         {
-            ELEMTYPE_UNK3,
+            ELEM_MATERIAL_UNK3,
             { 0xF7CFFFFF, 0x00, 0x04 },
             { 0xF7CFFFFF, 0x00, 0x00 },
-            TOUCH_ON | TOUCH_SFX_NORMAL,
-            BUMP_ON,
+            ATELEM_ON | ATELEM_SFX_NORMAL,
+            ACELEM_ON,
             OCELEM_ON,
         },
         { ODOLWA_LIMB_NONE, { { 0, 0, 0 }, 20 }, 100 },
     },
     {
         {
-            ELEMTYPE_UNK3,
+            ELEM_MATERIAL_UNK3,
             { 0xF7CFFFFF, 0x00, 0x04 },
             { 0xF7CFFFFF, 0x00, 0x00 },
-            TOUCH_ON | TOUCH_SFX_NORMAL,
-            BUMP_ON,
+            ATELEM_ON | ATELEM_SFX_NORMAL,
+            ACELEM_ON,
             OCELEM_ON,
         },
         { ODOLWA_LIMB_ROOT, { { 0, 0, 0 }, 30 }, 100 },
     },
     {
         {
-            ELEMTYPE_UNK3,
+            ELEM_MATERIAL_UNK3,
             { 0xF7CFFFFF, 0x00, 0x04 },
             { 0xF7CFFFFF, 0x00, 0x00 },
-            TOUCH_ON | TOUCH_SFX_NORMAL,
-            BUMP_ON,
+            ATELEM_ON | ATELEM_SFX_NORMAL,
+            ACELEM_ON,
             OCELEM_ON,
         },
         { ODOLWA_LIMB_ROOT, { { 0, 0, 0 }, 25 }, 100 },
     },
     {
         {
-            ELEMTYPE_UNK3,
+            ELEM_MATERIAL_UNK3,
             { 0xF7CFFFFF, 0x00, 0x04 },
             { 0xF7CFFFFF, 0x00, 0x00 },
-            TOUCH_ON | TOUCH_SFX_NORMAL,
-            BUMP_ON,
+            ATELEM_ON | ATELEM_SFX_NORMAL,
+            ACELEM_ON,
             OCELEM_ON,
         },
         { ODOLWA_LIMB_ROOT, { { 0, 0, 0 }, 15 }, 100 },
     },
     {
         {
-            ELEMTYPE_UNK3,
+            ELEM_MATERIAL_UNK3,
             { 0xF7CFFFFF, 0x00, 0x04 },
             { 0xF7CFFFFF, 0x00, 0x00 },
-            TOUCH_ON | TOUCH_SFX_NORMAL,
-            BUMP_ON,
+            ATELEM_ON | ATELEM_SFX_NORMAL,
+            ACELEM_ON,
             OCELEM_ON,
         },
         { ODOLWA_LIMB_ROOT, { { 0, 0, 0 }, 15 }, 100 },
     },
     {
         {
-            ELEMTYPE_UNK3,
+            ELEM_MATERIAL_UNK3,
             { 0xF7CFFFFF, 0x00, 0x04 },
             { 0xF7CFFFFF, 0x00, 0x00 },
-            TOUCH_ON | TOUCH_SFX_NORMAL,
-            BUMP_ON,
+            ATELEM_ON | ATELEM_SFX_NORMAL,
+            ACELEM_ON,
             OCELEM_ON,
         },
         { ODOLWA_LIMB_ROOT, { { 0, 0, 0 }, 15 }, 100 },
     },
     {
         {
-            ELEMTYPE_UNK3,
+            ELEM_MATERIAL_UNK3,
             { 0xF7CFFFFF, 0x00, 0x04 },
             { 0xF7CFFFFF, 0x00, 0x00 },
-            TOUCH_ON | TOUCH_SFX_NORMAL,
-            BUMP_ON,
+            ATELEM_ON | ATELEM_SFX_NORMAL,
+            ACELEM_ON,
             OCELEM_ON,
         },
         { ODOLWA_LIMB_ROOT, { { 0, 0, 0 }, 15 }, 100 },
     },
     {
         {
-            ELEMTYPE_UNK3,
+            ELEM_MATERIAL_UNK3,
             { 0xF7CFFFFF, 0x00, 0x04 },
             { 0xF7CFFFFF, 0x00, 0x00 },
-            TOUCH_ON | TOUCH_SFX_NORMAL,
-            BUMP_ON,
+            ATELEM_ON | ATELEM_SFX_NORMAL,
+            ACELEM_ON,
             OCELEM_ON,
         },
         { ODOLWA_LIMB_ROOT, { { 0, 0, 0 }, 15 }, 100 },
     },
     {
         {
-            ELEMTYPE_UNK3,
+            ELEM_MATERIAL_UNK3,
             { 0xF7CFFFFF, 0x00, 0x04 },
             { 0xF7CFFFFF, 0x00, 0x00 },
-            TOUCH_ON | TOUCH_SFX_NORMAL,
-            BUMP_ON,
+            ATELEM_ON | ATELEM_SFX_NORMAL,
+            ACELEM_ON,
             OCELEM_ON,
         },
         { ODOLWA_LIMB_ROOT, { { 0, 0, 0 }, 15 }, 100 },
     },
     {
         {
-            ELEMTYPE_UNK3,
+            ELEM_MATERIAL_UNK3,
             { 0xF7CFFFFF, 0x00, 0x04 },
             { 0xF7CFFFFF, 0x00, 0x00 },
-            TOUCH_ON | TOUCH_SFX_NORMAL,
-            BUMP_ON,
+            ATELEM_ON | ATELEM_SFX_NORMAL,
+            ACELEM_ON,
             OCELEM_ON,
         },
         { ODOLWA_LIMB_ROOT, { { 0, 0, 0 }, 15 }, 100 },
     },
     {
         {
-            ELEMTYPE_UNK3,
+            ELEM_MATERIAL_UNK3,
             { 0xF7CFFFFF, 0x00, 0x04 },
             { 0xF7CFFFFF, 0x00, 0x00 },
-            TOUCH_ON | TOUCH_SFX_NORMAL,
-            BUMP_ON,
+            ATELEM_ON | ATELEM_SFX_NORMAL,
+            ACELEM_ON,
             OCELEM_ON,
         },
         { ODOLWA_LIMB_ROOT, { { 0, 0, 0 }, 15 }, 100 },
@@ -549,7 +549,7 @@ static ColliderJntSphElementInit sBodyColliderJntSphElementsInit[11] = {
 
 static ColliderJntSphInit sBodyColliderJntSphInit = {
     {
-        COLTYPE_HIT3,
+        COL_MATERIAL_HIT3,
         AT_ON | AT_TYPE_ENEMY,
         AC_ON | AC_TYPE_PLAYER,
         OC1_ON | OC1_TYPE_PLAYER,
@@ -564,22 +564,22 @@ static ColliderJntSphInit sBodyColliderJntSphInit = {
 static ColliderJntSphElementInit sKickAndShieldBashColliderJntSphElementsInit[2] = {
     {
         {
-            ELEMTYPE_UNK3,
+            ELEM_MATERIAL_UNK3,
             { 0xF7CFFFFF, 0x04, 0x04 },
             { 0xF7CFFFFF, 0x00, 0x00 },
-            TOUCH_ON | TOUCH_SFX_HARD,
-            BUMP_ON,
+            ATELEM_ON | ATELEM_SFX_HARD,
+            ACELEM_ON,
             OCELEM_ON,
         },
         { ODOLWA_LIMB_NONE, { { 0, 0, 0 }, 36 }, 100 },
     },
     {
         {
-            ELEMTYPE_UNK3,
+            ELEM_MATERIAL_UNK3,
             { 0xF7CFFFFF, 0x04, 0x04 },
             { 0xF7CFFFFF, 0x00, 0x00 },
-            TOUCH_ON | TOUCH_SFX_HARD,
-            BUMP_ON,
+            ATELEM_ON | ATELEM_SFX_HARD,
+            ACELEM_ON,
             OCELEM_ON,
         },
         { ODOLWA_LIMB_NONE, { { 0, 0, 0 }, 36 }, 100 },
@@ -588,7 +588,7 @@ static ColliderJntSphElementInit sKickAndShieldBashColliderJntSphElementsInit[2]
 
 static ColliderJntSphInit sKickAndShieldBashColliderJntSphInit = {
     {
-        COLTYPE_HIT3,
+        COL_MATERIAL_HIT3,
         AT_ON | AT_TYPE_ENEMY,
         AC_ON | AC_TYPE_PLAYER,
         OC1_ON | OC1_TYPE_PLAYER,
@@ -601,7 +601,7 @@ static ColliderJntSphInit sKickAndShieldBashColliderJntSphInit = {
 
 static ColliderCylinderInit sBugACColliderCylinderInit = {
     {
-        COLTYPE_HIT3,
+        COL_MATERIAL_HIT3,
         AT_ON | AT_TYPE_ENEMY,
         AC_ON | AC_TYPE_PLAYER,
         OC1_ON | OC1_TYPE_ALL,
@@ -609,11 +609,11 @@ static ColliderCylinderInit sBugACColliderCylinderInit = {
         COLSHAPE_CYLINDER,
     },
     {
-        ELEMTYPE_UNK3,
+        ELEM_MATERIAL_UNK3,
         { 0xF7CFFFFF, 0x00, 0x04 },
         { 0xF7FFFFFF, 0x00, 0x00 },
-        TOUCH_ON | TOUCH_SFX_NORMAL,
-        BUMP_ON,
+        ATELEM_ON | ATELEM_SFX_NORMAL,
+        ACELEM_ON,
         OCELEM_ON,
     },
     { 15, 15, 10, { 0, 0, 0 } },
@@ -621,7 +621,7 @@ static ColliderCylinderInit sBugACColliderCylinderInit = {
 
 static ColliderCylinderInit sBugATColliderCylinderInit = {
     {
-        COLTYPE_HIT3,
+        COL_MATERIAL_HIT3,
         AT_ON | AT_TYPE_ENEMY,
         AC_ON | AC_TYPE_PLAYER,
         OC1_ON | OC1_TYPE_ALL,
@@ -629,17 +629,17 @@ static ColliderCylinderInit sBugATColliderCylinderInit = {
         COLSHAPE_CYLINDER,
     },
     {
-        ELEMTYPE_UNK3,
+        ELEM_MATERIAL_UNK3,
         { 0xF7CFFFFF, 0x00, 0x04 },
         { 0xF7FFFFFF, 0x00, 0x00 },
-        TOUCH_ON | TOUCH_SFX_NORMAL,
-        BUMP_ON,
+        ATELEM_ON | ATELEM_SFX_NORMAL,
+        ACELEM_ON,
         OCELEM_ON,
     },
     { 8, 15, 10, { 0, 0, 0 } },
 };
 
-ActorInit Boss_01_InitVars = {
+ActorProfile Boss_01_Profile = {
     /**/ ACTOR_BOSS_01,
     /**/ ACTORCAT_BOSS,
     /**/ FLAGS,
@@ -870,7 +870,7 @@ void Boss01_SpawnDustAtFeet(Boss01* this, PlayState* play, u8 dustSpawnFrameMask
 }
 
 void Boss01_Init(Actor* thisx, PlayState* play) {
-    Boss01* this = THIS;
+    Boss01* this = (Boss01*)thisx;
     s32 pad;
     s16 i;
 
@@ -899,7 +899,7 @@ void Boss01_Init(Actor* thisx, PlayState* play) {
         this->timers[TIMER_AFTERIMAGE_DESPAWN] = ODOLWA_GET_AFTERIMAGE_DESPAWN_TIMER(&this->actor);
         this->actor.world.rot.z = 0;
         this->actor.draw = Boss01_Afterimage_Draw;
-        this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
+        this->actor.flags &= ~ACTOR_FLAG_ATTENTION_ENABLED;
     } else {
         if (CHECK_WEEKEVENTREG(WEEKEVENTREG_CLEARED_WOODFALL_TEMPLE)) {
             Actor_SpawnAsChild(&play->actorCtx, &this->actor, play, ACTOR_DOOR_WARP1, 0.0f, 0.0f, 0.0f, 0, 0, 0,
@@ -921,7 +921,7 @@ void Boss01_Init(Actor* thisx, PlayState* play) {
         }
 
         this->actor.hintId = TATL_HINT_ID_ODOLWA_PHASE_ONE;
-        this->actor.targetMode = TARGET_MODE_5;
+        this->actor.attentionRangeType = ATTENTION_RANGE_5;
         this->actor.colChkInfo.mass = MASS_HEAVY;
         this->actor.colChkInfo.damageTable = &sOdolwaDamageTable;
         this->actor.colChkInfo.health = 20;
@@ -938,7 +938,7 @@ void Boss01_Init(Actor* thisx, PlayState* play) {
         SkelAnime_InitFlex(play, &this->skelAnime, &gOdolwaSkel, &gOdolwaReadyAnim, this->jointTable, this->morphTable,
                            ODOLWA_LIMB_MAX);
 
-        if ((KREG(64) != 0) || CHECK_EVENTINF(EVENTINF_54)) {
+        if ((KREG(64) != 0) || CHECK_EVENTINF(EVENTINF_INTRO_CS_WATCHED_ODOLWA)) {
             Boss01_SetupWait(this, play, ODOLWA_WAIT_READY);
             this->actor.gravity = -2.5f;
             sOdolwaMusicStartTimer = KREG(15) + 20;
@@ -961,16 +961,15 @@ void Boss01_Destroy(Actor* thisx, PlayState* play) {
  * Checks every explosive actor to see if Odolwa is close enough to any of them. If he is, then he'll jump.
  */
 void Boss01_JumpAwayFromExplosive(Boss01* this, PlayState* play) {
-    Actor* explosive = play->actorCtx.actorLists[ACTORCAT_EXPLOSIVES].first;
+    Actor* explosive;
 
-    while (explosive != NULL) {
+    for (explosive = play->actorCtx.actorLists[ACTORCAT_EXPLOSIVES].first; explosive != NULL;
+         explosive = explosive->next) {
         if (sqrtf(SQ(explosive->world.pos.x - this->actor.world.pos.x) +
                   SQ(explosive->world.pos.y - this->actor.world.pos.y) +
                   SQ(explosive->world.pos.z - this->actor.world.pos.z)) < 150.0f) {
             Boss01_SetupJump(this, play, false);
         }
-
-        explosive = explosive->next;
     }
 }
 
@@ -1000,7 +999,7 @@ void Boss01_IntroCutscene(Boss01* this, PlayState* play) {
 
     switch (this->cutsceneState) {
         case ODOLWA_INTRO_CS_STATE_WAITING_FOR_PLAYER_OR_DONE:
-            if ((CutsceneManager_GetCurrentCsId() != -1) || !(player->actor.world.pos.z < 590.0f)) {
+            if ((CutsceneManager_GetCurrentCsId() != CS_ID_NONE) || !(player->actor.world.pos.z < 590.0f)) {
                 break;
             }
 
@@ -1009,7 +1008,7 @@ void Boss01_IntroCutscene(Boss01* this, PlayState* play) {
             this->subCamId = Play_CreateSubCamera(play);
             Play_ChangeCameraStatus(play, CAM_ID_MAIN, CAM_STATUS_WAIT);
             Play_ChangeCameraStatus(play, this->subCamId, CAM_STATUS_ACTIVE);
-            this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
+            this->actor.flags &= ~ACTOR_FLAG_ATTENTION_ENABLED;
             this->cutsceneTimer = 0;
             this->cutsceneState = ODOLWA_INTRO_CS_STATE_LOOK_AT_PLAYER;
             this->subCamUp.x = 0.0f;
@@ -1124,7 +1123,7 @@ void Boss01_IntroCutscene(Boss01* this, PlayState* play) {
             }
 
             if (this->cutsceneTimer == 50) {
-                TitleCard_InitBossName(&play->state, &play->actorCtx.titleCtxt,
+                TitleCard_InitBossName(&play->state, &play->actorCtx.titleCtx,
                                        Lib_SegmentedToVirtual(&gOdolwaTitleCardTex), 160, 180, 128, 40);
             }
 
@@ -1141,8 +1140,8 @@ void Boss01_IntroCutscene(Boss01* this, PlayState* play) {
                 this->subCamId = SUB_CAM_ID_DONE;
                 Cutscene_StopManual(play, &play->csCtx);
                 Player_SetCsActionWithHaltedActors(play, &this->actor, PLAYER_CSACTION_END);
-                this->actor.flags |= ACTOR_FLAG_TARGETABLE;
-                SET_EVENTINF(EVENTINF_54);
+                this->actor.flags |= ACTOR_FLAG_ATTENTION_ENABLED;
+                SET_EVENTINF(EVENTINF_INTRO_CS_WATCHED_ODOLWA);
             }
             break;
 
@@ -1188,7 +1187,7 @@ void Boss01_SummonBugsCutscene(Boss01* this, PlayState* play) {
 
     switch (this->cutsceneState) {
         case ODOLWA_BUG_SUMMONING_CS_STATE_STARTED:
-            if (CutsceneManager_GetCurrentCsId() != -1) {
+            if (CutsceneManager_GetCurrentCsId() != CS_ID_NONE) {
                 break;
             }
 
@@ -1197,7 +1196,7 @@ void Boss01_SummonBugsCutscene(Boss01* this, PlayState* play) {
             this->subCamId = Play_CreateSubCamera(play);
             Play_ChangeCameraStatus(play, CAM_ID_MAIN, CAM_STATUS_WAIT);
             Play_ChangeCameraStatus(play, this->subCamId, CAM_STATUS_ACTIVE);
-            this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
+            this->actor.flags &= ~ACTOR_FLAG_ATTENTION_ENABLED;
             this->cutsceneState = ODOLWA_BUG_SUMMONING_CS_STATE_PLAYING_OR_DONE;
             this->actor.shape.rot.y = 0;
             this->actor.world.pos.z = 0.0f;
@@ -1227,7 +1226,7 @@ void Boss01_SummonBugsCutscene(Boss01* this, PlayState* play) {
                     pos.z = Rand_CenteredFloat(200.0f) + (this->actor.world.pos.z + offset.z);
                     Audio_PlaySfx(NA_SE_PL_DEKUNUTS_DROP_BOMB);
                     Actor_Spawn(&play->actorCtx, play, ACTOR_BOSS_01, pos.x, 1200.0f, pos.z, 0, Rand_ZeroFloat(0x10000),
-                                0, ODOLWA_TYPE_BUG);
+                                0, ODOLWA_PARAMS(ODOLWA_TYPE_BUG));
                 }
             }
 
@@ -1237,7 +1236,7 @@ void Boss01_SummonBugsCutscene(Boss01* this, PlayState* play) {
                 this->subCamId = SUB_CAM_ID_DONE;
                 Cutscene_StopManual(play, &play->csCtx);
                 Player_SetCsActionWithHaltedActors(play, &this->actor, PLAYER_CSACTION_END);
-                this->actor.flags |= ACTOR_FLAG_TARGETABLE;
+                this->actor.flags |= ACTOR_FLAG_ATTENTION_ENABLED;
                 player->actor.world.rot.y = player->actor.shape.rot.y = -0x8000;
                 player->actor.world.pos.x = 0.0f;
                 player->actor.world.pos.z = -600.0f;
@@ -1427,7 +1426,7 @@ void Boss01_Wait(Boss01* this, PlayState* play) {
             case ODOLWA_WAIT_ARM_SWING_DANCE:
             case ODOLWA_WAIT_THRUST_ATTACK:
                 Actor_Spawn(&play->actorCtx, play, ACTOR_BOSS_01, pos.x, pos.y, pos.z, 0, Rand_ZeroFloat(0x10000), 0,
-                            ODOLWA_TYPE_BUG);
+                            ODOLWA_PARAMS(ODOLWA_TYPE_BUG));
                 break;
 
             case ODOLWA_WAIT_SIDE_TO_SIDE_DANCE:
@@ -1909,9 +1908,9 @@ void Boss01_ShieldBash(Boss01* this, PlayState* play) {
  * function will transition him to that state and start a 20 frame timer; when this timer reaches 0, he will recover and
  * jump away. However, if he is already in the "damaged" state, and if the player attacked him with an attack that has
  * the ODOLWA_DMGEFF_DAMAGE_TIMER_CHECK damage effect, then one of two things will happen:
- * - If the attack hit while his current action timer is 7 or more, the timer will be set to 20 again; this will keep
+ * - If the attack hit while his current action timer is 5 or more, the timer will be set to 20 again; this will keep
  *   Odolwa in the "damaged" state for longer and allow the player to attack him more.
- * - If the attack hit while his current action timer is 6 or less, Odolwa will disable all of his collision for 20
+ * - If the attack hit while his current action timer is 4 or less, Odolwa will disable all of his collision for 20
  *   frames to ensure that the player cannot hit him with subsequent attacks.
  */
 void Boss01_SetupDamaged(Boss01* this, PlayState* play, u8 damageEffect) {
@@ -1955,38 +1954,38 @@ void Boss01_UpdateDamage(Boss01* this, PlayState* play) {
     u8 damage;
     s32 i;
 
-    if (this->shieldCollider.elements[ODOLWA_SHIELD_COLLIDER_SHIELD].info.bumperFlags & BUMP_HIT) {
+    if (this->shieldCollider.elements[ODOLWA_SHIELD_COLLIDER_SHIELD].base.acElemFlags & ACELEM_HIT) {
         this->bodyInvincibilityTimer = 5;
-        if (this->damageTimer == 0) {
-            ColliderInfo* acHitInfo = this->shieldCollider.elements[ODOLWA_SHIELD_COLLIDER_SHIELD].info.acHitInfo;
+        if (this->damagedTimer == 0) {
+            ColliderElement* acHitElem = this->shieldCollider.elements[ODOLWA_SHIELD_COLLIDER_SHIELD].base.acHitElem;
 
-            if (acHitInfo->toucher.dmgFlags == DMG_SWORD_BEAM) {
+            if (acHitElem->atDmgInfo.dmgFlags == DMG_SWORD_BEAM) {
                 Actor_Spawn(&play->actorCtx, play, ACTOR_EN_CLEAR_TAG, this->actor.focus.pos.x, this->actor.focus.pos.y,
                             this->actor.focus.pos.z, 0, 0, 3, CLEAR_TAG_PARAMS(CLEAR_TAG_LARGE_LIGHT_RAYS));
                 Actor_PlaySfx(&this->actor, NA_SE_IT_SHIELD_BOUND);
-                this->damageTimer = 5;
+                this->damagedTimer = 5;
             }
         }
-    } else if (this->damageTimer == 0) {
+    } else if (this->damagedTimer == 0) {
         for (i = 0; i < ODOLWA_SWORD_COLLIDER_MAX; i++) {
-            if (this->swordCollider.elements[i].info.toucherFlags & TOUCH_HIT) {
-                this->swordCollider.elements[i].info.toucherFlags &= ~TOUCH_HIT;
+            if (this->swordCollider.elements[i].base.atElemFlags & ATELEM_HIT) {
+                this->swordCollider.elements[i].base.atElemFlags &= ~ATELEM_HIT;
                 player->pushedYaw = this->actor.yawTowardsPlayer;
                 player->pushedSpeed = 15.0f;
             }
         }
 
         for (i = 0; i < ODOLWA_KICK_AND_SHIELD_BASH_COLLIDER_MAX; i++) {
-            if (this->kickAndShieldBashCollider.elements[i].info.toucherFlags & TOUCH_HIT) {
-                this->kickAndShieldBashCollider.elements[i].info.toucherFlags &= ~TOUCH_HIT;
+            if (this->kickAndShieldBashCollider.elements[i].base.atElemFlags & ATELEM_HIT) {
+                this->kickAndShieldBashCollider.elements[i].base.atElemFlags &= ~ATELEM_HIT;
                 player->pushedYaw = this->actor.yawTowardsPlayer;
                 player->pushedSpeed = 20.0f;
             }
         }
 
         for (i = 0; i < ODOLWA_COLLIDER_BODYPART_MAX; i++) {
-            if (this->bodyCollider.elements[i].info.bumperFlags & BUMP_HIT) {
-                this->bodyCollider.elements[i].info.bumperFlags &= ~BUMP_HIT;
+            if (this->bodyCollider.elements[i].base.acElemFlags & ACELEM_HIT) {
+                this->bodyCollider.elements[i].base.acElemFlags &= ~ACELEM_HIT;
 
                 switch (this->actor.colChkInfo.damageEffect) {
                     case ODOLWA_DMGEFF_FREEZE:
@@ -2018,7 +2017,7 @@ void Boss01_UpdateDamage(Boss01* this, PlayState* play) {
                     case ODOLWA_DMGEFF_STUN:
                     stunned:
                         Boss01_SetupStunned(this, play);
-                        this->damageTimer = 15;
+                        this->damagedTimer = 15;
                         Actor_PlaySfx(&this->actor, NA_SE_EN_COMMON_FREEZE);
                         this->canGuardOrEvade = false;
                         return;
@@ -2034,14 +2033,14 @@ void Boss01_UpdateDamage(Boss01* this, PlayState* play) {
                     //! @bug: unreachable code. If Odolwa's damage effect is ODOLWA_DMGEFF_STUN, we early-return out of
                     //! the function in the above switch statement.
                     Boss01_SetupStunned(this, play);
-                    this->damageTimer = 15;
+                    this->damagedTimer = 15;
                 } else if (this->actor.colChkInfo.damageEffect == ODOLWA_DMGEFF_DAZE) {
                     Boss01_SetupDazed(this, play);
                     Audio_PlaySfx_AtPos(&sOdolwaDamageSfxPos, NA_SE_EN_MIBOSS_DAMAGE_OLD);
-                    this->damageTimer = 15;
+                    this->damagedTimer = 15;
                 } else {
-                    this->damageFlashTimer = 15;
-                    this->damageTimer = 5;
+                    this->damagedFlashTimer = 15;
+                    this->damagedTimer = 5;
                     this->actor.colChkInfo.health -= damage;
                     if ((s8)this->actor.colChkInfo.health <= 0) {
                         Boss01_SetupDeathCutscene(this, play);
@@ -2105,13 +2104,13 @@ void Boss01_SetupDeathCutscene(Boss01* this, PlayState* play) {
     this->animEndFrame = Animation_GetLastFrame(&gOdolwaDeathAnim);
     this->actionFunc = Boss01_DeathCutscene;
     Actor_PlaySfx(&this->actor, NA_SE_EN_DAIOCTA_DAMAGE);
-    this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
+    this->actor.flags &= ~ACTOR_FLAG_ATTENTION_ENABLED;
     this->disableCollisionTimer = 1000;
     this->cutsceneTimer = 0;
     this->cutsceneState = ODOLWA_DEATH_CS_STATE_STARTED;
     SEQCMD_STOP_SEQUENCE(SEQ_PLAYER_BGM_MAIN, 1);
     sMothSwarm->unk_144 = 250;
-    func_800BC154(play, &play->actorCtx, &sMothSwarm->actor, ACTORCAT_BOSS);
+    Actor_ChangeCategory(play, &play->actorCtx, &sMothSwarm->actor, ACTORCAT_BOSS);
 }
 
 /**
@@ -2127,14 +2126,14 @@ void Boss01_DeathCutscene(Boss01* this, PlayState* play) {
     Camera* mainCam = Play_GetCamera(play, CAM_ID_MAIN);
 
     this->disableCollisionTimer = 1000;
-    this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
+    this->actor.flags &= ~ACTOR_FLAG_ATTENTION_ENABLED;
     SkelAnime_Update(&this->skelAnime);
     this->cutsceneTimer++;
     Math_ApproachZeroF(&this->actor.speed, 1.0f, 1.0f);
 
     switch (this->cutsceneState) {
         case ODOLWA_DEATH_CS_STATE_STARTED:
-            if (CutsceneManager_GetCurrentCsId() != -1) {
+            if (CutsceneManager_GetCurrentCsId() != CS_ID_NONE) {
                 break;
             }
 
@@ -2153,8 +2152,8 @@ void Boss01_DeathCutscene(Boss01* this, PlayState* play) {
             this->subCamAt.z = mainCam->at.z;
             diffX = this->subCamEye.x - this->actor.world.pos.x;
             diffZ = this->subCamEye.z - this->actor.world.pos.z;
-            this->deathCsInitialSubCamRot = Math_Atan2F_XY(diffZ, diffX);
-            this->deathCsSubCamRot = -0.5f;
+            this->deathCsInitialSubCamRotY = Math_Atan2F_XY(diffZ, diffX);
+            this->deathCsSubCamRotY = -0.5f;
             // fallthrough
         case ODOLWA_DEATH_CS_STATE_PLAY_ANIM_AND_FALL_FORWARD:
             if (this->cutsceneTimer < 15) {
@@ -2173,11 +2172,11 @@ void Boss01_DeathCutscene(Boss01* this, PlayState* play) {
             }
             // fallthrough
         case ODOLWA_DEATH_CS_STATE_BURST_INTO_FLAMES_AND_SHRINK:
-            Math_ApproachF(&this->deathCsSubCamRot, 1.3f, 0.1f, 0.008f);
+            Math_ApproachF(&this->deathCsSubCamRotY, 1.3f, 0.1f, 0.008f);
             subCamOffset.x = 0.0f;
             subCamOffset.y = 30.0f;
             subCamOffset.z = 300.0f;
-            Matrix_RotateYF(this->deathCsInitialSubCamRot + this->deathCsSubCamRot, MTXMODE_NEW);
+            Matrix_RotateYF(this->deathCsInitialSubCamRotY + this->deathCsSubCamRotY, MTXMODE_NEW);
             Matrix_MultVec3f(&subCamOffset, &this->subCamEyeNext);
             this->subCamEyeNext.x += this->pelvisPos.x;
             this->subCamEyeNext.y += this->pelvisPos.y;
@@ -2257,7 +2256,7 @@ void Boss01_DeathCutscene(Boss01* this, PlayState* play) {
                 this->subCamId = SUB_CAM_ID_DONE;
                 Cutscene_StopManual(play, &play->csCtx);
                 Player_SetCsActionWithHaltedActors(play, &this->actor, PLAYER_CSACTION_END);
-                this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
+                this->actor.flags &= ~ACTOR_FLAG_ATTENTION_ENABLED;
             }
             break;
 
@@ -2330,7 +2329,7 @@ void Boss01_Thaw(Boss01* this, PlayState* play) {
  * Returns true if Odolwa's model is rotated such that he is looking at the player *and* if the player's model is
  * rotated such that they are looking at Odolwa.
  */
-s32 Boss01_ArePlayerAndOdolwaFacing(Boss01* this, PlayState* play) {
+s32 Boss01_ArePlayerAndActorFacing(Boss01* this, PlayState* play) {
     Player* player = GET_PLAYER(play);
 
     if ((ABS_ALT(BINANG_SUB(this->actor.yawTowardsPlayer, this->actor.shape.rot.y)) < 0x3000) &&
@@ -2342,7 +2341,7 @@ s32 Boss01_ArePlayerAndOdolwaFacing(Boss01* this, PlayState* play) {
 }
 
 void Boss01_Update(Actor* thisx, PlayState* play2) {
-    Boss01* this = THIS;
+    Boss01* this = (Boss01*)thisx;
     PlayState* play = play2;
     s32 i;
     Player* player = GET_PLAYER(play);
@@ -2386,10 +2385,10 @@ void Boss01_Update(Actor* thisx, PlayState* play2) {
             DECR(this->timers[i]);
         }
 
-        DECR(this->damageTimer);
-        DECR(this->damageFlashTimer);
+        DECR(this->damagedTimer);
+        DECR(this->damagedFlashTimer);
 
-        this->actor.flags |= ACTOR_FLAG_TARGETABLE;
+        this->actor.flags |= ACTOR_FLAG_ATTENTION_ENABLED;
         this->actionFunc(this, play);
         Actor_MoveWithGravity(&this->actor);
         this->actor.world.pos.x += this->additionalVelocityX;
@@ -2412,7 +2411,7 @@ void Boss01_Update(Actor* thisx, PlayState* play2) {
         } else {
             this->bodyInvincibilityTimer--;
             for (i = 0; i < ODOLWA_COLLIDER_BODYPART_MAX; i++) {
-                this->bodyCollider.elements[i].info.bumperFlags &= ~BUMP_HIT;
+                this->bodyCollider.elements[i].base.acElemFlags &= ~ACELEM_HIT;
             }
         }
 
@@ -2432,7 +2431,7 @@ void Boss01_Update(Actor* thisx, PlayState* play2) {
     } else {
         this->disableCollisionTimer--;
         for (i = 0; i < ODOLWA_COLLIDER_BODYPART_MAX; i++) {
-            this->bodyCollider.elements[i].info.bumperFlags &= ~BUMP_HIT;
+            this->bodyCollider.elements[i].base.acElemFlags &= ~ACELEM_HIT;
         }
     }
 
@@ -2443,7 +2442,7 @@ void Boss01_Update(Actor* thisx, PlayState* play2) {
     // normally evades attacks, so long as the player is far enough to the side or behind him.
     if (this->canGuardOrEvade &&
         ((player->unk_D57 != 0) || ((player->unk_ADC != 0) && (this->actor.xzDistToPlayer <= 120.0f))) &&
-        Boss01_ArePlayerAndOdolwaFacing(this, play)) {
+        Boss01_ArePlayerAndActorFacing(this, play)) {
         if ((Rand_ZeroOne() < 0.25f) && (this->actionFunc != Boss01_Guard)) {
             Boss01_SetupJump(this, play, false);
             this->disableCollisionTimer = 10;
@@ -2461,10 +2460,10 @@ void Boss01_Update(Actor* thisx, PlayState* play2) {
     if (((this->frameCounter & (this->afterimageSpawnFrameMask - 1)) == 0) && (this->afterimageSpawnFrameMask != 0)) {
         s16 afterimageTimer = (this->actionFunc == Boss01_SpinAttack) ? 4 : 10;
         s32 pad;
-        Boss01* child =
-            (Boss01*)Actor_SpawnAsChild(&play->actorCtx, &this->actor, play, ACTOR_BOSS_01, this->actor.world.pos.x,
-                                        this->actor.world.pos.y, this->actor.world.pos.z, this->actor.world.rot.x,
-                                        this->actor.world.rot.y, afterimageTimer, ODOLWA_TYPE_AFTERIMAGE);
+        Boss01* child = (Boss01*)Actor_SpawnAsChild(
+            &play->actorCtx, &this->actor, play, ACTOR_BOSS_01, this->actor.world.pos.x, this->actor.world.pos.y,
+            this->actor.world.pos.z, this->actor.world.rot.x, this->actor.world.rot.y, afterimageTimer,
+            ODOLWA_PARAMS(ODOLWA_TYPE_AFTERIMAGE));
 
         if (child != NULL) {
             for (i = 0; i < ODOLWA_LIMB_MAX; i++) {
@@ -2639,14 +2638,14 @@ void Boss01_DrawSwordTrail(Boss01* this, PlayState* play) {
     Matrix_RotateZF(sOdolwaSwordTrailRotZ, MTXMODE_APPLY);
     Matrix_RotateYF(sOdolwaSwordTrailRotY, MTXMODE_APPLY);
 
-    gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    MATRIX_FINALIZE_AND_LOAD(POLY_XLU_DISP++, play->state.gfxCtx);
     gSPDisplayList(POLY_XLU_DISP++, gOdolwaSwordTrailDL);
 
     CLOSE_DISPS(play->state.gfxCtx);
 }
 
 s32 Boss01_OverrideLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3f* pos, Vec3s* rot, Actor* thisx) {
-    Boss01* this = THIS;
+    Boss01* this = (Boss01*)thisx;
 
     if (limbIndex == ODOLWA_LIMB_HEAD) {
         // The rot variable here is in model space, whereas the headRot variables are in world space.
@@ -2805,24 +2804,24 @@ static s8 sLimbToBodyParts[] = {
 };
 
 void Boss01_PostLimbDraw(PlayState* play2, s32 limbIndex, Gfx** dList, Vec3s* rot, Actor* thisx) {
-    Boss01* this = THIS;
+    Boss01* this = (Boss01*)thisx;
     PlayState* play = play2;
-    s8 index;
+    s8 bodyPartIndex;
     Vec3f pos;
 
     if (limbIndex == ODOLWA_LIMB_HEAD) {
         Matrix_MultZero(&this->actor.focus.pos);
     }
 
-    index = sLimbToBodyParts[limbIndex];
-    if (index > BODYPART_NONE) {
-        Matrix_MultZero(&this->bodyPartsPos[index]);
+    bodyPartIndex = sLimbToBodyParts[limbIndex];
+    if (bodyPartIndex > BODYPART_NONE) {
+        Matrix_MultZero(&this->bodyPartsPos[bodyPartIndex]);
     }
 
-    index = sLimbToColliderBodyParts[limbIndex];
-    if (index > BODYPART_NONE) {
-        Matrix_MultVec3f(&sLimbColliderOffsets[index], &pos);
-        Boss01_SetColliderSphere(index, &this->bodyCollider, &pos);
+    bodyPartIndex = sLimbToColliderBodyParts[limbIndex];
+    if (bodyPartIndex > BODYPART_NONE) {
+        Matrix_MultVec3f(&sLimbColliderOffsets[bodyPartIndex], &pos);
+        Boss01_SetColliderSphere(bodyPartIndex, &this->bodyCollider, &pos);
     }
 
     if (limbIndex == ODOLWA_LIMB_PELVIS) {
@@ -2867,7 +2866,7 @@ void Boss01_PostLimbDraw(PlayState* play2, s32 limbIndex, Gfx** dList, Vec3s* ro
         Matrix_Translate(1470.0f, 400.0f, 450.0f, MTXMODE_APPLY);
         Matrix_Scale(0.35f, 0.35f, 0.35f, MTXMODE_APPLY);
         Matrix_ReplaceRotation(&play->billboardMtxF);
-        gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+        MATRIX_FINALIZE_AND_LOAD(POLY_XLU_DISP++, play->state.gfxCtx);
         gSPDisplayList(POLY_XLU_DISP++, gOdolwaEyeDL);
         Matrix_Pop();
 
@@ -2875,7 +2874,7 @@ void Boss01_PostLimbDraw(PlayState* play2, s32 limbIndex, Gfx** dList, Vec3s* ro
         Matrix_Translate(1470.0f, -360.0f, 450.0f, MTXMODE_APPLY);
         Matrix_Scale(0.35f, 0.35f, 0.35f, MTXMODE_APPLY);
         Matrix_ReplaceRotation(&play->billboardMtxF);
-        gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+        MATRIX_FINALIZE_AND_LOAD(POLY_XLU_DISP++, play->state.gfxCtx);
         gSPDisplayList(POLY_XLU_DISP++, gOdolwaEyeDL);
         Matrix_Pop();
 
@@ -2885,7 +2884,7 @@ void Boss01_PostLimbDraw(PlayState* play2, s32 limbIndex, Gfx** dList, Vec3s* ro
 
 void Boss01_Draw(Actor* thisx, PlayState* play) {
     static Vec3f sDefaultPelvisColliderOffset = { 10000.0f, 10000.0f, 10000.0f };
-    Boss01* this = THIS;
+    Boss01* this = (Boss01*)thisx;
     s32 pad;
     u8* tex = GRAPH_ALLOC(play->state.gfxCtx, ODOLWA_SHADOW_TEX_SIZE);
 
@@ -2900,7 +2899,7 @@ void Boss01_Draw(Actor* thisx, PlayState* play) {
     Gfx_SetupDL25_Opa(play->state.gfxCtx);
     Gfx_SetupDL25_Xlu(play->state.gfxCtx);
 
-    if (this->damageFlashTimer & 1) {
+    if ((this->damagedFlashTimer % 2) != 0) {
         POLY_OPA_DISP = Gfx_SetFog(POLY_OPA_DISP, 255, 0, 0, 255, 900, 1099);
     }
 
@@ -2926,7 +2925,7 @@ void Boss01_Draw(Actor* thisx, PlayState* play) {
 }
 
 void Boss01_Afterimage_Draw(Actor* thisx, PlayState* play) {
-    Boss01* this = THIS;
+    Boss01* this = (Boss01*)thisx;
     s32 pad;
     Boss01* parent = (Boss01*)this->actor.parent;
 
@@ -3021,6 +3020,7 @@ void Boss01_FillShadowTex(Boss01* this, u8* tex, f32 weight) {
     Vec3f startVec;
 
     for (i = 0; i < ODOLWA_BODYPART_MAX; i++) {
+        // TODO: match with a continue
         if ((weight == 0.0f) || (y = sParentShadowBodyParts[i]) > BODYPART_NONE) {
             if (weight > 0.0f) {
                 VEC3F_LERPIMPDST(&lerp, &this->bodyPartsPos[i], &this->bodyPartsPos[y], weight);
@@ -3043,7 +3043,7 @@ void Boss01_FillShadowTex(Boss01* this, u8* tex, f32 weight) {
             baseY = (u16)((s32)startVec.y * 64);
 
             if (sShadowSizes[i] == ODOLWA_SHADOW_SIZE_EXTRA_LARGE) {
-                for (y = 0, addY = -0x180; y < ARRAY_COUNT(sShadowExtraLargeMap); y++, addY += 0x40) {
+                for (y = 0, addY = -384; y < ARRAY_COUNT(sShadowExtraLargeMap); y++, addY += 64) {
                     for (x = -sShadowExtraLargeMap[y]; x < sShadowExtraLargeMap[y]; x++) {
                         index = baseX + x + baseY + addY;
                         if ((index >= 0) && (index < ODOLWA_SHADOW_TEX_SIZE)) {
@@ -3052,7 +3052,7 @@ void Boss01_FillShadowTex(Boss01* this, u8* tex, f32 weight) {
                     }
                 }
             } else if (sShadowSizes[i] == ODOLWA_SHADOW_SIZE_LARGE) {
-                for (y = 0, addY = -0x100; y < ARRAY_COUNT(sShadowLargeMap); y++, addY += 0x40) {
+                for (y = 0, addY = -256; y < ARRAY_COUNT(sShadowLargeMap); y++, addY += 64) {
                     for (x = -sShadowLargeMap[y]; x < sShadowLargeMap[y]; x++) {
                         index = baseX + x + baseY + addY;
                         if ((index >= 0) && (index < ODOLWA_SHADOW_TEX_SIZE)) {
@@ -3061,7 +3061,7 @@ void Boss01_FillShadowTex(Boss01* this, u8* tex, f32 weight) {
                     }
                 }
             } else if (sShadowSizes[i] == ODOLWA_SHADOW_SIZE_MEDIUM) {
-                for (y = 0, addY = -0xC0; y < ARRAY_COUNT(sShadowMediumMap); y++, addY += 0x40) {
+                for (y = 0, addY = -192; y < ARRAY_COUNT(sShadowMediumMap); y++, addY += 64) {
                     for (x = -sShadowMediumMap[y]; x < sShadowMediumMap[y] - 1; x++) {
                         index = baseX + x + baseY + addY;
                         if ((index >= 0) && (index < ODOLWA_SHADOW_TEX_SIZE)) {
@@ -3070,7 +3070,7 @@ void Boss01_FillShadowTex(Boss01* this, u8* tex, f32 weight) {
                     }
                 }
             } else {
-                for (y = 0, addY = -0x80; y < ARRAY_COUNT(sShadowSmallMap); y++, addY += 0x40) {
+                for (y = 0, addY = -128; y < ARRAY_COUNT(sShadowSmallMap); y++, addY += 64) {
                     for (x = -sShadowSmallMap[y]; x < sShadowSmallMap[y] - 1; x++) {
                         index = baseX + x + baseY + addY;
                         if ((index >= 0) && (index < ODOLWA_SHADOW_TEX_SIZE)) {
@@ -3120,7 +3120,7 @@ void Boss01_DrawShadowTex(u8* tex, Boss01* this, PlayState* play) {
     gDPSetEnvColor(POLY_OPA_DISP++, 0, 0, 0, 0);
     Matrix_Translate(this->actor.world.pos.x, this->actor.floorHeight, this->actor.world.pos.z - 20.0f, MTXMODE_NEW);
     Matrix_Scale(1.65f, 1.0f, 1.65f, MTXMODE_APPLY);
-    gSPMatrix(POLY_OPA_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    MATRIX_FINALIZE_AND_LOAD(POLY_OPA_DISP++, play->state.gfxCtx);
     gSPDisplayList(POLY_OPA_DISP++, gOdolwaShadowMaterialDL);
     gDPLoadTextureBlock(POLY_OPA_DISP++, tex, G_IM_FMT_I, G_IM_SIZ_8b, ODOLWA_SHADOW_TEX_WIDTH,
                         ODOLWA_SHADOW_TEX_HEIGHT, 0, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMIRROR | G_TX_CLAMP, 6, 6,
@@ -3201,7 +3201,7 @@ void Boss01_Bug_SetupDead(Boss01* this, PlayState* play) {
     this->actor.speed = -15.0f;
     this->actor.velocity.y = 12.0f;
     this->actor.world.rot.y = this->actor.yawTowardsPlayer;
-    this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
+    this->actor.flags &= ~ACTOR_FLAG_ATTENTION_ENABLED;
 }
 
 void Boss01_Bug_SetupStunned(Boss01* this, PlayState* play) {
@@ -3251,23 +3251,23 @@ void Boss01_Bug_UpdateDamage(Boss01* this, PlayState* play) {
     Vec3f additionalVelocity;
     s32 pad[2];
     u8 damage;
-    ColliderInfo* acHitInfo;
+    ColliderElement* acHitElem;
     OdolwaEffect* effect = play->specialEffects;
 
     if (this->bugACCollider.base.acFlags & AC_HIT) {
         this->bugACCollider.base.acFlags &= ~AC_HIT;
-        acHitInfo = this->bugACCollider.info.acHitInfo;
+        acHitElem = this->bugACCollider.elem.acHitElem;
 
-        if (this->damageTimer == 0) {
+        if (this->damagedTimer == 0) {
             Matrix_RotateYS(this->actor.yawTowardsPlayer, MTXMODE_NEW);
-            if (acHitInfo->toucher.dmgFlags & 0x300000) {
-                this->damageTimer = 10;
+            if (acHitElem->atDmgInfo.dmgFlags & 0x300000) {
+                this->damagedTimer = 10;
                 Matrix_MultVecZ(-10.0f, &additionalVelocity);
                 this->additionalVelocityX = additionalVelocity.x;
                 this->additionalVelocityZ = additionalVelocity.z;
             } else {
-                this->damageTimer = 15;
-                this->damageFlashTimer = 15;
+                this->damagedTimer = 15;
+                this->damagedFlashTimer = 15;
                 Matrix_MultVecZ(-20.0f, &additionalVelocity);
                 this->additionalVelocityX = additionalVelocity.x;
                 this->additionalVelocityZ = additionalVelocity.z;
@@ -3300,7 +3300,7 @@ void Boss01_Bug_UpdateDamage(Boss01* this, PlayState* play) {
         if ((distXZ < (KREG(49) + 210.0f)) && (distXZ > (KREG(49) + 190.0f))) {
             Actor_PlaySfx(&this->actor, NA_SE_EN_MIZUBABA2_DAMAGE);
             Boss01_Bug_SetupDead(this, play);
-            this->damageFlashTimer = 15;
+            this->damagedFlashTimer = 15;
             this->bugDrawDmgEffType = ACTOR_DRAW_DMGEFF_FIRE;
             this->actor.speed = 0.0f;
             this->actor.velocity.y = 5.0f;
@@ -3309,7 +3309,7 @@ void Boss01_Bug_UpdateDamage(Boss01* this, PlayState* play) {
 }
 
 void Boss01_Bug_Update(Actor* thisx, PlayState* play) {
-    Boss01* this = THIS;
+    Boss01* this = (Boss01*)thisx;
     s32 pad;
     s32 i;
 
@@ -3319,8 +3319,8 @@ void Boss01_Bug_Update(Actor* thisx, PlayState* play) {
         DECR(this->timers[i]);
     }
 
-    DECR(this->damageTimer);
-    DECR(this->damageFlashTimer);
+    DECR(this->damagedTimer);
+    DECR(this->damagedFlashTimer);
 
     this->actionFunc(this, play);
 
@@ -3365,14 +3365,14 @@ s32 Boss01_Bug_OverrideLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec
 }
 
 void Boss01_Bug_Draw(Actor* thisx, PlayState* play) {
-    Boss01* this = THIS;
+    Boss01* this = (Boss01*)thisx;
     s32 pad;
 
     OPEN_DISPS(play->state.gfxCtx);
 
     Gfx_SetupDL25_Opa(play->state.gfxCtx);
 
-    if (this->damageFlashTimer & 1) {
+    if ((this->damagedFlashTimer % 2) != 0) {
         POLY_OPA_DISP = Gfx_SetFog(POLY_OPA_DISP, 255, 0, 0, 255, 900, 1099);
     }
 
@@ -3453,10 +3453,10 @@ void Boss01_UpdateEffects(Boss01* this, PlayState* play) {
                         if (player->invincibilityTimer == 0) {
                             if ((temp2 < (KREG(49) + 210.0f)) && ((KREG(49) + 190.0f) < temp2)) {
                                 for (j = 0; j < PLAYER_BODYPART_MAX; j++) {
-                                    player->flameTimers[j] = Rand_S16Offset(0, 200);
+                                    player->bodyFlameTimers[j] = Rand_S16Offset(0, 200);
                                 }
 
-                                player->isBurning = true;
+                                player->bodyIsBurning = true;
                                 temp = Math_Atan2S_XY(diffZ, diffX);
                                 if ((KREG(49) + 100.0f) < temp2) {
                                     temp += 0x8000;
@@ -3537,7 +3537,7 @@ void Boss01_DrawEffects(PlayState* play) {
             Matrix_RotateYS(effect->rotY, MTXMODE_APPLY);
             Matrix_RotateXS(effect->rotX, MTXMODE_APPLY);
             Matrix_Scale(effect->scale, effect->scale, effect->scale, MTXMODE_APPLY);
-            gSPMatrix(POLY_OPA_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+            MATRIX_FINALIZE_AND_LOAD(POLY_OPA_DISP++, play->state.gfxCtx);
             gSPDisplayList(POLY_OPA_DISP++, gOdolwaFallingBlockDL);
         }
     }
@@ -3550,7 +3550,7 @@ void Boss01_DrawEffects(PlayState* play) {
         if (effect->type == ODOLWA_EFFECT_FALLING_BLOCK) {
             Matrix_Translate(effect->pos.x, 0.0f, effect->pos.z, MTXMODE_NEW);
             Matrix_Scale(effect->scale * 50.0f, 1.0f, effect->scale * 50.0f, MTXMODE_APPLY);
-            gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+            MATRIX_FINALIZE_AND_LOAD(POLY_XLU_DISP++, play->state.gfxCtx);
             gSPDisplayList(POLY_XLU_DISP++, SEGMENTED_TO_K0(gCircleShadowDL));
         }
     }
@@ -3586,7 +3586,7 @@ void Boss01_DrawEffects(PlayState* play) {
                          ((0.007f + KREG(54) * 0.0001f) + (Boss01_RandZeroOne() * 30.0f * 0.0001f)) * effect->scale,
                          1.0f, MTXMODE_APPLY);
 
-            gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+            MATRIX_FINALIZE_AND_LOAD(POLY_XLU_DISP++, play->state.gfxCtx);
             gSPDisplayList(POLY_XLU_DISP++, gEffFire1DL);
             Matrix_Pop();
         }

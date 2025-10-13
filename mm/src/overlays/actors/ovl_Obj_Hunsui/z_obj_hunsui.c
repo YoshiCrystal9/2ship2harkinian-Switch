@@ -7,9 +7,7 @@
 #include "z_obj_hunsui.h"
 #include "objects/object_hunsui/object_hunsui.h"
 
-#define FLAGS (ACTOR_FLAG_10 | ACTOR_FLAG_20)
-
-#define THIS ((ObjHunsui*)thisx)
+#define FLAGS (ACTOR_FLAG_UPDATE_CULLING_DISABLED | ACTOR_FLAG_DRAW_CULLING_DISABLED)
 
 void ObjHunsui_Init(Actor* thisx, PlayState* play);
 void ObjHunsui_Destroy(Actor* thisx, PlayState* play);
@@ -47,7 +45,7 @@ ObjHansuiStruct D_80B9DC70[] = {
     { 3, 3 }, { 3, 5 }, { 3, 1 }, { 3, 6 }, { 3, 2 }, { 3, 4 }, { 3, 0 },
 };
 
-ActorInit Obj_Hunsui_InitVars = {
+ActorProfile Obj_Hunsui_Profile = {
     /**/ ACTOR_OBJ_HUNSUI,
     /**/ ACTORCAT_BG,
     /**/ FLAGS,
@@ -62,9 +60,9 @@ ActorInit Obj_Hunsui_InitVars = {
 
 static InitChainEntry sInitChain[] = {
     ICHAIN_VEC3F_DIV1000(scale, 100, ICHAIN_CONTINUE),
-    ICHAIN_F32(uncullZoneForward, 4000, ICHAIN_CONTINUE),
-    ICHAIN_F32(uncullZoneScale, 400, ICHAIN_CONTINUE),
-    ICHAIN_F32(uncullZoneDownward, 400, ICHAIN_STOP),
+    ICHAIN_F32(cullingVolumeDistance, 4000, ICHAIN_CONTINUE),
+    ICHAIN_F32(cullingVolumeScale, 400, ICHAIN_CONTINUE),
+    ICHAIN_F32(cullingVolumeDownward, 400, ICHAIN_STOP),
 };
 
 s32 func_80B9C450(PlayState* play, s32 switchFlagBase, s32 arg2) {
@@ -174,7 +172,7 @@ void func_80B9C5E8(ObjHunsui* this, PlayState* play) {
                     sp38 = sp34;
                 }
 
-                player->linearVelocity *= sp38;
+                player->speedXZ *= sp38;
 
                 if ((this->unk_160 == OBJHUNSUI_F000_5) || (this->unk_160 == OBJHUNSUI_F000_6)) {
                     Math_ApproachF(&this->unk_1A0, 4.5f, 2.0f, 1.0f);
@@ -185,7 +183,7 @@ void func_80B9C5E8(ObjHunsui* this, PlayState* play) {
                 }
             } else {
                 this->unk_1A4 = player->actor.world.rot.y;
-                player->linearVelocity *= 0.5f;
+                player->speedXZ *= 0.5f;
                 Math_ApproachF(&this->unk_1A0, 3.0f, 1.0f, 1.0f);
                 Math_ApproachF(&this->unk_19C, this->unk_1A0, 1.0f, 0.1f);
             }
@@ -194,8 +192,8 @@ void func_80B9C5E8(ObjHunsui* this, PlayState* play) {
         }
     } else {
         if (this->unk_172 & 8) {
-            player->linearVelocity = this->unk_19C + player->linearVelocity;
-            player->currentYaw = this->unk_1A4;
+            player->speedXZ = this->unk_19C + player->speedXZ;
+            player->yaw = this->unk_1A4;
         }
         this->unk_1A0 = 0.0f;
         this->unk_19C = 0.0f;
@@ -204,7 +202,7 @@ void func_80B9C5E8(ObjHunsui* this, PlayState* play) {
 }
 
 void ObjHunsui_Init(Actor* thisx, PlayState* play) {
-    ObjHunsui* this = THIS;
+    ObjHunsui* this = (ObjHunsui*)thisx;
 
     Actor_ProcessInitChain(&this->dyna.actor, sInitChain);
     this->unk_160 = OBJHUNSUI_GET_F000(thisx);
@@ -228,9 +226,9 @@ void ObjHunsui_Init(Actor* thisx, PlayState* play) {
         case OBJHUNSUI_F000_4:
         case OBJHUNSUI_F000_5:
         case OBJHUNSUI_F000_6:
-            this->dyna.actor.uncullZoneScale = 900.0f;
-            this->dyna.actor.uncullZoneDownward = 90.0f;
-            this->dyna.actor.uncullZoneForward = 4000.0f;
+            this->dyna.actor.cullingVolumeScale = 900.0f;
+            this->dyna.actor.cullingVolumeDownward = 90.0f;
+            this->dyna.actor.cullingVolumeDistance = 4000.0f;
             break;
     }
 
@@ -321,13 +319,13 @@ void ObjHunsui_Init(Actor* thisx, PlayState* play) {
 }
 
 void ObjHunsui_Destroy(Actor* thisx, PlayState* play) {
-    ObjHunsui* this = THIS;
+    ObjHunsui* this = (ObjHunsui*)thisx;
 
     DynaPoly_DeleteBgActor(play, &play->colCtx.dyna, this->dyna.bgId);
 }
 
 void ObjHunsui_Update(Actor* thisx, PlayState* play) {
-    ObjHunsui* this = THIS;
+    ObjHunsui* this = (ObjHunsui*)thisx;
 
     this->actionFunc(this, play);
 
@@ -587,9 +585,9 @@ void func_80B9D714(ObjHunsui* this, PlayState* play) {
             csId = this->dyna.actor.csId;
 
             if (this->unk_16E == 0) {
-                if ((csId >= 0) && !CutsceneManager_IsNext(csId)) {
+                if ((csId > CS_ID_NONE) && !CutsceneManager_IsNext(csId)) {
                     CutsceneManager_Queue(csId);
-                } else if (csId >= 0) {
+                } else if (csId > CS_ID_NONE) {
                     CutsceneManager_StartWithPlayerCs(csId, &this->dyna.actor);
                     this->unk_16E = -1;
                 } else {
@@ -634,7 +632,7 @@ void func_80B9D714(ObjHunsui* this, PlayState* play) {
 }
 
 void ObjHunsui_Draw(Actor* thisx, PlayState* play) {
-    ObjHunsui* this = THIS;
+    ObjHunsui* this = (ObjHunsui*)thisx;
 
     if (this->unk_172 & 0x10) {
         f32 temp_f8 = (this->dyna.actor.world.pos.y - this->dyna.actor.home.pos.y) / 800.0f;
@@ -650,7 +648,7 @@ void ObjHunsui_Draw(Actor* thisx, PlayState* play) {
 
 void func_80B9DA60(Actor* thisx, PlayState* play) {
     s32 pad;
-    ObjHunsui* this = THIS;
+    ObjHunsui* this = (ObjHunsui*)thisx;
     f32 temp;
 
     if (this->unk_172 & 0x10) {
@@ -658,7 +656,7 @@ void func_80B9DA60(Actor* thisx, PlayState* play) {
         Audio_PlaySfx_AtPosWithFreq(&this->dyna.actor.projectedPos, NA_SE_EV_WATER_PILLAR - SFX_FLAG, 1.0f + temp);
     }
 
-    if ((this->dyna.actor.flags & ACTOR_FLAG_40) && !(this->unk_172 & 2)) {
+    if ((this->dyna.actor.flags & ACTOR_FLAG_INSIDE_CULLING_VOLUME) && !(this->unk_172 & 2)) {
         if ((this->unk_160 == OBJHUNSUI_F000_6) || (this->unk_160 == OBJHUNSUI_F000_5)) {
             OPEN_DISPS(play->state.gfxCtx);
 

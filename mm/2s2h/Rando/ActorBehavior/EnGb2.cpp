@@ -6,7 +6,7 @@ extern "C" {
 #include "variables.h"
 #include "src/overlays/actors/ovl_En_Gb2/z_en_gb2.h"
 
-void Player_TalkWithPlayer(PlayState* play, Actor* actor);
+void Player_StartTalking(PlayState* play, Actor* actor);
 }
 
 void Rando::ActorBehavior::InitEnGb2Behavior() {
@@ -30,7 +30,7 @@ void Rando::ActorBehavior::InitEnGb2Behavior() {
         player->talkActor = refActor;
         player->talkActorDistance = refActor->xzDistToPlayer;
         player->exchangeItemAction = PLAYER_IA_MINUS1;
-        Player_TalkWithPlayer(gPlayState, refActor);
+        Player_StartTalking(gPlayState, refActor);
         /*
          * This actor sets MSGMODE_TEXT_CLOSING state and expects GI to set it back to MSGMODE_TEXT_START. Because the
          * GI is skipped, we manually start the textbox to prevent the player from being able to move during dialog.

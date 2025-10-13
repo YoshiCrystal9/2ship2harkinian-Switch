@@ -27,4 +27,6 @@ static const ALIGN_ASSET(2) char Z2_SECOM_room_00DL_000260[] = dZ2_SECOM_room_00
 #define dZ2_SECOM_room_00Tex_002EF0 "__OTR__scenes/nonmq/Z2_SECOM_scene/Z2_SECOM_room_00Tex_002EF0"
 static const ALIGN_ASSET(2) char Z2_SECOM_room_00Tex_002EF0[] = dZ2_SECOM_room_00Tex_002EF0;
 
+#define dZ2_SECOM_room_00DL_0026A0 "__OTR__scenes/nonmq/Z2_SECOM_scene/Z2_SECOM_room_00DL_0026A0"
+static const ALIGN_ASSET(2) char Z2_SECOM_room_00DL_0026A0[] = dZ2_SECOM_room_00DL_0026A0;
 #endif // Z2_SECOM_Z2_SECOM_ROOM_00_H

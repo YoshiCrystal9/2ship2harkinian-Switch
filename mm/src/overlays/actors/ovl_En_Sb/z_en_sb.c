@@ -5,12 +5,9 @@
  */
 
 #include "z_en_sb.h"
-#include "objects/object_sb/object_sb.h"
 #include "overlays/actors/ovl_En_Part/z_en_part.h"
 
-#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_UNFRIENDLY)
-
-#define THIS ((EnSb*)thisx)
+#define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_HOSTILE)
 
 void EnSb_Init(Actor* thisx, PlayState* play);
 void EnSb_Destroy(Actor* thisx, PlayState* play);
@@ -26,7 +23,7 @@ void EnSb_Lunge(EnSb* this, PlayState* play);
 void EnSb_Bounce(EnSb* this, PlayState* play);
 void EnSb_ReturnToIdle(EnSb* this, PlayState* play);
 
-ActorInit En_Sb_InitVars = {
+ActorProfile En_Sb_Profile = {
     /**/ ACTOR_EN_SB,
     /**/ ACTORCAT_ENEMY,
     /**/ FLAGS,
@@ -40,18 +37,18 @@ ActorInit En_Sb_InitVars = {
 
 static ColliderCylinderInitType1 sCylinderInit = {
     {
-        COLTYPE_NONE,
+        COL_MATERIAL_NONE,
         AT_ON | AT_TYPE_ENEMY,
         AC_ON | AC_TYPE_PLAYER,
         OC1_ON | OC1_TYPE_ALL,
         COLSHAPE_CYLINDER,
     },
     {
-        ELEMTYPE_UNK0,
+        ELEM_MATERIAL_UNK0,
         { 0xF7CFFFFF, 0x04, 0x08 },
         { 0xF7CFFFFF, 0x00, 0x00 },
-        TOUCH_ON | TOUCH_SFX_NORMAL,
-        BUMP_ON,
+        ATELEM_ON | ATELEM_SFX_NORMAL,
+        ACELEM_ON,
         OCELEM_ON,
     },
     { 30, 40, 0, { 0, 0, 0 } },
@@ -94,8 +91,8 @@ static DamageTable sDamageTable = {
 
 static InitChainEntry sInitChain[] = {
     ICHAIN_S8(hintId, TATL_HINT_ID_SHELLBLADE, ICHAIN_CONTINUE),
-    ICHAIN_U8(targetMode, TARGET_MODE_2, ICHAIN_CONTINUE),
-    ICHAIN_F32(targetArrowOffset, 30, ICHAIN_STOP),
+    ICHAIN_U8(attentionRangeType, ATTENTION_RANGE_2, ICHAIN_CONTINUE),
+    ICHAIN_F32(lockOnArrowOffset, 30, ICHAIN_STOP),
 };
 
 static Vec3f sFlamePosOffsets[] = {
@@ -106,14 +103,14 @@ static Vec3f sFlamePosOffsets[] = {
 };
 
 void EnSb_Init(Actor* thisx, PlayState* play) {
-    EnSb* this = THIS;
+    EnSb* this = (EnSb*)thisx;
 
     Actor_ProcessInitChain(&this->actor, sInitChain);
     this->actor.colChkInfo.damageTable = &sDamageTable;
     this->actor.colChkInfo.mass = 10;
     this->actor.colChkInfo.health = 2;
     SkelAnime_InitFlex(play, &this->skelAnime, &object_sb_Skel_002BF0, &object_sb_Anim_000194, this->jointTable,
-                       this->morphTable, 9);
+                       this->morphTable, OBJECT_SB_LIMB_MAX);
     Collider_InitCylinder(play, &this->collider);
     Collider_SetCylinderType1(play, &this->collider, &this->actor, &sCylinderInit);
     this->isDead = false;
@@ -129,7 +126,7 @@ void EnSb_Init(Actor* thisx, PlayState* play) {
 }
 
 void EnSb_Destroy(Actor* thisx, PlayState* play) {
-    EnSb* this = THIS;
+    EnSb* this = (EnSb*)thisx;
 
     Collider_DestroyCylinder(play, &this->collider);
 }
@@ -156,6 +153,11 @@ void EnSb_SetupOpen(EnSb* this) {
                      ANIMMODE_ONCE, 0.0f);
     this->state = SHELLBLADE_OPEN;
     this->actionFunc = EnSb_Open;
+    //! @bug Incorrect sfx
+    //! In OoT, NA_SE_EN_SHELL_MOUTH is the value 0x3849
+    //! But in MM, certain sfxIds got reordered this was not updated:
+    //! In MM, NA_SE_EN_KUSAMUSHI_VIBE is the old value 0x3849
+    //! In MM, NA_SE_EN_SHELL_MOUTH does not exist
     Actor_PlaySfx(&this->actor, NA_SE_EN_KUSAMUSHI_VIBE);
 }
 
@@ -167,12 +169,17 @@ void EnSb_SetupWaitOpen(EnSb* this) {
 }
 
 void EnSb_SetupLunge(EnSb* this) {
-    f32 frameCount = Animation_GetLastFrame(&object_sb_Anim_000124);
+    f32 endFrame = Animation_GetLastFrame(&object_sb_Anim_000124);
     f32 playbackSpeed = this->actor.depthInWater > 0.0f ? 1.0f : 0.0f;
 
-    Animation_Change(&this->skelAnime, &object_sb_Anim_000124, playbackSpeed, 0.0f, frameCount, ANIMMODE_ONCE, 0);
+    Animation_Change(&this->skelAnime, &object_sb_Anim_000124, playbackSpeed, 0.0f, endFrame, ANIMMODE_ONCE, 0);
     this->state = SHELLBLADE_LUNGE;
     this->actionFunc = EnSb_Lunge;
+    //! @bug Incorrect sfx
+    //! In OoT, NA_SE_EN_SHELL_MOUTH is the value 0x3849
+    //! But in MM, certain sfxIds got reordered this was not updated:
+    //! In MM, NA_SE_EN_KUSAMUSHI_VIBE is the old value 0x3849
+    //! In MM, NA_SE_EN_SHELL_MOUTH does not exist
     Actor_PlaySfx(&this->actor, NA_SE_EN_KUSAMUSHI_VIBE);
 }
 
@@ -184,10 +191,10 @@ void EnSb_SetupBounce(EnSb* this) {
 }
 
 void EnSb_SetupIdle(EnSb* this, s32 changeSpeed) {
-    f32 frameCount = Animation_GetLastFrame(&object_sb_Anim_00004C);
+    f32 endFrame = Animation_GetLastFrame(&object_sb_Anim_00004C);
 
     if (this->state != SHELLBLADE_WAIT_CLOSED) {
-        Animation_Change(&this->skelAnime, &object_sb_Anim_00004C, 1.0f, 0, frameCount, ANIMMODE_ONCE, 0.0f);
+        Animation_Change(&this->skelAnime, &object_sb_Anim_00004C, 1.0f, 0, endFrame, ANIMMODE_ONCE, 0.0f);
     }
     this->state = SHELLBLADE_WAIT_CLOSED;
     if (changeSpeed) {
@@ -209,20 +216,21 @@ void EnSb_SetupIdle(EnSb* this, s32 changeSpeed) {
 
 void EnSb_Idle(EnSb* this, PlayState* play) {
     Math_SmoothStepToS(&this->actor.shape.rot.y, this->actor.yawTowardsPlayer, 0xA, 0x7D0, 0);
-    if (this->actor.xzDistToPlayer <= 240.0f && this->actor.xzDistToPlayer > 0.0f) {
+    if ((this->actor.xzDistToPlayer <= 240.0f) && (this->actor.xzDistToPlayer > 0.0f)) {
         EnSb_SetupOpen(this);
     }
 }
 
 void EnSb_Open(EnSb* this, PlayState* play) {
-    f32 currentFrame = this->skelAnime.curFrame;
+    f32 curFrame = this->skelAnime.curFrame;
+    f32 endFrame = Animation_GetLastFrame(&object_sb_Anim_000194);
 
-    if (Animation_GetLastFrame(&object_sb_Anim_000194) <= currentFrame) {
+    if (curFrame >= endFrame) {
         this->vulnerableTimer = 20;
         EnSb_SetupWaitOpen(this);
     } else {
         Math_SmoothStepToS(&this->actor.shape.rot.y, this->actor.yawTowardsPlayer, 0xA, 0x7D0, 0);
-        if (this->actor.xzDistToPlayer > 240.0f || this->actor.xzDistToPlayer <= 40.0f) {
+        if ((this->actor.xzDistToPlayer > 240.0f) || (this->actor.xzDistToPlayer <= 40.0f)) {
             this->vulnerableTimer = 0;
             EnSb_SetupWaitClosed(this);
         }
@@ -232,7 +240,7 @@ void EnSb_Open(EnSb* this, PlayState* play) {
 void EnSb_WaitOpen(EnSb* this, PlayState* play) {
 
     Math_SmoothStepToS(&this->actor.shape.rot.y, this->actor.yawTowardsPlayer, 0xA, 0x7D0, 0);
-    if (this->actor.xzDistToPlayer > 240.0f || this->actor.xzDistToPlayer <= 40.0f) {
+    if ((this->actor.xzDistToPlayer > 240.0f) || (this->actor.xzDistToPlayer <= 40.0f)) {
         this->vulnerableTimer = 0;
         EnSb_SetupWaitClosed(this);
     }
@@ -280,11 +288,11 @@ void EnSb_Lunge(EnSb* this, PlayState* play) {
 
 void EnSb_Bounce(EnSb* this, PlayState* play) {
     s32 pad;
-    f32 currentFrame = currentFrame = this->skelAnime.curFrame;
-    f32 frameCount = frameCount = Animation_GetLastFrame(&object_sb_Anim_0000B4);
+    f32 curFrame = this->skelAnime.curFrame;
+    f32 endFrame = Animation_GetLastFrame(&object_sb_Anim_0000B4);
 
     Math_StepToF(&this->actor.speed, 0.0f, 0.2f);
-    if (currentFrame == frameCount) {
+    if (curFrame == endFrame) {
         if (this->bounceCounter != 0) {
             this->bounceCounter--;
             this->attackTimer = 1;
@@ -343,12 +351,17 @@ void EnSb_UpdateDamage(EnSb* this, PlayState* play) {
             }
             this->isDead = true;
             Enemy_StartFinishingBlow(play, &this->actor);
-            SoundSource_PlaySfxAtFixedWorldPos(play, &this->actor.world.pos, 0x28, NA_SE_EN_BEE_FLY);
+            //! @bug Incorrect sfx
+            //! In OoT, NA_SE_EN_SHELL_DEAD is the value 0x384A
+            //! But in MM, certain sfxIds got reordered this was not updated:
+            //! In MM, NA_SE_EN_BEE_FLY is the old value 0x384A
+            //! In MM, NA_SE_EN_SHELL_DEAD does not exist
+            SoundSource_PlaySfxAtFixedWorldPos(play, &this->actor.world.pos, 40, NA_SE_EN_BEE_FLY);
             return;
         }
-        hitPoint.x = this->collider.info.bumper.hitPos.x;
-        hitPoint.y = this->collider.info.bumper.hitPos.y;
-        hitPoint.z = this->collider.info.bumper.hitPos.z;
+        hitPoint.x = this->collider.elem.acDmgInfo.hitPos.x;
+        hitPoint.y = this->collider.elem.acDmgInfo.hitPos.y;
+        hitPoint.z = this->collider.elem.acDmgInfo.hitPos.z;
         CollisionCheck_SpawnShieldParticlesMetal2(play, &hitPoint);
         return;
     }
@@ -359,7 +372,7 @@ void EnSb_UpdateDamage(EnSb* this, PlayState* play) {
 
 void EnSb_Update(Actor* thisx, PlayState* play) {
     s32 pad;
-    EnSb* this = THIS;
+    EnSb* this = (EnSb*)thisx;
     Player* player = GET_PLAYER(play);
 
     if (this->isDead) {
@@ -390,14 +403,14 @@ void EnSb_Update(Actor* thisx, PlayState* play) {
 
 void EnSb_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* rot, Actor* thisx) {
     s8 partParams;
-    EnSb* this = THIS;
+    EnSb* this = (EnSb*)thisx;
 
     if (this->isDrawn) {
-        if (limbIndex < 7) {
+        if (limbIndex <= OBJECT_SB_LIMB_06) {
             partParams = (this->actor.depthInWater > 0) ? ENPART_PARAMS(ENPART_TYPE_4) : ENPART_PARAMS(ENPART_TYPE_1);
             Actor_SpawnBodyParts(thisx, play, partParams, dList);
         }
-        if (limbIndex == 6) {
+        if (limbIndex == OBJECT_SB_LIMB_06) {
             this->isDrawn = false;
             this->actor.draw = NULL;
         }
@@ -405,7 +418,7 @@ void EnSb_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* rot, 
 }
 
 void EnSb_Draw(Actor* thisx, PlayState* play) {
-    EnSb* this = THIS;
+    EnSb* this = (EnSb*)thisx;
     Vec3f flamePos;
     Vec3f* offset;
     s16 fireDecr;

@@ -14,13 +14,11 @@
  * 4. The UFO (which appears as a spinning ball of light)
  * 5. A cow tail
  */
-
-#include "sys_cfb.h"
+#include "prevent_bss_reordering.h"
 #include "z_en_invadepoh_demo.h"
+#include "sys_cfb.h"
 
-#define FLAGS (ACTOR_FLAG_10)
-
-#define THIS ((EnInvadepohDemo*)thisx)
+#define FLAGS (ACTOR_FLAG_UPDATE_CULLING_DISABLED)
 
 void EnInvadepohDemo_Init(Actor* thisx, PlayState* play);
 void EnInvadepohDemo_Destroy(Actor* thisx, PlayState* play);
@@ -93,7 +91,7 @@ typedef enum {
     /* 4 */ EN_INVADEPOH_DEMO_UFO_CUEID_MAX
 } EnInvadepohDemoUfoCueId;
 
-ActorInit En_Invadepoh_Demo_InitVars = {
+ActorProfile En_Invadepoh_Demo_Profile = {
     /**/ ACTOR_EN_INVADEPOH_DEMO,
     /**/ ACTORCAT_PROP,
     /**/ FLAGS,
@@ -114,34 +112,39 @@ static s32 sCueTypes[EN_INVADEPOH_DEMO_TYPE_MAX] = {
 };
 
 static InitChainEntry sAlienInitChain[] = {
-    ICHAIN_F32(uncullZoneForward, 20000, ICHAIN_CONTINUE), ICHAIN_F32(uncullZoneScale, 500, ICHAIN_CONTINUE),
-    ICHAIN_F32(uncullZoneDownward, 600, ICHAIN_CONTINUE),  ICHAIN_F32(targetArrowOffset, 6000, ICHAIN_CONTINUE),
+    ICHAIN_F32(cullingVolumeDistance, 20000, ICHAIN_CONTINUE),
+    ICHAIN_F32(cullingVolumeScale, 500, ICHAIN_CONTINUE),
+    ICHAIN_F32(cullingVolumeDownward, 600, ICHAIN_CONTINUE),
+    ICHAIN_F32(lockOnArrowOffset, 6000, ICHAIN_CONTINUE),
     ICHAIN_VEC3F_DIV1000(scale, 10, ICHAIN_STOP),
 };
 
 static InitChainEntry sRomaniInitChain[] = {
-    ICHAIN_F32(uncullZoneForward, 20000, ICHAIN_CONTINUE), ICHAIN_F32(uncullZoneScale, 100, ICHAIN_CONTINUE),
-    ICHAIN_F32(uncullZoneDownward, 100, ICHAIN_CONTINUE),  ICHAIN_F32(targetArrowOffset, 1500, ICHAIN_CONTINUE),
-    ICHAIN_U8(targetMode, TARGET_MODE_6, ICHAIN_CONTINUE), ICHAIN_VEC3F_DIV1000(scale, 10, ICHAIN_STOP),
+    ICHAIN_F32(cullingVolumeDistance, 20000, ICHAIN_CONTINUE),
+    ICHAIN_F32(cullingVolumeScale, 100, ICHAIN_CONTINUE),
+    ICHAIN_F32(cullingVolumeDownward, 100, ICHAIN_CONTINUE),
+    ICHAIN_F32(lockOnArrowOffset, 1500, ICHAIN_CONTINUE),
+    ICHAIN_U8(attentionRangeType, ATTENTION_RANGE_6, ICHAIN_CONTINUE),
+    ICHAIN_VEC3F_DIV1000(scale, 10, ICHAIN_STOP),
 };
 
 static InitChainEntry sCowInitChain[] = {
-    ICHAIN_F32(uncullZoneForward, 20000, ICHAIN_CONTINUE),
-    ICHAIN_F32(uncullZoneScale, 200, ICHAIN_CONTINUE),
-    ICHAIN_F32(uncullZoneDownward, 300, ICHAIN_CONTINUE),
+    ICHAIN_F32(cullingVolumeDistance, 20000, ICHAIN_CONTINUE),
+    ICHAIN_F32(cullingVolumeScale, 200, ICHAIN_CONTINUE),
+    ICHAIN_F32(cullingVolumeDownward, 300, ICHAIN_CONTINUE),
     ICHAIN_VEC3F_DIV1000(scale, 10, ICHAIN_STOP),
 };
 
 static InitChainEntry sUfoInitChain[] = {
-    ICHAIN_F32(uncullZoneForward, 20000, ICHAIN_CONTINUE), ICHAIN_F32(uncullZoneScale, 1000, ICHAIN_CONTINUE),
-    ICHAIN_F32(uncullZoneDownward, 1000, ICHAIN_CONTINUE), ICHAIN_VEC3S(shape.rot, 0, ICHAIN_CONTINUE),
-    ICHAIN_F32(terminalVelocity, -100, ICHAIN_CONTINUE),   ICHAIN_VEC3F_DIV1000(scale, 800, ICHAIN_STOP),
+    ICHAIN_F32(cullingVolumeDistance, 20000, ICHAIN_CONTINUE), ICHAIN_F32(cullingVolumeScale, 1000, ICHAIN_CONTINUE),
+    ICHAIN_F32(cullingVolumeDownward, 1000, ICHAIN_CONTINUE),  ICHAIN_VEC3S(shape.rot, 0, ICHAIN_CONTINUE),
+    ICHAIN_F32(terminalVelocity, -100, ICHAIN_CONTINUE),       ICHAIN_VEC3F_DIV1000(scale, 800, ICHAIN_STOP),
 };
 
 static InitChainEntry sCowTailInitChain[] = {
-    ICHAIN_F32(uncullZoneForward, 20000, ICHAIN_CONTINUE),
-    ICHAIN_F32(uncullZoneScale, 100, ICHAIN_CONTINUE),
-    ICHAIN_F32(uncullZoneDownward, 100, ICHAIN_CONTINUE),
+    ICHAIN_F32(cullingVolumeDistance, 20000, ICHAIN_CONTINUE),
+    ICHAIN_F32(cullingVolumeScale, 100, ICHAIN_CONTINUE),
+    ICHAIN_F32(cullingVolumeDownward, 100, ICHAIN_CONTINUE),
     ICHAIN_VEC3F_DIV1000(scale, 10, ICHAIN_STOP),
 };
 
@@ -200,15 +203,15 @@ static EnInvadepohDemoFunc sDrawFuncs[EN_INVADEPOH_DEMO_TYPE_MAX] = {
     EnInvadepohDemo_CowTail_Draw, // EN_INVADEPOH_DEMO_TYPE_COW_TAIL
 };
 
-MtxF sAlienLeftEyeBeamMtxF_2;
-MtxF sAlienRightEyeBeamMtxF_2;
+MtxF sInvadepohDemoAlienLeftEyeBeamMtxF;
+MtxF sInvadepohDemoAlienRightEyeBeamMtxF;
 
 void EnInvadepohDemo_DoNothing(EnInvadepohDemo* this, PlayState* play) {
 }
 
 void EnInvadepohDemo_Alien_Init(EnInvadepohDemo* this, PlayState* play) {
     Actor_ProcessInitChain(&this->actor, sAlienInitChain);
-    this->actor.flags = ACTOR_FLAG_10 | ACTOR_FLAG_IGNORE_QUAKE | ACTOR_FLAG_80000000;
+    this->actor.flags = ACTOR_FLAG_UPDATE_CULLING_DISABLED | ACTOR_FLAG_IGNORE_QUAKE | ACTOR_FLAG_MINIMAP_ICON_ENABLED;
     this->objectSlot = Object_GetSlot(&play->objectCtx, OBJECT_UCH);
     if (this->objectSlot <= OBJECT_SLOT_NONE) {
         Actor_Kill(&this->actor);
@@ -556,7 +559,7 @@ void EnInvadepohDemo_CowTail_WaitForObject(EnInvadepohDemo* this, PlayState* pla
     }
 }
 
-void EnInvadepohDemo_Ufo_UpdateMatrixTranslation(Vec3f* translation) {
+void EnInvadepohDemo_Ufo_SetMatrixTranslation(Vec3f* translation) {
     MtxF* currentMatrix = Matrix_GetCurrent();
 
     currentMatrix->xw = translation->x;
@@ -564,15 +567,16 @@ void EnInvadepohDemo_Ufo_UpdateMatrixTranslation(Vec3f* translation) {
     currentMatrix->zw = translation->z;
 }
 
-s32 EnInvadepohDemo_Ufo_ShouldDrawLensFlare(PlayState* play, Vec3f* pos) {
+s32 EnInvadepohDemo_Ufo_LensFlareCheck(PlayState* play, Vec3f* pos) {
     Vec3f projectedPos;
     f32 invW;
 
     Actor_GetProjectedPos(play, pos, &projectedPos, &invW);
+
     if ((projectedPos.z > 1.0f) && (fabsf(projectedPos.x * invW) < 1.0f) && (fabsf(projectedPos.y * invW) < 1.0f)) {
         f32 screenPosX = PROJECTED_TO_SCREEN_X(projectedPos, invW);
         f32 screenPosY = PROJECTED_TO_SCREEN_Y(projectedPos, invW);
-        s32 wZ = (s32)(projectedPos.z * invW * 16352.0f) + 16352;
+        s32 wZ = (s32)(projectedPos.z * invW * ((G_MAXZ / 2) * 32)) + ((G_MAXZ / 2) * 32);
 
         if (wZ < SysCfb_GetZBufferInt(screenPosX, screenPosY)) {
             return true;
@@ -589,14 +593,14 @@ void EnInvadepohDemo_Alien_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dL
         Matrix_RotateZS(-0x53ED, MTXMODE_APPLY);
         Matrix_RotateYS(-0x3830, MTXMODE_APPLY);
         Matrix_Scale(1.0f, 1.0f, 1.5f, MTXMODE_APPLY);
-        Matrix_Get(&sAlienLeftEyeBeamMtxF_2);
+        Matrix_Get(&sInvadepohDemoAlienLeftEyeBeamMtxF);
         Matrix_Pop();
     } else if (limbIndex == ALIEN_LIMB_RIGHT_EYE) {
         Matrix_Push();
         Matrix_RotateZS(-0x53ED, MTXMODE_APPLY);
         Matrix_RotateYS(-0x47D0, MTXMODE_APPLY);
         Matrix_Scale(1.0f, 1.0f, 1.5f, MTXMODE_APPLY);
-        Matrix_Get(&sAlienRightEyeBeamMtxF_2);
+        Matrix_Get(&sInvadepohDemoAlienRightEyeBeamMtxF);
         Matrix_Pop();
     }
 }
@@ -631,16 +635,16 @@ void EnInvadepohDemo_Alien_Draw(EnInvadepohDemo* this, PlayState* play) {
         gDPPipeSync(gfx++);
         gDPSetPrimColor(gfx++, 0, 0xFF, 240, 180, 100, 60);
         gDPSetEnvColor(gfx++, 255, 255, 255, 150);
-        Matrix_Mult(&sAlienLeftEyeBeamMtxF_2, MTXMODE_NEW);
+        Matrix_Mult(&sInvadepohDemoAlienLeftEyeBeamMtxF, MTXMODE_NEW);
 
-        mtx = Matrix_NewMtx(play->state.gfxCtx);
+        mtx = Matrix_Finalize(play->state.gfxCtx);
 
         if (mtx != NULL) {
             gSPMatrix(gfx++, mtx, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
             gSPDisplayList(gfx++, gAlienEyeBeamDL);
-            Matrix_Mult(&sAlienRightEyeBeamMtxF_2, MTXMODE_NEW);
+            Matrix_Mult(&sInvadepohDemoAlienRightEyeBeamMtxF, MTXMODE_NEW);
 
-            mtx = Matrix_NewMtx(play->state.gfxCtx);
+            mtx = Matrix_Finalize(play->state.gfxCtx);
 
             if (mtx != NULL) {
                 gSPMatrix(gfx++, mtx, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
@@ -681,7 +685,7 @@ void EnInvadepohDemo_Alien_Draw(EnInvadepohDemo* this, PlayState* play) {
         gSPDisplayList(gfx++, gameplay_keep_DL_029CB0);
         gDPSetPrimColor(gfx++, 0, 0, 240, 180, 100, 100);
 
-        mtx = Matrix_NewMtx(play->state.gfxCtx);
+        mtx = Matrix_Finalize(play->state.gfxCtx);
 
         if (mtx != NULL) {
             gSPMatrix(gfx++, mtx, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
@@ -732,14 +736,15 @@ void EnInvadepohDemo_Ufo_Draw(EnInvadepohDemo* this, PlayState* play) {
     flashPos.x = this->actor.world.pos.x;
     flashPos.y = this->actor.world.pos.y;
     flashPos.z = this->actor.world.pos.z;
-    EnInvadepohDemo_Ufo_UpdateMatrixTranslation(&flashPos);
+
+    EnInvadepohDemo_Ufo_SetMatrixTranslation(&flashPos);
     Matrix_ReplaceRotation(&play->billboardMtxF);
     Matrix_RotateZS(this->ufoRotZ, MTXMODE_APPLY);
 
     OPEN_DISPS(play->state.gfxCtx);
 
     Gfx_SetupDL25_Xlu(play->state.gfxCtx);
-    mtx = Matrix_NewMtx(play->state.gfxCtx);
+    mtx = Matrix_Finalize(play->state.gfxCtx);
     if (mtx != NULL) {
         gSPMatrix(POLY_XLU_DISP++, mtx, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
         gDPSetPrimColor(POLY_XLU_DISP++, 0xFF, 0x80, 255, 255, 0, 180);
@@ -749,7 +754,7 @@ void EnInvadepohDemo_Ufo_Draw(EnInvadepohDemo* this, PlayState* play) {
 
     CLOSE_DISPS(play->state.gfxCtx);
 
-    if (EnInvadepohDemo_Ufo_ShouldDrawLensFlare(play, &flashPos)) {
+    if (EnInvadepohDemo_Ufo_LensFlareCheck(play, &flashPos)) {
         Environment_DrawLensFlare(play, &play->envCtx, &play->view, play->state.gfxCtx, flashPos, 20.0f, 9.0f, 0,
                                   false);
     }
@@ -763,7 +768,7 @@ void EnInvadepohDemo_CowTail_Draw(EnInvadepohDemo* this, PlayState* play) {
 
 void EnInvadepohDemo_Init(Actor* thisx, PlayState* play) {
     s32 pad;
-    EnInvadepohDemo* this = THIS;
+    EnInvadepohDemo* this = (EnInvadepohDemo*)thisx;
 
     this->cueIdOffset = EN_INVADEPOH_DEMO_GET_CUEID_OFFSET(&this->actor);
     this->type = EN_INVADEPOH_DEMO_GET_TYPE(&this->actor);
@@ -793,21 +798,21 @@ void EnInvadepohDemo_Init(Actor* thisx, PlayState* play) {
 
 void EnInvadepohDemo_Destroy(Actor* thisx, PlayState* play) {
     s32 pad;
-    EnInvadepohDemo* this = THIS;
+    EnInvadepohDemo* this = (EnInvadepohDemo*)thisx;
 
     sDestroyFuncs[this->type](this, play);
 }
 
 void EnInvadepohDemo_Update(Actor* thisx, PlayState* play) {
     s32 pad;
-    EnInvadepohDemo* this = THIS;
+    EnInvadepohDemo* this = (EnInvadepohDemo*)thisx;
 
     this->actionFunc(this, play);
 }
 
 void EnInvadepohDemo_Draw(Actor* thisx, PlayState* play) {
     s32 pad;
-    EnInvadepohDemo* this = THIS;
+    EnInvadepohDemo* this = (EnInvadepohDemo*)thisx;
 
     if ((this->cueId != EN_INVADEPOH_DEMO_CUEID_NONE) && (this->drawFlags & DRAW_FLAG_SHOULD_DRAW)) {
         sDrawFuncs[this->type](this, play);

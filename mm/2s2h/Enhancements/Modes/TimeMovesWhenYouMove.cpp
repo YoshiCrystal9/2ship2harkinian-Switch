@@ -47,10 +47,10 @@ void RegisterTimeMovesWhenYouMove() {
     //         lastTalkActor = player->talkActor;
     //     }
 
-    //     if (player->linearVelocity == 0 &&
+    //     if (player->speedXZ == 0 &&
     //         lastTalkActor != actor && !(player->stateFlags1 & PLAYER_STATE1_1) &&
     //         !(player->stateFlags1 & PLAYER_STATE1_2) && !(player->stateFlags1 & PLAYER_STATE1_20) &&
-    //         !(player->stateFlags1 & PLAYER_STATE1_40) && !(player->stateFlags1 & PLAYER_STATE1_80) &&
+    //         !(player->stateFlags1 & PLAYER_STATE1_TALKING) && !(player->stateFlags1 & PLAYER_STATE1_80) &&
     //         !(player->stateFlags1 & PLAYER_STATE1_100) && !(player->stateFlags1 & PLAYER_STATE1_400) &&
     //         !(player->stateFlags1 & PLAYER_STATE1_1000) && !(player->stateFlags1 & PLAYER_STATE1_2000000) &&
     //         !(player->stateFlags1 & PLAYER_STATE1_10000000) && !(player->stateFlags1 & PLAYER_STATE1_20000000) &&
@@ -62,7 +62,7 @@ void RegisterTimeMovesWhenYouMove() {
 
     COND_ID_HOOK(OnActorUpdate, ACTOR_PLAYER, CVAR, [](Actor* actor) {
         Player* player = GET_PLAYER(gPlayState);
-        bool timeShouldMove = (player->stateFlags2 & PLAYER_STATE2_8000000) || player->linearVelocity != 0.0f;
+        bool timeShouldMove = (player->stateFlags2 & PLAYER_STATE2_USING_OCARINA) || player->speedXZ != 0.0f;
 
         if (timeShouldMove && sStoredTimeOffset != DEFAULT_TIME_OFFSET) {
             gSaveContext.save.timeSpeedOffset = sStoredTimeOffset;

@@ -5,7 +5,7 @@ extern "C" {
 #include "variables.h"
 #include "overlays/actors/ovl_En_Fsn/z_en_fsn.h"
 #include "overlays/actors/ovl_En_GirlA/z_en_girla.h"
-void Player_TalkWithPlayer(PlayState* play, Actor* actor);
+void Player_StartTalking(PlayState* play, Actor* actor);
 void EnFsn_ResumeInteraction(EnFsn* enFsn, PlayState* play);
 }
 
@@ -19,8 +19,8 @@ void EndEnFsnDialogue(EnFsn* actor) {
     player->talkActor = &actor->actor;
     player->talkActorDistance = actor->actor.xzDistToPlayer;
     player->exchangeItemAction = PLAYER_IA_MINUS1;
-    Player_TalkWithPlayer(gPlayState, &actor->actor);
-    actor->flags |= ACTOR_FLAG_TALK_REQUESTED;
+    Player_StartTalking(gPlayState, &actor->actor);
+    actor->flags |= ACTOR_FLAG_TALK;
     actor->actionFunc = EnFsn_ResumeInteraction;
 }
 

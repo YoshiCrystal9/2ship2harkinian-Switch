@@ -6,9 +6,7 @@
 
 #include "z_obj_mu_pict.h"
 
-#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_FRIENDLY)
-
-#define THIS ((ObjMuPict*)thisx)
+#define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY)
 
 void ObjMuPict_Init(Actor* thisx, PlayState* play);
 void ObjMuPict_Destroy(Actor* thisx, PlayState* play);
@@ -25,7 +23,7 @@ void func_80C06D90(ObjMuPict* this, PlayState* play);
 void func_80C06DC8(ObjMuPict* this, PlayState* play);
 void func_80C06E88(ObjMuPict* this, PlayState* play);
 
-ActorInit Obj_Mu_Pict_InitVars = {
+ActorProfile Obj_Mu_Pict_Profile = {
     /**/ ACTOR_OBJ_MU_PICT,
     /**/ ACTORCAT_PROP,
     /**/ FLAGS,
@@ -38,7 +36,7 @@ ActorInit Obj_Mu_Pict_InitVars = {
 };
 
 void ObjMuPict_Init(Actor* thisx, PlayState* play) {
-    ObjMuPict* this = THIS;
+    ObjMuPict* this = (ObjMuPict*)thisx;
 
     if (!CHECK_WEEKEVENTREG(WEEKEVENTREG_75_20) && !CHECK_WEEKEVENTREG(WEEKEVENTREG_CLEARED_STONE_TOWER_TEMPLE)) {
         Actor_Kill(&this->actor);
@@ -46,7 +44,7 @@ void ObjMuPict_Init(Actor* thisx, PlayState* play) {
 
     func_80C06D90(this, play);
     this->unk14A = OBJMUPICT_GET_F000(&this->actor);
-    this->actor.targetMode = TARGET_MODE_6;
+    this->actor.attentionRangeType = ATTENTION_RANGE_6;
     this->actor.focus.pos = this->actor.world.pos;
     this->actor.focus.pos.y += 30.0f;
     this->unk148 = 0;
@@ -63,7 +61,7 @@ void func_80C06B5C(ObjMuPict* this) {
 void func_80C06B70(ObjMuPict* this, PlayState* play) {
     s16 yawDiff = this->actor.yawTowardsPlayer - this->actor.world.rot.y;
 
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+    if (Actor_TalkOfferAccepted(&this->actor, &play->state)) {
         if (this->actor.csId <= CS_ID_NONE) {
             func_80C06DC8(this, play);
             func_80C06CC4(this);
@@ -100,20 +98,20 @@ void func_80C06CC4(ObjMuPict* this) {
 void func_80C06CD8(ObjMuPict* this, PlayState* play) {
     switch (Message_GetState(&play->msgCtx)) {
         case TEXT_STATE_NONE:
-        case TEXT_STATE_1:
+        case TEXT_STATE_NEXT:
         case TEXT_STATE_CLOSING:
-        case TEXT_STATE_3:
+        case TEXT_STATE_FADING:
         case TEXT_STATE_CHOICE:
             break;
 
-        case TEXT_STATE_5:
+        case TEXT_STATE_EVENT:
             func_80C06E88(this, play);
             break;
 
         case TEXT_STATE_DONE:
             if (Message_ShouldAdvance(play)) {
                 func_80C06B5C(this);
-                if (this->actor.csId >= 0) {
+                if (this->actor.csId > CS_ID_NONE) {
                     CutsceneManager_Stop(this->actor.csId);
                 }
             }
@@ -191,7 +189,7 @@ void func_80C06E88(ObjMuPict* this, PlayState* play) {
 }
 
 void ObjMuPict_Update(Actor* thisx, PlayState* play) {
-    ObjMuPict* this = THIS;
+    ObjMuPict* this = (ObjMuPict*)thisx;
     this->actionFunc(this, play);
 }
 

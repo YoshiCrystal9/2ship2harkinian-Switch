@@ -19,21 +19,26 @@ u8 sBombersNotebookOpen;
 u8 sMotionBlurStatus;
 
 #include "variables.h"
-#include "macros.h"
+#include "z64play.h"
+
 #include "buffers.h"
 #include "idle.h"
+#include "regs.h"
 #include "sys_cfb.h"
+
 #include "z64bombers_notebook.h"
 #include "z64debug_display.h"
+#include "z64malloc.h"
 #include "z64quake.h"
 #include "z64rumble.h"
 #include "z64shrink_window.h"
 #include "z64view.h"
+#include "z64vismono.h"
+#include "z64visfbuf.h"
 
 #include "overlays/gamestates/ovl_daytelop/z_daytelop.h"
 #include "overlays/gamestates/ovl_opening/z_opening.h"
 #include "overlays/gamestates/ovl_file_choose/z_file_select.h"
-#include "overlays/kaleido_scope/ovl_kaleido_scope/z_kaleido_scope.h"
 #include "debug.h"
 #include "BenPort.h"
 #include "2s2h/GameInteractor/GameInteractor.h"
@@ -283,7 +288,7 @@ void Play_TriggerPictoPhoto(void) {
 
 void Play_TakePictoPhoto(PreRender* prerender) {
     PreRender_ApplyFilters(prerender);
-    Play_ConvertRgba16ToIntensityImage(gPictoPhotoI8, prerender->fbufSave, SCREEN_WIDTH, PICTO_PHOTO_TOPLEFT_X,
+    Play_ConvertRgba16ToIntensityImage(gHiBuffer.pictoPhotoI8, prerender->fbufSave, SCREEN_WIDTH, PICTO_PHOTO_TOPLEFT_X,
                                        PICTO_PHOTO_TOPLEFT_Y, (PICTO_PHOTO_TOPLEFT_X + PICTO_PHOTO_WIDTH) - 1,
                                        (PICTO_PHOTO_TOPLEFT_Y + PICTO_PHOTO_HEIGHT) - 1, 8);
 }
@@ -439,7 +444,7 @@ void Play_Destroy(GameState* thisx) {
     this->unk_18E64 = NULL;
     this->unk_18E68 = NULL;
     Effect_DestroyAll(this);
-    EffectSS_Clear(this);
+    EffectSs_ClearAll(this);
     CollisionCheck_DestroyContext(this, &this->colChkCtx);
 
     if (gTransitionTileState == TRANS_TILE_READY) {
@@ -1011,14 +1016,15 @@ void Play_UpdateMain(PlayState* this) {
             if (((gSaveContext.gameMode == GAMEMODE_NORMAL) &&
                  (((this->msgCtx.msgMode == MSGMODE_NONE) ||
                    (((this->msgCtx.currentTextId == 0xFF) && (this->msgCtx.msgMode == MSGMODE_TEXT_DONE)) &&
-                    (this->msgCtx.textboxEndType == TEXTBOX_ENDTYPE_41))) ||
+                    (this->msgCtx.textboxEndType == TEXTBOX_ENDTYPE_PAUSE_MENU))) ||
                   ((this->msgCtx.currentTextId >= 0x100) && (this->msgCtx.currentTextId <= 0x200)))) &&
                 (this->gameOverCtx.state == GAMEOVER_INACTIVE)) {
                 KaleidoSetup_Update(this);
             }
 
-            sp5C = (this->pauseCtx.state != 0) || (this->pauseCtx.debugEditor != DEBUG_EDITOR_NONE);
-            AnimationContext_Reset(&this->animationCtx);
+            sp5C = IS_PAUSED(&this->pauseCtx);
+
+            AnimTaskQueue_Reset(&this->animTaskQueue);
             Object_UpdateEntries(&this->objectCtx);
 
             if (!sp5C && (IREG(72) == 0)) {
@@ -1036,7 +1042,7 @@ void Play_UpdateMain(PlayState* this) {
                         this->envCtx.fillScreen = false;
                     }
                 } else {
-                    Room_HandleLoadCallbacks(this, &this->roomCtx);
+                    Room_ProcessRoomRequest(this, &this->roomCtx);
                     CollisionCheck_AT(this, &this->colChkCtx);
                     CollisionCheck_OC(this, &this->colChkCtx);
                     CollisionCheck_Damage(this, &this->colChkCtx);
@@ -1047,7 +1053,7 @@ void Play_UpdateMain(PlayState* this) {
                     Cutscene_UpdateManual(this, &this->csCtx);
                     Cutscene_UpdateScripted(this, &this->csCtx);
                     Effect_UpdateAll(this);
-                    EffectSS_UpdateAllParticles(this);
+                    EffectSs_UpdateAll(this);
                     EffFootmark_Update(this);
                 }
             } else {
@@ -1058,7 +1064,7 @@ void Play_UpdateMain(PlayState* this) {
             Room_Noop(this, &this->roomCtx.prevRoom, &input[1], 1);
             Skybox_Update(&this->skyboxCtx);
 
-            if ((this->pauseCtx.state != 0) || (this->pauseCtx.debugEditor != DEBUG_EDITOR_NONE)) {
+            if (IS_PAUSED(&this->pauseCtx)) {
                 KaleidoScopeCall_Update(this);
             } else if (this->gameOverCtx.state != GAMEOVER_INACTIVE) {
                 GameOver_Update(this);
@@ -1066,7 +1072,7 @@ void Play_UpdateMain(PlayState* this) {
 
             Message_Update(this);
             Interface_Update(this);
-            AnimationContext_Update(this, &this->animationCtx);
+            AnimTaskQueue_Update(this, &this->animTaskQueue);
             SoundSource_UpdateAll(this);
             ShrinkWindow_Update(this->state.framerateDivisor);
             TransitionFade_Update(&this->unk_18E48, this->state.framerateDivisor);
@@ -1133,7 +1139,7 @@ void Play_Update(PlayState* this) {
 }
 
 void Play_PostWorldDraw(PlayState* this) {
-    if ((this->pauseCtx.state != 0) || (this->pauseCtx.debugEditor != DEBUG_EDITOR_NONE)) {
+    if (IS_PAUSED(&this->pauseCtx)) {
         KaleidoScopeCall_Draw(this);
     }
 
@@ -1141,8 +1147,7 @@ void Play_PostWorldDraw(PlayState* this) {
         Interface_Draw(this);
     }
 
-    if (((this->pauseCtx.state == 0) && (this->pauseCtx.debugEditor == DEBUG_EDITOR_NONE)) ||
-        (this->msgCtx.currentTextId != 0xFF)) {
+    if (!IS_PAUSED(&this->pauseCtx) || (this->msgCtx.currentTextId != 0xFF)) {
         Message_Draw(this);
     }
 
@@ -1207,7 +1212,7 @@ void Play_DrawMain(PlayState* this) {
     }
 
     if ((R_PAUSE_BG_PRERENDER_STATE <= PAUSE_BG_PRERENDER_SETUP) && (gTransitionTileState <= TRANS_TILE_SETUP)) {
-        if (this->skyboxCtx.skyboxShouldDraw || (this->roomCtx.curRoom.roomShape->base.type == ROOM_SHAPE_TYPE_IMAGE)) {
+        if (this->skyboxCtx.shouldDraw || (this->roomCtx.curRoom.roomShape->base.type == ROOM_SHAPE_TYPE_IMAGE)) {
             func_8012CF0C(gfxCtx, false, true, 0, 0, 0);
         } else {
             func_8012CF0C(gfxCtx, true, true, this->lightCtx.fogColor[0], this->lightCtx.fogColor[1],
@@ -1359,14 +1364,14 @@ void Play_DrawMain(PlayState* this) {
                 goto PostWorldDraw;
             }
 
-            if (!this->unk_18844) {
+            if (!this->soaringCsOrSoTCsPlaying) {
                 if (1) {
                     if (((u32)this->skyboxId != SKYBOX_NONE) && !this->envCtx.skyboxDisabled) {
                         if ((this->skyboxId == SKYBOX_NORMAL_SKY) || (this->skyboxId == SKYBOX_3)) {
                             Environment_UpdateSkybox(this->skyboxId, &this->envCtx, &this->skyboxCtx);
                             Skybox_Draw(&this->skyboxCtx, gfxCtx, this->skyboxId, this->envCtx.skyboxBlend,
                                         this->view.eye.x, this->view.eye.y, this->view.eye.z);
-                        } else if (!this->skyboxCtx.skyboxShouldDraw) {
+                        } else if (!this->skyboxCtx.shouldDraw) {
                             Skybox_Draw(&this->skyboxCtx, gfxCtx, this->skyboxId, 0, this->view.eye.x, this->view.eye.y,
                                         this->view.eye.z);
                         }
@@ -1385,7 +1390,8 @@ void Play_DrawMain(PlayState* this) {
                 Lights_Draw(lights, gfxCtx);
 
                 if (1) {
-                    u32 roomDrawFlags = ((1) ? 1 : 0) | (((void)0, 1) ? 2 : 0); // FAKE:
+                    //! FAKE:
+                    u32 roomDrawFlags = ((1) ? 1 : 0) | (((void)0, 1) ? 2 : 0);
 
                     if (CVarGetInteger("gEnhancements.Graphics.DisableSceneGeometryDistanceCheck", 0)) {
                         gSPSetExtraGeometryMode(POLY_OPA_DISP++, G_EX_ALWAYS_EXECUTE_BRANCH);
@@ -1404,7 +1410,7 @@ void Play_DrawMain(PlayState* this) {
                     }
                 }
 
-                if (this->skyboxCtx.skyboxShouldDraw) {
+                if (this->skyboxCtx.shouldDraw) {
                     Vec3f quakeOffset;
 
                     if (1) {
@@ -1637,7 +1643,7 @@ void Play_Main(GameState* thisx) {
     CutsceneManager_ClearWaiting();
 }
 
-s32 Play_InCsMode(PlayState* this) {
+bool Play_InCsMode(PlayState* this) {
     return (this->csCtx.state != CS_STATE_IDLE) || Player_InCsMode(this);
 }
 
@@ -1730,7 +1736,7 @@ void Play_SpawnScene(PlayState* this, s32 sceneId, s32 spawn) {
     scene->unk_D = 0;
     gSegments[2] = VIRTUAL_TO_PHYSICAL(this->sceneSegment);
     Play_InitScene(this, spawn);
-    Room_AllocateAndLoad(this, &this->roomCtx);
+    Room_SetupFirstRoom(this, &this->roomCtx);
 #endif
 }
 
@@ -2006,8 +2012,7 @@ s16 Play_GetOriginalSceneId(s16 sceneId) {
  * Copies the flags set in ActorContext over to the current scene's CycleSceneFlags, usually using the original scene
  * number. Exception for Inverted Stone Tower Temple, which uses its own.
  */
-void Play_SaveCycleSceneFlags(GameState* thisx) {
-    PlayState* this = (PlayState*)thisx;
+void Play_SaveCycleSceneFlags(PlayState* this) {
     CycleSceneFlags* cycleSceneFlags;
 
     cycleSceneFlags = &gSaveContext.cycleSceneFlags[Play_GetOriginalSceneId(this->sceneId)];
@@ -2023,9 +2028,8 @@ void Play_SaveCycleSceneFlags(GameState* thisx) {
     cycleSceneFlags->clearedRoom = this->actorCtx.sceneFlags.clearedRoom;
 }
 
-void Play_SetRespawnData(GameState* thisx, s32 respawnMode, u16 entrance, s32 roomIndex, s32 playerParams, Vec3f* pos,
+void Play_SetRespawnData(PlayState* this, s32 respawnMode, u16 entrance, s32 roomIndex, s32 playerParams, Vec3f* pos,
                          s16 yaw) {
-    PlayState* this = (PlayState*)thisx;
 
     gSaveContext.respawn[respawnMode].entrance = Entrance_Create(entrance >> 9, 0, entrance & 0xF);
     gSaveContext.respawn[respawnMode].roomIndex = roomIndex;
@@ -2037,12 +2041,11 @@ void Play_SetRespawnData(GameState* thisx, s32 respawnMode, u16 entrance, s32 ro
     gSaveContext.respawn[respawnMode].tempCollectFlags = this->actorCtx.sceneFlags.collectible[2];
 }
 
-void Play_SetupRespawnPoint(GameState* thisx, s32 respawnMode, s32 playerParams) {
-    PlayState* this = (PlayState*)thisx;
+void Play_SetupRespawnPoint(PlayState* this, s32 respawnMode, s32 playerParams) {
     Player* player = GET_PLAYER(this);
 
     if (this->sceneId != SCENE_KAKUSIANA) { // Grottos
-        Play_SetRespawnData(&this->state, respawnMode, ((void)0, gSaveContext.save.entrance), this->roomCtx.curRoom.num,
+        Play_SetRespawnData(this, respawnMode, ((void)0, gSaveContext.save.entrance), this->roomCtx.curRoom.num,
                             playerParams, &player->actor.world.pos, player->actor.shape.rot.y);
     }
 }
@@ -2057,9 +2060,7 @@ void func_80169ECC(PlayState* this) {
 
 // Gameplay_TriggerVoidOut ?
 // Used by Player, Ikana_Rotaryroom, Bji01, Kakasi, LiftNuts, Test4, Warptag, WarpUzu, Roomtimer
-void func_80169EFC(GameState* thisx) {
-    PlayState* this = (PlayState*)thisx;
-
+void func_80169EFC(PlayState* this) {
     gSaveContext.respawn[RESPAWN_MODE_DOWN].tempSwitchFlags = this->actorCtx.sceneFlags.switches[2];
     gSaveContext.respawn[RESPAWN_MODE_DOWN].unk_18 = this->actorCtx.sceneFlags.collectible[1];
     gSaveContext.respawn[RESPAWN_MODE_DOWN].tempCollectFlags = this->actorCtx.sceneFlags.collectible[2];
@@ -2072,9 +2073,7 @@ void func_80169EFC(GameState* thisx) {
 
 // Gameplay_LoadToLastEntrance ?
 // Used by game_over and Test7
-void func_80169F78(GameState* thisx) {
-    PlayState* this = (PlayState*)thisx;
-
+void func_80169F78(PlayState* this) {
     this->nextEntrance = gSaveContext.respawn[RESPAWN_MODE_TOP].entrance;
     gSaveContext.respawnFlag = -1;
     func_80169ECC(this);
@@ -2084,20 +2083,16 @@ void func_80169F78(GameState* thisx) {
 
 // Gameplay_TriggerRespawn ?
 // Used for void by Wallmaster, Deku Shrine doors. Also used by Player, Kaleido, DoorWarp1
-void func_80169FDC(GameState* thisx) {
-    func_80169F78(thisx);
+void func_80169FDC(PlayState* this) {
+    func_80169F78(this);
 }
 
-s32 Play_CamIsNotFixed(GameState* thisx) {
-    PlayState* this = (PlayState*)thisx;
-
+s32 Play_CamIsNotFixed(PlayState* this) {
     return this->roomCtx.curRoom.roomShape->base.type != ROOM_SHAPE_TYPE_IMAGE;
 }
 
-s32 FrameAdvance_IsEnabled(GameState* thisx) {
-    PlayState* this = (PlayState*)thisx;
-
-    return this->frameAdvCtx.enabled != 0;
+s32 FrameAdvance_IsEnabled(PlayState* this) {
+    return this->frameAdvCtx.enabled != false;
 }
 
 // Unused, unchanged from OoT, which uses it only in one Camera function.
@@ -2109,8 +2104,7 @@ s32 FrameAdvance_IsEnabled(GameState* thisx) {
  * @param[out] yaw Facing angle of the actor, or reverse if in the back room.
  * @return true if \p actor is a door and the sides are in different rooms, false otherwise
  */
-s32 func_8016A02C(GameState* thisx, Actor* actor, s16* yaw) {
-    PlayState* this = (PlayState*)thisx;
+s32 func_8016A02C(PlayState* this, Actor* actor, s16* yaw) {
     TransitionActorEntry* transitionActor;
     s8 frontRoom;
 
@@ -2184,8 +2178,7 @@ s16 sPlayerCsIdToCsCamId[] = {
  * Otherwise, if there is an ActorCutscene where csCamId matches the appropriate element of sPlayerCsIdToCsCamId,
  * set the corresponding playerActorCsId (and possibly change its priority for the zeroth one).
  */
-void Play_AssignPlayerCsIdsFromScene(GameState* thisx, s32 spawnCsId) {
-    PlayState* this = (PlayState*)thisx;
+void Play_AssignPlayerCsIdsFromScene(PlayState* this, s32 spawnCsId) {
     s32 i;
     s16* curPlayerCsId = this->playerCsIds;
     s16* csCamId = sPlayerCsIdToCsCamId;
@@ -2211,7 +2204,7 @@ void Play_AssignPlayerCsIdsFromScene(GameState* thisx, s32 spawnCsId) {
 }
 
 // Set values to fill screen
-void Play_FillScreen(GameState* thisx, s16 fillScreenOn, u8 red, u8 green, u8 blue, u8 alpha) {
+void Play_FillScreen(PlayState* this, s16 fillScreenOn, u8 red, u8 green, u8 blue, u8 alpha) {
     R_PLAY_FILL_SCREEN_ON = fillScreenOn;
     R_PLAY_FILL_SCREEN_R = red;
     R_PLAY_FILL_SCREEN_G = green;
@@ -2227,9 +2220,9 @@ void Play_Init(GameState* thisx) {
     s32 zAllocSize;
     Player* player;
     s32 i;
-    s32 spawn;
-    u8 sceneLayer;
     s32 scene;
+    u8 sceneLayer;
+    s32 pad2;
 
     if ((gSaveContext.respawnFlag == -4) || (gSaveContext.respawnFlag == -0x63)) {
         if (CHECK_EVENTINF(EVENTINF_TRIGGER_DAYTELOP)) {
@@ -2261,7 +2254,6 @@ void Play_Init(GameState* thisx) {
 
     if ((gSaveContext.nextCutsceneIndex == 0xFFEF) || (gSaveContext.nextCutsceneIndex == 0xFFF0)) {
         scene = ((void)0, gSaveContext.save.entrance) >> 9;
-        spawn = (((void)0, gSaveContext.save.entrance) >> 4) & 0x1F;
 
         if (CHECK_WEEKEVENTREG(WEEKEVENTREG_CLEARED_SNOWHEAD_TEMPLE)) {
             if (scene == ENTR_SCENE_MOUNTAIN_VILLAGE_WINTER) {
@@ -2302,9 +2294,8 @@ void Play_Init(GameState* thisx) {
                 gSaveContext.nextCutsceneIndex = 0xFFF4;
             }
         }
-        //! FAKE:
-        gSaveContext.save.entrance =
-            Entrance_Create(((void)0, scene), spawn, ((void)0, gSaveContext.save.entrance) & 0xF);
+        gSaveContext.save.entrance = Entrance_Create(scene, (((void)0, gSaveContext.save.entrance) >> 4) & 0x1F,
+                                                     ((void)0, gSaveContext.save.entrance) & 0xF);
     }
 
     GameState_Realloc(&this->state, 0);
@@ -2340,9 +2331,9 @@ void Play_Init(GameState* thisx) {
     SoundSource_InitAll(this);
     EffFootmark_Init(this);
     Effect_Init(this);
-    EffectSS_Init(this, 100);
+    EffectSs_InitInfo(this, 100);
     CollisionCheck_InitContext(this, &this->colChkCtx);
-    AnimationContext_Reset(&this->animationCtx);
+    AnimTaskQueue_Reset(&this->animTaskQueue);
     Cutscene_InitContext(this, &this->csCtx);
 
     if (gSaveContext.nextCutsceneIndex != 0xFFEF) {
@@ -2359,7 +2350,7 @@ void Play_Init(GameState* thisx) {
         gSaveContext.skyboxTime = gSaveContext.nextDayTime;
     }
 
-    if ((gSaveContext.save.time >= CLOCK_TIME(18, 0)) || (gSaveContext.save.time < CLOCK_TIME(6, 30))) {
+    if ((CURRENT_TIME >= CLOCK_TIME(18, 0)) || (CURRENT_TIME < CLOCK_TIME(6, 30))) {
         gSaveContext.save.isNight = true;
     } else {
         gSaveContext.save.isNight = false;
@@ -2410,10 +2401,10 @@ void Play_Init(GameState* thisx) {
     PreRender_SetValues(&this->pauseBgPreRender, gCfbWidth, gCfbHeight, NULL, NULL);
 
     this->unk_18E64 = gWorkBuffer;
-    this->pictoPhotoI8 = gPictoPhotoI8;
-    this->unk_18E68 = D_80784600;
-    this->unk_18E58 = D_80784600;
-    this->unk_18E60 = D_80784600;
+    this->pictoPhotoI8 = gHiBuffer.pictoPhotoI8;
+    this->unk_18E68 = gHiBuffer.D_80784600;
+    this->unk_18E58 = gHiBuffer.D_80784600;
+    this->unk_18E60 = gHiBuffer.D_80784600;
     gTransitionTileState = TRANS_TILE_OFF;
     this->transitionMode = TRANS_MODE_OFF;
     D_801D0D54 = false;
@@ -2429,7 +2420,7 @@ void Play_Init(GameState* thisx) {
     this->worldCoverAlpha = 0;
     this->bgCoverAlpha = 0;
     this->haltAllActors = false;
-    this->unk_18844 = false;
+    this->soaringCsOrSoTCsPlaying = false;
 
     if (gSaveContext.gameMode != GAMEMODE_TITLE_SCREEN) {
         if (gSaveContext.nextTransitionType == TRANS_NEXT_TYPE_DEFAULT) {
@@ -2472,10 +2463,11 @@ void Play_Init(GameState* thisx) {
 
     Actor_InitContext(this, &this->actorCtx, this->linkActorEntry);
 
-    while (!Room_HandleLoadCallbacks(this, &this->roomCtx)) {}
+    // Busyloop until the room loads
+    while (!Room_ProcessRoomRequest(this, &this->roomCtx)) {}
 
-    if ((CURRENT_DAY != 0) && ((this->roomCtx.curRoom.behaviorType1 == ROOM_BEHAVIOR_TYPE1_1) ||
-                               (this->roomCtx.curRoom.behaviorType1 == ROOM_BEHAVIOR_TYPE1_5))) {
+    if ((CURRENT_DAY != 0) &&
+        ((this->roomCtx.curRoom.type == ROOM_TYPE_DUNGEON) || (this->roomCtx.curRoom.type == ROOM_TYPE_BOSS))) {
         Actor_Spawn(&this->actorCtx, this, ACTOR_EN_TEST4, 0.0f, 0.0f, 0.0f, 0, 0, 0, 0);
     }
 
@@ -2491,9 +2483,9 @@ void Play_Init(GameState* thisx) {
     CutsceneManager_StoreCamera(&this->mainCamera);
     Interface_SetSceneRestrictions(this);
     Environment_PlaySceneSequence(this);
-    gSaveContext.seqId = this->sequenceCtx.seqId;
-    gSaveContext.ambienceId = this->sequenceCtx.ambienceId;
-    AnimationContext_Update(this, &this->animationCtx);
+    gSaveContext.seqId = this->sceneSequences.seqId;
+    gSaveContext.ambienceId = this->sceneSequences.ambienceId;
+    AnimTaskQueue_Update(this, &this->animTaskQueue);
     // BENTODO: crash in Message_FindMessage
     Cutscene_HandleEntranceTriggers(this);
     gSaveContext.respawnFlag = 0;

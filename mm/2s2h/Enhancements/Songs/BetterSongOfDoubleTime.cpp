@@ -129,8 +129,8 @@ void OnPlayerUpdate(Actor* actor) {
                 gPlayState->transitionTrigger = TRANS_TRIGGER_START;
                 gPlayState->transitionType = TRANS_TYPE_FADE_BLACK_FAST;
 
-                Play_SetRespawnData(&gPlayState->state, RESPAWN_MODE_RETURN, gSaveContext.save.entrance,
-                                    gPlayState->roomCtx.curRoom.num, PLAYER_PARAMS(0xFF, PLAYER_INITMODE_B),
+                Play_SetRespawnData(gPlayState, RESPAWN_MODE_RETURN, gSaveContext.save.entrance,
+                                    gPlayState->roomCtx.curRoom.num, PLAYER_PARAMS(0xFF, PLAYER_START_MODE_B),
                                     &player->actor.world.pos, player->actor.world.rot.y);
                 gSaveContext.nextTransitionType = TRANS_TYPE_FADE_BLACK;
                 gSaveContext.respawnFlag = 2;
@@ -374,9 +374,9 @@ void RegisterBetterSongOfDoubleTime() {
 
         gPlayState->msgCtx.ocarinaMode = OCARINA_MODE_PROCESS_DOUBLE_TIME;
         sActivelyChangingTime = true;
-        sOriginalTime = gSaveContext.save.time;
+        sOriginalTime = CURRENT_TIME;
         sOriginalDay = gSaveContext.save.day;
-        sSelectedTime = gSaveContext.save.time;
+        sSelectedTime = CURRENT_TIME;
         sSelectedDay = gSaveContext.save.day;
 
         onPlayerUpdateHookId = GameInteractor::Instance->RegisterGameHookForID<GameInteractor::OnActorUpdate>(

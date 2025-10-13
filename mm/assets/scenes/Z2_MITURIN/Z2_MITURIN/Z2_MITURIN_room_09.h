@@ -42,4 +42,10 @@ static const ALIGN_ASSET(2) char Z2_MITURIN_room_09DL_008150[] = dZ2_MITURIN_roo
 #define dZ2_MITURIN_room_09DL_009800 "__OTR__scenes/nonmq/Z2_MITURIN_scene/Z2_MITURIN_room_09DL_009800"
 static const ALIGN_ASSET(2) char Z2_MITURIN_room_09DL_009800[] = dZ2_MITURIN_room_09DL_009800;
 
+#define dZ2_MITURIN_room_09DL_009F70 "__OTR__scenes/nonmq/Z2_MITURIN_scene/Z2_MITURIN_room_09DL_009F70"
+static const ALIGN_ASSET(2) char Z2_MITURIN_room_09DL_009F70[] = dZ2_MITURIN_room_09DL_009F70;
+
+#define dZ2_MITURIN_room_09DL_00ADD0 "__OTR__scenes/nonmq/Z2_MITURIN_scene/Z2_MITURIN_room_09DL_00ADD0"
+static const ALIGN_ASSET(2) char Z2_MITURIN_room_09DL_00ADD0[] = dZ2_MITURIN_room_09DL_00ADD0;
+
 #endif // Z2_MITURIN_Z2_MITURIN_ROOM_09_H

@@ -207,8 +207,8 @@ static const ALIGN_ASSET(2) char object_cs_Tex_00F220[] = dobject_cs_Tex_00F220;
 #define dobject_cs_Tex_00F620 "__OTR__objects/object_cs/object_cs_Tex_00F620"
 static const ALIGN_ASSET(2) char object_cs_Tex_00F620[] = dobject_cs_Tex_00F620;
 
-#define dobject_cs_Matanimheader_00F6E4 "__OTR__objects/object_cs/object_cs_Matanimheader_00F6E4"
-static const ALIGN_ASSET(2) char object_cs_Matanimheader_00F6E4[] = dobject_cs_Matanimheader_00F6E4;
+#define dobject_cs_Matanimheader_00F6D4 "__OTR__objects/object_cs/object_cs_Matanimheader_00F6D4"
+static const ALIGN_ASSET(2) char object_cs_Matanimheader_00F6D4[] = dobject_cs_Matanimheader_00F6D4;
 
 #define dobject_cs_Skel_00F82C "__OTR__objects/object_cs/object_cs_Skel_00F82C"
 static const ALIGN_ASSET(2) char object_cs_Skel_00F82C[] = dobject_cs_Skel_00F82C;

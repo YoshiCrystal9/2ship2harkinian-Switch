@@ -7,9 +7,7 @@
 #include "z_oceff_storm.h"
 #include "BenPort.h"
 
-#define FLAGS (ACTOR_FLAG_10 | ACTOR_FLAG_20 | ACTOR_FLAG_2000000)
-
-#define THIS ((OceffStorm*)thisx)
+#define FLAGS (ACTOR_FLAG_UPDATE_CULLING_DISABLED | ACTOR_FLAG_DRAW_CULLING_DISABLED | ACTOR_FLAG_UPDATE_DURING_OCARINA)
 
 void OceffStorm_Init(Actor* thisx, PlayState* play);
 void OceffStorm_Destroy(Actor* thisx, PlayState* play);
@@ -20,7 +18,7 @@ void OceffStorm_DefaultAction(OceffStorm* this, PlayState* play);
 void func_80981B48(OceffStorm* this, PlayState* play);
 void OceffStorm_Draw2(Actor* thisx, PlayState* play);
 
-ActorInit Oceff_Storm_InitVars = {
+ActorProfile Oceff_Storm_Profile = {
     /**/ ACTOR_OCEFF_STORM,
     /**/ ACTORCAT_ITEMACTION,
     /**/ FLAGS,
@@ -64,7 +62,7 @@ s32 func_8098176C(PlayState* play) {
 void OceffStorm_Init(Actor* thisx, PlayState* play) {
     s32 pad[2];
     Player* player = GET_PLAYER(play);
-    OceffStorm* this = THIS;
+    OceffStorm* this = (OceffStorm*)thisx;
 
     OceffStorm_SetupAction(this, OceffStorm_DefaultAction);
 
@@ -93,7 +91,7 @@ void OceffStorm_Init(Actor* thisx, PlayState* play) {
 }
 
 void OceffStorm_Destroy(Actor* thisx, PlayState* play) {
-    OceffStorm* this = THIS;
+    OceffStorm* this = (OceffStorm*)thisx;
 
     Magic_Reset(play);
 }
@@ -163,7 +161,7 @@ void func_80981B48(OceffStorm* this, PlayState* play) {
 }
 
 void OceffStorm_Update(Actor* thisx, PlayState* play) {
-    OceffStorm* this = THIS;
+    OceffStorm* this = (OceffStorm*)thisx;
 
     this->actor.shape.rot.y = Camera_GetCamDirYaw(GET_ACTIVE_CAM(play));
     this->actionFunc(this, play);
@@ -173,7 +171,7 @@ void OceffStorm_Update(Actor* thisx, PlayState* play) {
 
 void OceffStorm_Draw2(Actor* thisx, PlayState* play) {
     s32 scroll = play->state.frames & 0xFFF;
-    OceffStorm* this = THIS;
+    OceffStorm* this = (OceffStorm*)thisx;
 
     OPEN_DISPS(play->state.gfxCtx);
 
@@ -192,7 +190,7 @@ void OceffStorm_Draw2(Actor* thisx, PlayState* play) {
     // 2S2H [Cosmetic] Changed to Wide variant to support widescreen
     gSPWideTextureRectangle(POLY_XLU_DISP++, OTRGetRectDimensionFromLeftEdge(0) << 2, 0,
                             OTRGetRectDimensionFromRightEdge(SCREEN_WIDTH) << 2, SCREEN_HEIGHT << 2, G_TX_RENDERTILE, 0,
-                            0, (s32)(0.13671875 * (1 << 10)), (s32)(-0.13671875 * (1 << 10)));
+                            0, (s32)(0.13671875f * (1 << 10)), (s32)(-0.13671875f * (1 << 10)));
 
     CLOSE_DISPS(play->state.gfxCtx);
 }
@@ -217,7 +215,7 @@ void OceffStorm_Draw(Actor* thisx, PlayState* play) {
     vtxPtr[0].v.cn[3] = vtxPtr[6].v.cn[3] = vtxPtr[16].v.cn[3] = vtxPtr[25].v.cn[3] = this->vtxAlpha >> 1;
     vtxPtr[10].v.cn[3] = vtxPtr[22].v.cn[3] = this->vtxAlpha;
 
-    gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    MATRIX_FINALIZE_AND_LOAD(POLY_XLU_DISP++, play->state.gfxCtx);
 
     gSPDisplayList(POLY_XLU_DISP++, &sSongOfStormsCylinderMaterialDL);
     gSPDisplayList(POLY_XLU_DISP++, Gfx_TwoTexScroll(play->state.gfxCtx, G_TX_RENDERTILE, scroll * 4, (0 - scroll) * 8,

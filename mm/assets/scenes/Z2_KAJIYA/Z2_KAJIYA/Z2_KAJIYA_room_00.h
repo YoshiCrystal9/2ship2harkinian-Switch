@@ -99,4 +99,10 @@ static const ALIGN_ASSET(2) char Z2_KAJIYA_room_00DL_00D750[] = dZ2_KAJIYA_room_
 #define dZ2_KAJIYA_room_00DL_00C2C0 "__OTR__scenes/nonmq/Z2_KAJIYA_scene/Z2_KAJIYA_room_00DL_00C2C0"
 static const ALIGN_ASSET(2) char Z2_KAJIYA_room_00DL_00C2C0[] = dZ2_KAJIYA_room_00DL_00C2C0;
 
+#define dZ2_KAJIYA_room_00DL_00D478 "__OTR__scenes/nonmq/Z2_KAJIYA_scene/Z2_KAJIYA_room_00DL_00D478"
+static const ALIGN_ASSET(2) char Z2_KAJIYA_room_00DL_00D478[] = dZ2_KAJIYA_room_00DL_00D478;
+
+#define dZ2_KAJIYA_room_00DL_00D8D0 "__OTR__scenes/nonmq/Z2_KAJIYA_scene/Z2_KAJIYA_room_00DL_00D8D0"
+static const ALIGN_ASSET(2) char Z2_KAJIYA_room_00DL_00D8D0[] = dZ2_KAJIYA_room_00DL_00D8D0;
+
 #endif // Z2_KAJIYA_Z2_KAJIYA_ROOM_00_H

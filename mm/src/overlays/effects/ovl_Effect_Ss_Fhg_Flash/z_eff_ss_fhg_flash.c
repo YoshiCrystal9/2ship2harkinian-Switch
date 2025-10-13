@@ -19,7 +19,7 @@ u32 EffectSsFhgFlash_Init(PlayState* play, u32 index, EffectSs* this, void* init
 void EffectSsFhgFlash_Update(PlayState* play, u32 index, EffectSs* this);
 void EffectSsFhgFlash_Draw(PlayState* play, u32 index, EffectSs* this);
 
-EffectSsInit Effect_Ss_Fhg_Flash_InitVars = {
+EffectSsProfile Effect_Ss_Fhg_Flash_Profile = {
     EFFECT_SS_FHG_FLASH,
     EffectSsFhgFlash_Init,
 };
@@ -74,7 +74,7 @@ void EffectSsFhgFlash_Draw(PlayState* play, u32 index, EffectSs* this) {
     gDPSetPrimColor(POLY_XLU_DISP++, 0, 0, 255, 255, 255, this->rAlpha);
     gDPSetEnvColor(POLY_XLU_DISP++, 0, 255, 155, 0);
     Matrix_RotateZS(this->rXZRot, MTXMODE_APPLY);
-    gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    MATRIX_FINALIZE_AND_LOAD(POLY_XLU_DISP++, gfxCtx);
 
     gSPDisplayList(POLY_XLU_DISP++, this->gfx);
 
@@ -93,21 +93,24 @@ void EffectSsFhgFlash_Update(PlayState* play, u32 index, EffectSs* this) {
         this->pos.x = player->bodyPartsPos[randBodyPart].x + Rand_CenteredFloat(10.0f);
         this->pos.y = player->bodyPartsPos[randBodyPart].y + Rand_CenteredFloat(15.0f);
         this->pos.z = player->bodyPartsPos[randBodyPart].z + Rand_CenteredFloat(10.0f);
-    } else if ((this->rParams >= FHGFLASH_SHOCK_GOHT_2) && (this->rParams <= FHGFLASH_SHOCK_GOHT_6)) {
+    } else if ((this->rParams >= FHGFLASH_SHOCK_GOHT_BACK_LEFT_THIGH) &&
+               (this->rParams <= FHGFLASH_SHOCK_GOHT_FRONT_RIGHT_UPPER_LEG)) {
         s32 pad;
-        Vec3f* bodyPartPos;
+        Vec3f* effectPos;
         BossHakugin* goht = (BossHakugin*)this->actor;
-        s32 gohtIndex = goht->unk_0191 - 3;
+        s32 effectIndex = goht->malfunctionEffectIndex - 3;
 
-        if (gohtIndex < 0) {
-            bodyPartPos = &goht->unk_3158[this->rParams - FHGFLASH_SHOCK_GOHT_2][12].unk_00;
+        if (effectIndex < 0) {
+            effectPos = &goht->malfunctionEffects[this->rParams - FHGFLASH_SHOCK_GOHT_BACK_LEFT_THIGH]
+                                                 [GOHT_MALFUNCTION_EFFECTS_PER_TYPE - 3]
+                                                     .pos;
         } else {
-            bodyPartPos = &goht->unk_3158[this->rParams - FHGFLASH_SHOCK_GOHT_2][gohtIndex].unk_00;
+            effectPos = &goht->malfunctionEffects[this->rParams - FHGFLASH_SHOCK_GOHT_BACK_LEFT_THIGH][effectIndex].pos;
         }
 
-        this->pos.x = Rand_CenteredFloat(70.0f) + bodyPartPos->x;
-        this->pos.y = Rand_CenteredFloat(70.0f) + bodyPartPos->y;
-        this->pos.z = Rand_CenteredFloat(70.0f) + bodyPartPos->z;
+        this->pos.x = Rand_CenteredFloat(70.0f) + effectPos->x;
+        this->pos.y = Rand_CenteredFloat(70.0f) + effectPos->y;
+        this->pos.z = Rand_CenteredFloat(70.0f) + effectPos->z;
     }
     if (this->life < 100) {
         this->rAlpha -= 50;

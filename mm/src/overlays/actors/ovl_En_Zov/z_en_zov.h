@@ -23,13 +23,13 @@ typedef struct EnZov {
     /* 0x2A0 */ ColliderCylinder collider;
     /* 0x2EC */ s16 unk_2EC;
     /* 0x2EE */ s16 unk_2EE;
-    /* 0x2F0 */ Vec3s unk_2F0;
-    /* 0x2F6 */ Vec3s unk_2F6;
+    /* 0x2F0 */ Vec3s headRot;
+    /* 0x2F6 */ Vec3s torsoRot;
     /* 0x2FC */ Vec3f unk_2FC;
     /* 0x308 */ Vec3f unk_308;
     /* 0x314 */ Vec3f unk_314;
     /* 0x320 */ u16 unk_320;
-    /* 0x322 */ s16 unk_322;
+    /* 0x322 */ s16 animIndex;
     /* 0x324 */ s16 unk_324;
     /* 0x326 */ s16 cueId;
     /* 0x328 */ s16 csIdList[2];

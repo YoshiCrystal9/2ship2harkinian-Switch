@@ -9,8 +9,6 @@
 
 #define FLAGS 0x00000000
 
-#define THIS ((ItemBHeart*)thisx)
-
 void ItemBHeart_Init(Actor* thisx, PlayState* play);
 void ItemBHeart_Destroy(Actor* thisx, PlayState* play);
 void ItemBHeart_Update(Actor* thisx, PlayState* play);
@@ -18,7 +16,7 @@ void ItemBHeart_Draw(Actor* thisx, PlayState* play);
 
 void ItemBHeart_UpdateModel(ItemBHeart* this, PlayState* play);
 
-ActorInit Item_B_Heart_InitVars = {
+ActorProfile Item_B_Heart_Profile = {
     /**/ ACTOR_ITEM_B_HEART,
     /**/ ACTORCAT_BOSS,
     /**/ FLAGS,
@@ -32,13 +30,13 @@ ActorInit Item_B_Heart_InitVars = {
 
 static InitChainEntry sInitChain[] = {
     ICHAIN_VEC3F_DIV1000(scale, 0, ICHAIN_CONTINUE),
-    ICHAIN_F32(uncullZoneForward, 4000, ICHAIN_CONTINUE),
-    ICHAIN_F32(uncullZoneScale, 800, ICHAIN_CONTINUE),
-    ICHAIN_F32(uncullZoneDownward, 800, ICHAIN_STOP),
+    ICHAIN_F32(cullingVolumeDistance, 4000, ICHAIN_CONTINUE),
+    ICHAIN_F32(cullingVolumeScale, 800, ICHAIN_CONTINUE),
+    ICHAIN_F32(cullingVolumeDownward, 800, ICHAIN_STOP),
 };
 
 void ItemBHeart_Init(Actor* thisx, PlayState* play) {
-    ItemBHeart* this = THIS;
+    ItemBHeart* this = (ItemBHeart*)thisx;
 
     if (Flags_GetCollectible(play, 0x1F)) {
         Actor_Kill(&this->actor);
@@ -61,7 +59,7 @@ void ItemBHeart_Destroy(Actor* thisx, PlayState* play) {
  * Adjusts size and handles collection (if of proper baseScale)
  */
 void ItemBHeart_Update(Actor* thisx, PlayState* play) {
-    ItemBHeart* this = THIS;
+    ItemBHeart* this = (ItemBHeart*)thisx;
 
     ItemBHeart_UpdateModel(this, play);
 
@@ -88,7 +86,7 @@ void ItemBHeart_UpdateModel(ItemBHeart* this, PlayState* play) {
  * Draw translucently when in front of a boss warp portal
  */
 void ItemBHeart_Draw(Actor* thisx, PlayState* play) {
-    ItemBHeart* this = THIS;
+    ItemBHeart* this = (ItemBHeart*)thisx;
     Actor* actorIt;
     u8 drawTranslucent = false;
 
@@ -106,12 +104,12 @@ void ItemBHeart_Draw(Actor* thisx, PlayState* play) {
 
     if (drawTranslucent || (this->actor.world.rot.y != 0)) {
         Gfx_SetupDL25_Xlu(play->state.gfxCtx);
-        gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+        MATRIX_FINALIZE_AND_LOAD(POLY_XLU_DISP++, play->state.gfxCtx);
         gSPDisplayList(POLY_XLU_DISP++, &gGiHeartBorderDL);
         gSPDisplayList(POLY_XLU_DISP++, &gGiHeartContainerDL);
     } else {
         Gfx_SetupDL25_Opa(play->state.gfxCtx);
-        gSPMatrix(POLY_OPA_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+        MATRIX_FINALIZE_AND_LOAD(POLY_OPA_DISP++, play->state.gfxCtx);
         gSPDisplayList(POLY_OPA_DISP++, &gGiHeartBorderDL);
         gSPDisplayList(POLY_OPA_DISP++, &gGiHeartContainerDL);
     }

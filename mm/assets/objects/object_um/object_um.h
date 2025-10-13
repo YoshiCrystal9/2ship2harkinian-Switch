@@ -84,6 +84,9 @@ static const ALIGN_ASSET(2) char object_um_Tex_006D10[] = dobject_um_Tex_006D10;
 #define dobject_um_Tex_007510 "__OTR__objects/object_um/object_um_Tex_007510"
 static const ALIGN_ASSET(2) char object_um_Tex_007510[] = dobject_um_Tex_007510;
 
+#define dobject_um_Matanimheader_007D10 "__OTR__objects/object_um/object_um_Matanimheader_007D10"
+static const ALIGN_ASSET(2) char object_um_Matanimheader_007D10[] = dobject_um_Matanimheader_007D10;
+
 #define dobject_um_Colheader_007E20 "__OTR__objects/object_um/object_um_Colheader_007E20"
 static const ALIGN_ASSET(2) char object_um_Colheader_007E20[] = dobject_um_Colheader_007E20;
 

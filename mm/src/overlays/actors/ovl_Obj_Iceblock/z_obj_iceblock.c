@@ -8,9 +8,7 @@
 #include "objects/object_ice_block/object_ice_block.h"
 #include "2s2h/GameInteractor/GameInteractor.h"
 
-#define FLAGS (ACTOR_FLAG_10)
-
-#define THIS ((ObjIceblock*)thisx)
+#define FLAGS (ACTOR_FLAG_UPDATE_CULLING_DISABLED)
 
 void ObjIceblock_Init(Actor* thisx, PlayState* play);
 void ObjIceblock_Destroy(Actor* thisx, PlayState* play);
@@ -46,7 +44,7 @@ void func_80A26B64(ObjIceblock* this, PlayState* play);
 void func_80A26B74(ObjIceblock* this, PlayState* play);
 void func_80A26BF8(ObjIceblock* this, PlayState* play);
 
-ActorInit Obj_Iceblock_InitVars = {
+ActorProfile Obj_Iceblock_Profile = {
     /**/ ACTOR_OBJ_ICEBLOCK,
     /**/ ACTORCAT_BG,
     /**/ FLAGS,
@@ -60,7 +58,7 @@ ActorInit Obj_Iceblock_InitVars = {
 
 static ColliderCylinderInit sCylinderInit = {
     {
-        COLTYPE_NONE,
+        COL_MATERIAL_NONE,
         AT_NONE,
         AC_ON | AC_TYPE_PLAYER,
         OC1_ON | OC1_NO_PUSH | OC1_TYPE_PLAYER,
@@ -68,11 +66,11 @@ static ColliderCylinderInit sCylinderInit = {
         COLSHAPE_CYLINDER,
     },
     {
-        ELEMTYPE_UNK0,
+        ELEM_MATERIAL_UNK0,
         { 0x00000000, 0x00, 0x00 },
         { 0x00000800, 0x00, 0x00 },
-        TOUCH_NONE | TOUCH_SFX_NORMAL,
-        BUMP_ON,
+        ATELEM_NONE | ATELEM_SFX_NORMAL,
+        ACELEM_ON,
         OCELEM_ON,
     },
     { 44, 62, -31, { 0, 0, 0 } },
@@ -244,8 +242,8 @@ void func_80A23938(ObjIceblock* this) {
     Actor* thisx = &this->dyna.actor;
 
     if (this->unk_1B0 & 0x80) {
-        Math_ScaledStepToS(&thisx->shape.rot.x, 0, 400);
-        Math_ScaledStepToS(&thisx->shape.rot.z, 0, 400);
+        Math_ScaledStepToS(&thisx->shape.rot.x, 0, 0x190);
+        Math_ScaledStepToS(&thisx->shape.rot.z, 0, 0x190);
     } else {
         ObjIceBlockUnkStruct4* ptr = &this->unk_27C;
         f32 phi_f0;
@@ -259,13 +257,13 @@ void func_80A23938(ObjIceblock* this) {
         }
 
         Math_StepToF(&ptr->unk_1C, phi_f0, 0.04f);
-        ptr->unk_22 += (s16)(ptr->unk_20 * -0.02f);
+        ptr->unk_22 += TRUNCF_BINANG(ptr->unk_20 * -0.02f);
         ptr->unk_22 = func_80A23090(ptr->unk_22, 50, 800);
         ptr->unk_20 += ptr->unk_22;
 
         temp = ptr->unk_16 - ptr->unk_14;
 
-        ptr->unk_18 += (s16)(temp * -0.04f * thisx->xzDistToPlayer * thisx->scale.x * (1.0f / 600.0f));
+        ptr->unk_18 += TRUNCF_BINANG(temp * -0.04f * thisx->xzDistToPlayer * thisx->scale.x * (1.0f / 600.0f));
         ptr->unk_18 = func_80A23090(ptr->unk_18, 50, 800);
         ptr->unk_16 += ptr->unk_18;
 
@@ -310,7 +308,7 @@ s32 func_80A23D08(ObjIceblock* this, PlayState* play) {
     };
     s32 pad3;
     ObjIceBlockUnkStruct2* ptr;
-    WaterBox* spC4;
+    WaterBox* waterBox;
     s32 i;
     s32 spBC;
     s32 spB8;
@@ -350,7 +348,7 @@ s32 func_80A23D08(ObjIceblock* this, PlayState* play) {
             }
         }
 
-        if (WaterBox_GetSurface1_2(play, &play->colCtx, spA4.x, spA4.z, &ptr->unk_0C, &spC4)) {
+        if (WaterBox_GetSurface1_2(play, &play->colCtx, spA4.x, spA4.z, &ptr->unk_0C, &waterBox)) {
             if (phi_f20 < ptr->unk_0C) {
                 spB8 = i;
                 phi_f20 = ptr->unk_0C;
@@ -422,7 +420,7 @@ s32 func_80A24118(ObjIceblock* this, PlayState* play, f32 arg2, Vec3f* arg3) {
     Vec3f spC4;
     Vec3f spB8;
     s32 pad[2];
-    s32 spAC;
+    s32 bgId;
     CollisionPoly* spA8;
     s32 ret;
     s32 i;
@@ -460,7 +458,7 @@ s32 func_80A24118(ObjIceblock* this, PlayState* play, f32 arg2, Vec3f* arg3) {
         spD0.y = spDC.y;
         spD0.z = temp_f26 + spDC.z;
 
-        if (BgCheck_EntityLineTest3(&play->colCtx, &spDC, &spD0, &spB8, &spA8, true, false, false, true, &spAC,
+        if (BgCheck_EntityLineTest3(&play->colCtx, &spDC, &spD0, &spB8, &spA8, true, false, false, true, &bgId,
                                     &this->dyna.actor, 0.0f)) {
             temp_f20 = Math3D_Vec3fDistSq(&spDC, &spB8);
             if (temp_f20 < phi_f20) {
@@ -497,7 +495,7 @@ s32 func_80A243E0(ObjIceblock* this, PlayState* play, Vec3f* arg0) {
     Vec3f spC8;
     s16 temp_s6;
     f32 temp_f28;
-    s32 spBC;
+    s32 bgId;
     CollisionPoly* spB8;
     s32 ret;
     f32 temp_f30;
@@ -536,7 +534,7 @@ s32 func_80A243E0(ObjIceblock* this, PlayState* play, Vec3f* arg0) {
         spE0.y = spEC.y;
         spE0.z = temp_f30 + spEC.z;
 
-        if (BgCheck_EntityLineTest3(&play->colCtx, &spEC, &spE0, &spC8, &spB8, true, false, false, true, &spBC,
+        if (BgCheck_EntityLineTest3(&play->colCtx, &spEC, &spE0, &spC8, &spB8, true, false, false, true, &bgId,
                                     &this->dyna.actor, 0.0f)) {
             temp_f12 = Math3D_Vec3fDistSq(&spEC, &spC8);
             if (temp_f12 < phi_f22) {
@@ -576,7 +574,7 @@ s32 func_80A246D8(ObjIceblock* this, PlayState* play, Vec3f* arg2) {
     Vec3f spB4;
     Vec3f spA8;
     Vec3f sp9C;
-    s32 sp98;
+    s32 bgId;
     CollisionPoly* sp94;
     ObjIceblock* temp_v0;
     f32 temp_f20 = (this->dyna.actor.scale.z * 300.0f) + 2.0f;
@@ -600,10 +598,10 @@ s32 func_80A246D8(ObjIceblock* this, PlayState* play, Vec3f* arg2) {
             spB4.y = spC0.y;
             spB4.z = (Math_CosS(phi_s3) * temp_f20) + spC0.z;
 
-            if (BgCheck_EntityLineTest3(&play->colCtx, &spC0, &spB4, &sp9C, &sp94, true, false, false, true, &sp98,
+            if (BgCheck_EntityLineTest3(&play->colCtx, &spC0, &spB4, &sp9C, &sp94, true, false, false, true, &bgId,
                                         &this->dyna.actor, 0.0f)) {
                 ret = true;
-                temp_v0 = (ObjIceblock*)DynaPoly_GetActor(&play->colCtx, sp98);
+                temp_v0 = (ObjIceblock*)DynaPoly_GetActor(&play->colCtx, bgId);
                 if ((temp_v0 != NULL) && (temp_v0->dyna.actor.id == ACTOR_OBJ_ICEBLOCK) && (temp_v0->unk_2B0 == 3)) {
                     temp_v0->unk_1B0 |= 0x80;
                 }
@@ -671,7 +669,7 @@ void func_80A24B74(ObjIceblock* this, PlayState* play) {
     s32 pad;
     Vec3f sp20;
 
-    if (!(this->dyna.actor.flags & ACTOR_FLAG_40)) {
+    if (!(this->dyna.actor.flags & ACTOR_FLAG_INSIDE_CULLING_VOLUME)) {
         return;
     }
 
@@ -689,14 +687,14 @@ void func_80A24BDC(ObjIceblock* this, PlayState* play, f32 arg2, f32 arg3, s32 a
     s16 phi_s0;
     s32 phi_s1 = 0;
 
-    if (this->dyna.actor.flags & ACTOR_FLAG_40) {
+    if (this->dyna.actor.flags & ACTOR_FLAG_INSIDE_CULLING_VOLUME) {
         sp88.y = this->unk_244;
         temp_f22 = 0x10000 / arg4;
 
         for (i = 0, phi_s0 = 0; i < arg4; i++, phi_s0 += temp_f22) {
             temp_f20 = ((Rand_ZeroOne() * 5.0f) + 40.0f) * arg2;
-            sp88.x = (Math_SinS((s32)(Rand_ZeroOne() * temp_f22) + phi_s0) * temp_f20) + this->dyna.actor.world.pos.x;
-            sp88.z = (Math_CosS((s32)(Rand_ZeroOne() * temp_f22) + phi_s0) * temp_f20) + this->dyna.actor.world.pos.z;
+            sp88.x = this->dyna.actor.world.pos.x + (Math_SinS((s32)(Rand_ZeroOne() * temp_f22) + phi_s0) * temp_f20);
+            sp88.z = this->dyna.actor.world.pos.z + (Math_CosS((s32)(Rand_ZeroOne() * temp_f22) + phi_s0) * temp_f20);
             EffectSsGSplash_Spawn(play, &sp88, NULL, NULL, 0, ((Rand_ZeroOne() * 60.0f) + 320.0f) * arg3);
         }
     }
@@ -725,7 +723,7 @@ void func_80A24DD0(ObjIceblock* this, PlayState* play) {
     }
 
     this->unk_2A2++;
-    if (this->dyna.actor.flags & ACTOR_FLAG_40) {
+    if (this->dyna.actor.flags & ACTOR_FLAG_INSIDE_CULLING_VOLUME) {
         if (this->unk_2A2 >= 0x2E) {
             phi_f22 = 1.0f;
         } else {
@@ -766,7 +764,7 @@ void func_80A2508C(ObjIceblock* this, PlayState* play) {
     f32 temp_f0;
     s32 temp_v0;
 
-    if (this->dyna.actor.flags & ACTOR_FLAG_40) {
+    if (this->dyna.actor.flags & ACTOR_FLAG_INSIDE_CULLING_VOLUME) {
         temp_v0 = (s32)(this->dyna.actor.scale.y * 130.0f) - 3;
         if (temp_v0 > 0) {
             this->unk_2AC += temp_v0;
@@ -898,14 +896,14 @@ static InitChainEntry sInitChain[] = {
     ICHAIN_F32_DIV1000(gravity, -1800, ICHAIN_CONTINUE),
     ICHAIN_F32_DIV1000(terminalVelocity, -26000, ICHAIN_CONTINUE),
     ICHAIN_VEC3F_DIV1000(scale, 100, ICHAIN_CONTINUE),
-    ICHAIN_F32(uncullZoneForward, 4000, ICHAIN_CONTINUE),
-    ICHAIN_F32(uncullZoneScale, 150, ICHAIN_CONTINUE),
-    ICHAIN_F32(uncullZoneDownward, 200, ICHAIN_STOP),
+    ICHAIN_F32(cullingVolumeDistance, 4000, ICHAIN_CONTINUE),
+    ICHAIN_F32(cullingVolumeScale, 150, ICHAIN_CONTINUE),
+    ICHAIN_F32(cullingVolumeDownward, 200, ICHAIN_STOP),
 };
 
 void ObjIceblock_Init(Actor* thisx, PlayState* play) {
     s32 pad;
-    ObjIceblock* this = THIS;
+    ObjIceblock* this = (ObjIceblock*)thisx;
     Actor* parent;
     s32 pad2;
 
@@ -961,7 +959,7 @@ void ObjIceblock_Init(Actor* thisx, PlayState* play) {
 }
 
 void ObjIceblock_Destroy(Actor* thisx, PlayState* play) {
-    ObjIceblock* this = THIS;
+    ObjIceblock* this = (ObjIceblock*)thisx;
 
     DynaPoly_DeleteBgActor(play, &play->colCtx.dyna, this->dyna.bgId);
     Collider_DestroyCylinder(play, &this->collider);
@@ -1010,7 +1008,7 @@ void func_80A2586C(ObjIceblock* this, PlayState* play) {
 
     func_80A2319C(this, this->dyna.actor.scale.x);
 
-    if (this->dyna.actor.flags & ACTOR_FLAG_40) {
+    if (this->dyna.actor.flags & ACTOR_FLAG_INSIDE_CULLING_VOLUME) {
         func_80A2339C(play, &this->dyna.actor.world.pos, (this->dyna.actor.scale.x + 0.05f) * 0.6666666f, 1.0f, 3);
     }
 }
@@ -1030,7 +1028,7 @@ void func_80A25994(ObjIceblock* this, PlayState* play) {
         return;
     }
 
-    if (this->dyna.actor.flags & ACTOR_FLAG_40) {
+    if (this->dyna.actor.flags & ACTOR_FLAG_INSIDE_CULLING_VOLUME) {
         func_80A2339C(play, &this->dyna.actor.world.pos, this->dyna.actor.scale.x, 1.2f, 15);
         if (ICEBLOCK_GET_ICEBERG(&this->dyna.actor)) {
             sp30.x = this->dyna.actor.world.pos.x;
@@ -1195,7 +1193,6 @@ void func_80A25FD4(ObjIceblock* this, PlayState* play) {
     s32 pad;
     s32 sp30;
     s32 sp2C;
-    Vec3f sp20;
 
     func_80A23690(this);
     func_80A23F90(this, play);
@@ -1205,16 +1202,18 @@ void func_80A25FD4(ObjIceblock* this, PlayState* play) {
 
     if (sp2C == -1) {
         sp30 = false;
-    } else if (!(this->unk_1B0 & 2) && (this->unk_26E[sp2C] >= 11) && !func_80A24118(this, play, 2.0f, &sp20) &&
-               !Player_InCsMode(play)) {
-        func_80A23370(this, sp2C);
-        func_80A260E8(this);
-        sp30 = false;
-        Player_SetCsActionWithHaltedActors(play, &this->dyna.actor, PLAYER_CSACTION_WAIT);
-        this->unk_1B0 |= 1;
-    }
+    } else {
+        Vec3f sp20;
 
-    if (this) {}
+        if (!(this->unk_1B0 & 2) && (this->unk_26E[sp2C] >= 11) && !func_80A24118(this, play, 2.0f, &sp20) &&
+            !Player_InCsMode(play)) {
+            func_80A23370(this, sp2C);
+            func_80A260E8(this);
+            sp30 = false;
+            Player_SetCsActionWithHaltedActors(play, &this->dyna.actor, PLAYER_CSACTION_WAIT);
+            this->unk_1B0 |= 1;
+        }
+    }
 
     if (sp30) {
         func_80A2541C(this, play);
@@ -1223,7 +1222,7 @@ void func_80A25FD4(ObjIceblock* this, PlayState* play) {
 }
 
 void func_80A260E8(ObjIceblock* this) {
-    static f32 D_80A26FC0[] = { 14.0, -14.0, 14.0, -14.0 };
+    static f32 D_80A26FC0[] = { 14.0f, -14.0f, 14.0f, -14.0f };
 
     this->unk_260 = D_80A26FC0[this->unk_26C];
     this->unk_25C = 0.0f;
@@ -1418,7 +1417,7 @@ void func_80A266E0(ObjIceblock* this, PlayState* play) {
 
 void ObjIceblock_Update(Actor* thisx, PlayState* play) {
     s32 pad;
-    ObjIceblock* this = THIS;
+    ObjIceblock* this = (ObjIceblock*)thisx;
     Actor* parent = this->dyna.actor.parent;
 
     if (parent != NULL) {
@@ -1448,7 +1447,7 @@ void ObjIceblock_Update(Actor* thisx, PlayState* play) {
         }
     }
 
-    if (((this->collider.base.acFlags & AC_HIT) && (this->collider.info.acHitInfo->toucher.dmgFlags & 0x800)) ||
+    if (((this->collider.base.acFlags & AC_HIT) && (this->collider.elem.acHitElem->atDmgInfo.dmgFlags & 0x800)) ||
         (this->meltTimer == 0)) {
         this->meltTimer = -1;
         this->unk_2B0 = 4;
@@ -1488,7 +1487,7 @@ void ObjIceblock_Update(Actor* thisx, PlayState* play) {
         if (ICEBLOCK_GET_ICEBERG(&this->dyna.actor) && (this->unk_2B4 > 0.0f)) {
             this->collider.base.ocFlags1 &= ~OC1_NO_PUSH;
             this->collider.base.ocFlags1 |= (OC1_TYPE_2 | OC1_TYPE_1 | OC1_TYPE_PLAYER);
-            this->collider.info.bumper.dmgFlags |=
+            this->collider.elem.acDmgInfo.dmgFlags |=
                 (0x800000 | 0x400000 | 0x10000 | 0x2000 | 0x1000 | 0x800 | 0x200 | 0x100 | 0x80 | 0x20 | 0x10 | 0x2);
             CollisionCheck_SetOC(play, &play->colChkCtx, &this->collider.base);
         }
@@ -1539,7 +1538,7 @@ void func_80A26BF8(ObjIceblock* this, PlayState* play) {
                                      this->dyna.actor.world.pos.z, &sp70);
         Matrix_Scale(ptr->unk_04, ptr->unk_08, ptr->unk_0C, MTXMODE_APPLY);
 
-        gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+        MATRIX_FINALIZE_AND_LOAD(POLY_XLU_DISP++, play->state.gfxCtx);
         gSPDisplayList(POLY_XLU_DISP++, gIceBlockCubeDL);
     }
 
@@ -1549,7 +1548,7 @@ void func_80A26BF8(ObjIceblock* this, PlayState* play) {
                                      this->dyna.actor.world.pos.z, &this->dyna.actor.shape.rot);
         Matrix_Scale(this->unk_2B4, this->unk_2B4, this->unk_2B4, MTXMODE_APPLY);
 
-        gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+        MATRIX_FINALIZE_AND_LOAD(POLY_XLU_DISP++, play->state.gfxCtx);
         gSPDisplayList(POLY_XLU_DISP++, gIceBlockIceBergDL);
     }
 
@@ -1557,7 +1556,7 @@ void func_80A26BF8(ObjIceblock* this, PlayState* play) {
 }
 
 void ObjIceblock_Draw(Actor* thisx, PlayState* play) {
-    ObjIceblock* this = THIS;
+    ObjIceblock* this = (ObjIceblock*)thisx;
 
     AnimatedMat_Draw(play, sCubeSublimatingAirTexMat);
     this->extendedDrawFunc(this, play);

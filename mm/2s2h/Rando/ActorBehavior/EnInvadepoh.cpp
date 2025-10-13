@@ -1,7 +1,7 @@
 #include "ActorBehavior.h"
 
 void Rando::ActorBehavior::InitEnInvadepohBehavior() {
-    // This is the same block found for non-scripted actors in OfferGetItem.cpp, but without Player_TalkWithPlayer().
+    // This is the same block found for non-scripted actors in OfferGetItem.cpp, but without Player_StartTalking().
     COND_VB_SHOULD(VB_GIVE_ITEM_FROM_OFFER, IS_RANDO, {
         GetItemId* item = va_arg(args, GetItemId*);
         Actor* actor = va_arg(args, Actor*);

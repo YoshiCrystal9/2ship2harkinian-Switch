@@ -39,4 +39,7 @@ static const ALIGN_ASSET(2) char Z2_LAST_GORON_room_01TLUT_004498[] = dZ2_LAST_G
 #define dZ2_LAST_GORON_room_01Tex_003C58 "__OTR__scenes/nonmq/Z2_LAST_GORON_scene/Z2_LAST_GORON_room_01Tex_003C58"
 static const ALIGN_ASSET(2) char Z2_LAST_GORON_room_01Tex_003C58[] = dZ2_LAST_GORON_room_01Tex_003C58;
 
+#define dZ2_LAST_GORON_room_01DL_001438 "__OTR__scenes/nonmq/Z2_LAST_GORON_scene/Z2_LAST_GORON_room_01DL_001438"
+static const ALIGN_ASSET(2) char Z2_LAST_GORON_room_01DL_001438[] = dZ2_LAST_GORON_room_01DL_001438;
+
 #endif // Z2_LAST_GORON_Z2_LAST_GORON_ROOM_01_H

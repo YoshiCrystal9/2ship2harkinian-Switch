@@ -9,9 +9,7 @@
 #include "objects/gameplay_keep/gameplay_keep.h"
 #include "2s2h/GameInteractor/GameInteractor.h"
 
-#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_FRIENDLY)
-
-#define THIS ((ObjWarpstone*)thisx)
+#define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY)
 
 void ObjWarpstone_Init(Actor* thisx, PlayState* play);
 void ObjWarpstone_Destroy(Actor* thisx, PlayState* play);
@@ -23,7 +21,7 @@ s32 ObjWarpstone_BeginOpeningCutscene(ObjWarpstone* this, PlayState* play);
 s32 ObjWarpstone_PlayOpeningCutscene(ObjWarpstone* this, PlayState* play);
 s32 ObjWarpstone_OpenedIdle(ObjWarpstone* this, PlayState* play);
 
-ActorInit Obj_Warpstone_InitVars = {
+ActorProfile Obj_Warpstone_Profile = {
     /**/ ACTOR_OBJ_WARPSTONE,
     /**/ ACTORCAT_ITEMACTION,
     /**/ FLAGS,
@@ -37,7 +35,7 @@ ActorInit Obj_Warpstone_InitVars = {
 
 static ColliderCylinderInit sCylinderInit = {
     {
-        COLTYPE_METAL,
+        COL_MATERIAL_METAL,
         AT_NONE,
         AC_ON | AC_HARD | AC_TYPE_PLAYER,
         OC1_ON | OC1_TYPE_ALL,
@@ -45,18 +43,18 @@ static ColliderCylinderInit sCylinderInit = {
         COLSHAPE_CYLINDER,
     },
     {
-        ELEMTYPE_UNK2,
+        ELEM_MATERIAL_UNK2,
         { 0x00100000, 0x00, 0x00 },
         { 0x01000202, 0x00, 0x00 },
-        TOUCH_NONE | TOUCH_SFX_NORMAL,
-        BUMP_ON | BUMP_HOOKABLE,
+        ATELEM_NONE | ATELEM_SFX_NORMAL,
+        ACELEM_ON | ACELEM_HOOKABLE,
         OCELEM_ON,
     },
     { 20, 60, 0, { 0, 0, 0 } },
 };
 
 static InitChainEntry sInitChain[] = {
-    ICHAIN_U8(targetMode, TARGET_MODE_1, ICHAIN_STOP),
+    ICHAIN_U8(attentionRangeType, ATTENTION_RANGE_1, ICHAIN_STOP),
 };
 
 static Gfx* sOwlStatueDLs[] = { gOwlStatueClosedDL, gOwlStatueOpenedDL };
@@ -66,15 +64,15 @@ void ObjWarpstone_SetupAction(ObjWarpstone* this, ObjWarpstoneActionFunc actionF
 }
 
 void ObjWarpstone_Init(Actor* thisx, PlayState* play) {
-    ObjWarpstone* this = THIS;
+    ObjWarpstone* this = (ObjWarpstone*)thisx;
 
     Actor_ProcessInitChain(&this->dyna.actor, sInitChain);
     Collider_InitAndSetCylinder(play, &this->collider, &this->dyna.actor, &sCylinderInit);
     Actor_SetFocus(&this->dyna.actor, 40.0f);
 
     if (!GameInteractor_Should(VB_OWL_STATUE_BE_ACTIVE,
-                               OBJ_WARPSTONE_IS_ACTIVATED(OBJ_WARPSTONE_GET_ID(&this->dyna.actor)),
-                               OBJ_WARPSTONE_GET_ID(&this->dyna.actor))) {
+                               GET_OWL_STATUE_ACTIVATED(OBJ_WARPSTONE_GET_OWL_WARP_ID(&this->dyna.actor)),
+                               OBJ_WARPSTONE_GET_OWL_WARP_ID(&this->dyna.actor))) {
         ObjWarpstone_SetupAction(this, ObjWarpstone_ClosedIdle);
     } else {
         ObjWarpstone_SetupAction(this, ObjWarpstone_OpenedIdle);
@@ -83,7 +81,7 @@ void ObjWarpstone_Init(Actor* thisx, PlayState* play) {
 }
 
 void ObjWarpstone_Destroy(Actor* thisx, PlayState* play) {
-    ObjWarpstone* this = THIS;
+    ObjWarpstone* this = (ObjWarpstone*)thisx;
 
     Collider_DestroyCylinder(play, &this->collider);
 }
@@ -113,8 +111,8 @@ s32 ObjWarpstone_BeginOpeningCutscene(ObjWarpstone* this, PlayState* play) {
 s32 ObjWarpstone_PlayOpeningCutscene(ObjWarpstone* this, PlayState* play) {
     if (this->openingCSTimer++ >= OBJ_WARPSTONE_TIMER_ACTIVATE_THRESHOLD) {
         CutsceneManager_Stop(this->dyna.actor.csId);
-        if (GameInteractor_Should(VB_OWL_STATUE_ACTIVATE, true, OBJ_WARPSTONE_GET_ID(&this->dyna.actor))) {
-            Sram_ActivateOwl(OBJ_WARPSTONE_GET_ID(&this->dyna.actor));
+        if (GameInteractor_Should(VB_OWL_STATUE_ACTIVATE, true, OBJ_WARPSTONE_GET_OWL_WARP_ID(&this->dyna.actor))) {
+            Sram_ActivateOwl(OBJ_WARPSTONE_GET_OWL_WARP_ID(&this->dyna.actor));
         }
         ObjWarpstone_SetupAction(this, ObjWarpstone_OpenedIdle);
     } else if (this->openingCSTimer < OBJ_WARPSTONE_TIMER_OPEN_THRESHOLD) {
@@ -137,7 +135,7 @@ s32 ObjWarpstone_OpenedIdle(ObjWarpstone* this, PlayState* play) {
 }
 
 void ObjWarpstone_Update(Actor* thisx, PlayState* play) {
-    ObjWarpstone* this = THIS;
+    ObjWarpstone* this = (ObjWarpstone*)thisx;
     s32 pad;
 
     if (this->isTalking) {
@@ -149,12 +147,12 @@ void ObjWarpstone_Update(Actor* thisx, PlayState* play) {
                 play->msgCtx.msgMode = MSGMODE_OWL_SAVE_0;
                 play->msgCtx.unk120D6 = 0;
                 play->msgCtx.unk120D4 = 0;
-                gSaveContext.save.owlSaveLocation = OBJ_WARPSTONE_GET_ID(&this->dyna.actor);
+                gSaveContext.save.owlWarpId = OBJ_WARPSTONE_GET_OWL_WARP_ID(&this->dyna.actor);
             } else {
                 Message_CloseTextbox(play);
             }
         }
-    } else if (Actor_ProcessTalkRequest(&this->dyna.actor, &play->state)) {
+    } else if (Actor_TalkOfferAccepted(&this->dyna.actor, &play->state)) {
         this->isTalking = true;
     } else if (!this->actionFunc(this, play)) {
         Actor_OfferTalkNearColChkInfoCylinder(&this->dyna.actor, play);
@@ -168,7 +166,7 @@ void ObjWarpstone_Update(Actor* thisx, PlayState* play) {
 
 void ObjWarpstone_Draw(Actor* thisx, PlayState* play2) {
     PlayState* play = play2;
-    ObjWarpstone* this = THIS;
+    ObjWarpstone* this = (ObjWarpstone*)thisx;
 
     Gfx_DrawDListOpa(play, sOwlStatueDLs[this->modelIndex]);
     if (this->dyna.actor.home.rot.x != 0) {
@@ -186,11 +184,11 @@ void ObjWarpstone_Draw(Actor* thisx, PlayState* play2) {
         gDPSetPrimColor(POLY_XLU_DISP++, 128, 128, 255, 255, 200, this->dyna.actor.home.rot.x);
         gDPSetEnvColor(POLY_XLU_DISP++, 100, 200, 0, 255);
         Matrix_RotateZF(BINANG_TO_RAD_ALT2((play->gameplayFrames * 1500) & 0xFFFF), MTXMODE_APPLY);
-        gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+        MATRIX_FINALIZE_AND_LOAD(POLY_XLU_DISP++, play->state.gfxCtx);
         gSPDisplayList(POLY_XLU_DISP++, gEffFlash1DL);
         Matrix_Pop();
         Matrix_RotateZF(BINANG_TO_RAD_ALT2(~((play->gameplayFrames * 1200) & 0xFFFF)), MTXMODE_APPLY);
-        gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+        MATRIX_FINALIZE_AND_LOAD(POLY_XLU_DISP++, play->state.gfxCtx);
         gSPDisplayList(POLY_XLU_DISP++, gEffFlash1DL);
 
         CLOSE_DISPS(play->state.gfxCtx);

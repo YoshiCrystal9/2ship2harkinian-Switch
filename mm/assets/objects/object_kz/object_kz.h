@@ -3,211 +3,211 @@
 
 #include "align_asset_macro.h"
 
-#define dobject_kz_Anim_0003CC "__OTR__objects/object_kz/object_kz_Anim_0003CC"
-static const ALIGN_ASSET(2) char object_kz_Anim_0003CC[] = dobject_kz_Anim_0003CC;
+#define dgFighterPirateSlashAnim "__OTR__objects/object_kz/gFighterPirateSlashAnim"
+static const ALIGN_ASSET(2) char gFighterPirateSlashAnim[] = dgFighterPirateSlashAnim;
 
-#define dobject_kz_Anim_000F5C "__OTR__objects/object_kz/object_kz_Anim_000F5C"
-static const ALIGN_ASSET(2) char object_kz_Anim_000F5C[] = dobject_kz_Anim_000F5C;
+#define dgFighterPirateSpinAttackAnim "__OTR__objects/object_kz/gFighterPirateSpinAttackAnim"
+static const ALIGN_ASSET(2) char gFighterPirateSpinAttackAnim[] = dgFighterPirateSpinAttackAnim;
 
-#define dobject_kz_Anim_001390 "__OTR__objects/object_kz/object_kz_Anim_001390"
-static const ALIGN_ASSET(2) char object_kz_Anim_001390[] = dobject_kz_Anim_001390;
+#define dgFighterPirateFlipAnim "__OTR__objects/object_kz/gFighterPirateFlipAnim"
+static const ALIGN_ASSET(2) char gFighterPirateFlipAnim[] = dgFighterPirateFlipAnim;
 
-#define dobject_kz_Anim_001578 "__OTR__objects/object_kz/object_kz_Anim_001578"
-static const ALIGN_ASSET(2) char object_kz_Anim_001578[] = dobject_kz_Anim_001578;
+#define dgFighterPirateBlockAnim "__OTR__objects/object_kz/gFighterPirateBlockAnim"
+static const ALIGN_ASSET(2) char gFighterPirateBlockAnim[] = dgFighterPirateBlockAnim;
 
-#define dobject_kz_Anim_001E9C "__OTR__objects/object_kz/object_kz_Anim_001E9C"
-static const ALIGN_ASSET(2) char object_kz_Anim_001E9C[] = dobject_kz_Anim_001E9C;
+#define dgFighterPirateThrowFlashAnim "__OTR__objects/object_kz/gFighterPirateThrowFlashAnim"
+static const ALIGN_ASSET(2) char gFighterPirateThrowFlashAnim[] = dgFighterPirateThrowFlashAnim;
 
-#define dobject_kz_Anim_002730 "__OTR__objects/object_kz/object_kz_Anim_002730"
-static const ALIGN_ASSET(2) char object_kz_Anim_002730[] = dobject_kz_Anim_002730;
+#define dgFighterPirateUnusedDefeatAnim "__OTR__objects/object_kz/gFighterPirateUnusedDefeatAnim"
+static const ALIGN_ASSET(2) char gFighterPirateUnusedDefeatAnim[] = dgFighterPirateUnusedDefeatAnim;
 
-#define dobject_kz_Anim_002BA0 "__OTR__objects/object_kz/object_kz_Anim_002BA0"
-static const ALIGN_ASSET(2) char object_kz_Anim_002BA0[] = dobject_kz_Anim_002BA0;
+#define dgFighterPirateDefeatIdleAnim "__OTR__objects/object_kz/gFighterPirateDefeatIdleAnim"
+static const ALIGN_ASSET(2) char gFighterPirateDefeatIdleAnim[] = dgFighterPirateDefeatIdleAnim;
 
-#define dobject_kz_Anim_003A3C "__OTR__objects/object_kz/object_kz_Anim_003A3C"
-static const ALIGN_ASSET(2) char object_kz_Anim_003A3C[] = dobject_kz_Anim_003A3C;
+#define dgFighterPirateDefeatAnim "__OTR__objects/object_kz/gFighterPirateDefeatAnim"
+static const ALIGN_ASSET(2) char gFighterPirateDefeatAnim[] = dgFighterPirateDefeatAnim;
 
-#define dobject_kz_Anim_0043E4 "__OTR__objects/object_kz/object_kz_Anim_0043E4"
-static const ALIGN_ASSET(2) char object_kz_Anim_0043E4[] = dobject_kz_Anim_0043E4;
+#define dgFighterPirateDemonstrativeSwordSwingAnim "__OTR__objects/object_kz/gFighterPirateDemonstrativeSwordSwingAnim"
+static const ALIGN_ASSET(2) char gFighterPirateDemonstrativeSwordSwingAnim[] = dgFighterPirateDemonstrativeSwordSwingAnim;
 
-#define dobject_kz_Anim_004860 "__OTR__objects/object_kz/object_kz_Anim_004860"
-static const ALIGN_ASSET(2) char object_kz_Anim_004860[] = dobject_kz_Anim_004860;
+#define dgFighterPirateDamageAnim "__OTR__objects/object_kz/gFighterPirateDamageAnim"
+static const ALIGN_ASSET(2) char gFighterPirateDamageAnim[] = dgFighterPirateDamageAnim;
 
-#define dobject_kz_Anim_005644 "__OTR__objects/object_kz/object_kz_Anim_005644"
-static const ALIGN_ASSET(2) char object_kz_Anim_005644[] = dobject_kz_Anim_005644;
+#define dgFighterPirateUnsheatheAnim "__OTR__objects/object_kz/gFighterPirateUnsheatheAnim"
+static const ALIGN_ASSET(2) char gFighterPirateUnsheatheAnim[] = dgFighterPirateUnsheatheAnim;
 
-#define dobject_kz_Anim_0058B8 "__OTR__objects/object_kz/object_kz_Anim_0058B8"
-static const ALIGN_ASSET(2) char object_kz_Anim_0058B8[] = dobject_kz_Anim_0058B8;
+#define dgFighterPirateWalkAnim "__OTR__objects/object_kz/gFighterPirateWalkAnim"
+static const ALIGN_ASSET(2) char gFighterPirateWalkAnim[] = dgFighterPirateWalkAnim;
 
-#define dobject_kz_TLUT_0058D0 "__OTR__objects/object_kz/object_kz_TLUT_0058D0"
-static const ALIGN_ASSET(2) char object_kz_TLUT_0058D0[] = dobject_kz_TLUT_0058D0;
+#define dgFighterPirate1TLUT "__OTR__objects/object_kz/gFighterPirate1TLUT"
+static const ALIGN_ASSET(2) char gFighterPirate1TLUT[] = dgFighterPirate1TLUT;
 
-#define dobject_kz_Tex_005AD0 "__OTR__objects/object_kz/object_kz_Tex_005AD0"
-static const ALIGN_ASSET(2) char object_kz_Tex_005AD0[] = dobject_kz_Tex_005AD0;
+#define dgFighterPirateSkin1Tex "__OTR__objects/object_kz/gFighterPirateSkin1Tex"
+static const ALIGN_ASSET(2) char gFighterPirateSkin1Tex[] = dgFighterPirateSkin1Tex;
 
-#define dobject_kz_Tex_005B10 "__OTR__objects/object_kz/object_kz_Tex_005B10"
-static const ALIGN_ASSET(2) char object_kz_Tex_005B10[] = dobject_kz_Tex_005B10;
+#define dgFighterPirateShirtTopRedGradientTex "__OTR__objects/object_kz/gFighterPirateShirtTopRedGradientTex"
+static const ALIGN_ASSET(2) char gFighterPirateShirtTopRedGradientTex[] = dgFighterPirateShirtTopRedGradientTex;
 
-#define dobject_kz_Tex_005B50 "__OTR__objects/object_kz/object_kz_Tex_005B50"
-static const ALIGN_ASSET(2) char object_kz_Tex_005B50[] = dobject_kz_Tex_005B50;
+#define dgFighterPirateArmor1Tex "__OTR__objects/object_kz/gFighterPirateArmor1Tex"
+static const ALIGN_ASSET(2) char gFighterPirateArmor1Tex[] = dgFighterPirateArmor1Tex;
 
-#define dobject_kz_Tex_005C50 "__OTR__objects/object_kz/object_kz_Tex_005C50"
-static const ALIGN_ASSET(2) char object_kz_Tex_005C50[] = dobject_kz_Tex_005C50;
+#define dgFighterPirateShirtBottomPatternAndVeilTex "__OTR__objects/object_kz/gFighterPirateShirtBottomPatternAndVeilTex"
+static const ALIGN_ASSET(2) char gFighterPirateShirtBottomPatternAndVeilTex[] = dgFighterPirateShirtBottomPatternAndVeilTex;
 
-#define dobject_kz_Tex_005D50 "__OTR__objects/object_kz/object_kz_Tex_005D50"
-static const ALIGN_ASSET(2) char object_kz_Tex_005D50[] = dobject_kz_Tex_005D50;
+#define dgFighterPirateBellyButtonTex "__OTR__objects/object_kz/gFighterPirateBellyButtonTex"
+static const ALIGN_ASSET(2) char gFighterPirateBellyButtonTex[] = dgFighterPirateBellyButtonTex;
 
-#define dobject_kz_Tex_005E50 "__OTR__objects/object_kz/object_kz_Tex_005E50"
-static const ALIGN_ASSET(2) char object_kz_Tex_005E50[] = dobject_kz_Tex_005E50;
+#define dgFighterPiratePantsTex "__OTR__objects/object_kz/gFighterPiratePantsTex"
+static const ALIGN_ASSET(2) char gFighterPiratePantsTex[] = dgFighterPiratePantsTex;
 
-#define dobject_kz_Tex_005F50 "__OTR__objects/object_kz/object_kz_Tex_005F50"
-static const ALIGN_ASSET(2) char object_kz_Tex_005F50[] = dobject_kz_Tex_005F50;
+#define dgFighterPirateZipper1Tex "__OTR__objects/object_kz/gFighterPirateZipper1Tex"
+static const ALIGN_ASSET(2) char gFighterPirateZipper1Tex[] = dgFighterPirateZipper1Tex;
 
-#define dobject_kz_DL_007CB0 "__OTR__objects/object_kz/object_kz_DL_007CB0"
-static const ALIGN_ASSET(2) char object_kz_DL_007CB0[] = dobject_kz_DL_007CB0;
+#define dgFighterPirateTorsoDL "__OTR__objects/object_kz/gFighterPirateTorsoDL"
+static const ALIGN_ASSET(2) char gFighterPirateTorsoDL[] = dgFighterPirateTorsoDL;
 
-#define dobject_kz_DL_008130 "__OTR__objects/object_kz/object_kz_DL_008130"
-static const ALIGN_ASSET(2) char object_kz_DL_008130[] = dobject_kz_DL_008130;
+#define dgFighterPirateRightUpperArmDL "__OTR__objects/object_kz/gFighterPirateRightUpperArmDL"
+static const ALIGN_ASSET(2) char gFighterPirateRightUpperArmDL[] = dgFighterPirateRightUpperArmDL;
 
-#define dobject_kz_DL_008268 "__OTR__objects/object_kz/object_kz_DL_008268"
-static const ALIGN_ASSET(2) char object_kz_DL_008268[] = dobject_kz_DL_008268;
+#define dgFighterPirateRightForearmDL "__OTR__objects/object_kz/gFighterPirateRightForearmDL"
+static const ALIGN_ASSET(2) char gFighterPirateRightForearmDL[] = dgFighterPirateRightForearmDL;
 
-#define dobject_kz_DL_008490 "__OTR__objects/object_kz/object_kz_DL_008490"
-static const ALIGN_ASSET(2) char object_kz_DL_008490[] = dobject_kz_DL_008490;
+#define dgFighterPirateLeftUpperArmDL "__OTR__objects/object_kz/gFighterPirateLeftUpperArmDL"
+static const ALIGN_ASSET(2) char gFighterPirateLeftUpperArmDL[] = dgFighterPirateLeftUpperArmDL;
 
-#define dobject_kz_DL_0085C8 "__OTR__objects/object_kz/object_kz_DL_0085C8"
-static const ALIGN_ASSET(2) char object_kz_DL_0085C8[] = dobject_kz_DL_0085C8;
+#define dgFighterPirateLeftForearmDL "__OTR__objects/object_kz/gFighterPirateLeftForearmDL"
+static const ALIGN_ASSET(2) char gFighterPirateLeftForearmDL[] = dgFighterPirateLeftForearmDL;
 
-#define dobject_kz_DL_0087F0 "__OTR__objects/object_kz/object_kz_DL_0087F0"
-static const ALIGN_ASSET(2) char object_kz_DL_0087F0[] = dobject_kz_DL_0087F0;
+#define dgFighterPirateWaistDL "__OTR__objects/object_kz/gFighterPirateWaistDL"
+static const ALIGN_ASSET(2) char gFighterPirateWaistDL[] = dgFighterPirateWaistDL;
 
-#define dobject_kz_DL_008A10 "__OTR__objects/object_kz/object_kz_DL_008A10"
-static const ALIGN_ASSET(2) char object_kz_DL_008A10[] = dobject_kz_DL_008A10;
+#define dgFighterPirateRightThighDL "__OTR__objects/object_kz/gFighterPirateRightThighDL"
+static const ALIGN_ASSET(2) char gFighterPirateRightThighDL[] = dgFighterPirateRightThighDL;
 
-#define dobject_kz_DL_008B10 "__OTR__objects/object_kz/object_kz_DL_008B10"
-static const ALIGN_ASSET(2) char object_kz_DL_008B10[] = dobject_kz_DL_008B10;
+#define dgFighterPirateRightShinDL "__OTR__objects/object_kz/gFighterPirateRightShinDL"
+static const ALIGN_ASSET(2) char gFighterPirateRightShinDL[] = dgFighterPirateRightShinDL;
 
-#define dobject_kz_DL_008D80 "__OTR__objects/object_kz/object_kz_DL_008D80"
-static const ALIGN_ASSET(2) char object_kz_DL_008D80[] = dobject_kz_DL_008D80;
+#define dgFighterPirateLeftThighDL "__OTR__objects/object_kz/gFighterPirateLeftThighDL"
+static const ALIGN_ASSET(2) char gFighterPirateLeftThighDL[] = dgFighterPirateLeftThighDL;
 
-#define dobject_kz_DL_008E80 "__OTR__objects/object_kz/object_kz_DL_008E80"
-static const ALIGN_ASSET(2) char object_kz_DL_008E80[] = dobject_kz_DL_008E80;
+#define dgFighterPirateLeftShinDL "__OTR__objects/object_kz/gFighterPirateLeftShinDL"
+static const ALIGN_ASSET(2) char gFighterPirateLeftShinDL[] = dgFighterPirateLeftShinDL;
 
-#define dobject_kz_Tex_009338 "__OTR__objects/object_kz/object_kz_Tex_009338"
-static const ALIGN_ASSET(2) char object_kz_Tex_009338[] = dobject_kz_Tex_009338;
+#define dgFighterPirateSkin2Tex "__OTR__objects/object_kz/gFighterPirateSkin2Tex"
+static const ALIGN_ASSET(2) char gFighterPirateSkin2Tex[] = dgFighterPirateSkin2Tex;
 
-#define dgKaizokuEyeOpenTex "__OTR__objects/object_kz/gKaizokuEyeOpenTex"
-static const ALIGN_ASSET(2) char gKaizokuEyeOpenTex[] = dgKaizokuEyeOpenTex;
+#define dgFighterPirateEarTex "__OTR__objects/object_kz/gFighterPirateEarTex"
+static const ALIGN_ASSET(2) char gFighterPirateEarTex[] = dgFighterPirateEarTex;
 
-#define dobject_kz_Tex_0097B8 "__OTR__objects/object_kz/object_kz_Tex_0097B8"
-static const ALIGN_ASSET(2) char object_kz_Tex_0097B8[] = dobject_kz_Tex_0097B8;
+#define dgFighterPirateEyeOpenTex "__OTR__objects/object_kz/gFighterPirateEyeOpenTex"
+static const ALIGN_ASSET(2) char gFighterPirateEyeOpenTex[] = dgFighterPirateEyeOpenTex;
 
-#define dobject_kz_Tex_0098B8 "__OTR__objects/object_kz/object_kz_Tex_0098B8"
-static const ALIGN_ASSET(2) char object_kz_Tex_0098B8[] = dobject_kz_Tex_0098B8;
+#define dgFighterPirateShirtBottomPatternAndVeil2Tex "__OTR__objects/object_kz/gFighterPirateShirtBottomPatternAndVeil2Tex"
+static const ALIGN_ASSET(2) char gFighterPirateShirtBottomPatternAndVeil2Tex[] = dgFighterPirateShirtBottomPatternAndVeil2Tex;
 
-#define dobject_kz_Tex_009938 "__OTR__objects/object_kz/object_kz_Tex_009938"
-static const ALIGN_ASSET(2) char object_kz_Tex_009938[] = dobject_kz_Tex_009938;
+#define dgFighterPirateShoesTex "__OTR__objects/object_kz/gFighterPirateShoesTex"
+static const ALIGN_ASSET(2) char gFighterPirateShoesTex[] = dgFighterPirateShoesTex;
 
-#define dgKaizokuEyeHalfTex "__OTR__objects/object_kz/gKaizokuEyeHalfTex"
-static const ALIGN_ASSET(2) char gKaizokuEyeHalfTex[] = dgKaizokuEyeHalfTex;
+#define dgFighterPirateShoeBottomTex "__OTR__objects/object_kz/gFighterPirateShoeBottomTex"
+static const ALIGN_ASSET(2) char gFighterPirateShoeBottomTex[] = dgFighterPirateShoeBottomTex;
 
-#define dobject_kz_Tex_009D78 "__OTR__objects/object_kz/object_kz_Tex_009D78"
-static const ALIGN_ASSET(2) char object_kz_Tex_009D78[] = dobject_kz_Tex_009D78;
+#define dgFighterPirateEyeHalfTex "__OTR__objects/object_kz/gFighterPirateEyeHalfTex"
+static const ALIGN_ASSET(2) char gFighterPirateEyeHalfTex[] = dgFighterPirateEyeHalfTex;
 
-#define dobject_kz_Tex_009DF8 "__OTR__objects/object_kz/object_kz_Tex_009DF8"
-static const ALIGN_ASSET(2) char object_kz_Tex_009DF8[] = dobject_kz_Tex_009DF8;
+#define dgFighterPirateZipper2Tex "__OTR__objects/object_kz/gFighterPirateZipper2Tex"
+static const ALIGN_ASSET(2) char gFighterPirateZipper2Tex[] = dgFighterPirateZipper2Tex;
 
-#define dobject_kz_Tex_009EF8 "__OTR__objects/object_kz/object_kz_Tex_009EF8"
-static const ALIGN_ASSET(2) char object_kz_Tex_009EF8[] = dobject_kz_Tex_009EF8;
+#define dgFighterPirateHairTex "__OTR__objects/object_kz/gFighterPirateHairTex"
+static const ALIGN_ASSET(2) char gFighterPirateHairTex[] = dgFighterPirateHairTex;
 
-#define dobject_kz_Tex_009FF8 "__OTR__objects/object_kz/object_kz_Tex_009FF8"
-static const ALIGN_ASSET(2) char object_kz_Tex_009FF8[] = dobject_kz_Tex_009FF8;
+#define dgFighterPirateFingersTex "__OTR__objects/object_kz/gFighterPirateFingersTex"
+static const ALIGN_ASSET(2) char gFighterPirateFingersTex[] = dgFighterPirateFingersTex;
 
-#define dgKaizokuEyeClosedTex "__OTR__objects/object_kz/gKaizokuEyeClosedTex"
-static const ALIGN_ASSET(2) char gKaizokuEyeClosedTex[] = dgKaizokuEyeClosedTex;
+#define dgFighterPirateYellowSwordGuardAndEmblemTex "__OTR__objects/object_kz/gFighterPirateYellowSwordGuardAndEmblemTex"
+static const ALIGN_ASSET(2) char gFighterPirateYellowSwordGuardAndEmblemTex[] = dgFighterPirateYellowSwordGuardAndEmblemTex;
 
-#define dobject_kz_DL_00C318 "__OTR__objects/object_kz/object_kz_DL_00C318"
-static const ALIGN_ASSET(2) char object_kz_DL_00C318[] = dobject_kz_DL_00C318;
+#define dgFighterPirateEyeClosedTex "__OTR__objects/object_kz/gFighterPirateEyeClosedTex"
+static const ALIGN_ASSET(2) char gFighterPirateEyeClosedTex[] = dgFighterPirateEyeClosedTex;
 
-#define dobject_kz_DL_00C4D8 "__OTR__objects/object_kz/object_kz_DL_00C4D8"
-static const ALIGN_ASSET(2) char object_kz_DL_00C4D8[] = dobject_kz_DL_00C4D8;
+#define dgFighterPirateLeftFootDL "__OTR__objects/object_kz/gFighterPirateLeftFootDL"
+static const ALIGN_ASSET(2) char gFighterPirateLeftFootDL[] = dgFighterPirateLeftFootDL;
 
-#define dobject_kz_DL_00C698 "__OTR__objects/object_kz/object_kz_DL_00C698"
-static const ALIGN_ASSET(2) char object_kz_DL_00C698[] = dobject_kz_DL_00C698;
+#define dgFighterPirateRightFootDL "__OTR__objects/object_kz/gFighterPirateRightFootDL"
+static const ALIGN_ASSET(2) char gFighterPirateRightFootDL[] = dgFighterPirateRightFootDL;
 
-#define dobject_kz_DL_00C830 "__OTR__objects/object_kz/object_kz_DL_00C830"
-static const ALIGN_ASSET(2) char object_kz_DL_00C830[] = dobject_kz_DL_00C830;
+#define dgFighterPirateLeftHandDL "__OTR__objects/object_kz/gFighterPirateLeftHandDL"
+static const ALIGN_ASSET(2) char gFighterPirateLeftHandDL[] = dgFighterPirateLeftHandDL;
 
-#define dobject_kz_DL_00CA08 "__OTR__objects/object_kz/object_kz_DL_00CA08"
-static const ALIGN_ASSET(2) char object_kz_DL_00CA08[] = dobject_kz_DL_00CA08;
+#define dgFighterPirateLeftSwordDL "__OTR__objects/object_kz/gFighterPirateLeftSwordDL"
+static const ALIGN_ASSET(2) char gFighterPirateLeftSwordDL[] = dgFighterPirateLeftSwordDL;
 
-#define dobject_kz_DL_00CBA0 "__OTR__objects/object_kz/object_kz_DL_00CBA0"
-static const ALIGN_ASSET(2) char object_kz_DL_00CBA0[] = dobject_kz_DL_00CBA0;
+#define dgFighterPirateRightHandDL "__OTR__objects/object_kz/gFighterPirateRightHandDL"
+static const ALIGN_ASSET(2) char gFighterPirateRightHandDL[] = dgFighterPirateRightHandDL;
 
-#define dobject_kz_DL_00CD78 "__OTR__objects/object_kz/object_kz_DL_00CD78"
-static const ALIGN_ASSET(2) char object_kz_DL_00CD78[] = dobject_kz_DL_00CD78;
+#define dgFighterPirateRightSwordDL "__OTR__objects/object_kz/gFighterPirateRightSwordDL"
+static const ALIGN_ASSET(2) char gFighterPirateRightSwordDL[] = dgFighterPirateRightSwordDL;
 
-#define dobject_kz_DL_00CE30 "__OTR__objects/object_kz/object_kz_DL_00CE30"
-static const ALIGN_ASSET(2) char object_kz_DL_00CE30[] = dobject_kz_DL_00CE30;
+#define dgFighterPirateVeilDL "__OTR__objects/object_kz/gFighterPirateVeilDL"
+static const ALIGN_ASSET(2) char gFighterPirateVeilDL[] = dgFighterPirateVeilDL;
 
-#define dobject_kz_DL_00CF20 "__OTR__objects/object_kz/object_kz_DL_00CF20"
-static const ALIGN_ASSET(2) char object_kz_DL_00CF20[] = dobject_kz_DL_00CF20;
+#define dgFighterPiratePonytailDL "__OTR__objects/object_kz/gFighterPiratePonytailDL"
+static const ALIGN_ASSET(2) char gFighterPiratePonytailDL[] = dgFighterPiratePonytailDL;
 
-#define dgKaizokuSkel "__OTR__objects/object_kz/gKaizokuSkel"
-static const ALIGN_ASSET(2) char gKaizokuSkel[] = dgKaizokuSkel;
+#define dgFighterPirateHeadDL "__OTR__objects/object_kz/gFighterPirateHeadDL"
+static const ALIGN_ASSET(2) char gFighterPirateHeadDL[] = dgFighterPirateHeadDL;
 
-#define dobject_kz_Anim_00DBE4 "__OTR__objects/object_kz/object_kz_Anim_00DBE4"
-static const ALIGN_ASSET(2) char object_kz_Anim_00DBE4[] = dobject_kz_Anim_00DBE4;
+#define dgFighterPirateSkel "__OTR__objects/object_kz/gFighterPirateSkel"
+static const ALIGN_ASSET(2) char gFighterPirateSkel[] = dgFighterPirateSkel;
 
-#define dobject_kz_Anim_00E1C8 "__OTR__objects/object_kz/object_kz_Anim_00E1C8"
-static const ALIGN_ASSET(2) char object_kz_Anim_00E1C8[] = dobject_kz_Anim_00E1C8;
+#define dgFighterPirateSidestepAnim "__OTR__objects/object_kz/gFighterPirateSidestepAnim"
+static const ALIGN_ASSET(2) char gFighterPirateSidestepAnim[] = dgFighterPirateSidestepAnim;
 
-#define dobject_kz_Anim_00E8BC "__OTR__objects/object_kz/object_kz_Anim_00E8BC"
-static const ALIGN_ASSET(2) char object_kz_Anim_00E8BC[] = dobject_kz_Anim_00E8BC;
+#define dgFighterPirateUnusedJumpAnim "__OTR__objects/object_kz/gFighterPirateUnusedJumpAnim"
+static const ALIGN_ASSET(2) char gFighterPirateUnusedJumpAnim[] = dgFighterPirateUnusedJumpAnim;
 
-#define dobject_kz_Anim_00ED1C "__OTR__objects/object_kz/object_kz_Anim_00ED1C"
-static const ALIGN_ASSET(2) char object_kz_Anim_00ED1C[] = dobject_kz_Anim_00ED1C;
+#define dgFighterPirateLandAnim "__OTR__objects/object_kz/gFighterPirateLandAnim"
+static const ALIGN_ASSET(2) char gFighterPirateLandAnim[] = dgFighterPirateLandAnim;
 
-#define dobject_kz_Anim_00EF9C "__OTR__objects/object_kz/object_kz_Anim_00EF9C"
-static const ALIGN_ASSET(2) char object_kz_Anim_00EF9C[] = dobject_kz_Anim_00EF9C;
+#define dgFighterPirateLandTalkAnim "__OTR__objects/object_kz/gFighterPirateLandTalkAnim"
+static const ALIGN_ASSET(2) char gFighterPirateLandTalkAnim[] = dgFighterPirateLandTalkAnim;
 
-#define dobject_kz_Anim_00F288 "__OTR__objects/object_kz/object_kz_Anim_00F288"
-static const ALIGN_ASSET(2) char object_kz_Anim_00F288[] = dobject_kz_Anim_00F288;
+#define dgFighterPirateUnusedTalkAnim "__OTR__objects/object_kz/gFighterPirateUnusedTalkAnim"
+static const ALIGN_ASSET(2) char gFighterPirateUnusedTalkAnim[] = dgFighterPirateUnusedTalkAnim;
 
-#define dobject_kz_Anim_00F8E4 "__OTR__objects/object_kz/object_kz_Anim_00F8E4"
-static const ALIGN_ASSET(2) char object_kz_Anim_00F8E4[] = dobject_kz_Anim_00F8E4;
+#define dgFighterPirateLowerWeaponsAnim "__OTR__objects/object_kz/gFighterPirateLowerWeaponsAnim"
+static const ALIGN_ASSET(2) char gFighterPirateLowerWeaponsAnim[] = dgFighterPirateLowerWeaponsAnim;
+
+#define dgFighterPirateFightingIdleAnim "__OTR__objects/object_kz/gFighterPirateFightingIdleAnim"
+static const ALIGN_ASSET(2) char gFighterPirateFightingIdleAnim[] = dgFighterPirateFightingIdleAnim;
 
 #define dobject_kzTLUT_009100 "__OTR__objects/object_kz/object_kzTLUT_009100"
 static const ALIGN_ASSET(2) char object_kzTLUT_009100[] = dobject_kzTLUT_009100;
 
-#define dobject_kzTex_0092F8 "__OTR__objects/object_kz/object_kzTex_0092F8"
-static const ALIGN_ASSET(2) char object_kzTex_0092F8[] = dobject_kzTex_0092F8;
-
 typedef enum KaizokuLimb {
     /* 0x00 */ KAIZOKU_LIMB_NONE,
-    /* 0x01 */ KAIZOKU_LIMB_01,
-    /* 0x02 */ KAIZOKU_LIMB_02,
-    /* 0x03 */ KAIZOKU_LIMB_03,
-    /* 0x04 */ KAIZOKU_LIMB_04,
-    /* 0x05 */ KAIZOKU_LIMB_05,
-    /* 0x06 */ KAIZOKU_LIMB_06,
-    /* 0x07 */ KAIZOKU_LIMB_07,
-    /* 0x08 */ KAIZOKU_LIMB_08,
-    /* 0x09 */ KAIZOKU_LIMB_09,
-    /* 0x0A */ KAIZOKU_LIMB_0A,
-    /* 0x0B */ KAIZOKU_LIMB_R_SWORD,
-    /* 0x0C */ KAIZOKU_LIMB_0C,
-    /* 0x0D */ KAIZOKU_LIMB_0D,
-    /* 0x0E */ KAIZOKU_LIMB_0E,
-    /* 0x0F */ KAIZOKU_LIMB_0F,
-    /* 0x10 */ KAIZOKU_LIMB_10,
-    /* 0x11 */ KAIZOKU_LIMB_11,
-    /* 0x12 */ KAIZOKU_LIMB_12,
-    /* 0x13 */ KAIZOKU_LIMB_L_FOOT,
-    /* 0x14 */ KAIZOKU_LIMB_14,
-    /* 0x15 */ KAIZOKU_LIMB_15,
-    /* 0x16 */ KAIZOKU_LIMB_R_FOOT,
-    /* 0x17 */ KAIZOKU_LIMB_17,
+    /* 0x01 */ KAIZOKU_LIMB_ROOT,
+    /* 0x02 */ KAIZOKU_LIMB_TORSO,
+    /* 0x03 */ KAIZOKU_LIMB_NECK,
+    /* 0x04 */ KAIZOKU_LIMB_PONYTAIL,
+    /* 0x05 */ KAIZOKU_LIMB_VEIL,
+    /* 0x06 */ KAIZOKU_LIMB_HEAD,
+    /* 0x07 */ KAIZOKU_LIMB_RIGHT_UPPER_ARM,
+    /* 0x08 */ KAIZOKU_LIMB_RIGHT_FOREARM,
+    /* 0x09 */ KAIZOKU_LIMB_RIGHT_WRIST,
+    /* 0x0A */ KAIZOKU_LIMB_RIGHT_HAND,
+    /* 0x0B */ KAIZOKU_LIMB_RIGHT_SWORD,
+    /* 0x0C */ KAIZOKU_LIMB_LEFT_UPPER_ARM,
+    /* 0x0D */ KAIZOKU_LIMB_LEFT_FOREARM,
+    /* 0x0E */ KAIZOKU_LIMB_LEFT_WRIST,
+    /* 0x0F */ KAIZOKU_LIMB_LEFT_HAND,
+    /* 0x10 */ KAIZOKU_LIMB_LEFT_SWORD,
+    /* 0x11 */ KAIZOKU_LIMB_LEFT_THIGH,
+    /* 0x12 */ KAIZOKU_LIMB_LEFT_SHIN,
+    /* 0x13 */ KAIZOKU_LIMB_LEFT_FOOT,
+    /* 0x14 */ KAIZOKU_LIMB_RIGHT_THIGH,
+    /* 0x15 */ KAIZOKU_LIMB_RIGHT_SHIN,
+    /* 0x16 */ KAIZOKU_LIMB_RIGHT_FOOT,
+    /* 0x17 */ KAIZOKU_LIMB_WAIST,
     /* 0x18 */ KAIZOKU_LIMB_MAX
 } KaizokuLimb;
 

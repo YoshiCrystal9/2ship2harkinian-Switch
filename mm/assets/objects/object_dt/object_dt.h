@@ -3,20 +3,20 @@
 
 #include "align_asset_macro.h"
 
-#define dobject_dt_Anim_0005A4 "__OTR__objects/object_dt/object_dt_Anim_0005A4"
-static const ALIGN_ASSET(2) char object_dt_Anim_0005A4[] = dobject_dt_Anim_0005A4;
+#define dgDotourDistressAnim "__OTR__objects/object_dt/gDotourDistressAnim"
+static const ALIGN_ASSET(2) char gDotourDistressAnim[] = dgDotourDistressAnim;
 
-#define dobject_dt_Anim_000854 "__OTR__objects/object_dt/object_dt_Anim_000854"
-static const ALIGN_ASSET(2) char object_dt_Anim_000854[] = dobject_dt_Anim_000854;
+#define dgDotourShockAnim "__OTR__objects/object_dt/gDotourShockAnim"
+static const ALIGN_ASSET(2) char gDotourShockAnim[] = dgDotourShockAnim;
 
-#define dobject_dt_Anim_000BE0 "__OTR__objects/object_dt/object_dt_Anim_000BE0"
-static const ALIGN_ASSET(2) char object_dt_Anim_000BE0[] = dobject_dt_Anim_000BE0;
+#define dgDotourUprightAnim "__OTR__objects/object_dt/gDotourUprightAnim"
+static const ALIGN_ASSET(2) char gDotourUprightAnim[] = dgDotourUprightAnim;
 
-#define dobject_dt_Anim_000DA8 "__OTR__objects/object_dt/object_dt_Anim_000DA8"
-static const ALIGN_ASSET(2) char object_dt_Anim_000DA8[] = dobject_dt_Anim_000DA8;
+#define dgDotourTapDeskAnim "__OTR__objects/object_dt/gDotourTapDeskAnim"
+static const ALIGN_ASSET(2) char gDotourTapDeskAnim[] = dgDotourTapDeskAnim;
 
-#define dobject_dt_Anim_00112C "__OTR__objects/object_dt/object_dt_Anim_00112C"
-static const ALIGN_ASSET(2) char object_dt_Anim_00112C[] = dobject_dt_Anim_00112C;
+#define dgDotourWaitAnim "__OTR__objects/object_dt/gDotourWaitAnim"
+static const ALIGN_ASSET(2) char gDotourWaitAnim[] = dgDotourWaitAnim;
 
 #define dobject_dt_DL_004DB0 "__OTR__objects/object_dt/object_dt_DL_004DB0"
 static const ALIGN_ASSET(2) char object_dt_DL_004DB0[] = dobject_dt_DL_004DB0;
@@ -147,8 +147,8 @@ static const ALIGN_ASSET(2) char object_dt_Matanimheader_00AFDC[] = dobject_dt_M
 #define dobject_dt_Skel_00B0CC "__OTR__objects/object_dt/object_dt_Skel_00B0CC"
 static const ALIGN_ASSET(2) char object_dt_Skel_00B0CC[] = dobject_dt_Skel_00B0CC;
 
-#define dobject_dt_Anim_00B500 "__OTR__objects/object_dt/object_dt_Anim_00B500"
-static const ALIGN_ASSET(2) char object_dt_Anim_00B500[] = dobject_dt_Anim_00B500;
+#define dgDotourSitUpAnim "__OTR__objects/object_dt/gDotourSitUpAnim"
+static const ALIGN_ASSET(2) char gDotourSitUpAnim[] = dgDotourSitUpAnim;
 
 typedef enum ObjectDtLimb {
     /* 0x00 */ OBJECT_DT_LIMB_NONE,

@@ -24,4 +24,10 @@ static const ALIGN_ASSET(2) char Z2_LAST_ZORA_room_00DL_0045B8[] = dZ2_LAST_ZORA
 #define dZ2_LAST_ZORA_room_00DL_00E5B0 "__OTR__scenes/nonmq/Z2_LAST_ZORA_scene/Z2_LAST_ZORA_room_00DL_00E5B0"
 static const ALIGN_ASSET(2) char Z2_LAST_ZORA_room_00DL_00E5B0[] = dZ2_LAST_ZORA_room_00DL_00E5B0;
 
+#define dZ2_LAST_ZORA_room_00DL_00DF40 "__OTR__scenes/nonmq/Z2_LAST_ZORA_scene/Z2_LAST_ZORA_room_00DL_00DF40"
+static const ALIGN_ASSET(2) char Z2_LAST_ZORA_room_00DL_00DF40[] = dZ2_LAST_ZORA_room_00DL_00DF40;
+
+#define dZ2_LAST_ZORA_room_00DL_00E750 "__OTR__scenes/nonmq/Z2_LAST_ZORA_scene/Z2_LAST_ZORA_room_00DL_00E750"
+static const ALIGN_ASSET(2) char Z2_LAST_ZORA_room_00DL_00E750[] = dZ2_LAST_ZORA_room_00DL_00E750;
+
 #endif // Z2_LAST_ZORA_Z2_LAST_ZORA_ROOM_00_H

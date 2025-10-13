@@ -9,14 +9,19 @@ struct Dummy204 { int x; };
 struct Dummy205 { int x; };
 struct Dummy206 { int x; };
 struct Dummy207 { int x; };
+struct Dummy208 { int x; };
+struct Dummy209 { int x; };
+struct Dummy210 { int x; };
+struct Dummy211 { int x; };
+struct Dummy212 { int x; };
 // clang-format on
 
 #include "z64math.h"
+
 #include "libc/stdbool.h"
-#include "libc/math.h"
 #include "PR/gu.h"
 
-#define ARRAY_COUNT(arr) (s32)(sizeof(arr) / sizeof(arr[0]))
+#include "macros.h"
 
 f32 Math3D_Normalize(Vec3f* vec) {
     f32 magnitude = Math3D_Vec3fMagnitude(vec);
@@ -1874,11 +1879,11 @@ s32 Math3D_CylVsLineSeg(Cylinder16* cyl, Vec3f* linePointA, Vec3f* linePointB, V
     fracA = 0.0f;
     fracB = 0.0f;
 
-//! FAKE:
-dummy:;
-
     zero = 0.0f;
     intFlags = 0;
+
+    //! FAKE:
+    if (1) {}
 
     if (Math3D_PointInCyl(cyl, linePointA) && Math3D_PointInCyl(cyl, linePointB)) {
         // both points are in the cylinder

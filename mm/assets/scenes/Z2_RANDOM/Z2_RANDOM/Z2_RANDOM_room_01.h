@@ -60,4 +60,10 @@ static const ALIGN_ASSET(2) char Z2_RANDOM_room_01DL_007720[] = dZ2_RANDOM_room_
 #define dZ2_RANDOM_room_01DL_007D08 "__OTR__scenes/nonmq/Z2_RANDOM_scene/Z2_RANDOM_room_01DL_007D08"
 static const ALIGN_ASSET(2) char Z2_RANDOM_room_01DL_007D08[] = dZ2_RANDOM_room_01DL_007D08;
 
+#define dZ2_RANDOM_room_01DL_008C90 "__OTR__scenes/nonmq/Z2_RANDOM_scene/Z2_RANDOM_room_01DL_008C90"
+static const ALIGN_ASSET(2) char Z2_RANDOM_room_01DL_008C90[] = dZ2_RANDOM_room_01DL_008C90;
+
+#define dZ2_RANDOM_room_01DL_009728 "__OTR__scenes/nonmq/Z2_RANDOM_scene/Z2_RANDOM_room_01DL_009728"
+static const ALIGN_ASSET(2) char Z2_RANDOM_room_01DL_009728[] = dZ2_RANDOM_room_01DL_009728;
+
 #endif // Z2_RANDOM_Z2_RANDOM_ROOM_01_H

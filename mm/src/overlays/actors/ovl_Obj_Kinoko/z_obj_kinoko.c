@@ -8,16 +8,14 @@
 #include "objects/gameplay_keep/gameplay_keep.h"
 #include "BenPort.h"
 
-#define FLAGS (ACTOR_FLAG_10)
-
-#define THIS ((ObjKinoko*)thisx)
+#define FLAGS (ACTOR_FLAG_UPDATE_CULLING_DISABLED)
 
 void ObjKinoko_Init(Actor* thisx, PlayState* play);
 void ObjKinoko_Destroy(Actor* thisx, PlayState* play);
 void ObjKinoko_Update(Actor* thisx, PlayState* play);
 void ObjKinoko_Draw(Actor* thisx, PlayState* play);
 
-ActorInit Obj_Kinoko_InitVars = {
+ActorProfile Obj_Kinoko_Profile = {
     /**/ ACTOR_OBJ_KINOKO,
     /**/ ACTORCAT_ITEMACTION,
     /**/ FLAGS,
@@ -43,11 +41,11 @@ void ObjKinoko_Update(Actor* thisx, PlayState* play) {
     if (player->currentMask != PLAYER_MASK_SCENTS) {
         thisx->draw = NULL;
         thisx->hintId = TATL_HINT_ID_NONE;
-        thisx->flags &= ~ACTOR_FLAG_TARGETABLE;
+        thisx->flags &= ~ACTOR_FLAG_ATTENTION_ENABLED;
     } else {
         thisx->draw = ObjKinoko_Draw;
         thisx->hintId = TATL_HINT_ID_MUSHROOM;
-        thisx->flags |= ACTOR_FLAG_TARGETABLE;
+        thisx->flags |= ACTOR_FLAG_ATTENTION_ENABLED;
         if (Actor_HasParent(thisx, play)) {
             Flags_SetCollectible(play, OBJ_KINOKO_GET_FLAG(thisx));
             Actor_Kill(thisx);
@@ -84,11 +82,11 @@ void ObjKinoko_Draw(Actor* thisx, PlayState* play) {
     gDPSetPrimColor(&gfx[0], 0, 0, 169, 63, 186, (u8)thisx->speed);
     gDPSetEnvColor(&gfx[1], 110, 44, 200, 100);
     gDPSetRenderMode(&gfx[2], G_RM_PASS, G_RM_ZB_CLD_SURF2);
-    gSPMatrix(&gfx[3], Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    MATRIX_FINALIZE_AND_LOAD(&gfx[3], play->state.gfxCtx);
     // Index adjust 2 -> 4 (for gsDPPipeSync) to account for our extraction size changes
     gSPDisplayList(&gfx[4], &gameplay_keep_DL_029D10_Data[4]);
     Matrix_RotateXS(-0x4000, MTXMODE_APPLY);
-    gSPMatrix(&gfx[5], Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    MATRIX_FINALIZE_AND_LOAD(&gfx[5], play->state.gfxCtx);
     gSPDisplayList(&gfx[6], &gameplay_keep_DL_029D10_Data[4]);
     // #endregion
     POLY_XLU_DISP = &gfx[7];

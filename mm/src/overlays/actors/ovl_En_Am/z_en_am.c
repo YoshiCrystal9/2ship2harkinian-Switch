@@ -9,9 +9,7 @@
 #include "overlays/actors/ovl_En_Bombf/z_en_bombf.h"
 #include "overlays/actors/ovl_En_Clear_Tag/z_en_clear_tag.h"
 
-#define FLAGS (ACTOR_FLAG_400 | ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_UNFRIENDLY)
-
-#define THIS ((EnAm*)thisx)
+#define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_HOSTILE | ACTOR_FLAG_HOOKSHOT_PULLS_PLAYER)
 
 void EnAm_Init(Actor* thisx, PlayState* play);
 void EnAm_Destroy(Actor* thisx, PlayState* play);
@@ -31,14 +29,12 @@ void func_808B057C(EnAm* this);
 void func_808B05C8(EnAm* this, PlayState* play);
 void func_808B0640(EnAm* this);
 void func_808B066C(EnAm* this, PlayState* play);
-void EnAm_TakeDamage(EnAm* this, PlayState* play);
 void func_808B07A8(EnAm* this, PlayState* play);
 void func_808B0820(EnAm* this);
 void func_808B0894(EnAm* this, PlayState* play);
 void func_808B0B4C(EnAm* this, PlayState* play);
-void EnAm_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* rot, Actor* thisx);
 
-ActorInit En_Am_InitVars = {
+ActorProfile En_Am_Profile = {
     /**/ ACTOR_EN_AM,
     /**/ ACTORCAT_ENEMY,
     /**/ FLAGS,
@@ -52,7 +48,7 @@ ActorInit En_Am_InitVars = {
 
 static ColliderCylinderInit sEnemyCylinderInit = {
     {
-        COLTYPE_HIT5,
+        COL_MATERIAL_HIT5,
         AT_NONE | AT_TYPE_ENEMY,
         AC_ON | AC_TYPE_PLAYER,
         OC1_ON | OC1_TYPE_ALL,
@@ -60,11 +56,11 @@ static ColliderCylinderInit sEnemyCylinderInit = {
         COLSHAPE_CYLINDER,
     },
     {
-        ELEMTYPE_UNK0,
+        ELEM_MATERIAL_UNK0,
         { 0xF7CFFFFF, 0x00, 0x08 },
         { 0x81C2C788, 0x00, 0x00 },
-        TOUCH_ON | TOUCH_SFX_NORMAL,
-        BUMP_ON | BUMP_HOOKABLE,
+        ATELEM_ON | ATELEM_SFX_NORMAL,
+        ACELEM_ON | ACELEM_HOOKABLE,
         OCELEM_ON,
     },
     { 23, 98, 0, { 0, 0, 0 } },
@@ -72,7 +68,7 @@ static ColliderCylinderInit sEnemyCylinderInit = {
 
 static ColliderCylinderInit sCylinderInit = {
     {
-        COLTYPE_METAL,
+        COL_MATERIAL_METAL,
         AT_NONE,
         AC_ON | AC_HARD | AC_TYPE_PLAYER,
         OC1_NONE,
@@ -80,11 +76,11 @@ static ColliderCylinderInit sCylinderInit = {
         COLSHAPE_CYLINDER,
     },
     {
-        ELEMTYPE_UNK0,
+        ELEM_MATERIAL_UNK0,
         { 0x00000000, 0x00, 0x00 },
         { 0x760D3877, 0x00, 0x00 },
-        TOUCH_NONE | TOUCH_SFX_NORMAL,
-        BUMP_ON,
+        ATELEM_NONE | ATELEM_SFX_NORMAL,
+        ACELEM_ON,
         OCELEM_NONE,
     },
     { 23, 98, 0, { 0, 0, 0 } },
@@ -131,23 +127,11 @@ static InitChainEntry sInitChain[] = {
     ICHAIN_VEC3F_DIV1000(scale, 14, ICHAIN_CONTINUE),
     ICHAIN_S8(hintId, TATL_HINT_ID_ARMOS, ICHAIN_CONTINUE),
     ICHAIN_F32_DIV1000(gravity, -4000, ICHAIN_CONTINUE),
-    ICHAIN_F32(targetArrowOffset, 2000, ICHAIN_STOP),
+    ICHAIN_F32(lockOnArrowOffset, 2000, ICHAIN_STOP),
 };
 
-static Vec3f sVelocity = { 0.0f, -1.5f, 0.0f };
-
-static Vec3f sAccel = { 0.0f, -(1.0f / 5.0f), 0.0f };
-
-static Color_RGBA8 D_808B1118 = { 100, 100, 100, 0 };
-
-static Color_RGBA8 D_808B111C = { 40, 40, 40, 0 };
-
-static Color_RGBA8 D_808B1120 = { 150, 150, 150, 255 };
-
-static Color_RGBA8 D_808B1124 = { 100, 100, 100, 150 };
-
 void EnAm_Init(Actor* thisx, PlayState* play) {
-    EnAm* this = THIS;
+    EnAm* this = (EnAm*)thisx;
 
     Actor_ProcessInitChain(&this->actor, sInitChain);
     ActorShape_Init(&this->actor.shape, 0.0f, ActorShadow_DrawCircle, 300.0f / 7.0f);
@@ -164,13 +148,17 @@ void EnAm_Init(Actor* thisx, PlayState* play) {
 }
 
 void EnAm_Destroy(Actor* thisx, PlayState* play) {
-    EnAm* this = THIS;
+    EnAm* this = (EnAm*)thisx;
 
     Collider_DestroyCylinder(play, &this->enemyCollider);
     Collider_DestroyCylinder(play, &this->interactCollider);
 }
 
 void EnAm_SpawnEffects(EnAm* this, PlayState* play) {
+    static Vec3f sVelocity = { 0.0f, -1.5f, 0.0f };
+    static Vec3f sAccel = { 0.0f, -(1.0f / 5.0f), 0.0f };
+    static Color_RGBA8 sPrimColor = { 100, 100, 100, 0 };
+    static Color_RGBA8 sEnvColor = { 40, 40, 40, 0 };
     s32 i;
     Vec3f effectPos;
     s32 pad;
@@ -180,18 +168,18 @@ void EnAm_SpawnEffects(EnAm* this, PlayState* play) {
         effectPos.x = Rand_CenteredFloat(65.0f) + this->actor.world.pos.x;
         effectPos.y = Rand_CenteredFloat(10.0f) + (this->actor.world.pos.y + 40.0f);
         effectPos.z = Rand_CenteredFloat(65.0f) + this->actor.world.pos.z;
-        EffectSsKirakira_SpawnSmall(play, &effectPos, &sVelocity, &sAccel, &D_808B1118, &D_808B111C);
+        EffectSsKirakira_SpawnSmall(play, &effectPos, &sVelocity, &sAccel, &sPrimColor, &sEnvColor);
     }
     Actor_PlaySfx(&this->actor, NA_SE_EN_AMOS_WALK);
-    Actor_SpawnFloorDustRing(play, &this->actor, &this->actor.world.pos, 4.0f, 3, 8.0f, 300, 15, 0);
+    Actor_SpawnFloorDustRing(play, &this->actor, &this->actor.world.pos, 4.0f, 3, 8.0f, 300, 15, false);
 }
 
 void func_808AFF9C(EnAm* this) {
     f32 endFrame = Animation_GetLastFrame(&gArmosPushedBackAnim);
 
     Animation_Change(&this->skelAnime, &gArmosPushedBackAnim, 0.0f, endFrame, endFrame, ANIMMODE_LOOP, 0.0f);
-    this->enemyCollider.info.bumper.dmgFlags = 0x80000088;
-    this->interactCollider.info.bumper.dmgFlags = 0x77CFFF77;
+    this->enemyCollider.elem.acDmgInfo.dmgFlags = 0x80000088;
+    this->interactCollider.elem.acDmgInfo.dmgFlags = 0x77CFFF77;
     if (this->actor.colChkInfo.health != 0) {
         this->enemyCollider.base.atFlags &= ~AT_ON;
     }
@@ -209,7 +197,7 @@ void EnAm_RemoveEnemyTexture(EnAm* this, PlayState* play) {
         this->textureBlend -= 10;
     } else {
         this->textureBlend = 0;
-        this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
+        this->actor.flags &= ~ACTOR_FLAG_ATTENTION_ENABLED;
         this->unkFlag = 0;
     }
 }
@@ -230,9 +218,9 @@ void EnAm_ApplyEnemyTexture(EnAm* this, PlayState* play) {
 
     if (this->textureBlend + 20 >= 255) {
         this->textureBlend = 255;
-        this->actor.flags |= ACTOR_FLAG_TARGETABLE;
-        this->enemyCollider.info.bumper.dmgFlags = 0x81C2C788;
-        this->interactCollider.info.bumper.dmgFlags = 0x760D3877;
+        this->actor.flags |= ACTOR_FLAG_ATTENTION_ENABLED;
+        this->enemyCollider.elem.acDmgInfo.dmgFlags = 0x81C2C788;
+        this->interactCollider.elem.acDmgInfo.dmgFlags = 0x760D3877;
         this->enemyCollider.base.atFlags |= AT_ON;
         this->actor.shape.yOffset = 0.0f;
         func_808B0358(this);
@@ -392,13 +380,15 @@ void func_808B0820(EnAm* this) {
     Animation_PlayLoopSetSpeed(&this->skelAnime, &gArmosHopAnim, 4.0f);
     this->explodeTimer = 64;
     this->actor.world.rot.y = this->actor.shape.rot.y;
-    this->actor.flags |= ACTOR_FLAG_10;
+    this->actor.flags |= ACTOR_FLAG_UPDATE_CULLING_DISABLED;
     this->actor.speed = 0.0f;
     this->speed = 6.0f;
     this->actionFunc = func_808B0894;
 }
 
 void func_808B0894(EnAm* this, PlayState* play) {
+    static Color_RGBA8 sPrimColor = { 150, 150, 150, 255 };
+    static Color_RGBA8 sEnvColor = { 100, 100, 100, 150 };
     s32 i;
     Vec3f dustPos;
     s32 pad;
@@ -421,7 +411,7 @@ void func_808B0894(EnAm* this, PlayState* play) {
             dustPos.y = (Rand_CenteredFloat(10.0f) * 6.0f) + (this->actor.world.pos.y + 40.0f);
             dustPos.z = (Math_CosS(0) * 7.0f) + this->actor.world.pos.z;
 
-            func_800B0EB0(play, &dustPos, &gZeroVec3f, &gZeroVec3f, &D_808B1120, &D_808B1124, 200, 45, 12);
+            func_800B0EB0(play, &dustPos, &gZeroVec3f, &gZeroVec3f, &sPrimColor, &sEnvColor, 200, 45, 12);
         }
     } else if (this->explodeTimer == 0) {
         Actor_Kill(&this->actor);
@@ -452,7 +442,7 @@ void func_808B0B4C(EnAm* this, PlayState* play) {
 s32 EnAm_UpdateDamage(EnAm* this, PlayState* play) {
     if (this->enemyCollider.base.acFlags & AC_HIT) {
         this->enemyCollider.base.acFlags &= ~AC_HIT;
-        Actor_SetDropFlag(&this->actor, &this->enemyCollider.info);
+        Actor_SetDropFlag(&this->actor, &this->enemyCollider.elem);
         if (!Actor_ApplyDamage(&this->actor)) {
             Enemy_StartFinishingBlow(play, &this->actor);
         }
@@ -466,9 +456,9 @@ s32 EnAm_UpdateDamage(EnAm* this, PlayState* play) {
         if (this->actor.colChkInfo.damageEffect == 0x4) {
             this->drawDmgEffScale = 0.7f;
             this->drawDmgEffAlpha = 4.0f;
-            Actor_Spawn(&play->actorCtx, play, ACTOR_EN_CLEAR_TAG, this->enemyCollider.info.bumper.hitPos.x,
-                        this->enemyCollider.info.bumper.hitPos.y, this->enemyCollider.info.bumper.hitPos.z, 0, 0, 0,
-                        CLEAR_TAG_PARAMS(CLEAR_TAG_LARGE_LIGHT_RAYS));
+            Actor_Spawn(&play->actorCtx, play, ACTOR_EN_CLEAR_TAG, this->enemyCollider.elem.acDmgInfo.hitPos.x,
+                        this->enemyCollider.elem.acDmgInfo.hitPos.y, this->enemyCollider.elem.acDmgInfo.hitPos.z, 0, 0,
+                        0, CLEAR_TAG_PARAMS(CLEAR_TAG_LARGE_LIGHT_RAYS));
         }
         EnAm_TakeDamage(this, play);
         return true;
@@ -477,7 +467,7 @@ s32 EnAm_UpdateDamage(EnAm* this, PlayState* play) {
 }
 
 void EnAm_Update(Actor* thisx, PlayState* play) {
-    EnAm* this = THIS;
+    EnAm* this = (EnAm*)thisx;
     s32 pad;
 
     if (EnAm_UpdateDamage(this, play) == false) {
@@ -507,7 +497,7 @@ void EnAm_Update(Actor* thisx, PlayState* play) {
     }
     CollisionCheck_SetAC(play, &play->colChkCtx, &this->interactCollider.base);
     if (this->enemyCollider.base.atFlags & AT_ON) {
-        this->actor.flags |= ACTOR_FLAG_1000000;
+        this->actor.flags |= ACTOR_FLAG_SFX_FOR_PLAYER_BODY_HIT;
         CollisionCheck_SetAT(play, &play->colChkCtx, &this->enemyCollider.base);
     }
     Math_StepToF(&this->drawDmgEffAlpha, 0.0f, 0.05f);
@@ -540,7 +530,7 @@ void EnAm_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* rot, 
     s32 phi_s3;
     Vec3f* phi_s1;
     Vec3f* phi_s2;
-    EnAm* this = THIS;
+    EnAm* this = (EnAm*)thisx;
 
     phi_s2 = 0;
     phi_s1 = 0;
@@ -567,7 +557,7 @@ void EnAm_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* rot, 
 
 void EnAm_Draw(Actor* thisx, PlayState* play) {
     Gfx* gfx;
-    EnAm* this = THIS;
+    EnAm* this = (EnAm*)thisx;
 
     OPEN_DISPS(play->state.gfxCtx);
 

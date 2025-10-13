@@ -26,8 +26,7 @@ void RegisterMarkShootingGalleryOctoroks() {
                              enSyatekiOkuta->actor.world.pos.z + 20.0f, MTXMODE_NEW);
 
             gDPSetPrimColor(POLY_XLU_DISP++, 0, 0, 255, 255, 255, 192);
-            gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(gPlayState->state.gfxCtx),
-                      G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+            MATRIX_FINALIZE_AND_LOAD(POLY_XLU_DISP++, gPlayState->state.gfxCtx);
 
             if (enSyatekiOkuta->type == SG_OCTO_TYPE_BLUE) {
                 gSPDisplayList(POLY_XLU_DISP++, (Gfx*)&gShootingGalleryOctorokCrossDL);

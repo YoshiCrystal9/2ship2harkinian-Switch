@@ -1,4 +1,5 @@
 #include "buffers.h"
+#include "z64.h"
 #include <assert.h>
 #include <stdlib.h>
 #ifndef _MSC_VER

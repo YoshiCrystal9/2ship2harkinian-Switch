@@ -7,9 +7,7 @@
 #include "z_bg_iknv_doukutu.h"
 #include "objects/object_iknv_obj/object_iknv_obj.h"
 
-#define FLAGS (ACTOR_FLAG_10 | ACTOR_FLAG_20)
-
-#define THIS ((BgIknvDoukutu*)thisx)
+#define FLAGS (ACTOR_FLAG_UPDATE_CULLING_DISABLED | ACTOR_FLAG_DRAW_CULLING_DISABLED)
 
 void BgIknvDoukutu_Init(Actor* thisx, PlayState* play);
 void BgIknvDoukutu_Destroy(Actor* thisx, PlayState* play);
@@ -27,7 +25,7 @@ void func_80BD7820(Actor* thisx, PlayState* play);
 void func_80BD78C4(Actor* thisx, PlayState* play);
 void func_80BD7538(Actor* thisx, PlayState* play);
 
-ActorInit Bg_Iknv_Doukutu_InitVars = {
+ActorProfile Bg_Iknv_Doukutu_Profile = {
     /**/ ACTOR_BG_IKNV_DOUKUTU,
     /**/ ACTORCAT_BG,
     /**/ FLAGS,
@@ -40,7 +38,7 @@ ActorInit Bg_Iknv_Doukutu_InitVars = {
 };
 
 void BgIknvDoukutu_Init(Actor* thisx, PlayState* play) {
-    BgIknvDoukutu* this = THIS;
+    BgIknvDoukutu* this = (BgIknvDoukutu*)thisx;
     CollisionHeader* colHeader = NULL;
     s32 pad;
 
@@ -96,7 +94,7 @@ void BgIknvDoukutu_Init(Actor* thisx, PlayState* play) {
 }
 
 void BgIknvDoukutu_Destroy(Actor* thisx, PlayState* play) {
-    BgIknvDoukutu* this = THIS;
+    BgIknvDoukutu* this = (BgIknvDoukutu*)thisx;
 
     if ((BGIKNVDOUKUTU_GET_F(&this->dyna.actor) == BGIKNVDOUKUTU_F_1) ||
         (BGIKNVDOUKUTU_GET_F(&this->dyna.actor) == BGIKNVDOUKUTU_F_2)) {
@@ -156,21 +154,21 @@ void func_80BD73D0(BgIknvDoukutu* this, PlayState* play) {
 }
 
 void BgIknvDoukutu_Update(Actor* thisx, PlayState* play) {
-    BgIknvDoukutu* this = THIS;
+    BgIknvDoukutu* this = (BgIknvDoukutu*)thisx;
 
     this->actionFunc(this, play);
 }
 
 void BgIknvDoukutu_Draw(Actor* thisx, PlayState* play) {
-    BgIknvDoukutu* this = THIS;
+    BgIknvDoukutu* this = (BgIknvDoukutu*)thisx;
 
     OPEN_DISPS(play->state.gfxCtx);
 
     AnimatedMat_Draw(play, Lib_SegmentedToVirtual(object_iknv_obj_Matanimheader_00F1C0));
     Scene_SetRenderModeXlu(play, 0, 1);
 
-    gSPMatrix(POLY_OPA_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
-    gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    MATRIX_FINALIZE_AND_LOAD(POLY_OPA_DISP++, play->state.gfxCtx);
+    MATRIX_FINALIZE_AND_LOAD(POLY_XLU_DISP++, play->state.gfxCtx);
 
     Gfx_SetupDL25_Opa(play->state.gfxCtx);
     Gfx_SetupDL25_Xlu(play->state.gfxCtx);
@@ -184,7 +182,7 @@ void BgIknvDoukutu_Draw(Actor* thisx, PlayState* play) {
 }
 
 void func_80BD7538(Actor* thisx, PlayState* play) {
-    BgIknvDoukutu* this = THIS;
+    BgIknvDoukutu* this = (BgIknvDoukutu*)thisx;
     GraphicsContext* gfxCtx;
     f32 sp54;
 
@@ -203,7 +201,7 @@ void func_80BD7538(Actor* thisx, PlayState* play) {
     sp54 = this->unk_160;
     AnimatedMat_Draw(play, Lib_SegmentedToVirtual(object_iknv_obj_Matanimheader_00F1C0));
 
-    gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    MATRIX_FINALIZE_AND_LOAD(POLY_XLU_DISP++, play->state.gfxCtx);
 
     Gfx_SetupDL72(POLY_XLU_DISP++);
     Scene_SetRenderModeXlu(play, 1, 2);
@@ -218,13 +216,13 @@ void func_80BD7538(Actor* thisx, PlayState* play) {
 }
 
 void func_80BD7768(Actor* thisx, PlayState* play) {
-    BgIknvDoukutu* this = THIS;
+    BgIknvDoukutu* this = (BgIknvDoukutu*)thisx;
 
     OPEN_DISPS(play->state.gfxCtx);
 
     Scene_SetRenderModeXlu(play, 0, 1);
 
-    gSPMatrix(POLY_OPA_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    MATRIX_FINALIZE_AND_LOAD(POLY_OPA_DISP++, play->state.gfxCtx);
 
     Gfx_SetupDL25_Opa(play->state.gfxCtx);
 
@@ -235,13 +233,13 @@ void func_80BD7768(Actor* thisx, PlayState* play) {
 }
 
 void func_80BD7820(Actor* thisx, PlayState* play) {
-    BgIknvDoukutu* this = THIS;
+    BgIknvDoukutu* this = (BgIknvDoukutu*)thisx;
 
     OPEN_DISPS(play->state.gfxCtx);
 
     AnimatedMat_Draw(play, Lib_SegmentedToVirtual(object_iknv_obj_Matanimheader_012728));
 
-    gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    MATRIX_FINALIZE_AND_LOAD(POLY_XLU_DISP++, play->state.gfxCtx);
 
     Gfx_SetupDL25_Xlu(play->state.gfxCtx);
 
@@ -251,7 +249,7 @@ void func_80BD7820(Actor* thisx, PlayState* play) {
 }
 
 void func_80BD78C4(Actor* thisx, PlayState* play) {
-    BgIknvDoukutu* this = THIS;
+    BgIknvDoukutu* this = (BgIknvDoukutu*)thisx;
     f32 sp30 = this->unk_160;
     s32 pad;
 
@@ -259,7 +257,7 @@ void func_80BD78C4(Actor* thisx, PlayState* play) {
 
     AnimatedMat_Draw(play, Lib_SegmentedToVirtual(object_iknv_obj_Matanimheader_0117A0));
 
-    gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    MATRIX_FINALIZE_AND_LOAD(POLY_XLU_DISP++, play->state.gfxCtx);
 
     Gfx_SetupDL25_Xlu(play->state.gfxCtx);
 

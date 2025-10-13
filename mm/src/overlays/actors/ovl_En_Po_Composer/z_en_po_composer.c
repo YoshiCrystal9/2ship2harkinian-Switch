@@ -6,9 +6,9 @@
 
 #include "z_en_po_composer.h"
 
-#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_10 | ACTOR_FLAG_100000 | ACTOR_FLAG_2000000)
-
-#define THIS ((EnPoComposer*)thisx)
+#define FLAGS                                                                                  \
+    (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_UPDATE_CULLING_DISABLED | \
+     ACTOR_FLAG_FREEZE_EXCEPTION | ACTOR_FLAG_UPDATE_DURING_OCARINA)
 
 void EnPoComposer_Init(Actor* thisx, PlayState* play);
 void EnPoComposer_Destroy(Actor* thisx, PlayState* play);
@@ -32,7 +32,7 @@ void EnPoComposer_SetupStartCutscene(EnPoComposer* this);
 void EnPoComposer_SetupStartedCutscene(EnPoComposer* this);
 void EnPoComposer_StepLightAlpha(EnPoComposer* this);
 
-ActorInit En_Po_Composer_InitVars = {
+ActorProfile En_Po_Composer_Profile = {
     /**/ ACTOR_EN_PO_COMPOSER,
     /**/ ACTORCAT_ITEMACTION,
     /**/ FLAGS,
@@ -46,7 +46,7 @@ ActorInit En_Po_Composer_InitVars = {
 
 static ColliderCylinderInit sCylinderInit = {
     {
-        COLTYPE_HIT3,
+        COL_MATERIAL_HIT3,
         AT_NONE,
         AC_ON | AC_TYPE_PLAYER,
         OC1_ON | OC1_TYPE_ALL,
@@ -54,11 +54,11 @@ static ColliderCylinderInit sCylinderInit = {
         COLSHAPE_CYLINDER,
     },
     {
-        ELEMTYPE_UNK0,
+        ELEM_MATERIAL_UNK0,
         { 0x00000000, 0x00, 0x00 },
         { 0xF7CFFFFF, 0x00, 0x00 },
-        TOUCH_NONE | TOUCH_SFX_NORMAL,
-        BUMP_ON,
+        ATELEM_NONE | ATELEM_SFX_NORMAL,
+        ACELEM_ON,
         OCELEM_ON,
     },
     { 20, 40, 20, { 0, 0, 0 } },
@@ -67,11 +67,11 @@ static ColliderCylinderInit sCylinderInit = {
 static ColliderJntSphElementInit sJntSphElementsInit[1] = {
     {
         {
-            ELEMTYPE_UNK0,
+            ELEM_MATERIAL_UNK0,
             { 0xF7CFFFFF, 0x00, 0x08 },
             { 0x00000000, 0x00, 0x00 },
-            TOUCH_ON | TOUCH_SFX_NORMAL,
-            BUMP_NONE,
+            ATELEM_ON | ATELEM_SFX_NORMAL,
+            ACELEM_NONE,
             OCELEM_ON,
         },
         { POE_COMPOSER_LIMB_LANTERN, { { 0, -1500, 0 }, 10 }, 100 },
@@ -80,7 +80,7 @@ static ColliderJntSphElementInit sJntSphElementsInit[1] = {
 
 static ColliderJntSphInit sJntSphInit = {
     {
-        COLTYPE_HIT3,
+        COL_MATERIAL_HIT3,
         AT_ON | AT_TYPE_ENEMY,
         AC_ON | AC_TYPE_PLAYER,
         OC1_ON | OC1_TYPE_ALL,
@@ -174,13 +174,13 @@ static Color_RGBA8 sSharpClothingColor2 = { 90, 85, 50, 255 };
 static Color_RGBA8 sFlatClothingColor2 = { 100, 90, 100, 255 };
 
 static InitChainEntry sInitChain[] = {
-    ICHAIN_F32(targetArrowOffset, 3200, ICHAIN_STOP),
+    ICHAIN_F32(lockOnArrowOffset, 3200, ICHAIN_STOP),
 };
 
 static s32 sPlayerIsPlayingOcarina = false;
 
 void EnPoComposer_Init(Actor* thisx, PlayState* play) {
-    EnPoComposer* this = THIS;
+    EnPoComposer* this = (EnPoComposer*)thisx;
 
     Actor_ProcessInitChain(&this->actor, sInitChain);
     ActorShape_Init(&this->actor.shape, 0.0f, ActorShadow_DrawCircle, 30.0f);
@@ -194,7 +194,7 @@ void EnPoComposer_Init(Actor* thisx, PlayState* play) {
     this->lightNode = LightContext_InsertLight(play, &play->lightCtx, &this->lightInfo);
     Lights_PointGlowSetInfo(&this->lightInfo, this->actor.home.pos.x, this->actor.home.pos.y, this->actor.home.pos.z,
                             255, 255, 255, 0);
-    this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
+    this->actor.flags &= ~ACTOR_FLAG_ATTENTION_ENABLED;
     this->lightColor = sLightColorInit;
     this->envColor = sEnvColorInit;
     this->cueId = POE_COMPOSER_CUEID_NONE;
@@ -239,7 +239,7 @@ void EnPoComposer_Init(Actor* thisx, PlayState* play) {
 }
 
 void EnPoComposer_Destroy(Actor* thisx, PlayState* play) {
-    EnPoComposer* this = THIS;
+    EnPoComposer* this = (EnPoComposer*)thisx;
 
     LightContext_RemoveLight(play, &play->lightCtx, this->lightNode);
     Collider_DestroyJntSph(play, &this->lanternCollider);
@@ -287,7 +287,7 @@ void EnPoComposer_StartedCutscene(EnPoComposer* this, PlayState* play) {
 
 void EnPoComposer_SetupPlayCurse(EnPoComposer* this) {
     this->actionTimer = 0;
-    this->actor.flags |= ACTOR_FLAG_TARGETABLE;
+    this->actor.flags |= ACTOR_FLAG_ATTENTION_ENABLED;
     Actor_ChangeAnimationByInfo(&this->skelAnime, sAnimationInfo, POE_COMPOSER_ANIM_PLAYING_CURSE);
     this->actionFunc = EnPoComposer_PlayCurse;
 }
@@ -304,7 +304,7 @@ void EnPoComposer_PlayCurse(EnPoComposer* this, PlayState* play) {
     }
 
     // Ocarina check
-    if (player->stateFlags2 & PLAYER_STATE2_8000000) {
+    if (player->stateFlags2 & PLAYER_STATE2_USING_OCARINA) {
         if (!sPlayerIsPlayingOcarina) {
             // Play sound whenever the player begins playing the Ocarina
             Audio_PlaySfx(NA_SE_SY_TRE_BOX_APPEAR);
@@ -604,7 +604,7 @@ void EnPoComposer_UpdateCollision(EnPoComposer* this, PlayState* play) {
 }
 
 void EnPoComposer_Update(Actor* thisx, PlayState* play) {
-    EnPoComposer* this = THIS;
+    EnPoComposer* this = (EnPoComposer*)thisx;
 
     EnPoComposer_UpdateEnvColor(this);
     SkelAnime_Update(&this->skelAnime);
@@ -619,7 +619,7 @@ void EnPoComposer_Update(Actor* thisx, PlayState* play) {
 
 s32 EnPoComposer_OverrideLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3f* pos, Vec3s* rot, Actor* thisx,
                                   Gfx** gfx) {
-    EnPoComposer* this = THIS;
+    EnPoComposer* this = (EnPoComposer*)thisx;
 
     if ((this->lightColor.a == 0) || (limbIndex == POE_COMPOSER_LIMB_LANTERN)) {
         *dList = NULL;
@@ -637,7 +637,7 @@ s32 EnPoComposer_OverrideLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, V
 }
 
 void EnPoComposer_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* rot, Actor* thisx, Gfx** gfx) {
-    EnPoComposer* this = THIS;
+    EnPoComposer* this = (EnPoComposer*)thisx;
 
     Collider_UpdateSpheres(limbIndex, &this->lanternCollider);
     if (limbIndex == POE_COMPOSER_LIMB_LANTERN) {
@@ -646,7 +646,7 @@ void EnPoComposer_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3
 }
 
 void EnPoComposer_Draw(Actor* thisx, PlayState* play) {
-    EnPoComposer* this = THIS;
+    EnPoComposer* this = (EnPoComposer*)thisx;
     s32 pad;
     Gfx* dl;
     Color_RGBA8* clothingColor;
@@ -720,7 +720,7 @@ void EnPoComposer_Draw(Actor* thisx, PlayState* play) {
         gDPSetEnvColor(&dl[1], this->envColor.r, this->envColor.g, this->envColor.b, this->lightColor.a);
 
         Matrix_Put(&this->lanternMtxF);
-        gSPMatrix(&dl[2], Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+        MATRIX_FINALIZE_AND_LOAD(&dl[2], play->state.gfxCtx);
 
         gSPDisplayList(&dl[3], gPoeComposerLanternBaseDL);
         gSPDisplayList(&dl[4], gPoeComposerLanternGlassDL);
@@ -739,9 +739,9 @@ void EnPoComposer_Draw(Actor* thisx, PlayState* play) {
     Matrix_Put(&play->billboardMtxF);
     Matrix_MultVecZ(15.0f, &lightOffset);
     lightPos = this->lanternCollider.elements[0].dim.worldSphere.center;
-    lightPos.x += (s16)lightOffset.x;
-    lightPos.y += (s16)lightOffset.y;
-    lightPos.z += (s16)lightOffset.z;
+    lightPos.x += TRUNCF_BINANG(lightOffset.x);
+    lightPos.y += TRUNCF_BINANG(lightOffset.y);
+    lightPos.z += TRUNCF_BINANG(lightOffset.z);
 
     Lights_PointGlowSetInfo(&this->lightInfo, lightPos.x, lightPos.y, lightPos.z, this->envColor.r, this->envColor.g,
                             this->envColor.b, this->envColor.a * (200.0f / 255.0f));

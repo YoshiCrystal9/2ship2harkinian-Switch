@@ -40,6 +40,11 @@ typedef struct {
 } Vec3i; // size = 0xC
 
 typedef struct {
+    /* 0x0 */ s16 distance;
+    /* 0x2 */ s16 angle;
+} VecPolarS; // size = 0x4
+
+typedef struct {
     /* 0x0 */ f32 distance;
     /* 0x4 */ s16 angle;
 } VecPolar; // size = 0x8
@@ -59,8 +64,8 @@ The plane paramaters are of form `ax + by + cz + d = 0`
 where `(a,b,c)` is the plane's normal vector and d is the originDist
  */
 typedef struct {
-    /* 0x00 */ Vec3f normal;
-    /* 0x0C */ f32   originDist;
+    /* 0x0 */ Vec3f normal;
+    /* 0xC */ f32   originDist;
 } Plane; // size = 0x10
 
 typedef struct {
@@ -131,6 +136,19 @@ typedef union {
     };
 } MtxF; // size = 0x40
 #endif
+
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
+extern Vec3f gZeroVec3f;
+extern Vec3s gZeroVec3s;
+
+#ifdef __cplusplus
+}
+#endif
+
 #define LERPIMP(v0, v1, t) ((v0) + (((v1) - (v0)) * (t)))
 #define LERPIMP_ALT(v0, v1, t) (((v1) - (v0)) * (t) + (v0))
 #define S16_LERP(v0, v1, t) ((s16)(((v1) - (v0)) * (t)) + (v0))
@@ -155,6 +173,7 @@ typedef union {
 #define IS_ZERO(f) (fabsf(f) < 0.008f)
 
 #define SQ(x) ((x) * (x))
+#define CB(x) ((x) * (x) * (x))
 #define ABS(x) ((x) >= 0 ? (x) : -(x))
 #define ABS_ALT(x) ((x) < 0 ? -(x) : (x))
 

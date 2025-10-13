@@ -8,9 +8,7 @@
 #include "objects/object_an4/object_an4.h"
 #include "objects/object_msmo/object_msmo.h"
 
-#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_FRIENDLY)
-
-#define THIS ((DmAn*)thisx)
+#define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY)
 
 void DmAn_Init(Actor* thisx, PlayState* play);
 void DmAn_Destroy(Actor* thisx, PlayState* play);
@@ -21,7 +19,7 @@ void DmAn_HandleCouplesMaskCs(DmAn* this, PlayState* play);
 void DmAn_DoNothing(DmAn* this, PlayState* play);
 void DmAn_Draw(Actor* thisx, PlayState* play);
 
-ActorInit Dm_An_InitVars = {
+ActorProfile Dm_An_Profile = {
     /**/ ACTOR_DM_AN,
     /**/ ACTORCAT_NPC,
     /**/ FLAGS,
@@ -200,24 +198,26 @@ s32 DmAn_UpdateAttention(DmAn* this, PlayState* play) {
 }
 
 Actor* DmAn_FindAnjusMotherActor(PlayState* play) {
-    Actor* tempActor;
-    Actor* foundActor = NULL;
+    Actor* actorIter = NULL;
 
     while (true) {
-        foundActor = SubS_FindActor(play, foundActor, ACTORCAT_NPC, ACTOR_DM_AH);
+        actorIter = SubS_FindActor(play, actorIter, ACTORCAT_NPC, ACTOR_DM_AH);
 
-        if ((foundActor == NULL) || (foundActor->update != NULL)) {
+        if (actorIter == NULL) {
             break;
         }
 
-        tempActor = foundActor->next;
-        if ((tempActor == NULL) || false) {
-            foundActor = NULL;
+        if (actorIter->update != NULL) {
             break;
         }
-        foundActor = tempActor;
+
+        if ((actorIter->next == NULL) || false) {
+            actorIter = NULL;
+            break;
+        }
+        actorIter = actorIter->next;
     }
-    return foundActor;
+    return actorIter;
 }
 
 void DmAn_WaitForObject(DmAn* this, PlayState* play) {
@@ -229,7 +229,7 @@ void DmAn_WaitForObject(DmAn* this, PlayState* play) {
 
         this->animIndex = DMAN_ANIM_NONE;
         DmAn_ChangeAnim(this, play, DMAN_ANIM_SITTING_IN_DISBELIEF);
-        this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
+        this->actor.flags &= ~ACTOR_FLAG_ATTENTION_ENABLED;
         Actor_SetScale(&this->actor, 0.01f);
         this->stateFlags |= DMAN_STATE_LOST_ATTENTION;
         this->actor.draw = DmAn_Draw;
@@ -309,7 +309,7 @@ void DmAn_DoNothing(DmAn* this, PlayState* play) {
 }
 
 void DmAn_Init(Actor* thisx, PlayState* play) {
-    DmAn* this = THIS;
+    DmAn* this = (DmAn*)thisx;
 
     this->an4ObjectSlot = SubS_GetObjectSlot(OBJECT_AN4, play);
     this->msmoObjectSlot = SubS_GetObjectSlot(OBJECT_MSMO, play);
@@ -320,7 +320,7 @@ void DmAn_Destroy(Actor* thisx, PlayState* play) {
 }
 
 void DmAn_Update(Actor* thisx, PlayState* play) {
-    DmAn* this = THIS;
+    DmAn* this = (DmAn*)thisx;
 
     this->actionFunc(this, play);
 
@@ -335,7 +335,7 @@ void DmAn_Update(Actor* thisx, PlayState* play) {
 
 void DmAn_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* rot, Actor* thisx) {
     s32 pad[2];
-    DmAn* this = THIS;
+    DmAn* this = (DmAn*)thisx;
     s8 objectSlot = this->actor.objectSlot;
     s8 msmoObjectSlot = this->msmoObjectSlot;
 
@@ -348,7 +348,7 @@ void DmAn_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* rot, 
         Matrix_Push();
         Matrix_TranslateRotateZYX(&D_80C1D2C8, &D_80C1D2D4);
 
-        gSPMatrix(POLY_OPA_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+        MATRIX_FINALIZE_AND_LOAD(POLY_OPA_DISP++, play->state.gfxCtx);
         gSPSegment(POLY_OPA_DISP++, 0x06, play->objectCtx.slots[msmoObjectSlot].segment);
         gSPDisplayList(POLY_OPA_DISP++, gMoonMaskDL);
         gSPSegment(POLY_OPA_DISP++, 0x06, play->objectCtx.slots[objectSlot].segment);
@@ -367,7 +367,7 @@ void DmAn_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* rot, 
 }
 
 void DmAn_TransformLimbDraw(PlayState* play, s32 limbIndex, Actor* thisx) {
-    DmAn* this = THIS;
+    DmAn* this = (DmAn*)thisx;
     s16 stepRot;
     s16 overrideRot;
 
@@ -422,7 +422,7 @@ void DmAn_Draw(Actor* thisx, PlayState* play) {
         gAnju1EyeSadTex,            // DMAN_EYES_SAD
         gAnju1EyeRelievedClosedTex, // DMAN_EYES_RELIEVED_CLOSED
     };
-    DmAn* this = THIS;
+    DmAn* this = (DmAn*)thisx;
 
     OPEN_DISPS(play->state.gfxCtx);
 
