@@ -3,6 +3,7 @@
 #include "Context.h"
 #include "config/Config.h"
 #include <bit>
+#include "Rando/Rando.h"
 
 extern "C" {
 #include "z64save.h"
@@ -12,6 +13,7 @@ extern "C" {
 #include "assets/interface/icon_item_dungeon_static/icon_item_dungeon_static.h"
 #include "assets/interface/icon_item_field_static/icon_item_field_static.h"
 #include "assets/interface/parameter_static/parameter_static.h"
+#include "2s2h_assets.h"
 }
 
 #define CFG_TRACKER_ITEM(var) ("ItemTracker." var)
@@ -29,6 +31,7 @@ typedef enum {
     TRACKER_ITEM_KEY_SNOWHEAD,
     TRACKER_ITEM_KEY_GREAT_BAY,
     TRACKER_ITEM_KEY_STONE_TONER,
+    TRACKER_ITEM_TRIFORCE_PIECES,
 } ItemTrackerItems;
 
 using namespace Ship;
@@ -351,6 +354,7 @@ bool ItemTrackerWindow::HasItemCount(int itemId) {
         case TRACKER_ITEM_KEY_SNOWHEAD:
         case TRACKER_ITEM_KEY_GREAT_BAY:
         case TRACKER_ITEM_KEY_STONE_TONER:
+        case TRACKER_ITEM_TRIFORCE_PIECES:
             return true;
         default:
             return false;
@@ -416,6 +420,17 @@ ItemTrackerWindow::CountInfo ItemTrackerWindow::GetItemCountInfo(int itemId) {
                 .maxCap = sSmallKeyCounts[itemId - TRACKER_ITEM_KEY_WOODFALL + DUNGEON_SCENE_INDEX_WOODFALL_TEMPLE],
             };
             break;
+        case TRACKER_ITEM_TRIFORCE_PIECES: {
+            u32 triforcePieceCount = gSaveContext.save.shipSaveInfo.rando.foundTriforcePieces;
+            info = {
+                .cur = (uint16_t)triforcePieceCount,
+                .curCap =
+                    (uint16_t)RANDO_SAVE_OPTIONS[Rando::StaticData::Options[RO_TRIFORCE_PIECES_REQUIRED].randoOptionId],
+                .maxCap =
+                    (uint16_t)RANDO_SAVE_OPTIONS[Rando::StaticData::Options[RO_TRIFORCE_PIECES_REQUIRED].randoOptionId],
+            };
+            break;
+        }
         default:
             info = { 0 };
     }
@@ -585,6 +600,14 @@ int ItemTrackerWindow::DrawMisc(int columns, int prevDrawnColumns) {
     DrawOwlFace(gSaveContext.save.saveInfo.playerData.owlActivationFlags == 0);
     DrawItemCount(TRACKER_ITEM_OWL_ACTIVATIONS, pos);
     ImGui::EndGroup();
+    pos = ImVec2((0 * (mIconSize + mIconSpacing) + 8.0f),
+                 ((prevDrawnColumns + 1) * (mIconSize + mIconSpacing)) + 8.0f + topPadding);
+    ImGui::SetCursorPos(pos);
+    ImGui::BeginGroup();
+    DrawItem((char*)gTriforcePieceTex,
+             RANDO_SAVE_OPTIONS[Rando::StaticData::Options[RO_TRIFORCE_PIECES_REQUIRED].randoOptionId] == 0, mIconSize);
+    DrawItemCount(TRACKER_ITEM_TRIFORCE_PIECES, pos);
+    ImGui::EndGroup();
 
     // TODO: Heart counts once we have extra save stats
     // pos = ImVec2((2 * (mIconSize + mIconSpacing) + 8.0f),
@@ -597,7 +620,7 @@ int ItemTrackerWindow::DrawMisc(int columns, int prevDrawnColumns) {
     // ImGui::SetCursorPos(pos);
     // DrawItem(const_cast<char*>(gQuestIconPieceOfHeartTex), false, mIconSize);
 
-    return 1;
+    return 2;
 }
 
 static int RoundDown(int orig, int nearest) {

@@ -10,6 +10,8 @@ extern "C" {
 #include "z64scene.h"
 }
 
+#define DEFAULT_TRIFORCE_PIECES_MAX 15
+
 namespace Rando {
 
 namespace StaticData {

@@ -902,6 +902,9 @@ void DrawItemsAndMasksTab() {
             if (!riFilter.PassFilter(randoStaticItem.name)) {
                 continue;
             }
+            if (randoItemId == RI_TRIFORCE_PIECE_PREVIOUS) {
+                continue;
+            }
 
             std::string buttonLabel = "Give ";
             buttonLabel += randoStaticItem.name;

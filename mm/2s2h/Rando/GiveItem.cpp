@@ -103,6 +103,22 @@ void Rando::GiveItem(RandoItemId randoItemId) {
                 gSaveContext.save.shipSaveInfo.rando.foundDungeonKeys[DUNGEON_SCENE_INDEX_STONE_TOWER_TEMPLE]++;
             }
             break;
+        case RI_TRIFORCE_PIECE:
+        case RI_TRIFORCE_PIECE_PREVIOUS:
+            gSaveContext.save.shipSaveInfo.rando.foundTriforcePieces++;
+            if (gSaveContext.save.shipSaveInfo.rando.foundTriforcePieces ==
+                RANDO_SAVE_OPTIONS[RO_TRIFORCE_PIECES_REQUIRED]) {
+                // Blocks the ability to beat the game through killing Majora until all Triforce Pieces are found.
+                if (!Flags_GetRandoInf(RANDO_INF_OBTAINED_SOUL_OF_MAJORA)) {
+                    Rando::GiveItem(RI_SOUL_MAJORA);
+                }
+                GameInteractor::Instance->events.emplace_back(
+                    GIEventTransition{ .entrance = ENTRANCE(TERMINA_FIELD, 0),
+                                       .cutsceneIndex = 0xFFF7,
+                                       .transitionTrigger = TRANS_TRIGGER_START,
+                                       .transitionType = TRANS_TYPE_FADE_BLACK });
+            }
+            break;
         // Technically these should never be used, but leaving them here just in case
         case RI_PROGRESSIVE_MAGIC:
         case RI_PROGRESSIVE_BOW:

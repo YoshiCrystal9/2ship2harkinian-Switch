@@ -297,6 +297,35 @@ void DrawSkulltulaToken(RandoItemId randoItemId, Actor* actor) {
     CLOSE_DISPS(gPlayState->state.gfxCtx);
 }
 
+void DrawTriforcePiece(RandoItemId randoItemId) {
+    Gfx* triforcePieceModels[3] = {
+        (Gfx*)gTriforcePiece0DL,
+        (Gfx*)gTriforcePiece1DL,
+        (Gfx*)gTriforcePiece2DL,
+    };
+
+    u8 currentTriforcePieces = gSaveContext.save.shipSaveInfo.rando.foundTriforcePieces;
+
+    OPEN_DISPS(gPlayState->state.gfxCtx);
+
+    Gfx_SetupDL25_Xlu(gPlayState->state.gfxCtx);
+
+    Matrix_Scale(0.03f, 0.03f, 0.03f, MTXMODE_APPLY);
+
+    MATRIX_FINALIZE_AND_LOAD(POLY_XLU_DISP++, gPlayState->state.gfxCtx);
+    if (currentTriforcePieces >= RANDO_SAVE_OPTIONS[RO_TRIFORCE_PIECES_REQUIRED]) {
+        gSPDisplayList(POLY_XLU_DISP++, (Gfx*)gTriforcePieceCompletedDL);
+    } else {
+        if (randoItemId == RI_TRIFORCE_PIECE_PREVIOUS) {
+            gSPDisplayList(POLY_XLU_DISP++, (Gfx*)triforcePieceModels[(currentTriforcePieces - 1) % 3]);
+        } else {
+            gSPDisplayList(POLY_XLU_DISP++, (Gfx*)triforcePieceModels[currentTriforcePieces % 3]);
+        }
+    }
+
+    CLOSE_DISPS(gPlayState->state.gfxCtx);
+}
+
 void DrawAbilityItem(RandoItemId randoItemId, Actor* actor) {
     Gfx* abilityItemModel[1] = {
         (Gfx*)gGiFlippersDL,
@@ -439,6 +468,10 @@ void Rando::DrawItem(RandoItemId randoItemId, Actor* actor) {
             break;
         case RI_ABILITY_SWIM:
             DrawAbilityItem(randoItemId, actor);
+            break;
+        case RI_TRIFORCE_PIECE_PREVIOUS:
+        case RI_TRIFORCE_PIECE:
+            DrawTriforcePiece(randoItemId);
             break;
         case RI_NONE:
         case RI_UNKNOWN:

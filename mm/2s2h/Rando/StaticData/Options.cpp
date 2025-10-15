@@ -41,6 +41,7 @@ std::map<RandoOptionId, RandoStaticOption> Options = {
 	RO(RO_SHUFFLE_SNOWBALL_DROPS,      RO_GENERIC_OFF),
     RO(RO_SHUFFLE_SWIM,                RO_GENERIC_OFF),
     RO(RO_SHUFFLE_TINGLE_SHOPS,        RO_GENERIC_OFF),
+    RO(RO_SHUFFLE_TRIFORCE_PIECES,     RO_GENERIC_OFF),
     RO(RO_STARTING_CONSUMABLES,        RO_GENERIC_OFF),
     RO(RO_STARTING_HEALTH,             3),
     RO(RO_STARTING_ITEMS_1,            0),
@@ -48,6 +49,8 @@ std::map<RandoOptionId, RandoStaticOption> Options = {
     RO(RO_STARTING_ITEMS_3,            2048),
     RO(RO_STARTING_MAPS_AND_COMPASSES, RO_GENERIC_OFF),
     RO(RO_STARTING_RUPEES,             RO_GENERIC_OFF),
+    RO(RO_TRIFORCE_PIECES_MAX,         DEFAULT_TRIFORCE_PIECES_MAX),
+    RO(RO_TRIFORCE_PIECES_REQUIRED,    DEFAULT_TRIFORCE_PIECES_MAX),
 };
 // clang-format on
 
