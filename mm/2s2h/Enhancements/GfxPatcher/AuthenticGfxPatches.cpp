@@ -6,6 +6,7 @@ extern "C" {
 #include "objects/object_fz/object_fz.h"
 #include "objects/object_ik/object_ik.h"
 #include "objects/object_gi_mask03/object_gi_mask03.h"
+#include "objects/object_yukimura_obj/object_yukimura_obj.h"
 #include "overlays/ovl_En_Syateki_Okuta/ovl_En_Syateki_Okuta.h"
 #include "overlays/ovl_fbdemo_wipe1/ovl_fbdemo_wipe1.h"
 #include "overlays/ovl_Obj_Jgame_Light/ovl_Obj_Jgame_Light.h"
@@ -356,6 +357,12 @@ void GfxPatcher_ApplyFierceDeityGIPatch() {
     ResourceMgr_PatchGfxByName(gGiFierceDeityMaskHairAndHatDL, "TEXEL1Fix", 3, gsSPDisplayList(loadGrassDL));
 }
 
+void GfxPatcher_ApplySmithyChimneyFirePatch() {
+    // object_yukimura_obj_DL_000F98 has an extraneous gsSPPopMatrix(G_MTX_MODELVIEW) command, which can deplete the
+    // matrix stack and result in sometimes fatal UB. Just no-op the pop command.
+    ResourceMgr_PatchGfxByName(object_yukimura_obj_DL_000F98, "smithyChimneyFireFix", 31, gsSPNoOp());
+}
+
 // Applies required patches for authentic bugs to allow the game to play and render properly
 void GfxPatcher_ApplyNecessaryAuthenticPatches() {
     PatchMiniGameCrossAndCircleSymbols();
@@ -367,4 +374,6 @@ void GfxPatcher_ApplyNecessaryAuthenticPatches() {
     GfxPatcher_ApplyTransitionWipePatch();
 
     GfxPatcher_ApplyFierceDeityGIPatch();
+
+    GfxPatcher_ApplySmithyChimneyFirePatch();
 }
