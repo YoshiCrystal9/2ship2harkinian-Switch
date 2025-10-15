@@ -17,6 +17,9 @@ extern CameraSetting sCameraSettings[];
 extern s32 sCameraInterfaceFlags;
 }
 
+// Check if bombchu remote control is active
+extern bool IsBombchuFocused();
+
 // Static Data Used For Free Camera
 static bool sCanFreeLook = false;
 
@@ -149,6 +152,10 @@ bool Camera_CanFreeLook(Camera* camera) {
     }
     // Reset camera during cutscenes
     if (gPlayState != nullptr && Player_InCsMode(gPlayState)) {
+        sCanFreeLook = false;
+    }
+    // Disable freecam during bombchu control
+    if (IsBombchuFocused()) {
         sCanFreeLook = false;
     }
 
