@@ -246,7 +246,8 @@ void func_80BA39C8(EnToto* this, PlayState* play) {
         } else {
             this->actor.flags &= ~ACTOR_FLAG_TALK_OFFER_AUTO_ACCEPTED;
             Actor_OfferTalk(&this->actor, play, 50.0f);
-            if (play->sceneId == SCENE_SONCHONOIE) {
+            // 2S2H [FD Enhancement] - Do not prompt for song if playing as FD. Default to dialog of cancellation
+            if (play->sceneId == SCENE_SONCHONOIE || player->transformation == PLAYER_FORM_FIERCE_DEITY) {
                 if (player->transformation == PLAYER_FORM_DEKU) {
                     if (!Flags_GetSwitch(play, ENTOTO_GET_SWITCH_FLAG_3(&this->actor))) {
                         this->text = &D_80BA502C[15];

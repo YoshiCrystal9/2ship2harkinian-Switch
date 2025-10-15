@@ -28,7 +28,7 @@ void Message_FindMessageNES(PlayState* play, u16 textId) {
 
     while (msgEntry->textId != 0xFFFF) {
         if (msgEntry->textId == textId) {
-            // #region 2SH2 [Port] Just assign the msgEntry, we don't need to change the messageStart and messageEnd
+            // #region 2S2H [Port] Just assign the msgEntry, we don't need to change the messageStart and messageEnd
             font->messageStart = msgEntry;
             return;
             // #endregion

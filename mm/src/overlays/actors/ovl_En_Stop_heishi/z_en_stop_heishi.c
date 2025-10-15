@@ -403,7 +403,7 @@ void func_80AE7F34(EnStopheishi* this, PlayState* play) {
             phi_a2 = 2;
             break;
 
-        // 2SH2 [FD Enhancement] - Guard treats FD as if Human has already talked
+        // 2S2H [FD Enhancement] - Guard treats FD as if Human has already talked
         case PLAYER_FORM_FIERCE_DEITY:
             phi_a2 = 1;
             break;
