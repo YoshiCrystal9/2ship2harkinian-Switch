@@ -245,6 +245,10 @@ void Rando::MiscBehavior::OnFileCreate(s16 fileNum) {
                     }
                 }
 
+                if (RANDO_SAVE_OPTIONS[RO_SHUFFLE_SWIM] == RO_GENERIC_YES) {
+                    itemPool.push_back(RI_ABILITY_SWIM);
+                }
+
                 // Remove starting items from the pool (but only one per entry in startingItems)
                 for (RandoItemId startingItem : startingItems) {
                     auto it = std::find(itemPool.begin(), itemPool.end(), startingItem);

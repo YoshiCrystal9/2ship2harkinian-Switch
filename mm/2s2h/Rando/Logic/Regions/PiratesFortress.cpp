@@ -31,7 +31,7 @@ static RegisterShipInitFunc initFunc([]() {
             EXIT(ENTRANCE(PIRATES_FORTRESS, 1),             ENTRANCE(PIRATES_FORTRESS_INTERIOR, 0), true),
         },
         .events = {
-            EVENT(RE_ACCESS_ZORA_EGG, HAS_ITEM(ITEM_HOOKSHOT) && HAS_BOTTLE && CAN_BE_ZORA),
+            EVENT(RE_ACCESS_ZORA_EGG, HAS_ITEM(ITEM_HOOKSHOT) && HAS_BOTTLE && CAN_BE_ZORA && CAN_USE_ABILITY(SWIM)),
         },
     };
     Regions[RR_PIRATES_FORTRESS_INSIDE_3_GUARD_ROOM] = RandoRegion{ .name = "3 Guard Room", .sceneId = SCENE_PIRATE,
@@ -50,7 +50,7 @@ static RegisterShipInitFunc initFunc([]() {
     };
     Regions[RR_PIRATES_FORTRESS_INSIDE_CHEST_EGG_ROOM] = RandoRegion{ .name = "Chest Egg Room", .sceneId = SCENE_PIRATE,
         .checks = {
-            CHECK(RC_PIRATE_FORTRESS_INTERIOR_AQUARIUM_CHEST, HAS_ITEM(ITEM_HOOKSHOT) && CAN_BE_ZORA),
+            CHECK(RC_PIRATE_FORTRESS_INTERIOR_AQUARIUM_CHEST, HAS_ITEM(ITEM_HOOKSHOT) && CAN_BE_ZORA && CAN_USE_ABILITY(SWIM)),
             CHECK(RC_PIRATE_FORTRESS_INTERIOR_CHEST_AQUARIUM_POT_01, true),
             CHECK(RC_PIRATE_FORTRESS_INTERIOR_CHEST_AQUARIUM_POT_02, true),
             CHECK(RC_PIRATE_FORTRESS_INTERIOR_CHEST_AQUARIUM_POT_03, true),
@@ -62,7 +62,7 @@ static RegisterShipInitFunc initFunc([]() {
             CONNECTION(RR_PIRATES_FORTRESS_INSIDE_ORANGE_GUARD, true),
         },
         .events = {
-            EVENT(RE_ACCESS_ZORA_EGG, HAS_ITEM(ITEM_HOOKSHOT) && HAS_BOTTLE && CAN_BE_ZORA),
+            EVENT(RE_ACCESS_ZORA_EGG, HAS_ITEM(ITEM_HOOKSHOT) && HAS_BOTTLE && CAN_BE_ZORA && CAN_USE_ABILITY(SWIM)),
         },
     };
     Regions[RR_PIRATES_FORTRESS_INSIDE_GREEN_GUARD] = RandoRegion{ .name = "Green Guard Room", .sceneId = SCENE_PIRATE,
@@ -121,7 +121,7 @@ static RegisterShipInitFunc initFunc([]() {
             CONNECTION(RR_PIRATES_FORTRESS_LEFT_CLAM_EGG_ROOM, true),
         },
         .events = {
-            EVENT(RE_ACCESS_ZORA_EGG, HAS_ITEM(ITEM_HOOKSHOT) && HAS_BOTTLE && CAN_BE_ZORA),
+            EVENT(RE_ACCESS_ZORA_EGG, HAS_ITEM(ITEM_HOOKSHOT) && HAS_BOTTLE && CAN_BE_ZORA && CAN_USE_ABILITY(SWIM)),
         },
     };
     Regions[RR_PIRATES_FORTRESS_LEFT_PLATFORM] = RandoRegion{ .name = "Left Platform", .sceneId = SCENE_KAIZOKU,
@@ -135,11 +135,11 @@ static RegisterShipInitFunc initFunc([]() {
     };
     Regions[RR_PIRATES_FORTRESS_MOAT_HIGHER] = RandoRegion{ .name = "Higher", .sceneId = SCENE_TORIDE,
         .exits = { //     TO                                         FROM
-            EXIT(ENTRANCE(PIRATES_FORTRESS, 0),             ENTRANCE(PIRATES_FORTRESS_EXTERIOR, 1), true),
-            EXIT(ENTRANCE(PIRATES_FORTRESS_INTERIOR, 10),   ENTRANCE(PIRATES_FORTRESS_EXTERIOR, 6), true),
+            EXIT(ENTRANCE(PIRATES_FORTRESS, 0),             ENTRANCE(PIRATES_FORTRESS_EXTERIOR, 1), CAN_USE_ABILITY(SWIM)),
+            EXIT(ENTRANCE(PIRATES_FORTRESS_INTERIOR, 10),   ENTRANCE(PIRATES_FORTRESS_EXTERIOR, 6), CAN_USE_ABILITY(SWIM)),
         },
         .connections = {
-            CONNECTION(RR_PIRATES_FORTRESS_MOAT_LOWER, true),
+            CONNECTION(RR_PIRATES_FORTRESS_MOAT_LOWER, CAN_USE_ABILITY(SWIM)),
         },
         .oneWayEntrances = {
             ENTRANCE(PIRATES_FORTRESS_EXTERIOR, 4), // From being captured in the inner part of Pirate Fortress
@@ -147,16 +147,16 @@ static RegisterShipInitFunc initFunc([]() {
     };
     Regions[RR_PIRATES_FORTRESS_MOAT_LOWER] = RandoRegion{ .name = "Lower", .sceneId = SCENE_TORIDE,
         .checks = {
-            CHECK(RC_PIRATE_FORTRESS_ENTRANCE_CHEST_01, CAN_BE_ZORA),
-            CHECK(RC_PIRATE_FORTRESS_ENTRANCE_CHEST_02, CAN_BE_ZORA),
-            CHECK(RC_PIRATE_FORTRESS_ENTRANCE_CHEST_03, CAN_BE_ZORA),
+            CHECK(RC_PIRATE_FORTRESS_ENTRANCE_CHEST_01, CAN_BE_ZORA && CAN_USE_ABILITY(SWIM)),
+            CHECK(RC_PIRATE_FORTRESS_ENTRANCE_CHEST_02, CAN_BE_ZORA && CAN_USE_ABILITY(SWIM)),
+            CHECK(RC_PIRATE_FORTRESS_ENTRANCE_CHEST_03, CAN_BE_ZORA && CAN_USE_ABILITY(SWIM)),
         },
         .exits = { //     TO                                         FROM
-            EXIT(ENTRANCE(GREAT_BAY_COAST, 5),              ENTRANCE(PIRATES_FORTRESS_EXTERIOR, 0), CAN_BE_ZORA),
-            EXIT(ENTRANCE(PIRATES_FORTRESS_INTERIOR, 9),    ENTRANCE(PIRATES_FORTRESS_EXTERIOR, 2), CAN_BE_ZORA && CAN_BE_GORON),
+            EXIT(ENTRANCE(GREAT_BAY_COAST, 5),              ENTRANCE(PIRATES_FORTRESS_EXTERIOR, 0), CAN_BE_ZORA && CAN_USE_ABILITY(SWIM)),
+            EXIT(ENTRANCE(PIRATES_FORTRESS_INTERIOR, 9),    ENTRANCE(PIRATES_FORTRESS_EXTERIOR, 2), CAN_BE_ZORA && CAN_USE_ABILITY(SWIM) && CAN_BE_GORON),
         },
         .connections = {
-            CONNECTION(RR_PIRATES_FORTRESS_MOAT_HIGHER, HAS_ITEM(ITEM_HOOKSHOT)),
+            CONNECTION(RR_PIRATES_FORTRESS_MOAT_HIGHER, HAS_ITEM(ITEM_HOOKSHOT) && CAN_USE_ABILITY(SWIM)),
         },
         .events = {
             EVENT(RE_ACCESS_PIRATE_PICTURE, true),
@@ -173,7 +173,7 @@ static RegisterShipInitFunc initFunc([]() {
             EXIT(ENTRANCE(PIRATES_FORTRESS, 12),            ENTRANCE(PIRATES_FORTRESS_EXTERIOR, 5), true),
         },
         .connections = {
-            CONNECTION(RR_PIRATES_FORTRESS_MOAT_LOWER, true),
+            CONNECTION(RR_PIRATES_FORTRESS_MOAT_LOWER, CAN_USE_ABILITY(SWIM)),
         },
     };
     Regions[RR_PIRATES_FORTRESS_PLAZA_LEFT_EXIT] = RandoRegion{ .name = "Left Side Exit", .sceneId = SCENE_KAIZOKU,
@@ -283,29 +283,29 @@ static RegisterShipInitFunc initFunc([]() {
             CONNECTION(RR_PIRATES_FORTRESS_INSIDE_MAZE_GUARD, true),
         },
         .events = {
-            EVENT(RE_ACCESS_ZORA_EGG, HAS_ITEM(ITEM_HOOKSHOT) && HAS_BOTTLE && CAN_BE_ZORA),
+            EVENT(RE_ACCESS_ZORA_EGG, HAS_ITEM(ITEM_HOOKSHOT) && HAS_BOTTLE && CAN_BE_ZORA && CAN_USE_ABILITY(SWIM)),
         },
     };
     Regions[RR_PIRATES_FORTRESS_SEWERS_POSTGATE] = RandoRegion{ .name = "Sewers Postgate", .sceneId = SCENE_PIRATE,
         .checks = {
-            CHECK(RC_PIRATE_FORTRESS_SEWERS_WATERWAY_POT_01, true),
-            CHECK(RC_PIRATE_FORTRESS_SEWERS_WATERWAY_POT_02, true),
+            CHECK(RC_PIRATE_FORTRESS_SEWERS_WATERWAY_POT_01, CAN_USE_ABILITY(SWIM)),
+            CHECK(RC_PIRATE_FORTRESS_SEWERS_WATERWAY_POT_02, CAN_USE_ABILITY(SWIM)),
         },
         .exits = { //     TO                                         FROM
-            EXIT(ENTRANCE(PIRATES_FORTRESS_EXTERIOR, 3),             ONE_WAY_EXIT, true)
+            EXIT(ENTRANCE(PIRATES_FORTRESS_EXTERIOR, 3),             ONE_WAY_EXIT, CAN_USE_ABILITY(SWIM))
         },
         .connections = {
-            CONNECTION(RR_PIRATES_FORTRESS_TELESCOPE_ROOM, HAS_ITEM(ITEM_BOW) || HAS_ITEM(ITEM_HOOKSHOT) || CAN_BE_ZORA)
+            CONNECTION(RR_PIRATES_FORTRESS_TELESCOPE_ROOM, (HAS_ITEM(ITEM_BOW) || HAS_ITEM(ITEM_HOOKSHOT) || CAN_BE_ZORA) && CAN_USE_ABILITY(SWIM))
         }
     };
     Regions[RR_PIRATES_FORTRESS_SEWERS_PREGATE] = RandoRegion{ .name = "Sewers Pregate", .sceneId = SCENE_PIRATE,
         .checks = {
-            CHECK(RC_PIRATE_FORTRESS_INTERIOR_SEWERS_CHEST_01,                       CAN_BE_ZORA),
-            CHECK(RC_PIRATE_FORTRESS_INTERIOR_SEWERS_CHEST_02,                       CAN_BE_ZORA),
-            CHECK(RC_PIRATE_FORTRESS_INTERIOR_SEWERS_CHEST_03,                       CAN_BE_ZORA),
+            CHECK(RC_PIRATE_FORTRESS_INTERIOR_SEWERS_CHEST_01,                       CAN_BE_ZORA && CAN_USE_ABILITY(SWIM)),
+            CHECK(RC_PIRATE_FORTRESS_INTERIOR_SEWERS_CHEST_02,                       CAN_BE_ZORA && CAN_USE_ABILITY(SWIM)),
+            CHECK(RC_PIRATE_FORTRESS_INTERIOR_SEWERS_CHEST_03,                       CAN_BE_ZORA && CAN_USE_ABILITY(SWIM)),
             CHECK(RC_PIRATE_FORTRESS_SEWERS_HEART_PIECE_ROOM_POT_01,                 true),
             CHECK(RC_PIRATE_FORTRESS_SEWERS_HEART_PIECE_ROOM_POT_02,                 true),
-            CHECK(RC_PIRATE_FORTRESS_INTERIOR_SEWERS_PIECE_OF_HEART,                            true),
+            CHECK(RC_PIRATE_FORTRESS_INTERIOR_SEWERS_PIECE_OF_HEART,                true),
             CHECK(RC_PIRATE_FORTRESS_SEWERS_HEART_PIECE_ROOM_BARREL_01,             true),
             CHECK(RC_PIRATE_FORTRESS_SEWERS_HEART_PIECE_ROOM_BARREL_02,             true),
             CHECK(RC_PIRATE_FORTRESS_SEWERS_HEART_PIECE_ROOM_BARREL_03,             true),
@@ -355,7 +355,7 @@ static RegisterShipInitFunc initFunc([]() {
             EXIT(ENTRANCE(PIRATES_FORTRESS_EXTERIOR, 6),    ENTRANCE(PIRATES_FORTRESS_INTERIOR, 10), CAN_USE_PROJECTILE)
         },
         .connections = {
-            CONNECTION(RR_PIRATES_FORTRESS_SEWERS_POSTGATE, true)
+            CONNECTION(RR_PIRATES_FORTRESS_SEWERS_POSTGATE, CAN_USE_ABILITY(SWIM))
         }
     };
 }, {});

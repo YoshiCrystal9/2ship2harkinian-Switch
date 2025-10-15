@@ -2,6 +2,7 @@
 #include "2s2h/Enhancements/FrameInterpolation/FrameInterpolation.h"
 #include "2s2h/ShipInit.hpp"
 #include "2s2h/Rando/DrawFuncs.h"
+#include "2s2h_assets.h"
 
 extern "C" {
 #include "variables.h"
@@ -296,6 +297,21 @@ void DrawSkulltulaToken(RandoItemId randoItemId, Actor* actor) {
     CLOSE_DISPS(gPlayState->state.gfxCtx);
 }
 
+void DrawAbilityItem(RandoItemId randoItemId, Actor* actor) {
+    Gfx* abilityItemModel[1] = {
+        (Gfx*)gGiFlippersDL,
+    };
+
+    OPEN_DISPS(gPlayState->state.gfxCtx);
+
+    Gfx_SetupDL25_Xlu(gPlayState->state.gfxCtx);
+
+    MATRIX_FINALIZE_AND_LOAD(POLY_XLU_DISP++, gPlayState->state.gfxCtx);
+    gSPDisplayList(POLY_XLU_DISP++, (Gfx*)abilityItemModel[randoItemId - RI_ABILITY_SWIM]);
+
+    CLOSE_DISPS(gPlayState->state.gfxCtx);
+}
+
 void DrawSparkles(RandoItemId randoItemId, Actor* actor) {
     if (actor == NULL) {
         return;
@@ -421,6 +437,9 @@ void Rando::DrawItem(RandoItemId randoItemId, Actor* actor) {
         case RI_FROG_WHITE:
             DrawMinifrog(randoItemId, actor);
             break;
+        case RI_ABILITY_SWIM:
+            DrawAbilityItem(randoItemId, actor);
+            break;
         case RI_NONE:
         case RI_UNKNOWN:
             break;
@@ -431,6 +450,7 @@ void Rando::DrawItem(RandoItemId randoItemId, Actor* actor) {
 
     switch (randoItemId) {
         case RI_NONE:
+        case RI_ABILITY_SWIM:
         case RI_PROGRESSIVE_MAGIC:
         case RI_SINGLE_MAGIC:
         case RI_DOUBLE_MAGIC:

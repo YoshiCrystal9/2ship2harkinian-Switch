@@ -94,7 +94,7 @@ static RegisterShipInitFunc initFunc([]() {
             CHECK(RC_GREAT_BAY_COAST_COW_GROTTO_GRASS_72, true),
         },
         .connections = {
-            CONNECTION(RR_GREAT_BAY_COAST, true), // TODO: Grotto mapping
+            CONNECTION(RR_GREAT_BAY_COAST_CLIFFSIDE, true), // TODO: Grotto mapping
         },
     };
     Regions[RR_GREAT_BAY_COAST_FISHERMAN_GROTTO] = RandoRegion{ .name = "Great Bay Coast Fisherman Grotto", .sceneId = SCENE_KAKUSIANA,
@@ -122,26 +122,9 @@ static RegisterShipInitFunc initFunc([]() {
     Regions[RR_GREAT_BAY_COAST] = RandoRegion{ .sceneId = SCENE_30GYOSON,
         .checks = {
             CHECK(RC_GREAT_BAY_COAST_FISHERMAN_MINIGAME, RANDO_EVENTS[RE_CLEARED_GREAT_BAY_TEMPLE] && (HAS_ITEM(ITEM_HOOKSHOT) || CAN_USE_MAGIC_ARROW(ICE))),
-            CHECK(RC_GREAT_BAY_COAST_OWL_STATUE, CAN_USE_SWORD),
-            CHECK(RC_GREAT_BAY_COAST_MIKAU, CAN_PLAY_SONG(HEALING)),
-            CHECK(RC_GREAT_BAY_COAST_PIECE_OF_HEART, CAN_HOOK_SCARECROW && CAN_GROW_BEAN_PLANT),
-            CHECK(RC_GREAT_BAY_COAST_POT_01, true),
-            CHECK(RC_GREAT_BAY_COAST_POT_02, true),
+            CHECK(RC_GREAT_BAY_COAST_MIKAU, CAN_USE_ABILITY(SWIM) && CAN_PLAY_SONG(HEALING)),
             CHECK(RC_GREAT_BAY_COAST_POT_03, true),
             CHECK(RC_GREAT_BAY_COAST_POT_04, true),
-            CHECK(RC_GREAT_BAY_COAST_POT_05, true),
-            CHECK(RC_GREAT_BAY_COAST_POT_06, true),
-            CHECK(RC_GREAT_BAY_COAST_POT_07, true),
-            CHECK(RC_GREAT_BAY_COAST_POT_08, true),
-            CHECK(RC_GREAT_BAY_COAST_POT_09, true),
-            CHECK(RC_GREAT_BAY_COAST_POT_10, true),
-            CHECK(RC_GREAT_BAY_COAST_POT_11, true),
-            CHECK(RC_GREAT_BAY_COAST_POT_12, true),
-            CHECK(RC_GREAT_BAY_COAST_LEDGE_POT_01, HAS_ITEM(ITEM_HOOKSHOT)),
-            CHECK(RC_GREAT_BAY_COAST_LEDGE_POT_02, HAS_ITEM(ITEM_HOOKSHOT)),
-            CHECK(RC_GREAT_BAY_COAST_LEDGE_POT_03, HAS_ITEM(ITEM_HOOKSHOT)),
-            CHECK(RC_GREAT_BAY_COAST_TINGLE_MAP_01, (HAS_ITEM(ITEM_BOW) || HAS_ITEM(ITEM_HOOKSHOT)) && CAN_AFFORD(RC_GREAT_BAY_COAST_TINGLE_MAP_01)),
-            CHECK(RC_GREAT_BAY_COAST_TINGLE_MAP_02, (HAS_ITEM(ITEM_BOW) || HAS_ITEM(ITEM_HOOKSHOT)) && CAN_AFFORD(RC_GREAT_BAY_COAST_TINGLE_MAP_02)),
             CHECK(RC_GREAT_BAY_COAST_GRASS_01, true),
             CHECK(RC_GREAT_BAY_COAST_GRASS_02, true),
             CHECK(RC_GREAT_BAY_COAST_GRASS_03, true),
@@ -151,22 +134,55 @@ static RegisterShipInitFunc initFunc([]() {
         .exits = { //     TO                                         FROM
             EXIT(ENTRANCE(TERMINA_FIELD, 2),                ENTRANCE(GREAT_BAY_COAST, 0), true),
             EXIT(ENTRANCE(ZORA_CAPE, 0),                    ENTRANCE(GREAT_BAY_COAST, 1), true),
-            EXIT(ENTRANCE(PINNACLE_ROCK, 0),                ENTRANCE(GREAT_BAY_COAST, 3), true),
+            EXIT(ENTRANCE(PINNACLE_ROCK, 0),                ENTRANCE(GREAT_BAY_COAST, 3), CAN_USE_ABILITY(SWIM)),
             EXIT(ENTRANCE(FISHERMANS_HUT, 0),               ENTRANCE(GREAT_BAY_COAST, 4), true),
-            EXIT(ENTRANCE(PIRATES_FORTRESS_EXTERIOR, 0),    ENTRANCE(GREAT_BAY_COAST, 5), CAN_BE_ZORA),
-            EXIT(ENTRANCE(MARINE_RESEARCH_LAB, 0),          ENTRANCE(GREAT_BAY_COAST, 7), true),
+            EXIT(ENTRANCE(PIRATES_FORTRESS_EXTERIOR, 0),    ENTRANCE(GREAT_BAY_COAST, 5), CAN_BE_ZORA && CAN_USE_ABILITY(SWIM)),
             EXIT(ENTRANCE(OCEANSIDE_SPIDER_HOUSE, 0),       ENTRANCE(GREAT_BAY_COAST, 8), true),
         },
         .connections = {
-            CONNECTION(RR_GREAT_BAY_COAST_COW_GROTTO, CAN_HOOK_SCARECROW && CAN_GROW_BEAN_PLANT), // TODO: Grotto mapping
+            CONNECTION(RR_GREAT_BAY_COAST_CLIFFSIDE, CAN_USE_ABILITY(SWIM)), // TODO: Grotto mapping
             CONNECTION(RR_GREAT_BAY_COAST_FISHERMAN_GROTTO, true), // TODO: Grotto mapping
+            CONNECTION(RR_GREAT_BAY_COAST_MARINE_LAB_EXTERIOR, CAN_USE_ABILITY(SWIM)),
+            CONNECTION(RR_GREAT_BAY_COAST_PIRATE_LEDGE, CAN_USE_ABILITY(SWIM)),
+        },
+    };
+    Regions[RR_GREAT_BAY_COAST_MARINE_LAB_EXTERIOR] = RandoRegion{ .sceneId = SCENE_30GYOSON,
+        .checks = {
+            CHECK(RC_GREAT_BAY_COAST_OWL_STATUE, CAN_USE_SWORD),
+            CHECK(RC_GREAT_BAY_COAST_POT_09, true),
+            CHECK(RC_GREAT_BAY_COAST_POT_10, true),
+            CHECK(RC_GREAT_BAY_COAST_POT_11, true),
+            CHECK(RC_GREAT_BAY_COAST_POT_12, true),
+            CHECK(RC_GREAT_BAY_COAST_TINGLE_MAP_01, (HAS_ITEM(ITEM_BOW) || HAS_ITEM(ITEM_HOOKSHOT)) && CAN_AFFORD(RC_GREAT_BAY_COAST_TINGLE_MAP_01)),
+            CHECK(RC_GREAT_BAY_COAST_TINGLE_MAP_02, (HAS_ITEM(ITEM_BOW) || HAS_ITEM(ITEM_HOOKSHOT)) && CAN_AFFORD(RC_GREAT_BAY_COAST_TINGLE_MAP_02)),
+        },
+        .exits = { //     TO                                         FROM
+            EXIT(ENTRANCE(MARINE_RESEARCH_LAB, 0),          ENTRANCE(GREAT_BAY_COAST, 7), true),
+        },
+        .connections = {
+            CONNECTION(RR_GREAT_BAY_COAST, CAN_USE_ABILITY(SWIM)),
         },
         .events = {
             EVENT(RE_ACCESS_PICTOGRAPH_TINGLE, HAS_ITEM(ITEM_PICTOGRAPH_BOX)),
         },
         .oneWayEntrances = {
             ENTRANCE(GREAT_BAY_COAST, 11), // From Song of Soaring
-            ENTRANCE(GREAT_BAY_COAST, 12), // From being captured in Pirate Fortress Moat
+        },
+    };
+    Regions[RR_GREAT_BAY_COAST_CLIFFSIDE] = RandoRegion{ .sceneId = SCENE_30GYOSON,
+        .checks = {
+            CHECK(RC_GREAT_BAY_COAST_PIECE_OF_HEART, CAN_HOOK_SCARECROW && CAN_GROW_BEAN_PLANT),
+            CHECK(RC_GREAT_BAY_COAST_POT_05, true),
+            CHECK(RC_GREAT_BAY_COAST_POT_06, true),
+            CHECK(RC_GREAT_BAY_COAST_POT_07, true),
+            CHECK(RC_GREAT_BAY_COAST_POT_08, true),
+            CHECK(RC_GREAT_BAY_COAST_LEDGE_POT_01, HAS_ITEM(ITEM_HOOKSHOT)),
+            CHECK(RC_GREAT_BAY_COAST_LEDGE_POT_02, HAS_ITEM(ITEM_HOOKSHOT)),
+            CHECK(RC_GREAT_BAY_COAST_LEDGE_POT_03, HAS_ITEM(ITEM_HOOKSHOT)),
+        },
+        .connections = {
+            CONNECTION(RR_GREAT_BAY_COAST_COW_GROTTO, CAN_HOOK_SCARECROW && CAN_GROW_BEAN_PLANT), // TODO: Grotto mapping
+            CONNECTION(RR_GREAT_BAY_COAST, CAN_USE_ABILITY(SWIM)),
         },
     };
     Regions[RR_GREAT_BAY_GREAT_FAIRY_FOUNTAIN] = RandoRegion{ .sceneId = SCENE_YOUSEI_IZUMI,
@@ -175,6 +191,19 @@ static RegisterShipInitFunc initFunc([]() {
         },
         .exits = { //     TO                                         FROM
             EXIT(ENTRANCE(ZORA_CAPE, 5),                    ENTRANCE(FAIRY_FOUNTAIN, 3), true),
+        },
+    };
+    Regions[RR_GREAT_BAY_COAST_PIRATE_LEDGE] = RandoRegion{ .sceneId = SCENE_30GYOSON,
+        .checks = {
+            CHECK(RC_GREAT_BAY_COAST_POT_01, true),
+            CHECK(RC_GREAT_BAY_COAST_POT_02, true),
+        },
+        .connections = {
+            CONNECTION(RR_GREAT_BAY_COAST, CAN_USE_ABILITY(SWIM)),
+        },
+        .oneWayEntrances = {
+            // This region can feel like overkill now, but this one-way entrance will be significant for entrance rando.
+            ENTRANCE(GREAT_BAY_COAST, 12), // From being captured in Pirate Fortress Moat
         },
     };
     Regions[RR_MARINE_RESEARCH_LAB] = RandoRegion{ .sceneId = SCENE_LABO,
@@ -212,7 +241,7 @@ static RegisterShipInitFunc initFunc([]() {
             CHECK(RC_PINNACLE_ROCK_REUNITE_SEAHORSE,  CAN_BE_ZORA && HAS_MAGIC && RANDO_EVENTS[RE_ACCESS_SEAHORSE]),
         },
         .connections = {
-            CONNECTION(RR_PINNACLE_ROCK_ENTRANCE, true)
+            CONNECTION(RR_PINNACLE_ROCK_ENTRANCE, CAN_USE_ABILITY(SWIM))
         },
         .events = {
             EVENT(RE_ACCESS_ZORA_EGG, HAS_MAGIC && HAS_BOTTLE && CAN_BE_ZORA),
@@ -222,8 +251,8 @@ static RegisterShipInitFunc initFunc([]() {
     };
     Regions[RR_WATERFALL_RAPIDS] = RandoRegion{ .sceneId = SCENE_35TAKI,
         .checks = {
-            CHECK(RC_WATERFALL_RAPIDS_BEAVER_RACE_01, CAN_BE_ZORA),
-            CHECK(RC_WATERFALL_RAPIDS_BEAVER_RACE_02, CAN_BE_ZORA),
+            CHECK(RC_WATERFALL_RAPIDS_BEAVER_RACE_01, CAN_BE_ZORA && CAN_USE_ABILITY(SWIM)),
+            CHECK(RC_WATERFALL_RAPIDS_BEAVER_RACE_02, CAN_BE_ZORA && CAN_USE_ABILITY(SWIM)),
         },
         .exits = { //     TO                                         FROM
             EXIT(ENTRANCE(ZORA_CAPE, 4),                    ENTRANCE(WATERFALL_RAPIDS, 0), true),
@@ -275,14 +304,14 @@ static RegisterShipInitFunc initFunc([]() {
         .checks = {
             CHECK(RC_ZORA_CAPE_LEDGE_CHEST_01,             HAS_ITEM(ITEM_HOOKSHOT)),
             CHECK(RC_ZORA_CAPE_LEDGE_CHEST_02,             HAS_ITEM(ITEM_HOOKSHOT)),
-            CHECK(RC_ZORA_CAPE_UNDERWATER_CHEST,          CAN_BE_ZORA),
-            CHECK(RC_ZORA_CAPE_WATERFALL_PIECE_OF_HEART,  CAN_BE_ZORA),
+            CHECK(RC_ZORA_CAPE_UNDERWATER_CHEST,          CAN_BE_ZORA && CAN_USE_ABILITY(SWIM)),
+            CHECK(RC_ZORA_CAPE_WATERFALL_PIECE_OF_HEART,  CAN_BE_ZORA && CAN_USE_ABILITY(SWIM)),
             CHECK(RC_ZORA_CAPE_NEAR_BEAVERS_POT_01,        true),
             CHECK(RC_ZORA_CAPE_NEAR_BEAVERS_POT_02,        true),
         },
         .exits = { //     TO                                         FROM
             EXIT(ENTRANCE(GREAT_BAY_COAST, 1),              ENTRANCE(ZORA_CAPE, 0), true),
-            EXIT(ENTRANCE(ZORA_HALL, 0),                    ENTRANCE(ZORA_CAPE, 1), CAN_BE_ZORA),
+            EXIT(ENTRANCE(ZORA_HALL, 0),                    ENTRANCE(ZORA_CAPE, 1), CAN_BE_ZORA && CAN_USE_ABILITY(SWIM)),
             EXIT(ENTRANCE(WATERFALL_RAPIDS, 0),             ENTRANCE(ZORA_CAPE, 4), HAS_ITEM(ITEM_HOOKSHOT)),
             EXIT(ENTRANCE(FAIRY_FOUNTAIN, 3),               ENTRANCE(ZORA_CAPE, 5), HAS_ITEM(ITEM_HOOKSHOT) && CAN_USE_EXPLOSIVE),
         },

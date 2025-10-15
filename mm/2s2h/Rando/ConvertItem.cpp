@@ -238,6 +238,7 @@ bool Rando::IsItemObtainable(RandoItemId randoItemId, RandoCheckId randoCheckId)
         case RI_FROG_CYAN:
         case RI_FROG_PINK:
         case RI_FROG_WHITE:
+        case RI_ABILITY_SWIM:
             if (hasObtainedCheck) {
                 return false;
             }
