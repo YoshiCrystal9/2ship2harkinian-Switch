@@ -105,6 +105,15 @@ void Rando::MiscBehavior::OnFileCreate(s16 fileNum) {
                 std::unordered_map<RandoCheckId, bool> checkPool;
                 std::vector<RandoItemId> itemPool;
 
+                // Create Excluded Checks List to eliminate excluded checks from the pool
+                std::vector<RandoCheckId> excludedChecks;
+                std::string excludedChecksList = CVarGetString("gRando.ExcludedChecks", "");
+                std::string word;
+                std::istringstream stream(excludedChecksList);
+                while (std::getline(stream, word, ',')) {
+                    excludedChecks.push_back((RandoCheckId)std::stoi(word));
+                }
+
                 // First loop through all regions and add checks/items to the pool
                 for (auto& [randoRegionId, randoRegion] : Rando::Logic::Regions) {
                     for (auto& [randoCheckId, _] : randoRegion.checks) {
@@ -200,6 +209,22 @@ void Rando::MiscBehavior::OnFileCreate(s16 fileNum) {
                                 // random price ahead of time, logic will account for whatever price we choose
                                 int price = Ship_Random(0, 200);
                                 RANDO_SAVE_CHECKS[randoCheckId].price = price;
+                            }
+                        }
+
+                        // Skip checks that have been excluded in the Locations menu and add their vanilla item to the
+                        // pool except if Logic is set to Vanilla or French Vanilla.
+                        if (RANDO_SAVE_OPTIONS[RO_LOGIC] <= RO_LOGIC_NEARLY_NO_LOGIC) {
+                            auto it = std::find(excludedChecks.begin(), excludedChecks.end(), randoCheckId);
+                            if (it != excludedChecks.end()) {
+                                RandoItemId vanillaItem = Rando::StaticData::Checks[randoCheckId].randoItemId;
+                                itemPool.push_back(vanillaItem);
+
+                                RANDO_SAVE_CHECKS[randoCheckId].randoItemId = RI_JUNK;
+                                RANDO_SAVE_CHECKS[randoCheckId].skipped = true;
+
+                                checkPool.insert({ randoCheckId, true });
+                                continue;
                             }
                         }
 

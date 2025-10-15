@@ -96,7 +96,17 @@ void ApplyGlitchlessLogicToSaveContext(std::unordered_map<RandoCheckId, bool>& c
 
                     RandoItemId randoItemId;
 
-                    if (isShuffled) {
+                    if (RANDO_SAVE_CHECKS[randoCheckId].skipped) {
+                        uint32_t index = 0;
+                        for (auto& item : itemPool) {
+                            if (Rando::StaticData::Items[item].randoItemType == RITYPE_JUNK) {
+                                randoItemId = item;
+                                itemPool.erase(itemPool.begin() + index);
+                                break;
+                            }
+                            index++;
+                        }
+                    } else if (isShuffled) {
                         randoItemId = itemPool.back();
                         itemPool.pop_back();
 
