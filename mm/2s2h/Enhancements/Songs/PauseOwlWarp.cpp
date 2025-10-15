@@ -36,7 +36,8 @@ static u16 sOwlWarpEntrances[OWL_WARP_MAX - 1] = {
 extern "C" bool PauseOwlWarp_IsOwlWarpEnabled() {
     return CVAR && CHECK_QUEST_ITEM(QUEST_SONG_SOARING) &&
            gSaveContext.save.saveInfo.playerData.owlActivationFlags != 0 &&
-           gPlayState->pauseCtx.debugEditor == DEBUG_EDITOR_NONE;
+           gPlayState->pauseCtx.debugEditor == DEBUG_EDITOR_NONE &&
+           gPlayState->interfaceCtx.restrictions.songOfSoaring == 0;
 }
 
 void HandleConfirmingState(PauseContext* pauseCtx, Input* input) {
@@ -58,6 +59,9 @@ void HandleConfirmingState(PauseContext* pauseCtx, Input* input) {
                 // Clear horse mounting state to prevent Epona from spawning at warp destination
                 gHorseIsMounted = false;
             }
+
+            // Clear pictograph/camera event flag to prevent UI state from persisting after warp
+            CLEAR_EVENTINF(EVENTINF_41);
 
             Interface_SetAButtonDoAction(gPlayState, DO_ACTION_NONE);
             pauseCtx->state = PAUSE_STATE_UNPAUSE_SETUP;
