@@ -206,6 +206,26 @@ void RegisterFierceDeityAnywhere() {
             *should = true;
         }
     });
+
+    /*
+     * Allow the FD Mask to be usable in water. This requires two pieces: using VB_DISABLE_ITEM_UNDERWATER to make the
+     * assigned button itself enabled and using VB_USE_ITEM_CONSIDER_ITEM_ACTION to ensure the item action can be
+     * completed in water. This is how, normally, Zora Mask is the only usable item in water.
+     */
+    COND_VB_SHOULD(VB_USE_ITEM_CONSIDER_ITEM_ACTION, CVAR, {
+        PlayerItemAction itemAction = *va_arg(args, PlayerItemAction*);
+        if (itemAction == PLAYER_IA_MASK_FIERCE_DEITY) {
+            *should = true;
+        }
+    });
+
+    COND_VB_SHOULD(VB_DISABLE_ITEM_UNDERWATER, CVAR, {
+        s32 item = va_arg(args, s32);
+        if (item == ITEM_MASK_FIERCE_DEITY &&
+            Player_GetEnvironmentalHazard(gPlayState) > PLAYER_ENV_HAZARD_UNDERWATER_FLOOR) {
+            *should = false;
+        }
+    });
 }
 
 static RegisterShipInitFunc initFunc(RegisterFierceDeityAnywhere, { CVAR_NAME });

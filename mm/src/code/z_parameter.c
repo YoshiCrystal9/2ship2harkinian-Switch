@@ -3154,12 +3154,11 @@ void Interface_UpdateButtonsPart2(PlayState* play) {
         }
 
         for (i = EQUIP_SLOT_C_LEFT; i <= EQUIP_SLOT_C_RIGHT; i++) {
-            if (GET_CUR_FORM_BTN_ITEM(i) != ITEM_MASK_ZORA) {
+            if (GameInteractor_Should(VB_DISABLE_ITEM_UNDERWATER, GET_CUR_FORM_BTN_ITEM(i) != ITEM_MASK_ZORA,
+                                      (s32)GET_CUR_FORM_BTN_ITEM(i))) {
                 if (Player_GetEnvironmentalHazard(play) == PLAYER_ENV_HAZARD_UNDERWATER_FLOOR) {
-                    if (GameInteractor_Should(VB_DISABLE_ITEM_UNDERWATER_FLOOR,
-                                              !((GET_CUR_FORM_BTN_ITEM(i) >= ITEM_BOTTLE) &&
-                                                (GET_CUR_FORM_BTN_ITEM(i) <= ITEM_OBABA_DRINK)),
-                                              (s32)GET_CUR_FORM_BTN_ITEM(i))) {
+                    if (!((GET_CUR_FORM_BTN_ITEM(i) >= ITEM_BOTTLE) &&
+                          (GET_CUR_FORM_BTN_ITEM(i) <= ITEM_OBABA_DRINK))) {
                         if (gSaveContext.buttonStatus[i] == BTN_ENABLED) {
                             restoreHudVisibility = true;
                         }
@@ -3183,12 +3182,11 @@ void Interface_UpdateButtonsPart2(PlayState* play) {
         }
         // #region 2S2H [Dpad]
         for (s16 j = EQUIP_SLOT_D_RIGHT; j <= EQUIP_SLOT_D_UP; j++) {
-            if (DPAD_GET_CUR_FORM_BTN_ITEM(j) != ITEM_MASK_ZORA) {
+            if (GameInteractor_Should(VB_DISABLE_ITEM_UNDERWATER, DPAD_GET_CUR_FORM_BTN_ITEM(j) != ITEM_MASK_ZORA,
+                                      (s32)DPAD_GET_CUR_FORM_BTN_ITEM(j))) {
                 if (Player_GetEnvironmentalHazard(play) == PLAYER_ENV_HAZARD_UNDERWATER_FLOOR) {
-                    if (GameInteractor_Should(VB_DISABLE_ITEM_UNDERWATER_FLOOR,
-                                              !((DPAD_GET_CUR_FORM_BTN_ITEM(j) >= ITEM_BOTTLE) &&
-                                                (DPAD_GET_CUR_FORM_BTN_ITEM(j) <= ITEM_OBABA_DRINK)),
-                                              (s32)DPAD_GET_CUR_FORM_BTN_ITEM(j))) {
+                    if (!((DPAD_GET_CUR_FORM_BTN_ITEM(j) >= ITEM_BOTTLE) &&
+                          (DPAD_GET_CUR_FORM_BTN_ITEM(j) <= ITEM_OBABA_DRINK))) {
                         if (gSaveContext.shipSaveContext.dpad.status[j] == BTN_ENABLED) {
                             restoreHudVisibility = true;
                         }

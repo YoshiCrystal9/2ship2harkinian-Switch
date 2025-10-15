@@ -4629,7 +4629,7 @@ void Player_UseItem(PlayState* play, Player* this, ItemId item) {
          ((this->itemAction <= PLAYER_IA_MINUS1) &&
           ((Player_MeleeWeaponFromIA(itemAction) != PLAYER_MELEEWEAPON_NONE) || (itemAction == PLAYER_IA_NONE)))) &&
         ((itemAction == PLAYER_IA_NONE) || !(this->stateFlags1 & PLAYER_STATE1_8000000) ||
-         (itemAction == PLAYER_IA_MASK_ZORA) ||
+         (GameInteractor_Should(VB_USE_ITEM_CONSIDER_ITEM_ACTION, itemAction == PLAYER_IA_MASK_ZORA, &itemAction)) ||
          ((this->currentBoots >= PLAYER_BOOTS_ZORA_UNDERWATER) && (this->actor.bgCheckFlags & BGCHECKFLAG_GROUND)))) {
         s32 var_v1 = ((itemAction >= PLAYER_IA_MASK_MIN) && (itemAction <= PLAYER_IA_MASK_MAX) &&
                       (!GameInteractor_Should(VB_USE_ITEM_CONSIDER_LINK_HUMAN,
