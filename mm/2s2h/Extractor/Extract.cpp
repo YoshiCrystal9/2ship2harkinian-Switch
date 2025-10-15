@@ -441,6 +441,17 @@ bool Extractor::Run(std::string searchPath, RomSearchMode searchMode) {
         }
     }
 
+    if (roms.size() > 1) {
+        int ret = ShowYesNoBox("Multiple ROMs Found", "Multiple ROM files were detected. Select one manually?");
+        if (ret == IDYES) {
+            if (!ManuallySearchForRomMatchingType(searchMode)) {
+                return false;
+            }
+            roms.clear();
+            roms.push_back(mCurrentRomPath);
+        }
+    }
+
     for (const auto& rom : roms) {
         SetRomInfo(rom);
 
