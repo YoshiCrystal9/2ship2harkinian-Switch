@@ -179,6 +179,14 @@ void GameInteractor_ExecuteOnPlayerPostLimbDraw(Player* player, s32 limbIndex) {
     GameInteractor::Instance->ExecuteHooksForFilter<GameInteractor::OnPlayerPostLimbDraw>(player, limbIndex);
 }
 
+void GameInteractor_ExecuteOnBossDefeated(s16 actorId) {
+    SPDLOG_DEBUG("GameInteractor_ExecuteOnBossDefeated: actorId: {}", actorId);
+    GameInteractor::Instance->ExecuteHooks<GameInteractor::OnBossDefeated>(actorId);
+    GameInteractor::Instance->ExecuteHooksForID<GameInteractor::OnBossDefeated>(actorId, actorId);
+    GameInteractor::Instance->ExecuteHooksForPtr<GameInteractor::OnBossDefeated>((uintptr_t)actorId, actorId);
+    GameInteractor::Instance->ExecuteHooksForFilter<GameInteractor::OnBossDefeated>(actorId);
+}
+
 void GameInteractor_ExecuteOnSceneFlagSet(s16 sceneId, FlagType flagType, u32 flag) {
     SPDLOG_DEBUG("OnSceneFlagSet: sceneId: {}, flagType: {}, flag: {}", sceneId, (u32)flagType, flag);
     GameInteractor::Instance->ExecuteHooks<GameInteractor::OnSceneFlagSet>(sceneId, flagType, flag);
@@ -256,6 +264,13 @@ void GameInteractor_ExecuteOnItemGive(u8 item) {
     GameInteractor::Instance->ExecuteHooks<GameInteractor::OnItemGive>(item);
     GameInteractor::Instance->ExecuteHooksForID<GameInteractor::OnItemGive>(item, item);
     GameInteractor::Instance->ExecuteHooksForFilter<GameInteractor::OnItemGive>(item);
+}
+
+void GameInteractor_ExecuteOnBottleContentsUpdate(u8 item) {
+    SPDLOG_DEBUG("OnBottleContentsUpdate: item: {}", item);
+    GameInteractor::Instance->ExecuteHooks<GameInteractor::OnBottleContentsUpdate>(item);
+    GameInteractor::Instance->ExecuteHooksForID<GameInteractor::OnBottleContentsUpdate>(item, item);
+    GameInteractor::Instance->ExecuteHooksForFilter<GameInteractor::OnBottleContentsUpdate>(item);
 }
 
 bool GameInteractor_Should(GIVanillaBehavior flag, uint32_t result, ...) {

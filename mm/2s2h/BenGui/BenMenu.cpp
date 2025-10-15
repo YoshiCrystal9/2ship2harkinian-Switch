@@ -1620,6 +1620,13 @@ void BenMenu::AddEnhancements() {
         .CVar("gWindows.ItemTrackerSettings")
         .WindowName("Item Tracker Settings");
 
+    // Timesplit Settings
+    path = { "Enhancements", "Time Splits", SECTION_COLUMN_1 };
+    AddSidebarEntry("Enhancements", "Time Splits", 1);
+    AddWidget(path, "Popout Timesplits Settings", WIDGET_WINDOW_BUTTON)
+        .CVar("gWindows.Timesplits.Settings")
+        .WindowName("Time Splits Settings Window");
+
     // Audio Editor
     path = { "Enhancements", "Audio Editor", SECTION_COLUMN_1 };
     AddSidebarEntry("Enhancements", "Audio Editor", 1);

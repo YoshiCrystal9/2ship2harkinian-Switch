@@ -31,6 +31,7 @@ DEFINE_HOOK(OnActorDraw, (Actor * actor))
 DEFINE_HOOK(OnActorKill, (Actor * actor))
 DEFINE_HOOK(OnActorDestroy, (Actor * actor))
 DEFINE_HOOK(OnPlayerPostLimbDraw, (Player * player, s32 limbIndex))
+DEFINE_HOOK(OnBossDefeated, (s16 actorId))
 
 DEFINE_HOOK(OnSceneFlagSet, (s16 sceneId, FlagType flagType, u32 flag))
 DEFINE_HOOK(OnSceneFlagUnset, (s16 sceneId, FlagType flagType, u32 flag))
@@ -47,5 +48,7 @@ DEFINE_HOOK(OnOpenText, (u16 * textId, bool* loadFromMessageTable))
 
 DEFINE_HOOK(ShouldItemGive, (u8 item, bool* should))
 DEFINE_HOOK(OnItemGive, (u8 item))
+
+DEFINE_HOOK(OnBottleContentsUpdate, (u8 item))
 
 DEFINE_HOOK(ShouldVanillaBehavior, (GIVanillaBehavior flag, bool* should, va_list originalArgs))

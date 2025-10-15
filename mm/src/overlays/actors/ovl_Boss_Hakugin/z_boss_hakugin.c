@@ -2309,6 +2309,7 @@ void BossHakugin_CutsceneStart(BossHakugin* this, PlayState* play) {
         CutsceneManager_StartWithPlayerCs(this->actor.csId, &this->actor);
         if (this->actor.colChkInfo.health == 0) {
             BossHakugin_SetupDeathCutsceneRun(this);
+            GameInteractor_ExecuteOnBossDefeated(this->actor.id); // 2S2H Time Splits
         } else if (this->nextCutsceneType == GOHT_NEXT_CUTSCENE_TYPE_INTRO) {
             BossHakugin_SetupIntroCutsceneThaw(this);
         } else {

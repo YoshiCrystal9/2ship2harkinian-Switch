@@ -29,6 +29,7 @@
 
 #include "2s2h/BenPort.h"
 #include "2s2h/Enhancements/FrameInterpolation/FrameInterpolation.h"
+#include "2s2h/GameInteractor/GameInteractor.h"
 
 #define FLAGS                                                                                 \
     (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_HOSTILE | ACTOR_FLAG_UPDATE_CULLING_DISABLED | \
@@ -1768,6 +1769,8 @@ void Boss07_Wrath_SetupDeathCutscene(Boss07* this, PlayState* play) {
     }
 
     this->damagedTimer = 1000;
+
+    GameInteractor_ExecuteOnBossDefeated(this->actor.id); // 2S2H Time Splits
 }
 
 void Boss07_Wrath_DeathCutscene(Boss07* this, PlayState* play) {

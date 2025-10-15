@@ -45,7 +45,7 @@ std::unordered_map<s16, const char*> sceneNames = {
 #undef DEFINE_SCENE_UNSET
 
 // These textures are not in existing lists that we iterate over.
-std::array<const char*, 19> miscellaneousTextures = {
+std::array<const char*, 21> miscellaneousTextures = {
     gArcheryScoreIconTex,
     gBarrelTrackerIcon,
     gChestTrackerIcon,
@@ -65,11 +65,31 @@ std::array<const char*, 19> miscellaneousTextures = {
     gTimerClockIconTex,
     gWorldMapOwlFaceTex,
     gameplay_keep_Tex_053140,
+    gDungeonMapSkullTex,
+    gPauseUnusedCursorTex,
 };
 
 std::array<const char*, 11> digitList = { gCounterDigit0Tex, gCounterDigit1Tex, gCounterDigit2Tex, gCounterDigit3Tex,
                                           gCounterDigit4Tex, gCounterDigit5Tex, gCounterDigit6Tex, gCounterDigit7Tex,
                                           gCounterDigit8Tex, gCounterDigit9Tex, gCounterColonTex };
+
+std::map<uint32_t, ImVec4> itemColorMap = {
+    { ITEM_SONG_SONATA, ImVec4(0.588f, 1.0f, 0.392f, 1.0f) },
+    { ITEM_SONG_LULLABY, ImVec4(1.0f, 0.313f, 0.156f, 1.0f) },
+    { ITEM_SONG_NOVA, ImVec4(0.392f, 0.588f, 1.0f, 1.0f) },
+    { ITEM_SONG_ELEGY, ImVec4(1.0f, 0.627f, 0.0f, 1.0f) },
+    { ITEM_SONG_OATH, ImVec4(1.0f, 0.392f, 1.0f, 1.0f) },
+    { ITEM_SONG_LULLABY_INTRO, ImVec4(1.0f, 0.313f, 0.156f, 1.0f) },
+};
+
+ImVec4 Ship_GetItemColorTint(uint32_t itemId) {
+    auto findColor = itemColorMap.find(itemId);
+    if (findColor != itemColorMap.end()) {
+        return findColor->second;
+    } else {
+        return ImVec4(1, 1, 1, 1);
+    }
+}
 
 extern "C" const char* Ship_GetSceneName(s16 sceneId) {
     if (sceneNames.contains(sceneId)) {
@@ -77,6 +97,15 @@ extern "C" const char* Ship_GetSceneName(s16 sceneId) {
     }
 
     return "Unknown";
+}
+
+std::string Ship_FormatTimeDisplay(uint32_t value) {
+    uint32_t sec = value / 10;
+    uint32_t hh = sec / 3600;
+    uint32_t mm = (sec - hh * 3600) / 60;
+    uint32_t ss = sec - hh * 3600 - mm * 60;
+    uint32_t ds = value % 10;
+    return fmt::format("{}:{:0>2}:{:0>2}.{}", hh, mm, ss, ds);
 }
 
 constexpr f32 fourByThree = 4.0f / 3.0f;

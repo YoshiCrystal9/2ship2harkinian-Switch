@@ -18,22 +18,12 @@ void Boss07_Wrath_DeathCutscene(Boss07*, PlayState*);
 
 float windowScale = 1.0f;
 ImVec4 windowBG = ImVec4(0, 0, 0, 0.5f);
-
-std::string formatTimeDisplay(uint32_t value) {
-    uint32_t sec = value / 10;
-    uint32_t hh = sec / 3600;
-    uint32_t mm = (sec - hh * 3600) / 60;
-    uint32_t ss = sec - hh * 3600 - mm * 60;
-    uint32_t ds = value % 10;
-    return fmt::format("{}:{:0>2}:{:0>2}.{}", hh, mm, ss, ds);
-}
-
 static constexpr ImVec4 tintColor = {};
 
 void DrawInGameTimer(uint32_t timer, ImVec4 color = ImVec4(1, 1, 1, 1)) {
     float windowScale = MAX(CVarGetFloat("gDisplayOverlay.Scale", 1.0f), 1.0f);
 
-    std::string timerStr = formatTimeDisplay(timer);
+    std::string timerStr = Ship_FormatTimeDisplay(timer);
     uint16_t textureIndex = 0;
     for (const auto c : timerStr) {
         if (c == ':' || c == '.') {

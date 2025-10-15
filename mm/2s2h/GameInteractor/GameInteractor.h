@@ -731,6 +731,7 @@ void GameInteractor_ExecuteOnActorDraw(Actor* actor);
 void GameInteractor_ExecuteOnActorKill(Actor* actor);
 void GameInteractor_ExecuteOnActorDestroy(Actor* actor);
 void GameInteractor_ExecuteOnPlayerPostLimbDraw(Player* player, s32 limbIndex);
+void GameInteractor_ExecuteOnBossDefeated(s16 actorId);
 
 void GameInteractor_ExecuteOnSceneFlagSet(s16 sceneId, FlagType flagType, u32 flag);
 void GameInteractor_ExecuteOnSceneFlagUnset(s16 sceneId, FlagType flagType, u32 flag);
@@ -747,6 +748,8 @@ void GameInteractor_ExecuteOnOpenText(u16* textId, bool* loadFromMessageTable);
 
 bool GameInteractor_ShouldItemGive(u8 item);
 void GameInteractor_ExecuteOnItemGive(u8 item);
+
+void GameInteractor_ExecuteOnBottleContentsUpdate(u8 item);
 
 bool GameInteractor_Should(GIVanillaBehavior flag, uint32_t result, ...);
 #define REGISTER_VB_SHOULD(flag, body)                                                      \

@@ -1148,6 +1148,7 @@ void func_809DBFB4(Boss02* this, PlayState* play) {
 
                         if (otherTwinmold->unk_0144 >= 10) {
                             SEQCMD_STOP_SEQUENCE(SEQ_PLAYER_BGM_MAIN, 1);
+                            GameInteractor_ExecuteOnBossDefeated(this->actor.id); // 2S2H Time Splits
                         } else {
                             otherTwinmold->unk_0195 = 1;
                         }

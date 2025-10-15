@@ -35,6 +35,7 @@
 #include "overlays/actors/ovl_Item_B_Heart/z_item_b_heart.h"
 
 #include "2s2h/BenPort.h"
+#include "2s2h/GameInteractor/GameInteractor.h"
 
 #define FLAGS                                                                                 \
     (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_HOSTILE | ACTOR_FLAG_UPDATE_CULLING_DISABLED | \
@@ -2046,6 +2047,7 @@ void Boss01_UpdateDamage(Boss01* this, PlayState* play) {
                         Boss01_SetupDeathCutscene(this, play);
                         Actor_PlaySfx(&this->actor, NA_SE_EN_MIBOSS_DEAD_OLD);
                         Enemy_StartFinishingBlow(play, &this->actor);
+                        GameInteractor_ExecuteOnBossDefeated(this->actor.id); // 2S2H Time Splits
                     } else {
                         Boss01_SetupDamaged(this, play, this->actor.colChkInfo.damageEffect);
                         Audio_PlaySfx_AtPos(&sOdolwaDamageSfxPos, NA_SE_EN_MIBOSS_DAMAGE_OLD);
