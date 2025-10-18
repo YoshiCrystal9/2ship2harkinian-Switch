@@ -255,6 +255,8 @@ void Rando::MiscBehavior::OnFileCreate(s16 fileNum) {
 
                 if (RANDO_SAVE_OPTIONS[RO_SHUFFLE_SWIM] == RO_GENERIC_YES) {
                     itemPool.push_back(RI_ABILITY_SWIM);
+                } else {
+                    Flags_SetRandoInf(RANDO_INF_OBTAINED_SWIM);
                 }
 
                 // Remove starting items from the pool (but only one per entry in startingItems)
