@@ -5,6 +5,7 @@
 extern "C" {
 #include "variables.h"
 #include "functions.h"
+extern u8 sStartSeqDisabled;
 }
 
 #define CVAR_NAME_FASTER_SCENE_TRANSITIONS "gEnhancements.Timesavers.FasterSceneTransitions"
@@ -29,6 +30,11 @@ extern "C" {
 
 void RegisterFixBgmReplay() {
     COND_VB_SHOULD(VB_PLAY_SCENE_SEQUENCE, CVAR_FASTER_SCENE_TRANSITIONS || CVAR_PAUSE_SAVE || CVAR_DEBUG_MODE, {
+        // The Astral Observatory telescope and moon crash set this flag. No need to meddle further.
+        if (sStartSeqDisabled) {
+            return;
+        }
+
         u16 sRequestedSceneSeqId = *va_arg(args, u16*);
         u16 sPrevMainBgmSeqId = *va_arg(args, u16*);
         u16 seqId = *va_arg(args, u16*);
