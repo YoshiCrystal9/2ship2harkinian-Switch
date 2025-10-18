@@ -12,6 +12,7 @@
 #include <imgui.h>
 void LoadGuiTextures();
 std::string convertEnumToReadableName(const std::string& input);
+std::string Ship_RemoveSpecialCharacters(const std::string& str);
 extern std::array<const char*, 11> digitList;
 extern std::string Ship_FormatTimeDisplay(uint32_t value);
 extern std::map<uint32_t, ImVec4> itemColorMap;

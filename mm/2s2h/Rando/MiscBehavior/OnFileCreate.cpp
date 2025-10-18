@@ -43,7 +43,7 @@ void Rando::MiscBehavior::OnFileCreate(s16 fileNum) {
             // SpoilerFileIndex == 0 means we're generating a new one
             if (CVarGetInteger("gRando.SpoilerFileIndex", 0) == 0) {
                 bool hadInputSeed = true;
-                std::string inputSeed = CVarGetString("gRando.InputSeed", "");
+                std::string inputSeed = Ship_RemoveSpecialCharacters(CVarGetString("gRando.InputSeed", ""));
                 if (inputSeed.empty()) {
                     inputSeed = std::to_string(Ship_Random(0, 1000000));
                     hadInputSeed = false;

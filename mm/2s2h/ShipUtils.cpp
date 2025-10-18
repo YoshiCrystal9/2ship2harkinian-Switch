@@ -109,6 +109,17 @@ std::string Ship_FormatTimeDisplay(uint32_t value) {
     return fmt::format("{}:{:0>2}:{:0>2}.{}", hh, mm, ss, ds);
 }
 
+std::string Ship_RemoveSpecialCharacters(const std::string& str) {
+    std::string result;
+    for (char ch : str) {
+        // Only keep alphanumeric characters (letters and digits)
+        if (std::isalnum(static_cast<unsigned char>(ch))) {
+            result += ch;
+        }
+    }
+    return result;
+}
+
 constexpr f32 fourByThree = 4.0f / 3.0f;
 
 // Gets the additional ratio of the screen compared to the original 4:3 ratio, clamping to 1 if smaller
