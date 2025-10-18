@@ -16,6 +16,8 @@ nlohmann::json GenerateFromSaveContext() {
         spoiler["options"][randoStaticOption.name] = RANDO_SAVE_OPTIONS[randoOptionId];
     }
 
+    spoiler["startingItems"] = RANDO_STARTING_ITEMS;
+
     spoiler["checks"] = nlohmann::json::object();
     for (auto& [randoCheckId, randoStaticCheck] : Rando::StaticData::Checks) {
         if (randoStaticCheck.randoCheckId == RC_UNKNOWN) {

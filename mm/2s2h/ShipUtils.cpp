@@ -242,6 +242,39 @@ void LoadGuiTextures() {
     }
 }
 
+std::string CreateStartingItemsToCvar(std::vector<RandoItemId> startingItemList) {
+    std::string startingItemsStr = "";
+    for (auto& item : startingItemList) {
+        if (startingItemsStr != "") {
+            startingItemsStr += ",";
+        }
+        startingItemsStr += std::to_string(item).c_str();
+    }
+
+    return startingItemsStr;
+}
+
+std::vector<RandoItemId> convertStartingItemsToRandoItemId(const std::string& input, const std::string& delimiter) {
+    std::vector<RandoItemId> result;
+    size_t start = 0;
+    size_t end = input.find(delimiter);
+
+    while (end != std::string::npos) {
+        std::string item = input.substr(start, end - start);
+        if (!item.empty()) {
+            result.push_back(static_cast<RandoItemId>(std::stoul(item)));
+        }
+        start = end + delimiter.length();
+        end = input.find(delimiter, start);
+    }
+
+    if (!input.substr(start).empty()) {
+        result.push_back(static_cast<RandoItemId>(std::stoul(input.substr(start))));
+    }
+
+    return result;
+}
+
 std::string convertEnumToReadableName(const std::string& input) {
     std::string result;
     std::string content = input;

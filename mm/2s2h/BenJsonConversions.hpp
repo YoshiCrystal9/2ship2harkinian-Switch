@@ -55,6 +55,7 @@ void to_json(json& j, const RandoSaveInfo& rando) {
         { "randoSaveChecks", rando.randoSaveChecks },
         { "finalSeed", rando.finalSeed },
         { "randoSaveOptions", rando.randoSaveOptions },
+        { "randoStartingItems", rando.randoStartingItems },
         { "foundDungeonKeys", rando.foundDungeonKeys },
         { "foundTriforcePieces", rando.foundTriforcePieces },
     };
@@ -66,6 +67,11 @@ void from_json(const json& j, RandoSaveInfo& rando) {
     j.at("randoSaveChecks").get_to(rando.randoSaveChecks);
     j.at("finalSeed").get_to(rando.finalSeed);
     j.at("randoSaveOptions").get_to(rando.randoSaveOptions);
+
+    // The value of Starting Items is a string in code but is stored as a char in the RandoSaveInfo
+    std::string startingItemsStr = j.value("randoStartingItems", "");
+    strncpy(rando.randoStartingItems, startingItemsStr.c_str(), startingItemsStr.size() +1);
+
     j.at("foundDungeonKeys").get_to(rando.foundDungeonKeys);
     j.at("foundTriforcePieces").get_to(rando.foundTriforcePieces);
 }
