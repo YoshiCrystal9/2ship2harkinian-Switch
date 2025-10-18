@@ -492,8 +492,7 @@ static void DrawLocationsTab() {
                 continue;
             }
 
-            if (!includedFilter.PassFilter(
-                    convertEnumToReadableName(Rando::StaticData::Checks[includedChecks.first].name).c_str())) {
+            if (!includedFilter.PassFilter(Rando::StaticData::CheckNames[includedChecks.first].c_str())) {
                 continue;
             }
 
@@ -503,7 +502,7 @@ static void DrawLocationsTab() {
             }
 
             ImGui::BeginGroup();
-            ImGui::Text("%s", convertEnumToReadableName(Rando::StaticData::Checks[includedChecks.first].name).c_str());
+            ImGui::Text("%s", Rando::StaticData::CheckNames[includedChecks.first].c_str());
             ImGui::SameLine();
             ImGui::Dummy(ImVec2(ImGui::GetContentRegionAvail().x, 0));
             ImGui::EndGroup();
@@ -540,12 +539,11 @@ static void DrawLocationsTab() {
         ImGui::TableNextColumn();
         int16_t index = 0;
         for (auto& excludedChecks : checkExclusionList) {
-            if (!excludedFilter.PassFilter(
-                    convertEnumToReadableName(Rando::StaticData::Checks[excludedChecks].name).c_str())) {
+            if (!excludedFilter.PassFilter(Rando::StaticData::CheckNames[excludedChecks].c_str())) {
                 continue;
             }
 
-            ImGui::Text("%s", convertEnumToReadableName(Rando::StaticData::Checks[excludedChecks].name).c_str());
+            ImGui::Text("%s", Rando::StaticData::CheckNames[excludedChecks].c_str());
 
             ImGui::TableSetBgColor(ImGuiTableBgTarget_RowBg0,
                                    ImGui::IsItemHovered() ? IM_COL32(255, 255, 0, 128) : IM_COL32(255, 255, 255, 0));

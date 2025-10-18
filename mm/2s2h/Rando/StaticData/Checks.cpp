@@ -1,4 +1,5 @@
 #include "StaticData.h"
+#include "ShipUtils.h"
 
 extern "C" {
 s16 Play_GetOriginalSceneId(s16 sceneId);
@@ -7,6 +8,7 @@ s16 Play_GetOriginalSceneId(s16 sceneId);
 namespace Rando {
 
 namespace StaticData {
+std::array<std::string, RC_MAX> CheckNames = std::array<std::string, RC_MAX>();
 
 #define RC(id, type, scene, flagType, flag, item)      \
     {                                                  \
@@ -2261,6 +2263,12 @@ RandoCheckId GetCheckIdFromName(const char* name) {
         }
     }
     return RC_UNKNOWN;
+}
+
+void PopulateCheckNames() {
+    for (auto& [randoCheckId, randoStaticCheck] : Rando::StaticData::Checks) {
+        CheckNames[randoCheckId] = convertEnumToReadableName(randoStaticCheck.name);
+    }
 }
 
 } // namespace StaticData

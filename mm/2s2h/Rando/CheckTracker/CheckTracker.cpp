@@ -60,7 +60,6 @@ ImVec4 trackerBG = ImVec4{ 0, 0, 0, 0.5f };
 
 std::map<SceneId, std::vector<RandoCheckId>> sceneChecks;
 std::vector<SceneId> sortedSceneIds;
-std::unordered_map<RandoCheckId, std::string> readableCheckNames;
 std::unordered_map<RandoCheckId, std::string> accessLogicFuncs;
 
 std::vector<const char*> checkTypeIconList = {
@@ -188,7 +187,7 @@ void CheckTrackerDrawLogicalList() {
                     continue;
                 }
 
-                if (!sCheckTrackerFilter.PassFilter(readableCheckNames[randoCheckId].c_str())) {
+                if (!sCheckTrackerFilter.PassFilter(Rando::StaticData::CheckNames[randoCheckId].c_str())) {
                     continue;
                 }
 
@@ -250,7 +249,7 @@ void CheckTrackerDrawLogicalList() {
                             DrawCheckTypeIcon(checkId);
                             ImGui::TableNextColumn();
                             ImGui::SetCursorPosY(cursorPosY);
-                            ImGui::Text("%s", readableCheckNames[checkId].c_str());
+                            ImGui::Text("%s", Rando::StaticData::CheckNames[checkId].c_str());
                             if (accessLogicString != "") {
                                 UIWidgets::Tooltip(accessLogicString.c_str());
                             }
@@ -349,7 +348,7 @@ void CheckTrackerDrawNonLogicalList() {
                 }
             }
 
-            if (!sCheckTrackerFilter.PassFilter(readableCheckNames[checkId].c_str())) {
+            if (!sCheckTrackerFilter.PassFilter(Rando::StaticData::CheckNames[checkId].c_str())) {
                 continue;
             }
 
@@ -414,7 +413,7 @@ void CheckTrackerDrawNonLogicalList() {
                         ImGui::TableNextColumn();
 
                         ImGui::SetCursorPosY(cursorPosY);
-                        ImGui::Text("%s", readableCheckNames[randoCheckId].c_str());
+                        ImGui::Text("%s", Rando::StaticData::CheckNames[randoCheckId].c_str());
                         if (randoSaveCheck.obtained) {
                             ImGui::SameLine(0, 25.0f);
                             ImGui::Text("(%s)", Rando::StaticData::Items[randoSaveCheck.randoItemId].name);
@@ -557,9 +556,6 @@ void SettingsWindow::DrawElement() {
 }
 
 void Init() {
-    for (auto& [randoCheckId, randoStaticCheck] : Rando::StaticData::Checks) {
-        readableCheckNames[randoCheckId] = convertEnumToReadableName(randoStaticCheck.name);
-    }
     for (auto& [randoRegionId, randoRegion] : Rando::Logic::Regions) {
         for (auto& [randoCheckId, accessLogicFunc] : randoRegion.checks) {
             accessLogicFuncs[randoCheckId] = accessLogicFunc.second;
