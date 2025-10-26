@@ -624,10 +624,6 @@ INSTALL(FILES $<TARGET_PDB_FILE:2ship> DESTINATION ./debug COMPONENT 2s2h)
 INSTALL(FILES ${CMAKE_BINARY_DIR}/mm/2ship.o2r DESTINATION . COMPONENT 2s2h)
 endif()
 
-if ("${CMAKE_SYSTEM_NAME}" STREQUAL "Linux")
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/linux/2s2h.sh.in ${CMAKE_BINARY_DIR}/linux/2s2h.sh @ONLY)
-endif()
-
 find_program(CURL NAMES curl DOC "Path to the curl program.  Used to download files.")
 execute_process(COMMAND ${CURL} -sSfL https://raw.githubusercontent.com/gabomdq/SDL_GameControllerDB/master/gamecontrollerdb.txt -o ${CMAKE_BINARY_DIR}/gamecontrollerdb.txt OUTPUT_VARIABLE RESULT)
 
