@@ -1,7 +1,7 @@
 #include "MiscBehavior.h"
 #include "Rando/Spoiler/Spoiler.h"
 #include "Rando/Logic/Logic.h"
-#include <boost_custom/container_hash/hash_32.hpp>
+#include "2s2h/ShipUtils.h"
 #include "public/bridge/consolevariablebridge.h"
 #include <spdlog/spdlog.h>
 
@@ -49,7 +49,7 @@ void Rando::MiscBehavior::OnFileCreate(s16 fileNum) {
                     hadInputSeed = false;
                 }
 
-                uint32_t finalSeed = boost::hash_32<std::string>{}(inputSeed);
+                uint32_t finalSeed = Ship_Hash(inputSeed);
                 Ship_Random_Seed(finalSeed);
 
                 // Persist options to the save
@@ -96,7 +96,7 @@ void Rando::MiscBehavior::OnFileCreate(s16 fileNum) {
                     }
                 }
 
-                std::unordered_map<RandoCheckId, bool> checkPool;
+                std::vector<RandoCheckId> checkPool;
                 std::vector<RandoItemId> itemPool;
 
                 // Create Excluded Checks List to eliminate excluded checks from the pool
@@ -119,7 +119,7 @@ void Rando::MiscBehavior::OnFileCreate(s16 fileNum) {
                         }
 
                         // Skip checks that are already in the pool
-                        if (checkPool.find(randoCheckId) != checkPool.end()) {
+                        if (std::find(checkPool.begin(), checkPool.end(), randoCheckId) != checkPool.end()) {
                             continue;
                         }
 
@@ -217,12 +217,12 @@ void Rando::MiscBehavior::OnFileCreate(s16 fileNum) {
                                 RANDO_SAVE_CHECKS[randoCheckId].randoItemId = RI_JUNK;
                                 RANDO_SAVE_CHECKS[randoCheckId].skipped = true;
 
-                                checkPool.insert({ randoCheckId, true });
+                                checkPool.emplace_back(randoCheckId);
                                 continue;
                             }
                         }
 
-                        checkPool.insert({ randoCheckId, true });
+                        checkPool.emplace_back(randoCheckId);
                         itemPool.push_back(randoStaticCheck.randoItemId);
                     }
                 }

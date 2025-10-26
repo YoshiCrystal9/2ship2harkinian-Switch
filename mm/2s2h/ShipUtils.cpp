@@ -1,11 +1,10 @@
 #include "ShipUtils.h"
 #include "assets/2s2h_assets.h"
 #include <string>
+#include <bit>
 #include <random>
 #include <vector>
-#include <boost/random/mersenne_twister.hpp>
-#include <boost/random/uniform_int_distribution.hpp>
-#include <boost_custom/container_hash/hash_32.hpp>
+#include <cassert>
 #include "public/bridge/consolevariablebridge.h"
 #include "Context.h"
 #include "Window.h"
@@ -205,20 +204,50 @@ extern "C" TexturePtr Ship_GetCharFontTextureNES(u8 character) {
 }
 
 static bool seeded = false;
-static boost::random::mt19937 generator;
+static uint64_t state = 0;
+const uint64_t multiplier = 6364136223846793005ULL;
+const uint64_t increment = 11634580027462260723ULL;
 
-extern "C" void Ship_Random_Seed(u32 seed) {
+extern "C" void Ship_Random_Seed(u64 seed) {
     seeded = true;
-    generator = boost::random::mt19937{ seed };
+    state = seed;
+}
+
+uint32_t next32() {
+    if (!seeded) {
+        uint64_t seed = static_cast<uint64_t>(std::random_device{}());
+        Ship_Random_Seed(seed);
+    }
+    state = state * multiplier + increment;
+    uint32_t xorshifted = static_cast<uint32_t>(((state >> 18) ^ state) >> 27);
+    uint32_t rot = static_cast<int>(state >> 59);
+    return std::rotr(xorshifted, rot);
 }
 
 extern "C" s32 Ship_Random(s32 min, s32 max) {
-    if (!seeded) {
-        const auto seed = static_cast<uint32_t>(std::random_device{}());
-        Ship_Random_Seed(seed);
+    if (min == max) {
+        return min;
     }
-    boost::random::uniform_int_distribution<uint32_t> distribution(min, max - 1);
-    return distribution(generator);
+    assert(max > min);
+    uint32_t n = max - min;
+    uint32_t cutoff = UINT32_MAX - UINT32_MAX % static_cast<uint32_t>(n);
+    for (;;) {
+        uint32_t r = next32();
+        if (r <= cutoff) {
+            return min + r % n;
+        }
+    }
+}
+
+extern uint32_t Ship_Hash(std::string str) {
+    // FNV-1a
+    const size_t len = str.size();
+    uint32_t hval = 0x811c9dc5;
+    for (size_t pos = 0; pos < len; pos++) {
+        hval ^= (uint32_t)str[pos];
+        hval *= 0x01000193;
+    }
+    return hval;
 }
 
 void LoadGuiTextures() {

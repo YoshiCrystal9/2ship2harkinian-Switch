@@ -29,14 +29,13 @@ struct RandoPoolPlacement {
     RandoItemId placedItemId;
 };
 
-void ApplyFrenchVanillaLogicToSaveContext(std::unordered_map<RandoCheckId, bool>& checkPool,
-                                          std::vector<RandoItemId>& itemPool) {
+void ApplyFrenchVanillaLogicToSaveContext(std::vector<RandoCheckId>& checkPool, std::vector<RandoItemId>& itemPool) {
     uint64_t tick = GetUnixTimestamp();
     std::set<RandoCheckId> allChecksThatAreInLogic;
     std::set<RandoCheckId> allChecksThatHaveBeenReachedAtLeastOnce;
 
     // Used across all iterations
-    std::unordered_map<RandoCheckId, RandoPoolEntry> currentCheckPool;
+    std::map<RandoCheckId, RandoPoolEntry> currentCheckPool;
     std::set<RandoRegionId> currentReachableRegions = { RR_MAX };
     std::set<std::pair<RandoEvent, std::function<bool()>>*> currentEventsTriggered;
 
@@ -56,7 +55,7 @@ void ApplyFrenchVanillaLogicToSaveContext(std::unordered_map<RandoCheckId, bool>
     for (auto& [randoRegionId, randoRegion] : Rando::Logic::Regions) {
         for (auto& [randoCheckId, _] : randoRegion.checks) {
             auto& randoStaticCheck = Rando::StaticData::Checks[randoCheckId];
-            bool isShuffled = checkPool.find(randoCheckId) != checkPool.end();
+            bool isShuffled = std::find(checkPool.begin(), checkPool.end(), randoCheckId) != checkPool.end();
 
             allChecksThatAreInLogic.insert(randoCheckId);
             currentCheckPool[randoCheckId] = {

@@ -69,8 +69,8 @@ struct RandoStaticRegion {
     RandoRegionId randoRegionId;
     const char* name;
     SceneId sceneId;
-    std::unordered_map<RandoCheckId, std::function<bool()>> checks;
-    std::unordered_map<RandoRegionId, std::function<bool()>> regions;
+    std::map<RandoCheckId, std::function<bool()>> checks;
+    std::map<RandoRegionId, std::function<bool()>> regions;
 };
 
 extern std::map<RandoRegionId, RandoStaticRegion> Regions;

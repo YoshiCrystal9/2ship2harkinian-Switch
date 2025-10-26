@@ -7,10 +7,10 @@ namespace Rando {
 
 namespace Logic {
 
-std::unordered_map<RandoRegionId, RandoRegion> Regions = {};
+std::map<RandoRegionId, RandoRegion> Regions = {};
 
 RandoRegionId GetRegionIdFromEntrance(s32 entrance) {
-    static std::unordered_map<s32, RandoRegionId> entranceToRegionId;
+    static std::map<s32, RandoRegionId> entranceToRegionId;
     if (entranceToRegionId.empty()) {
         for (auto& [randoRegionId, randoRegion] : Regions) {
             for (auto& [_, regionExit] : randoRegion.exits) {

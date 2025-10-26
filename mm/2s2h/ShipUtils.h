@@ -21,6 +21,7 @@ extern std::array<const char*, 11> digitList;
 extern std::string Ship_FormatTimeDisplay(uint32_t value);
 extern std::map<uint32_t, ImVec4> itemColorMap;
 extern ImVec4 Ship_GetItemColorTint(uint32_t itemId);
+extern uint32_t Ship_Hash(std::string str);
 
 extern "C" {
 #endif
@@ -37,7 +38,7 @@ bool Ship_IsCStringEmpty(const char* str);
 void Ship_CreateQuadVertexGroup(Vtx* vtxList, s32 xStart, s32 yStart, s32 width, s32 height, u8 flippedH);
 f32 Ship_GetCharFontWidthNES(u8 character);
 TexturePtr Ship_GetCharFontTextureNES(u8 character);
-void Ship_Random_Seed(u32 seed);
+void Ship_Random_Seed(u64 seed);
 s32 Ship_Random(s32 min, s32 max);
 
 #ifdef __cplusplus
