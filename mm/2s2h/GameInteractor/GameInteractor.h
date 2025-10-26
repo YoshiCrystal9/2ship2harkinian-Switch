@@ -790,6 +790,7 @@ bool GameInteractor_Should(GIVanillaBehavior flag, uint32_t result, ...);
 
 int GameInteractor_InvertControl(GIInvertType type);
 uint32_t GameInteractor_Dpad(GIDpadType type, uint32_t buttonCombo);
+uint32_t GameInteractor_RightStickOcarina(Input* input);
 
 #ifdef __cplusplus
 }

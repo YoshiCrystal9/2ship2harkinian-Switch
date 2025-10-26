@@ -1203,6 +1203,9 @@ void BenMenu::AddEnhancements() {
     AddWidget(path, "D-pad Ocarina", WIDGET_CVAR_CHECKBOX)
         .CVar("gEnhancements.Playback.DpadOcarina")
         .Options(CheckboxOptions().Tooltip("Enables using the D-pad for Ocarina playback."));
+    AddWidget(path, "Right Stick Ocarina", WIDGET_CVAR_CHECKBOX)
+        .CVar("gEnhancements.Playback.RightStickOcarina")
+        .Options(CheckboxOptions().Tooltip("Enables using the Right Stick for Ocarina playback."));
     AddWidget(path, "Pause Owl Warp", WIDGET_CVAR_CHECKBOX)
         .CVar("gEnhancements.Songs.PauseOwlWarp")
         .Options(CheckboxOptions().Tooltip(
