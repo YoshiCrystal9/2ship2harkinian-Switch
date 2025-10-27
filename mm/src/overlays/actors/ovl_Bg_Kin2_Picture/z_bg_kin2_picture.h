@@ -4,7 +4,12 @@
 #include "global.h"
 
 #define BG_KIN2_PICTURE_SKULLTULA_COLLECTED(thisx) (((thisx)->params >> 5) & 1)
-#define BG_KIN2_PICTURE_GET_3FC(thisx) ((u8)(((thisx & 0x3FC)) >> 2))
+// #region 2S2H [Port] The original calculation is ((u8)(((thisx & 0x3FC)) >> 2)), but this results in values well
+// over 100. This value is ultimately used to left shift 1 to get the treasure flag. Bit shifts greater than the bit
+// width are undefined behavior. On N64, this likely truncates to a value below 32. The correction below matches other
+// uses of the Skulltula Token chest flag (see ENSI_GET_CHEST_FLAG and inline uses in z_tg_sw.c):
+#define BG_KIN2_PICTURE_GET_3FC(thisx) ((u8)(((thisx & 0xFC)) >> 2))
+// #endregion
 #define BG_KIN2_PICTURE_SKULLTULA_SPAWN_PARAM(thisx) ((((thisx)->params & 0x1F) << 2) | 0xFF03)
 
 struct BgKin2Picture;
