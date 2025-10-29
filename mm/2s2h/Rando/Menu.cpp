@@ -10,7 +10,6 @@ std::unordered_map<int32_t, const char*> logicOptions = {
     { RO_LOGIC_GLITCHLESS, "Glitchless" },
     { RO_LOGIC_NO_LOGIC, "No Logic" },
     { RO_LOGIC_NEARLY_NO_LOGIC, "Nearly No Logic" },
-    { RO_LOGIC_FRENCH_VANILLA, "French Vanilla" },
     { RO_LOGIC_VANILLA, "Vanilla" },
 };
 
@@ -27,12 +26,6 @@ std::unordered_map<int32_t, const char*> accessTrialsOptions = {
     { RO_ACCESS_TRIALS_REMAINS, "Requires Associated Remains" },
     { RO_ACCESS_TRIALS_FORMS, "Requires Associated Transformation" },
     { RO_ACCESS_TRIALS_OPEN, "Open" },
-};
-
-std::vector<int32_t> incompatibleWithFrenchVanilla = {
-    RO_SHUFFLE_BOSS_SOULS,
-    RO_SHUFFLE_SWIM,
-    RO_PLENTIFUL_ITEMS,
 };
 
 std::vector<int32_t> incompatibleWithVanilla = {
@@ -61,14 +54,7 @@ void ClearIncompatibleSetting() {
     int32_t currentLogicSetting =
         CVarGetInteger(Rando::StaticData::Options[RO_LOGIC].cvar, Rando::StaticData::Options[RO_LOGIC].defaultValue);
     switch (currentLogicSetting) {
-        // French Vanilla can't have any options that add items without a corresponding check
-        case RO_LOGIC_FRENCH_VANILLA:
-            CVarClear(Rando::StaticData::Options[RO_PLENTIFUL_ITEMS].cvar);
-            CVarClear(Rando::StaticData::Options[RO_SHUFFLE_BOSS_SOULS].cvar);
-            CVarClear(Rando::StaticData::Options[RO_SHUFFLE_SWIM].cvar);
-            // TODO: Handle Starting Items to ensure starting sword/shield
-            break;
-        // Similar to French Vanilla, Vanilla can't add items without corresponding checks
+        // Vanilla can't add items without corresponding checks
         case RO_LOGIC_VANILLA:
             CVarClear(Rando::StaticData::Options[RO_PLENTIFUL_ITEMS].cvar);
             CVarClear(Rando::StaticData::Options[RO_SHUFFLE_BOSS_SOULS].cvar);
@@ -83,12 +69,6 @@ bool IncompatibleWithLogicSetting(int32_t option) {
     int32_t currentLogicSetting =
         CVarGetInteger(Rando::StaticData::Options[RO_LOGIC].cvar, Rando::StaticData::Options[RO_LOGIC].defaultValue);
     switch (currentLogicSetting) {
-        case RO_LOGIC_FRENCH_VANILLA:
-            if (std::find(incompatibleWithFrenchVanilla.begin(), incompatibleWithFrenchVanilla.end(), option) !=
-                incompatibleWithFrenchVanilla.end()) {
-                return true;
-            }
-            break;
         case RO_LOGIC_VANILLA:
             if (std::find(incompatibleWithVanilla.begin(), incompatibleWithVanilla.end(), option) !=
                 incompatibleWithVanilla.end()) {
@@ -197,9 +177,6 @@ static void DrawLogicConditionsTab() {
         "- Oath to Order and Remains cannot be placed on the Moon.\n"
         "- Deku Mask, Zora Mask, Sonata, and Bossa Nova cannot be placed in their respective Temples or on "
         "the Moon.\n\n"
-        "French Vanilla - This is an alternative variant to Glitchless, but the items are biased to be "
-        "closer to their vanilla locations. Tends to be an more beginner friendly experience.\n"
-        "Not compatible with settings that add items to the pool, like Boss Souls or Plentiful Items.\n\n"
         "Vanilla - The items are not shuffled.\n"
         "Not compatible with settings that add items to the pool, like Boss Souls or Plentiful Items.");
     ImGui::EndChild();
@@ -502,9 +479,9 @@ static void DrawStartingItemsTab() {
 }
 
 static void DrawLocationsTab() {
-    if (CVarGetInteger(Rando::StaticData::Options[RO_LOGIC].cvar, RO_LOGIC_GLITCHLESS) >= RO_LOGIC_FRENCH_VANILLA) {
+    if (CVarGetInteger(Rando::StaticData::Options[RO_LOGIC].cvar, RO_LOGIC_GLITCHLESS) >= RO_LOGIC_VANILLA) {
         ImGui::TextColored(UIWidgets::ColorValues.at(UIWidgets::Colors::Red),
-                           "This setting is not compatible with French Vanilla or Vanilla Logic.");
+                           "This setting is not compatible with Vanilla Logic.");
         return;
     }
 
