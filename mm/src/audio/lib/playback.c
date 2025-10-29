@@ -1,7 +1,7 @@
 #include "global.h"
 #include "audio/effects.h"
 #include "BenPort.h"
-#include "public/bridge/consolevariablebridge.h"
+#include <libultraship/bridge/consolevariablebridge.h>
 
 void AudioPlayback_NoteSetResamplingRate(NoteSampleState* sampleState, f32 resamplingRateInput);
 void AudioPlayback_AudioListPushFront(AudioListItem* list, AudioListItem* item);

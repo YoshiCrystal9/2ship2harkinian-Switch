@@ -14,7 +14,7 @@
  *     Otherwise, each set of instructions has its own command interpreter
  */
 
-#include "endianness.h"
+#include <ship/utils/binarytools/endianness.h>
 #include "global.h"
 #include "BenPort.h"
 #include "2s2h/Enhancements/Audio/AudioEditor.h"

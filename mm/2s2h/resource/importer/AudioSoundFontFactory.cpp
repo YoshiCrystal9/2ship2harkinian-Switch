@@ -2,9 +2,9 @@
 #include "2s2h/resource/type/AudioSoundFont.h"
 #include "audio/soundfont.h"
 #include "audio/load.h"
-#include "Context.h"
-#include "ResourceManager.h"
-#include "resource/archive/Archive.h"
+#include <ship/Context.h>
+#include <ship/resource/ResourceManager.h>
+#include <ship/resource/archive/Archive.h>
 #include <tinyxml2.h>
 
 namespace SOH {

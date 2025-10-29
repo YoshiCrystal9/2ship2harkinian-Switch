@@ -1,7 +1,7 @@
 #include "2s2h/resource/importer/TextureAnimationFactory.h"
 #include "2s2h/resource/type/TextureAnimation.h"
 #include "gbi.h"
-#include "spdlog/spdlog.h"
+#include <spdlog/spdlog.h>
 
 namespace SOH {
 

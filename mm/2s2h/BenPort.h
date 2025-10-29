@@ -13,7 +13,7 @@
 #define MM_NTSC_US_GC 0xB443EB08
 
 #ifdef __cplusplus
-#include <Context.h>
+#include <ship/Context.h>
 
 #include <vector>
 

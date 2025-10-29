@@ -2,8 +2,8 @@
 #include "2s2h/resource/type/AudioSample.h"
 #include "2s2h/resource/importer/AudioSoundFontFactory.h"
 #include "audio/soundfont.h"
-#include "Context.h"
-#include "resource/archive/Archive.h"
+#include <ship/Context.h>
+#include <ship/resource/archive/Archive.h>
 #include <tinyxml2.h>
 #include <thread>
 
@@ -14,7 +14,7 @@
 #include <dr_mp3.h>
 
 #define DR_FLAC_IMPLEMENTATION
-#include "ResourceManager.h"
+#include <ship/resource/ResourceManager.h>
 
 #include <dr_flac.h>
 

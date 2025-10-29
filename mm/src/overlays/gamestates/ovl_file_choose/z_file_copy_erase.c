@@ -6,7 +6,7 @@
 
 #include "z_file_select.h"
 #include "z64rumble.h"
-#include "public/bridge/consolevariablebridge.h"
+#include <libultraship/bridge/consolevariablebridge.h>
 
 // When choosing a file to copy or erase, the 6 main menu buttons are placed at these offsets
 s16 sChooseFileYOffsets[] = { -48, -48, -48, -24, -24, 0 };

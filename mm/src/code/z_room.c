@@ -2,7 +2,7 @@
 #include "PR/gs2dex.h"
 #include "debug.h"
 
-#include "public/bridge/gfxbridge.h"
+#include <libultraship/bridge/gfxbridge.h>
 
 void Room_Noop(PlayState* play, Room* room, Input* input, s32 arg3) {
 }

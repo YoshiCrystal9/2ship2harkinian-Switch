@@ -1,7 +1,7 @@
 #pragma once
 
 #ifdef __cplusplus
-#include "GuiWindow.h"
+#include <ship/window/gui/GuiWindow.h>
 #include "UIWidgets.hpp"
 
 class HudEditorWindow : public Ship::GuiWindow {

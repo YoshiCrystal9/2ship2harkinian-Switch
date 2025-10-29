@@ -15,7 +15,7 @@
 #include "sys_cfb.h"
 #include <string.h>
 #include "2s2h/framebuffer_effects.h"
-#include "public/bridge/gfxbridge.h"
+#include <libultraship/bridge/gfxbridge.h>
 #include "BenPort.h"
 
 #define SCALE_MIN 0.032f

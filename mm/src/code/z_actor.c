@@ -30,7 +30,7 @@
 #include "2s2h/ShipUtils.h"
 #include "2s2h/ActorExtension/ActorExtension.h"
 #include "2s2h/ActorExtension/ActorListIndex.h"
-#include "public/bridge/consolevariablebridge.h"
+#include <libultraship/bridge/consolevariablebridge.h>
 
 // bss
 // FaultClient sActorFaultClient; // 2 funcs

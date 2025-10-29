@@ -1,5 +1,5 @@
 #include "ActorBehavior.h"
-#include "public/bridge/consolevariablebridge.h"
+#include <libultraship/bridge/consolevariablebridge.h>
 
 extern "C" {
 #include "overlays/actors/ovl_Dm_Char08/z_dm_char08.h"

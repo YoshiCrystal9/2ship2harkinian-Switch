@@ -1,6 +1,6 @@
 #include "2s2h/resource/importer/ArrayFactory.h"
 #include "2s2h/resource/type/Array.h"
-#include "graphic/Fast3D/lus_gbi.h"
+#include <fast/lus_gbi.h>
 
 namespace SOH {
 std::shared_ptr<Ship::IResource>

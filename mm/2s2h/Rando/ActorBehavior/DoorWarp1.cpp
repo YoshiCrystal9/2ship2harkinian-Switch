@@ -1,6 +1,6 @@
 #include "ActorBehavior.h"
 #include "2s2h/Enhancements/Cutscenes/StoryCutscenes/SkipGiantsChamber.h"
-#include "public/bridge/consolevariablebridge.h"
+#include <libultraship/bridge/consolevariablebridge.h>
 
 extern "C" {
 #include "overlays/actors/ovl_Door_Warp1/z_door_warp1.h"

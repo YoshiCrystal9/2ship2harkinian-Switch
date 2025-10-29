@@ -18,7 +18,7 @@
 #include "2s2h/Enhancements/Audio/AudioCollection.h"
 #include "2s2h/Enhancements/Audio/AudioEditor.h"
 #include "BenPort.h"
-#include "luslog.h"
+#include <libultraship/log/luslog.h>
 // Windows deprecated the use of `strdup` it uses _strdup. Linux/Unix doesn't have _strdup.
 #ifdef _MSC_VER
 #define strdup _strdup
@@ -1141,7 +1141,7 @@ int strcmp_sort(const void* str1, const void* str2) {
 
 extern AudioContext gAudioCtx;
 // #end region
-#include "resourcebridge.h"
+#include <libultraship/bridge/resourcebridge.h>
 
 void AudioLoad_Init(void* heap, size_t heapSize) {
     s32 pad1[9];

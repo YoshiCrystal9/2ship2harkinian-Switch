@@ -23,8 +23,8 @@
 #include "2s2h/BenGui/CosmeticEditor.h"
 #include "2s2h_assets.h"
 #include "2s2h/GameInteractor/GameInteractor.h"
-#include "public/bridge/gfxbridge.h"
-#include "public/bridge/consolevariablebridge.h"
+#include <libultraship/bridge/gfxbridge.h>
+#include <libultraship/bridge/consolevariablebridge.h>
 
 // 2S2H [Port] This was originally static but needs to be global so it can be accessed in z_kaleido_collect,
 // z_kaleido_debug, and z_kaleido_draw.

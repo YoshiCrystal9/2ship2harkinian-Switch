@@ -1,8 +1,8 @@
 #include "ResolutionEditor.h"
 #include <imgui.h>
 
-#include <graphic/Fast3D/Fast3dWindow.h>
-#include <graphic/Fast3D/interpreter.h>
+#include <fast/Fast3dWindow.h>
+#include <fast/interpreter.h>
 #include "2s2h/BenPort.h"
 #include "2s2h/BenGui/BenMenu.h"
 #include "2s2h/BenGui/BenGui.hpp"

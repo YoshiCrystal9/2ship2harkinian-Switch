@@ -5,8 +5,8 @@
 #include "Rando/Spoiler/Spoiler.h"
 #include "Rando/CheckTracker/CheckTracker.h"
 #include "2s2h/ShipInit.hpp"
-#include "FileDropMgr.h"
-#include "Context.h"
+#include <ship/window/FileDropMgr.h>
+#include <ship/Context.h>
 
 // When a save is loaded, we want to unregister all hooks and re-register them if it's a rando save
 void OnSaveLoadHandler(s16 fileNum) {

@@ -11,7 +11,7 @@
 #include "2s2h/Rando/CheckTracker/CheckTracker.h"
 
 #ifdef __APPLE__
-#include "graphic/Fast3D/backends/gfx_metal.h"
+#include <fast/backends/gfx_metal.h>
 #endif
 
 #ifdef __SWITCH__

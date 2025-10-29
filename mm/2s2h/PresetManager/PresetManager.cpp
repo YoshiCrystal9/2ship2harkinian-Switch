@@ -1,12 +1,12 @@
 #include "PresetManager.h"
-#include "public/bridge/consolevariablebridge.h"
+#include <libultraship/bridge/consolevariablebridge.h>
 #include <filesystem>
 #include <fstream>
 #include <set>
 #include "2s2h/BenPort.h"
 #include "2s2h/BenGui/UIWidgets.hpp"
 #include "2s2h/BenGui/Notification.h"
-#include "FileDropMgr.h"
+#include <ship/window/FileDropMgr.h>
 
 std::unordered_map<std::string, std::string> tagMap = {
     { "gEventLog", "Developer Tools" },

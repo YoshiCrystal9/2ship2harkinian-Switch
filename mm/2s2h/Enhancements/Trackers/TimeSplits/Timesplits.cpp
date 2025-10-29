@@ -1,8 +1,8 @@
 
 #include "Timesplits.h"
-#include "public/bridge/consolevariablebridge.h"
-#include "Context.h"
-#include "Window.h"
+#include <libultraship/bridge/consolevariablebridge.h>
+#include <ship/Context.h>
+#include <ship/window/Window.h>
 #include "2s2h/BenGui/UIWidgets.hpp"
 
 extern "C" {

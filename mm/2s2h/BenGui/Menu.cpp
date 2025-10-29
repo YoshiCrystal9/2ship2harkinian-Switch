@@ -2,13 +2,13 @@
 #include "UIWidgets.hpp"
 #include "BenPort.h"
 #include "BenInputEditorWindow.h"
-#include "window/gui/GuiElement.h"
+#include <ship/window/gui/GuiElement.h>
 #include "Notification.h"
 #include <variant>
 #include <spdlog/fmt/fmt.h>
 #include "variables.h"
 #include <tuple>
-#include "Config.h"
+#include <ship/config/Config.h>
 
 extern "C" {
 #include "z64.h"

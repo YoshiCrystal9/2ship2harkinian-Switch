@@ -1,5 +1,5 @@
-#include "window/gui/Gui.h"
-#include "window/gui/GuiWindow.h"
+#include <ship/window/gui/Gui.h>
+#include <ship/window/gui/GuiWindow.h>
 #include <array>
 
 typedef enum class TrackerWindowType : uint8_t {

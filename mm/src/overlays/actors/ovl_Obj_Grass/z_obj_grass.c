@@ -13,7 +13,7 @@
 
 #include "2s2h/ShipUtils.h"
 #include "2s2h/Enhancements/FrameInterpolation/FrameInterpolation.h"
-#include "public/bridge/consolevariablebridge.h"
+#include <libultraship/bridge/consolevariablebridge.h>
 #include "GameInteractor/GameInteractor.h"
 
 #define FLAGS (ACTOR_FLAG_UPDATE_CULLING_DISABLED | ACTOR_FLAG_DRAW_CULLING_DISABLED)

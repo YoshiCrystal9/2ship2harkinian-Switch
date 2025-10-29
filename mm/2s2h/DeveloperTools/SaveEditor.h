@@ -1,6 +1,6 @@
 #pragma once
 
-#include <GuiWindow.h>
+#include <ship/window/gui/GuiWindow.h>
 #include <vector>
 
 extern "C" {

@@ -1,5 +1,5 @@
 #include "NameTag.h"
-#include "public/bridge/consolevariablebridge.h"
+#include <libultraship/bridge/consolevariablebridge.h>
 #include <vector>
 #include <algorithm>
 #include "2s2h/Enhancements/FrameInterpolation/FrameInterpolation.h"

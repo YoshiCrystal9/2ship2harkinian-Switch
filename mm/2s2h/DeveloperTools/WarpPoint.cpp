@@ -1,5 +1,5 @@
 #include "2s2h/BenGui/UIWidgets.hpp"
-#include "window/gui/IconsFontAwesome4.h"
+#include <ship/window/gui/IconsFontAwesome4.h>
 #include "2s2h/GameInteractor/GameInteractor.h"
 #include "2s2h/DeveloperTools/DeveloperTools.h"
 #include "2s2h/ShipInit.hpp"

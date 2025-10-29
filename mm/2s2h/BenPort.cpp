@@ -5,31 +5,30 @@
 #include <fstream>
 #include <chrono>
 
-#include <ResourceManager.h>
-#include "graphic/Fast3D/Fast3dWindow.h"
-#include <File.h>
-#include <DisplayList.h>
-#include <Window.h>
+#include <ship/resource/ResourceManager.h>
+#include <fast/Fast3dWindow.h>
+#include <ship/resource/File.h>
+#include <ship/window/Window.h>
 
 #include "z64animation.h"
 #include "z64bgcheck.h"
 #include <libultraship/libultra/gbi.h>
-#include <Fonts.h>
+#include <ship/window/gui/Fonts.h>
 #ifdef _WIN32
 #include <Windows.h>
 #else
 #include <time.h>
 #endif
-#include <AudioPlayer.h>
+#include <ship/audio/AudioPlayer.h>
 #include "variables.h"
 #include "z64.h"
 #include "macros.h"
-#include <utils/StringHelper.h>
+#include <ship/utils/StringHelper.h>
 #include <nlohmann/json.hpp>
 #include "build.h"
 
-#include <Fast3D/interpreter.h>
-#include <Fast3D/backends/gfx_rendering_api.h>
+#include <fast/interpreter.h>
+#include <fast/backends/gfx_rendering_api.h>
 
 #ifdef __APPLE__
 #include <SDL_scancode.h>
@@ -47,6 +46,8 @@ CrowdControl* CrowdControl::Instance;
 #endif
 
 #include <libultraship/libultraship.h>
+#include <libultraship/controller/controldeck/ControlDeck.h>
+#include <fast/resource/ResourceType.h>
 #include <BenGui/BenGui.hpp>
 
 #include "2s2h/GameInteractor/GameInteractor.h"
@@ -64,11 +65,11 @@ CrowdControl* CrowdControl::Instance;
 #include "2s2h/PresetManager/PresetManager.h"
 
 // Resource Types/Factories
-#include "resource/type/Blob.h"
-#include "resource/type/DisplayList.h"
-#include "resource/type/Matrix.h"
-#include "resource/type/Texture.h"
-#include "resource/type/Vertex.h"
+#include <ship/resource/type/Blob.h>
+#include <fast/resource/type/DisplayList.h>
+#include <fast/resource/type/Matrix.h>
+#include <fast/resource/type/Texture.h>
+#include <fast/resource/type/Vertex.h>
 #include "2s2h/resource/type/2shResourceType.h"
 #include "2s2h/resource/type/Animation.h"
 #include "2s2h/resource/type/Array.h"
@@ -82,11 +83,11 @@ CrowdControl* CrowdControl::Instance;
 #include "2s2h/resource/type/Scene.h"
 #include "2s2h/resource/type/Skeleton.h"
 #include "2s2h/resource/type/SkeletonLimb.h"
-#include "resource/factory/BlobFactory.h"
-#include "resource/factory/DisplayListFactory.h"
-#include "resource/factory/MatrixFactory.h"
-#include "resource/factory/TextureFactory.h"
-#include "resource/factory/VertexFactory.h"
+#include <ship/resource/factory/BlobFactory.h>
+#include <fast/resource/factory/DisplayListFactory.h>
+#include <fast/resource/factory/MatrixFactory.h>
+#include <fast/resource/factory/TextureFactory.h>
+#include <fast/resource/factory/VertexFactory.h>
 #include "2s2h/resource/importer/AnimationFactory.h"
 #include "2s2h/resource/importer/ArrayFactory.h"
 #include "2s2h/resource/importer/AudioSampleFactory.h"
@@ -103,9 +104,9 @@ CrowdControl* CrowdControl::Instance;
 #include "2s2h/resource/importer/BackgroundFactory.h"
 #include "2s2h/resource/importer/TextureAnimationFactory.h"
 #include "2s2h/resource/importer/KeyFrameFactory.h"
-#include "window/gui/resource/Font.h"
-#include "window/FileDropMgr.h"
-#include "window/gui/resource/FontFactory.h"
+#include <ship/window/gui/resource/Font.h>
+#include <ship/window/FileDropMgr.h>
+#include <ship/window/gui/resource/FontFactory.h>
 #include "2s2h/Enhancements/Audio/AudioCollection.h"
 #include "BenGui/BenInputEditorWindow.h"
 

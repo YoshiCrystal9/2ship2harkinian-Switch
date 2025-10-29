@@ -1,7 +1,7 @@
 #include "ItemTracker.h"
-#include "public/bridge/consolevariablebridge.h"
-#include "Context.h"
-#include "config/Config.h"
+#include <libultraship/bridge/consolevariablebridge.h>
+#include <ship/Context.h>
+#include <ship/config/Config.h>
 #include <bit>
 #include "Rando/Rando.h"
 

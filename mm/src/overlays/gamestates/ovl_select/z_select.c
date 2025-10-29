@@ -9,7 +9,7 @@
 #include "z64view.h"
 #include "libc/alloca.h"
 #include "overlays/gamestates/ovl_title/z_title.h"
-#include "public/bridge/consolevariablebridge.h"
+#include <libultraship/bridge/consolevariablebridge.h>
 #include "2s2h/DeveloperTools/BetterMapSelect.h"
 #include "2s2h/GameInteractor/GameInteractor.h"
 

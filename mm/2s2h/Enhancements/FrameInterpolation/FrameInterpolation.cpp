@@ -1,4 +1,4 @@
-#include "public/bridge/consolevariablebridge.h"
+#include <libultraship/bridge/consolevariablebridge.h>
 
 #include <vector>
 #include <map>

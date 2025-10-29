@@ -1,8 +1,8 @@
 #include "AudioCollection.h"
 #include "sequence.h"
-#include <utils/StringHelper.h>
-#include "public/bridge/consolevariablebridge.h"
-#include "Window.h"
+#include <ship/utils/StringHelper.h>
+#include <libultraship/bridge/consolevariablebridge.h>
+#include <ship/window/Window.h>
 #include <2s2h/BenPort.h>
 #include <locale>
 #include <filesystem>

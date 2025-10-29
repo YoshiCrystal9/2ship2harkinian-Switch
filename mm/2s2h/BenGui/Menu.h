@@ -1,7 +1,7 @@
 #ifndef MENU_H
 #define MENU_H
 
-#include "GuiWindow.h"
+#include <ship/window/gui/GuiWindow.h>
 #include "UIWidgets.hpp"
 #include "MenuTypes.h"
 #include <string>

@@ -1,11 +1,11 @@
 ﻿#include "BenPort.h"
 #include "global.h"
-#include <Blob.h>
+#include <ship/resource/type/Blob.h>
 #include <memory>
 #include <cassert>
-#include <utils/StringHelper.h>
-#include <DisplayList.h>
-#include <public/bridge/resourcebridge.h>
+#include <ship/utils/StringHelper.h>
+#include <fast/resource/type/DisplayList.h>
+#include <libultraship/bridge/resourcebridge.h>
 #include "2s2h/GameInteractor/GameInteractor.h"
 #include "2s2h/resource/type/Scene.h"
 #include "2s2h/resource/type/CollisionHeader.h"

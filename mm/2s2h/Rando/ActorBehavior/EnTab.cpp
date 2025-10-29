@@ -1,6 +1,6 @@
 #include "ActorBehavior.h"
 #include "Rando/MiscBehavior/MiscBehavior.h"
-#include "public/bridge/consolevariablebridge.h"
+#include <libultraship/bridge/consolevariablebridge.h>
 #include "2s2h/CustomMessage/CustomMessage.h"
 
 extern "C" {

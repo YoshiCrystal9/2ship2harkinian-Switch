@@ -3,12 +3,12 @@
 #include <map>
 #include <set>
 #include <string>
-#include "public/bridge/consolevariablebridge.h"
+#include <libultraship/bridge/consolevariablebridge.h>
 #include <functions.h>
 #include <sequence.h>
 // #include "../randomizer/3drando/random.hpp"
 #include "../../BenPort.h"
-#include <utils/StringHelper.h>
+#include <ship/utils/StringHelper.h>
 #include "../../BenGui/UIWidgets.hpp"
 #include "AudioCollection.h"
 #include <random>

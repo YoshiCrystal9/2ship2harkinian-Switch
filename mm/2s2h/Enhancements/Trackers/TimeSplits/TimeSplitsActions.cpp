@@ -1,9 +1,9 @@
 #include "Timesplits.h"
-#include "public/bridge/consolevariablebridge.h"
+#include <libultraship/bridge/consolevariablebridge.h>
 #include "2s2h/GameInteractor/GameInteractor.h"
 #include "2s2h/ShipInit.hpp"
-#include "Context.h"
-#include "Window.h"
+#include <ship/Context.h>
+#include <ship/window/Window.h>
 #include "2s2h/BenGui/UIWidgets.hpp"
 #include <fstream>
 #include <filesystem>

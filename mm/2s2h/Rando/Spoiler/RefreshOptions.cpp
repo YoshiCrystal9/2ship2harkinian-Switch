@@ -1,5 +1,5 @@
 #include "Spoiler.h"
-#include "public/bridge/consolevariablebridge.h"
+#include <libultraship/bridge/consolevariablebridge.h>
 #include <filesystem>
 #include "BenPort.h"
 

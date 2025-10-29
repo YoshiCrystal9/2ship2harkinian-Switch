@@ -1,11 +1,11 @@
 #include "BenInputEditorWindow.h"
-#include <Context.h>
-#include "public/bridge/consolevariablebridge.h"
-#include "controller/controldevice/controller/mapping/ControllerRumbleMapping.h"
-#include "controller/controldeck/ControlDeck.h"
-#include "utils/StringHelper.h"
+#include <ship/Context.h>
+#include <libultraship/bridge/consolevariablebridge.h>
+#include <ship/controller/controldevice/controller/mapping/ControllerRumbleMapping.h>
+#include <ship/controller/controldeck/ControlDeck.h>
+#include <ship/utils/StringHelper.h>
 #ifndef __WIIU__
-#include "controller/controldevice/controller/mapping/sdl/SDLAxisDirectionToButtonMapping.h"
+#include <ship/controller/controldevice/controller/mapping/sdl/SDLAxisDirectionToButtonMapping.h>
 #endif
 
 #define SCALE_IMGUI_SIZE(value) ((value / 13.0f) * ImGui::GetFontSize())

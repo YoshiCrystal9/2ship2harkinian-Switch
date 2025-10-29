@@ -1,8 +1,8 @@
 #include "BenPort.h"
 #include "2s2h/resource/type/Scene.h"
-#include <utils/StringHelper.h>
+#include <ship/utils/StringHelper.h>
 #include "2s2h/GameInteractor/GameInteractor.h"
-#include "ResourceManager.h"
+#include <ship/resource/ResourceManager.h>
 
 extern "C" {
 #include "global.h"

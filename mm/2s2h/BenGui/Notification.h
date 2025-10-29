@@ -4,7 +4,7 @@
 
 #include <string>
 #include <cstdint>
-#include <GuiWindow.h>
+#include <ship/window/gui/GuiWindow.h>
 namespace Notification {
 
 struct Options {

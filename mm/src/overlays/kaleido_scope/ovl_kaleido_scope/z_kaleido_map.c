@@ -14,7 +14,7 @@
 #include "BenPort.h"
 
 #include "2s2h/Enhancements/Songs/Songs.h"
-#include "public/bridge/consolevariablebridge.h"
+#include <libultraship/bridge/consolevariablebridge.h>
 
 // 2S2H [Port] (and line 26) don't do pointer math and access the list of digits directly.
 extern const char* sCounterTextures[];

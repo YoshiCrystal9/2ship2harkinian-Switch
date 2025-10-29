@@ -1,5 +1,5 @@
 #include "ActorBehavior.h"
-#include "public/bridge/consolevariablebridge.h"
+#include <libultraship/bridge/consolevariablebridge.h>
 #include "2s2h/ActorExtension/ActorExtension.h"
 
 extern "C" {

@@ -11,7 +11,7 @@
  */
 #include "global.h"
 #include "audio/effects.h"
-#include "endianness.h"
+#include <ship/utils/binarytools/endianness.h>
 
 void AudioScript_SequenceChannelProcessSound(SequenceChannel* channel, s32 recalculateVolume, s32 applyBend) {
     f32 channelVolume;

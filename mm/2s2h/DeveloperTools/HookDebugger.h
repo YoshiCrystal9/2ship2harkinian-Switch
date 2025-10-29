@@ -1,7 +1,7 @@
 #ifndef HOOK_DEBUGGER_H
 #define HOOK_DEBUGGER_H
 
-#include "GuiWindow.h"
+#include <ship/window/gui/GuiWindow.h>
 
 class HookDebuggerWindow : public Ship::GuiWindow {
   public:

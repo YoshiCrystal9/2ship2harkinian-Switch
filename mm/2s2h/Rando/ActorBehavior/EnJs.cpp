@@ -1,5 +1,5 @@
 #include "ActorBehavior.h"
-#include "public/bridge/consolevariablebridge.h"
+#include <libultraship/bridge/consolevariablebridge.h>
 #include "2s2h/Rando/Logic/Logic.h"
 #include "2s2h/CustomMessage/CustomMessage.h"
 

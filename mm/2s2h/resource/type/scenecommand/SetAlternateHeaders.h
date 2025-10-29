@@ -2,7 +2,7 @@
 
 #include <cstdint>
 #include <vector>
-#include "Resource.h"
+#include <ship/resource/Resource.h>
 #include "SceneCommand.h"
 #include "2s2h/resource/type/Scene.h"
 

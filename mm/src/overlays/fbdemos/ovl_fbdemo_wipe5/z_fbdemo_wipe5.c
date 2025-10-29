@@ -9,7 +9,7 @@
 #include "sys_cfb.h"
 #include "z_fbdemo_wipe5.h"
 #include <string.h>
-#include "public/bridge/gfxbridge.h"
+#include <libultraship/bridge/gfxbridge.h>
 
 void* TransitionWipe5_Init(void* thisx);
 void TransitionWipe5_Destroy(void* thisx);

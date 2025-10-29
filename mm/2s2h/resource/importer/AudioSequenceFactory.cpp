@@ -1,10 +1,10 @@
 #include "2s2h/resource/importer/AudioSequenceFactory.h"
 #include "2s2h/resource/type/AudioSequence.h"
 #include "2s2h/resource/importer/AudioSoundFontFactory.h"
-#include "Context.h"
-#include "resource/archive/Archive.h"
-#include "BinaryWriter.h"
-#include "ResourceManager.h"
+#include <ship/Context.h>
+#include <ship/resource/archive/Archive.h>
+#include <ship/utils/binarytools/BinaryWriter.h>
+#include <ship/resource/ResourceManager.h>
 
 #include <type_traits>
 #include <tinyxml2.h>

@@ -5,7 +5,7 @@
 #include "Menu.h"
 #include "2s2h/Enhancements/Enhancements.h"
 #include "2s2h/DeveloperTools/DeveloperTools.h"
-#include "graphic/Fast3D/backends/gfx_rendering_api.h"
+#include <fast/backends/gfx_rendering_api.h>
 
 namespace BenGui {
 

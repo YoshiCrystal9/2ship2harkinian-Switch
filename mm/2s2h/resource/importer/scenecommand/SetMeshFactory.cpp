@@ -1,7 +1,7 @@
 #include "2s2h/resource/importer/scenecommand/SetMeshFactory.h"
 #include "2s2h/resource/type/scenecommand/SetMesh.h"
-#include "spdlog/spdlog.h"
-#include "Context.h"
+#include <spdlog/spdlog.h>
+#include <ship/Context.h>
 
 namespace SOH {
 std::shared_ptr<Ship::IResource> SetMeshFactory::ReadResource(std::shared_ptr<Ship::ResourceInitData> initData,

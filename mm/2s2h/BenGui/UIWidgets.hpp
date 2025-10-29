@@ -12,10 +12,10 @@
 #include "2s2h/ShipUtils.h"
 #include "2s2h/ShipInit.hpp"
 #include "DeveloperTools/SaveEditor.h"
-#include "GuiWindow.h"
-#include "Context.h"
-#include "public/bridge/consolevariablebridge.h"
-#include "Window.h"
+#include <ship/window/gui/GuiWindow.h>
+#include <ship/Context.h>
+#include <libultraship/bridge/consolevariablebridge.h>
+#include <ship/window/Window.h>
 
 namespace UIWidgets {
 

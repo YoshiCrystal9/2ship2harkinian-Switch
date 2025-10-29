@@ -6,9 +6,9 @@
 #include <list>
 #include <memory>
 #include "stdint.h"
-#include "GuiWindow.h"
-#include "controller/controldevice/controller/mapping/ControllerAxisDirectionMapping.h"
-#include "controller/physicaldevice/PhysicalDeviceType.h"
+#include <ship/window/gui/GuiWindow.h>
+#include <ship/controller/controldevice/controller/mapping/ControllerAxisDirectionMapping.h>
+#include <ship/controller/physicaldevice/PhysicalDeviceType.h>
 
 #include <imgui.h>
 #include <libultraship/libultra/controller.h>

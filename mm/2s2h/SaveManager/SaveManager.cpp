@@ -6,7 +6,7 @@
 
 #include "BenJsonConversions.hpp"
 #include "BenPort.h"
-#include "Window.h"
+#include <ship/window/Window.h>
 
 extern "C" {
 #include "z64save.h"

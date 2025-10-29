@@ -9,7 +9,7 @@
 #include "HudEditor.h"
 #include "Notification.h"
 #include <variant>
-#include "StringHelper.h"
+#include <ship/utils/StringHelper.h>
 #include <spdlog/fmt/fmt.h>
 #include "variables.h"
 #include <variant>

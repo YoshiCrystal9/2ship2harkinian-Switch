@@ -3,7 +3,7 @@
 #include "functions.h"
 #include "z64vismono.h"
 #include "z64visfbuf.h"
-#include "public/bridge/consolevariablebridge.h"
+#include <libultraship/bridge/consolevariablebridge.h>
 
 // Variables are put before most headers as a hacky way to bypass bss reordering
 s16 sTransitionFillTimer;

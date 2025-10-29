@@ -15,7 +15,7 @@
 #include "interface/icon_item_jpn_static/icon_item_jpn_static.h"
 #include "interface/icon_item_vtx_static/icon_item_vtx_static.h"
 #include "BenPort.h"
-#include "gfxdebuggerbridge.h"
+#include <libultraship/bridge/gfxdebuggerbridge.h>
 #include "archives/item_name_static/item_name_static.h"
 #include "archives/map_name_static/map_name_static.h"
 #include "2s2h/Enhancements/FrameInterpolation/FrameInterpolation.h"
@@ -26,7 +26,7 @@
 #include "2s2h/GameInteractor/GameInteractor.h"
 
 #include "2s2h/Enhancements/Songs/Songs.h"
-#include "public/bridge/consolevariablebridge.h"
+#include <libultraship/bridge/consolevariablebridge.h>
 
 #pragma increment_block_number "n64-us:128"
 

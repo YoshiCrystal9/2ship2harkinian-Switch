@@ -32,7 +32,7 @@
 #include "2s2h/resource/importer/scenecommand/SetMinimapListFactory.h"
 #include "2s2h/resource/importer/scenecommand/SetMinimapChestsFactory.h"
 #include "2s2h/resource/importer/scenecommand/SetActorCutsceneListFactory.h"
-#include "spdlog/spdlog.h"
+#include <spdlog/spdlog.h>
 
 namespace SOH {
 ResourceFactoryBinarySceneV0::ResourceFactoryBinarySceneV0() {

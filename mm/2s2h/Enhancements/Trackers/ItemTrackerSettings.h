@@ -1,5 +1,5 @@
-#include "window/gui/Gui.h"
-#include "window/gui/GuiWindow.h"
+#include <ship/window/gui/Gui.h>
+#include <ship/window/gui/GuiWindow.h>
 
 class ItemTrackerSettingsWindow : public Ship::GuiWindow {
   public:

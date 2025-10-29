@@ -18,7 +18,7 @@
 #include "stackcheck.h"
 #include <stdlib.h>
 #include <string.h>
-#include "public/bridge/gfxbridge.h"
+#include <libultraship/bridge/gfxbridge.h>
 
 /**
  * Assigns the "save" values in PreRender

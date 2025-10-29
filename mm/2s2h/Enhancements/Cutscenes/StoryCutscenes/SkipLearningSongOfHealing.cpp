@@ -1,10 +1,10 @@
-#include "public/bridge/consolevariablebridge.h"
+#include <libultraship/bridge/consolevariablebridge.h>
 #include "2s2h/GameInteractor/GameInteractor.h"
 #include "2s2h/Rando/Rando.h"
 #include "2s2h/CustomMessage/CustomMessage.h"
 #include "2s2h/CustomItem/CustomItem.h"
 #include "2s2h/ShipInit.hpp"
-#include "spdlog/spdlog.h"
+#include <spdlog/spdlog.h>
 
 extern "C" {
 #include "functions.h"

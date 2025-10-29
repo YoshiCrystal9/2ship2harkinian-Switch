@@ -1,6 +1,6 @@
 #include "Spoiler.h"
 #include "Rando/Rando.h"
-#include "public/bridge/consolevariablebridge.h"
+#include <libultraship/bridge/consolevariablebridge.h>
 #include "ShipUtils.h"
 
 namespace Rando {

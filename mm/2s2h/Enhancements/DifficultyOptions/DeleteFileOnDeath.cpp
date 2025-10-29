@@ -1,7 +1,7 @@
-#include "public/bridge/consolevariablebridge.h"
-#include "ConsoleWindow.h"
-#include "Context.h"
-#include "Window.h"
+#include <libultraship/bridge/consolevariablebridge.h>
+#include <ship/window/gui/ConsoleWindow.h>
+#include <ship/Context.h>
+#include <ship/window/Window.h>
 #include "2s2h/GameInteractor/GameInteractor.h"
 #include "2s2h/ShipInit.hpp"
 

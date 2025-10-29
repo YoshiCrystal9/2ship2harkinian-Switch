@@ -4,8 +4,8 @@
 #include <filesystem>
 #include <spdlog/spdlog.h>
 #include "BenPort.h"
-#include "public/bridge/consolevariablebridge.h"
-#include "Window.h"
+#include <libultraship/bridge/consolevariablebridge.h>
+#include <ship/window/Window.h>
 
 extern "C" {
 #include "sfx.h"
