@@ -254,6 +254,8 @@ typedef enum {
     VB_SET_CAMERA_AT_EYE,
     VB_SET_CAMERA_FOV,
     VB_USE_ITEM_CONSIDER_ITEM_ACTION,
+    VB_ENEMY_DROP_COLLECTIBLE,
+    VB_DRAW_SLIME_RANDO_ITEM
 } GIVanillaBehavior;
 
 typedef enum {

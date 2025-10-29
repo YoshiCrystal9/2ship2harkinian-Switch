@@ -119,6 +119,17 @@ extern std::map<RandoRegionId, RandoRegion> Regions;
         }                                                     \
     }
 
+inline bool CanReachRegions(std::vector<RandoRegionId> regionList) {
+    std::set<RandoRegionId> reachableRegions;
+    FindReachableRegions(GetRegionIdFromEntrance(gSaveContext.save.entrance), reachableRegions);
+    for (auto& target : regionList) {
+        if (reachableRegions.count(target) > 0) {
+            return true;
+        }
+    }
+    return false;
+}
+
 inline std::string LogicString(std::string condition) {
     if (condition == "true")
         return "";
@@ -214,7 +225,7 @@ inline bool CanKillEnemy(ActorId EnemyId) {
             return (HAS_ITEM(ITEM_BOW) && (CAN_BE_DEKU || CAN_USE_EXPLOSIVE || CAN_BE_GORON));
         case ACTOR_EN_BIGSLIME: // Great Bay Gekko
             return (CAN_USE_MAGIC_ARROW(ICE));
-        case ACTOR_EN_SW: // Gold Skulltula
+        case ACTOR_EN_SW: // Gold Skulltula & Skullwalltula
             return (CAN_USE_PROJECTILE || CAN_BE_DEKU || CAN_BE_GORON || CAN_USE_HUMAN_SWORD || CAN_USE_EXPLOSIVE);
         case ACTOR_EN_DINOFOS: // Dinofos
             return (CAN_USE_SWORD || CAN_BE_GORON || HAS_ITEM(ITEM_BOW) || (CAN_BE_DEKU && HAS_MAGIC));
@@ -244,6 +255,75 @@ inline bool CanKillEnemy(ActorId EnemyId) {
                     CAN_USE_EXPLOSIVE || HAS_ITEM(ITEM_DEKU_STICK));
         case ACTOR_OBJ_SNOWBALL: // Large Snowball
             return (CAN_USE_EXPLOSIVE || CAN_BE_GORON || CAN_USE_MAGIC_ARROW(FIRE));
+        case ACTOR_EN_AM: // Armos
+            return (CAN_USE_SWORD || CAN_BE_GORON || CAN_BE_ZORA || CAN_BE_DEKU || CAN_USE_EXPLOSIVE);
+        case ACTOR_EN_VM: // Beamos
+            return (CAN_USE_EXPLOSIVE);
+        case ACTOR_EN_BB:     // Blue Bubble
+        case ACTOR_EN_BBFALL: // Red Bubble
+            return (CAN_USE_SWORD || CAN_BE_GORON || CAN_BE_ZORA || HAS_ITEM(ITEM_BOW) || HAS_ITEM(ITEM_DEKU_STICK));
+        case ACTOR_EN_RAT:       // Real Bombchu
+        case ACTOR_EN_TUBO_TRAP: // Flying Pot
+            return true;
+        case ACTOR_EN_FAMOS: // Death Armos
+            return (CAN_USE_MAGIC_ARROW(LIGHT));
+        case ACTOR_EN_DODONGO: // Dodongo
+            return (CAN_USE_SWORD || CAN_BE_GORON || CAN_BE_ZORA || (CAN_BE_DEKU && HAS_MAGIC));
+        case ACTOR_EN_FLOORMAS: // Floormaster
+        case ACTOR_EN_WALLMAS:  // Wallmaster
+            return (CAN_USE_SWORD || CAN_BE_GORON || CAN_BE_ZORA || (CAN_BE_DEKU && HAS_MAGIC) || HAS_ITEM(ITEM_BOW) ||
+                    HAS_ITEM(ITEM_DEKU_STICK));
+        case ACTOR_EN_FZ: // Freezard
+            return (CAN_USE_SWORD || CAN_BE_GORON || CAN_BE_ZORA || CAN_USE_MAGIC_ARROW(FIRE) ||
+                    HAS_ITEM(ITEM_HOOKSHOT));
+        case ACTOR_EN_CROW: // Guay (Generic, excludes the one circling Clock Town En_Ruppecrow)
+            return (CAN_USE_SWORD || CAN_BE_GORON || CAN_BE_ZORA || CAN_BE_DEKU || HAS_ITEM(ITEM_BOW) ||
+                    HAS_ITEM(ITEM_DEKU_STICK) || HAS_ITEM(ITEM_HOOKSHOT));
+        case ACTOR_EN_FIREFLY: // Keese
+            return (CAN_USE_SWORD || CAN_BE_GORON || CAN_BE_ZORA || CAN_BE_DEKU || HAS_ITEM(ITEM_BOW) ||
+                    HAS_ITEM(ITEM_DEKU_STICK) || HAS_ITEM(ITEM_HOOKSHOT));
+        case ACTOR_EN_RR: // Like Like
+            return (CAN_USE_SWORD || CAN_BE_GORON || CAN_BE_ZORA || (CAN_BE_DEKU && HAS_MAGIC) || HAS_ITEM(ITEM_BOW) ||
+                    HAS_ITEM(ITEM_DEKU_STICK));
+        case ACTOR_EN_DEKUNUTS: // Mad Scrub
+            return (CAN_USE_SWORD || CAN_BE_GORON || CAN_BE_ZORA || CAN_BE_DEKU || HAS_ITEM(ITEM_BOW) ||
+                    HAS_ITEM(ITEM_DEKU_STICK) || HAS_ITEM(ITEM_HOOKSHOT));
+        case ACTOR_EN_KAREBABA: // Wilted/Mini Babas
+            return (CAN_USE_SWORD || CAN_BE_GORON || CAN_BE_ZORA || CAN_BE_DEKU);
+        case ACTOR_EN_PEEHAT: // Peahat
+            return (CAN_USE_SWORD || CAN_BE_GORON || CAN_BE_ZORA || CAN_BE_DEKU || HAS_ITEM(ITEM_DEKU_STICK));
+        case ACTOR_EN_RD: // Redead & Gibdos
+            return (CAN_USE_SWORD || CAN_BE_DEKU || CAN_BE_GORON || CAN_BE_ZORA || HAS_ITEM(ITEM_DEKU_STICK));
+        case ACTOR_EN_SKB: // Stalchild
+            return (CAN_USE_SWORD || CAN_BE_GORON || CAN_BE_ZORA || (CAN_BE_DEKU && HAS_MAGIC) || HAS_ITEM(ITEM_BOW) ||
+                    HAS_ITEM(ITEM_DEKU_STICK) || HAS_ITEM(ITEM_HOOKSHOT));
+        case ACTOR_EN_TITE: // Tektite
+            return (CAN_USE_SWORD || CAN_BE_GORON || CAN_BE_ZORA || (CAN_BE_DEKU && HAS_MAGIC) || HAS_ITEM(ITEM_BOW));
+        case ACTOR_EN_SLIME: // Chuchus
+            return (CAN_USE_SWORD || CAN_BE_ZORA || CAN_BE_DEKU || HAS_ITEM(ITEM_BOW) || HAS_ITEM(ITEM_DEKU_STICK));
+        case ACTOR_EN_SNOWMAN: // Eeno
+            return (CAN_USE_SWORD || CAN_BE_GORON || CAN_BE_ZORA || (CAN_BE_DEKU && HAS_MAGIC) || HAS_ITEM(ITEM_BOW) ||
+                    HAS_ITEM(ITEM_DEKU_STICK) || HAS_ITEM(ITEM_HOOKSHOT));
+        case ACTOR_EN_WDHAND: // Dexihand (Basic kill method, seems like a pain to require other things)
+            return (CAN_BE_ZORA && HAS_MAGIC);
+        case ACTOR_EN_KAME: // Snapper (non Gekko Miniboss)
+            return (CAN_BE_DEKU || CAN_USE_EXPLOSIVE || CAN_BE_GORON);
+        case ACTOR_EN_SB: // Shellblade
+            return (CAN_BE_ZORA && HAS_MAGIC);
+        case ACTOR_EN_OKUTA: // Octorok
+            return (CAN_USE_PROJECTILE);
+        case ACTOR_EN_BAGUO: // Nejiron
+            return (CAN_USE_SWORD || CAN_BE_GORON || CAN_BE_ZORA || HAS_ITEM(ITEM_HOOKSHOT));
+        case ACTOR_EN_NEO_REEBA: // Leever
+            return (CAN_USE_SWORD || CAN_BE_GORON || CAN_BE_ZORA || (CAN_BE_DEKU && HAS_MAGIC) || HAS_ITEM(ITEM_BOW) ||
+                    HAS_ITEM(ITEM_DEKU_STICK));
+        case ACTOR_EN_PP:
+            return (CAN_USE_SWORD || CAN_BE_GORON || CAN_BE_ZORA || (CAN_BE_DEKU && HAS_MAGIC) || HAS_ITEM(ITEM_BOW) ||
+                    HAS_ITEM(ITEM_DEKU_STICK) || HAS_ITEM(ITEM_HOOKSHOT));
+        case ACTOR_EN_PR2:
+            return (CAN_BE_ZORA && HAS_MAGIC);
+        case ACTOR_BOSS_05: // Bio Deku Baba
+            return CAN_BE_ZORA && CAN_USE_ABILITY(SWIM);
         default: // Incorrect actor ID inputed.
             assert(false);
             return false;

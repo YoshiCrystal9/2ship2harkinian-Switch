@@ -78,6 +78,7 @@ void Rando::ActorBehavior::OnFileLoad() {
     Rando::ActorBehavior::InitEnDnhBehavior();
     Rando::ActorBehavior::InitEnElfgrpBehavior();
     Rando::ActorBehavior::InitEnElforgBehavior();
+    Rando::ActorBehavior::InitEnemyDropBehavior();
     Rando::ActorBehavior::InitEnFish2Behavior();
     Rando::ActorBehavior::InitEnFsnBehavior();
     Rando::ActorBehavior::InitEnFuBehavior();

@@ -183,6 +183,11 @@ void Rando::MiscBehavior::OnFileCreate(s16 fileNum) {
                             continue;
                         }
 
+                        if (randoStaticCheck.randoCheckType == RCTYPE_ENEMY_DROP &&
+                            RANDO_SAVE_OPTIONS[RO_SHUFFLE_ENEMY_DROPS] == RO_GENERIC_NO) {
+                            continue;
+                        }
+
                         if (randoStaticCheck.randoCheckType == RCTYPE_TINGLE_SHOP &&
                             RANDO_SAVE_OPTIONS[RO_SHUFFLE_TINGLE_SHOPS] == RO_GENERIC_NO) {
                             continue;

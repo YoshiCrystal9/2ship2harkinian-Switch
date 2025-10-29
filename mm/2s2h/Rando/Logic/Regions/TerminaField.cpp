@@ -487,7 +487,6 @@ static RegisterShipInitFunc initFunc([]() {
             CHECK(RC_TERMINA_FIELD_GRASS_214, true),
             CHECK(RC_TERMINA_FIELD_GRASS_215, true),
             CHECK(RC_TERMINA_FIELD_GRASS_216, true),
-
         },
         .exits = { //     TO                                         FROM
             EXIT(ENTRANCE(GROTTOS, 0),                      ENTRANCE(TERMINA_FIELD, 0), CAN_USE_EXPLOSIVE || CAN_BE_GORON), // TODO: Grotto mapping Gossip Stone #3

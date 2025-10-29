@@ -68,6 +68,7 @@ std::vector<const char*> checkTypeIconList = {
     /*RCTYPE_CHEST*/ gChestTrackerIcon,
     /*RCTYPE_COW*/ gItemIconRomaniMaskTex,
     /*RCTYPE_CRATE*/ gCrateTrackerIcon,
+    /*RCTYPE_ENEMY_DROP*/ gDungeonMapSkullTex,
     /*RCTYPE_FREESTANDING*/ gRupeeCounterIconTex,
     /*RCTYPE_FROG*/ gItemIconDonGeroMaskTex,
     /*RCTYPE_GRASS*/ gameplay_keep_Tex_053140,
@@ -375,6 +376,9 @@ void CheckTrackerDrawNonLogicalList() {
         ImGui::Separator();
         ImGui::PushStyleColor(ImGuiCol_Header, ImVec4(0, 0, 0, 0));
         std::string headerText = Ship_GetSceneName(sceneId);
+        if (sceneId == SCENE_SPOT00) {
+            headerText = "Various Regions";
+        }
         headerText += " (" + std::to_string(obtainedCheckSum) + "/" + std::to_string(unfilteredChecks.size()) + ")";
 
         ImGui::PushStyleColor(ImGuiCol_Text, obtainedCheckSum == unfilteredChecks.size()
