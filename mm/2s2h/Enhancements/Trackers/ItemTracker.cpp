@@ -254,6 +254,11 @@ static constexpr std::array<const char*, 4> sStrayFairyTextures = {
 
 static constexpr uint16_t sSmallKeyCounts[4] = { 1, 3, 1, 4 };
 
+static constexpr FrogInfo sFrogInfos[4] = { { WEEKEVENTREG_32_40, "Cyan" },
+                                            { WEEKEVENTREG_32_80, "Pink" },
+                                            { WEEKEVENTREG_33_01, "Blue" },
+                                            { WEEKEVENTREG_33_02, "White" } };
+
 bool ItemTrackerWindow::HasAmmoCount(int itemId) {
     switch (itemId) {
         case ITEM_BOW:
@@ -660,6 +665,35 @@ int ItemTrackerWindow::DrawStrayFairies(int columns, int prevDrawnColumns) {
     return 1;
 }
 
+int ItemTrackerWindow::DrawFrogs(int columns, int prevDrawnColumns) {
+    int topPadding = 0;
+
+    for (size_t i = 0; i < 4; i++) {
+        int row = prevDrawnColumns + (i / columns);
+        int column = i % columns;
+        ImVec2 pos = ImVec2((column * (mIconSize + mIconSpacing) + 8.0f),
+                            (row * (mIconSize + mIconSpacing)) + 8.0f + topPadding);
+        FrogInfo frogInfo = sFrogInfos[i];
+
+        ImGui::SetCursorPos(pos);
+        ImGui::BeginGroup();
+        DrawItem((char*)gItemIconDonGeroMaskTex, !CHECK_WEEKEVENTREG(frogInfo.flag), mIconSize);
+
+        ImVec2 finalPos = ImGui::GetCursorPos();
+        const char* text = frogInfo.name;
+        ImGui::SetWindowFontScale(mTextSize / 13.0f);
+
+        float x = finalPos.x + (mIconSize / 2.0f) - (ImGui::CalcTextSize(text).x / 2.0f);
+        float y = finalPos.y - (mTextOffset / 36.0f) * mIconSize - 16 * (mTextSize / 13.0f);
+
+        // Normalize the offset based on the icon being 36x36 to account for larger icons.
+        ImGui::SetCursorPos({ x, y });
+        ImGui::Text("%s", text);
+        ImGui::EndGroup();
+    }
+    return 1;
+}
+
 int ItemTrackerWindow::DrawGoldSkulltulas(int columns, int prevDrawnColumns) {
     int topPadding = 0;
 
@@ -894,6 +928,20 @@ void ItemTrackerWindow::DrawItemsInRows(int columns) {
         }
         advancedBy = DrawStrayFairies(5, drawPos);
         if (mItemDrawModes[SECTION_STRAY_FAIRIES] == ItemTrackerDisplayType::Separate) {
+            EndFloatingWindows();
+        } else {
+            mainWindowPos += advancedBy;
+        }
+    }
+
+    if (mItemDrawModes[SECTION_FROGS] != ItemTrackerDisplayType::Hidden) {
+        int drawPos = mainWindowPos;
+        if (mItemDrawModes[SECTION_FROGS] == ItemTrackerDisplayType::Separate) {
+            drawPos = 0;
+            BeginFloatingWindows("Frogs");
+        }
+        advancedBy = DrawFrogs(4, drawPos);
+        if (mItemDrawModes[SECTION_FROGS] == ItemTrackerDisplayType::Separate) {
             EndFloatingWindows();
         } else {
             mainWindowPos += advancedBy;
