@@ -31,11 +31,13 @@ std::unordered_map<int32_t, const char*> accessTrialsOptions = {
 
 std::vector<int32_t> incompatibleWithFrenchVanilla = {
     RO_SHUFFLE_BOSS_SOULS,
+    RO_SHUFFLE_SWIM,
     RO_PLENTIFUL_ITEMS,
 };
 
 std::vector<int32_t> incompatibleWithVanilla = {
     RO_SHUFFLE_BOSS_SOULS,
+    RO_SHUFFLE_SWIM,
     RO_PLENTIFUL_ITEMS,
 };
 
@@ -63,12 +65,14 @@ void ClearIncompatibleSetting() {
         case RO_LOGIC_FRENCH_VANILLA:
             CVarClear(Rando::StaticData::Options[RO_PLENTIFUL_ITEMS].cvar);
             CVarClear(Rando::StaticData::Options[RO_SHUFFLE_BOSS_SOULS].cvar);
+            CVarClear(Rando::StaticData::Options[RO_SHUFFLE_SWIM].cvar);
             // TODO: Handle Starting Items to ensure starting sword/shield
             break;
         // Similar to French Vanilla, Vanilla can't add items without corresponding checks
         case RO_LOGIC_VANILLA:
             CVarClear(Rando::StaticData::Options[RO_PLENTIFUL_ITEMS].cvar);
             CVarClear(Rando::StaticData::Options[RO_SHUFFLE_BOSS_SOULS].cvar);
+            CVarClear(Rando::StaticData::Options[RO_SHUFFLE_SWIM].cvar);
             break;
         default:
             break;
@@ -296,7 +300,9 @@ static void DrawItemsTab() {
     ImGui::BeginChild("randoItemsColumn1", ImVec2(columnWidth, ImGui::GetContentRegionAvail().y));
     CVarCheckbox("Shuffle Swim", Rando::StaticData::Options[RO_SHUFFLE_SWIM].cvar,
                  CheckboxOptions({ { .tooltip = "Shuffles the ability to Swim, entering the Swim state or submerging\n"
-                                                "into deep water will respawn Link." } }));
+                                                "into deep water will respawn Link.",
+                                     .disabled = IncompatibleWithLogicSetting(RO_SHUFFLE_SWIM),
+                                     .disabledTooltip = "Incompatible with current Logic Setting" } }));
     CVarCheckbox("Deku Stick Bag", "gPlaceholderBool",
                  CheckboxOptions({ { .disabled = true, .disabledTooltip = "Coming Soon" } }));
     CVarCheckbox("Deku Nut Bag", "gPlaceholderBool",

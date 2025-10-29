@@ -20,7 +20,7 @@ static RegisterShipInitFunc initFunc([]() {
     };
     Regions[RR_ASTRAL_OBSERVATORY_PASSAGE] = RandoRegion{ .name = "Passage", .sceneId = SCENE_TENMON_DAI,
         .checks = {
-            CHECK(RC_ASTRAL_OBSERVATORY_PASSAGE_CHEST, CAN_USE_EXPLOSIVE),
+            CHECK(RC_ASTRAL_OBSERVATORY_PASSAGE_CHEST, CAN_USE_EXPLOSIVE && (CAN_USE_ABILITY(SWIM) || CAN_BE_ZORA)),
             CHECK(RC_ASTRAL_OBSERVATORY_PASSAGE_POT_01, true),
             CHECK(RC_ASTRAL_OBSERVATORY_PASSAGE_POT_02, true),
             CHECK(RC_ASTRAL_OBSERVATORY_PASSAGE_POT_03, true),
