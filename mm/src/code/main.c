@@ -47,7 +47,7 @@ s32 gScreenHeight = SCREEN_HEIGHT;
 size_t gSystemHeapSize = 0;
 
 void InitOTR();
-
+void Heaps_Free(void);
 #ifdef __GNUC__
 #define SDL_main main
 #endif
@@ -148,4 +148,5 @@ void SDL_main(int argc, char** argv /* void* arg*/) {
 #ifdef _WIN32
     FreeConsole();
 #endif
+    Heaps_Free();
 }
