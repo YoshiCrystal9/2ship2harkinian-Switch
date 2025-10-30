@@ -255,7 +255,8 @@ typedef enum {
     VB_SET_CAMERA_FOV,
     VB_USE_ITEM_CONSIDER_ITEM_ACTION,
     VB_ENEMY_DROP_COLLECTIBLE,
-    VB_DRAW_SLIME_RANDO_ITEM
+    VB_DRAW_SLIME_RANDO_ITEM,
+    VB_ENABLE_OBJECT_DEPENDENCY,
 } GIVanillaBehavior;
 
 typedef enum {
@@ -369,7 +370,9 @@ struct GIEventSpawnActor {
     f32 posX;
     f32 posY;
     f32 posZ;
-    s16 rot;
+    s16 rotX;
+    s16 rotY;
+    s16 rotZ;
     s32 params;
     // if true, the coordinates are made relative to the player's position and rotation, 0 rotation is facing the same
     // direction as the player, x+ is to the players right, y+ is up, z+ is in front of the player
@@ -383,7 +386,11 @@ struct GIEventTransition {
     u8 transitionType;
 };
 
-typedef std::variant<GIEventNone, GIEventGiveItem, GIEventSpawnActor, GIEventTransition> GIEvent;
+struct GIEventTrap {
+    std::function<void()> action;
+};
+
+typedef std::variant<GIEventNone, GIEventGiveItem, GIEventSpawnActor, GIEventTransition, GIEventTrap> GIEvent;
 
 class GameInteractor {
   public:

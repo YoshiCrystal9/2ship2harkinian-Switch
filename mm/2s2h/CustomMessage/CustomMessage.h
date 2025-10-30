@@ -32,6 +32,7 @@ void StartTextbox(std::string msg, Entry options = {});
 void SetActiveCustomMessage(std::string msg, Entry options = {});
 
 // Helpers
+std::string RemoveColorCodes(const std::string& input);
 void Replace(std::string* msg, const std::string& placeholder, const std::string& value);
 void AddLineBreaks(std::string* msg);
 void ReplaceColorChars(std::string* msg);

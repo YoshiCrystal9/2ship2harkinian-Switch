@@ -1,6 +1,7 @@
 #include "ActorBehavior.h"
 #include <libultraship/bridge/consolevariablebridge.h>
 #include "2s2h/CustomMessage/CustomMessage.h"
+#include "2s2h/Rando/MiscBehavior/Traps.h"
 
 extern "C" {
 #include "variables.h"
@@ -67,6 +68,9 @@ void EnGirlA_RandoBuyFunc(PlayState* play, EnGirlA* enGirlA) {
     RandoItemId randoItemId = Rando::ConvertItem(randoSaveCheck.randoItemId, (RandoCheckId)enGirlA->actor.world.rot.z);
     randoSaveCheck.obtained = true;
     Rupees_ChangeBy(-play->msgCtx.unk1206C);
+    if (randoItemId == RI_TRAP) {
+        RollTrapType();
+    }
     Rando::GiveItem(randoItemId);
 }
 

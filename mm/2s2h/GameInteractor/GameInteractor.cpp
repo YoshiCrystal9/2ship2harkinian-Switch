@@ -510,10 +510,15 @@ void ProcessEvents(Actor* actor) {
             f32 x2 = e->posX * c - e->posZ * s;
             f32 z2 = e->posX * s + e->posZ * c;
             Actor_Spawn(&gPlayState->actorCtx, gPlayState, e->actorId, x + x2, y + e->posY, z + z2, 0,
-                        e->rot + player->actor.world.rot.y, 0, e->params);
+                        e->rotY + player->actor.world.rot.y, 0, e->params);
         } else {
-            Actor_Spawn(&gPlayState->actorCtx, gPlayState, e->actorId, e->posX, e->posY, e->posZ, 0, e->rot, 0,
-                        e->params);
+            Actor_Spawn(&gPlayState->actorCtx, gPlayState, e->actorId, e->posX, e->posY, e->posZ, e->rotX, e->rotY,
+                        e->rotZ, e->params);
+        }
+        GameInteractor::Instance->currentEvent = GIEventNone{};
+    } else if (auto e = std::get_if<GIEventTrap>(&nextEvent)) {
+        if (e->action) {
+            e->action();
         }
         GameInteractor::Instance->currentEvent = GIEventNone{};
     }

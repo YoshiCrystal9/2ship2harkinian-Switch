@@ -1,4 +1,5 @@
 #include "Rando/Rando.h"
+#include "Rando/MiscBehavior/MiscBehavior.h"
 
 extern "C" {
 #include "variables.h"
@@ -287,6 +288,9 @@ void Rando::GiveItem(RandoItemId randoItemId) {
             break;
         case RI_ABILITY_SWIM:
             Flags_SetRandoInf(RANDO_INF_OBTAINED_SWIM);
+            break;
+        case RI_TRAP:
+            Rando::MiscBehavior::OfferTrapItem();
             break;
         case RI_JUNK:
         case RI_NONE:

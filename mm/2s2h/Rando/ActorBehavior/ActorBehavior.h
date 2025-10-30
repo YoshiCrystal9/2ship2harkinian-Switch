@@ -98,6 +98,7 @@ void InitObjTsuboBehavior();
 void InitObjWarpstoneBehavior();
 void InitPlayerBehavior();
 void InitSoulsBehavior();
+void InitTrapsBehavior();
 
 } // namespace ActorBehavior
 

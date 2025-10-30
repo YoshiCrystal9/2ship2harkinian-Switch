@@ -53,6 +53,7 @@ u8 GetIconForZMessage(RandoItemId itemId);
 const char* GetIconTexturePath(RandoItemId itemId);
 bool ShouldShowGetItemCutscene(RandoItemId itemId);
 std::string GetItemName(RandoItemId randoItemId, bool includeArticle = true);
+std::string GetTrapMessage();
 
 struct RandoStaticOption {
     RandoOptionId randoOptionId;

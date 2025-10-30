@@ -1,5 +1,6 @@
 #include "global.h"
 #include <libultraship/bridge/consolevariablebridge.h>
+#include "GameInteractor/GameInteractor.h"
 
 /**
  * Spawn an object file of a specified ID that will persist through room changes.
@@ -112,7 +113,7 @@ s32 Object_GetSlot(ObjectContext* objectCtx, s16 objectId) {
         }
     }
 
-    return CVarGetInteger("gDeveloperTools.DisableObjectDependency", 0) ? 0 : OBJECT_SLOT_NONE;
+    return GameInteractor_Should(VB_ENABLE_OBJECT_DEPENDENCY, true, objectId) ? OBJECT_SLOT_NONE : 0;
 }
 
 s32 Object_IsLoaded(ObjectContext* objectCtx, s32 slot) {

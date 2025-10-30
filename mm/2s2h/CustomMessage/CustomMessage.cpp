@@ -9,6 +9,20 @@ extern f32 sNESFontWidths[160];
 
 CustomMessage::Entry activeCustomMessage;
 
+std::string CustomMessage::RemoveColorCodes(const std::string& input) {
+    std::string output = input;
+    const std::vector<std::string> codes = { "%r", "%w", "%y", "%g", "%b", "%p" };
+
+    for (const auto& code : codes) {
+        size_t pos = 0;
+        while ((pos = output.find(code, pos)) != std::string::npos) {
+            output.erase(pos, code.length());
+        }
+    }
+
+    return output;
+}
+
 void CustomMessage::StartTextbox(std::string msg, CustomMessage::Entry options) {
     options.msg = msg;
     activeCustomMessage = options;

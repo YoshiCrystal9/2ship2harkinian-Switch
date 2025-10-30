@@ -290,6 +290,14 @@ static void DrawItemsTab() {
                  CheckboxOptions({ { .disabled = true, .disabledTooltip = "Coming Soon" } }));
     CVarCheckbox("Infinite Upgrades", "gPlaceholderBool",
                  CheckboxOptions({ { .disabled = true, .disabledTooltip = "Coming Soon" } }));
+    CVarCheckbox("Song of Double Time", "gPlaceholderBool",
+                 CheckboxOptions({ { .disabled = true, .disabledTooltip = "Coming Soon" } }));
+    CVarCheckbox("Inverted Song of Time", "gPlaceholderBool",
+                 CheckboxOptions({ { .disabled = true, .disabledTooltip = "Coming Soon" } }));
+    CVarCheckbox("Saria's Song", "gPlaceholderBool",
+                 CheckboxOptions({ { .disabled = true, .disabledTooltip = "Coming Soon" } }));
+    CVarCheckbox("Sun's Song", "gPlaceholderBool",
+                 CheckboxOptions({ { .disabled = true, .disabledTooltip = "Coming Soon" } }));
     ImGui::EndChild();
     ImGui::SameLine();
     ImGui::BeginChild("randoItemsColumn2", ImVec2(columnWidth, ImGui::GetContentRegionAvail().y));
@@ -313,14 +321,56 @@ static void DrawItemsTab() {
     ImGui::EndChild();
     ImGui::SameLine();
     ImGui::BeginChild("randoItemsColumn3", ImVec2(columnWidth, ImGui::GetContentRegionAvail().y));
-    CVarCheckbox("Song of Double Time", "gPlaceholderBool",
-                 CheckboxOptions({ { .disabled = true, .disabledTooltip = "Coming Soon" } }));
-    CVarCheckbox("Inverted Song of Time", "gPlaceholderBool",
-                 CheckboxOptions({ { .disabled = true, .disabledTooltip = "Coming Soon" } }));
-    CVarCheckbox("Saria's Song", "gPlaceholderBool",
-                 CheckboxOptions({ { .disabled = true, .disabledTooltip = "Coming Soon" } }));
-    CVarCheckbox("Sun's Song", "gPlaceholderBool",
-                 CheckboxOptions({ { .disabled = true, .disabledTooltip = "Coming Soon" } }));
+    CVarCheckbox("Shuffle Traps", Rando::StaticData::Options[RO_SHUFFLE_TRAPS].cvar,
+                 CheckboxOptions({ { .tooltip = "Ice Trap time!" } }));
+    CVarSliderInt(
+        "##trapcount", Rando::StaticData::Options[RO_TRAP_AMOUNT].cvar,
+        IntSliderOptions({ { .tooltip = "How many Traps are shuffled into the Item Pool.",
+                             .disabled = (bool)!CVarGetInteger(Rando::StaticData::Options[RO_SHUFFLE_TRAPS].cvar, 0),
+                             .disabledTooltip = "Shuffle Traps is disabled." } })
+            .LabelPosition(LabelPosition::None)
+            .Color(UIWidgets::Colors(CVarGetInteger("gSettings.Menu.Theme", 5)))
+            .Format("Traps: %i")
+            .Min(1)
+            .Max(10)
+            .DefaultValue(5));
+    ImGui::SeparatorText("Toggle Trap Types");
+    CVarCheckbox(
+        "Freeze Traps", "gRando.Traps.Freeze",
+        CheckboxOptions({ { .tooltip = "Freezes Link in place.",
+                            .disabled = (bool)!CVarGetInteger(Rando::StaticData::Options[RO_SHUFFLE_TRAPS].cvar, 0),
+                            .disabledTooltip = "Shuffle Traps is disabled." } }));
+    CVarCheckbox(
+        "Blast Traps", "gRando.Traps.Blast",
+        CheckboxOptions({ { .tooltip = "Link explodes with Powder Keg force.",
+                            .disabled = (bool)!CVarGetInteger(Rando::StaticData::Options[RO_SHUFFLE_TRAPS].cvar, 0),
+                            .disabledTooltip = "Shuffle Traps is disabled." } }));
+    CVarCheckbox(
+        "Shock Traps", "gRando.Traps.Shock",
+        CheckboxOptions({ { .tooltip = "Shocks Link for a few seconds.",
+                            .disabled = (bool)!CVarGetInteger(Rando::StaticData::Options[RO_SHUFFLE_TRAPS].cvar, 0),
+                            .disabledTooltip = "Shuffle Traps is disabled." } }));
+    CVarCheckbox(
+        "Jinx Traps", "gRando.Traps.Jinx",
+        CheckboxOptions({ { .tooltip = "Afflicts Link with Jinx.",
+                            .disabled = (bool)!CVarGetInteger(Rando::StaticData::Options[RO_SHUFFLE_TRAPS].cvar, 0),
+                            .disabledTooltip = "Shuffle Traps is disabled." } }));
+    CVarCheckbox(
+        "Wallet Traps", "gRando.Traps.Wallet",
+        CheckboxOptions({ { .tooltip = "Links rupees scatter around him.",
+                            .disabled = (bool)!CVarGetInteger(Rando::StaticData::Options[RO_SHUFFLE_TRAPS].cvar, 0),
+                            .disabledTooltip = "Shuffle Traps is disabled." } }));
+    CVarCheckbox( // This only spawns a Like Like, more enemies may be added in the future but each would need fine
+                  // tuning
+        "Like Like Traps", "gRando.Traps.Enemy",
+        CheckboxOptions({ { .tooltip = "Spawns a Like Like on top of Link.",
+                            .disabled = (bool)!CVarGetInteger(Rando::StaticData::Options[RO_SHUFFLE_TRAPS].cvar, 0),
+                            .disabledTooltip = "Shuffle Traps is disabled." } }));
+    CVarCheckbox(
+        "Time Traps", "gRando.Traps.Time",
+        CheckboxOptions({ { .tooltip = "Advances Time 90 Minutes (Game Time).",
+                            .disabled = (bool)!CVarGetInteger(Rando::StaticData::Options[RO_SHUFFLE_TRAPS].cvar, 0),
+                            .disabledTooltip = "Shuffle Traps is disabled." } }));
     ImGui::EndChild();
 }
 
