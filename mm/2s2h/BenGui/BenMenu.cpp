@@ -206,9 +206,10 @@ WidgetInfo& BenMenu::AddWidget(WidgetPath& pathInfo, std::string widgetName, Wid
     return widget;
 }
 
-// Last generated with the following command on 05/19/2025
+// Last generated with the following command on 10/30/2025. The gap in commits is so that cherry-picks from other repos
+// do not get mixed in.
 // clang-format off
-// git shortlog -sn 2332f63f5a9ca4b949f029c11a9744d601d7155f..HEAD | sed -E 's/^[[:space:]]*[0-9]+[[:space:]]+/"/' | sed -E 's/(.+)/\1",/'
+// { git shortlog -sn 2332f63..558f59b ; git shortlog -sn dfcc80e..HEAD; } | sort -k2 | uniq -f1 | sed -E 's/^[[:space:]]*[0-9]+[[:space:]]+/"/' | sed -E 's/(.+)/\1",/'
 // clang-format on
 std::vector<std::string> contributors = {
     "ProxySaw", // "Garrett Cox", manual replacement
@@ -262,6 +263,8 @@ std::vector<std::string> contributors = {
     "justawayofthesamurai",
     "verbes4",
     "ammar sadaoui",
+    "Mrlinkwii",
+    "Corbin Park",
 };
 
 void BenMenu::AddSettings() {
