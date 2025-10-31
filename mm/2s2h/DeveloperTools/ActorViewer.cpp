@@ -2,7 +2,7 @@
 #include "2s2h/BenGui/UIWidgets.hpp"
 #include "2s2h/GameInteractor/GameInteractor.h"
 #include "2s2h/NameTag/NameTag.h"
-#include "2s2h/ActorExtension/ActorListIndex.h"
+#include "2s2h/ObjectExtension/ActorListIndex.h"
 #include <spdlog/fmt/fmt.h>
 #include <string>
 #include <vector>

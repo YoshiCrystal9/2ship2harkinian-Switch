@@ -1,10 +1,15 @@
 #include "ActorBehavior.h"
 #include <libultraship/bridge/consolevariablebridge.h>
-#include "2s2h/ActorExtension/ActorExtension.h"
+#include "2s2h/ObjectExtension/ObjectExtension.h"
 
 extern "C" {
 #include "variables.h"
 }
+
+struct ActorRandoCheckId {
+    RandoCheckId randoCheckId = RC_UNKNOWN;
+};
+static ObjectExtension::Register<ActorRandoCheckId> ActorRandoCheckIdRegister;
 
 // This is kind of a catch-all for things that are simple enough to not need their own file.
 void MiscVanillaBehaviorHandler(GIVanillaBehavior id, bool* should, va_list optionalArg) {
@@ -28,32 +33,17 @@ void MiscVanillaBehaviorHandler(GIVanillaBehavior id, bool* should, va_list opti
     }
 }
 
-ActorExtensionId randoCheckIdActorExt = 0;
-
 RandoCheckId Rando::ActorBehavior::GetActorRandoCheckId(Actor* actor) {
-    RandoCheckId* actorRandoCheckId = (RandoCheckId*)ActorExtension_Get(actor, randoCheckIdActorExt);
-    if (actorRandoCheckId == NULL) {
-        return RC_UNKNOWN;
-    }
-
-    return *actorRandoCheckId;
+    const ActorRandoCheckId* actorRandoCheckId = ObjectExtension::GetInstance().Get<ActorRandoCheckId>(actor);
+    return actorRandoCheckId != nullptr ? actorRandoCheckId->randoCheckId : RC_UNKNOWN;
 }
 
-void Rando::ActorBehavior::SetActorRandoCheckId(Actor* actor, RandoCheckId rc) {
-    RandoCheckId* actorRandoCheckId = (RandoCheckId*)ActorExtension_Get(actor, randoCheckIdActorExt);
-
-    if (actorRandoCheckId == NULL) {
-        assert(false);
-    } else {
-        *actorRandoCheckId = rc;
-    }
+void Rando::ActorBehavior::SetActorRandoCheckId(const Actor* actor, RandoCheckId rc) {
+    ObjectExtension::GetInstance().Set<ActorRandoCheckId>(actor, ActorRandoCheckId{ rc });
 }
 
 // Entry point for the module, run once on game boot
 void Rando::ActorBehavior::Init() {
-    if (randoCheckIdActorExt == 0) {
-        randoCheckIdActorExt = ActorExtension_CreateForAll(sizeof(RandoCheckId));
-    }
 }
 
 void Rando::ActorBehavior::OnFileLoad() {

@@ -1,4 +1,4 @@
-#include "2s2h/ActorExtension/ActorExtension.h"
+#include "2s2h/ObjectExtension/ObjectExtension.h"
 #include <libultraship/bridge/consolevariablebridge.h>
 #include "2s2h/GameInteractor/GameInteractor.h"
 #include "2s2h/ShipInit.hpp"
@@ -14,32 +14,24 @@ extern "C" {
 #include "overlays/actors/ovl_En_Neo_Reeba/z_en_neo_reeba.h"
 }
 
-ActorExtensionId actorHitBySwordBeamExtId = 0;
-
 #define CVAR_NAME "gEnhancements.Masks.FierceDeitysAnywhere"
 #define CVAR CVarGetInteger(CVAR_NAME, 0)
 
-bool GetActorHitBySwordBeam(Actor* actor) {
-    bool* swordBeamCollisionFlag = (bool*)ActorExtension_Get(actor, actorHitBySwordBeamExtId);
-    if (swordBeamCollisionFlag == NULL) {
-        return false;
-    }
+struct SwordBeamCollision {
+    bool hitBySwordBeam = false;
+};
+static ObjectExtension::Register<SwordBeamCollision> SwordBeamCollisionRegister;
 
-    return *swordBeamCollisionFlag;
+bool GetActorHitBySwordBeam(Actor* actor) {
+    const SwordBeamCollision* collision = ObjectExtension::GetInstance().Get<SwordBeamCollision>(actor);
+    return collision != nullptr ? collision->hitBySwordBeam : SwordBeamCollision{}.hitBySwordBeam;
 }
 
-void SetActorHitBySwordBeam(Actor* actor, bool flag) {
-    bool* swordBeamCollisionFlag = (bool*)ActorExtension_Get(actor, actorHitBySwordBeamExtId);
-    if (swordBeamCollisionFlag != NULL) {
-        *swordBeamCollisionFlag = flag;
-    }
+void SetActorHitBySwordBeam(const Actor* actor, bool hitBySwordBeam) {
+    ObjectExtension::GetInstance().Set<SwordBeamCollision>(actor, SwordBeamCollision{ hitBySwordBeam });
 }
 
 void RegisterFierceDeityAnywhere() {
-    if (actorHitBySwordBeamExtId == 0) {
-        actorHitBySwordBeamExtId = ActorExtension_CreateForAll(sizeof(bool));
-    }
-
     COND_VB_SHOULD(VB_DISABLE_FD_MASK, CVAR, { *should = false; });
 
     COND_VB_SHOULD(VB_DAMAGE_MULTIPLIER, CVAR, {

@@ -2,7 +2,7 @@
 #include <libultraship/bridge/consolevariablebridge.h>
 #include "2s2h/CustomItem/CustomItem.h"
 #include "assets/2s2h_assets.h"
-#include "2s2h/ActorExtension/ActorListIndex.h"
+#include "2s2h/ObjectExtension/ActorListIndex.h"
 #include "2s2h/ShipUtils.h"
 
 extern "C" {

@@ -1,5 +1,4 @@
-
-#include "2s2h/ActorExtension/ActorExtension.h"
+#include "2s2h/ObjectExtension/ObjectExtension.h"
 #include "2s2h/GameInteractor/GameInteractor.h"
 #include "2s2h/Enhancements/FrameInterpolation/FrameInterpolation.h"
 #include "2s2h/ShipInit.hpp"
@@ -26,18 +25,21 @@ typedef enum {
     ENEMYHEALTH_ANCHOR_BOTTOM,
 } EnemyHealthBarAnchorType;
 
-ActorExtensionId actorEnemyHealthExtId = 0;
+struct ActorMaximumHealth {
+    u8 maximumHealth = 0;
+};
+static ObjectExtension::Register<ActorMaximumHealth> ActorMaximumHealthRegister;
 
 static Vtx sEnemyHealthVtx[16];
 static Mtx sEnemyHealthMtx[2];
 
 u8 GetActorMaxHealth(Actor* actor) {
-    u8* maxHealth = (u8*)ActorExtension_Get(actor, actorEnemyHealthExtId);
-    if (maxHealth == NULL) {
-        return 0;
-    }
+    const ActorMaximumHealth* maxHealth = ObjectExtension::GetInstance().Get<ActorMaximumHealth>(actor);
+    return maxHealth != nullptr ? maxHealth->maximumHealth : ActorMaximumHealth{}.maximumHealth;
+}
 
-    return *maxHealth;
+void SetActorMaximumHealth(const Actor* actor, u8 maximumHealth) {
+    ObjectExtension::GetInstance().Set<ActorMaximumHealth>(actor, ActorMaximumHealth{ maximumHealth });
 }
 
 // Draws an enemy health bar using the magic bar textures and positions it in a similar way to Z-Targeting
@@ -186,25 +188,16 @@ void Interface_DrawEnemyHealthBar(Attention* attention, PlayState* play) {
 static RegisterShipInitFunc initFunc(
     []() {
         // Register actor extension health data and actor init hook once
-        if (actorEnemyHealthExtId == 0) {
-            actorEnemyHealthExtId = ActorExtension_CreateForAll(sizeof(u8));
+        GameInteractor::Instance->RegisterGameHook<GameInteractor::OnActorInit>([](Actor* actor) {
+            u8 maxHealth = actor->colChkInfo.health;
 
-            GameInteractor::Instance->RegisterGameHook<GameInteractor::OnActorInit>([](Actor* actor) {
-                u8* maxHealth = (u8*)ActorExtension_Get(actor, actorEnemyHealthExtId);
-                if (maxHealth == NULL) {
-                    assert(false && "Actor Extension memory not valid");
-                    return;
-                }
-
-                *maxHealth = actor->colChkInfo.health;
-
-                // The remains in the Majora fight get their health set after init for the first time fighting,
-                // so we set the expected value now
-                if (actor->id == ACTOR_BOSS_07 && actor->params >= MAJORA_TYPE_REMAINS) {
-                    *maxHealth = 5;
-                }
-            });
-        }
+            // The remains in the Majora fight get their health set after init for the first time fighting,
+            // so we set the expected value now
+            if (actor->id == ACTOR_BOSS_07 && actor->params >= MAJORA_TYPE_REMAINS) {
+                maxHealth = 5;
+            }
+            SetActorMaximumHealth(actor, maxHealth);
+        });
 
         COND_HOOK(OnInterfaceDrawStart, CVAR, []() {
             if (gPlayState != NULL) {
