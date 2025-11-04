@@ -8,6 +8,7 @@ set(GAME_STR "MM")
 project(2s2h VERSION 3.0.0 LANGUAGES C CXX)
 include(CMake/2ship-cvars.cmake)
 include(CMake/lus-cvars.cmake)
+include(CMake/logging.cmake)
 set(PROJECT_BUILD_NAME "Mion Alfa" CACHE STRING "" FORCE)
 set(PROJECT_TEAM "github.com/harbourmasters" CACHE STRING "" FORCE)
 
