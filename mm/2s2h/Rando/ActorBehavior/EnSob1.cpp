@@ -28,7 +28,7 @@ void Rando::ActorBehavior::InitEnSob1Behavior() {
     });
 
     COND_ID_HOOK(OnActorDraw, ACTOR_EN_OSSAN, IS_RANDO, [](Actor* actor) {
-        if (RANDO_SAVE_CHECKS[RC_BOMB_SHOP_ITEM_01].shuffled) {
+        if (RANDO_SAVE_CHECKS[RC_BOMB_SHOP_ITEM_01].shuffled && actor->params == 2) { // Bomb Shop Owner
             Matrix_Put(&sLeftHandMtxF);
             EnSob1_DrawCustomItem(actor, gPlayState);
         }
