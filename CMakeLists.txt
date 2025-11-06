@@ -5,10 +5,11 @@ set(CMAKE_CXX_STANDARD 20 CACHE STRING "The C++ standard to use")
 
 set(CMAKE_OSX_DEPLOYMENT_TARGET "10.15" CACHE STRING "Minimum OS X deployment version")
 set(GAME_STR "MM")
-project(2s2h VERSION 3.0.0 LANGUAGES C CXX)
+project(2s2h VERSION 3.0.1 LANGUAGES C CXX)
 include(CMake/2ship-cvars.cmake)
 include(CMake/lus-cvars.cmake)
-set(PROJECT_BUILD_NAME "Mion Alfa" CACHE STRING "" FORCE)
+include(CMake/logging.cmake)
+set(PROJECT_BUILD_NAME "Mion Bravo" CACHE STRING "" FORCE)
 set(PROJECT_TEAM "github.com/harbourmasters" CACHE STRING "" FORCE)
 
 execute_process(

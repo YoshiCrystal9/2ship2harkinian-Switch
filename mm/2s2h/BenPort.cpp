@@ -195,8 +195,13 @@ OTRGlobals::OTRGlobals() {
     context->InitWindow(benFast3dWindow);
 
     // Override LUS defaults
+#if (_DEBUG)
+    int defaultLogLevel = 0;
+#else
+    int defaultLogLevel = 2;
+#endif
     Ship::Context::GetInstance()->GetLogger()->set_level(
-        (spdlog::level::level_enum)CVarGetInteger("gDeveloperTools.LogLevel", 1));
+        (spdlog::level::level_enum)CVarGetInteger("gDeveloperTools.LogLevel", defaultLogLevel));
     Ship::Context::GetInstance()->GetLogger()->set_pattern("[%H:%M:%S.%e] [%s:%#] [%l] %v");
 
     auto overlay = context->GetInstance()->GetWindow()->GetGui()->GetGameOverlay();

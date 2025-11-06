@@ -3116,7 +3116,7 @@ void Actor_DrawLensActors(PlayState* play, s32 numLensActors, Actor** lensActors
             POLY_XLU_DISP = gfx;
             // BENTODO: Since actor masking is diabled for actors that would normally
             // be "hidden", we are opting to just not render them at all
-            if (play->roomCtx.curRoom.lensMode == LENS_MODE_HIDE_ACTORS) {
+            if (play->roomCtx.curRoom.lensMode == LENS_MODE_SHOW_ACTORS) {
                 Actor_Draw(play, *lensActor);
             }
             gfx = POLY_XLU_DISP;
