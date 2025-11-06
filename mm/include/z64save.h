@@ -387,7 +387,7 @@ typedef struct RandoSaveInfo {
     u32 randoSaveOptions[RO_MAX]; // Type here may change in the future
     char randoStartingItems[512];
     s8 foundDungeonKeys[9]; // Tracks the number of dungeon keys found, opposed to the number of keys in the inventory
-    u8 foundTriforcePieces;
+    u16 foundTriforcePieces;
 } RandoSaveInfo;
 
 // These are values added by 2S2H that we need to be persisted to the save file
