@@ -6,6 +6,7 @@ extern "C" {
 #include "objects/object_fz/object_fz.h"
 #include "objects/object_ik/object_ik.h"
 #include "objects/object_gi_mask03/object_gi_mask03.h"
+#include "objects/object_rsn/object_rsn.h"
 #include "objects/object_yukimura_obj/object_yukimura_obj.h"
 #include "overlays/ovl_En_Syateki_Okuta/ovl_En_Syateki_Okuta.h"
 #include "overlays/ovl_fbdemo_wipe1/ovl_fbdemo_wipe1.h"
@@ -363,6 +364,15 @@ void GfxPatcher_ApplySmithyChimneyFirePatch() {
     ResourceMgr_PatchGfxByName(object_yukimura_obj_DL_000F98, "smithyChimneyFireFix", 31, gsSPNoOp());
 }
 
+void GfxPatcher_ApplyBombShopkeeperPatch() {
+    // gBombShopkeeperBombDL calls gsSPClearGeometryMode just before drawing the fuse, with the following arguments:
+    // G_ZBUFFER | G_SHADE | G_CULL_BACK | G_LIGHTING | G_SHADING_SMOOTH
+    // This results in the fuse retaining the blue color of the bomb base instead of the intended color seen on console.
+    // This replacement command comes from the geometry mode argument used before drawing the regular bomb GI's fuse.
+    ResourceMgr_PatchGfxByName(gBombShopkeeperBombDL, "bombShopOwnerFuseFix", 85,
+                               gsSPClearGeometryMode(G_TEXTURE_GEN | G_TEXTURE_GEN_LINEAR));
+}
+
 // Applies required patches for authentic bugs to allow the game to play and render properly
 void GfxPatcher_ApplyNecessaryAuthenticPatches() {
     PatchMiniGameCrossAndCircleSymbols();
@@ -376,4 +386,6 @@ void GfxPatcher_ApplyNecessaryAuthenticPatches() {
     GfxPatcher_ApplyFierceDeityGIPatch();
 
     GfxPatcher_ApplySmithyChimneyFirePatch();
+
+    GfxPatcher_ApplyBombShopkeeperPatch();
 }
