@@ -15,6 +15,9 @@ void Rando::ActorBehavior::InitEnAlBehavior() {
 
     COND_ID_HOOK(OnActorInit, ACTOR_EN_AL, IS_RANDO, [](Actor* actor) { skipCmds.clear(); });
 
+    COND_VB_SHOULD(VB_MADAME_AROMA_ASK_FOR_HELP, IS_RANDO,
+                   { *should = !RANDO_SAVE_CHECKS[RC_MAYORS_OFFICE_KAFEIS_MASK].cycleObtained; });
+
     COND_VB_SHOULD(VB_EXEC_MSG_EVENT, IS_RANDO, {
         u32 cmdId = va_arg(args, u32);
         Actor* actor = va_arg(args, Actor*);
@@ -30,6 +33,8 @@ void Rando::ActorBehavior::InitEnAlBehavior() {
                 if (getItemId == GI_MASK_KAFEIS_MASK) { // Mayor's Residence
                     // Prevents the player from moving freely in case a notebook event message pops afterward
                     Player_SetupWaitForPutAway(gPlayState, player, Player_SetupTalk);
+                    // There is no usable flag for this check, so grant it manually
+                    RANDO_SAVE_CHECKS[RC_MAYORS_OFFICE_KAFEIS_MASK].eligible = true;
                 } else { // Express Mail reward
                     /*
                      * We do something a little tricky here. We manually open a textbox with the message that normally

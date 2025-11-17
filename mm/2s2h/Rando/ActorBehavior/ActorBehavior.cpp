@@ -14,9 +14,6 @@ static ObjectExtension::Register<ActorRandoCheckId> ActorRandoCheckIdRegister;
 // This is kind of a catch-all for things that are simple enough to not need their own file.
 void MiscVanillaBehaviorHandler(GIVanillaBehavior id, bool* should, va_list optionalArg) {
     switch (id) {
-        case VB_MADAME_AROMA_ASK_FOR_HELP:
-            *should = !CHECK_WEEKEVENTREG(WEEKEVENTREG_BOMBERS_NOTEBOOK_EVENT_RECEIVED_KAFEIS_MASK);
-            break;
         case VB_GIVE_ITEM_FROM_ROMANI:
             *should = CHECK_QUEST_ITEM(QUEST_SONG_EPONA);
             break;

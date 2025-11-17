@@ -13,8 +13,6 @@ void Rando::ActorBehavior::InitEnKitanBehavior() {
         Actor* actor = va_arg(args, Actor*);
         if (actor->id == ACTOR_EN_KITAN && !RANDO_SAVE_CHECKS[RC_KEATON_QUIZ].cycleObtained) {
             *should = false;
-            // The actor sets this flag using direct syntax, which does not trigger rando's FLAG_WEEK_EVENT_REG handling
-            // TODO: No longer true with decomp updates. Try removing this and see what happens.
             SET_WEEKEVENTREG(WEEKEVENTREG_RECEIVED_KEATON_HEART_PIECE);
             ((EnKitan*)actor)->actionFunc = EnKitan_TalkAfterGivingPrize;
             // This forces the previous BGM to resume, ending the Keaton quiz BGM
