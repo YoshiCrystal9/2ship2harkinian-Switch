@@ -5,11 +5,9 @@
 
 using namespace Rando::Logic;
 
-inline bool CanGetPastBigOcto() {
-    // Boat ride. This takes Link to a landing in the next region and thus has no additional requirements.
-    if (RANDO_EVENTS[RE_SOUTHERN_SWAMP_RIDE_BOAT]) {
-        return true;
-    }
+#define CAN_TRAVERSE_WAIST_DEEP_WATER (CAN_USE_ABILITY(SWIM) || CAN_BE_DEKU || CAN_BE_ZORA || CAN_BE_GORON)
+
+inline bool CanGetPastBigOctoWithoutBoat() {
     /*
      * Kill the Big Octo. This means the water is still in a poison state, so swimming is not logically considered due
      * to the damage boost method not being logically considered. This piece may need expanded as tricks and glitches
@@ -23,11 +21,19 @@ inline bool CanGetPastBigOcto() {
      * over the water as Deku, or he uses one of the forms tall enough to walk through the water. This may also be
      * expanded if FD is ever logically considered.
      */
-    if (RANDO_EVENTS[RE_CLEARED_WOODFALL_TEMPLE] &&
-        (CAN_USE_ABILITY(SWIM) || CAN_BE_DEKU || CAN_BE_ZORA || CAN_BE_GORON)) {
+    if (RANDO_EVENTS[RE_CLEARED_WOODFALL_TEMPLE] && CAN_TRAVERSE_WAIST_DEEP_WATER) {
         return true;
     }
     return false;
+}
+
+inline bool CanGetPastBigOcto() {
+    // Boat ride. This takes Link to a landing in the next region and thus has no additional requirements.
+    if (RANDO_EVENTS[RE_SOUTHERN_SWAMP_RIDE_BOAT]) {
+        return true;
+    }
+
+    return CanGetPastBigOctoWithoutBoat();
 }
 
 // clang-format off
@@ -272,8 +278,6 @@ static RegisterShipInitFunc initFunc([]() {
             CHECK(RC_SOUTHERN_SWAMP_SCRUB_DEED, Flags_GetRandoInf(RANDO_INF_OBTAINED_DEED_LAND)),
             CHECK(RC_SOUTHERN_SWAMP_SCRUB_BEANS, CAN_BE_DEKU),
             CHECK(RC_SOUTHERN_SWAMP_OWL_STATUE, CAN_USE_SWORD),
-            CHECK(RC_SOUTHERN_SWAMP_FREESTANDING_RUPEE_01, CAN_BE_DEKU || CAN_BE_ZORA),
-            CHECK(RC_SOUTHERN_SWAMP_FREESTANDING_RUPEE_02, CAN_BE_DEKU || CAN_BE_ZORA),
             CHECK(RC_SOUTHERN_SWAMP_CLEARED_GRASS_01, RANDO_EVENTS[RE_CLEARED_WOODFALL_TEMPLE]),
             CHECK(RC_SOUTHERN_SWAMP_CLEARED_GRASS_02, RANDO_EVENTS[RE_CLEARED_WOODFALL_TEMPLE]),
             CHECK(RC_SOUTHERN_SWAMP_CLEARED_GRASS_03, RANDO_EVENTS[RE_CLEARED_WOODFALL_TEMPLE]),
@@ -304,8 +308,9 @@ static RegisterShipInitFunc initFunc([]() {
             EXIT(ENTRANCE(TOURIST_INFORMATION, 0),          ENTRANCE(SOUTHERN_SWAMP_POISONED, 1), true),
         },
         .connections = {
-            CONNECTION(RR_SOUTHERN_SWAMP_SOUTH, CanGetPastBigOcto()),
-    		CONNECTION(RR_SOUTHERN_SWAMP_NEAR_WOODS, (CAN_BE_HUMAN && CAN_USE_ABILITY(SWIM)) || (CAN_BE_DEKU || CAN_BE_ZORA || CAN_BE_GORON)),
+            CONNECTION(RR_SOUTHERN_SWAMP_SOUTH, CanGetPastBigOcto()), // Via Octo near Tourist Center
+    		CONNECTION(RR_SOUTHERN_SWAMP_NEAR_FLOWERS, CAN_TRAVERSE_WAIST_DEEP_WATER),
+    		CONNECTION(RR_SOUTHERN_SWAMP_NEAR_WOODS, CAN_TRAVERSE_WAIST_DEEP_WATER),
         },
         .events = {
             EVENT(RE_ACCESS_SPRING_WATER, true),
@@ -317,17 +322,33 @@ static RegisterShipInitFunc initFunc([]() {
             ENTRANCE(SOUTHERN_SWAMP_POISONED, 10), // From Song of Soaring
         }
     };
-    Regions[RR_SOUTHERN_SWAMP_NEAR_WOODS] = RandoRegion{ .name = "North Woods Section", .sceneId = SCENE_20SICHITAI,
+    Regions[RR_SOUTHERN_SWAMP_NEAR_FLOWERS] = RandoRegion{ .name = "Flowers Section", .sceneId = SCENE_20SICHITAI,
         .checks = {
             CHECK(RC_SOUTHERN_SWAMP_FROG, HAS_ITEM(ITEM_MASK_DON_GERO)),
+            CHECK(RC_SOUTHERN_SWAMP_FREESTANDING_RUPEE_01, CAN_BE_DEKU || CAN_BE_ZORA),
+            CHECK(RC_SOUTHERN_SWAMP_FREESTANDING_RUPEE_02, CAN_BE_DEKU || CAN_BE_ZORA),
+        },
+        .connections = {
+            CONNECTION(RR_SOUTHERN_SWAMP_SOUTH, CanGetPastBigOctoWithoutBoat()),
+    		CONNECTION(RR_SOUTHERN_SWAMP_NORTH, CAN_TRAVERSE_WAIST_DEEP_WATER),
+            CONNECTION(RR_SOUTHERN_SWAMP_NEAR_WOODS, CAN_TRAVERSE_WAIST_DEEP_WATER),
+        },
+        .events = {
+            // Any form but Deku can bottle water here. Human can do it from a lilypad before it sinks.
+            // If human is ever shuffled, revisit this.
+            EVENT(RE_ACCESS_SPRING_WATER, true),
+            EVENT(RE_SOUTHERN_SWAMP_KILL_OCTOROK, (HAS_ITEM(ITEM_BOW) || HAS_ITEM(ITEM_HOOKSHOT) || CAN_BE_ZORA)),
+            EVENT(RE_ACCESS_PICTOGRAPH_SWAMP_GENERIC, HAS_ITEM(ITEM_PICTOGRAPH_BOX)),
+        },
+    };
+    Regions[RR_SOUTHERN_SWAMP_NEAR_WOODS] = RandoRegion{ .name = "North Woods Section", .sceneId = SCENE_20SICHITAI,
+        .checks = {
             CHECK(RC_SOUTHERN_SWAMP_POISON_POT_01, true),
             CHECK(RC_SOUTHERN_SWAMP_POISON_POT_02, true),
             CHECK(RC_SOUTHERN_SWAMP_POISON_POT_03, true),
             CHECK(RC_SOUTHERN_SWAMP_CLEAR_POT_01, RANDO_EVENTS[RE_CLEARED_WOODFALL_TEMPLE]),
             CHECK(RC_SOUTHERN_SWAMP_CLEAR_POT_02, RANDO_EVENTS[RE_CLEARED_WOODFALL_TEMPLE]),
             CHECK(RC_SOUTHERN_SWAMP_CLEAR_POT_03, RANDO_EVENTS[RE_CLEARED_WOODFALL_TEMPLE]),
-            CHECK(RC_SOUTHERN_SWAMP_FREESTANDING_RUPEE_01, CAN_BE_DEKU || CAN_BE_ZORA),
-            CHECK(RC_SOUTHERN_SWAMP_FREESTANDING_RUPEE_02, CAN_BE_DEKU || CAN_BE_ZORA),
             CHECK(RC_SOUTHERN_SWAMP_CLEARED_GRASS_13, RANDO_EVENTS[RE_CLEARED_WOODFALL_TEMPLE]),
             CHECK(RC_SOUTHERN_SWAMP_CLEARED_GRASS_14, RANDO_EVENTS[RE_CLEARED_WOODFALL_TEMPLE]),
             CHECK(RC_SOUTHERN_SWAMP_CLEARED_GRASS_15, RANDO_EVENTS[RE_CLEARED_WOODFALL_TEMPLE]),
@@ -370,13 +391,11 @@ static RegisterShipInitFunc initFunc([]() {
             EXIT(ENTRANCE(WOODS_OF_MYSTERY, 0),             ENTRANCE(SOUTHERN_SWAMP_POISONED, 7), true),
         },
         .connections = {
-            CONNECTION(RR_SOUTHERN_SWAMP_SOUTH, CanGetPastBigOcto()),
-    		CONNECTION(RR_SOUTHERN_SWAMP_NORTH, (CAN_BE_HUMAN && CAN_USE_ABILITY(SWIM)) || (CAN_BE_DEKU || CAN_BE_ZORA || CAN_BE_GORON)),
+            CONNECTION(RR_SOUTHERN_SWAMP_NEAR_FLOWERS, CAN_TRAVERSE_WAIST_DEEP_WATER),
+    		CONNECTION(RR_SOUTHERN_SWAMP_NORTH, CAN_TRAVERSE_WAIST_DEEP_WATER),
         },
         .events = {
             EVENT(RE_ACCESS_SPRING_WATER, true),
-            EVENT(RE_ACCESS_BEANS_REFILL, CAN_BE_DEKU && HAS_ITEM(ITEM_MAGIC_BEANS)),
-            EVENT(RE_SOUTHERN_SWAMP_KILL_OCTOROK, (HAS_ITEM(ITEM_BOW) || HAS_ITEM(ITEM_HOOKSHOT) || CAN_BE_ZORA)),
             EVENT(RE_ACCESS_PICTOGRAPH_SWAMP_GENERIC, HAS_ITEM(ITEM_PICTOGRAPH_BOX)),
         },
         .oneWayEntrances = {
@@ -395,7 +414,7 @@ static RegisterShipInitFunc initFunc([]() {
         },
         .connections = {
             CONNECTION(RR_SOUTHERN_SWAMP_NORTH, CanGetPastBigOcto()),
-            CONNECTION(RR_SOUTHERN_SWAMP_NEAR_WOODS, CanGetPastBigOcto()),
+            CONNECTION(RR_SOUTHERN_SWAMP_NEAR_FLOWERS, CanGetPastBigOctoWithoutBoat()),
             CONNECTION(RR_SOUTHERN_SWAMP_GROTTO, CAN_BE_DEKU || (RANDO_EVENTS[RE_CLEARED_WOODFALL_TEMPLE] && (CAN_USE_ABILITY(SWIM) || CAN_BE_ZORA || CAN_BE_GORON))), // TODO: Grotto mapping
         },
         .events = {
