@@ -6,7 +6,9 @@
 extern "C" {
 #include "variables.h"
 #include "overlays/actors/ovl_En_Slime/z_en_slime.h"
+#include "overlays/actors/ovl_En_Tanron5/z_en_tanron5.h"
 void EnItem00_Draw(Actor* thisx, PlayState* play);
+void EnTanron5_ItemDrop_Draw(Actor* thisx, PlayState* play);
 }
 
 #define CVAR_NAME "gEnhancements.Graphics.3DItemDrops"
@@ -124,6 +126,29 @@ void EnItem00_3DItemsDraw(Actor* actor, PlayState* play) {
     }
 }
 
+void Tanron5_3DItemsDraw(Actor* actor, PlayState* play) {
+    EnTanron5* enTanron5 = (EnTanron5*)actor;
+
+    // Flicker when close to despawning
+    if ((enTanron5->timer <= 50) && !(enTanron5->timer & 1)) {
+        return;
+    }
+
+    // Tanron5 drops do not appear over Link's head when collected. That is vanilla behavior.
+    FrameInterpolation_RecordOpenChild(enTanron5, 0);
+    FrameInterpolation_IgnoreActorMtx();
+    // Move above the sand
+    Matrix_Translate(0.0f, 200.0f, 0.0f, MTXMODE_APPLY);
+    if (enTanron5->itemDropType == 0) { // TWINMOLD_PROP_ITEM_DROP_TYPE_10_ARROWS
+        Matrix_Scale(7.0f, 7.0f, 7.0f, MTXMODE_APPLY);
+        GetItem_Draw(play, GID_ARROWS_SMALL);
+    } else { // TWINMOLD_PROP_ITEM_DROP_TYPE_MAGIC_JAR_BIG
+        Matrix_Scale(8.0f, 8.0f, 8.0f, MTXMODE_APPLY);
+        GetItem_Draw(play, GID_MAGIC_JAR_BIG);
+    }
+    FrameInterpolation_RecordCloseChild();
+}
+
 void DrawSlime3DItem(Actor* actor, bool* should) {
     *should = false;
     EnSlime* slime = (EnSlime*)actor;
@@ -147,6 +172,7 @@ void DrawSlime3DItem(Actor* actor, bool* should) {
 
 void Register3DItemDrops() {
     if (gPlayState != NULL) {
+        // Regular item drops
         Actor* actor = gPlayState->actorCtx.actorLists[ACTORCAT_MISC].first;
 
         while (actor != NULL) {
@@ -165,6 +191,24 @@ void Register3DItemDrops() {
 
             actor = actor->next;
         }
+
+        // Twinmold boss fight arrow/magic drops
+        actor = gPlayState->actorCtx.actorLists[ACTORCAT_BOSS].first;
+
+        while (actor != NULL) {
+            if (actor->id == ACTOR_EN_TANRON5 &&
+                TWINMOLD_PROP_GET_TYPE(actor) >= TWINMOLD_PROP_TYPE_ITEM_DROP_1) { // Twinmold ruins drop
+                if (CVAR && (actor->draw == EnTanron5_ItemDrop_Draw)) {
+                    actor->draw = Tanron5_3DItemsDraw;
+                } else if (actor->draw == Tanron5_3DItemsDraw) {
+                    actor->draw = EnTanron5_ItemDrop_Draw;
+                    // Reset rotation for bill-boarded sprites
+                    actor->shape.rot.y = 0;
+                }
+            }
+
+            actor = actor->next;
+        }
     }
 
     COND_ID_HOOK(OnActorInit, ACTOR_EN_ITEM00, CVAR, [](Actor* actor) {
@@ -176,6 +220,19 @@ void Register3DItemDrops() {
     COND_ID_HOOK(OnActorUpdate, ACTOR_EN_ITEM00, CVAR, [](Actor* actor) {
         // Add spin to normally bill-boarded items
         if (actor->draw == EnItem00_3DItemsDraw && ItemShouldSpinWhen3D(actor)) {
+            actor->shape.rot.y += 0x3C0;
+        }
+    });
+
+    COND_ID_HOOK(OnActorInit, ACTOR_EN_TANRON5, CVAR, [](Actor* actor) {
+        if (actor->draw == EnTanron5_ItemDrop_Draw) {
+            actor->draw = Tanron5_3DItemsDraw;
+        }
+    });
+
+    COND_ID_HOOK(OnActorUpdate, ACTOR_EN_TANRON5, CVAR, [](Actor* actor) {
+        // Add spin
+        if (actor->draw == Tanron5_3DItemsDraw) {
             actor->shape.rot.y += 0x3C0;
         }
     });
