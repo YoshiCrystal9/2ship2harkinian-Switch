@@ -30,13 +30,13 @@ void MiscVanillaBehaviorHandler(GIVanillaBehavior id, bool* should, va_list opti
     }
 }
 
-RandoCheckId Rando::ActorBehavior::GetActorRandoCheckId(Actor* actor) {
-    const ActorRandoCheckId* actorRandoCheckId = ObjectExtension::GetInstance().Get<ActorRandoCheckId>(actor);
+RandoCheckId Rando::ActorBehavior::GetObjectRandoCheckId(void* object) {
+    const ActorRandoCheckId* actorRandoCheckId = ObjectExtension::GetInstance().Get<ActorRandoCheckId>(object);
     return actorRandoCheckId != nullptr ? actorRandoCheckId->randoCheckId : RC_UNKNOWN;
 }
 
-void Rando::ActorBehavior::SetActorRandoCheckId(const Actor* actor, RandoCheckId rc) {
-    ObjectExtension::GetInstance().Set<ActorRandoCheckId>(actor, ActorRandoCheckId{ rc });
+void Rando::ActorBehavior::SetObjectRandoCheckId(const void* object, RandoCheckId rc) {
+    ObjectExtension::GetInstance().Set<ActorRandoCheckId>(object, ActorRandoCheckId{ rc });
 }
 
 // Entry point for the module, run once on game boot

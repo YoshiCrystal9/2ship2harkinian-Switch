@@ -10,8 +10,8 @@ namespace ActorBehavior {
 void Init();
 void OnFileLoad();
 
-RandoCheckId GetActorRandoCheckId(Actor* actor);
-void SetActorRandoCheckId(const Actor* actor, RandoCheckId rc);
+RandoCheckId GetObjectRandoCheckId(void* actor);
+void SetObjectRandoCheckId(const void* object, RandoCheckId rc);
 
 void InitDmChar01Behavior();
 void InitDmChar05Behavior();

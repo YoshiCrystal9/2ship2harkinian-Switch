@@ -104,39 +104,88 @@ std::map<std::tuple<s16, s16, s16>, RandoCheckId> snowballActorIdMap = {
     { { SCENE_17SETUGEN,        0,  65 }, RC_TWIN_ISLANDS_SMALL_SNOWBALL_04 },
     { { SCENE_17SETUGEN,        0,  66 }, RC_TWIN_ISLANDS_SMALL_SNOWBALL_05 },
     { { SCENE_17SETUGEN,        0,  67 }, RC_TWIN_ISLANDS_SMALL_SNOWBALL_06 },
-};
 
-std::map<std::pair<float, float>, RandoCheckId> snowballCoordsMap = {
-    { { -1025.00f,   137.00f }, RC_MOUNTAIN_VILLAGE_LARGE_SNOWBALL_01 },
-    { { -1062.00f,   891.00f }, RC_MOUNTAIN_VILLAGE_LARGE_SNOWBALL_02 },
-    { {  1863.00f,   705.00f }, RC_MOUNTAIN_VILLAGE_LARGE_SNOWBALL_03 },
-    { {  -197.00f,  -172.00f }, RC_MOUNTAIN_VILLAGE_LARGE_SNOWBALL_04 },
-    { {  1462.00f,   863.00f }, RC_MOUNTAIN_VILLAGE_LARGE_SNOWBALL_05 },
-    { {  1674.00f,  6811.00f }, RC_PATH_TO_MOUNTAIN_VILLAGE_LARGE_SNOWBALL_01 },
-    { {  2061.00f,  6748.00f }, RC_PATH_TO_MOUNTAIN_VILLAGE_LARGE_SNOWBALL_02 },
-    { {   203.00f,  6068.00f }, RC_PATH_TO_MOUNTAIN_VILLAGE_LARGE_SNOWBALL_03 },
-    { {   623.00f,  6237.00f }, RC_PATH_TO_MOUNTAIN_VILLAGE_LARGE_SNOWBALL_04 },
-    { {   987.00f,  4607.00f }, RC_PATH_TO_MOUNTAIN_VILLAGE_LARGE_SNOWBALL_09 },
-    { {   976.00f,  4691.00f }, RC_PATH_TO_MOUNTAIN_VILLAGE_LARGE_SNOWBALL_10 },
-    { {   979.00f,  4517.00f }, RC_PATH_TO_MOUNTAIN_VILLAGE_LARGE_SNOWBALL_11 },
-    { {   427.00f,  -613.00f }, RC_TWIN_ISLANDS_LARGE_SNOWBALL_01 },
-    { {    65.00f,   345.00f }, RC_TWIN_ISLANDS_LARGE_SNOWBALL_02 },
-    { {  -179.00f,  -876.00f }, RC_TWIN_ISLANDS_LARGE_SNOWBALL_03 },
-    { {   851.00f,   643.00f }, RC_TWIN_ISLANDS_LARGE_SNOWBALL_04 },
-    { {   371.00f,   778.00f }, RC_TWIN_ISLANDS_LARGE_SNOWBALL_05 },
-    { {  -563.00f,  -523.00f }, RC_TWIN_ISLANDS_LARGE_SNOWBALL_06 },
-    { {  1203.00f,   109.00f }, RC_TWIN_ISLANDS_LARGE_SNOWBALL_07 },
-    { { -1029.00f,   -25.00f }, RC_TWIN_ISLANDS_LARGE_SNOWBALL_08 },
-    { {  -880.00f,   497.00f }, RC_TWIN_ISLANDS_LARGE_SNOWBALL_09 },
-    { {  -395.00f,   677.00f }, RC_TWIN_ISLANDS_LARGE_SNOWBALL_10 },
-    { {     5.00f,  -560.00f }, RC_TWIN_ISLANDS_LARGE_SNOWBALL_11 },
-    { {    60.00f,   -46.00f }, RC_TWIN_ISLANDS_LARGE_SNOWBALL_12 },
-    { {  1001.00f,  -426.00f }, RC_TWIN_ISLANDS_LARGE_SNOWBALL_13 },
+    // The following large snowballs have different ActorListIndex values each day. Having repeat check map entries is
+    // fine, so long as there are no overlaps in values for a given scene. Duplicates are organized by Day 1, 2, 3:
+    { { SCENE_10YUKIYAMANOMURA, 0, 14 }, RC_MOUNTAIN_VILLAGE_LARGE_SNOWBALL_01 },
+    { { SCENE_10YUKIYAMANOMURA, 0, 45 }, RC_MOUNTAIN_VILLAGE_LARGE_SNOWBALL_01 },
+    { { SCENE_10YUKIYAMANOMURA, 0, 16 }, RC_MOUNTAIN_VILLAGE_LARGE_SNOWBALL_01 },
+    { { SCENE_10YUKIYAMANOMURA, 0, 17 }, RC_MOUNTAIN_VILLAGE_LARGE_SNOWBALL_02 },
+    { { SCENE_10YUKIYAMANOMURA, 0, 13 }, RC_MOUNTAIN_VILLAGE_LARGE_SNOWBALL_02 },
+    { { SCENE_10YUKIYAMANOMURA, 0, 12 }, RC_MOUNTAIN_VILLAGE_LARGE_SNOWBALL_02 },
+    { { SCENE_10YUKIYAMANOMURA, 0, 18 }, RC_MOUNTAIN_VILLAGE_LARGE_SNOWBALL_03 },
+    { { SCENE_10YUKIYAMANOMURA, 0, 47 }, RC_MOUNTAIN_VILLAGE_LARGE_SNOWBALL_03 },
+    { { SCENE_10YUKIYAMANOMURA, 0, 44 }, RC_MOUNTAIN_VILLAGE_LARGE_SNOWBALL_03 },
+    { { SCENE_10YUKIYAMANOMURA, 0, 46 }, RC_MOUNTAIN_VILLAGE_LARGE_SNOWBALL_04 },
+    { { SCENE_10YUKIYAMANOMURA, 0, 48 }, RC_MOUNTAIN_VILLAGE_LARGE_SNOWBALL_04 },
+    { { SCENE_10YUKIYAMANOMURA, 0, 34 }, RC_MOUNTAIN_VILLAGE_LARGE_SNOWBALL_04 },
+    { { SCENE_10YUKIYAMANOMURA, 0, 52 }, RC_MOUNTAIN_VILLAGE_LARGE_SNOWBALL_05 },
+    { { SCENE_10YUKIYAMANOMURA, 0, 15 }, RC_MOUNTAIN_VILLAGE_LARGE_SNOWBALL_05 },
+    { { SCENE_10YUKIYAMANOMURA, 0, 51 }, RC_MOUNTAIN_VILLAGE_LARGE_SNOWBALL_05 },
+    { { SCENE_13HUBUKINOMITI,   0, 26 }, RC_PATH_TO_MOUNTAIN_VILLAGE_LARGE_SNOWBALL_01 },
+    { { SCENE_13HUBUKINOMITI,   0, 28 }, RC_PATH_TO_MOUNTAIN_VILLAGE_LARGE_SNOWBALL_01 },
+    { { SCENE_13HUBUKINOMITI,   0, 23 }, RC_PATH_TO_MOUNTAIN_VILLAGE_LARGE_SNOWBALL_01 },
+    { { SCENE_13HUBUKINOMITI,   0, 42 }, RC_PATH_TO_MOUNTAIN_VILLAGE_LARGE_SNOWBALL_02 },
+    { { SCENE_13HUBUKINOMITI,   0, 24 }, RC_PATH_TO_MOUNTAIN_VILLAGE_LARGE_SNOWBALL_02 },
+    { { SCENE_13HUBUKINOMITI,   0, 19 }, RC_PATH_TO_MOUNTAIN_VILLAGE_LARGE_SNOWBALL_02 },
+    { { SCENE_13HUBUKINOMITI,   0, 31 }, RC_PATH_TO_MOUNTAIN_VILLAGE_LARGE_SNOWBALL_03 },
+    { { SCENE_13HUBUKINOMITI,   0, 46 }, RC_PATH_TO_MOUNTAIN_VILLAGE_LARGE_SNOWBALL_03 },
+    { { SCENE_13HUBUKINOMITI,   0, 22 }, RC_PATH_TO_MOUNTAIN_VILLAGE_LARGE_SNOWBALL_03 },
+    { { SCENE_13HUBUKINOMITI,   0, 30 }, RC_PATH_TO_MOUNTAIN_VILLAGE_LARGE_SNOWBALL_04 },
+    { { SCENE_13HUBUKINOMITI,   0, 27 }, RC_PATH_TO_MOUNTAIN_VILLAGE_LARGE_SNOWBALL_04 },
+    { { SCENE_13HUBUKINOMITI,   0, 29 }, RC_PATH_TO_MOUNTAIN_VILLAGE_LARGE_SNOWBALL_04 },
+    { { SCENE_13HUBUKINOMITI,   0, 41 }, RC_PATH_TO_MOUNTAIN_VILLAGE_LARGE_SNOWBALL_09 },
+    { { SCENE_13HUBUKINOMITI,   0, 45 }, RC_PATH_TO_MOUNTAIN_VILLAGE_LARGE_SNOWBALL_09 },
+    { { SCENE_13HUBUKINOMITI,   0, 47 }, RC_PATH_TO_MOUNTAIN_VILLAGE_LARGE_SNOWBALL_09 },
+    { { SCENE_13HUBUKINOMITI,   0, 43 }, RC_PATH_TO_MOUNTAIN_VILLAGE_LARGE_SNOWBALL_10 },
+    { { SCENE_13HUBUKINOMITI,   0, 48 }, RC_PATH_TO_MOUNTAIN_VILLAGE_LARGE_SNOWBALL_10 },
+    { { SCENE_13HUBUKINOMITI,   0, 20 }, RC_PATH_TO_MOUNTAIN_VILLAGE_LARGE_SNOWBALL_10 },
+    { { SCENE_13HUBUKINOMITI,   0, 44 }, RC_PATH_TO_MOUNTAIN_VILLAGE_LARGE_SNOWBALL_11 },
+    { { SCENE_13HUBUKINOMITI,   0, 25 }, RC_PATH_TO_MOUNTAIN_VILLAGE_LARGE_SNOWBALL_11 },
+    { { SCENE_13HUBUKINOMITI,   0, 21 }, RC_PATH_TO_MOUNTAIN_VILLAGE_LARGE_SNOWBALL_11 },
+    { { SCENE_17SETUGEN,        0, 18 }, RC_TWIN_ISLANDS_LARGE_SNOWBALL_01 },
+    { { SCENE_17SETUGEN,        0, 53 }, RC_TWIN_ISLANDS_LARGE_SNOWBALL_01 },
+    { { SCENE_17SETUGEN,        0, 43 }, RC_TWIN_ISLANDS_LARGE_SNOWBALL_01 },
+    { { SCENE_17SETUGEN,        0, 19 }, RC_TWIN_ISLANDS_LARGE_SNOWBALL_02 },
+    { { SCENE_17SETUGEN,        0, 49 }, RC_TWIN_ISLANDS_LARGE_SNOWBALL_02 },
+    { { SCENE_17SETUGEN,        0, 45 }, RC_TWIN_ISLANDS_LARGE_SNOWBALL_02 },
+    { { SCENE_17SETUGEN,        0, 22 }, RC_TWIN_ISLANDS_LARGE_SNOWBALL_03 },
+    { { SCENE_17SETUGEN,        0, 17 }, RC_TWIN_ISLANDS_LARGE_SNOWBALL_03 },
+    { { SCENE_17SETUGEN,        0, 42 }, RC_TWIN_ISLANDS_LARGE_SNOWBALL_03 },
+    { { SCENE_17SETUGEN,        0, 30 }, RC_TWIN_ISLANDS_LARGE_SNOWBALL_04 },
+    { { SCENE_17SETUGEN,        0, 52 }, RC_TWIN_ISLANDS_LARGE_SNOWBALL_04 },
+    { { SCENE_17SETUGEN,        0, 44 }, RC_TWIN_ISLANDS_LARGE_SNOWBALL_04 },
+    { { SCENE_17SETUGEN,        0, 54 }, RC_TWIN_ISLANDS_LARGE_SNOWBALL_05 },
+    { { SCENE_17SETUGEN,        0, 21 }, RC_TWIN_ISLANDS_LARGE_SNOWBALL_05 },
+    { { SCENE_17SETUGEN,        0, 28 }, RC_TWIN_ISLANDS_LARGE_SNOWBALL_05 },
+    { { SCENE_17SETUGEN,        0, 55 }, RC_TWIN_ISLANDS_LARGE_SNOWBALL_06 },
+    { { SCENE_17SETUGEN,        0, 51 }, RC_TWIN_ISLANDS_LARGE_SNOWBALL_06 },
+    { { SCENE_17SETUGEN,        0, 13 }, RC_TWIN_ISLANDS_LARGE_SNOWBALL_06 },
+    { { SCENE_17SETUGEN,        0, 56 }, RC_TWIN_ISLANDS_LARGE_SNOWBALL_07 },
+    { { SCENE_17SETUGEN,        0, 47 }, RC_TWIN_ISLANDS_LARGE_SNOWBALL_07 },
+    { { SCENE_17SETUGEN,        0, 40 }, RC_TWIN_ISLANDS_LARGE_SNOWBALL_07 },
+    { { SCENE_17SETUGEN,        0, 57 }, RC_TWIN_ISLANDS_LARGE_SNOWBALL_08 },
+    { { SCENE_17SETUGEN,        0, 48 }, RC_TWIN_ISLANDS_LARGE_SNOWBALL_08 },
+    { { SCENE_17SETUGEN,        0, 20 }, RC_TWIN_ISLANDS_LARGE_SNOWBALL_08 },
+    { { SCENE_17SETUGEN,        0, 58 }, RC_TWIN_ISLANDS_LARGE_SNOWBALL_09 },
+    { { SCENE_17SETUGEN,        0, 16 }, RC_TWIN_ISLANDS_LARGE_SNOWBALL_09 },
+    { { SCENE_17SETUGEN,        0, 46 }, RC_TWIN_ISLANDS_LARGE_SNOWBALL_09 },
+    { { SCENE_17SETUGEN,        0, 59 }, RC_TWIN_ISLANDS_LARGE_SNOWBALL_10 },
+    { { SCENE_17SETUGEN,        0, 11 }, RC_TWIN_ISLANDS_LARGE_SNOWBALL_10 },
+    { { SCENE_17SETUGEN,        0, 14 }, RC_TWIN_ISLANDS_LARGE_SNOWBALL_10 },
+    { { SCENE_17SETUGEN,        0, 60 }, RC_TWIN_ISLANDS_LARGE_SNOWBALL_11 },
+    { { SCENE_17SETUGEN,        0, 29 }, RC_TWIN_ISLANDS_LARGE_SNOWBALL_11 },
+    { { SCENE_17SETUGEN,        0, 41 }, RC_TWIN_ISLANDS_LARGE_SNOWBALL_11 },
+    { { SCENE_17SETUGEN,        0, 61 }, RC_TWIN_ISLANDS_LARGE_SNOWBALL_12 },
+    // Note: RC_TWIN_ISLANDS_LARGE_SNOWBALL_12 does not exist on Day 2
+    { { SCENE_17SETUGEN,        0, 15 }, RC_TWIN_ISLANDS_LARGE_SNOWBALL_12 },
+    { { SCENE_17SETUGEN,        0, 12 }, RC_TWIN_ISLANDS_LARGE_SNOWBALL_13 },
+    { { SCENE_17SETUGEN,        0, 50 }, RC_TWIN_ISLANDS_LARGE_SNOWBALL_13 },
+    { { SCENE_17SETUGEN,        0,  4 }, RC_TWIN_ISLANDS_LARGE_SNOWBALL_13 },
 };
 // clang-format on
 
-// We primarily rely on the ActorListIndex, however in some scenes the ActorListIndex for Large
-// snowballs is inconsistent based on the day, so we fallback to the coords which are consistent
+// Identify the snowball based on scene ID, room, and actor list index
 void IdentifySnowball(Actor* actor, bool* should) {
     s16 actorListIndex = GetActorListIndex(actor);
     RandoCheckId randoCheckId = RC_UNKNOWN;
@@ -144,18 +193,13 @@ void IdentifySnowball(Actor* actor, bool* should) {
     auto it = snowballActorIdMap.find({ gPlayState->sceneId, gPlayState->roomCtx.curRoom.num, actorListIndex });
     if (it != snowballActorIdMap.end()) {
         randoCheckId = it->second;
-    } else {
-        auto it2 = snowballCoordsMap.find({ actor->home.pos.x, actor->home.pos.z });
-        if (it2 != snowballCoordsMap.end()) {
-            randoCheckId = it2->second;
-        }
     }
 
     if (!RANDO_SAVE_CHECKS[randoCheckId].shuffled || RANDO_SAVE_CHECKS[randoCheckId].cycleObtained) {
         return;
     }
 
-    Rando::ActorBehavior::SetActorRandoCheckId(actor, randoCheckId);
+    Rando::ActorBehavior::SetObjectRandoCheckId(actor, randoCheckId);
 }
 
 void SpawnSnowballDrop(Vec3f pos, RandoCheckId randoCheckId) {
@@ -180,7 +224,7 @@ void Rando::ActorBehavior::InitObjSnowballBehavior() {
     COND_VB_SHOULD(VB_SNOWBALL_DROP_COLLECTIBLE, IS_RANDO, {
         Actor* actor = va_arg(args, Actor*);
 
-        RandoCheckId randoCheckId = GetActorRandoCheckId(actor);
+        RandoCheckId randoCheckId = GetObjectRandoCheckId(actor);
 
         if (randoCheckId == RC_UNKNOWN) {
             return;
@@ -202,7 +246,7 @@ void Rando::ActorBehavior::InitObjSnowballBehavior() {
             return;
         }
 
-        RandoCheckId randoCheckId = GetActorRandoCheckId(actor);
+        RandoCheckId randoCheckId = GetObjectRandoCheckId(actor);
 
         if (randoCheckId == RC_UNKNOWN) {
             return;

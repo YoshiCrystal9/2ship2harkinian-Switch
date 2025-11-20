@@ -514,6 +514,8 @@ static RegisterShipInitFunc initFunc([]() {
             CHECK(RC_WOODS_OF_MYSTERY_GRASS_19, true),
             CHECK(RC_WOODS_OF_MYSTERY_GRASS_20, true),
             CHECK(RC_WOODS_OF_MYSTERY_GRASS_21, true),
+            CHECK(RC_WOODS_OF_MYSTERY_GRASS_22, true),
+            CHECK(RC_WOODS_OF_MYSTERY_GRASS_23, true),
         },
         .exits = { //     TO                                         FROM
             EXIT(ENTRANCE(SOUTHERN_SWAMP_POISONED, 7),      ENTRANCE(WOODS_OF_MYSTERY, 0), true),
