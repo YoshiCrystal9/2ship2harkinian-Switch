@@ -17,6 +17,7 @@
 #include <stdlib.h>
 #include "2s2h/Enhancements/Audio/AudioCollection.h"
 #include "2s2h/Enhancements/Audio/AudioEditor.h"
+#include "2s2h/GameInteractor/GameInteractor.h"
 #include "BenPort.h"
 #include <libultraship/log/luslog.h>
 // Windows deprecated the use of `strdup` it uses _strdup. Linux/Unix doesn't have _strdup.
@@ -658,6 +659,9 @@ s32 AudioLoad_SyncInitSeqPlayerInternal(s32 playerIndex, s32 seqId, s32 arg2) {
     seqPlayer->delay = 0;
     seqPlayer->finished = false;
     seqPlayer->playerIndex = playerIndex;
+
+    GameInteractor_ExecuteOnSeqPlayerInit(playerIndex, seqId);
+
     return 1;
     //! @bug missing return (but the return value is not used so it's not UB)
 }

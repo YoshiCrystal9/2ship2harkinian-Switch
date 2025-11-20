@@ -6,7 +6,7 @@ extern "C" {
 #include "overlays/actors/ovl_Obj_Sound/z_obj_sound.h"
 }
 
-#define CVAR_NAME "gEnhancements.Sfx.MuteCarpenterSfx"
+#define CVAR_NAME "gAudioEditor.MuteCarpenterSfx"
 #define CVAR CVarGetInteger(CVAR_NAME, 0)
 
 void RegisterMuteCarpenterSfx() {

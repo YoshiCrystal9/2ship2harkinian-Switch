@@ -30,6 +30,7 @@ typedef enum {
     DISABLE_FOR_LOW_RES_MODE_ON,
     DISABLE_FOR_ADVANCED_RESOLUTION_OFF,
     DISABLE_FOR_VERTICAL_RESOLUTION_OFF,
+    DISABLE_FOR_LINKS_VOICE_PITCH_MULTIPLIER_OFF,
 } DisableOption;
 
 struct WidgetInfo;
@@ -124,6 +125,7 @@ struct WidgetInfo {
     const char* windowName = "";
     bool isHidden = false;
     bool sameLine = false;
+    bool hideInSearch = false;
 
     WidgetInfo& CVar(const char* cVar_) {
         cVar = cVar_;
@@ -201,6 +203,11 @@ struct WidgetInfo {
         customFunction = customFunction_;
         return *this;
     }
+
+    WidgetInfo& HideInSearch(bool hide) {
+        hideInSearch = hide;
+        return *this;
+    }
 };
 
 struct WidgetPath {
@@ -251,6 +258,15 @@ struct disabledInfo {
 struct SidebarEntry {
     uint32_t columnCount;
     std::vector<std::vector<WidgetInfo>> columnWidgets;
+};
+
+struct SearchWidget {
+    // First four required
+    WidgetInfo& info;
+    std::string menuName;
+    std::string sidebarName;
+    std::string location;
+    std::string extraTerms = "";
 };
 
 // Contains entries for what's listed in the header at the top, including the name displayed on the top bar (label),

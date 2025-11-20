@@ -21,6 +21,7 @@ extern std::unordered_map<s16, const char*> warpPointSceneList;
 extern void Warp();
 
 namespace BenGui {}
+std::vector<SearchWidget> extraSearchWidgets = {};
 
 namespace Ship {
 std::string disabledTempTooltip;
@@ -210,12 +211,33 @@ uint32_t Menu::DrawSearchResults(std::string& menuSearchText) {
             }
         }
     }
+    for (auto& entry : extraSearchWidgets) {
+        if (entry.info.type == WIDGET_SEARCH || entry.info.type == WIDGET_SEPARATOR ||
+            entry.info.type == WIDGET_SEPARATOR_TEXT || entry.info.isHidden || entry.info.hideInSearch) {
+            continue;
+        }
+        std::string widgetStr = entry.info.name + entry.info.options->tooltip + entry.extraTerms + entry.sidebarName;
+        std::transform(widgetStr.begin(), widgetStr.end(), widgetStr.begin(), ::tolower);
+        widgetStr.erase(std::remove(widgetStr.begin(), widgetStr.end(), ' '), widgetStr.end());
+        if (widgetStr.find(menuSearchText) != std::string::npos) {
+            MenuDrawItem(entry.info, 400, menuThemeIndex);
+            ImGui::PushStyleColor(ImGuiCol_Text, UIWidgets::ColorValues.at(UIWidgets::Colors::Gray));
+            std::string origin = fmt::format("  ({} -> {}, {})", entry.menuName, entry.sidebarName, entry.location);
+            ImGui::Text("%s", origin.c_str());
+            ImGui::PopStyleColor();
+            searchCount++;
+        }
+    }
     return searchCount;
 }
 
 void Menu::AddMenuEntry(std::string entryName, const char* entryCvar) {
     menuEntries.emplace(entryName, MainMenuEntry{ entryName, entryCvar });
     menuOrder.push_back(entryName);
+}
+
+void Menu::AddSearchWidget(SearchWidget widget) {
+    extraSearchWidgets.push_back(widget);
 }
 
 std::unordered_map<uint32_t, disabledInfo>& Menu::GetDisabledMap() {

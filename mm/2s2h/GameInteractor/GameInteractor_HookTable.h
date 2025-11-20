@@ -52,3 +52,9 @@ DEFINE_HOOK(OnItemGive, (u8 item))
 DEFINE_HOOK(OnBottleContentsUpdate, (u8 item))
 
 DEFINE_HOOK(ShouldVanillaBehavior, (GIVanillaBehavior flag, bool* should, va_list originalArgs))
+
+// Audio
+DEFINE_HOOK(OnSeqPlayerInit, (s32 playerIdx, s32 seqId));
+
+// Rando
+DEFINE_HOOK(OnRandoSeedGeneration, ());

@@ -12208,8 +12208,10 @@ void Player_UpdateCamAndSeqModes(PlayState* play, Player* this) {
         }
 
         if (play->actorCtx.attention.bgmEnemy != NULL) {
-            seqMode = SEQ_MODE_ENEMY;
-            Audio_UpdateEnemyBgmVolume(sqrtf(play->actorCtx.attention.bgmEnemy->xyzDistToPlayerSq));
+            if (GameInteractor_Should(VB_PLAY_ENEMY_PROXIMITY_MUSIC, true)) {
+                seqMode = SEQ_MODE_ENEMY;
+                Audio_UpdateEnemyBgmVolume(sqrtf(play->actorCtx.attention.bgmEnemy->xyzDistToPlayerSq));
+            }
         }
 
         Audio_SetSequenceMode(seqMode);

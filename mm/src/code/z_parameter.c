@@ -5091,12 +5091,15 @@ void Interface_SetTatlCall(PlayState* play, u16 tatlCallState) {
 
     if (((tatlCallState == TATL_STATE_2A) || (tatlCallState == TATL_STATE_2B)) && !interfaceCtx->tatlCalling &&
         (play->csCtx.state == CS_STATE_IDLE)) {
-        if (tatlCallState == TATL_STATE_2B) {
-            Audio_PlaySfx(NA_SE_VO_NAVY_CALL);
+        if (GameInteractor_Should(VB_PLAY_TATL_CALL_AUDIO, true)) {
+            if (tatlCallState == TATL_STATE_2B) {
+                Audio_PlaySfx(NA_SE_VO_NAVY_CALL);
+            }
+            if (tatlCallState == TATL_STATE_2A) {
+                Audio_PlaySfx_AtPosWithReverb(&gSfxDefaultPos, NA_SE_VO_NA_HELLO_2, 0x20);
+            }
         }
-        if (tatlCallState == TATL_STATE_2A) {
-            Audio_PlaySfx_AtPosWithReverb(&gSfxDefaultPos, NA_SE_VO_NA_HELLO_2, 0x20);
-        }
+
         interfaceCtx->tatlCalling = true;
         sCUpInvisible = 0;
         sCUpTimer = 10;

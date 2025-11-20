@@ -239,6 +239,9 @@ typedef enum {
     VB_BUY_GORMAN_MILK,
     VB_PLAY_LOW_HP_ALARM,
     VB_PLAY_GORON_CHILD_CRY,
+    VB_PLAY_ENEMY_PROXIMITY_MUSIC,
+    VB_PLAY_TATL_CALL_AUDIO,
+    VB_LINK_VOICE_PITCH_MULTIPLIER,
     VB_SNOWBALL_DROP_COLLECTIBLE,
     VB_SNOWBALL_SET_FLAG,
     VB_START_JUMPSLASH,
@@ -759,6 +762,8 @@ bool GameInteractor_ShouldItemGive(u8 item);
 void GameInteractor_ExecuteOnItemGive(u8 item);
 
 void GameInteractor_ExecuteOnBottleContentsUpdate(u8 item);
+
+void GameInteractor_ExecuteOnSeqPlayerInit(int32_t playerIdx, int32_t seqId);
 
 bool GameInteractor_Should(GIVanillaBehavior flag, uint32_t result, ...);
 #define REGISTER_VB_SHOULD(flag, body)                                                      \
