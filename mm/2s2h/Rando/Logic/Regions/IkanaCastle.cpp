@@ -21,7 +21,7 @@ static RegisterShipInitFunc initFunc([]() {
             CHECK(RC_ANCIENT_CASTLE_OF_IKANA_LEFT_THIRD_ROOM_POT_02, true),
         },
         .connections = {
-            CONNECTION(RR_IKANA_CASTLE_SKULLTULA_ROOM, CAN_USE_HUMAN_SWORD),
+            CONNECTION(RR_IKANA_CASTLE_SKULLTULA_ROOM, CAN_USE_SWORD),
             CONNECTION(RR_IKANA_CASTLE_OUTER_ROOF, true)
         },
     };
@@ -50,18 +50,24 @@ static RegisterShipInitFunc initFunc([]() {
     Regions[RR_IKANA_CASTLE_FLOORMASTER_ROOM] = RandoRegion{ .name = "Floormaster Room", .sceneId = SCENE_CASTLE,
         .connections = {
             CONNECTION(RR_IKANA_CASTLE_MAIN_ROOM, true),
-            CONNECTION(RR_IKANA_CASTLE_WIZZROBE_ROOM, CAN_USE_MAGIC_ARROW(LIGHT) || (RANDO_EVENTS[RE_IKANA_CASTLE_RIGHT_SUNLIGHT] && (GET_CUR_EQUIP_VALUE(EQUIP_TYPE_SHIELD) >= EQUIP_VALUE_SHIELD_MIRROR))),
+            CONNECTION(RR_IKANA_CASTLE_FLOORMASTER_ROOM_REDEAD_AREA, CAN_USE_MAGIC_ARROW(LIGHT) || (RANDO_EVENTS[RE_IKANA_CASTLE_RIGHT_SUNLIGHT] && (GET_CUR_EQUIP_VALUE(EQUIP_TYPE_SHIELD) >= EQUIP_VALUE_SHIELD_MIRROR))),
         },
         .oneWayEntrances = {
             ENTRANCE(IKANA_CASTLE, 5), // From Inner Roof
         }
+    };
+    Regions[RR_IKANA_CASTLE_FLOORMASTER_ROOM_REDEAD_AREA] = RandoRegion{ .name = "Floormaster Room, Redead Area", .sceneId = SCENE_CASTLE,
+        .connections = {
+            CONNECTION(RR_IKANA_CASTLE_FLOORMASTER_ROOM, CAN_USE_MAGIC_ARROW(LIGHT)),
+            CONNECTION(RR_IKANA_CASTLE_WIZZROBE_ROOM, true),
+        },
     };
     Regions[RR_IKANA_CASTLE_FRONT_ENTRANCE] = RandoRegion{ .name = "Front Entrance", .sceneId = SCENE_CASTLE,
         .exits = { //     TO                                         FROM
             EXIT(ENTRANCE(IKANA_CANYON, 8),                 ENTRANCE(IKANA_CASTLE, 1), true),
         },
         .connections = {
-            CONNECTION(RR_IKANA_CASTLE_COURTYARD, CAN_USE_MAGIC_ARROW(LIGHT) || ((GET_CUR_EQUIP_VALUE(EQUIP_TYPE_SHIELD) >= EQUIP_VALUE_SHIELD_MIRROR) && (CAN_USE_HUMAN_SWORD || CAN_BE_GORON || CAN_USE_PROJECTILE))),
+            CONNECTION(RR_IKANA_CASTLE_COURTYARD, CAN_USE_MAGIC_ARROW(LIGHT) || ((GET_CUR_EQUIP_VALUE(EQUIP_TYPE_SHIELD) >= EQUIP_VALUE_SHIELD_MIRROR) && (CAN_USE_SWORD || CAN_BE_GORON || CAN_USE_PROJECTILE))),
         },
     };
     Regions[RR_IKANA_CASTLE_INNER_ROOF] = RandoRegion{ .name = "Inner Roof", .sceneId = SCENE_CASTLE,
@@ -123,7 +129,7 @@ static RegisterShipInitFunc initFunc([]() {
             CHECK(RC_ANCIENT_CASTLE_OF_IKANA_LEFT_SECOND_ROOM_POT_04, CAN_BE_DEKU || HAS_ITEM(ITEM_BOW))
         },
         .connections = {
-            CONNECTION(RR_IKANA_CASTLE_CEILING_ROOM, CAN_USE_HUMAN_SWORD || CAN_USE_PROJECTILE),
+            CONNECTION(RR_IKANA_CASTLE_CEILING_ROOM, CAN_USE_SWORD || CAN_USE_PROJECTILE),
             CONNECTION(RR_IKANA_CASTLE_BUBBLE_ROOM, HAS_ITEM(ITEM_LENS_OF_TRUTH) && HAS_MAGIC && CAN_BE_DEKU && (HAS_ITEM(ITEM_BOW) || HAS_ITEM(ITEM_BOMB)))
         },
     };
@@ -145,7 +151,7 @@ static RegisterShipInitFunc initFunc([]() {
     };
     Regions[RR_IKANA_CASTLE_WIZZROBE_ROOM] = RandoRegion{ .name = "Wizzrobe Room", .sceneId = SCENE_CASTLE,
         .connections = {
-            CONNECTION(RR_IKANA_CASTLE_FLOORMASTER_ROOM, CanKillEnemy(ACTOR_EN_WIZ)),
+            CONNECTION(RR_IKANA_CASTLE_FLOORMASTER_ROOM_REDEAD_AREA, CanKillEnemy(ACTOR_EN_WIZ)),
             CONNECTION(RR_IKANA_CASTLE_REDEAD_WALKWAY, CanKillEnemy(ACTOR_EN_WIZ))
         },
     };

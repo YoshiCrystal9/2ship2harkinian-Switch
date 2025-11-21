@@ -96,6 +96,7 @@ typedef enum FaceAnimationType {
 void EnInvadepoh_Init(Actor* thisx, PlayState* play2);
 void EnInvadepoh_Destroy(Actor* thisx, PlayState* play2);
 void EnInvadepoh_InvasionHandler_Update(Actor* thisx, PlayState* play2);
+void EnInvadepoh_Reset(void);
 
 // Update functions
 void EnInvadepoh_Alien_WaitForObject(Actor* thisx, PlayState* play2);
@@ -242,6 +243,7 @@ ActorProfile En_Invadepoh_Profile = {
     /**/ EnInvadepoh_Destroy,
     /**/ EnInvadepoh_InvasionHandler_Update,
     /**/ NULL,
+    /**/ EnInvadepoh_Reset,
 };
 
 static ColliderCylinderInit sAlienCylinderInit = {
@@ -5482,4 +5484,14 @@ void EnInvadepoh_Cremia_Draw(Actor* thisx, PlayState* play) {
                           EnInvadepoh_Cremia_OverrideLimbDraw, EnInvadepoh_Cremia_PostLimbDraw, &this->actor);
 
     CLOSE_DISPS(play->state.gfxCtx);
+}
+
+void EnInvadepoh_Reset() {
+    sInvasionState = INVASION_STATE_NONE;
+    sRewardFinished = false;
+    sAliensExtremeThreat = false;
+    for (int i = 0; i < ALIEN_COUNT; i++) {
+        sAliens[i] = NULL;
+        sAlienStateFlags[i] = 0;
+    }
 }
