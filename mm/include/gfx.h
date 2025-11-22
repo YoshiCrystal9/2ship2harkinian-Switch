@@ -6,6 +6,7 @@
 #include "thga.h"
 #include "alignment.h"
 #include "unk.h"
+#include "z64play.h"
 
 struct GameState;
 
@@ -122,8 +123,8 @@ extern GfxMasterList D_0E000000;
 #define OVERLAY_DISP __gfxCtx->overlay.p
 #define DEBUG_DISP __gfxCtx->debug.p
 
-void Gfx_DrawDListOpa(struct PlayState* play, Gfx* dList);
-void Gfx_DrawDListXlu(struct PlayState* play, Gfx* dList);
+void Gfx_DrawDListOpa(PlayState* play, Gfx* dList);
+void Gfx_DrawDListXlu(PlayState* play, Gfx* dList);
 
 // #region 2S2H [Port] Logic to perform in DISPS methods for debug information and frame interpolation support
 #define OPEN_DISPS_PORT_HELPERS(gfxCtx)                            \

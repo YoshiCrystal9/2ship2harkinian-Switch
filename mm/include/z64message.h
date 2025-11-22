@@ -4,6 +4,7 @@
 #include "PR/ultratypes.h"
 #include "z64view.h"
 #include "unk.h"
+#include "z64bombers_notebook.h"
 
 struct Actor;
 struct MessageTableEntry;
