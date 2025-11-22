@@ -18,9 +18,9 @@ jobs:
       uses: hendrikmuhs/ccache-action@v1.2
       with:
         save: ${{ github.ref_name == github.event.repository.default_branch }}
-        key: ${{ runner.os }}-otr-ccache-${{ github.ref }}-${{ github.sha }}
+        key: ${{ runner.os }}-otr-ccache-${{ github.ref_name }}
         restore-keys: |
-          ${{ runner.os }}-otr-ccache-${{ github.ref }}
+          ${{ runner.os }}-otr-ccache-${{ github.event.repository.default_branch }}
           ${{ runner.os }}-otr-ccache
     - name: Install dependencies
       run: |
@@ -29,9 +29,9 @@ jobs:
     - name: Restore Cached deps folder
       uses: actions/cache/restore@v4
       with:
-        key: ${{ runner.os }}-deps-${{ github.ref }}-${{ github.sha }}
+        key: ${{ runner.os }}-deps-${{ github.ref_name }}
         restore-keys: |
-          ${{ runner.os }}-deps-${{ github.ref }}-
+          ${{ runner.os }}-deps-${{ github.event.repository.default_branch }}
           ${{ runner.os }}-deps-
         path: deps
     - name: Create deps folder
@@ -87,9 +87,9 @@ jobs:
       with:
         create-symlink: true
         save: ${{ github.ref_name == github.event.repository.default_branch }}
-        key: ${{ runner.os }}-14-ccache-${{ github.ref }}-${{ github.sha }}
+        key: ${{ runner.os }}-14-ccache-${{ github.ref_name }}
         restore-keys: |
-          ${{ runner.os }}-14-ccache-${{ github.ref }}
+          ${{ runner.os }}-14-ccache-${{ github.event.repository.default_branch }}
           ${{ runner.os }}-14-ccache
     # Needed to apply sudo for macports cache restore
     - name: Install gtar wrapper
@@ -101,10 +101,7 @@ jobs:
       id: restore-cache-macports
       uses: actions/cache/restore@v4
       with:
-        key: ${{ runner.os }}-14-macports-${{ hashFiles('.github/workflows/macports-deps.txt') }}-${{ github.sha }}
-        restore-keys: |
-          ${{ runner.os }}-14-macports-${{ hashFiles('.github/workflows/macports-deps.txt') }}-
-          ${{ runner.os }}-14-macports-
+        key: ${{ runner.os }}-14-macports-${{ hashFiles('.github/workflows/macports-deps.txt') }}
         path: /opt/local/
     # Updated PATH applies to the next step and onwards
     - name: Install MacPorts (if necessary)
@@ -166,17 +163,17 @@ jobs:
       uses: hendrikmuhs/ccache-action@v1.2
       with:
         save: ${{ github.ref_name == github.event.repository.default_branch }}
-        key: ${{ runner.os }}-ccache-${{ github.ref }}-${{ github.sha }}
+        key: ${{ runner.os }}-ccache-${{ github.ref_name }}
         restore-keys: |
-          ${{ runner.os }}-ccache-${{ github.ref }}
+          ${{ runner.os }}-ccache-${{ github.event.repository.default_branch }}
           ${{ runner.os }}-ccache
     - name: Restore Cached deps folder
       id: restore-cache-deps
       uses: actions/cache/restore@v4
       with:
-        key: ${{ runner.os }}-deps-${{ github.ref }}-${{ github.sha }}
+        key: ${{ runner.os }}-deps-${{ github.ref_name }}
         restore-keys: |
-          ${{ runner.os }}-deps-${{ github.ref }}-
+          ${{ runner.os }}-deps-${{ github.event.repository.default_branch }}
           ${{ runner.os }}-deps-
         path: deps
     - name: Create deps folder
@@ -271,17 +268,17 @@ jobs:
         max-size: "2G"
         evict-old-files: job
         save: ${{ github.ref_name == github.event.repository.default_branch }}
-        key: ${{ runner.os }}-ccache-${{ github.ref }}-${{ github.sha }}
+        key: ${{ runner.os }}-ccache-${{ github.ref_name }}
         restore-keys: |
-          ${{ runner.os }}-ccache-${{ github.ref }}
+          ${{ runner.os }}-ccache-${{ github.event.repository.default_branch }}
           ${{ runner.os }}-ccache
     - name: Restore Cached VCPKG folder
       id: restore-cache-vcpkg
       uses: actions/cache/restore@v4
       with:
-        key: ${{ runner.os }}-vcpkg-${{ github.ref }}-${{ github.sha }}
+        key: ${{ runner.os }}-vcpkg-${{ github.ref_name }}
         restore-keys: |
-          ${{ runner.os }}-vcpkg-${{ github.ref }}-
+          ${{ runner.os }}-vcpkg-${{ github.event.repository.default_branch }}
           ${{ runner.os }}-vcpkg-
         path: vcpkg
     - name: Configure Developer Command Prompt
