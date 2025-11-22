@@ -18,7 +18,6 @@ jobs:
       uses: hendrikmuhs/ccache-action@v1.2
       with:
         save: ${{ github.ref_name == github.event.repository.default_branch }}
-        append-timestamp: false
         key: ${{ runner.os }}-otr-ccache-${{ github.ref_name }}
         restore-keys: |
           ${{ runner.os }}-otr-ccache-${{ github.event.repository.default_branch }}
@@ -88,7 +87,6 @@ jobs:
       with:
         create-symlink: true
         save: ${{ github.ref_name == github.event.repository.default_branch }}
-        append-timestamp: false
         key: ${{ runner.os }}-14-ccache-${{ github.ref_name }}
         restore-keys: |
           ${{ runner.os }}-14-ccache-${{ github.event.repository.default_branch }}
@@ -165,7 +163,6 @@ jobs:
       uses: hendrikmuhs/ccache-action@v1.2
       with:
         save: ${{ github.ref_name == github.event.repository.default_branch }}
-        append-timestamp: false
         key: ${{ runner.os }}-ccache-${{ github.ref_name }}
         restore-keys: |
           ${{ runner.os }}-ccache-${{ github.event.repository.default_branch }}
@@ -270,7 +267,6 @@ jobs:
         variant: sccache
         max-size: "2G"
         evict-old-files: job
-        append-timestamp: false
         save: ${{ github.ref_name == github.event.repository.default_branch }}
         key: ${{ runner.os }}-ccache-${{ github.ref_name }}
         restore-keys: |
