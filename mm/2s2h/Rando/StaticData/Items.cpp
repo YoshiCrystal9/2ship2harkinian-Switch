@@ -2,11 +2,14 @@
 #include <libultraship/bridge/consolevariablebridge.h>
 #include "2s2h/ShipUtils.h"
 #include "2s2h/Rando/Rando.h"
+#include "2s2h_assets.h"
 
 extern "C" {
 extern s16 D_801CFF94[250];
 #include "assets/interface/parameter_static/parameter_static.h"
 #include "assets/interface/icon_item_dungeon_static/icon_item_dungeon_static.h"
+#include "interface/icon_item_field_static/icon_item_field_static.h"
+#include "assets/archives/icon_item_static/icon_item_static_yar.h"
 }
 
 namespace Rando {
@@ -333,6 +336,26 @@ const char* GetIconTexturePath(RandoItemId randoItemId) {
         case RI_FROG_PINK:
         case RI_FROG_WHITE:
             return (const char*)gItemIcons[ITEM_MASK_DON_GERO];
+        case RI_OWL_CLOCK_TOWN_SOUTH:
+        case RI_OWL_GREAT_BAY_COAST:
+        case RI_OWL_IKANA_CANYON:
+        case RI_OWL_MILK_ROAD:
+        case RI_OWL_MOUNTAIN_VILLAGE:
+        case RI_OWL_SNOWHEAD:
+        case RI_OWL_SOUTHERN_SWAMP:
+        case RI_OWL_STONE_TOWER:
+        case RI_OWL_WOODFALL:
+        case RI_OWL_ZORA_CAPE:
+            return (const char*)gWorldMapOwlFaceTex;
+        case RI_TINGLE_MAP_CLOCK_TOWN:
+        case RI_TINGLE_MAP_GREAT_BAY:
+        case RI_TINGLE_MAP_ROMANI_RANCH:
+        case RI_TINGLE_MAP_SNOWHEAD:
+        case RI_TINGLE_MAP_STONE_TOWER:
+        case RI_TINGLE_MAP_WOODFALL:
+            return (const char*)gItemIconTingleMapTex;
+        case RI_TRIFORCE_PIECE:
+            return (const char*)gTriforcePieceTex;
         default:
             break;
     }

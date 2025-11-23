@@ -20,8 +20,8 @@
 
 #include "include/global.h"
 
-#include "Enhancements/Trackers/ItemTracker.h"
-#include "Enhancements/Trackers/ItemTrackerSettings.h"
+#include "Enhancements/Trackers/ItemTracker/ItemTracker.h"
+#include "Enhancements/Trackers/ItemTracker/ItemTrackerSettings.h"
 #include "Enhancements/Trackers/DisplayOverlay.h"
 #include "Enhancements/Trackers//TimeSplits/Timesplits.h"
 #include "Enhancements/Trackers/TimeSplits/TimesplitsSettings.h"
