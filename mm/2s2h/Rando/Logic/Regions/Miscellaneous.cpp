@@ -84,7 +84,7 @@ static RegisterShipInitFunc initFunc([]() {
 			CHECK(RC_ENEMY_DROP_LIKE_LIKE,		CanKillEnemy(ACTOR_EN_RR)			&& CanReachRegions({ RR_ZORA_CAPE,
 																										 RR_GREAT_BAY_COAST })),
 			CHECK(RC_ENEMY_DROP_MAD_SCRUB,		CanKillEnemy(ACTOR_EN_DEKUNUTS)		&& CanReachRegions({ RR_WOODFALL,
-																										 RR_DEKU_PALACE_INSIDE })),
+																										 RR_DEKU_PALACE_INSIDE_UPPER })),
 			CHECK(RC_ENEMY_DROP_MINI_BABA,		CanKillEnemy(ACTOR_EN_KAREBABA)		&& CanReachRegions({ RR_SOUTHERN_SWAMP_NORTH,
 																										 RR_SOUTHERN_SWAMP_NEAR_WOODS,
 																										 RR_DEKU_PALACE_OUTSIDE,

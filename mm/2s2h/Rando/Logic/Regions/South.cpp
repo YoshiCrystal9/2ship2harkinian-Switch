@@ -76,11 +76,9 @@ static RegisterShipInitFunc initFunc([]() {
             EXIT(ENTRANCE(DEKU_PALACE, 9),                  ENTRANCE(GROTTOS, 12), true), // TODO: Grotto mapping
         },
     };
-    Regions[RR_DEKU_PALACE_INSIDE] = RandoRegion{ .name = "Inside", .sceneId = SCENE_22DEKUCITY,
+    Regions[RR_DEKU_PALACE_INSIDE_LOWER] = RandoRegion{ .name = "Inside, Lower", .sceneId = SCENE_22DEKUCITY,
         .checks = {
             CHECK(RC_DEKU_PALACE_PIECE_OF_HEART,    true),
-            CHECK(RC_DEKU_PALACE_POT_01, CAN_BE_DEKU),
-            CHECK(RC_DEKU_PALACE_POT_02, CAN_BE_DEKU),
             CHECK(RC_DEKU_PALACE_FREESTANDING_RUPEE_01, CAN_BE_DEKU),
             CHECK(RC_DEKU_PALACE_FREESTANDING_RUPEE_02, CAN_BE_DEKU),
             CHECK(RC_DEKU_PALACE_FREESTANDING_RUPEE_03, CAN_BE_DEKU),
@@ -108,21 +106,34 @@ static RegisterShipInitFunc initFunc([]() {
         },
         .exits = { //     TO                                         FROM
             EXIT(ENTRANCE(DEKU_KINGS_CHAMBER, 0),           ENTRANCE(DEKU_PALACE, 2), true),
-            EXIT(ENTRANCE(DEKU_KINGS_CHAMBER, 1),           ENTRANCE(DEKU_PALACE, 3), CAN_BE_DEKU), // Cell TODO: Is there something to do with beans here?
             EXIT(ENTRANCE(GROTTOS, 12),                     ENTRANCE(DEKU_PALACE, 9), true), // TODO: Grotto mapping
         },
         .connections = {
             CONNECTION(RR_DEKU_PALACE_OUTSIDE, true),
         },
     };
+    Regions[RR_DEKU_PALACE_INSIDE_UPPER] = RandoRegion{ .name = "Inside, Upper", .sceneId = SCENE_22DEKUCITY,
+        .checks = {
+            CHECK(RC_DEKU_PALACE_POT_01, CAN_BE_DEKU),
+            CHECK(RC_DEKU_PALACE_POT_02, CAN_BE_DEKU),
+        },
+        .exits = { //     TO                                         FROM
+            EXIT(ENTRANCE(DEKU_KINGS_CHAMBER, 1),           ENTRANCE(DEKU_PALACE, 3), CAN_BE_DEKU), // Cell
+        },
+        .connections = {
+            CONNECTION(RR_DEKU_PALACE_INSIDE_LOWER, true),
+        },
+    };
     Regions[RR_DEKU_PALACE_OUTSIDE] = RandoRegion{ .name = "Outside", .sceneId = SCENE_22DEKUCITY,
         .exits = { //     TO                                         FROM
             EXIT(ENTRANCE(SOUTHERN_SWAMP_POISONED, 3),      ENTRANCE(DEKU_PALACE, 0), true),
             EXIT(ENTRANCE(SOUTHERN_SWAMP_POISONED, 4),      ENTRANCE(DEKU_PALACE, 5), CAN_BE_DEKU), // Treetop
-            EXIT(ENTRANCE(DEKU_SHRINE, 0),                  ENTRANCE(DEKU_PALACE, 4), RANDO_EVENTS[RE_CLEARED_WOODFALL_TEMPLE]),
+            EXIT(ENTRANCE(DEKU_SHRINE, 0),                  ENTRANCE(DEKU_PALACE, 4), RANDO_EVENTS[RE_CLEARED_WOODFALL_TEMPLE] && CAN_TRAVERSE_WAIST_DEEP_WATER),
         },
         .connections = {
-            CONNECTION(RR_DEKU_PALACE_INSIDE, CAN_BE_DEKU),
+            CONNECTION(RR_DEKU_PALACE_INSIDE_LOWER, CAN_BE_DEKU),
+            // TODO: This soil patch can be watered with the Day 2 rain. Clock shuffle will need to require Day 2 or another water source.
+            CONNECTION(RR_DEKU_PALACE_INSIDE_UPPER, (CAN_BE_DEKU || (RANDO_EVENTS[RE_CLEARED_WOODFALL_TEMPLE] && CAN_TRAVERSE_WAIST_DEEP_WATER)) && HAS_ITEM(ITEM_MAGIC_BEANS)),
         },
     };
     Regions[RR_DEKU_SHRINE_ENTRANCE] = RandoRegion{ .name = "Entrance", .sceneId = SCENE_DANPEI,

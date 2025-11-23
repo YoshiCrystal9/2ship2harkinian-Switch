@@ -22,7 +22,8 @@ static RegisterShipInitFunc initFunc([]() {
         .checks = {
             // TODO: Trick: Jumpslash to clip through (similar to Clock Town Straw).
             // Zora can just climb up, adding it to logic for now but if someone wants to make it a trick later feel free.
-            CHECK(RC_DOGGY_RACETRACK_CHEST, HAS_ITEM(ITEM_HOOKSHOT) || CAN_GROW_BEAN_PLANT || CAN_BE_ZORA),
+            // TODO: This soil patch can be watered with the Day 2 rain. Clock shuffle will need to require Day 2 or another water source.
+            CHECK(RC_DOGGY_RACETRACK_CHEST, HAS_ITEM(ITEM_HOOKSHOT) || HAS_ITEM(ITEM_MAGIC_BEANS) || CAN_BE_ZORA),
             CHECK(RC_DOGGY_RACETRACK_PIECE_OF_HEART,    HAS_ITEM(ITEM_MASK_TRUTH)),
             CHECK(RC_DOGGY_RACETRACK_POT_01, true),
             CHECK(RC_DOGGY_RACETRACK_POT_02, true),
