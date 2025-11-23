@@ -1419,6 +1419,10 @@ void BenMenu::AddEnhancements() {
         .Options(CheckboxOptions().Tooltip("Restores the appearance of Woodfall mountain to not look poisoned "
                                            "when viewed from Termina Field after clearing Woodfall Temple\n\n"
                                            "Requires a scene reload to take effect."));
+    AddWidget(path, "Bonk Collision", WIDGET_CVAR_CHECKBOX)
+        .CVar("gEnhancements.Restorations.BonkCollision")
+        .Options(
+            CheckboxOptions().Tooltip("Corrects rolls to allow bonking trees near the end of the roll, as in OoT."));
     AddWidget(path, "Simulated Input Lag", WIDGET_CVAR_SLIDER_INT)
         .CVar(CVAR_SIMULATED_INPUT_LAG)
         .Options(IntSliderOptions()
