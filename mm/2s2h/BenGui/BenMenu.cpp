@@ -138,6 +138,12 @@ static const std::vector<const char*> maskOfTruthGrottoOptions = {
     "Always",             // HIDDEN_GROTTOS_VISIBLITY_ALWAYS
 };
 
+static const std::vector<const char*> goronRaceDifficultyOptions = {
+    "Vanilla",  // GORON_RACE_DIFFICULTY_VANILLA
+    "Balanced", // GORON_RACE_DIFFICULTY_BALANCED
+    "Skip",     // GORON_RACE_DIFFICULTY_SKIP
+};
+
 static const std::vector<const char*> timerDisplayOptions = {
     "Off",          // TIMER_DISPLAY_NONE
     "Real-Time",    // TIMER_DISPLAY_RTA
@@ -1557,6 +1563,16 @@ void BenMenu::AddEnhancements() {
         .CVar("gEnhancements.Minigames.MarkShootingGalleryOctoroks")
         .Options(CheckboxOptions().Tooltip("Places markers on the Town Shooting Gallery Octoroks, indicating whether "
                                            "they should be hit."));
+    AddWidget(path, "Goron Race", WIDGET_CVAR_COMBOBOX)
+        .CVar("gEnhancements.DifficultyOptions.GoronRace")
+        .Options(ComboboxOptions()
+                     .Tooltip("Set CPU behavior for the Goron Race:\n"
+                              "- Vanilla: Gorons ahead of Link slow down, and Gorons behind speed up.\n"
+                              "- Balanced: Gorons ahead of Link slow down, but Gorons behind do not speed up.\n"
+                              "- Skip: Instantly win the race.\n")
+                     .DefaultIndex(GoronRaceDifficultyOptions::GORON_RACE_DIFFICULTY_VANILLA)
+                     .ComboVec(&goronRaceDifficultyOptions));
+
     path.column = SECTION_COLUMN_3;
     AddWidget(path, "Other", WIDGET_SEPARATOR_TEXT);
     AddWidget(path, "Lower Bank Reward Thresholds", WIDGET_CVAR_CHECKBOX)

@@ -52,6 +52,12 @@ enum TimerDisplayOptions {
     TIMER_DISPLAY_IGT,
 };
 
+enum GoronRaceDifficultyOptions {
+    GORON_RACE_DIFFICULTY_VANILLA,
+    GORON_RACE_DIFFICULTY_BALANCED,
+    GORON_RACE_DIFFICULTY_SKIP,
+};
+
 // Old Entry Point
 void InitEnhancements();
 

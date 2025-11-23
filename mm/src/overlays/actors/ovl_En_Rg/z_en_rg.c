@@ -7,6 +7,8 @@
 #include "z_en_rg.h"
 #include "objects/gameplay_keep/gameplay_keep.h"
 
+#include "2s2h/GameInteractor/GameInteractor.h"
+
 #define FLAGS (ACTOR_FLAG_UPDATE_CULLING_DISABLED | ACTOR_FLAG_MINIMAP_ICON_ENABLED)
 
 void EnRg_Init(Actor* thisx, PlayState* play);
@@ -472,7 +474,7 @@ s32 func_80BF47AC(EnRg* this, PlayState* play) {
         phi_f0 = phi_f2 * 2.0f;
     }
 
-    if (phi_f0 > 0.0f) {
+    if (GameInteractor_Should(VB_GORON_RACE_RUBBERBANDING, phi_f0 > 0.0f, &phi_f0, &phi_f2)) {
         if (this->unk_320 != 0) {
             this->unk_320--;
         }
