@@ -7,14 +7,12 @@
 
 extern "C" {
 #include "variables.h"
-#include "overlays/actors/ovl_Boss_07/z_boss_07.h"
 uint64_t GetUnixTimestamp();
-void Boss07_Wrath_DeathCutscene(Boss07*, PlayState*);
 }
 
 #include "ShipUtils.h"
 #include "interface/parameter_static/parameter_static.h"
-#include "GameInteractor/GameInteractor.h"
+#include "2s2h/Enhancements/Enhancements.h"
 
 float windowScale = 1.0f;
 ImVec4 windowBG = ImVec4(0, 0, 0, 0.5f);
@@ -48,7 +46,8 @@ void DisplayOverlayWindow::Draw() {
     if (!gPlayState) {
         return;
     }
-    if (!CVarGetInteger("gWindows.DisplayOverlay", 0)) {
+    int displayOverlay = CVarGetInteger("gWindows.DisplayOverlay", 0);
+    if (displayOverlay == TIMER_DISPLAY_NONE) {
         return;
     }
 
@@ -68,12 +67,34 @@ void DisplayOverlayWindow::Draw() {
     ImGui::Image(Ship::Context::GetInstance()->GetWindow()->GetGui()->GetTextureByName(gTimerClockIconTex),
                  ImVec2(16.0f * windowScale, 16.0f * windowScale));
     ImGui::SameLine(0, 10.0f);
-    if (gSaveContext.save.shipSaveInfo.fileCompletedAt == 0) {
-        DrawInGameTimer((GetUnixTimestamp() - gSaveContext.save.shipSaveInfo.fileCreatedAt) / 100);
-    } else {
-        DrawInGameTimer(
-            (gSaveContext.save.shipSaveInfo.fileCompletedAt - gSaveContext.save.shipSaveInfo.fileCreatedAt) / 100,
-            ImVec4(0, 1, 0, 1));
+
+    uint64_t timeToDisplay = 0;
+    if (gSaveContext.save.shipSaveInfo.fileCompletedAt == 0) { // Player has not beaten the game
+        switch (displayOverlay) {
+            case TIMER_DISPLAY_RTA:
+                timeToDisplay = (GetUnixTimestamp() - gSaveContext.save.shipSaveInfo.fileCreatedAt);
+                break;
+            case TIMER_DISPLAY_IGT:
+                timeToDisplay = ((GetUnixTimestamp() - gSaveContext.shipSaveContext.lastTimeLog) +
+                                 gSaveContext.save.shipSaveInfo.filePlaytime);
+                break;
+            default:
+                break;
+        }
+        DrawInGameTimer(timeToDisplay / 100);
+    } else { // Player has beaten the game
+        switch (displayOverlay) {
+            case TIMER_DISPLAY_RTA:
+                timeToDisplay =
+                    (gSaveContext.save.shipSaveInfo.fileCompletedAt - gSaveContext.save.shipSaveInfo.fileCreatedAt);
+                break;
+            case TIMER_DISPLAY_IGT:
+                timeToDisplay = gSaveContext.save.shipSaveInfo.filePlaytime;
+                break;
+            default:
+                break;
+        }
+        DrawInGameTimer(timeToDisplay / 100, ImVec4(0, 1, 0, 1));
     }
 
     ImGui::End();
@@ -83,16 +104,4 @@ void DisplayOverlayWindow::Draw() {
 }
 
 void DisplayOverlayWindow::InitElement() {
-    COND_HOOK(OnSaveLoad, true, [](s16 fileNum) {
-        if (gSaveContext.save.shipSaveInfo.fileCreatedAt == 0) {
-            gSaveContext.save.shipSaveInfo.fileCreatedAt = GetUnixTimestamp();
-        }
-    });
-
-    COND_ID_HOOK(OnActorUpdate, ACTOR_BOSS_07, true, [](Actor* actor) {
-        Boss07* boss = (Boss07*)actor;
-        if (boss->actionFunc == Boss07_Wrath_DeathCutscene && gSaveContext.save.shipSaveInfo.fileCompletedAt == 0) {
-            gSaveContext.save.shipSaveInfo.fileCompletedAt = GetUnixTimestamp();
-        }
-    })
 }

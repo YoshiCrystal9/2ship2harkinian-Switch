@@ -3580,6 +3580,7 @@ void KaleidoScope_Update(PlayState* play) {
                                 // but we need to first identify and fix edge cases where that doesn't work properly
                                 // like grottos and cutscenes
                                 gSaveContext.save.shipSaveInfo.pauseSaveEntrance = SavingEnhancements_GetSaveEntrance();
+                                SavingEnhancements_AdvancePlaytime();
                             }
                             Play_SaveCycleSceneFlags(play);
                             gSaveContext.save.saveInfo.playerData.savedSceneId = play->sceneId;

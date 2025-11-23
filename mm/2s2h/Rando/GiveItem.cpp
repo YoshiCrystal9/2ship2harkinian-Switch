@@ -113,6 +113,7 @@ void Rando::GiveItem(RandoItemId randoItemId) {
                 if (!Flags_GetRandoInf(RANDO_INF_OBTAINED_SOUL_OF_MAJORA)) {
                     Rando::GiveItem(RI_SOUL_MAJORA);
                 }
+                GameInteractor_ExecuteOnGameCompletion();
                 GameInteractor::Instance->events.emplace_back(
                     GIEventTransition{ .entrance = ENTRANCE(TERMINA_FIELD, 0),
                                        .cutsceneIndex = 0xFFF7,

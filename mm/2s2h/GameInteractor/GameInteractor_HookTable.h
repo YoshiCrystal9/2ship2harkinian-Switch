@@ -15,6 +15,7 @@ DEFINE_HOOK(BeforeMoonCrashSaveReset, ())
 DEFINE_HOOK(OnInterfaceDrawStart, ())
 DEFINE_HOOK(AfterInterfaceClockDraw, ())
 DEFINE_HOOK(BeforeInterfaceClockDraw, ())
+DEFINE_HOOK(OnGameCompletion, ())
 
 DEFINE_HOOK(OnSceneInit, (s8 sceneId, s8 spawnNum))
 DEFINE_HOOK(OnRoomInit, (s8 sceneId, s8 roomNum))

@@ -5,6 +5,7 @@
 #include "BenPort.h"
 #include "build.h"
 
+#include "2s2h/Enhancements/Saving/SavingEnhancements.h"
 #include "2s2h/GameInteractor/GameInteractor.h"
 #include <libultraship/bridge/consolevariablebridge.h>
 
@@ -1017,6 +1018,8 @@ void Sram_InitNewSave(void) {
     gSaveContext.save.shipSaveInfo.saveType = SAVETYPE_VANILLA;
     gSaveContext.save.shipSaveInfo.fileCreatedAt = 0;
     gSaveContext.save.shipSaveInfo.fileCompletedAt = 0;
+    gSaveContext.save.shipSaveInfo.filePlaytime = 0;
+    gSaveContext.shipSaveContext.lastTimeLog = 0;
     //  #endregion
 
     Sram_GenerateRandomSaveFields();
@@ -1247,6 +1250,8 @@ void Sram_InitDebugSave(void) {
     gSaveContext.save.shipSaveInfo.saveType = SAVETYPE_VANILLA;
     gSaveContext.save.shipSaveInfo.fileCreatedAt = 0;
     gSaveContext.save.shipSaveInfo.fileCompletedAt = 0;
+    gSaveContext.save.shipSaveInfo.filePlaytime = 0;
+    gSaveContext.shipSaveContext.lastTimeLog = 0;
     // #endregion
 
     Sram_GenerateRandomSaveFields();
@@ -2019,6 +2024,8 @@ void Sram_SaveSpecialEnterClockTown(PlayState* play) {
 
     gSaveContext.save.isFirstCycle = true;
     gSaveContext.save.isOwlSave = false;
+    // 2S2H [Enhancement] Store playtime before saving
+    SavingEnhancements_AdvancePlaytime();
     func_80145698(sramCtx);
     SysFlashrom_WriteDataSync(sramCtx->saveBuf, gFlashSaveStartPages[gSaveContext.fileNum * FLASH_SAVE_MAIN_MULTIPLIER],
                               gFlashSpecialSaveNumPages[gSaveContext.fileNum * FLASH_SAVE_MAIN_MULTIPLIER]);

@@ -1771,6 +1771,7 @@ void Boss07_Wrath_SetupDeathCutscene(Boss07* this, PlayState* play) {
     this->damagedTimer = 1000;
 
     GameInteractor_ExecuteOnBossDefeated(this->actor.id); // 2S2H Time Splits
+    GameInteractor_ExecuteOnGameCompletion();
 }
 
 void Boss07_Wrath_DeathCutscene(Boss07* this, PlayState* play) {

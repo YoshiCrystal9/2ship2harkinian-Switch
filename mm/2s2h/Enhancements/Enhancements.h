@@ -46,6 +46,12 @@ enum HiddenGrottosVisibilityOptions {
     HIDDEN_GROTTOS_VISIBLITY_ALWAYS,
 };
 
+enum TimerDisplayOptions {
+    TIMER_DISPLAY_NONE,
+    TIMER_DISPLAY_RTA,
+    TIMER_DISPLAY_IGT,
+};
+
 // Old Entry Point
 void InitEnhancements();
 

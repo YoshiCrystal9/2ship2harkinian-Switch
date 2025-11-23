@@ -70,7 +70,7 @@ void from_json(const json& j, RandoSaveInfo& rando) {
 
     // The value of Starting Items is a string in code but is stored as a char in the RandoSaveInfo
     std::string startingItemsStr = j.value("randoStartingItems", "");
-    strncpy(rando.randoStartingItems, startingItemsStr.c_str(), startingItemsStr.size() +1);
+    strncpy(rando.randoStartingItems, startingItemsStr.c_str(), startingItemsStr.size() + 1);
 
     j.at("foundDungeonKeys").get_to(rando.foundDungeonKeys);
     j.at("foundTriforcePieces").get_to(rando.foundTriforcePieces);
@@ -80,12 +80,13 @@ void to_json(json& j, const ShipSaveInfo& shipSaveInfo) {
     uint8_t commitHash[8];
     memcpy(commitHash, shipSaveInfo.commitHash, sizeof(commitHash));
 
-    j = json {
+    j = json{
         { "dpadEquips", shipSaveInfo.dpadEquips },
         { "pauseSaveEntrance", shipSaveInfo.pauseSaveEntrance },
         { "saveType", shipSaveInfo.saveType },
         { "fileCreatedAt", shipSaveInfo.fileCreatedAt },
         { "fileCompletedAt", shipSaveInfo.fileCompletedAt },
+        { "filePlaytime", shipSaveInfo.filePlaytime },
         { "commitHash", commitHash },
     };
 
@@ -100,6 +101,7 @@ void from_json(const json& j, ShipSaveInfo& shipSaveInfo) {
     j.at("saveType").get_to(shipSaveInfo.saveType);
     j.at("fileCreatedAt").get_to(shipSaveInfo.fileCreatedAt);
     j.at("fileCompletedAt").get_to(shipSaveInfo.fileCompletedAt);
+    j.at("filePlaytime").get_to(shipSaveInfo.filePlaytime);
     j.at("commitHash").get_to(shipSaveInfo.commitHash);
 
     if (shipSaveInfo.saveType == SAVETYPE_RANDO) {

@@ -397,7 +397,8 @@ typedef struct ShipSaveInfo {
     s32 pauseSaveEntrance;
     SaveType saveType;
     uint64_t fileCreatedAt;
-    uint64_t fileCompletedAt; // For now this is always Majora final blow, has the potential to be something else later on
+    uint64_t fileCompletedAt;
+    uint64_t filePlaytime;
     char commitHash[8];
     RandoSaveInfo rando;
 } ShipSaveInfo;
@@ -433,6 +434,7 @@ typedef struct DpadSaveContext {
 // See `ShipSaveInfo` for values on the SaveContext that are persisted.
 typedef struct ShipSaveContext {
     DpadSaveContext dpad;
+    uint64_t lastTimeLog;
 } ShipSaveContext;
 // #endregion
 

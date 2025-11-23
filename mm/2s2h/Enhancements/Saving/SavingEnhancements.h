@@ -10,6 +10,7 @@ extern "C" {
 
 int SavingEnhancements_GetSaveEntrance();
 bool SavingEnhancements_CanSave();
+void SavingEnhancements_AdvancePlaytime();
 
 #ifdef __cplusplus
 }
