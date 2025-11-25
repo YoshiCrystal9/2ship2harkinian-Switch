@@ -118,7 +118,7 @@ std::map<std::tuple<s16, s16, s16>, RandoCheckId> crateMap = {
 };
 
 // Identify the crate RC by scene ID, room, and actor list index
-RandoCheckId getCrateRandoCheck(Actor* actor) {
+RandoCheckId IdentifyCrate(Actor* actor) {
     RandoCheckId randoCheckId = RC_UNKNOWN;
 
     s16 actorListIndex = GetActorListIndex(actor);
@@ -126,6 +126,13 @@ RandoCheckId getCrateRandoCheck(Actor* actor) {
     if (it != crateMap.end()) {
         randoCheckId = it->second;
     }
+
+    if (randoCheckId == RC_UNKNOWN || !RANDO_SAVE_CHECKS[randoCheckId].shuffled ||
+        RANDO_SAVE_CHECKS[randoCheckId].cycleObtained) {
+        return RC_UNKNOWN;
+    }
+
+    Rando::ActorBehavior::SetObjectRandoCheckId(actor, randoCheckId);
     return randoCheckId;
 }
 
@@ -135,7 +142,7 @@ void ObjKibako_RandoDraw(Actor* actor, PlayState* play) {
         return;
     }
 
-    RandoCheckId randoCheckId = getCrateRandoCheck(actor);
+    RandoCheckId randoCheckId = Rando::ActorBehavior::GetObjectRandoCheckId(actor);
     RandoItemId randoItemId = Rando::ConvertItem(RANDO_SAVE_CHECKS[randoCheckId].randoItemId, randoCheckId);
     RandoItemType randoItemType = Rando::StaticData::Items[randoItemId].randoItemType;
 
@@ -176,7 +183,7 @@ void ObjKibako2_RandoDraw(Actor* actor, PlayState* play) {
         return;
     }
 
-    RandoCheckId randoCheckId = getCrateRandoCheck(actor);
+    RandoCheckId randoCheckId = Rando::ActorBehavior::GetObjectRandoCheckId(actor);
     RandoItemId randoItemId = Rando::ConvertItem(RANDO_SAVE_CHECKS[randoCheckId].randoItemId, randoCheckId);
     RandoItemType randoItemType = Rando::StaticData::Items[randoItemId].randoItemType;
 
@@ -211,29 +218,23 @@ void ObjKibako2_RandoDraw(Actor* actor, PlayState* play) {
     }
 }
 
-void initCrateBehavior(Actor* actor) {
-    RandoCheckId randoCheckId = getCrateRandoCheck(actor);
-    if (!RANDO_SAVE_CHECKS[randoCheckId].shuffled || RANDO_SAVE_CHECKS[randoCheckId].cycleObtained) {
-        return;
-    }
-
-    Rando::ActorBehavior::SetObjectRandoCheckId(actor, randoCheckId);
-}
-
 void Rando::ActorBehavior::InitObjKibakoBehavior() {
     COND_ID_HOOK(OnActorInit, ACTOR_OBJ_KIBAKO, IS_RANDO, [](Actor* actor) {
-        initCrateBehavior(actor);
-        actor->draw = ObjKibako_RandoDraw;
+        if (IdentifyCrate(actor) != RC_UNKNOWN) {
+            actor->draw = ObjKibako_RandoDraw;
+        }
     });
 
     COND_ID_HOOK(OnActorInit, ACTOR_OBJ_KIBAKO2, IS_RANDO, [](Actor* actor) {
-        initCrateBehavior(actor);
-        actor->draw = ObjKibako2_RandoDraw;
+        if (IdentifyCrate(actor) != RC_UNKNOWN) {
+            actor->draw = ObjKibako2_RandoDraw;
+        }
     });
 
     COND_VB_SHOULD(VB_CRATE_DRAW_BE_OVERRIDDEN, IS_RANDO, {
         Actor* actor = va_arg(args, Actor*);
-        if (getCrateRandoCheck(actor) != RC_UNKNOWN) {
+        // Identify has already been called at this point, just check if we have a valid RC.
+        if (Rando::ActorBehavior::GetObjectRandoCheckId(actor) != RC_UNKNOWN) {
             *should = false;
             actor->draw = ObjKibako_RandoDraw;
         }
@@ -241,14 +242,9 @@ void Rando::ActorBehavior::InitObjKibakoBehavior() {
 
     COND_VB_SHOULD(VB_BARREL_OR_CRATE_DROP_COLLECTIBLE, IS_RANDO, {
         Actor* actor = va_arg(args, Actor*);
+        RandoCheckId randoCheckId = Rando::ActorBehavior::GetObjectRandoCheckId(actor);
 
-        if (actor->id != ACTOR_OBJ_KIBAKO && actor->id != ACTOR_OBJ_KIBAKO2) {
-            return;
-        }
-
-        RandoCheckId randoCheckId = getCrateRandoCheck(actor);
-
-        if (randoCheckId == RC_UNKNOWN) {
+        if (actor->id != ACTOR_OBJ_KIBAKO && actor->id != ACTOR_OBJ_KIBAKO2 || randoCheckId == RC_UNKNOWN) {
             return;
         }
 

@@ -363,6 +363,9 @@ void Rando::ActorBehavior::InitObjGrassBehavior() {
             auto it = objMure2GrassMap.find({ gPlayState->sceneId, actor->room, GetActorListIndex(actor) });
             if (it != objMure2GrassMap.end()) {
                 RandoCheckId randoCheckId = static_cast<RandoCheckId>(it->second + i);
+                if (!RANDO_SAVE_CHECKS[randoCheckId].shuffled || RANDO_SAVE_CHECKS[randoCheckId].cycleObtained) {
+                    return;
+                }
                 SetObjectRandoCheckId(child, randoCheckId);
             }
         }
