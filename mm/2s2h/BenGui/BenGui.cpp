@@ -60,6 +60,8 @@ std::shared_ptr<ItemTrackerSettingsWindow> mItemTrackerSettingsWindow;
 std::shared_ptr<DisplayOverlayWindow> mDisplayOverlayWindow;
 std::shared_ptr<TimesplitsWindow> mTimesplitsWindow;
 std::shared_ptr<TimesplitsSettingsWindow> mTimesplitsSettingsWindow;
+std::shared_ptr<InputViewer> mInputViewer;
+std::shared_ptr<InputViewerSettingsWindow> mInputViewerSettings;
 std::shared_ptr<BenModalWindow> mModalWindow;
 
 UIWidgets::Colors GetMenuThemeColor() {
@@ -164,6 +166,11 @@ void SetupGuiElements() {
         "gWindows.CheckTrackerSettings", "Check Tracker Settings");
     gui->AddGuiWindow(mRandoCheckTrackerSettingsWindow);
 
+    mInputViewer = std::make_shared<InputViewer>("gWindows.InputViewer", "Input Viewer");
+    gui->AddGuiWindow(mInputViewer);
+    mInputViewerSettings = std::make_shared<InputViewerSettingsWindow>("gWindows.InputViewerSettings",
+                                                                       "Input Viewer Settings", ImVec2(500, 525));
+    gui->AddGuiWindow(mInputViewerSettings);
     mModalWindow = std::make_shared<BenModalWindow>("gWindows.ModalWindow", "Modal Window");
     gui->AddGuiWindow(mModalWindow);
     mModalWindow->Show();
@@ -194,6 +201,8 @@ void Destroy() {
     mAudioEditorWindow = nullptr;
     mItemTrackerWindow = nullptr;
     mItemTrackerSettingsWindow = nullptr;
+    mInputViewer = nullptr;
+    mInputViewerSettings = nullptr;
 }
 
 void RegisterPopup(std::string title, std::string message, std::string button1, std::string button2,

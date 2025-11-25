@@ -623,6 +623,22 @@ void BenMenu::AddSettings() {
     path.sidebarName = "Presets";
     AddSidebarEntry("Settings", "Presets", 1);
     AddWidget(path, "Presets", WIDGET_CUSTOM).CustomFunction([](WidgetInfo& info) { PresetManager_Draw(); });
+
+    // Input Viewer
+    path.sidebarName = "Input Viewer";
+    path.column = SECTION_COLUMN_1;
+    AddSidebarEntry("Settings", path.sidebarName, 2);
+    AddWidget(path, "Input Viewer", WIDGET_SEPARATOR_TEXT);
+    AddWidget(path, "Toggle Input Viewer", WIDGET_WINDOW_BUTTON)
+        .CVar("gWindows.InputViewer")
+        .WindowName("Input Viewer")
+        .Options(ButtonOptions().Tooltip("Toggles the Input Viewer."));
+
+    AddWidget(path, "Input Viewer Settings", WIDGET_SEPARATOR_TEXT);
+    AddWidget(path, "Popout Input Viewer Settings", WIDGET_WINDOW_BUTTON)
+        .CVar("gWindows.InputViewerSettings")
+        .WindowName("Input Viewer Settings")
+        .Options(ButtonOptions().Tooltip("Enables the separate Input Viewer Settings Window."));
 }
 int32_t motionBlurStrength;
 

@@ -2,6 +2,7 @@
 #define BenGui_hpp
 
 #include <BenGui/UIWidgets.hpp>
+#include "2s2h/BenGui/InputViewer.h"
 #include "BenModals.h"
 
 namespace BenGui {

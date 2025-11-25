@@ -190,7 +190,10 @@ OTRGlobals::OTRGlobals() {
     prevAltAssets = CVarGetInteger("gEnhancements.Mods.AlternateAssets", 0);
     context->GetResourceManager()->SetAltAssetsEnabled(prevAltAssets);
 
-    auto controlDeck = std::make_shared<LUS::ControlDeck>(std::vector<CONTROLLERBUTTONS_T>({}));
+    auto controlDeck = std::make_shared<LUS::ControlDeck>(std::vector<CONTROLLERBUTTONS_T>({
+        BTN_CUSTOM_MODIFIER1,
+        BTN_CUSTOM_MODIFIER2,
+    }));
     context->InitControlDeck(controlDeck);
 
     context->InitCrashHandler();
