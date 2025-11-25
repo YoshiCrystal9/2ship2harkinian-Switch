@@ -430,51 +430,50 @@ void ItemTrackerWindow::Draw() {
 
     uint32_t windowIndex = TRACKER_MAIN;
     for (auto* window : itemTrackerWindows) {
-        if (window->empty()) {
-            continue;
-        }
-        bool singleWindowOpen = false;
-        if (!shouldWindowSplit) {
-            ImVec4 mainBg = ImGui::GetStyleColorVec4(ImGuiCol_WindowBg);
-            mainBg.w = (*window)[0].windowOpacity;
-            ImGui::PushStyleColor(ImGuiCol_WindowBg, mainBg);
-            singleWindowOpen =
-                ImGui::Begin(windowIndex == TRACKER_MAIN ? "Main Tracker" : "Rando Tracker", nullptr, windowFlags);
-        }
+        if (!window->empty()) {
+            bool singleWindowOpen = false;
+            if (!shouldWindowSplit) {
+                ImVec4 mainBg = ImGui::GetStyleColorVec4(ImGuiCol_WindowBg);
+                mainBg.w = (*window)[0].windowOpacity;
+                ImGui::PushStyleColor(ImGuiCol_WindowBg, mainBg);
+                singleWindowOpen =
+                    ImGui::Begin(windowIndex == TRACKER_MAIN ? "Main Tracker" : "Rando Tracker", nullptr, windowFlags);
+            }
 
-        uint32_t index = 0;
-        for (auto& object : *window) {
-            if (object.itemList.empty()) {
+            uint32_t index = 0;
+            for (auto& object : *window) {
+                if (object.itemList.empty()) {
+                    index++;
+                    continue;
+                }
+
+                bool isWindowOpen = false;
+
+                if (shouldWindowSplit) {
+                    ImVec4 bg = ImGui::GetStyleColorVec4(ImGuiCol_WindowBg);
+                    bg.w = object.windowOpacity;
+                    ImGui::PushStyleColor(ImGuiCol_WindowBg, bg);
+                    std::string windowName = std::string(object.windowName) + "##" + std::to_string(index);
+                    isWindowOpen = ImGui::Begin(windowName.c_str(), nullptr, windowFlags);
+                } else {
+                    isWindowOpen = singleWindowOpen;
+                }
+
+                if (isWindowOpen) {
+                    DrawItemWindowList(object, windowIndex == TRACKER_MAIN ? false : true);
+                }
+
+                if (shouldWindowSplit) {
+                    ImGui::PopStyleColor(1);
+                    ImGui::End();
+                }
+
                 index++;
-                continue;
             }
-
-            bool isWindowOpen = false;
-
-            if (shouldWindowSplit) {
-                ImVec4 bg = ImGui::GetStyleColorVec4(ImGuiCol_WindowBg);
-                bg.w = object.windowOpacity;
-                ImGui::PushStyleColor(ImGuiCol_WindowBg, bg);
-                std::string windowName = std::string(object.windowName) + "##" + std::to_string(index);
-                isWindowOpen = ImGui::Begin(windowName.c_str(), nullptr, windowFlags);
-            } else {
-                isWindowOpen = singleWindowOpen;
-            }
-
-            if (isWindowOpen) {
-                DrawItemWindowList(object, windowIndex == TRACKER_MAIN ? false : true);
-            }
-
-            if (shouldWindowSplit) {
+            if (!shouldWindowSplit) {
                 ImGui::PopStyleColor(1);
                 ImGui::End();
             }
-
-            index++;
-        }
-        if (!shouldWindowSplit) {
-            ImGui::PopStyleColor(1);
-            ImGui::End();
         }
         windowIndex++;
     }
