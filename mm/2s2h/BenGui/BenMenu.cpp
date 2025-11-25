@@ -81,9 +81,9 @@ static const std::vector<const char*> motionBlurOptions = {
     "Always On",         // MOTION_BLUR_ALWAYS_ON
 };
 static const std::vector<const char*> debugSaveOptions = {
-    "100% save",          // DEBUG_SAVE_INFO_COMPLETE
-    "Vanilla debug save", // DEBUG_SAVE_INFO_VANILLA_DEBUG
     "Empty save",         // DEBUG_SAVE_INFO_NONE
+    "Vanilla debug save", // DEBUG_SAVE_INFO_VANILLA_DEBUG
+    "100% save",          // DEBUG_SAVE_INFO_COMPLETE
 };
 
 #ifdef _DEBUG
