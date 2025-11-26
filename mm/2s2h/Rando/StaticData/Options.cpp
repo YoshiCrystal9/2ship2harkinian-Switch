@@ -1,5 +1,9 @@
 #include "StaticData.h"
 
+extern "C" {
+#include "overlays/actors/ovl_En_Sth/z_en_sth.h"
+}
+
 namespace Rando {
 
 namespace StaticData {
@@ -25,6 +29,7 @@ std::map<RandoOptionId, RandoStaticOption> Options = {
     RO(RO_HINTS_SPIDER_HOUSES,         RO_GENERIC_OFF),
     RO(RO_TRAP_AMOUNT,                 5),
     RO(RO_LOGIC,                       RO_LOGIC_GLITCHLESS),
+    RO(RO_MINIMUM_SKULLTULA_TOKENS,    SPIDER_HOUSE_TOKENS_REQUIRED),
     RO(RO_MINIMUM_STRAY_FAIRIES,       STRAY_FAIRY_SCATTERED_TOTAL),
     RO(RO_PLENTIFUL_ITEMS,             RO_GENERIC_OFF),
     RO(RO_SHUFFLE_BARREL_DROPS,        RO_GENERIC_OFF),

@@ -9,6 +9,7 @@ extern "C" {
 #include "functions.h"
 #include "variables.h"
 #include "ShipUtils.h"
+#include "overlays/actors/ovl_En_Sth/z_en_sth.h"
 }
 
 // Very primitive randomizer implementation, when a save is created, if rando is enabled
@@ -94,6 +95,11 @@ void Rando::MiscBehavior::OnFileCreate(s16 fileNum) {
                     for (RandoItemId itemId : MapsAndCompasses) {
                         startingItems.push_back(itemId);
                     }
+                }
+
+                // If Skulltula tokens are not shuffled, use the vanilla requirement
+                if (!RANDO_SAVE_OPTIONS[RO_SHUFFLE_GOLD_SKULLTULAS]) {
+                    RANDO_SAVE_OPTIONS[RO_MINIMUM_SKULLTULA_TOKENS] = SPIDER_HOUSE_TOKENS_REQUIRED;
                 }
 
                 std::vector<RandoCheckId> checkPool;

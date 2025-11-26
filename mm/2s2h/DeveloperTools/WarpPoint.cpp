@@ -113,7 +113,7 @@ void RenderWarpPointSection() {
         "Boot to Warp Point on Launch", WARP_POINT_CVAR "BootToWarpPoint",
         UIWidgets::CheckboxOptions({ { .disabled = skipToFileSelect,
                                        .disabledTooltip = "Incompatible with Skip to File Select enhancement" } })
-        .DefaultValue(true)
+            .DefaultValue(true)
             .Color(THEME_COLOR)
             .Tooltip(
                 "If enabled, the game will boot directly to the saved warp point with the debug save when launching "

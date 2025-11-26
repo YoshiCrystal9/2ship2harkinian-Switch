@@ -5,6 +5,10 @@
 #include "build.h"
 #include "2s2h/BenGui/BenMenu.h"
 
+extern "C" {
+#include "overlays/actors/ovl_En_Sth/z_en_sth.h"
+}
+
 // TODO: This block should come from elsewhere, tied to data in Rando::StaticData::Options
 std::unordered_map<int32_t, const char*> logicOptions = {
     { RO_LOGIC_GLITCHLESS, "Glitchless" },
@@ -217,9 +221,15 @@ static void DrawShufflesTab() {
     CVarCheckbox("Shuffle Boss Remains", Rando::StaticData::Options[RO_SHUFFLE_BOSS_REMAINS].cvar);
     CVarCheckbox("Shuffle Cows", Rando::StaticData::Options[RO_SHUFFLE_COWS].cvar);
     CVarCheckbox("Shuffle Gold Skulltula Tokens", Rando::StaticData::Options[RO_SHUFFLE_GOLD_SKULLTULAS].cvar);
-    CVarSliderInt(
-        "Shuffle Gold Skulltula Tokens", "gPlaceholderInt",
-        IntSliderOptions({ { .disabled = true, .disabledTooltip = "Coming Soon" } }).Min(1).Max(30).DefaultValue(30));
+    CVarSliderInt("Minimum Required Gold Skulltula Tokens",
+                  Rando::StaticData::Options[RO_MINIMUM_SKULLTULA_TOKENS].cvar,
+                  IntSliderOptions(
+                      { { .tooltip = "Minimum Gold Skulltula tokens needed to obtain the Spider House checks.",
+                          .disabled = !CVarGetInteger(Rando::StaticData::Options[RO_SHUFFLE_GOLD_SKULLTULAS].cvar, 0),
+                          .disabledTooltip = "Only takes effect if Gold Skulltula Tokens are shuffled." } })
+                      .Min(1)
+                      .Max(SPIDER_HOUSE_TOKENS_REQUIRED)
+                      .DefaultValue(SPIDER_HOUSE_TOKENS_REQUIRED));
     CVarSliderInt(
         "Minimum Required Stray Fairies", Rando::StaticData::Options[RO_MINIMUM_STRAY_FAIRIES].cvar,
         IntSliderOptions({ { .tooltip = "Minimum Stray Fairies needed to obtain the corresponding Great Fairy check.\n"

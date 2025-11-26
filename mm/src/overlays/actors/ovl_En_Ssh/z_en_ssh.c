@@ -6,6 +6,7 @@
 
 #include "z_en_ssh.h"
 #include "objects/object_st/object_st.h"
+#include "2s2h/GameInteractor/GameInteractor.h"
 
 #define FLAGS                                                                                 \
     (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_HOSTILE | ACTOR_FLAG_UPDATE_CULLING_DISABLED | \
@@ -688,7 +689,8 @@ void EnSsh_Init(Actor* thisx, PlayState* play) {
     this->actor.gravity = 0.0f;
     this->initialYaw = this->actor.world.rot.y;
     EnSsh_SetupAction(this, EnSsh_Start);
-    if (Inventory_GetSkullTokenCount(play->sceneId) >= SPIDER_HOUSE_TOKENS_REQUIRED) {
+    if (GameInteractor_Should(VB_HAVE_ALL_SKULLTULA_TOKENS,
+                              Inventory_GetSkullTokenCount(play->sceneId) >= SPIDER_HOUSE_TOKENS_REQUIRED)) {
         Actor_Kill(&this->actor);
     }
 }

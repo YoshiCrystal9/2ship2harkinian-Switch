@@ -8,6 +8,7 @@
  */
 
 #include "z_en_sth.h"
+#include "2s2h/GameInteractor/GameInteractor.h"
 
 #define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY)
 
@@ -146,7 +147,8 @@ void EnSth_Init(Actor* thisx, PlayState* play) {
             break;
 
         case STH_TYPE_SWAMP_SPIDER_HOUSE_CURED:
-            if (Inventory_GetSkullTokenCount(play->sceneId) >= SPIDER_HOUSE_TOKENS_REQUIRED) {
+            if (GameInteractor_Should(VB_HAVE_ALL_SKULLTULA_TOKENS,
+                                      Inventory_GetSkullTokenCount(play->sceneId) >= SPIDER_HOUSE_TOKENS_REQUIRED)) {
                 this->actionFunc = EnSth_SwampSpiderHouseIdle;
             } else {
                 Actor_Kill(&this->actor);
@@ -159,7 +161,8 @@ void EnSth_Init(Actor* thisx, PlayState* play) {
             break;
 
         case STH_TYPE_MOON_LOOKING: // South Clock Town
-            if ((gSaveContext.save.saveInfo.skullTokenCount & 0xFFFF) >= SPIDER_HOUSE_TOKENS_REQUIRED) {
+            if (GameInteractor_Should(VB_HAVE_ALL_SKULLTULA_TOKENS, (gSaveContext.save.saveInfo.skullTokenCount &
+                                                                     0xFFFF) >= SPIDER_HOUSE_TOKENS_REQUIRED)) {
                 Actor_Kill(&this->actor);
                 return;
             }
@@ -185,7 +188,9 @@ void EnSth_Init(Actor* thisx, PlayState* play) {
 
         case STH_TYPE_OCEANSIDE_SPIDER_HOUSE_PANIC:
             if (!CHECK_WEEKEVENTREG(WEEKEVENTREG_OCEANSIDE_SPIDER_HOUSE_BUYER_MOVED_IN) ||
-                (Inventory_GetSkullTokenCount(play->sceneId) < SPIDER_HOUSE_TOKENS_REQUIRED)) {
+                (GameInteractor_Should(VB_NOT_HAVE_ALL_SKULLTULA_TOKENS,
+                                       Inventory_GetSkullTokenCount(play->sceneId) < SPIDER_HOUSE_TOKENS_REQUIRED,
+                                       this))) {
                 // Has not moved in, and has not completed the house; do NOT spawn yet.
                 Actor_Kill(&this->actor);
                 return;
@@ -490,7 +495,8 @@ void EnSth_GetInitialSwampSpiderHouseText(EnSth* this, PlayState* play) {
             nextTextId = 0x918; // I've had enough of this, going home
         }
         EnSth_ChangeAnim(this, STH_ANIM_TALK);
-    } else if (Inventory_GetSkullTokenCount(play->sceneId) >= SPIDER_HOUSE_TOKENS_REQUIRED) {
+    } else if (GameInteractor_Should(VB_HAVE_ALL_SKULLTULA_TOKENS,
+                                     Inventory_GetSkullTokenCount(play->sceneId) >= SPIDER_HOUSE_TOKENS_REQUIRED)) {
         if (INV_CONTENT(ITEM_MASK_TRUTH) == ITEM_MASK_TRUTH) {
             this->sthFlags |= STH_FLAG_SWAMP_SPIDER_HOUSE_SAVED;
             nextTextId = 0x919; // I've been saved!
@@ -609,7 +615,8 @@ void EnSth_SwampSpiderHouseIdle(EnSth* this, PlayState* play) {
 void EnSth_UpdateOceansideSpiderHouseWaitForTokens(Actor* thisx, PlayState* play) {
     EnSth* this = (EnSth*)thisx;
 
-    if (Inventory_GetSkullTokenCount(play->sceneId) >= SPIDER_HOUSE_TOKENS_REQUIRED) {
+    if (GameInteractor_Should(VB_HAVE_ALL_SKULLTULA_TOKENS,
+                              Inventory_GetSkullTokenCount(play->sceneId) >= SPIDER_HOUSE_TOKENS_REQUIRED)) {
         this->actor.update = EnSth_Update;
         this->actor.draw = EnSth_Draw;
         this->actor.flags |= ACTOR_FLAG_ATTENTION_ENABLED;
@@ -635,7 +642,8 @@ void EnSth_UpdateWaitForObject(Actor* thisx, PlayState* play) {
             this->animIndex = STH_ANIM_BENDING_DOWN;
             if (CHECK_WEEKEVENTREG(WEEKEVENTREG_34_10) || CHECK_WEEKEVENTREG(WEEKEVENTREG_34_20) ||
                 CHECK_WEEKEVENTREG(WEEKEVENTREG_RECEIVED_MASK_OF_TRUTH) ||
-                (Inventory_GetSkullTokenCount(play->sceneId) >= SPIDER_HOUSE_TOKENS_REQUIRED)) {
+                (GameInteractor_Should(VB_HAVE_ALL_SKULLTULA_TOKENS,
+                                       Inventory_GetSkullTokenCount(play->sceneId) >= SPIDER_HOUSE_TOKENS_REQUIRED))) {
                 EnSth_ChangeAnim(this, STH_ANIM_WAIT);
             }
         } else {
@@ -667,7 +675,8 @@ void EnSth_UpdateWaitForObject(Actor* thisx, PlayState* play) {
 
         // not ready to appear yet
         if ((STH_GET_TYPE(&this->actor) == STH_TYPE_OCEANSIDE_SPIDER_HOUSE_GREET) &&
-            (Inventory_GetSkullTokenCount(play->sceneId) < SPIDER_HOUSE_TOKENS_REQUIRED)) {
+            (GameInteractor_Should(VB_NOT_HAVE_ALL_SKULLTULA_TOKENS,
+                                   Inventory_GetSkullTokenCount(play->sceneId) < SPIDER_HOUSE_TOKENS_REQUIRED, this))) {
             this->actor.update = EnSth_UpdateOceansideSpiderHouseWaitForTokens;
             this->actor.draw = NULL;
             this->actor.flags &= ~ACTOR_FLAG_ATTENTION_ENABLED;

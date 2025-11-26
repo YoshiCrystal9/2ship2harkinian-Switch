@@ -48,7 +48,7 @@ static RegisterShipInitFunc initFunc([]() {
     };
     Regions[RR_OCEAN_SPIDER_HOUSE_ENTRANCE_UPPER] = RandoRegion{ .name = "Entrance Upper", .sceneId = SCENE_KINDAN2,
         .checks = {
-            CHECK(RC_OCEAN_SPIDER_HOUSE_WALLET, Inventory_GetSkullTokenCount(SCENE_KINDAN2) >= 30),
+            CHECK(RC_OCEAN_SPIDER_HOUSE_WALLET, HAS_ENOUGH_SKULLTULA_TOKENS(SCENE_KINDAN2)),
         },
         .exits = { //     TO                                         FROM
             EXIT(ENTRANCE(GREAT_BAY_COAST, 8),          ENTRANCE(OCEANSIDE_SPIDER_HOUSE, 0), true)
@@ -181,7 +181,7 @@ static RegisterShipInitFunc initFunc([]() {
     };
     Regions[RR_SWAMP_SPIDER_HOUSE_ENTRANCE] = RandoRegion{ .name = "Entrance", .sceneId = SCENE_KINSTA1,
         .checks = {
-            CHECK(RC_SWAMP_SPIDER_HOUSE_MASK_OF_TRUTH, Inventory_GetSkullTokenCount(SCENE_KINSTA1) >= 30),
+            CHECK(RC_SWAMP_SPIDER_HOUSE_MASK_OF_TRUTH, HAS_ENOUGH_SKULLTULA_TOKENS(SCENE_KINSTA1)),
         },
         .exits = { //     TO                                         FROM
             EXIT(ENTRANCE(SOUTHERN_SWAMP_POISONED, 8),      ENTRANCE(SWAMP_SPIDER_HOUSE, 0), true),
