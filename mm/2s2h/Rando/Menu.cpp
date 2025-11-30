@@ -94,14 +94,13 @@ void SaveExcludedChecks() {
     SortExcludedChecks();
 
     for (auto& data : checkExclusionList) {
-        excludedString += std::to_string(data).c_str();
+        excludedString += std::to_string(data);
         excludedString += ",";
     }
     CVarSetString("gRando.ExcludedChecks", excludedString.c_str());
 }
 
 void LoadExcludedChecks() {
-    std::vector<RandoCheckId> sortedExclusionList;
     std::string checksList = CVarGetString("gRando.ExcludedChecks", "");
 
     if (checksList != "") {
@@ -517,7 +516,7 @@ static void DrawStartingItemsTab() {
                         if (currentStartingItems.length() != 0) {
                             currentStartingItems += ",";
                         }
-                        currentStartingItems += std::to_string(item).c_str();
+                        currentStartingItems += std::to_string(item);
                         CVarSetString("gRando.StartingItems", currentStartingItems.c_str());
                         Ship::Context::GetInstance()->GetWindow()->GetGui()->SaveConsoleVariablesNextFrame();
                     }
@@ -538,7 +537,40 @@ static void DrawStartingItemsTab() {
     ImGui::EndChild();
 }
 
-static void DrawLocationsTab() {
+static f32 CalcButtonWidth(const char* label) {
+    const auto& style = ImGui::GetStyle();
+    f32 buttonPaddingX = style.FramePadding.x;
+    f32 buttonBorderAndSpacing = style.FrameBorderSize + style.ItemSpacing.x * 0.5f;
+    return ImGui::CalcTextSize(label).x + (buttonPaddingX * 2) + buttonBorderAndSpacing;
+}
+
+static void DrawFilterWithButton(ImGuiTextFilter& filter, const char* placeholderText, const char* buttonLabel,
+                                 f32 availableWidth, UIWidgets::Colors menuThemeColor, bool& actionFlagWhenFiltered,
+                                 bool& actionFlagWhenAll, f32 filterButtonSpacing, f32 filterButtonOffset,
+                                 f32 filterButtonPaddingY, f32 filterSearchLabelOffset) {
+    UIWidgets::PushStyleCombobox(menuThemeColor);
+
+    f32 buttonWidth = CalcButtonWidth(buttonLabel);
+    filter.Draw("##filter", availableWidth - buttonWidth - filterButtonSpacing);
+    if (!filter.IsActive()) {
+        ImGui::SameLine(filterSearchLabelOffset);
+        ImGui::Text("%s", placeholderText);
+    }
+    UIWidgets::PopStyleCombobox();
+
+    // SameLine() uses absolute positioning from line start
+    ImGui::SameLine(availableWidth - buttonWidth - filterButtonOffset);
+    if (UIWidgets::Button(buttonLabel, { .padding = ImVec2(ImGui::GetStyle().FramePadding.x, filterButtonPaddingY),
+                                         .color = menuThemeColor })) {
+        if (filter.IsActive()) {
+            actionFlagWhenFiltered = true;
+        } else {
+            actionFlagWhenAll = true;
+        }
+    }
+}
+
+static void DrawCheckFilterTab() {
     if (CVarGetInteger(Rando::StaticData::Options[RO_LOGIC].cvar, RO_LOGIC_GLITCHLESS) >= RO_LOGIC_VANILLA) {
         ImGui::TextColored(UIWidgets::ColorValues.at(UIWidgets::Colors::Red),
                            "This setting is not compatible with Vanilla Logic.");
@@ -546,7 +578,10 @@ static void DrawLocationsTab() {
     }
 
     auto menuThemeColor = UIWidgets::Colors(CVarGetInteger("gSettings.Menu.Theme", LightBlue));
-    bool clearExcluded = false;
+    bool excludeAllChecks = false;
+    bool excludeFiltered = false;
+    bool removeFiltered = false;
+    bool removeAllChecks = false;
     if (!isExcludedInitialized) {
         LoadExcludedChecks();
         isExcludedInitialized = true;
@@ -554,19 +589,15 @@ static void DrawLocationsTab() {
 
     f32 columnWidth = ImGui::GetContentRegionAvail().x / 2 - (ImGui::GetStyle().ItemSpacing.x * 2);
     ImGui::BeginChild("randoIncludedChecks", ImVec2(columnWidth, ImGui::GetContentRegionAvail().y));
-    ImGui::SeparatorText("Included Checks");
+    ImGui::SeparatorText("Normal Checks");
 
     static ImGuiTextFilter includedFilter;
-    UIWidgets::PushStyleCombobox(menuThemeColor);
+    const char* leftButtonLabel = includedFilter.IsActive() ? "Junk Filtered" : "Junk All";
+    f32 availableWidth = ImGui::GetContentRegionAvail().x;
+    DrawFilterWithButton(includedFilter, "Normal Search", leftButtonLabel, availableWidth, menuThemeColor,
+                         excludeFiltered, excludeAllChecks, 30.0f, 24.0f, 6.0f, 18.0f);
 
-    includedFilter.Draw("##filter", ImGui::GetContentRegionAvail().x - 5.0f);
-    UIWidgets::PopStyleCombobox();
-    if (!includedFilter.IsActive()) {
-        ImGui::SameLine(18.0f);
-        ImGui::Text("Included Search");
-    }
-
-    if (ImGui::BeginTable("Included Checks", 1)) {
+    if (ImGui::BeginTable("Normal Checks", 1)) {
         ImGui::TableNextColumn();
 
         for (auto& includedChecks : Rando::StaticData::Checks) {
@@ -578,8 +609,7 @@ static void DrawLocationsTab() {
                 continue;
             }
 
-            auto it = std::find(checkExclusionList.begin(), checkExclusionList.end(), includedChecks.first);
-            if (it != checkExclusionList.end()) {
+            if (std::binary_search(checkExclusionList.begin(), checkExclusionList.end(), includedChecks.first)) {
                 continue;
             }
 
@@ -592,8 +622,11 @@ static void DrawLocationsTab() {
             ImGui::TableSetBgColor(ImGuiTableBgTarget_RowBg0,
                                    ImGui::IsItemHovered() ? IM_COL32(255, 255, 0, 128) : IM_COL32(255, 255, 255, 0));
             if (ImGui::IsItemClicked()) {
-                checkExclusionList.push_back(includedChecks.first);
-                SaveExcludedChecks();
+                auto it = std::lower_bound(checkExclusionList.begin(), checkExclusionList.end(), includedChecks.first);
+                if (it == checkExclusionList.end() || *it != includedChecks.first) {
+                    checkExclusionList.insert(it, includedChecks.first);
+                    SaveExcludedChecks();
+                }
             }
             ImGui::TableNextColumn();
         }
@@ -605,45 +638,87 @@ static void DrawLocationsTab() {
     ImGui::SeparatorText("Forced Junk Checks");
 
     static ImGuiTextFilter excludedFilter;
-    UIWidgets::PushStyleCombobox(menuThemeColor);
-    excludedFilter.Draw("##filter", ImGui::GetContentRegionAvail().x - ImGui::CalcTextSize("Clear All").x - 30.0f);
-    if (!excludedFilter.IsActive()) {
-        ImGui::SameLine(18.0f);
-        ImGui::Text("Excluded Search");
-    }
-    ImGui::SameLine(ImGui::GetContentRegionAvail().x - ImGui::CalcTextSize("Clear All").x - 24.0f);
-    if (ImGui::Button("Clear All")) {
-        clearExcluded = true;
-    }
-    UIWidgets::PopStyleCombobox();
+    const char* rightButtonLabel = excludedFilter.IsActive() ? "Remove Filtered" : "Remove All";
+    f32 rightAvailableWidth = ImGui::GetContentRegionAvail().x;
+    DrawFilterWithButton(excludedFilter, "Junk Search", rightButtonLabel, rightAvailableWidth, menuThemeColor,
+                         removeFiltered, removeAllChecks, 30.0f, 24.0f, 6.0f, 18.0f);
 
-    if (ImGui::BeginTable("Excluded Checks", 1)) {
+    if (ImGui::BeginTable("Forced Junk Checks", 1)) {
         ImGui::TableNextColumn();
-        int16_t index = 0;
-        for (auto& excludedChecks : checkExclusionList) {
-            if (!excludedFilter.PassFilter(Rando::StaticData::CheckNames[excludedChecks].c_str())) {
+        for (auto it = checkExclusionList.begin(); it != checkExclusionList.end();) {
+            if (!excludedFilter.PassFilter(Rando::StaticData::CheckNames[*it].c_str())) {
+                ++it;
                 continue;
             }
 
-            ImGui::Text("%s", Rando::StaticData::CheckNames[excludedChecks].c_str());
+            ImGui::Text("%s", Rando::StaticData::CheckNames[*it].c_str());
 
             ImGui::TableSetBgColor(ImGuiTableBgTarget_RowBg0,
                                    ImGui::IsItemHovered() ? IM_COL32(255, 255, 0, 128) : IM_COL32(255, 255, 255, 0));
             if (ImGui::IsItemClicked()) {
-                checkExclusionList.erase(checkExclusionList.begin() + index);
+                it = checkExclusionList.erase(it);
                 SaveExcludedChecks();
+            } else {
+                ++it;
             }
-            index++;
             ImGui::TableNextColumn();
         }
         ImGui::EndTable();
     }
     ImGui::EndChild();
 
-    if (clearExcluded) {
+    // Junk all checks
+    if (excludeAllChecks) {
+        checkExclusionList.clear();
+        checkExclusionList.reserve(Rando::StaticData::Checks.size());
+        for (auto& includedChecks : Rando::StaticData::Checks) {
+            if (includedChecks.first != RC_UNKNOWN) {
+                checkExclusionList.push_back(includedChecks.first);
+            }
+        }
+        SortExcludedChecks();
+        SaveExcludedChecks();
+        includedFilter.Clear();
+        excludeAllChecks = false;
+    }
+
+    // Junk filtered checks
+    if (excludeFiltered) {
+        for (auto& includedChecks : Rando::StaticData::Checks) {
+            if (includedChecks.first == RC_UNKNOWN) {
+                continue;
+            }
+
+            if (!includedFilter.PassFilter(Rando::StaticData::CheckNames[includedChecks.first].c_str())) {
+                continue;
+            }
+
+            auto it = std::lower_bound(checkExclusionList.begin(), checkExclusionList.end(), includedChecks.first);
+            if (it == checkExclusionList.end() || *it != includedChecks.first) {
+                checkExclusionList.insert(it, includedChecks.first);
+            }
+        }
+        SaveExcludedChecks();
+        includedFilter.Clear();
+        excludeFiltered = false;
+    }
+
+    // Remove filtered checks: erase_if removes items where PassFilter returns true
+    if (removeFiltered) {
+        std::erase_if(checkExclusionList, [&](const RandoCheckId& checkId) {
+            return excludedFilter.PassFilter(Rando::StaticData::CheckNames[checkId].c_str());
+        });
+        SaveExcludedChecks();
+        excludedFilter.Clear();
+        removeFiltered = false;
+    }
+
+    // Remove all checks
+    if (removeAllChecks) {
         checkExclusionList.clear();
         SaveExcludedChecks();
-        clearExcluded = false;
+        excludedFilter.Clear();
+        removeAllChecks = false;
     }
 }
 
@@ -707,9 +782,11 @@ void Rando::RegisterMenu() {
     mBenMenu->AddWidget(path, "Shuffle Options", WIDGET_CUSTOM).CustomFunction([](WidgetInfo& info) {
         DrawShufflesTab();
     });
-    mBenMenu->AddSidebarEntry("Rando", "Locations", 1);
-    path.sidebarName = "Locations";
-    mBenMenu->AddWidget(path, "Locations", WIDGET_CUSTOM).CustomFunction([](WidgetInfo& info) { DrawLocationsTab(); });
+    mBenMenu->AddSidebarEntry("Rando", "Check Filter", 1);
+    path.sidebarName = "Check Filter";
+    mBenMenu->AddWidget(path, "Check Filter", WIDGET_CUSTOM).CustomFunction([](WidgetInfo& info) {
+        DrawCheckFilterTab();
+    });
     mBenMenu->AddSidebarEntry("Rando", "Items", 1);
     path.sidebarName = "Items";
     mBenMenu->AddWidget(path, "Items", WIDGET_CUSTOM).CustomFunction([](WidgetInfo& info) { DrawItemsTab(); });
