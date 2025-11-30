@@ -244,6 +244,14 @@ void DrawTempleClears() {
     bool inverted = false;
     bool inStoneTower = false;
 
+    if (gPlayState != NULL) {
+        inStoneTower = Play_GetOriginalSceneId(gPlayState->sceneId) == SCENE_F40;
+        inverted = Flags_GetSwitch(gPlayState, 20);
+    }
+
+    ImGui::Columns(2, nullptr, false);
+
+    // Left column: Cleared checkboxes
     // Woodfall
     cleared = CHECK_WEEKEVENTREG(WEEKEVENTREG_CLEARED_WOODFALL_TEMPLE);
     if (UIWidgets::Checkbox("Woodfall cleared", &cleared)) {
@@ -254,8 +262,41 @@ void DrawTempleClears() {
         }
     }
 
-    ImGui::SameLine();
+    // Snowhead
+    cleared = CHECK_WEEKEVENTREG(WEEKEVENTREG_CLEARED_SNOWHEAD_TEMPLE);
+    if (UIWidgets::Checkbox("Snowhead cleared", &cleared)) {
+        if (cleared) {
+            SET_WEEKEVENTREG(WEEKEVENTREG_CLEARED_SNOWHEAD_TEMPLE);
+        } else {
+            CLEAR_WEEKEVENTREG(WEEKEVENTREG_CLEARED_SNOWHEAD_TEMPLE);
+        }
+    }
 
+    // Great Bay
+    cleared = CHECK_WEEKEVENTREG(WEEKEVENTREG_CLEARED_GREAT_BAY_TEMPLE);
+    if (UIWidgets::Checkbox("Great Bay cleared", &cleared)) {
+        if (cleared) {
+            SET_WEEKEVENTREG(WEEKEVENTREG_CLEARED_GREAT_BAY_TEMPLE);
+        } else {
+            CLEAR_WEEKEVENTREG(WEEKEVENTREG_CLEARED_GREAT_BAY_TEMPLE);
+        }
+    }
+
+    // Stone Tower
+    cleared = CHECK_WEEKEVENTREG(WEEKEVENTREG_CLEARED_STONE_TOWER_TEMPLE);
+    if (UIWidgets::Checkbox("Stone Tower cleared", &cleared)) {
+        if (cleared) {
+            SET_WEEKEVENTREG(WEEKEVENTREG_CLEARED_STONE_TOWER_TEMPLE);
+        } else {
+            CLEAR_WEEKEVENTREG(WEEKEVENTREG_CLEARED_STONE_TOWER_TEMPLE);
+        }
+    }
+
+    ImGui::NextColumn();
+
+    // Right column: Open/Inverted checkboxes
+    // Woodfall
+    cleared = CHECK_WEEKEVENTREG(WEEKEVENTREG_CLEARED_WOODFALL_TEMPLE);
     if (cleared) {
         open = true;
         SET_WEEKEVENTREG(WEEKEVENTREG_20_01);
@@ -272,16 +313,6 @@ void DrawTempleClears() {
 
     // Snowhead
     cleared = CHECK_WEEKEVENTREG(WEEKEVENTREG_CLEARED_SNOWHEAD_TEMPLE);
-    if (UIWidgets::Checkbox("Snowhead cleared", &cleared)) {
-        if (cleared) {
-            SET_WEEKEVENTREG(WEEKEVENTREG_CLEARED_SNOWHEAD_TEMPLE);
-        } else {
-            CLEAR_WEEKEVENTREG(WEEKEVENTREG_CLEARED_SNOWHEAD_TEMPLE);
-        }
-    }
-
-    ImGui::SameLine();
-
     if (cleared) {
         open = true;
         SET_WEEKEVENTREG(WEEKEVENTREG_30_01);
@@ -298,16 +329,6 @@ void DrawTempleClears() {
 
     // Great Bay
     cleared = CHECK_WEEKEVENTREG(WEEKEVENTREG_CLEARED_GREAT_BAY_TEMPLE);
-    if (UIWidgets::Checkbox("Great Bay cleared", &cleared)) {
-        if (cleared) {
-            SET_WEEKEVENTREG(WEEKEVENTREG_CLEARED_GREAT_BAY_TEMPLE);
-        } else {
-            CLEAR_WEEKEVENTREG(WEEKEVENTREG_CLEARED_GREAT_BAY_TEMPLE);
-        }
-    }
-
-    ImGui::SameLine();
-
     if (cleared) {
         open = true;
         // 53_20 is if the turtle is raised
@@ -327,23 +348,7 @@ void DrawTempleClears() {
         }
     }
 
-    // Stone Tower
-    cleared = CHECK_WEEKEVENTREG(WEEKEVENTREG_CLEARED_STONE_TOWER_TEMPLE);
-    if (UIWidgets::Checkbox("Stone Tower cleared", &cleared)) {
-        if (cleared) {
-            SET_WEEKEVENTREG(WEEKEVENTREG_CLEARED_STONE_TOWER_TEMPLE);
-        } else {
-            CLEAR_WEEKEVENTREG(WEEKEVENTREG_CLEARED_STONE_TOWER_TEMPLE);
-        }
-    }
-
-    if (gPlayState != NULL) {
-        inStoneTower = Play_GetOriginalSceneId(gPlayState->sceneId) == SCENE_F40;
-        inverted = Flags_GetSwitch(gPlayState, 20);
-    }
-
-    ImGui::SameLine();
-
+    // Stone Tower Inverted
     if (UIWidgets::Checkbox(
             "Stone Tower Inverted", &inverted,
             { { .disabled = !inStoneTower, .disabledTooltip = "Can only invert while in Stone Tower" } })) {
@@ -353,15 +358,19 @@ void DrawTempleClears() {
             Flags_UnsetSwitch(gPlayState, 20);
         }
     }
+
+    ImGui::Columns(1);
 }
 
 void DrawGeneralTab() {
     ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding, 3.0f);
     ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(8.0f, 8.0f));
     ImGui::BeginChild("generalTab", ImVec2(0, 0), true);
-    ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x * 0.5f - 4.0f);
 
-    ImGui::BeginGroup();
+    UIWidgets::BeginCardLayout({ .columnsPerRow = 2, .minColumnWidth = 420.0f });
+
+    // Card 1: Player Identity
+    UIWidgets::BeginCard("identityCard");
     ImGui::Text("Player Name");
     ImGui::PushStyleColor(ImGuiCol_FrameBg, UIWidgets::ColorValues.at(UIWidgets::Colors::Gray));
     ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 3.0f);
@@ -371,12 +380,22 @@ void DrawGeneralTab() {
                      ImGuiInputTextFlags_CallbackAlways | ImGuiInputTextFlags_AutoSelectAll, setPlayerName);
     ImGui::PopStyleVar(2);
     ImGui::PopStyleColor(1);
-    ImGui::EndGroup();
 
-    ImGui::SameLine();
-    ImGui::SetCursorPosY(0.0f);
-    ImGui::BeginGroup();
-    ImGui::Text("Time");
+    ImGui::Spacing();
+    ImGui::Text("Bombers Code: %d %d %d %d %d", gSaveContext.save.saveInfo.bomberCode[0],
+                gSaveContext.save.saveInfo.bomberCode[1], gSaveContext.save.saveInfo.bomberCode[2],
+                gSaveContext.save.saveInfo.bomberCode[3], gSaveContext.save.saveInfo.bomberCode[4]);
+
+    ImGui::Spacing();
+    UIWidgets::Checkbox("Has Tatl", (bool*)&gSaveContext.save.hasTatl, { .color = UIWidgets::Colors::Gray });
+    UIWidgets::Checkbox("Is Owl Save", (bool*)&gSaveContext.save.isOwlSave, { .color = UIWidgets::Colors::Gray });
+    UIWidgets::Checkbox("Finished Intro Sequence", (bool*)&gSaveContext.save.isFirstCycle,
+                        { .color = UIWidgets::Colors::Gray });
+    UIWidgets::EndCard();
+
+    // Card 2: Time & Day
+    UIWidgets::BeginCard("timeCard");
+    ImGui::Text("Time of Day");
     UIWidgets::PushStyleSlider();
     static u16 minTime = 0;
     static u16 maxTime = 0xFFFF;
@@ -403,9 +422,92 @@ void DrawGeneralTab() {
         UpdateGameTime(gameTime);
     }
     UIWidgets::PopStyleSlider();
-    ImGui::EndGroup();
 
-    ImGui::BeginGroup();
+    ImGui::Spacing();
+    static const std::array<std::pair<int8_t, const char*>, 4> timeSkipAmounts = {
+        { { -60, "-1hr" }, { -15, "-15m" }, { 15, "+15m" }, { 60, "+1hr" } }
+    };
+    float availWidth = ImGui::GetContentRegionAvail().x;
+    float spacing = ImGui::GetStyle().ItemSpacing.x;
+    float buttonWidth = (availWidth - (3 * spacing)) / 4;
+    for (size_t i = 0; i < timeSkipAmounts.size(); i++) {
+        const auto& skip = timeSkipAmounts.at(i);
+        if (UIWidgets::Button(skip.second, { .size = ImVec2(buttonWidth, 0), .color = UIWidgets::Colors::LightBlue })) {
+            UpdateGameTime(CURRENT_TIME + CLOCK_TIME(0, skip.first));
+        }
+        if (i < timeSkipAmounts.size() - 1) {
+            ImGui::SameLine();
+        }
+    }
+
+    UIWidgets::PushStyleSlider();
+    static s32 minDay = 0;
+    static s32 maxDay = 4;
+    if (ImGui::SliderScalar("##dayInput", ImGuiDataType_S32, &gSaveContext.save.day, &minDay, &maxDay, "Day: %d")) {
+        gSaveContext.save.eventDayCount = CURRENT_DAY;
+
+        if (gPlayState != nullptr) {
+            Interface_NewDay(gPlayState, CURRENT_DAY);
+            // Inverting setup actors forces half-day actors to kill/respawn for new day
+            gPlayState->numSetupActors = -gPlayState->numSetupActors;
+            // Load environment values for new day
+            Environment_NewDay(&gPlayState->envCtx);
+            // Clear weather from day 2
+            gWeatherMode = WEATHER_MODE_CLEAR;
+            gPlayState->envCtx.lightningState = LIGHTNING_OFF;
+        }
+    }
+
+    // Time speed slider
+    // Values are added to R_TIME_SPEED which is generally 3 in normal play state
+    static s32 minSpeed = -3; // Time frozen
+    static s32 maxSpeed = 7;
+    std::string extraText = "";
+    if (gSaveContext.save.timeSpeedOffset == 0) {
+        extraText = " (default)";
+    } else if (gSaveContext.save.timeSpeedOffset == -2) {
+        extraText = " (inverted)";
+    }
+    std::string timeSpeedString = "Time Speed: " + std::to_string(gSaveContext.save.timeSpeedOffset + 3) + extraText;
+    ImGui::SliderScalar("##timeSpeedInput", ImGuiDataType_S32, &gSaveContext.save.timeSpeedOffset, &minSpeed, &maxSpeed,
+                        timeSpeedString.c_str());
+    UIWidgets::PopStyleSlider();
+    UIWidgets::EndCard();
+
+    // Card 3: Currency
+    UIWidgets::BeginCard("currencyCard");
+    if (UIWidgets::Button("Max Rupees", { .size = UIWidgets::Sizes::Inline, .color = UIWidgets::Colors::Green })) {
+        Inventory_ChangeUpgrade(UPG_WALLET, 2);
+        gSaveContext.save.saveInfo.playerData.rupees = CUR_CAPACITY(UPG_WALLET);
+    }
+    ImGui::SameLine();
+    if (UIWidgets::Button("Reset##resetRupeesButton",
+                          { .size = UIWidgets::Sizes::Inline, .color = UIWidgets::Colors::Gray })) {
+        gSaveContext.save.saveInfo.playerData.rupees = 0;
+        Inventory_ChangeUpgrade(UPG_WALLET, 0);
+    }
+    UIWidgets::PushStyleSlider(UIWidgets::Colors::Green);
+    u8 currentWalletLevel = CUR_UPG_VALUE(UPG_WALLET);
+    if (ImGui::SliderScalar("##walletLevelSlider", ImGuiDataType_U8, &currentWalletLevel, &U8_ZERO, &WALLET_LEVEL_MAX,
+                            WALLET_LEVEL_NAMES[currentWalletLevel])) {
+        Inventory_ChangeUpgrade(UPG_WALLET, currentWalletLevel);
+        gSaveContext.save.saveInfo.playerData.rupees =
+            MIN(gSaveContext.save.saveInfo.playerData.rupees, CUR_CAPACITY(UPG_WALLET));
+    }
+    s16 walletCapacity = CUR_CAPACITY(UPG_WALLET);
+    ImGui::SliderScalar("##rupeesSlider", ImGuiDataType_S16, &gSaveContext.save.saveInfo.playerData.rupees, &S16_ZERO,
+                        &walletCapacity, "Rupees: %d");
+
+    int bankedRupees = HS_GET_BANK_RUPEES();
+    if (ImGui::SliderInt("##setBank", &bankedRupees, 0, 5000, "Banked Rupees: %d")) {
+        HS_SET_BANK_RUPEES(bankedRupees);
+    }
+    UIWidgets::Tooltip("To receive the rewards, set the bank to 199, 999, or 4,999 then deposit a single rupee");
+    UIWidgets::PopStyleSlider();
+    UIWidgets::EndCard();
+
+    // Card 4: Health
+    UIWidgets::BeginCard("healthCard");
     if (UIWidgets::Button("Max Health", { .size = UIWidgets::Sizes::Inline, .color = UIWidgets::Colors::Red })) {
         gSaveContext.save.saveInfo.playerData.doubleDefense = 1;
         gSaveContext.save.saveInfo.inventory.defenseHearts = 20;
@@ -440,59 +542,10 @@ void DrawGeneralTab() {
     ImGui::SliderScalar("##healthSlider", ImGuiDataType_S16, &gSaveContext.save.saveInfo.playerData.health, &S16_ZERO,
                         &gSaveContext.save.saveInfo.playerData.healthCapacity, "Health: %d");
     UIWidgets::PopStyleSlider();
-    ImGui::EndGroup();
+    UIWidgets::EndCard();
 
-    // Time skip buttons
-    ImGui::SameLine();
-    ImGui::BeginGroup();
-    static const std::array<std::pair<int8_t, const char*>, 4> timeSkipAmounts = {
-        { { -60, "-1hr" }, { -15, "-15m" }, { 15, "+15m" }, { 60, "+1hr" } }
-    };
-    for (size_t i = 0; i < timeSkipAmounts.size(); i++) {
-        const auto& skip = timeSkipAmounts.at(i);
-        if (UIWidgets::Button(skip.second,
-                              { .size = UIWidgets::Sizes::Inline, .color = UIWidgets::Colors::LightBlue })) {
-            UpdateGameTime(CURRENT_TIME + CLOCK_TIME(0, skip.first));
-        }
-        if (i < timeSkipAmounts.size() - 1) {
-            ImGui::SameLine();
-        }
-    }
-    // Day slider
-    UIWidgets::PushStyleSlider();
-    static s32 minDay = 0;
-    static s32 maxDay = 4;
-    if (ImGui::SliderScalar("##dayInput", ImGuiDataType_S32, &gSaveContext.save.day, &minDay, &maxDay, "Day: %d")) {
-        gSaveContext.save.eventDayCount = CURRENT_DAY;
-
-        if (gPlayState != nullptr) {
-            Interface_NewDay(gPlayState, CURRENT_DAY);
-            // Inverting setup actors forces half-day actors to kill/respawn for new day
-            gPlayState->numSetupActors = -gPlayState->numSetupActors;
-            // Load environment values for new day
-            Environment_NewDay(&gPlayState->envCtx);
-            // Clear weather from day 2
-            gWeatherMode = WEATHER_MODE_CLEAR;
-            gPlayState->envCtx.lightningState = LIGHTNING_OFF;
-        }
-    }
-    // Time speed slider
-    // Values are added to R_TIME_SPEED which is generally 3 in normal play state
-    static s32 minSpeed = -3; // Time frozen
-    static s32 maxSpeed = 7;
-    std::string extraText = "";
-    if (gSaveContext.save.timeSpeedOffset == 0) {
-        extraText = " (default)";
-    } else if (gSaveContext.save.timeSpeedOffset == -2) {
-        extraText = " (inverted)";
-    }
-    std::string timeSpeedString = "Time Speed: " + std::to_string(gSaveContext.save.timeSpeedOffset + 3) + extraText;
-    ImGui::SliderScalar("##timeSpeedInput", ImGuiDataType_S32, &gSaveContext.save.timeSpeedOffset, &minSpeed, &maxSpeed,
-                        timeSpeedString.c_str());
-    UIWidgets::PopStyleSlider();
-    ImGui::EndGroup();
-
-    ImGui::BeginGroup();
+    // Card 5: Magic
+    UIWidgets::BeginCard("magicCard");
     if (UIWidgets::Button("Max Magic", { .size = UIWidgets::Sizes::Inline, .color = UIWidgets::Colors::DarkGreen })) {
         gSaveContext.magicCapacity = gSaveContext.save.saveInfo.playerData.magic = MAGIC_DOUBLE_METER;
         gSaveContext.save.saveInfo.playerData.magicLevel = 2;
@@ -552,58 +605,15 @@ void DrawGeneralTab() {
     ImGui::SliderScalar("##magicSlider", ImGuiDataType_S8, &gSaveContext.save.saveInfo.playerData.magic, &S8_ZERO,
                         &gSaveContext.magicCapacity, "Magic: %d");
     UIWidgets::PopStyleSlider();
-    ImGui::EndGroup();
+    UIWidgets::EndCard();
 
-    ImGui::SameLine();
-
-    ImGui::BeginGroup();
-    if (UIWidgets::Button("Max Rupees", { .size = UIWidgets::Sizes::Inline, .color = UIWidgets::Colors::Green })) {
-        Inventory_ChangeUpgrade(UPG_WALLET, 2);
-        gSaveContext.save.saveInfo.playerData.rupees = CUR_CAPACITY(UPG_WALLET);
-    }
-    ImGui::SameLine();
-    if (UIWidgets::Button("Reset##resetRupeesButton",
-                          { .size = UIWidgets::Sizes::Inline, .color = UIWidgets::Colors::Gray })) {
-        gSaveContext.save.saveInfo.playerData.rupees = 0;
-        Inventory_ChangeUpgrade(UPG_WALLET, 0);
-    }
-    UIWidgets::PushStyleSlider(UIWidgets::Colors::Green);
-    u8 currentWalletLevel = CUR_UPG_VALUE(UPG_WALLET);
-    if (ImGui::SliderScalar("##walletLevelSlider", ImGuiDataType_U8, &currentWalletLevel, &U8_ZERO, &WALLET_LEVEL_MAX,
-                            WALLET_LEVEL_NAMES[currentWalletLevel])) {
-        Inventory_ChangeUpgrade(UPG_WALLET, currentWalletLevel);
-        gSaveContext.save.saveInfo.playerData.rupees =
-            MIN(gSaveContext.save.saveInfo.playerData.rupees, CUR_CAPACITY(UPG_WALLET));
-    }
-    s16 walletCapacity = CUR_CAPACITY(UPG_WALLET);
-    ImGui::SliderScalar("##rupeesSlider", ImGuiDataType_S16, &gSaveContext.save.saveInfo.playerData.rupees, &S16_ZERO,
-                        &walletCapacity, "Rupees: %d");
-    UIWidgets::PopStyleSlider();
-    ImGui::EndGroup();
-
-    ImGui::BeginGroup();
-    ImGui::Text("Bombers Code: %d %d %d %d %d", gSaveContext.save.saveInfo.bomberCode[0],
-                gSaveContext.save.saveInfo.bomberCode[1], gSaveContext.save.saveInfo.bomberCode[2],
-                gSaveContext.save.saveInfo.bomberCode[3], gSaveContext.save.saveInfo.bomberCode[4]);
-
-    ImGui::Text("Banked Rupees: %d", HS_GET_BANK_RUPEES());
-    int bankedRupees = HS_GET_BANK_RUPEES();
-    UIWidgets::PushStyleSlider(UIWidgets::Colors::Green);
-    if (ImGui::SliderInt("##setBank", &bankedRupees, 0, 5000, "Banked Rupees: %d")) {
-        HS_SET_BANK_RUPEES(bankedRupees);
-    }
-    UIWidgets::Tooltip("To receive the rewards, set the bank to 199, 999, or 4,999 then deposit a single rupee");
-    UIWidgets::PopStyleSlider();
-
+    // Card 6: Temple Progress
+    UIWidgets::BeginCard("progressCard");
     DrawTempleClears();
+    UIWidgets::EndCard();
 
-    UIWidgets::Checkbox("Has Tatl", (bool*)&gSaveContext.save.hasTatl, { .color = UIWidgets::Colors::Gray });
-    UIWidgets::Checkbox("Is Owl Save", (bool*)&gSaveContext.save.isOwlSave, { .color = UIWidgets::Colors::Gray });
-    UIWidgets::Checkbox("Finished Intro Sequence", (bool*)&gSaveContext.save.isFirstCycle,
-                        { .color = UIWidgets::Colors::Gray });
-    ImGui::EndGroup();
+    UIWidgets::EndCardLayout();
 
-    ImGui::PopItemWidth();
     ImGui::EndChild();
     ImGui::PopStyleVar(2);
 }
@@ -1107,7 +1117,7 @@ void DrawQuestSlot(QuestItem slot) {
     ImGui::PopID();
 }
 
-void DrawSong(QuestItem slot) {
+ImVec2 DrawSong(QuestItem slot) {
     SongInfo(slot);
     if (ImGui::ImageButton(std::to_string(slot).c_str(),
                            Ship::Context::GetInstance()->GetWindow()->GetGui()->GetTextureByName(
@@ -1116,14 +1126,13 @@ void DrawSong(QuestItem slot) {
                            ImVec4(0, 0, 0, 0), colorTint)) {
         NextQuestInSlot(slot);
     }
+    ImVec2 itemSize = ImGui::GetItemRectSize();
     if (ImGui::IsItemHovered()) {
         ImGui::BeginTooltip();
         ImGui::Text("%s", songTooltip);
         ImGui::EndTooltip();
     }
-    if (slot != QUEST_SONG_SUN && slot != QUEST_SONG_SARIA) {
-        ImGui::SameLine();
-    }
+    return itemSize;
 }
 
 void DrawQuestStatusTab() {
@@ -1176,12 +1185,21 @@ void DrawQuestStatusTab() {
         DrawQuestSlot(slot);
     }
     ImGui::SeparatorText("Songs");
-    for (int32_t i = QUEST_SONG_TIME; i <= QUEST_SONG_SUN; i++) {
-        DrawSong((QuestItem)i);
-    }
-    for (int32_t i = QUEST_SONG_SONATA; i <= QUEST_SONG_SARIA; i++) {
-        DrawSong((QuestItem)i);
-    }
+    auto drawSongRange = [](int32_t start, int32_t end) {
+        for (int32_t i = start; i <= end; i++) {
+            ImVec2 itemSize = DrawSong(static_cast<QuestItem>(i));
+            if (i != end) {
+                float currentCursorX = ImGui::GetCursorPosX();
+                float nextItemMaxX = currentCursorX + ImGui::GetStyle().ItemSpacing.x + itemSize.x;
+                float regionMaxX = ImGui::GetWindowContentRegionMax().x;
+                if (nextItemMaxX <= regionMaxX) {
+                    ImGui::SameLine();
+                }
+            }
+        }
+    };
+    drawSongRange(QUEST_SONG_TIME, QUEST_SONG_SUN);
+    drawSongRange(QUEST_SONG_SONATA, QUEST_SONG_SARIA);
     ImGui::SeparatorText("Equipment");
     if (GET_PLAYER_FORM == PLAYER_FORM_FIERCE_DEITY) {
         ImTextureID swordTextureId = Ship::Context::GetInstance()->GetWindow()->GetGui()->GetTextureByName(
@@ -1279,6 +1297,7 @@ void DrawDungeonItemTab() {
     ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(1.0f, 1.0f, 1.0f, 0.0f));
     ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding, 3.0f);
     ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(8.0f, 8.0f));
+    ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
     ImGui::BeginChild("dungeonTab", ImVec2(0, 0), true);
 
     for (int i = DUNGEON_SCENE_INDEX_WOODFALL_TEMPLE; i <= DUNGEON_SCENE_INDEX_STONE_TOWER_TEMPLE; i++) {
@@ -1332,29 +1351,37 @@ void DrawDungeonItemTab() {
             SetDungeonItems(DUNGEON_BOSS_KEY, i);
         }
         if (ImGui::BeginPopup("strayFairies")) {
+            UIWidgets::PushStyleSlider(UIWidgets::Colors(CVarGetInteger("gSettings.Menu.Theme", 5)));
             s32 minStray = 0;
             s32 maxStray = 15;
             int currentStrays = gSaveContext.save.saveInfo.inventory.strayFairies[dungeonId];
+            ImGui::PushItemWidth(ImGui::GetFontSize() * 12.0f);
             if (ImGui::SliderScalar("##strayCount", ImGuiDataType_S32, &currentStrays, &minStray, &maxStray,
                                     "Strays: %d")) {
                 gSaveContext.save.saveInfo.inventory.strayFairies[dungeonId] = currentStrays;
             }
+            ImGui::PopItemWidth();
+            UIWidgets::PopStyleSlider();
             ImGui::EndPopup();
         }
         if (ImGui::BeginPopup("smallKeys")) {
+            UIWidgets::PushStyleSlider(UIWidgets::Colors(CVarGetInteger("gSettings.Menu.Theme", 5)));
             s32 minKey = -1;
             s32 maxKey = smallKeyCounts[dungeonId];
             int currentKeys = gSaveContext.save.saveInfo.inventory.dungeonKeys[dungeonId];
+            ImGui::PushItemWidth(ImGui::GetFontSize() * 12.0f);
             if (ImGui::SliderScalar("##sKeyCount", ImGuiDataType_S32, &currentKeys, &minKey, &maxKey,
                                     "Small Keys: %d")) {
                 gSaveContext.save.saveInfo.inventory.dungeonKeys[dungeonId] = currentKeys;
             }
+            ImGui::PopItemWidth();
+            UIWidgets::PopStyleSlider();
             ImGui::EndPopup();
         }
         ImGui::EndChild();
     }
     ImGui::EndChild();
-    ImGui::PopStyleVar(2);
+    ImGui::PopStyleVar(3);
     ImGui::PopStyleColor(1);
 }
 
@@ -1390,6 +1417,45 @@ void GetPlayerForm(uint32_t form) {
     }
 }
 
+void ClearAllEquippedItems() {
+    auto& buttonItems = gSaveContext.save.saveInfo.equips.buttonItems;
+    auto& cButtonSlots = gSaveContext.save.saveInfo.equips.cButtonSlots;
+
+    for (size_t form = 0; form < ARRAY_COUNT(buttonItems); form++) {
+        for (size_t slot = 0; slot < ARRAY_COUNT(buttonItems[form]); slot++) {
+            if (slot == EQUIP_SLOT_B) {
+                // Goron/Deku/Zora/FD expect their innate B actions; leave untouched.
+                // Form 0 is shared by FD and Human via CUR_FORM
+                if (form != 0 || GET_PLAYER_FORM == PLAYER_FORM_FIERCE_DEITY) {
+                    continue;
+                }
+
+                int swordValue = GET_CUR_EQUIP_VALUE(EQUIP_TYPE_SWORD);
+                if (swordValue == EQUIP_VALUE_SWORD_NONE) {
+                    buttonItems[form][slot] = ITEM_NONE;
+                } else {
+                    buttonItems[form][slot] = ITEM_SWORD_KOKIRI + swordValue - EQUIP_VALUE_SWORD_KOKIRI;
+                }
+                continue;
+            }
+
+            // B slot stores item directly (sword); cButtonSlots only maps C-buttons to inventory slots
+            buttonItems[form][slot] = ITEM_NONE;
+            cButtonSlots[form][slot] = SLOT_NONE;
+        }
+    }
+
+    auto& dpadItems = gSaveContext.save.shipSaveInfo.dpadEquips.dpadItems;
+    auto& dpadSlots = gSaveContext.save.shipSaveInfo.dpadEquips.dpadSlots;
+
+    for (size_t form = 0; form < ARRAY_COUNT(dpadItems); form++) {
+        for (size_t slot = 0; slot < ARRAY_COUNT(dpadItems[form]); slot++) {
+            dpadItems[form][slot] = ITEM_NONE;
+            dpadSlots[form][slot] = SLOT_NONE;
+        }
+    }
+}
+
 void DrawPlayerTab() {
     ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(1.0f, 1.0f, 1.0f, 0.0f));
     ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding, 3.0f);
@@ -1398,11 +1464,23 @@ void DrawPlayerTab() {
 
     if (gPlayState) {
         Player* player = GET_PLAYER(gPlayState);
-        ImGui::BeginChild("playerLocation",
-                          ImVec2(INV_GRID_WIDTH * 8 + INV_GRID_PADDING * 2,
-                                 INV_GRID_HEIGHT * 1.75f + INV_GRID_PADDING * 2 + INV_GRID_TOP_MARGIN),
-                          ImGuiChildFlags_Border);
 
+        UIWidgets::BeginCardLayout({ .columnsPerRow = 2, .minColumnWidth = 420.0f });
+
+        UIWidgets::BeginCard("playerSpeed");
+        ImGui::Text("Link's Speed");
+        UIWidgets::PushStyleCombobox(formColor);
+        ImGui::PushItemWidth(ImGui::GetFontSize() * 6);
+        ImGui::InputScalar("XZ Speed", ImGuiDataType_Float, &player->speedXZ);
+        ImGui::InputScalar("Y Velocity", ImGuiDataType_Float, &player->actor.velocity.y);
+        ImGui::InputScalar("Ledge Height", ImGuiDataType_Float, &player->yDistToLedge);
+        ImGui::InputScalar("Invincibility Timer", ImGuiDataType_S16, &player->invincibilityTimer);
+        ImGui::InputScalar("Gravity", ImGuiDataType_Float, &player->actor.gravity);
+        ImGui::PopItemWidth();
+        UIWidgets::PopStyleCombobox();
+        UIWidgets::EndCard();
+
+        UIWidgets::BeginCard("playerLocation");
         GetPlayerForm(GET_PLAYER_FORM);
         ImGui::Text("%s Link", curForm);
         ImGui::Text("Position:");
@@ -1419,32 +1497,11 @@ void DrawPlayerTab() {
         ImGui::InputScalar("Y Rot", ImGuiDataType_S16, &player->actor.world.rot.y);
         ImGui::SameLine();
         ImGui::InputScalar("Z Rot", ImGuiDataType_S16, &player->actor.world.rot.z);
-
         ImGui::PopItemWidth();
         UIWidgets::PopStyleCombobox();
-        ImGui::EndChild();
+        UIWidgets::EndCard();
 
-        ImGui::BeginChild("playerSpeed",
-                          ImVec2(INV_GRID_WIDTH * 5 + INV_GRID_PADDING * 2,
-                                 INV_GRID_HEIGHT * 2.75f + INV_GRID_PADDING * 2 + INV_GRID_TOP_MARGIN),
-                          ImGuiChildFlags_Border);
-        ImGui::Text("Link's Speed");
-        UIWidgets::PushStyleCombobox(formColor);
-        ImGui::PushItemWidth(ImGui::GetFontSize() * 6);
-        ImGui::InputScalar("XZ Speed", ImGuiDataType_Float, &player->speedXZ);
-        ImGui::InputScalar("Y Velocity", ImGuiDataType_Float, &player->actor.velocity.y);
-        ImGui::InputScalar("Ledge Height", ImGuiDataType_Float, &player->yDistToLedge);
-        ImGui::InputScalar("Invincibility Timer", ImGuiDataType_S16, &player->invincibilityTimer);
-        ImGui::InputScalar("Gravity", ImGuiDataType_Float, &player->actor.gravity);
-
-        ImGui::PopItemWidth();
-        UIWidgets::PopStyleCombobox();
-        ImGui::EndChild();
-
-        ImGui::BeginChild("playerForm",
-                          ImVec2(INV_GRID_WIDTH * 8 + INV_GRID_PADDING * 2,
-                                 INV_GRID_HEIGHT * 2.2f + INV_GRID_PADDING * 2 + INV_GRID_TOP_MARGIN),
-                          ImGuiChildFlags_Border);
+        UIWidgets::BeginCard("playerForm");
         ImGui::Text("Change Link's Current Form");
         for (int i = PLAYER_FORM_FIERCE_DEITY; i <= PLAYER_FORM_HUMAN; i++) {
             GetPlayerForm(i);
@@ -1529,12 +1586,48 @@ void DrawPlayerTab() {
             ImGui::Text("              No Equipment in this Form");
             ImGui::Separator();
         }
-        ImGui::EndChild();
+        UIWidgets::EndCard();
 
-        ImGui::BeginChild("playerStates",
-                          ImVec2(INV_GRID_WIDTH * 8 + INV_GRID_PADDING * 2,
-                                 INV_GRID_HEIGHT * 0.75f + INV_GRID_PADDING * 2 + INV_GRID_TOP_MARGIN),
-                          ImGuiChildFlags_Border);
+        UIWidgets::BeginCard("currentItems");
+        ImGui::Text("Current Items");
+
+        // Two-column layout
+        ImGui::Columns(2, nullptr, false);
+
+        // Left column: C-buttons
+        ImGui::PushItemWidth(ImGui::GetFontSize() * 6);
+        UIWidgets::PushStyleInput();
+        static u8 one = 1;
+        ImGui::InputScalar("B Button", ImGuiDataType_U8, &CUR_FORM_EQUIP(0), &one, NULL);
+        ImGui::InputScalar("C Left", ImGuiDataType_U8, &CUR_FORM_EQUIP(1), &one, NULL);
+        ImGui::InputScalar("C Down", ImGuiDataType_U8, &CUR_FORM_EQUIP(2), &one, NULL);
+        ImGui::InputScalar("C Right", ImGuiDataType_U8, &CUR_FORM_EQUIP(3), &one, NULL);
+        UIWidgets::PopStyleInput();
+        ImGui::PopItemWidth();
+
+        // Right column: D-pad
+        ImGui::NextColumn();
+        ImGui::PushItemWidth(ImGui::GetFontSize() * 6);
+        UIWidgets::PushStyleInput();
+        ImGui::InputScalar("D-Pad Right", ImGuiDataType_U8, &DPAD_GET_CUR_FORM_BTN_ITEM(EQUIP_SLOT_D_RIGHT), &one,
+                           NULL);
+        ImGui::InputScalar("D-Pad Left", ImGuiDataType_U8, &DPAD_GET_CUR_FORM_BTN_ITEM(EQUIP_SLOT_D_LEFT), &one, NULL);
+        ImGui::InputScalar("D-Pad Down", ImGuiDataType_U8, &DPAD_GET_CUR_FORM_BTN_ITEM(EQUIP_SLOT_D_DOWN), &one, NULL);
+        ImGui::InputScalar("D-Pad Up", ImGuiDataType_U8, &DPAD_GET_CUR_FORM_BTN_ITEM(EQUIP_SLOT_D_UP), &one, NULL);
+        UIWidgets::PopStyleInput();
+        ImGui::PopItemWidth();
+
+        ImGui::Columns(1);
+
+        // Clear All button
+        ImGui::Spacing();
+        if (UIWidgets::Button("Clear All", { .size = UIWidgets::Sizes::Inline, .color = UIWidgets::Colors::Red })) {
+            ClearAllEquippedItems();
+        }
+
+        UIWidgets::EndCard();
+
+        UIWidgets::BeginCard("playerStates");
         ImGui::Text("Player States");
         uint32_t states[4] = { player->stateFlags1, player->stateFlags2, player->stateFlags3,
                                player->meleeWeaponState };
@@ -1559,7 +1652,9 @@ void DrawPlayerTab() {
             ImGui::PopStyleVar(1);
             ImGui::EndTable();
         }
-        ImGui::EndChild();
+        UIWidgets::EndCard();
+
+        UIWidgets::EndCardLayout();
     }
     ImGui::EndChild();
     ImGui::PopStyleVar(2);
@@ -1595,12 +1690,14 @@ void DrawRegEditorTab() {
 
     ImGui::BeginChild("regSliders", ImVec2(0, 0), ImGuiChildFlags_Border);
 
+    ImGui::Columns(2, nullptr, false);
+    ImGui::SetColumnWidth(0, 100.0f);
+
     for (int i = 0; i < REG_PER_PAGE; i++) {
         ImGui::PushID(i);
-        ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x * 0.5f - 4.0f);
-        ImGui::BeginGroup();
+        ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x - 4.0f);
         ImGui::Text("%02X (%d)", i + gRegEditor->regPage * REG_PER_PAGE, i + gRegEditor->regPage * REG_PER_PAGE);
-        ImGui::SameLine();
+        ImGui::NextColumn();
         ImGui::PushStyleColor(ImGuiCol_FrameBg, UIWidgets::ColorValues.at(UIWidgets::Colors::Gray));
         ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 3.0f);
         ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(10.0f, 8.0f));
@@ -1610,10 +1707,12 @@ void DrawRegEditorTab() {
             NULL, NULL, "%d");
         ImGui::PopStyleVar(2);
         ImGui::PopStyleColor(1);
-        ImGui::EndGroup();
+        ImGui::NextColumn();
         ImGui::PopItemWidth();
         ImGui::PopID();
     }
+
+    ImGui::Columns(1);
 
     ImGui::EndChild();
 }
@@ -1646,11 +1745,11 @@ void DrawFlagsTab() {
     static int16_t selectedScene = 0;
     if (selectedFlagSection == PERMANENT_SCENE_FLAGS || selectedFlagSection == CYCLE_SCENE_FLAGS) {
         ImGui::SameLine();
-        UIWidgets::Combobox("Scene", &selectedScene, &sceneList,
-                            {
-                                .alignment = UIWidgets::ComponentAlignment::Left,
-                                .labelPosition = UIWidgets::LabelPosition::None,
-                            });
+        UIWidgets::ComboboxWithSearch("Scene", &selectedScene, &sceneList,
+                                      {
+                                          .alignment = UIWidgets::ComponentAlignment::Left,
+                                          .labelPosition = UIWidgets::LabelPosition::None,
+                                      });
         if (gPlayState != NULL) {
             ImGui::SameLine();
             if (UIWidgets::Button("Current", UIWidgets::ButtonOptions{ { .color = UIWidgets::Colors::Gray } }.Size(
@@ -2151,8 +2250,8 @@ void DrawRandoTab() {
                                                    : UIWidgets::ColorValues.at(UIWidgets::Colors::White),
                            randoStaticCheck.name);
         ImGui::TableNextColumn();
-        UIWidgets::Combobox((hiddenName + "reward").c_str(), &randoSaveCheck.randoItemId, &randoItemIdComboboxMap,
-                            { .labelPosition = UIWidgets::LabelPosition::None });
+        UIWidgets::ComboboxWithSearch((hiddenName + "reward").c_str(), &randoSaveCheck.randoItemId,
+                                      &randoItemIdComboboxMap, { .labelPosition = UIWidgets::LabelPosition::None });
     }
 
     ImGui::EndTable();
@@ -2161,6 +2260,7 @@ void DrawRandoTab() {
 }
 
 void SaveEditorWindow::DrawElement() {
+    UIWidgets::PushStyleTabs(UIWidgets::Colors(CVarGetInteger("gSettings.Menu.Theme", 5)));
     if (ImGui::BeginTabBar("SaveContextTabBar", ImGuiTabBarFlags_NoCloseWithMiddleMouseButton)) {
         if (ImGui::BeginTabItem("General")) {
             DrawGeneralTab();
@@ -2211,6 +2311,7 @@ void SaveEditorWindow::DrawElement() {
 
         ImGui::EndTabBar();
     }
+    UIWidgets::PopStyleTabs();
 }
 
 void SaveEditorWindow::InitElement() {
