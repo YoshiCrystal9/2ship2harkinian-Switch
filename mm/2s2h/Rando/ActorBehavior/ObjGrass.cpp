@@ -131,6 +131,8 @@ std::map<s8, RandoCheckId> chestGrottoMap = {
     { -107, RC_ZORA_CAPE_GROTTO_GRASS_01 },
 };
 
+constexpr s8 chestGrottoActorIdsToBaseRc[20] = { 0, 1, 2, 3, -1, 4, 5, -1, -1, -1, 6, 7, 8, -1, 9, -1, 10, 11, 12, 13 };
+
 // For batches of grass spawned by Obj_Mure2
 std::map<std::tuple<u16, u8, s16>, RandoCheckId> objMure2GrassMap = {
     { { SCENE_10YUKIYAMANOMURA2, 0, 29 }, RC_MOUNTAIN_VILLAGE_SPRING_GRASS_04 },
@@ -330,7 +332,7 @@ void Rando::ActorBehavior::InitObjGrassBehavior() {
         if (gPlayState->sceneId == SCENE_KAKUSIANA && actor->room == 4) { // Common chest grotto
             auto it = chestGrottoMap.find(gSaveContext.respawn[RESPAWN_MODE_UNK_3].data);
             if (it != chestGrottoMap.end()) {
-                randoCheckId = static_cast<RandoCheckId>(it->second + actorListIndex);
+                randoCheckId = static_cast<RandoCheckId>(it->second + chestGrottoActorIdsToBaseRc[actorListIndex]);
             }
         } else {
             auto it = enKusaMap.find({ gPlayState->sceneId, actor->room, actorListIndex });
