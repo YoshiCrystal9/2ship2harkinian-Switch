@@ -6,6 +6,7 @@
 
 #include "z_en_tru_mt.h"
 #include "overlays/actors/ovl_En_Jc_Mato/z_en_jc_mato.h"
+#include "2s2h/GameInteractor/GameInteractor.h"
 
 #define FLAGS                                                                                  \
     (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_UPDATE_CULLING_DISABLED | \
@@ -181,7 +182,9 @@ s32 func_80B761FC(EnTruMt* this, PlayState* play) {
                 this->unk_3A4 = 0;
                 Actor_PlaySfx(&this->actor, NA_SE_EN_KOUME_DAMAGE2);
             }
-            play->interfaceCtx.minigameHiddenPoints = 1;
+            if (GameInteractor_Should(VB_KOUME_TAKE_DAMAGE, true)) {
+                play->interfaceCtx.minigameHiddenPoints = 1;
+            }
             Actor_SetColorFilter(&this->actor, COLORFILTER_COLORFLAG_RED, 255, COLORFILTER_BUFFLAG_OPA, 25);
             return true;
         }
@@ -337,7 +340,7 @@ void func_80B76924(EnTruMt* this) {
 void func_80B76980(EnTruMt* this, PlayState* play) {
     Player* player = GET_PLAYER(play);
 
-    if (gSaveContext.minigameHiddenScore >= 10) {
+    if (GameInteractor_Should(VB_FAIL_BOAT_ARCHERY, gSaveContext.minigameHiddenScore >= 10)) {
         Message_StartTextbox(play, 0x87F, &this->actor);
         SET_EVENTINF(EVENTINF_36);
         SET_EVENTINF(EVENTINF_40);

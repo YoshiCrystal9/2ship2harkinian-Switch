@@ -1595,6 +1595,30 @@ void BenMenu::AddEnhancements() {
                               "- Skip: Instantly win the race.\n")
                      .DefaultIndex(GoronRaceDifficultyOptions::GORON_RACE_DIFFICULTY_VANILLA)
                      .ComboVec(&goronRaceDifficultyOptions));
+    AddWidget(path, "Swamp Boat Archery Target Score", WIDGET_CVAR_SLIDER_INT)
+        .CVar("gEnhancements.Minigames.BoatArcheryScore")
+        .Options(IntSliderOptions()
+                     .Tooltip("Sets the initial target score of the Swamp Boat Archery minigame. The target score "
+                              "gets set the first time you play the minigame in each cycle.")
+                     .Min(1)
+                     .Max(50)
+                     .DefaultValue(20));
+    AddWidget(path, "Koume's Health", WIDGET_CVAR_SLIDER_INT)
+        .CVar("gEnhancements.Minigames.BoatArcheryHealth")
+        .PreFunc([](WidgetInfo& info) {
+            if (mBenMenu->disabledMap.at(DISABLE_FOR_KOUME_INVINCIBLE).active) {
+                info.activeDisables.push_back(DISABLE_FOR_KOUME_INVINCIBLE);
+            }
+        })
+        .Options(IntSliderOptions()
+                     .Tooltip("Sets Koume's health in the Swamp Boat Archery minigame. If Koume is hit this many "
+                              "times, the minigame will end.")
+                     .Min(1)
+                     .Max(30)
+                     .DefaultValue(10));
+    AddWidget(path, "Invincible", WIDGET_CVAR_CHECKBOX)
+        .CVar("gEnhancements.Minigames.BoatArcheryInvincible")
+        .Options(CheckboxOptions().Tooltip("Koume's health does not decrease when hit."));
 
     path.column = SECTION_COLUMN_3;
     AddWidget(path, "Other", WIDGET_SEPARATOR_TEXT);
@@ -1985,6 +2009,11 @@ void BenMenu::InitElement() {
                return !CVarGetInteger("gAudioEditor.LinkVoiceFreqMultiplier.Enable", 0);
            },
             "Enable Link's Voice Pitch Multiplier is Disabled" } },
+        { DISABLE_FOR_KOUME_INVINCIBLE,
+          { [](disabledInfo& info) -> bool {
+               return CVarGetInteger("gEnhancements.Minigames.BoatArcheryInvincible", 0);
+           },
+            "Koume is Invincible" } },
     };
 }
 
