@@ -17,6 +17,7 @@ std::string convertEnumToReadableName(const std::string& input);
 std::vector<RandoItemId> convertStartingItemsToRandoItemId(const std::string& input, const std::string& delimiter);
 std::string CreateStartingItemsToCvar(std::vector<RandoItemId> startingItemList);
 std::string Ship_RemoveSpecialCharacters(const std::string& str);
+extern u16 sOwlWarpEntrancesForMods[];
 extern std::array<const char*, 11> digitList;
 extern const char* fairyIconTextures[];
 extern std::string Ship_FormatTimeDisplay(uint32_t value);
