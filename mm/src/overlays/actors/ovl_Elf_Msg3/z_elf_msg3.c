@@ -104,7 +104,7 @@ void func_80A2CF7C(ElfMsg3* this, PlayState* play) {
     EnElf* tatl = (EnElf*)player->tatlActor;
 
     if (GameInteractor_Should(
-            VB_TATL_INTERUPT_MSG3,
+            VB_TATL_INTERRUPT_MSG3,
             (((((player->tatlActor != NULL) &&
                 (fabsf(player->actor.world.pos.x - this->actor.world.pos.x) < (100.0f * this->actor.scale.x))) &&
                (this->actor.world.pos.y <= player->actor.world.pos.y)) &&

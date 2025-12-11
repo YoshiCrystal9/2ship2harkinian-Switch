@@ -111,7 +111,7 @@ void func_80AFD668(ElfMsg4* this, PlayState* play) {
     Player* player = GET_PLAYER(play);
     EnElf* tatl = (EnElf*)player->tatlActor;
 
-    if (GameInteractor_Should(VB_TATL_INTERUPT_MSG4, (player->tatlActor != NULL) && func_80AFD5E0(this), this)) {
+    if (GameInteractor_Should(VB_TATL_INTERRUPT_MSG4, (player->tatlActor != NULL) && func_80AFD5E0(this), this)) {
         player->tatlTextId = ElfMsg4_GetTextId(this);
         CutsceneManager_Queue(CS_ID_GLOBAL_TALK);
         tatl->elfMsg = this->elfMsg5;

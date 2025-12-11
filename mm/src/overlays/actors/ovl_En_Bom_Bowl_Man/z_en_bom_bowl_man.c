@@ -159,7 +159,7 @@ void EnBomBowlMan_Init(Actor* thisx, PlayState* play) {
     // notebook requirement
     if (GameInteractor_Should(VB_SETUP_EAST_CLOCK_TOWN_BOM_BOWL_MAN,
                               (gSaveContext.save.entrance == ENTRANCE(EAST_CLOCK_TOWN, 2)) &&
-                                  GameInteractor_Should(VB_BE_ELIGBLE_FOR_BOMBERS_NOTEBOOK,
+                                  GameInteractor_Should(VB_BE_ELIGIBLE_FOR_BOMBERS_NOTEBOOK,
                                                         CHECK_WEEKEVENTREG(WEEKEVENTREG_73_80) &&
                                                             !CHECK_QUEST_ITEM(QUEST_BOMBERS_NOTEBOOK),
                                                         this),

@@ -19,7 +19,7 @@ void CutsceneManager_End();
 void EnBomBowlMan_WaitForPlayer(EnBomBowlMan* enBomBowlMan, PlayState* play) {
     Player* player = GET_PLAYER(play);
 
-    if (GameInteractor_Should(VB_BE_ELIGBLE_FOR_BOMBERS_NOTEBOOK,
+    if (GameInteractor_Should(VB_BE_ELIGIBLE_FOR_BOMBERS_NOTEBOOK,
                               CHECK_WEEKEVENTREG(WEEKEVENTREG_73_80) && !CHECK_QUEST_ITEM(QUEST_BOMBERS_NOTEBOOK),
                               enBomBowlMan)) {
         if (player->actor.world.pos.x < 1510.0f && player->transformation != PLAYER_FORM_DEKU &&
