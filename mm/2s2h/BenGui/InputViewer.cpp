@@ -177,12 +177,15 @@ void InputViewer::DrawElement() {
                 ImVec2(scaledBGSize.x,
                        scaledBGSize.y + (showLeftAnalogAngles || showRightAnalogAngles ? 15 * scale * maxScale : 0)));
         } else {
+
+            ImGui::SetNextWindowSize(ImVec2(scaledBGSize.x + 20, scaledBGSize.y + 20));
+
             ImGui::SetNextWindowContentSize(
                 ImVec2(mainPos.x + size.x - scaledBGSize.x - 30, mainPos.y + size.y - scaledBGSize.y - 30));
         }
 
         ImGui::SetNextWindowPos(
-            ImVec2(mainPos.x + size.x - scaledBGSize.x - 30, mainPos.y + size.y - scaledBGSize.y - 30),
+            ImVec2(mainPos.x + size.x - scaledBGSize.x - 30, mainPos.y + size.y - scaledBGSize.y - 50),
             ImGuiCond_FirstUseEver);
 
         ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0, 0, 0, 0));
@@ -403,7 +406,7 @@ void InputViewer::DrawElement() {
             if (showLeftAnalogAngles) {
                 ImGui::SetCursorPos(ImVec2(
                     aPos.x + 10 + CVarGetInteger(CVAR_INPUT_VIEWER("LeftAnalogAngles.HortizontalOffset"), 0) * scale,
-                    aPos.y + 10 + CVarGetInteger(CVAR_INPUT_VIEWER("LeftAnalogAngles.VerticalOffset"), 0) * scale));
+                    aPos.y + 10 + CVarGetInteger(CVAR_INPUT_VIEWER("LeftAnalogAngles.VerticalOffset"), 173) * scale));
                 // Scale font with input viewer scale
                 float oldFontScale = ImGui::GetFont()->Scale;
                 ImGui::GetFont()->Scale *= scale * CVarGetFloat(CVAR_INPUT_VIEWER("LeftAnalogAngles.Scale"), 1.0f);
@@ -449,7 +452,7 @@ void InputViewer::DrawElement() {
             if (showRightAnalogAngles) {
                 ImGui::SetCursorPos(ImVec2(
                     aPos.x + 10 + CVarGetInteger(CVAR_INPUT_VIEWER("RightAnalogAngles.HortizontalOffset"), 170) * scale,
-                    aPos.y + 10 + CVarGetInteger(CVAR_INPUT_VIEWER("RightAnalogAngles.VerticalOffset"), 0) * scale));
+                    aPos.y + 10 + CVarGetInteger(CVAR_INPUT_VIEWER("RightAnalogAngles.VerticalOffset"), 173) * scale));
                 // Scale font with input viewer scale
                 float oldFontScale = ImGui::GetFont()->Scale;
                 ImGui::GetFont()->Scale *= scale * CVarGetFloat(CVAR_INPUT_VIEWER("RightAnalogAngles.Scale"), 1.0f);
