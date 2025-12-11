@@ -1033,7 +1033,8 @@ void Play_UpdateMain(PlayState* this) {
 
                 if ((this->actorCtx.freezeFlashTimer != 0) && ((this->actorCtx.freezeFlashTimer--) < 5)) {
                     freezeFlashTimer = this->actorCtx.freezeFlashTimer;
-                    if ((freezeFlashTimer > 0) && ((freezeFlashTimer % 2) != 0)) {
+                    if (GameInteractor_Should(VB_FLASH_SCREEN_FOR_ENEMY_KILL,
+                                              (freezeFlashTimer > 0) && ((freezeFlashTimer % 2) != 0))) {
                         this->envCtx.fillScreen = true;
                         this->envCtx.screenFillColor[0] = this->envCtx.screenFillColor[1] =
                             this->envCtx.screenFillColor[2] = 150;

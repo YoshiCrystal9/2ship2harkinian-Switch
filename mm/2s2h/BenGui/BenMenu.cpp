@@ -1020,6 +1020,17 @@ void BenMenu::AddEnhancements() {
                               "-Hug: Get the hugging cutscene\n"
                               "-Rupee: Get the rupee reward")
                      .ComboVec(&cremiaRewardOptions));
+    AddWidget(path, "Accessibility", WIDGET_SEPARATOR_TEXT);
+    AddWidget(path, "Disable Screen Flash for Enemy Kills", WIDGET_CVAR_CHECKBOX)
+        .CVar("gEnhancements.A11y.NoScreenFlashForEnemyKill")
+        .Options(CheckboxOptions().Tooltip("Disables the white screen flash on enemy kill."));
+    AddWidget(path, "Bow Reticle", WIDGET_CVAR_CHECKBOX)
+        .CVar("gEnhancements.Graphics.BowReticle")
+        .Options(CheckboxOptions().Tooltip("Gives the bow a reticle when you draw an arrow."));
+    AddWidget(path, "Mark Shooting Gallery Octoroks", WIDGET_CVAR_CHECKBOX)
+        .CVar("gEnhancements.Minigames.MarkShootingGalleryOctoroks")
+        .Options(CheckboxOptions().Tooltip("Places markers on the Town Shooting Gallery Octoroks, indicating whether "
+                                           "they should be hit."));
     path.column = SECTION_COLUMN_3;
     AddWidget(path, "Saving", WIDGET_SEPARATOR_TEXT);
     AddWidget(path, "3rd Save File Slot", WIDGET_CVAR_CHECKBOX)
@@ -1153,9 +1164,6 @@ void BenMenu::AddEnhancements() {
         .CVar("gEnhancements.Graphics.AuthenticLogo")
         .Options(CheckboxOptions().Tooltip("Hide the game version and build details and display the authentic "
                                            "model and texture on the boot logo start screen."));
-    AddWidget(path, "Bow Reticle", WIDGET_CVAR_CHECKBOX)
-        .CVar("gEnhancements.Graphics.BowReticle")
-        .Options(CheckboxOptions().Tooltip("Gives the bow a reticle when you draw an arrow."));
     AddWidget(path, "Disable Black Bar Letterboxes", WIDGET_CVAR_CHECKBOX)
         .CVar("gEnhancements.Graphics.DisableBlackBars")
         .Options(CheckboxOptions().Tooltip(
@@ -1578,10 +1586,6 @@ void BenMenu::AddEnhancements() {
                      .Min(1)
                      .Max(20)
                      .DefaultValue(20));
-    AddWidget(path, "Mark Shooting Gallery Octoroks", WIDGET_CVAR_CHECKBOX)
-        .CVar("gEnhancements.Minigames.MarkShootingGalleryOctoroks")
-        .Options(CheckboxOptions().Tooltip("Places markers on the Town Shooting Gallery Octoroks, indicating whether "
-                                           "they should be hit."));
     AddWidget(path, "Goron Race", WIDGET_CVAR_COMBOBOX)
         .CVar("gEnhancements.DifficultyOptions.GoronRace")
         .Options(ComboboxOptions()
