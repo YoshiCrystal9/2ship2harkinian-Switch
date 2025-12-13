@@ -28,6 +28,7 @@ static RegisterShipInitFunc initFunc([]() {
             CHECK(RC_TERMINA_FIELD_BIO_BABA_GROTTO, CAN_BE_ZORA && CAN_USE_ABILITY(SWIM)),
             CHECK(RC_TERMINA_FIELD_BIO_BABA_GROTTO_GRASS_01, true),
             CHECK(RC_TERMINA_FIELD_BIO_BABA_GROTTO_GRASS_02, true),
+            CHECK(RC_ENEMY_DROP_BIO_DEKU_BABA, CanKillEnemy(ACTOR_BOSS_05)),
         },
         .exits = { //     TO                                         FROM
             EXIT(ENTRANCE(TERMINA_FIELD, 0),                ENTRANCE(GROTTOS, 11), true), // TODO: Grotto mapping
@@ -109,6 +110,7 @@ static RegisterShipInitFunc initFunc([]() {
             CHECK(RC_TERMINA_FIELD_COW_GROTTO_GRASS_70, true),
             CHECK(RC_TERMINA_FIELD_COW_GROTTO_GRASS_71, true),
             CHECK(RC_TERMINA_FIELD_COW_GROTTO_GRASS_72, true),
+            CHECK(RC_ENEMY_DROP_GIANT_BEE, CAN_USE_PROJECTILE), // In a beehive
         },
         .connections = {
             CONNECTION(RR_TERMINA_FIELD, true), // TODO: Grotto mapping
@@ -117,12 +119,17 @@ static RegisterShipInitFunc initFunc([]() {
     Regions[RR_TERMINA_FIELD_DODONGO_GROTTO] = RandoRegion{ .name = "Termina Field Dodongo", .sceneId = SCENE_KAKUSIANA,
         .checks = {
             CHECK(RC_TERMINA_FIELD_DODONGO_GROTTO_CHEST, CAN_USE_SWORD || CAN_BE_ZORA || CAN_BE_GORON),
+            CHECK(RC_ENEMY_DROP_DODONGO, CanKillEnemy(ACTOR_EN_DODONGO)),
         },
         .exits = { //     TO                                         FROM
             EXIT(ENTRANCE(TERMINA_FIELD, 0),                ENTRANCE(GROTTOS, 7), true), // TODO: Grotto mapping
         },
     };
     Regions[RR_TERMINA_FIELD_GOSSIP_STONE_GROTTO_1] = RandoRegion{ .name = "Termina Field Gossip Stone #1", .sceneId = SCENE_KAKUSIANA,
+        .checks = {
+            CHECK(RC_ENEMY_DROP_SKULLTULA, CanKillEnemy(ACTOR_EN_ST)),
+            CHECK(RC_ENEMY_DROP_SKULLWALLTULA, CanKillEnemy(ACTOR_EN_SW)),
+        },
         .exits = { //     TO                                         FROM
             EXIT(ENTRANCE(TERMINA_FIELD, 0),                ENTRANCE(GROTTOS, 1), true), // TODO: Grotto mapping
         },
@@ -146,6 +153,7 @@ static RegisterShipInitFunc initFunc([]() {
             CHECK(RC_TERMINA_FIELD_GOSSIP_STONE_GROTTO_3_GRASS_03, true),
             CHECK(RC_TERMINA_FIELD_GOSSIP_STONE_GROTTO_3_GRASS_04, true),
             CHECK(RC_TERMINA_FIELD_GOSSIP_STONE_GROTTO_3_GRASS_05, true),
+            CHECK(RC_ENEMY_DROP_GIANT_BEE, CAN_USE_PROJECTILE), // In a beehive
         },
         .exits = { //     TO                                         FROM
             EXIT(ENTRANCE(TERMINA_FIELD, 0),                ENTRANCE(GROTTOS, 0), true), // TODO: Grotto mapping
@@ -184,6 +192,7 @@ static RegisterShipInitFunc initFunc([]() {
             CHECK(RC_TERMINA_FIELD_PEAHAT_GROTTO_GRASS_10, true),
             CHECK(RC_TERMINA_FIELD_PEAHAT_GROTTO_GRASS_11, true),
             CHECK(RC_TERMINA_FIELD_PEAHAT_GROTTO_GRASS_12, true),
+            CHECK(RC_ENEMY_DROP_PEAHAT, CanKillEnemy(ACTOR_EN_PEEHAT)),
         },
         .exits = { //     TO                                         FROM
             EXIT(ENTRANCE(TERMINA_FIELD, 0),                ENTRANCE(GROTTOS, 13), true), // TODO: Grotto mapping
@@ -206,6 +215,7 @@ static RegisterShipInitFunc initFunc([]() {
             CHECK(RC_TERMINA_FIELD_PILLAR_GROTTO_GRASS_12, true),
             CHECK(RC_TERMINA_FIELD_PILLAR_GROTTO_GRASS_13, true),
             CHECK(RC_TERMINA_FIELD_PILLAR_GROTTO_GRASS_14, true),
+            CHECK(RC_ENEMY_DROP_MINI_BABA, CanKillEnemy(ACTOR_EN_KAREBABA)),
         },
         .connections = {
             CONNECTION(RR_TERMINA_FIELD, true), // TODO: Grotto mapping
@@ -238,6 +248,7 @@ static RegisterShipInitFunc initFunc([]() {
             CHECK(RC_TERMINA_FIELD_TALL_GRASS_GROTTO_GRASS_12, true),
             CHECK(RC_TERMINA_FIELD_TALL_GRASS_GROTTO_GRASS_13, true),
             CHECK(RC_TERMINA_FIELD_TALL_GRASS_GROTTO_GRASS_14, true),
+            CHECK(RC_ENEMY_DROP_MINI_BABA, CanKillEnemy(ACTOR_EN_KAREBABA)),
         },
         .connections = {
             CONNECTION(RR_TERMINA_FIELD, true), // TODO: Grotto mapping
@@ -487,6 +498,15 @@ static RegisterShipInitFunc initFunc([]() {
             CHECK(RC_TERMINA_FIELD_GRASS_214, true),
             CHECK(RC_TERMINA_FIELD_GRASS_215, true),
             CHECK(RC_TERMINA_FIELD_GRASS_216, true),
+            CHECK(RC_ENEMY_DROP_BLUE_BUBBLE, CanKillEnemy(ACTOR_EN_BB)), // Night only
+            CHECK(RC_ENEMY_DROP_DEKU_BABA, CanKillEnemy(ACTOR_EN_DEKUBABA)),
+            CHECK(RC_ENEMY_DROP_CHUCHU, CanKillEnemy(ACTOR_EN_SLIME)), // Day only
+            CHECK(RC_ENEMY_DROP_REAL_BOMBCHU, CanKillEnemy(ACTOR_EN_RAT)), // Day only
+            CHECK(RC_ENEMY_DROP_LEEVER, CanKillEnemy(ACTOR_EN_NEO_REEBA)),
+            CHECK(RC_ENEMY_DROP_DODONGO, CanKillEnemy(ACTOR_EN_DODONGO)), // Day only
+            CHECK(RC_ENEMY_DROP_EENO, CanKillEnemy(ACTOR_EN_SNOWMAN)), // Night only
+            CHECK(RC_ENEMY_DROP_BAD_BAT, CanKillEnemy(ACTOR_EN_BAT)),
+            CHECK(RC_ENEMY_DROP_TAKKURI, CanKillEnemy(ACTOR_EN_THIEFBIRD)),
         },
         .exits = { //     TO                                         FROM
             EXIT(ENTRANCE(GROTTOS, 0),                      ENTRANCE(TERMINA_FIELD, 0), CAN_USE_EXPLOSIVE || CAN_BE_GORON), // TODO: Grotto mapping Gossip Stone #3

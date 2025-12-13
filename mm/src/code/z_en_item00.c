@@ -929,7 +929,7 @@ Actor* Item_DropCollectible(PlayState* play, Vec3f* spawnPos, u32 params) {
     s32 paramFF = params & 0xFF;
     s32 i;
 
-    if ((GameInteractor_Should(VB_ENEMY_DROP_COLLECTIBLE, true, *spawnPos))) {
+    if ((GameInteractor_Should(VB_ENEMY_DROP_COLLECTIBLE, true, *spawnPos, params))) {
         params &= 0x7FFF;
         newParamFF = params & 0xFF;
 
@@ -1337,7 +1337,7 @@ u8 sDropTableAmounts[DROP_TABLE_SIZE * DROP_TABLE_NUMBER] = {
 };
 
 void Item_DropCollectibleRandom(PlayState* play, Actor* fromActor, Vec3f* spawnPos, s16 params) {
-    if (!(GameInteractor_Should(VB_ENEMY_DROP_COLLECTIBLE, true, *spawnPos))) {
+    if (!(GameInteractor_Should(VB_ENEMY_DROP_COLLECTIBLE, true, *spawnPos, params))) {
         return;
     }
 

@@ -116,6 +116,7 @@ static RegisterShipInitFunc initFunc([]() {
         .checks = {
             CHECK(RC_DEKU_PALACE_POT_01, CAN_BE_DEKU),
             CHECK(RC_DEKU_PALACE_POT_02, CAN_BE_DEKU),
+            CHECK(RC_ENEMY_DROP_MAD_SCRUB, CanKillEnemy(ACTOR_EN_DEKUNUTS)),
         },
         .exits = { //     TO                                         FROM
             EXIT(ENTRANCE(DEKU_KINGS_CHAMBER, 1),           ENTRANCE(DEKU_PALACE, 3), CAN_BE_DEKU), // Cell
@@ -125,6 +126,9 @@ static RegisterShipInitFunc initFunc([]() {
         },
     };
     Regions[RR_DEKU_PALACE_OUTSIDE] = RandoRegion{ .name = "Outside", .sceneId = SCENE_22DEKUCITY,
+        .checks = {
+            CHECK(RC_ENEMY_DROP_MINI_BABA, (CAN_BE_DEKU || (RANDO_EVENTS[RE_CLEARED_WOODFALL_TEMPLE] && CAN_TRAVERSE_WAIST_DEEP_WATER)) && CanKillEnemy(ACTOR_EN_KAREBABA)),
+        },
         .exits = { //     TO                                         FROM
             EXIT(ENTRANCE(SOUTHERN_SWAMP_POISONED, 3),      ENTRANCE(DEKU_PALACE, 0), true),
             EXIT(ENTRANCE(SOUTHERN_SWAMP_POISONED, 4),      ENTRANCE(DEKU_PALACE, 5), CAN_BE_DEKU), // Treetop
@@ -217,6 +221,7 @@ static RegisterShipInitFunc initFunc([]() {
             CHECK(RC_ROAD_TO_SOUTHERN_SWAMP_GROTTO_GRASS_12, true),
             CHECK(RC_ROAD_TO_SOUTHERN_SWAMP_GROTTO_GRASS_13, true),
             CHECK(RC_ROAD_TO_SOUTHERN_SWAMP_GROTTO_GRASS_14, true),
+            CHECK(RC_ENEMY_DROP_MINI_BABA, CanKillEnemy(ACTOR_EN_KAREBABA)),
         },
         .connections = {
             CONNECTION(RR_ROAD_TO_SOUTHERN_SWAMP, true), // TODO: Grotto mapping
@@ -247,6 +252,10 @@ static RegisterShipInitFunc initFunc([]() {
             CHECK(RC_ROAD_TO_SOUTHERN_SWAMP_GRASS_18, true),
             CHECK(RC_ROAD_TO_SOUTHERN_SWAMP_GRASS_19, true),
             CHECK(RC_ROAD_TO_SOUTHERN_SWAMP_GRASS_20, true),
+            CHECK(RC_ENEMY_DROP_DEKU_BABA, CanKillEnemy(ACTOR_EN_DEKUBABA)),
+            CHECK(RC_ENEMY_DROP_CHUCHU, CanKillEnemy(ACTOR_EN_SLIME)), // Day only
+            CHECK(RC_ENEMY_DROP_WOLFOS, CanKillEnemy(ACTOR_EN_WF)), // Night only
+            CHECK(RC_ENEMY_DROP_BAD_BAT, CanKillEnemy(ACTOR_EN_BAT)),
         },
         .exits = { //     TO                                         FROM
             EXIT(ENTRANCE(TERMINA_FIELD, 1),                ENTRANCE(ROAD_TO_SOUTHERN_SWAMP, 0), true),
@@ -278,6 +287,7 @@ static RegisterShipInitFunc initFunc([]() {
             CHECK(RC_SOUTHERN_SWAMP_GROTTO_GRASS_12, true),
             CHECK(RC_SOUTHERN_SWAMP_GROTTO_GRASS_13, true),
             CHECK(RC_SOUTHERN_SWAMP_GROTTO_GRASS_14, true),
+            CHECK(RC_ENEMY_DROP_MINI_BABA, CanKillEnemy(ACTOR_EN_KAREBABA)),
         },
         .connections = {
             CONNECTION(RR_SOUTHERN_SWAMP_SOUTH, true), // TODO: Grotto mapping
@@ -313,6 +323,7 @@ static RegisterShipInitFunc initFunc([]() {
             CHECK(RC_SOUTHERN_SWAMP_POISON_GRASS_10, true),
             CHECK(RC_SOUTHERN_SWAMP_POISON_GRASS_11, true),
             CHECK(RC_SOUTHERN_SWAMP_POISON_GRASS_12, true),
+            CHECK(RC_ENEMY_DROP_MINI_BABA, CanKillEnemy(ACTOR_EN_KAREBABA)),
         },
         .exits = { //     TO                                         FROM
             EXIT(ENTRANCE(ROAD_TO_SOUTHERN_SWAMP, 1),       ENTRANCE(SOUTHERN_SWAMP_POISONED, 0), true),
@@ -338,6 +349,7 @@ static RegisterShipInitFunc initFunc([]() {
             CHECK(RC_SOUTHERN_SWAMP_FROG, HAS_ITEM(ITEM_MASK_DON_GERO)),
             CHECK(RC_SOUTHERN_SWAMP_FREESTANDING_RUPEE_01, CAN_BE_DEKU || CAN_BE_ZORA),
             CHECK(RC_SOUTHERN_SWAMP_FREESTANDING_RUPEE_02, CAN_BE_DEKU || CAN_BE_ZORA),
+            CHECK(RC_ENEMY_DROP_OCTOROK, CanKillEnemy(ACTOR_EN_OKUTA) && CAN_TRAVERSE_WAIST_DEEP_WATER),
         },
         .connections = {
             CONNECTION(RR_SOUTHERN_SWAMP_SOUTH, CanGetPastBigOctoWithoutBoat()),
@@ -396,6 +408,8 @@ static RegisterShipInitFunc initFunc([]() {
             CHECK(RC_SOUTHERN_SWAMP_POISON_GRASS_28, true),
             CHECK(RC_SOUTHERN_SWAMP_POISON_GRASS_29, true),
             CHECK(RC_SOUTHERN_SWAMP_POISON_GRASS_30, true),
+            CHECK(RC_ENEMY_DROP_MINI_BABA, CanKillEnemy(ACTOR_EN_KAREBABA)),
+            CHECK(RC_ENEMY_DROP_DEKU_BABA, CanKillEnemy(ACTOR_EN_DEKUBABA)),
         },
         .exits = { //     TO                                         FROM
             EXIT(ENTRANCE(MAGIC_HAGS_POTION_SHOP, 0),       ENTRANCE(SOUTHERN_SWAMP_POISONED, 5), true),
@@ -431,6 +445,7 @@ static RegisterShipInitFunc initFunc([]() {
     Regions[RR_SOUTHERN_SWAMP_SOUTH_UPPER] = RandoRegion{ .name = "Upper South Section", .sceneId = SCENE_20SICHITAI,
         .checks = {
             CHECK(RC_SOUTHERN_SWAMP_SONG_OF_SOARING, CAN_BE_DEKU),
+            CHECK(RC_ENEMY_DROP_DRAGONFLY, CanKillEnemy(ACTOR_EN_GRASSHOPPER)),
         },
         .exits = { //     TO                                         FROM
             EXIT(ENTRANCE(WOODFALL, 0),                     ENTRANCE(SOUTHERN_SWAMP_POISONED, 2), CAN_BE_DEKU),
@@ -485,6 +500,9 @@ static RegisterShipInitFunc initFunc([]() {
             CHECK(RC_WOODFALL_GRASS_04, true),
             CHECK(RC_WOODFALL_GRASS_05, true),
             CHECK(RC_WOODFALL_GRASS_06, true),
+            CHECK(RC_ENEMY_DROP_DRAGONFLY, CanKillEnemy(ACTOR_EN_GRASSHOPPER)),
+            CHECK(RC_ENEMY_DROP_HIPLOOP, CanKillEnemy(ACTOR_EN_PP)),
+            CHECK(RC_ENEMY_DROP_MAD_SCRUB, CanKillEnemy(ACTOR_EN_DEKUNUTS)),
         },
         .exits = { //     TO                                         FROM
             EXIT(ENTRANCE(SOUTHERN_SWAMP_POISONED, 2),      ENTRANCE(WOODFALL, 0), true),
@@ -527,6 +545,7 @@ static RegisterShipInitFunc initFunc([]() {
             CHECK(RC_WOODS_OF_MYSTERY_GROTTO_GRASS_12, true),
             CHECK(RC_WOODS_OF_MYSTERY_GROTTO_GRASS_13, true),
             CHECK(RC_WOODS_OF_MYSTERY_GROTTO_GRASS_14, true),
+            CHECK(RC_ENEMY_DROP_MINI_BABA, CanKillEnemy(ACTOR_EN_KAREBABA)),
         },
         .connections = {
             CONNECTION(RR_WOODS_OF_MYSTERY, true), // TODO: Grotto mapping
@@ -557,6 +576,7 @@ static RegisterShipInitFunc initFunc([]() {
             CHECK(RC_WOODS_OF_MYSTERY_GRASS_21, true),
             CHECK(RC_WOODS_OF_MYSTERY_GRASS_22, true),
             CHECK(RC_WOODS_OF_MYSTERY_GRASS_23, true),
+            CHECK(RC_ENEMY_DROP_SNAPPER, CAN_BE_DEKU || CanKillEnemy(ACTOR_EN_KAME)),
         },
         .exits = { //     TO                                         FROM
             EXIT(ENTRANCE(SOUTHERN_SWAMP_POISONED, 7),      ENTRANCE(WOODS_OF_MYSTERY, 0), true),

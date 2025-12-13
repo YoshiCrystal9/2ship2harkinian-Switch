@@ -19,6 +19,8 @@ static RegisterShipInitFunc initFunc([]() {
             CHECK(RC_BENEATH_THE_WELL_MIDDLE_POT_08, true),
             CHECK(RC_BENEATH_THE_WELL_MIDDLE_POT_09, true),
             CHECK(RC_BENEATH_THE_WELL_MIDDLE_POT_10, true),
+            CHECK(RC_ENEMY_DROP_MINI_BABA, CanKillEnemy(ACTOR_EN_KAREBABA)),
+            CHECK(RC_ENEMY_DROP_DEKU_BABA, CanKillEnemy(ACTOR_EN_DEKUBABA)),
         },
         .connections = {
             CONNECTION(RR_BENEATH_THE_WELL_FREEZARD_ROOM, true),
@@ -60,6 +62,9 @@ static RegisterShipInitFunc initFunc([]() {
         }
     };
     Regions[RR_BENEATH_THE_WELL_DEXIHAND_ROOM] = RandoRegion{ .name = "Dexihand Room", .sceneId = SCENE_REDEAD,
+        .checks = {
+            CHECK(RC_ENEMY_DROP_DEXIHAND, CanKillEnemy(ACTOR_EN_WDHAND)),
+        },
         .connections = {
             CONNECTION(RR_BENEATH_THE_WELL_THREE_SPIKED_BARS, true),
         },
@@ -84,6 +89,10 @@ static RegisterShipInitFunc initFunc([]() {
         },
     };
     Regions[RR_BENEATH_THE_WELL_FOUR_SPIKED_BARS] = RandoRegion{ .name = "Four Spikes Room", .sceneId = SCENE_REDEAD,
+        .checks = {
+            CHECK(RC_ENEMY_DROP_SKULLTULA, CanKillEnemy(ACTOR_EN_ST)),
+            CHECK(RC_ENEMY_DROP_WALLMASTER, CanKillEnemy(ACTOR_EN_WALLMAS)),
+        },
         .connections = {
             CONNECTION(RR_BENEATH_THE_WELL_BABA_AND_POTS_ROOM, true),
             CONNECTION(RR_BENEATH_THE_WELL_MIRROR_SHIELD_ROOM, HAS_BOTTLE && CAN_ACCESS(MILK_REFILL) && HAS_ITEM(ITEM_MASK_GIBDO))
@@ -93,10 +102,15 @@ static RegisterShipInitFunc initFunc([]() {
         }
     };
     Regions[RR_BENEATH_THE_WELL_FREEZARD_ROOM] = RandoRegion{ .name = "Freezard Room", .sceneId = SCENE_REDEAD,
+        .checks = {
+            CHECK(RC_ENEMY_DROP_KEESE, CanKillEnemy(ACTOR_EN_FIREFLY)),
+            CHECK(RC_ENEMY_DROP_WALLMASTER, CanKillEnemy(ACTOR_EN_WALLMAS)),
+            CHECK(RC_ENEMY_DROP_FREEZARD, CanKillEnemy(ACTOR_EN_FZ)),
+        },
         .connections = {
             CONNECTION(RR_BENEATH_THE_WELL_ENTRANCE, true),
             CONNECTION(RR_BENEATH_THE_WELL_RIGHT_FIRE_KEESE, HAS_ITEM(ITEM_MASK_GIBDO)),
-            CONNECTION(RR_BENEATH_THE_WELL_BABA_AND_POTS_ROOM, HAS_BOTTLE && CAN_ACCESS(FISH) && HAS_ITEM(ITEM_MASK_GIBDO))
+            CONNECTION(RR_BENEATH_THE_WELL_BABA_AND_POTS_ROOM, HAS_BOTTLE && CAN_ACCESS(FISH) && HAS_ITEM(ITEM_MASK_GIBDO)),
         },
         .events = {
             EVENT(RE_ACCESS_SPRING_WATER, true),
@@ -105,6 +119,8 @@ static RegisterShipInitFunc initFunc([]() {
     Regions[RR_BENEATH_THE_WELL_LEFT_FIRE_KEESE] = RandoRegion{ .name = "Left Fire Keese Room", .sceneId = SCENE_REDEAD,
         .checks = {
             CHECK(RC_BENEATH_THE_WELL_KEESE_CHEST, HAS_ITEM(ITEM_LENS_OF_TRUTH) && HAS_MAGIC),
+            CHECK(RC_ENEMY_DROP_KEESE, CanKillEnemy(ACTOR_EN_FIREFLY)),
+            CHECK(RC_ENEMY_DROP_WALLMASTER, CanKillEnemy(ACTOR_EN_WALLMAS)),
         },
         .connections = {
             CONNECTION(RR_BENEATH_THE_WELL_TWO_SPIKED_BARS, true),
@@ -121,6 +137,9 @@ static RegisterShipInitFunc initFunc([]() {
         }
     };
     Regions[RR_BENEATH_THE_WELL_RIGHT_FIRE_KEESE] = RandoRegion{ .name = "Right Fire Keese Room", .sceneId = SCENE_REDEAD,
+        .checks = {
+            CHECK(RC_ENEMY_DROP_KEESE, CanKillEnemy(ACTOR_EN_FIREFLY)),
+        },
         .connections = {
             CONNECTION(RR_BENEATH_THE_WELL_FREEZARD_ROOM, true),
             CONNECTION(RR_BENEATH_THE_WELL_BIG_POE_ROOM, HAS_ITEM(ITEM_BOMB) && HAS_ITEM(ITEM_MASK_GIBDO)),
@@ -133,6 +152,7 @@ static RegisterShipInitFunc initFunc([]() {
     Regions[RR_BENEATH_THE_WELL_SKULLTULA_ROOM] = RandoRegion{ .name = "Skulltula Room", .sceneId = SCENE_REDEAD,
         .checks = {
             CHECK(RC_BENEATH_THE_WELL_SKULLTULLA_CHEST, CAN_LIGHT_TORCH_NEAR_ANOTHER),
+            CHECK(RC_ENEMY_DROP_SKULLTULA, CanKillEnemy(ACTOR_EN_ST)),
         },
         .connections = {
             CONNECTION(RR_BENEATH_THE_WELL_BABA_AND_POTS_ROOM, true), 
@@ -156,6 +176,7 @@ static RegisterShipInitFunc initFunc([]() {
             CHECK(RC_BENEATH_THE_WELL_LEFT_SIDE_POT_03, CAN_LIGHT_TORCH_NEAR_ANOTHER),
             CHECK(RC_BENEATH_THE_WELL_LEFT_SIDE_POT_04, CAN_LIGHT_TORCH_NEAR_ANOTHER),
             CHECK(RC_BENEATH_THE_WELL_LEFT_SIDE_POT_05, CAN_LIGHT_TORCH_NEAR_ANOTHER),
+            CHECK(RC_ENEMY_DROP_WALLMASTER, CanKillEnemy(ACTOR_EN_WALLMAS)),
         },
         .connections = {
             CONNECTION(RR_BENEATH_THE_WELL_THREE_SPIKED_BARS, true),

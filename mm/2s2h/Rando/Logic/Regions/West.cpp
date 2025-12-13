@@ -92,6 +92,7 @@ static RegisterShipInitFunc initFunc([]() {
             CHECK(RC_GREAT_BAY_COAST_COW_GROTTO_GRASS_70, true),
             CHECK(RC_GREAT_BAY_COAST_COW_GROTTO_GRASS_71, true),
             CHECK(RC_GREAT_BAY_COAST_COW_GROTTO_GRASS_72, true),
+            CHECK(RC_ENEMY_DROP_GIANT_BEE, CAN_USE_PROJECTILE), // In a beehive
         },
         .connections = {
             CONNECTION(RR_GREAT_BAY_COAST_CLIFFSIDE, true), // TODO: Grotto mapping
@@ -114,6 +115,7 @@ static RegisterShipInitFunc initFunc([]() {
             CHECK(RC_GREAT_BAY_COAST_FISHERMAN_GROTTO_GRASS_12, true),
             CHECK(RC_GREAT_BAY_COAST_FISHERMAN_GROTTO_GRASS_13, true),
             CHECK(RC_GREAT_BAY_COAST_FISHERMAN_GROTTO_GRASS_14, true),
+            CHECK(RC_ENEMY_DROP_MINI_BABA, CanKillEnemy(ACTOR_EN_KAREBABA)),
         },
         .connections = {
             CONNECTION(RR_GREAT_BAY_COAST, true), // TODO: Grotto mapping
@@ -130,6 +132,8 @@ static RegisterShipInitFunc initFunc([]() {
             CHECK(RC_GREAT_BAY_COAST_GRASS_03, true),
             CHECK(RC_GREAT_BAY_COAST_GRASS_04, true),
             CHECK(RC_GREAT_BAY_COAST_GRASS_05, true),
+            CHECK(RC_ENEMY_DROP_LEEVER, CanKillEnemy(ACTOR_EN_NEO_REEBA)),
+            CHECK(RC_ENEMY_DROP_LIKE_LIKE, CanKillEnemy(ACTOR_EN_RR)),
         },
         .exits = { //     TO                                         FROM
             EXIT(ENTRANCE(TERMINA_FIELD, 2),                ENTRANCE(GREAT_BAY_COAST, 0), true),
@@ -226,19 +230,20 @@ static RegisterShipInitFunc initFunc([]() {
     Regions[RR_PINNACLE_ROCK_INNER] = RandoRegion{ .name = "Inner", .sceneId = SCENE_SINKAI,
         .checks = {
             CHECK(RC_PINNACLE_ROCK_CHEST_01,          CAN_BE_ZORA),
-            CHECK(RC_PINNACLE_ROCK_CHEST_02,          CAN_BE_ZORA && HAS_MAGIC),
-            CHECK(RC_PINNACLE_ROCK_POT_01,            CAN_BE_ZORA && HAS_MAGIC),
-            CHECK(RC_PINNACLE_ROCK_POT_02,            CAN_BE_ZORA && HAS_MAGIC),
-            CHECK(RC_PINNACLE_ROCK_POT_03,            CAN_BE_ZORA && HAS_MAGIC),
-            CHECK(RC_PINNACLE_ROCK_POT_04,            CAN_BE_ZORA && HAS_MAGIC),
-            CHECK(RC_PINNACLE_ROCK_POT_05,            CAN_BE_ZORA && HAS_MAGIC),
+            CHECK(RC_PINNACLE_ROCK_CHEST_02,          CanKillEnemy(ACTOR_EN_DRAGON)),
+            CHECK(RC_PINNACLE_ROCK_POT_01,            CanKillEnemy(ACTOR_EN_DRAGON)),
+            CHECK(RC_PINNACLE_ROCK_POT_02,            CanKillEnemy(ACTOR_EN_DRAGON)),
+            CHECK(RC_PINNACLE_ROCK_POT_03,            CanKillEnemy(ACTOR_EN_DRAGON)),
+            CHECK(RC_PINNACLE_ROCK_POT_04,            CanKillEnemy(ACTOR_EN_DRAGON)),
+            CHECK(RC_PINNACLE_ROCK_POT_05,            CanKillEnemy(ACTOR_EN_DRAGON)),
             CHECK(RC_PINNACLE_ROCK_POT_06,            CAN_BE_ZORA),
             CHECK(RC_PINNACLE_ROCK_POT_07,            CAN_BE_ZORA),
             CHECK(RC_PINNACLE_ROCK_POT_08,            CAN_BE_ZORA),
             CHECK(RC_PINNACLE_ROCK_POT_09,            CAN_BE_ZORA),
             CHECK(RC_PINNACLE_ROCK_POT_10,            CAN_BE_ZORA),
             CHECK(RC_PINNACLE_ROCK_POT_11,            CAN_BE_ZORA),
-            CHECK(RC_PINNACLE_ROCK_REUNITE_SEAHORSE,  CAN_BE_ZORA && HAS_MAGIC && RANDO_EVENTS[RE_ACCESS_SEAHORSE]),
+            CHECK(RC_PINNACLE_ROCK_REUNITE_SEAHORSE,  CanKillEnemy(ACTOR_EN_DRAGON) && RANDO_EVENTS[RE_ACCESS_SEAHORSE]),
+            CHECK(RC_ENEMY_DROP_DEEP_PYTHON,          CanKillEnemy(ACTOR_EN_DRAGON)),
         },
         .connections = {
             CONNECTION(RR_PINNACLE_ROCK_ENTRANCE, CAN_USE_ABILITY(SWIM))
@@ -295,12 +300,16 @@ static RegisterShipInitFunc initFunc([]() {
             CHECK(RC_ZORA_CAPE_GROTTO_GRASS_12, true),
             CHECK(RC_ZORA_CAPE_GROTTO_GRASS_13, true),
             CHECK(RC_ZORA_CAPE_GROTTO_GRASS_14, true),
+            CHECK(RC_ENEMY_DROP_MINI_BABA, CanKillEnemy(ACTOR_EN_KAREBABA)),
         },
         .connections = {
             CONNECTION(RR_ZORA_CAPE, true), // TODO: Grotto mapping
         },
     };
     Regions[RR_ZORA_CAPE_OUTSIDE_FAIRY_FOUNTAIN] = RandoRegion{ .sceneId = SCENE_31MISAKI,
+        .checks = {
+            CHECK(RC_ENEMY_DROP_GUAY, CanKillEnemy(ACTOR_EN_CROW)),
+        },
         .exits = { //     TO                                         FROM
             EXIT(ENTRANCE(FAIRY_FOUNTAIN, 3),               ENTRANCE(ZORA_CAPE, 5), CAN_USE_EXPLOSIVE),
         },
@@ -312,10 +321,12 @@ static RegisterShipInitFunc initFunc([]() {
         .checks = {
             CHECK(RC_ZORA_CAPE_LEDGE_CHEST_01,             HAS_ITEM(ITEM_HOOKSHOT)),
             CHECK(RC_ZORA_CAPE_LEDGE_CHEST_02,             HAS_ITEM(ITEM_HOOKSHOT)),
-            CHECK(RC_ZORA_CAPE_UNDERWATER_CHEST,          CAN_BE_ZORA && CAN_USE_ABILITY(SWIM)),
-            CHECK(RC_ZORA_CAPE_WATERFALL_PIECE_OF_HEART,  CAN_BE_ZORA && CAN_USE_ABILITY(SWIM)),
+            CHECK(RC_ZORA_CAPE_UNDERWATER_CHEST,           CAN_BE_ZORA && CAN_USE_ABILITY(SWIM)),
+            CHECK(RC_ZORA_CAPE_WATERFALL_PIECE_OF_HEART,   CAN_BE_ZORA && CAN_USE_ABILITY(SWIM)),
             CHECK(RC_ZORA_CAPE_NEAR_BEAVERS_POT_01,        true),
             CHECK(RC_ZORA_CAPE_NEAR_BEAVERS_POT_02,        true),
+            CHECK(RC_ENEMY_DROP_LEEVER,                    CanKillEnemy(ACTOR_EN_NEO_REEBA)),
+            CHECK(RC_ENEMY_DROP_LIKE_LIKE,                 CanKillEnemy(ACTOR_EN_RR)),
         },
         .exits = { //     TO                                         FROM
             EXIT(ENTRANCE(GREAT_BAY_COAST, 1),              ENTRANCE(ZORA_CAPE, 0), true),

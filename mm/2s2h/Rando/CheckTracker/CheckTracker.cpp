@@ -432,7 +432,14 @@ void CheckTrackerDrawNonLogicalList() {
                         std::string accessLogicString = accessLogicFuncs.find(randoCheckId) != accessLogicFuncs.end()
                                                             ? accessLogicFuncs[randoCheckId]
                                                             : "";
-                        if (accessLogicString != "") {
+                        /*
+                         * Enemy drop checks are multiple in number and may have unique conditions per location. This
+                         * can result in arbitrary particular instances' conditions being displayed for the general
+                         * check. Since the basic requirement of defeating the enemy is self-explanatory and the
+                         * minimum, we'll omit the logic tooltip for them in particular.
+                         */
+                        if (accessLogicString != "" &&
+                            !(randoCheckId >= RC_ENEMY_DROP_ALIEN && randoCheckId <= RC_ENEMY_DROP_WOLFOS)) {
                             UIWidgets::Tooltip(accessLogicString.c_str());
                         }
                         ImGui::TableSetBgColor(ImGuiTableBgTarget_RowBg0, ImGui::IsItemHovered()

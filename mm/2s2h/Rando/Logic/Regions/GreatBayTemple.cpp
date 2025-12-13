@@ -10,6 +10,7 @@ static RegisterShipInitFunc initFunc([]() {
     Regions[RR_GREAT_BAY_TEMPLE_BABA_CHEST_ROOM] = RandoRegion{ .sceneId = SCENE_SEA,
         .checks = {
             CHECK(RC_GREAT_BAY_TEMPLE_BABA_CHEST, CAN_BE_ZORA || CAN_USE_PROJECTILE || HAS_ITEM(ITEM_HOOKSHOT)),
+            CHECK(RC_ENEMY_DROP_BIO_DEKU_BABA, CanKillEnemy(ACTOR_BOSS_05)),
         },
         .connections = {
             CONNECTION(RR_GREAT_BAY_TEMPLE_COMPASS_ROOM,    true),
@@ -30,6 +31,7 @@ static RegisterShipInitFunc initFunc([]() {
             CHECK(RC_GREAT_BAY_TEMPLE_BEFORE_WART_POT_10, true),
             CHECK(RC_GREAT_BAY_TEMPLE_BEFORE_WART_POT_11, true),
             CHECK(RC_GREAT_BAY_TEMPLE_BEFORE_WART_POT_12, true),
+            CHECK(RC_ENEMY_DROP_CHUCHU,                   CanKillEnemy(ACTOR_EN_SLIME)),
         },
         .connections = {
             CONNECTION(RR_GREAT_BAY_TEMPLE_RED_PIPE_BEFORE_WART,  KEY_COUNT(GREAT_BAY_TEMPLE) >= 1),
@@ -92,6 +94,7 @@ static RegisterShipInitFunc initFunc([]() {
             CHECK(RC_GREAT_BAY_TEMPLE_SF_COMPASS_ROOM_TUNNEL_POT,                CAN_BE_ZORA || (CAN_USE_PROJECTILE && HAS_ITEM(ITEM_MASK_GREAT_FAIRY))),
             CHECK(RC_GREAT_BAY_TEMPLE_COMPASS_ROOM_TUNNEL_FREESTANDING_RUPEE_01, CAN_BE_ZORA),
             CHECK(RC_GREAT_BAY_TEMPLE_COMPASS_ROOM_TUNNEL_FREESTANDING_RUPEE_02, CAN_BE_ZORA),
+            CHECK(RC_ENEMY_DROP_DEXIHAND,                                        CanKillEnemy(ACTOR_EN_WDHAND)),
         },
         .connections = {
             CONNECTION(RR_GREAT_BAY_TEMPLE_CENTRAL_ROOM,              CAN_BE_ZORA && CAN_USE_ABILITY(SWIM)),
@@ -109,6 +112,8 @@ static RegisterShipInitFunc initFunc([]() {
             CHECK(RC_GREAT_BAY_TEMPLE_COMPASS_ROOM_WATER_POT_01,   CAN_BE_ZORA && CAN_USE_ABILITY(SWIM)),
             CHECK(RC_GREAT_BAY_TEMPLE_COMPASS_ROOM_WATER_POT_02,   CAN_BE_ZORA && CAN_USE_ABILITY(SWIM)),
             CHECK(RC_GREAT_BAY_TEMPLE_COMPASS_ROOM_WATER_POT_03,   CAN_BE_ZORA && CAN_USE_ABILITY(SWIM)),
+            CHECK(RC_ENEMY_DROP_BIO_DEKU_BABA,                     CanKillEnemy(ACTOR_BOSS_05)),
+            CHECK(RC_ENEMY_DROP_DEXIHAND,                          CanKillEnemy(ACTOR_EN_WDHAND)),
         },
         .connections = {
             CONNECTION(RR_GREAT_BAY_TEMPLE_BABA_CHEST_ROOM,                   true),
@@ -155,6 +160,7 @@ static RegisterShipInitFunc initFunc([]() {
             CHECK(RC_GREAT_BAY_TEMPLE_GEKKO_SMALL_CRATE_14, true),
             CHECK(RC_GREAT_BAY_TEMPLE_GEKKO_SMALL_CRATE_15, true),
             CHECK(RC_GREAT_BAY_TEMPLE_GEKKO_SMALL_CRATE_16, true),
+            CHECK(RC_ENEMY_DROP_GEKKO, CanKillEnemy(ACTOR_EN_BIGSLIME)),
         },
         .connections = {
             CONNECTION(RR_GREAT_BAY_TEMPLE_COMPASS_ROOM_WITH_BOSS_KEY_CHEST,    CanKillEnemy(ACTOR_EN_BIGSLIME)),
@@ -172,6 +178,8 @@ static RegisterShipInitFunc initFunc([]() {
             CHECK(RC_GREAT_BAY_TEMPLE_GREEN_PIPE_1_BARREL_01,             HAS_ITEM(ITEM_HOOKSHOT)),
             CHECK(RC_GREAT_BAY_TEMPLE_GREEN_PIPE_1_BARREL_02,             HAS_ITEM(ITEM_HOOKSHOT)),
             CHECK(RC_GREAT_BAY_TEMPLE_GREEN_PIPE_1_BARREL_03,             HAS_ITEM(ITEM_HOOKSHOT)),
+            CHECK(RC_ENEMY_DROP_TEKTITE,                                  CanKillEnemy(ACTOR_EN_TITE)),
+            CHECK(RC_ENEMY_DROP_DESBREKO,                                 CanKillEnemy(ACTOR_EN_PR)),
         },
         .connections = {
             CONNECTION(RR_GREAT_BAY_TEMPLE_CENTRAL_ROOM,  CAN_USE_ABILITY(SWIM)),
@@ -194,6 +202,7 @@ static RegisterShipInitFunc initFunc([]() {
             CHECK(RC_GREAT_BAY_TEMPLE_GREEN_PIPE_2_POT_06,      CAN_BE_ZORA && CAN_USE_ABILITY(SWIM)),
             CHECK(RC_GREAT_BAY_TEMPLE_GREEN_PIPE_2_POT_07,      CAN_BE_ZORA && CAN_USE_ABILITY(SWIM)),
             CHECK(RC_GREAT_BAY_TEMPLE_GREEN_PIPE_2_POT_08,      CAN_BE_ZORA && CAN_USE_ABILITY(SWIM)),
+            CHECK(RC_ENEMY_DROP_DEXIHAND,                       CanKillEnemy(ACTOR_EN_WDHAND)),
         },
         .connections = {
             CONNECTION(RR_GREAT_BAY_TEMPLE_COMPASS_ROOM,  CAN_BE_ZORA && CAN_USE_ABILITY(SWIM)),
@@ -214,6 +223,7 @@ static RegisterShipInitFunc initFunc([]() {
             CHECK(RC_GREAT_BAY_TEMPLE_GREEN_PIPE_3_LARGE_CRATE_05, true),
             CHECK(RC_GREAT_BAY_TEMPLE_GREEN_PIPE_3_LARGE_CRATE_06, true),
             CHECK(RC_GREAT_BAY_TEMPLE_GREEN_PIPE_3_LARGE_CRATE_07, true),
+            CHECK(RC_ENEMY_DROP_CHUCHU,                            CanKillEnemy(ACTOR_EN_SLIME)),
         },
         .connections = {
             CONNECTION(RR_GREAT_BAY_TEMPLE_GREEN_PIPE_2,  true),
@@ -238,6 +248,7 @@ static RegisterShipInitFunc initFunc([]() {
             CHECK(RC_GREAT_BAY_TEMPLE_MAP_ROOM_WATER_POT_07,    CAN_BE_ZORA && CAN_USE_ABILITY(SWIM)),
             CHECK(RC_GREAT_BAY_TEMPLE_MAP_ROOM_WATER_POT_08,    CAN_BE_ZORA && CAN_USE_ABILITY(SWIM)),
             CHECK(RC_GREAT_BAY_TEMPLE_SF_MAP_ROOM_POT,          CAN_BE_ZORA || CAN_USE_MAGIC_ARROW(ICE)),
+            CHECK(RC_ENEMY_DROP_SKULLFISH, CanKillEnemy(ACTOR_EN_PR2)),
         },
         .connections = {
             CONNECTION(RR_GREAT_BAY_TEMPLE_BABA_CHEST_ROOM,         CAN_BE_ZORA),
@@ -274,6 +285,9 @@ static RegisterShipInitFunc initFunc([]() {
             CHECK(RC_GREAT_BAY_TEMPLE_RED_PIPE_BEFORE_WART_POT_02, CAN_BE_ZORA && CAN_USE_ABILITY(SWIM)),
             CHECK(RC_GREAT_BAY_TEMPLE_RED_PIPE_BEFORE_WART_POT_03, CAN_BE_ZORA && CAN_USE_ABILITY(SWIM)),
             CHECK(RC_GREAT_BAY_TEMPLE_RED_PIPE_BEFORE_WART_POT_04, CAN_BE_ZORA && CAN_USE_ABILITY(SWIM)),
+            CHECK(RC_ENEMY_DROP_SHELLBLADE, CanKillEnemy(ACTOR_EN_SB)),
+            CHECK(RC_ENEMY_DROP_OCTOROK, CanKillEnemy(ACTOR_EN_OKUTA)),
+            CHECK(RC_ENEMY_DROP_SKULLFISH, CanKillEnemy(ACTOR_EN_PR2)),
         },
         .connections = {
             CONNECTION(RR_GREAT_BAY_TEMPLE_CENTRAL_ROOM,    CAN_BE_ZORA && CAN_USE_ABILITY(SWIM)),
@@ -305,7 +319,7 @@ static RegisterShipInitFunc initFunc([]() {
     };
     Regions[RR_GREAT_BAY_TEMPLE_WART] = RandoRegion{ .sceneId = SCENE_SEA,
         .checks = {
-            CHECK(RC_GREAT_BAY_TEMPLE_ICE_ARROW_CHEST,  true),
+            CHECK(RC_GREAT_BAY_TEMPLE_ICE_ARROW_CHEST,   CanKillEnemy(ACTOR_BOSS_04)),
             CHECK(RC_GREAT_BAY_TEMPLE_WART_POT_01,       true),
             CHECK(RC_GREAT_BAY_TEMPLE_WART_POT_02,       true),
             CHECK(RC_GREAT_BAY_TEMPLE_WART_POT_03,       true),
@@ -314,9 +328,10 @@ static RegisterShipInitFunc initFunc([]() {
             CHECK(RC_GREAT_BAY_TEMPLE_WART_POT_06,       true),
             CHECK(RC_GREAT_BAY_TEMPLE_WART_POT_07,       true),
             CHECK(RC_GREAT_BAY_TEMPLE_WART_POT_08,       true),
+            CHECK(RC_ENEMY_DROP_WART,                    CanKillEnemy(ACTOR_BOSS_04)),
         },
         .connections = {
-            CONNECTION(RR_GREAT_BAY_TEMPLE_BEFORE_WART, true),
+            CONNECTION(RR_GREAT_BAY_TEMPLE_BEFORE_WART, CanKillEnemy(ACTOR_BOSS_04)),
         },
     };
     Regions[RR_GREAT_BAY_TEMPLE_WATER_WHEEL_ROOM] = RandoRegion{ .sceneId = SCENE_SEA,
@@ -328,6 +343,7 @@ static RegisterShipInitFunc initFunc([]() {
             CHECK(RC_GREAT_BAY_TEMPLE_WATER_WHEEL_FREESTANDING_RUPEE_03, true),
             CHECK(RC_GREAT_BAY_TEMPLE_WATER_WHEEL_FREESTANDING_RUPEE_04, true),
             CHECK(RC_GREAT_BAY_TEMPLE_WATER_WHEEL_FREESTANDING_RUPEE_05, true),
+            CHECK(RC_ENEMY_DROP_SKULLTULA, CanKillEnemy(ACTOR_EN_ST)),
         },
         .connections = {
             CONNECTION(RR_GREAT_BAY_TEMPLE_CENTRAL_ROOM,  CAN_BE_ZORA && CAN_USE_ABILITY(SWIM)),

@@ -545,11 +545,20 @@ typedef enum {
     VB_ENABLE_OBJECT_DEPENDENCY,
 
     // #### `result`
+    // #### In `Item_DropCollectible`:
     // ```c
     // true
     // ```
     // #### `args`
-    // - `*Vec3f` (spawn position)
+    // - `*Vec3f` spawnPos
+    // - `u32` params
+    // #### In `Item_DropCollectibleRandom`:
+    // ```c
+    // true
+    // ```
+    // #### `args`
+    // - `*Vec3f` spawnPos
+    // - `u16` params
     VB_ENEMY_DROP_COLLECTIBLE,
 
     // #### `result`

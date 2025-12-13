@@ -72,10 +72,6 @@ static RegisterShipInitFunc initFunc([]() {
             EXIT(ENTRANCE(ZORA_CAPE, 6),                             ONE_WAY_EXIT, CAN_PLAY_SONG(SOARING) && CAN_OWL_WARP(OWL_WARP_ZORA_CAPE)),
             EXIT(ENTRANCE(IKANA_CANYON, 4),                          ONE_WAY_EXIT, CAN_PLAY_SONG(SOARING) && CAN_OWL_WARP(OWL_WARP_IKANA_CANYON)),
             EXIT(ENTRANCE(STONE_TOWER, 3),                           ONE_WAY_EXIT, CAN_PLAY_SONG(SOARING) && CAN_OWL_WARP(OWL_WARP_STONE_TOWER)),
-            EXIT(ENTRANCE(CUTSCENE, 0),                              ONE_WAY_EXIT, true), // Enemy Drop Region
-        },
-        .connections = {
-            CONNECTION(RR_MISCELLANEOUS, true), // Enemy Drop Region
         },
     };
 }, {});

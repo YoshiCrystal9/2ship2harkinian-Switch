@@ -23,6 +23,7 @@ static RegisterShipInitFunc initFunc([]() {
             CHECK(RC_OCEAN_SPIDER_HOUSE_MAIN_ROOM_POT_02, true),
             CHECK(RC_OCEAN_SPIDER_HOUSE_MAIN_ROOM_WEB_POT, true),
             CHECK(RC_OCEAN_SPIDER_HOUSE_MAIN_ROOM_BOE_POT, true),
+            CHECK(RC_ENEMY_DROP_BOE, CanKillEnemy(ACTOR_EN_MKK)), // In pot
         },
         .connections = {
             CONNECTION(RR_OCEAN_SPIDER_HOUSE_ENTRANCE_LOWER, HAS_ITEM(ITEM_HOOKSHOT)),
@@ -82,6 +83,7 @@ static RegisterShipInitFunc initFunc([]() {
             CHECK(RC_OCEAN_SPIDER_HOUSE_CHEST_PIECE_OF_HEART, HAS_ITEM(ITEM_BOW) && HAS_ITEM(ITEM_MASK_CAPTAIN)),
             CHECK(RC_OCEAN_SPIDER_HOUSE_COLORED_SKULLS_POT_01, true),
             CHECK(RC_OCEAN_SPIDER_HOUSE_COLORED_SKULLS_POT_02, true),
+            CHECK(RC_ENEMY_DROP_SKULLTULA, CanKillEnemy(ACTOR_EN_ST)),
         },
         .connections = {
             CONNECTION(RR_OCEAN_SPIDER_HOUSE_CENTRAL_ROOM, true)
@@ -101,6 +103,8 @@ static RegisterShipInitFunc initFunc([]() {
             CHECK(RC_OCEAN_SPIDER_HOUSE_STORAGE_TOP_POT_01, HAS_ITEM(ITEM_HOOKSHOT)),
             CHECK(RC_OCEAN_SPIDER_HOUSE_STORAGE_TOP_POT_02, HAS_ITEM(ITEM_HOOKSHOT)),
             CHECK(RC_OCEAN_SPIDER_HOUSE_STORAGE_TOP_POT_03, HAS_ITEM(ITEM_HOOKSHOT)),
+            CHECK(RC_ENEMY_DROP_SKULLTULA, CanKillEnemy(ACTOR_EN_ST)),
+            CHECK(RC_ENEMY_DROP_BOE, CanKillEnemy(ACTOR_EN_MKK)),
         },
         .connections = {
             CONNECTION(RR_OCEAN_SPIDER_HOUSE_CENTRAL_ROOM, true)
@@ -121,6 +125,7 @@ static RegisterShipInitFunc initFunc([]() {
             CHECK(RC_SWAMP_SPIDER_HOUSE_JAR_ROOM_POT_03, true),
             CHECK(RC_SWAMP_SPIDER_HOUSE_JAR_ROOM_POT_04, true),
             CHECK(RC_SWAMP_SPIDER_HOUSE_JAR_ROOM_POT_05, true),
+            CHECK(RC_ENEMY_DROP_GIANT_BEE, CAN_USE_PROJECTILE), // In beehive
         },
         .connections = {
             CONNECTION(RR_SWAMP_SPIDER_HOUSE_CENTER_ROOM_LOWER, true),
@@ -253,7 +258,8 @@ static RegisterShipInitFunc initFunc([]() {
             CHECK(RC_SWAMP_SKULLTULA_TREE_ROOM_HIVE, CAN_USE_PROJECTILE),
             CHECK(RC_SWAMP_SKULLTULA_TREE_ROOM_TREE_01, CanKillEnemy(ACTOR_EN_SW)),
             CHECK(RC_SWAMP_SKULLTULA_TREE_ROOM_TREE_02, CanKillEnemy(ACTOR_EN_SW)),
-            CHECK(RC_SWAMP_SKULLTULA_TREE_ROOM_TREE_03, CanKillEnemy(ACTOR_EN_SW))
+            CHECK(RC_SWAMP_SKULLTULA_TREE_ROOM_TREE_03, CanKillEnemy(ACTOR_EN_SW)),
+            CHECK(RC_ENEMY_DROP_GIANT_BEE, CAN_USE_PROJECTILE), // In beehive
         },
         .connections = {
             CONNECTION(RR_SWAMP_SPIDER_HOUSE_GOLD_ROOM_UPPER, true)

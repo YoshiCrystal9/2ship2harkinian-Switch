@@ -25,6 +25,7 @@ static RegisterShipInitFunc initFunc([]() {
             CHECK(RC_ASTRAL_OBSERVATORY_PASSAGE_POT_02, true),
             CHECK(RC_ASTRAL_OBSERVATORY_PASSAGE_POT_03, true),
             CHECK(RC_ASTRAL_OBSERVATORY_PASSAGE_POT_04, true),
+            CHECK(RC_ENEMY_DROP_SKULLTULA, CanKillEnemy(ACTOR_EN_ST)),
         },
         .exits = { //     TO                                         FROM
             EXIT(ENTRANCE(EAST_CLOCK_TOWN, 2),              ENTRANCE(ASTRAL_OBSERVATORY, 0), true),
