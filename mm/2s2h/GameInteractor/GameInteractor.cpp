@@ -466,39 +466,40 @@ void ProcessEvents(Actor* actor) {
 
     if (auto e = std::get_if<GIEventGiveItem>(&nextEvent)) {
         EnItem00* enItem00;
+
+        s16 flags = CustomItem::HIDE_TILL_OVERHEAD | CustomItem::KEEP_ON_PLAYER;
+
         // If the player is climbing or in the air, deliver the item without a cutscene but freeze the player
         if (!e->showGetItemCutscene ||
             (player->stateFlags1 &
              (PLAYER_STATE1_CHARGING_SPIN_ATTACK | PLAYER_STATE1_2000 | PLAYER_STATE1_4000 | PLAYER_STATE1_40000 |
               PLAYER_STATE1_80000 | PLAYER_STATE1_100000 | PLAYER_STATE1_200000 | PLAYER_STATE1_8000000)) ||
             (Player_GetExplosiveHeld(player) > PLAYER_EXPLOSIVE_NONE)) {
-            enItem00 = CustomItem::Spawn(
-                player->actor.world.pos.x, player->actor.world.pos.y, player->actor.world.pos.z, 0,
-                CustomItem::GIVE_OVERHEAD | CustomItem::HIDE_TILL_OVERHEAD | CustomItem::KEEP_ON_PLAYER, e->param,
-                [](Actor* actor, PlayState* play) {
-                    Player* player = GET_PLAYER(gPlayState);
-                    const auto& nextEvent = GameInteractor::Instance->currentEvent;
-                    if (auto e = std::get_if<GIEventGiveItem>(&nextEvent)) {
-                        e->giveItem(actor, play);
-                        if (e->showGetItemCutscene) {
-                            player->actor.freezeTimer = 30;
-                        }
-                    }
-                },
-                e->drawItem);
+
+            flags |= CustomItem::GIVE_OVERHEAD;
         } else {
-            enItem00 = CustomItem::Spawn(
-                player->actor.world.pos.x, player->actor.world.pos.y, player->actor.world.pos.z, 0,
-                CustomItem::GIVE_ITEM_CUTSCENE | CustomItem::HIDE_TILL_OVERHEAD | CustomItem::KEEP_ON_PLAYER, e->param,
-                e->giveItem, e->drawItem);
+            flags |= CustomItem::GIVE_ITEM_CUTSCENE;
         }
+
+        enItem00 = CustomItem::Spawn(
+            player->actor.world.pos.x, player->actor.world.pos.y, player->actor.world.pos.z, 0, flags, e->param,
+            [](Actor* actor, PlayState* play) {
+                Player* player = GET_PLAYER(gPlayState);
+                const auto& nextEvent = GameInteractor::Instance->currentEvent;
+                if (auto e = std::get_if<GIEventGiveItem>(&nextEvent)) {
+                    e->giveItem(actor, play);
+                    if (e->showGetItemCutscene && !(CUSTOM_ITEM_FLAGS & CustomItem::GIVE_ITEM_CUTSCENE)) {
+                        player->actor.freezeTimer = 30;
+                    }
+                    GameInteractor::Instance->currentEvent = GIEventNone{};
+                }
+            },
+            e->drawItem);
         enItem00->actor.destroy = [](Actor* actor, PlayState* play) {
             if (!(CUSTOM_ITEM_FLAGS & CustomItem::CALLED_ACTION)) {
                 // Event was not handled, requeue it
                 GameInteractor::Instance->events.push_back(GameInteractor::Instance->currentEvent);
             }
-
-            GameInteractor::Instance->currentEvent = GIEventNone{};
         };
     } else if (auto e = std::get_if<GIEventTransition>(&nextEvent)) {
         gPlayState->nextEntrance = e->entrance;

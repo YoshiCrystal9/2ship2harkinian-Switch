@@ -82,11 +82,13 @@ void Rando::MiscBehavior::CheckQueue() {
                         } else if (Rando::StaticData::ShouldShowGetItemCutscene(randoItemId)) {
                             CustomMessage::StartTextbox(entry.msg + "\x1C\x02\x10", entry);
                         } else {
-                            Notification::Emit({
-                                .itemIcon = Rando::StaticData::GetIconTexturePath(randoItemId),
-                                .message = prefix,
-                                .suffix = message,
-                            });
+                            if (Rando::StaticData::Items[randoItemId].randoItemType != RITYPE_JUNK) {
+                                Notification::Emit({
+                                    .itemIcon = Rando::StaticData::GetIconTexturePath(randoItemId),
+                                    .message = prefix,
+                                    .suffix = message,
+                                });
+                            }
                         }
                         Rando::GiveItem(randoItemId);
                         randoSaveCheck.cycleObtained = true;
