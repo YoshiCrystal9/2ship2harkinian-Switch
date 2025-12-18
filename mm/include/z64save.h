@@ -399,6 +399,7 @@ typedef struct ShipSaveInfo {
     uint64_t fileCreatedAt;
     uint64_t fileCompletedAt;
     uint64_t filePlaytime;
+    RespawnData respawn[RESPAWN_MODE_MAX];
     char commitHash[8];
     RandoSaveInfo rando;
 } ShipSaveInfo;

@@ -1047,14 +1047,17 @@ void BenMenu::AddEnhancements() {
             "Re-introduce the pause menu save system. Pressing B in the pause menu will give you the "
             "option to create a persistent Owl Save from your current location.\n\nWhen loading back "
             "into the game, you will be placed either at the entrance of the dungeon you saved in, or "
-            "in South Clock Town."));
+            "in South Clock Town, unless Remember Save Location is enabled."));
+    AddWidget(path, "Remember Save Location", WIDGET_CVAR_CHECKBOX)
+        .CVar("gEnhancements.Saving.RememberSaveLocation")
+        .Options(CheckboxOptions().Tooltip("When loading a save, places Link at the last entrance he went through."));
     AddWidget(path, "Autosave", WIDGET_CVAR_CHECKBOX)
         .CVar("gEnhancements.Saving.Autosave")
         .Callback([](WidgetInfo& info) { RegisterAutosave(); })
         .Options(CheckboxOptions().Tooltip(
             "Automatically create a persistent Owl Save on the chosen interval.\n\nWhen loading "
             "back into the game, you will be placed either at the entrance of the dungeon you "
-            "saved in, or in South Clock Town."));
+            "saved in, or in South Clock Town, unless Remember Save Location is enabled."));
     AddWidget(path, "Autosave Interval: %d minutes", WIDGET_CVAR_SLIDER_INT)
         .CVar("gEnhancements.Saving.AutosaveInterval")
         .PreFunc([](WidgetInfo& info) {

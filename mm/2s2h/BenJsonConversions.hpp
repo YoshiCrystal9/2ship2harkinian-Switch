@@ -76,6 +76,46 @@ void from_json(const json& j, RandoSaveInfo& rando) {
     j.at("foundTriforcePieces").get_to(rando.foundTriforcePieces);
 }
 
+void to_json(json& j, const Vec3f& vec) {
+    j = json{
+        { "x", vec.x },
+        { "y", vec.y },
+        { "z", vec.z },
+    };
+}
+
+void from_json(const json& j, Vec3f& vec) {
+    j.at("x").get_to(vec.x);
+    j.at("y").get_to(vec.y);
+    j.at("z").get_to(vec.z);
+}
+
+void to_json(json& j, const RespawnData& respawnData) {
+    j = json{
+        { "pos", respawnData.pos },
+        { "yaw", respawnData.yaw },
+        { "playerParams", respawnData.playerParams },
+        { "entrance", respawnData.entrance },
+        { "roomIndex", respawnData.roomIndex },
+        { "data", respawnData.data },
+        { "tempSwitchFlags", respawnData.tempSwitchFlags },
+        { "unk_18", respawnData.unk_18 },
+        { "tempCollectFlags", respawnData.tempCollectFlags },
+    };
+}
+
+void from_json(const json& j, RespawnData& respawnData) {
+    j.at("pos").get_to(respawnData.pos);
+    j.at("yaw").get_to(respawnData.yaw);
+    j.at("playerParams").get_to(respawnData.playerParams);
+    j.at("entrance").get_to(respawnData.entrance);
+    j.at("roomIndex").get_to(respawnData.roomIndex);
+    j.at("data").get_to(respawnData.data);
+    j.at("tempSwitchFlags").get_to(respawnData.tempSwitchFlags);
+    j.at("unk_18").get_to(respawnData.unk_18);
+    j.at("tempCollectFlags").get_to(respawnData.tempCollectFlags);
+}
+
 void to_json(json& j, const ShipSaveInfo& shipSaveInfo) {
     uint8_t commitHash[8];
     memcpy(commitHash, shipSaveInfo.commitHash, sizeof(commitHash));
@@ -87,6 +127,7 @@ void to_json(json& j, const ShipSaveInfo& shipSaveInfo) {
         { "fileCreatedAt", shipSaveInfo.fileCreatedAt },
         { "fileCompletedAt", shipSaveInfo.fileCompletedAt },
         { "filePlaytime", shipSaveInfo.filePlaytime },
+        { "respawn", shipSaveInfo.respawn },
         { "commitHash", commitHash },
     };
 
@@ -102,6 +143,7 @@ void from_json(const json& j, ShipSaveInfo& shipSaveInfo) {
     j.at("fileCreatedAt").get_to(shipSaveInfo.fileCreatedAt);
     j.at("fileCompletedAt").get_to(shipSaveInfo.fileCompletedAt);
     j.at("filePlaytime").get_to(shipSaveInfo.filePlaytime);
+    j.at("respawn").get_to(shipSaveInfo.respawn);
     j.at("commitHash").get_to(shipSaveInfo.commitHash);
 
     if (shipSaveInfo.saveType == SAVETYPE_RANDO) {
