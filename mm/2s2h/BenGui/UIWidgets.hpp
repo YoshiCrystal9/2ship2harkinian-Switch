@@ -1068,8 +1068,10 @@ bool ComboboxWithSearch(const char* label, T* value, const std::unordered_map<T,
     
     ImGui::SetNextItemWidth(options.width.value_or(comboWidth));
     if (ImGui::BeginCombo(invisibleLabel, comboMap->at(*value), options.flags)) {
-        // Local filter, no persistence
-        ImGuiTextFilter filter;
+        // Use static map to maintain filter state per combobox instance
+        static std::unordered_map<ImGuiID, ImGuiTextFilter> filters;
+        ImGuiID filterId = ImGui::GetID("##search");
+        ImGuiTextFilter& filter = filters[filterId];
         
         // Focus search input when dropdown first opens
         if (ImGui::IsWindowAppearing()) {
