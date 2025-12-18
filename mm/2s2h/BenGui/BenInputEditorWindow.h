@@ -67,6 +67,8 @@ class BenInputEditorWindow : public Ship::GuiWindow {
     void DrawRemoveGyroMappingButton(uint8_t port, std::string id);
     void DrawAddGyroMappingButton(uint8_t port);
 
+    void DrawModifierButtonsSection(uint8_t port);
+
     // Used together for an incomplete linked hash map implementation in order to
     // map button masks to their names and original mapping on N64
     std::list<std::pair<N64ButtonMask, const char*>> buttons;

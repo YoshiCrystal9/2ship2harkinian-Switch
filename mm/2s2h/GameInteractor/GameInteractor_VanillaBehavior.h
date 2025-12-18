@@ -1804,6 +1804,25 @@ typedef enum {
 
     // #### `result`
     // ```c
+    // true
+    // ```
+    // #### `args`
+    // - '*f32' (incrStep)
+    // - '*f32' (maxSpeed)
+    // - '*f32' (speed)
+    // - '*f32' (speedTarget)
+    VB_SPEED_MODIFIER_SWIM,
+
+    // #### `result`
+    // ```c
+    // true
+    // ```
+    // #### `args`
+    // - None
+    VB_SPEED_MODIFIER_WALK,
+
+    // #### `result`
+    // ```c
     // this->actor.xzDistToPlayer < 350.0f
     // ```
     // #### `args`
