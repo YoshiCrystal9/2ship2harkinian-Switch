@@ -1613,6 +1613,14 @@ typedef enum {
 
     // #### `result`
     // ```c
+    // false
+    // ```
+    // #### `args`
+    // - None
+    VB_SAVE_ON_B_BUTTON_IN_PAUSE_MENU,
+
+    // #### `result`
+    // ```c
     // gSaveContext.save.saveInfo.inventory.items[ITEM_OCARINA_OF_TIME] == ITEM_NONE
     // ```
     // #### `args`

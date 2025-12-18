@@ -3438,12 +3438,10 @@ void KaleidoScope_Update(PlayState* play) {
                     if (!pauseCtx->itemDescriptionOn &&
                         (CHECK_BTN_ALL(input->press.button, BTN_START) || CHECK_BTN_ALL(input->press.button, BTN_B))) {
                         Interface_SetAButtonDoAction(play, DO_ACTION_NONE);
-                        if (CVarGetInteger("gEnhancements.Saving.PauseSave", 0) && SavingEnhancements_CanSave()) {
-                            if (CHECK_BTN_ALL(input->press.button, BTN_B)) {
-                                pauseCtx->state = PAUSE_STATE_SAVEPROMPT;
-                                Audio_PlaySfx_MessageDecide();
-                                break;
-                            }
+                        if (GameInteractor_Should(VB_SAVE_ON_B_BUTTON_IN_PAUSE_MENU, false)) {
+                            pauseCtx->state = PAUSE_STATE_SAVEPROMPT;
+                            Audio_PlaySfx_MessageDecide();
+                            break;
                         }
                         pauseCtx->state = PAUSE_STATE_UNPAUSE_SETUP;
                         sPauseMenuVerticalOffset = -6240.0f;
@@ -3479,12 +3477,10 @@ void KaleidoScope_Update(PlayState* play) {
                         // Abort having the player play the song and close the pause menu
                         AudioOcarina_SetInstrument(OCARINA_INSTRUMENT_OFF);
                         Interface_SetAButtonDoAction(play, DO_ACTION_NONE);
-                        if (CVarGetInteger("gEnhancements.Saving.PauseSave", 0) && SavingEnhancements_CanSave()) {
-                            if (CHECK_BTN_ALL(input->press.button, BTN_B)) {
-                                pauseCtx->state = PAUSE_STATE_SAVEPROMPT;
-                                Audio_PlaySfx_MessageDecide();
-                                break;
-                            }
+                        if (GameInteractor_Should(VB_SAVE_ON_B_BUTTON_IN_PAUSE_MENU, false)) {
+                            pauseCtx->state = PAUSE_STATE_SAVEPROMPT;
+                            Audio_PlaySfx_MessageDecide();
+                            break;
                         }
                         pauseCtx->state = PAUSE_STATE_UNPAUSE_SETUP;
                         sPauseMenuVerticalOffset = -6240.0f;
@@ -3522,12 +3518,10 @@ void KaleidoScope_Update(PlayState* play) {
                     if (CHECK_BTN_ALL(input->press.button, BTN_START) || CHECK_BTN_ALL(input->press.button, BTN_B)) {
                         AudioOcarina_SetInstrument(OCARINA_INSTRUMENT_OFF);
                         Interface_SetAButtonDoAction(play, DO_ACTION_NONE);
-                        if (CVarGetInteger("gEnhancements.Saving.PauseSave", 0) && SavingEnhancements_CanSave()) {
-                            if (CHECK_BTN_ALL(input->press.button, BTN_B)) {
-                                pauseCtx->state = PAUSE_STATE_SAVEPROMPT;
-                                Audio_PlaySfx_MessageDecide();
-                                break;
-                            }
+                        if (GameInteractor_Should(VB_SAVE_ON_B_BUTTON_IN_PAUSE_MENU, false)) {
+                            pauseCtx->state = PAUSE_STATE_SAVEPROMPT;
+                            Audio_PlaySfx_MessageDecide();
+                            break;
                         }
                         pauseCtx->state = PAUSE_STATE_UNPAUSE_SETUP;
                         sPauseMenuVerticalOffset = -6240.0f;
