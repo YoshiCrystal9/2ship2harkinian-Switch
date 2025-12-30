@@ -112,7 +112,8 @@ static RegisterShipInitFunc initFunc([]() {
                 (RANDO_SAVE_OPTIONS[RO_ACCESS_TRIALS] == RO_ACCESS_TRIALS_FORMS) ||
                 (RANDO_SAVE_OPTIONS[RO_ACCESS_TRIALS] == RO_ACCESS_TRIALS_OPEN)
             ),
-            EXIT(ENTRANCE(MAJORAS_LAIR, 0),                          ONE_WAY_EXIT, RemainsCount() >= RANDO_SAVE_OPTIONS[RO_ACCESS_MAJORA_REMAINS_COUNT]),
+            EXIT(ENTRANCE(MAJORAS_LAIR, 0),                          ONE_WAY_EXIT, (RemainsCount() >= RANDO_SAVE_OPTIONS[RO_ACCESS_MAJORA_REMAINS_COUNT]) && (MoonMaskCount() >= RANDO_SAVE_OPTIONS[RO_ACCESS_MAJORA_MASKS_COUNT])
+            ),
         },
         .oneWayEntrances = {
             ENTRANCE(THE_MOON, 0), // From rooftop and trials

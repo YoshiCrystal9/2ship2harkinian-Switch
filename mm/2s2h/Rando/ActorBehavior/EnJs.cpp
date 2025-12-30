@@ -116,7 +116,8 @@ void OverrideMainJsText(u16* textId, bool* loadFromMessageTable) {
                 override = true;
             }
 
-            if (Rando::Logic::RemainsCount() < RANDO_SAVE_OPTIONS[RO_ACCESS_MAJORA_REMAINS_COUNT]) {
+            if (Rando::Logic::MoonMaskCount() < RANDO_SAVE_OPTIONS[RO_ACCESS_MAJORA_MASKS_COUNT] ||
+                Rando::Logic::RemainsCount() < RANDO_SAVE_OPTIONS[RO_ACCESS_MAJORA_REMAINS_COUNT]) {
                 entry.msg = "You are not strong enough to play with me...";
                 entry.nextMessageID = 0x21FD;
                 override = true;
