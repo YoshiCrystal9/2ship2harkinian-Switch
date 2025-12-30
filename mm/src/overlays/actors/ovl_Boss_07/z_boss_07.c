@@ -371,6 +371,8 @@ void Boss07_Remains_Draw(Actor* thisx, PlayState* play2);
 void Boss07_Top_Draw(Actor* thisx, PlayState* play2);
 void Boss07_BattleHandler_Draw(Actor* thisx, PlayState* play2);
 
+void Boss07_Reset(void);
+
 void Boss07_Wrath_SetupIntroCutscene(Boss07* this, PlayState* play);
 void Boss07_Wrath_IntroCutscene(Boss07* this, PlayState* play);
 void Boss07_Wrath_DeathCutscene(Boss07* this, PlayState* play);
@@ -642,6 +644,7 @@ ActorProfile Boss_07_Profile = {
     /**/ Boss07_Destroy,
     /**/ Boss07_Wrath_Update,
     /**/ Boss07_Wrath_Draw,
+    /**/ Boss07_Reset,
 };
 
 // The limbs referenced here are not used. The spheres are positioned manually by Boss07_Wrath_PostLimbDraw.

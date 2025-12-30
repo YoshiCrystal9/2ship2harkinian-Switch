@@ -72,7 +72,9 @@ void Rando::ActorBehavior::InitEnCowBehavior() {
         }
     });
 
-    COND_VB_SHOULD(VB_GIVE_ITEM_FROM_COW, IS_RANDO, {
+    bool shouldRegister = IS_RANDO && RANDO_SAVE_OPTIONS[RO_SHUFFLE_COWS];
+
+    COND_VB_SHOULD(VB_GIVE_ITEM_FROM_COW, shouldRegister, {
         // Original Should is the Range check, if it fails just Return.
         Actor* actor = va_arg(args, Actor*);
         if (!((actor->xzDistToPlayer < 90.0f) &&
@@ -80,13 +82,15 @@ void Rando::ActorBehavior::InitEnCowBehavior() {
             *should = false;
             return;
         }
+
+        ((EnCow*)actor)->flags |= EN_COW_FLAG_WONT_GIVE_MILK;
+
         RandoCheckId randoCheckId = GetObjectRandoCheckId(actor);
 
         if (randoCheckId == RC_UNKNOWN) {
             *should = true;
             return;
         }
-        ((EnCow*)actor)->flags |= EN_COW_FLAG_WONT_GIVE_MILK;
 
         RandoSaveCheck& randoSaveCheck = RANDO_SAVE_CHECKS[randoCheckId];
         if (!randoSaveCheck.shuffled || randoSaveCheck.cycleObtained) {
@@ -97,7 +101,7 @@ void Rando::ActorBehavior::InitEnCowBehavior() {
         *should = false;
     });
 
-    COND_VB_SHOULD(VB_COW_CONSIDER_EPONAS_SONG_PLAYED, IS_RANDO, {
+    COND_VB_SHOULD(VB_COW_CONSIDER_EPONAS_SONG_PLAYED, shouldRegister, {
         EnCow* actor = va_arg(args, EnCow*);
         if (actor->flags & EN_COW_FLAG_WONT_GIVE_MILK) {
             gPlayState->msgCtx.songPlayed = 0;
