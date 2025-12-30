@@ -1589,6 +1589,9 @@ void BenMenu::AddEnhancements() {
                      .Min(1)
                      .Max(20)
                      .DefaultValue(20));
+    AddWidget(path, "Skip Little Beaver Brother Races", WIDGET_CVAR_CHECKBOX)
+        .CVar("gEnhancements.Minigames.SkipLittleBeaver")
+        .Options(CheckboxOptions().Tooltip("Only Race the Older Beaver."));
     AddWidget(path, "Goron Race", WIDGET_CVAR_COMBOBOX)
         .CVar("gEnhancements.DifficultyOptions.GoronRace")
         .Options(ComboboxOptions()
