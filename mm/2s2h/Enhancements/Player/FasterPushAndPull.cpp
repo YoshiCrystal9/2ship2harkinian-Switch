@@ -6,6 +6,7 @@ extern "C" {
 #include "overlays/actors/ovl_Bg_Dblue_Movebg/z_bg_dblue_movebg.h"
 #include "overlays/actors/ovl_Bg_Ikana_Block/z_bg_ikana_block.h"
 #include "overlays/actors/ovl_Obj_Oshihiki/z_obj_oshihiki.h"
+#include "overlays/actors/ovl_Obj_Skateblock/z_obj_skateblock.h"
 }
 
 #define CVAR_NAME "gEnhancements.Player.FasterPushAndPull"
@@ -34,7 +35,12 @@ void RegisterFasterPushAndPull() {
         *should = false;
     });
 
-    COND_VB_SHOULD(VB_SKATE_BLOCK_BEGIN_MOVE, CVAR, { *should = true; });
+    COND_VB_SHOULD(VB_SKATE_BLOCK_BEGIN_MOVE, CVAR, {
+        // These blocks can only be pushed, not pulled
+        ObjSkateblock* objSkateblock = va_arg(args, ObjSkateblock*);
+        s32 directionIndex = va_arg(args, s32);
+        *should = objSkateblock->unk_172[directionIndex] > 0;
+    });
 
     COND_VB_SHOULD(VB_BLOCK_BEGIN_MOVE, CVAR, { *should = true; });
 
