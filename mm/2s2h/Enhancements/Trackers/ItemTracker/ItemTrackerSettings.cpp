@@ -345,8 +345,8 @@ void DrawPreviewPane() {
             }
             windowListIndex++;
         }
-        ImGui::EndChild();
     }
+    ImGui::EndChild();
 }
 
 void DrawTrackerWindowOptions(int32_t windowIndex, TrackerItemListObject& windowObject) {
@@ -606,9 +606,8 @@ void DrawTrackerCustomizationOptions() {
             DrawItemList(randoListOrder[rkey], std::get<2>(list));
             ImGui::PopID();
         }
-
-        ImGui::EndChild();
     }
+    ImGui::EndChild();
 }
 
 void ItemTrackerSettingsWindow::DrawElement() {
@@ -634,28 +633,28 @@ void ItemTrackerSettingsWindow::DrawElement() {
                     if (ImGui::BeginTabItem("Customization")) {
                         if (ImGui::BeginChild("CustomizationChild")) {
                             DrawTrackerCustomizationOptions();
-                            ImGui::EndChild();
                         }
+                        ImGui::EndChild();
                         ImGui::EndTabItem();
                     }
                     if (ImGui::BeginTabItem("Options")) {
                         if (ImGui::BeginChild("OptionsChild")) {
                             DrawTrackerOptions();
-                            ImGui::EndChild();
                         }
+                        ImGui::EndChild();
                         ImGui::EndTabItem();
                     }
                     if (ImGui::BeginTabItem("Save/Load")) {
                         if (ImGui::BeginChild("SaveChild")) {
                             DrawTrackerSaveLoadOptions();
-                            ImGui::EndChild();
                         }
+                        ImGui::EndChild();
                         ImGui::EndTabItem();
                     }
                     ImGui::EndTabBar();
                 }
-                ImGui::EndChild();
             }
+            ImGui::EndChild();
 
             ImGui::TableNextColumn();
             if (ImGui::BeginChild("WindowChild")) {
@@ -666,15 +665,15 @@ void ItemTrackerSettingsWindow::DrawElement() {
                     }
                     ImGui::EndTabBar();
                 }
-                ImGui::EndChild();
             }
+            ImGui::EndChild();
             ImGui::EndTable();
         }
         UIWidgets::PopStyleTabs();
 
         ImGui::PopStyleColor(3);
-        ImGui::EndChild();
     }
+    ImGui::EndChild();
 }
 
 void ItemTrackerSettingsWindow::InitElement() {
