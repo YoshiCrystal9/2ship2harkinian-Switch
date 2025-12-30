@@ -119,8 +119,8 @@ static const std::vector<const char*> notificationPosition = {
 };
 
 static const std::vector<const char*> dekuGuardSearchBallsOptions = {
-    "Never",      // DEKU_GUARD_SEARCH_BALLS_NEVER
     "Night Only", // DEKU_GUARD_SEARCH_BALLS_NIGHT_ONLY
+    "Never",      // DEKU_GUARD_SEARCH_BALLS_NEVER
     "Always",     // DEKU_GUARD_SEARCH_BALLS_ALWAYS
 };
 

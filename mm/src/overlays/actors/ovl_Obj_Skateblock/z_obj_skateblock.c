@@ -529,10 +529,9 @@ void func_80A22334(ObjSkateblock* this, PlayState* play) {
 
     if (sp2C == -1) {
         sp30 = false;
-    } else if (GameInteractor_Should(VB_SKATE_BLOCK_BEGIN_MOVE,
-                                     !(this->unk_1C1 & 2) && (this->unk_172[sp2C] > 10) && (D_80A22A10 == 0) &&
-                                         !func_80A216D4(this, play, 2.0f, &sp20) && !Player_InCsMode(play),
-                                     this)) {
+    } else if (!(this->unk_1C1 & 2) &&
+               GameInteractor_Should(VB_SKATE_BLOCK_BEGIN_MOVE, (this->unk_172[sp2C] > 10), this, sp2C) &&
+               (D_80A22A10 == 0) && !func_80A216D4(this, play, 2.0f, &sp20) && !Player_InCsMode(play)) {
         func_80A21C88(this, sp2C);
         func_80A2244C(this);
         sp30 = false;

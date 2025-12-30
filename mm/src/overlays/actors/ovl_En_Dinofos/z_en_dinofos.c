@@ -15,6 +15,7 @@ void EnDinofos_Init(Actor* thisx, PlayState* play);
 void EnDinofos_Destroy(Actor* thisx, PlayState* play);
 void EnDinofos_Update(Actor* thisx, PlayState* play2);
 void EnDinofos_Draw(Actor* thisx, PlayState* play);
+void EnDinofos_Reset(void);
 
 void EnDinofos_Idle(EnDinofos* this, PlayState* play);
 void EnDinofos_PlayCutscene(EnDinofos* this, PlayState* play);
@@ -67,6 +68,7 @@ ActorProfile En_Dinofos_Profile = {
     /**/ EnDinofos_Destroy,
     /**/ EnDinofos_Update,
     /**/ EnDinofos_Draw,
+    /**/ EnDinofos_Reset,
 };
 
 static ColliderJntSphElementInit sJntSphElementsInit[9] = {
@@ -1573,4 +1575,9 @@ void EnDinofos_Draw(Actor* thisx, PlayState* play) {
                             this->drawDmgEffFrozenSteamScale, this->drawDmgEffAlpha, this->drawDmgEffType);
 
     CLOSE_DISPS(play->state.gfxCtx);
+}
+
+void EnDinofos_Reset(void) {
+    sCsId = CS_ID_NONE;
+    sNumAlive = 0;
 }
