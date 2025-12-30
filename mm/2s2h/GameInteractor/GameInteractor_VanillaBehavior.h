@@ -1194,6 +1194,22 @@ typedef enum {
     // true
     // ```
     // #### `args`
+    // - None
+    VB_MSG_LOAD_RUPEES_TEXT,
+
+    // #### `result`
+    // ```c
+    // true
+    // ```
+    // #### `args`
+    // - None
+    VB_MSG_PLAY_INPUT_COUNT_SOUND,
+
+    // #### `result`
+    // ```c
+    // true
+    // ```
+    // #### `args`
     // - `*Actor`
     // - `s16` (item ID)
     VB_MSG_SCRIPT_DEL_ITEM,

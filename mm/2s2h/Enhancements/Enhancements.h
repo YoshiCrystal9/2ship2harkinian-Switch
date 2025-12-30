@@ -27,6 +27,12 @@ enum CremiaRewardsOptions {
     CREMIA_REWARD_ALWAYS_RUPEE,
 };
 
+enum AmmoBuybackOptions {
+    AMMO_BUYBACK_VANILLA,
+    AMMO_BUYBACK_FULL_PRICE,
+    AMMO_BUYBACK_HALF_PRICE,
+};
+
 enum GibdoTradeSequenceOptions {
     GIBDO_TRADE_SEQUENCE_VANILLA,
     GIBDO_TRADE_SEQUENCE_MM3D,
