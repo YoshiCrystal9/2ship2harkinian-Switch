@@ -280,6 +280,11 @@ void Rando::MiscBehavior::OnFileCreate(s16 fileNum) {
                     std::vector<RandoItemId> plentifulItems;
                     std::vector<RandoItemId> potentialPlentifulItems;
                     for (size_t i = 0; i < itemPool.size(); i++) {
+                        // The user can specify exactly how many pieces they want to shuffle, so skip those
+                        if (Rando::StaticData::Items[itemPool[i]].randoItemId == RI_TRIFORCE_PIECE) {
+                            continue;
+                        }
+
                         switch (Rando::StaticData::Items[itemPool[i]].randoItemType) {
                             case RITYPE_BOSS_KEY:
                             case RITYPE_SMALL_KEY:
@@ -408,6 +413,17 @@ void Rando::MiscBehavior::OnFileCreate(s16 fileNum) {
 
                         RANDO_SAVE_OPTIONS[RO_TRIFORCE_PIECES_MAX] = piecesShuffled;
                         RANDO_SAVE_OPTIONS[RO_TRIFORCE_PIECES_REQUIRED] = (piecesShuffled * currentRatio) + 1;
+                    }
+
+                    if (RANDO_SAVE_OPTIONS[RO_TRIFORCE_PIECES_MAX] < 1 ||
+                        RANDO_SAVE_OPTIONS[RO_TRIFORCE_PIECES_MAX] > 1000 ||
+                        RANDO_SAVE_OPTIONS[RO_TRIFORCE_PIECES_REQUIRED] < 1 ||
+                        RANDO_SAVE_OPTIONS[RO_TRIFORCE_PIECES_REQUIRED] > 1000) {
+                        SPDLOG_ERROR("Error with adjusting Triforce Piece placement. Resulting shuffle requires {} "
+                                     "pieces and out of a total of {}",
+                                     RANDO_SAVE_OPTIONS[RO_TRIFORCE_PIECES_REQUIRED],
+                                     RANDO_SAVE_OPTIONS[RO_TRIFORCE_PIECES_MAX]);
+                        throw std::runtime_error("Invalid Triforce Piece count");
                     }
                 }
 
