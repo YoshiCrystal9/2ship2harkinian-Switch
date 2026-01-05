@@ -557,6 +557,7 @@ void BenMenu::AddSettings() {
         .Options(ButtonOptions().Tooltip("Enables the separate Bindings Window.").Size(Sizes::Inline));
 
     path.sidebarName = "Overlay";
+    path.column = SECTION_COLUMN_1;
     AddSidebarEntry("Settings", "Overlay", 2);
     AddWidget(path, "Notifications", WIDGET_SEPARATOR_TEXT);
     AddWidget(path, "Position", WIDGET_CVAR_COMBOBOX)

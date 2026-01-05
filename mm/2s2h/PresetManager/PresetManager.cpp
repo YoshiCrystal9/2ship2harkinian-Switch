@@ -48,6 +48,11 @@ nlohmann::json defaultsPresetJ = R"(
 nlohmann::json curatedPresetJ = R"(
 {
     "CVars": {
+        "gAudioEditor": {
+            "ChildGoronCry": 1,
+            "LowHpAlarm": 1,
+            "MuteCarpenterSfx": 1
+        },
         "gCheats": {
             "EasyFrameAdvance": 1
         },
@@ -61,6 +66,7 @@ nlohmann::json curatedPresetJ = R"(
         "gEnhancements": {
             "Cutscenes": {
                 "HideTitleCards": 1,
+                "SkipEnemyCutscenes": 1,
                 "SkipEntranceCutscenes": 1,
                 "SkipFirstCycle": 1,
                 "SkipGetItemCutscenes": 2,
@@ -76,13 +82,16 @@ nlohmann::json curatedPresetJ = R"(
                 "DoNotResetRazorSword": 1,
                 "DoNotResetRupees": 1,
                 "DoNotResetTimeSpeed": 1,
-                "KeepExpressMail": 1
+                "KeepExpressMail": 1,
+                "OceansideWalletAnyDay": 1,
+                "StopOceansideSpiderHouseSquatter": 1
             },
             "Dialogue": {
                 "FastBankSelection": 1,
                 "FastText": 1
             },
             "DifficultyOptions": {
+                "GoronRace": 1,
                 "LowerBankRewardThresholds": 1
             },
             "Dpad": {
@@ -128,8 +137,10 @@ nlohmann::json curatedPresetJ = R"(
                 "HoneyAndDarlingDay2": 4,
                 "HoneyAndDarlingDay3": 8,
                 "PowderKegCertification": 1,
+                "RomaniTargetPractice": 5,
                 "SkipBalladOfWindfish": 1,
                 "SkipHorseRace": 1,
+                "SkipLittleBeaver": 1,
                 "SwampArcheryScore": 1580,
                 "SwordsmanSchoolScore": 6,
                 "TownArcheryScore": 25
@@ -157,11 +168,13 @@ nlohmann::json curatedPresetJ = R"(
                 "InstantRecall": 1
             },
             "Restorations": {
+                "BonkCollision": 1,
                 "ConstantFlipsHops": 1,
                 "OoTFasterSwim": 1,
                 "PowerCrouchStab": 1,
                 "SideRoll": 1,
-                "TatlISG": 1
+                "TatlISG": 1,
+                "WoodfallMountainAppearance": 1
             },
             "Saving": {
                 "Autosave": 1,
@@ -174,12 +187,15 @@ nlohmann::json curatedPresetJ = R"(
                 "EnableSunsSong": 1,
                 "FasterSongPlayback": 1,
                 "PauseOwlWarp": 1,
-                "SkipSoTCutscenes": 1
+                "SkipSoTCutscenes": 1,
+                "SkipSoaringCutscene": 1
             },
             "Timesavers": {
                 "DampeDiggingSkip": 1,
+                "FastChests": 1,
                 "GalleryTwofer": 1,
                 "MarineLabHP": 1,
+                "SkipBalladOfWindfish": 1,
                 "SwampBoatSpeed": 1
             }
         },
@@ -246,9 +262,6 @@ nlohmann::json curatedPresetJ = R"(
             "Timers": {
                 "Mode": 3
             }
-        },
-        "gModes": {
-            "PlayAsKafei": 1
         }
     },
     "type": "2S2H_PRESET",

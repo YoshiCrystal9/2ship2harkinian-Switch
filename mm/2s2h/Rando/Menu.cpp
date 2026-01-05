@@ -148,7 +148,8 @@ static void DrawGeneralTab() {
         }
         UIWidgets::PopStyleSlider();
 
-        UIWidgets::CVarCheckbox("Generate Spoiler File", "gRando.GenerateSpoiler");
+        UIWidgets::CVarCheckbox("Generate Spoiler File", "gRando.GenerateSpoiler",
+                                CheckboxOptions().DefaultValue(true));
     }
     ImGui::SeparatorText("Enhancements");
     UIWidgets::CVarCheckbox("Container Style Matches Contents", "gRando.CSMC");

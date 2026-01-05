@@ -447,7 +447,7 @@ void Rando::MiscBehavior::OnFileCreate(s16 fileNum) {
                                              std::to_string(RANDO_SAVE_OPTIONS[RO_LOGIC]));
                 }
 
-                if (CVarGetInteger("gRando.GenerateSpoiler", 0)) {
+                if (CVarGetInteger("gRando.GenerateSpoiler", 1)) {
                     nlohmann::json spoiler = Rando::Spoiler::GenerateFromSaveContext();
                     spoiler["inputSeed"] = inputSeed;
 
