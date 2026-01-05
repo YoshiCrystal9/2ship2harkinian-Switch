@@ -3,6 +3,10 @@
 #include <libultraship/bridge/consolevariablebridge.h>
 #include "ShipUtils.h"
 
+extern "C" {
+#include "overlays/actors/ovl_En_Sth/z_en_sth.h"
+}
+
 namespace Rando {
 
 namespace Spoiler {
@@ -14,42 +18,12 @@ void ApplyToSaveContext(nlohmann::json spoiler) {
         RANDO_SAVE_OPTIONS[randoOptionId] = spoiler["options"][randoStaticOption.name].get<uint32_t>();
     }
 
+    if (!RANDO_SAVE_OPTIONS[RO_SHUFFLE_GOLD_SKULLTULAS]) {
+        RANDO_SAVE_OPTIONS[RO_MINIMUM_SKULLTULA_TOKENS] = SPIDER_HOUSE_TOKENS_REQUIRED;
+    }
+
     std::string startingItemsSave = spoiler["startingItems"].get<std::string>();
     strncpy(RANDO_STARTING_ITEMS, startingItemsSave.c_str(), startingItemsSave.size() + 1);
-
-    if (RANDO_SAVE_OPTIONS[RO_STARTING_HEALTH] != 3) {
-        gSaveContext.save.saveInfo.playerData.healthCapacity = gSaveContext.save.saveInfo.playerData.health =
-            RANDO_SAVE_OPTIONS[RO_STARTING_HEALTH] * 0x10;
-    }
-
-    if (RANDO_SAVE_OPTIONS[RO_STARTING_CONSUMABLES]) {
-        GiveItem(RI_DEKU_STICK);
-        GiveItem(RI_DEKU_NUT);
-        AMMO(ITEM_DEKU_STICK) = CUR_CAPACITY(UPG_DEKU_STICKS);
-        AMMO(ITEM_DEKU_NUT) = CUR_CAPACITY(UPG_DEKU_NUTS);
-    }
-
-    std::vector<RandoItemId> startingItems = convertStartingItemsToRandoItemId(RANDO_STARTING_ITEMS, ",");
-
-    if (RANDO_SAVE_OPTIONS[RO_STARTING_MAPS_AND_COMPASSES]) {
-        std::vector<RandoItemId> MapsAndCompasses = {
-            RI_GREAT_BAY_COMPASS,       RI_GREAT_BAY_MAP,       RI_SNOWHEAD_COMPASS,       RI_SNOWHEAD_MAP,
-            RI_STONE_TOWER_COMPASS,     RI_STONE_TOWER_MAP,     RI_TINGLE_MAP_CLOCK_TOWN,  RI_TINGLE_MAP_GREAT_BAY,
-            RI_TINGLE_MAP_ROMANI_RANCH, RI_TINGLE_MAP_SNOWHEAD, RI_TINGLE_MAP_STONE_TOWER, RI_TINGLE_MAP_WOODFALL,
-            RI_WOODFALL_COMPASS,        RI_WOODFALL_MAP,
-        };
-        for (RandoItemId itemId : MapsAndCompasses) {
-            startingItems.push_back(itemId);
-        }
-    }
-
-    for (RandoItemId startingItem : startingItems) {
-        GiveItem(ConvertItem(startingItem));
-    }
-
-    if (RANDO_SAVE_OPTIONS[RO_STARTING_RUPEES]) {
-        gSaveContext.save.saveInfo.playerData.rupees = CUR_CAPACITY(UPG_WALLET);
-    }
 
     for (auto& [randoCheckId, randoStaticCheck] : Rando::StaticData::Checks) {
         if (randoStaticCheck.randoCheckId == RC_UNKNOWN) {

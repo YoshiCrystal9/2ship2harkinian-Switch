@@ -4,6 +4,9 @@
 #include "Rando/CheckTracker/CheckTracker.h"
 #include "build.h"
 #include "2s2h/BenGui/BenMenu.h"
+#include "2s2h/BenGui/BenGui.hpp"
+#include "2s2h/Rando/Logic/Logic.h"
+#include "2s2h/ShipInit.hpp"
 
 extern "C" {
 #include "overlays/actors/ovl_En_Sth/z_en_sth.h"
@@ -113,6 +116,81 @@ void LoadExcludedChecks() {
     SortExcludedChecks();
 }
 
+static int checksInPool = 0;
+static int itemsInPool = 0;
+static int junkInPool = 0;
+static bool ableToBalance = true;
+void RefreshMetrics() {
+    RandoSaveInfo randoSaveInfo;
+    std::vector<RandoCheckId> checkPool;
+    std::vector<RandoItemId> itemPool;
+
+    // Load options into CVars
+    for (auto& [randoOptionId, randoStaticOption] : Rando::StaticData::Options) {
+        randoSaveInfo.randoSaveOptions[randoOptionId] =
+            (uint32_t)CVarGetInteger(randoStaticOption.cvar, randoStaticOption.defaultValue);
+    }
+    std::string startingItemsString = CVarGetString("gRando.StartingItems", RANDO_STARTING_ITEMS_DEFAULT);
+    strncpy(randoSaveInfo.randoStartingItems, startingItemsString.c_str(), startingItemsString.size() + 1);
+
+    Rando::Logic::GeneratePools(randoSaveInfo, checkPool, itemPool);
+
+    checksInPool = checkPool.size();
+    itemsInPool = itemPool.size();
+    junkInPool = 0;
+    for (auto& item : itemPool) {
+        if (Rando::StaticData::Items[item].randoItemType == RITYPE_JUNK) {
+            junkInPool++;
+        }
+    }
+    ableToBalance = checksInPool >= (itemsInPool - junkInPool);
+}
+
+static RegisterShipInitFunc refreshMetricsInit(RefreshMetrics, {
+                                                                   // I Don't love this, but it works...
+                                                                   "gRando.Options.RO_ACCESS_DUNGEONS",
+                                                                   "gRando.Options.RO_ACCESS_MAJORA_MASKS_COUNT",
+                                                                   "gRando.Options.RO_ACCESS_MAJORA_REMAINS_COUNT",
+                                                                   "gRando.Options.RO_ACCESS_MOON_MASKS_COUNT",
+                                                                   "gRando.Options.RO_ACCESS_MOON_REMAINS_COUNT",
+                                                                   "gRando.Options.RO_ACCESS_TRIALS",
+                                                                   "gRando.Options.RO_HINTS_BOSS_REMAINS",
+                                                                   "gRando.Options.RO_HINTS_GOSSIP_STONES",
+                                                                   "gRando.Options.RO_HINTS_HOOKSHOT",
+                                                                   "gRando.Options.RO_HINTS_OATH_TO_ORDER",
+                                                                   "gRando.Options.RO_HINTS_PURCHASEABLE",
+                                                                   "gRando.Options.RO_HINTS_SPIDER_HOUSES",
+                                                                   "gRando.Options.RO_TRAP_AMOUNT",
+                                                                   "gRando.Options.RO_LOGIC",
+                                                                   "gRando.Options.RO_MINIMUM_SKULLTULA_TOKENS",
+                                                                   "gRando.Options.RO_MINIMUM_STRAY_FAIRIES",
+                                                                   "gRando.Options.RO_PLENTIFUL_ITEMS",
+                                                                   "gRando.Options.RO_SHUFFLE_BARREL_DROPS",
+                                                                   "gRando.Options.RO_SHUFFLE_BOSS_REMAINS",
+                                                                   "gRando.Options.RO_SHUFFLE_BOSS_SOULS",
+                                                                   "gRando.Options.RO_SHUFFLE_COWS",
+                                                                   "gRando.Options.RO_SHUFFLE_CRATE_DROPS",
+                                                                   "gRando.Options.RO_SHUFFLE_ENEMY_DROPS",
+                                                                   "gRando.Options.RO_SHUFFLE_FREESTANDING_ITEMS",
+                                                                   "gRando.Options.RO_SHUFFLE_FROGS",
+                                                                   "gRando.Options.RO_SHUFFLE_GOLD_SKULLTULAS",
+                                                                   "gRando.Options.RO_SHUFFLE_GRASS_DROPS",
+                                                                   "gRando.Options.RO_SHUFFLE_TRAPS",
+                                                                   "gRando.Options.RO_SHUFFLE_OWL_STATUES",
+                                                                   "gRando.Options.RO_SHUFFLE_POT_DROPS",
+                                                                   "gRando.Options.RO_SHUFFLE_SHOPS",
+                                                                   "gRando.Options.RO_SHUFFLE_SNOWBALL_DROPS",
+                                                                   "gRando.Options.RO_SHUFFLE_SWIM",
+                                                                   "gRando.Options.RO_SHUFFLE_TINGLE_SHOPS",
+                                                                   "gRando.Options.RO_SHUFFLE_TRIFORCE_PIECES",
+                                                                   "gRando.Options.RO_STARTING_CONSUMABLES",
+                                                                   "gRando.Options.RO_STARTING_HEALTH",
+                                                                   "gRando.Options.RO_STARTING_MAPS_AND_COMPASSES",
+                                                                   "gRando.Options.RO_STARTING_RUPEES",
+                                                                   "gRando.Options.RO_TRIFORCE_PIECES_MAX",
+                                                                   "gRando.Options.RO_TRIFORCE_PIECES_REQUIRED",
+                                                               });
+
 static void DrawGeneralTab() {
     ImGui::BeginChild("randoSettings");
     ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1, 1, 1, 0.5f));
@@ -151,6 +229,32 @@ static void DrawGeneralTab() {
         UIWidgets::CVarCheckbox("Generate Spoiler File", "gRando.GenerateSpoiler",
                                 CheckboxOptions().DefaultValue(true));
     }
+
+    float mainWidth = 300.0f; // Arbitrary width for progress bars
+    float itemProgress = mainWidth * (static_cast<float>(itemsInPool) / static_cast<float>(checksInPool));
+    float junkProgress = static_cast<float>(junkInPool) / static_cast<float>(itemsInPool);
+
+    ImGui::SeparatorText("Current Settings Metrics");
+    ImGui::Text("Checks in pool: %d", checksInPool);
+    ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 4.0f);
+    ImGui::PushStyleColor(ImGuiCol_PlotHistogram, UIWidgets::ColorValues.at(THEME_COLOR));
+    ImGui::PushStyleColor(ImGuiCol_FrameBg, UIWidgets::ColorValues.at(UIWidgets::Colors::DarkGray));
+    ImGui::ProgressBar(1.0f, ImVec2(mainWidth, 0.0f), "");
+    ImGui::Text("Items in Pool: %d", itemsInPool);
+    ImGui::SameLine();
+    ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 0.5f), "(%d Junk Items)", junkInPool);
+
+    ImGui::ProgressBar(1.0f - junkProgress, ImVec2(itemProgress, 0.0f), "");
+    ImGui::PopStyleColor(2);
+    ImGui::PopStyleVar();
+    ImGui::Text("Able to Balance:");
+    ImGui::SameLine();
+    if (ableToBalance) {
+        ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "Yes");
+    } else {
+        ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "No");
+    }
+
     ImGui::SeparatorText("Enhancements");
     UIWidgets::CVarCheckbox("Container Style Matches Contents", "gRando.CSMC");
     UIWidgets::Tooltip("This will make the contents of a container match the container itself. This currently only "
@@ -166,9 +270,8 @@ static void DrawGeneralTab() {
 }
 
 static void DrawLogicConditionsTab() {
-    f32 columnWidth = ImGui::GetContentRegionAvail().x / 3 - (ImGui::GetStyle().ItemSpacing.x * 2);
-    f32 halfHeight = ImGui::GetContentRegionAvail().y / 2 - (ImGui::GetStyle().ItemSpacing.y * 2);
-    ImGui::BeginChild("randoLogicColumn1", ImVec2(columnWidth, halfHeight));
+    f32 columnWidth = ImGui::GetContentRegionAvail().x / 2 - (ImGui::GetStyle().ItemSpacing.x * 2);
+    ImGui::BeginChild("randoLogicColumn1", ImVec2(columnWidth, 0));
     if (UIWidgets::CVarCombobox("Logic", Rando::StaticData::Options[RO_LOGIC].cvar, &logicOptions)) {
         ClearIncompatibleSetting();
     }
@@ -185,7 +288,7 @@ static void DrawLogicConditionsTab() {
         "Not compatible with settings that add items to the pool, like Boss Souls or Plentiful Items.");
     ImGui::EndChild();
     ImGui::SameLine();
-    ImGui::BeginChild("randoLogicColumn2", ImVec2(columnWidth, halfHeight));
+    ImGui::BeginChild("randoLogicColumn2", ImVec2(columnWidth, 0));
 
     UIWidgets::CVarCombobox("Dungeon Access", Rando::StaticData::Options[RO_ACCESS_DUNGEONS].cvar,
                             &accessDungeonOptions);
@@ -208,14 +311,11 @@ static void DrawLogicConditionsTab() {
                              IntSliderOptions().Min(0).Max(20).DefaultValue(0));
     UIWidgets::CVarCombobox("Trials Access", Rando::StaticData::Options[RO_ACCESS_TRIALS].cvar, &accessTrialsOptions);
     ImGui::EndChild();
-    ImGui::BeginChild("randoLogicTricks", ImVec2(0, 0));
-    ImGui::SeparatorText("Tricks & Glitches");
-    ImGui::EndChild();
 }
 
 static void DrawShufflesTab() {
-    f32 columnWidth = ImGui::GetContentRegionAvail().x / 3 - (ImGui::GetStyle().ItemSpacing.x * 2);
-    f32 halfHeight = ImGui::GetContentRegionAvail().y / 2 - (ImGui::GetStyle().ItemSpacing.y * 2);
+    f32 columnWidth = ImGui::GetContentRegionAvail().x / 2 - (ImGui::GetStyle().ItemSpacing.x * 2);
+    f32 halfHeight = 0;
     ImGui::SeparatorText("Shuffle Options");
     ImGui::BeginChild("randoShufflesColumn1", ImVec2(columnWidth, halfHeight));
     CVarCheckbox("Shuffle Songs", "gPlaceholderBool",
@@ -259,31 +359,6 @@ static void DrawShufflesTab() {
     ImGui::EndChild();
     ImGui::SameLine();
     ImGui::BeginChild("randoLocationsColumn3", ImVec2(columnWidth, halfHeight));
-    CVarCheckbox("Triforce Hunt", Rando::StaticData::Options[RO_SHUFFLE_TRIFORCE_PIECES].cvar);
-    ImGui::BeginDisabled(!CVarGetInteger(Rando::StaticData::Options[RO_SHUFFLE_TRIFORCE_PIECES].cvar, RO_GENERIC_OFF));
-    CVarSliderInt(
-        "Required Triforce Pieces", Rando::StaticData::Options[RO_TRIFORCE_PIECES_REQUIRED].cvar,
-        IntSliderOptions({})
-            .Min(1)
-            .Max(CVarGetInteger(Rando::StaticData::Options[RO_TRIFORCE_PIECES_MAX].cvar, DEFAULT_TRIFORCE_PIECES_MAX))
-            .DefaultValue(DEFAULT_TRIFORCE_PIECES_MAX));
-    if (CVarSliderInt(
-            "Shuffled Triforce Pieces", Rando::StaticData::Options[RO_TRIFORCE_PIECES_MAX].cvar,
-            IntSliderOptions({})
-                .Min(1)
-                .Max(1000)
-                .DefaultValue(DEFAULT_TRIFORCE_PIECES_MAX)
-                .Tooltip("If the maximum amount of placeable pieces exceeds what will allow the seed to generate, the "
-                         "amount will be adjusted automatically."))) {
-        if (CVarGetInteger(Rando::StaticData::Options[RO_TRIFORCE_PIECES_REQUIRED].cvar, DEFAULT_TRIFORCE_PIECES_MAX) >
-            CVarGetInteger(Rando::StaticData::Options[RO_TRIFORCE_PIECES_MAX].cvar, DEFAULT_TRIFORCE_PIECES_MAX)) {
-            CVarGetInteger(
-                Rando::StaticData::Options[RO_TRIFORCE_PIECES_REQUIRED].cvar,
-                CVarGetInteger(Rando::StaticData::Options[RO_TRIFORCE_PIECES_MAX].cvar, DEFAULT_TRIFORCE_PIECES_MAX));
-        }
-    }
-
-    ImGui::EndDisabled();
     ImGui::EndChild();
 }
 
@@ -333,6 +408,32 @@ static void DrawItemsTab() {
                  CheckboxOptions({ { .tooltip = "Shuffles the first drop from a non Boss Enemy." } }));
     CVarCheckbox("Enemy Souls", "gPlaceholderBool",
                  CheckboxOptions({ { .disabled = true, .disabledTooltip = "Coming Soon" } }));
+
+    CVarCheckbox("Triforce Hunt", Rando::StaticData::Options[RO_SHUFFLE_TRIFORCE_PIECES].cvar);
+    ImGui::BeginDisabled(!CVarGetInteger(Rando::StaticData::Options[RO_SHUFFLE_TRIFORCE_PIECES].cvar, RO_GENERIC_OFF));
+    CVarSliderInt(
+        "Required Triforce Pieces", Rando::StaticData::Options[RO_TRIFORCE_PIECES_REQUIRED].cvar,
+        IntSliderOptions({})
+            .Min(1)
+            .Max(CVarGetInteger(Rando::StaticData::Options[RO_TRIFORCE_PIECES_MAX].cvar, DEFAULT_TRIFORCE_PIECES_MAX))
+            .DefaultValue(DEFAULT_TRIFORCE_PIECES_MAX));
+    if (CVarSliderInt(
+            "Shuffled Triforce Pieces", Rando::StaticData::Options[RO_TRIFORCE_PIECES_MAX].cvar,
+            IntSliderOptions({})
+                .Min(1)
+                .Max(1000)
+                .DefaultValue(DEFAULT_TRIFORCE_PIECES_MAX)
+                .Tooltip("If the maximum amount of placeable pieces exceeds what will allow the seed to generate, the "
+                         "amount will be adjusted automatically."))) {
+        if (CVarGetInteger(Rando::StaticData::Options[RO_TRIFORCE_PIECES_REQUIRED].cvar, DEFAULT_TRIFORCE_PIECES_MAX) >
+            CVarGetInteger(Rando::StaticData::Options[RO_TRIFORCE_PIECES_MAX].cvar, DEFAULT_TRIFORCE_PIECES_MAX)) {
+            CVarSetInteger(
+                Rando::StaticData::Options[RO_TRIFORCE_PIECES_REQUIRED].cvar,
+                CVarGetInteger(Rando::StaticData::Options[RO_TRIFORCE_PIECES_MAX].cvar, DEFAULT_TRIFORCE_PIECES_MAX));
+        }
+    }
+
+    ImGui::EndDisabled();
     ImGui::EndChild();
     ImGui::SameLine();
     ImGui::BeginChild("randoItemsColumn3", ImVec2(columnWidth, ImGui::GetContentRegionAvail().y));
@@ -347,7 +448,7 @@ static void DrawItemsTab() {
             .Color(UIWidgets::Colors(CVarGetInteger("gSettings.Menu.Theme", 5)))
             .Format("Traps: %i")
             .Min(1)
-            .Max(10)
+            .Max(100)
             .DefaultValue(5));
     ImGui::SeparatorText("Toggle Trap Types");
     CVarCheckbox(

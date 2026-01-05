@@ -47,21 +47,8 @@ void ApplyNearlyNoLogicToSaveContext(std::vector<RandoCheckId>& checkPool, std::
             continue;
         }
 
-        RandoItemId randoItemId = RI_NONE;
-        if (RANDO_SAVE_CHECKS[randoCheckId].skipped) {
-            uint32_t index = 0;
-            for (auto& item : itemPool) {
-                if (Rando::StaticData::Items[item].randoItemType == RITYPE_JUNK) {
-                    randoItemId = item;
-                    itemPool.erase(itemPool.begin() + index);
-                    break;
-                }
-                index++;
-            }
-        } else {
-            randoItemId = itemPool.back();
-            itemPool.pop_back();
-        }
+        RandoItemId randoItemId = itemPool.back();
+        itemPool.pop_back();
 
         RANDO_SAVE_CHECKS[randoCheckId].shuffled = true;
         RANDO_SAVE_CHECKS[randoCheckId].randoItemId = randoItemId;

@@ -12,6 +12,43 @@ extern "C" {
 #include "overlays/actors/ovl_En_Sth/z_en_sth.h"
 }
 
+void GrantStarters() {
+    std::vector<RandoItemId> startingItems = convertStartingItemsToRandoItemId(RANDO_STARTING_ITEMS, ",");
+
+    if (RANDO_SAVE_OPTIONS[RO_STARTING_MAPS_AND_COMPASSES]) {
+        std::vector<RandoItemId> MapsAndCompasses = {
+            RI_GREAT_BAY_COMPASS,       RI_GREAT_BAY_MAP,       RI_SNOWHEAD_COMPASS,       RI_SNOWHEAD_MAP,
+            RI_STONE_TOWER_COMPASS,     RI_STONE_TOWER_MAP,     RI_TINGLE_MAP_CLOCK_TOWN,  RI_TINGLE_MAP_GREAT_BAY,
+            RI_TINGLE_MAP_ROMANI_RANCH, RI_TINGLE_MAP_SNOWHEAD, RI_TINGLE_MAP_STONE_TOWER, RI_TINGLE_MAP_WOODFALL,
+            RI_WOODFALL_COMPASS,        RI_WOODFALL_MAP,
+        };
+
+        for (RandoItemId itemId : MapsAndCompasses) {
+            startingItems.push_back(itemId);
+        }
+    }
+
+    for (RandoItemId startingItem : startingItems) {
+        Rando::GiveItem(Rando::ConvertItem(startingItem));
+    }
+
+    if (RANDO_SAVE_OPTIONS[RO_STARTING_HEALTH] != 3) {
+        gSaveContext.save.saveInfo.playerData.healthCapacity = gSaveContext.save.saveInfo.playerData.health =
+            RANDO_SAVE_OPTIONS[RO_STARTING_HEALTH] * 0x10;
+    }
+
+    if (RANDO_SAVE_OPTIONS[RO_STARTING_CONSUMABLES]) {
+        Rando::GiveItem(RI_DEKU_STICK);
+        Rando::GiveItem(RI_DEKU_NUT);
+        AMMO(ITEM_DEKU_STICK) = CUR_CAPACITY(UPG_DEKU_STICKS);
+        AMMO(ITEM_DEKU_NUT) = CUR_CAPACITY(UPG_DEKU_NUTS);
+    }
+
+    if (RANDO_SAVE_OPTIONS[RO_STARTING_RUPEES]) {
+        gSaveContext.save.saveInfo.playerData.rupees = CUR_CAPACITY(UPG_WALLET);
+    }
+}
+
 // Very primitive randomizer implementation, when a save is created, if rando is enabled
 // we set the save type to rando and shuffle all checks and persist the results to the save
 void Rando::MiscBehavior::OnFileCreate(s16 fileNum) {
@@ -60,267 +97,18 @@ void Rando::MiscBehavior::OnFileCreate(s16 fileNum) {
                         (uint32_t)CVarGetInteger(randoStaticOption.cvar, randoStaticOption.defaultValue);
                 }
 
-                std::vector<RandoItemId> startingItems = convertStartingItemsToRandoItemId(
-                    CVarGetString("gRando.StartingItems", RANDO_STARTING_ITEMS_DEFAULT), ",");
-
-                std::string startingItemSave = CreateStartingItemsToCvar(startingItems);
-                strncpy(RANDO_STARTING_ITEMS, startingItemSave.c_str(), startingItemSave.size() + 1);
-
-                if (RANDO_SAVE_OPTIONS[RO_STARTING_HEALTH] != 3) {
-                    gSaveContext.save.saveInfo.playerData.healthCapacity =
-                        gSaveContext.save.saveInfo.playerData.health = RANDO_SAVE_OPTIONS[RO_STARTING_HEALTH] * 0x10;
-                }
-
-                if (RANDO_SAVE_OPTIONS[RO_SHUFFLE_TRIFORCE_PIECES] != RO_GENERIC_OFF) {
-                    RANDO_SAVE_OPTIONS[RO_TRIFORCE_PIECES_REQUIRED] = CVarGetInteger(
-                        Rando::StaticData::Options[RO_TRIFORCE_PIECES_REQUIRED].cvar, DEFAULT_TRIFORCE_PIECES_MAX);
-                }
-
-                if (RANDO_SAVE_OPTIONS[RO_STARTING_CONSUMABLES]) {
-                    GiveItem(RI_DEKU_STICK);
-                    GiveItem(RI_DEKU_NUT);
-                    AMMO(ITEM_DEKU_STICK) = CUR_CAPACITY(UPG_DEKU_STICKS);
-                    AMMO(ITEM_DEKU_NUT) = CUR_CAPACITY(UPG_DEKU_NUTS);
-                }
-
-                if (RANDO_SAVE_OPTIONS[RO_STARTING_MAPS_AND_COMPASSES]) {
-                    std::vector<RandoItemId> MapsAndCompasses = {
-                        RI_GREAT_BAY_COMPASS,     RI_GREAT_BAY_MAP,          RI_SNOWHEAD_COMPASS,
-                        RI_SNOWHEAD_MAP,          RI_STONE_TOWER_COMPASS,    RI_STONE_TOWER_MAP,
-                        RI_TINGLE_MAP_CLOCK_TOWN, RI_TINGLE_MAP_GREAT_BAY,   RI_TINGLE_MAP_ROMANI_RANCH,
-                        RI_TINGLE_MAP_SNOWHEAD,   RI_TINGLE_MAP_STONE_TOWER, RI_TINGLE_MAP_WOODFALL,
-                        RI_WOODFALL_COMPASS,      RI_WOODFALL_MAP,
-                    };
-
-                    for (RandoItemId itemId : MapsAndCompasses) {
-                        startingItems.push_back(itemId);
-                    }
-                }
-
                 // If Skulltula tokens are not shuffled, use the vanilla requirement
                 if (!RANDO_SAVE_OPTIONS[RO_SHUFFLE_GOLD_SKULLTULAS]) {
                     RANDO_SAVE_OPTIONS[RO_MINIMUM_SKULLTULA_TOKENS] = SPIDER_HOUSE_TOKENS_REQUIRED;
                 }
 
+                // Persist StartingItems to the save
+                std::string startingItemsString = CVarGetString("gRando.StartingItems", RANDO_STARTING_ITEMS_DEFAULT);
+                strncpy(RANDO_STARTING_ITEMS, startingItemsString.c_str(), startingItemsString.size() + 1);
+
                 std::vector<RandoCheckId> checkPool;
                 std::vector<RandoItemId> itemPool;
-
-                // Create Excluded Checks List to eliminate excluded checks from the pool
-                std::vector<RandoCheckId> excludedChecks;
-                std::string excludedChecksList = CVarGetString("gRando.ExcludedChecks", "");
-                std::string word;
-                std::istringstream stream(excludedChecksList);
-                while (std::getline(stream, word, ',')) {
-                    excludedChecks.push_back((RandoCheckId)std::stoi(word));
-                }
-
-                // First loop through all regions and add checks/items to the pool
-                for (auto& [randoRegionId, randoRegion] : Rando::Logic::Regions) {
-                    for (auto& [randoCheckId, _] : randoRegion.checks) {
-                        auto& randoStaticCheck = Rando::StaticData::Checks[randoCheckId];
-
-                        // Initialize the check with it's vanilla item
-                        if (randoStaticCheck.randoCheckId != RC_UNKNOWN) {
-                            RANDO_SAVE_CHECKS[randoCheckId].randoItemId = randoStaticCheck.randoItemId;
-                        }
-
-                        // Skip checks that are already in the pool
-                        if (std::find(checkPool.begin(), checkPool.end(), randoCheckId) != checkPool.end()) {
-                            continue;
-                        }
-
-                        // TODO: We may never shuffle these 2 pots, leaving this decision for later
-                        if (randoStaticCheck.sceneId == SCENE_LAST_BS) {
-                            continue;
-                        }
-
-                        if (randoStaticCheck.randoCheckType == RCTYPE_SKULL_TOKEN &&
-                            RANDO_SAVE_OPTIONS[RO_SHUFFLE_GOLD_SKULLTULAS] == RO_GENERIC_NO) {
-                            continue;
-                        }
-
-                        if (randoStaticCheck.randoCheckType == RCTYPE_OWL &&
-                            RANDO_SAVE_OPTIONS[RO_SHUFFLE_OWL_STATUES] == RO_GENERIC_NO) {
-                            continue;
-                        }
-
-                        if (randoStaticCheck.randoCheckType == RCTYPE_POT &&
-                            RANDO_SAVE_OPTIONS[RO_SHUFFLE_POT_DROPS] == RO_GENERIC_NO) {
-                            continue;
-                        }
-
-                        if (randoStaticCheck.randoCheckType == RCTYPE_CRATE &&
-                            RANDO_SAVE_OPTIONS[RO_SHUFFLE_CRATE_DROPS] == RO_GENERIC_NO) {
-                            continue;
-                        }
-
-                        if (randoStaticCheck.randoCheckType == RCTYPE_BARREL &&
-                            RANDO_SAVE_OPTIONS[RO_SHUFFLE_BARREL_DROPS] == RO_GENERIC_NO) {
-                            continue;
-                        }
-
-                        if (randoStaticCheck.randoCheckType == RCTYPE_GRASS &&
-                            RANDO_SAVE_OPTIONS[RO_SHUFFLE_GRASS_DROPS] == RO_GENERIC_NO) {
-                            continue;
-                        }
-
-                        if (randoStaticCheck.randoCheckType == RCTYPE_FREESTANDING &&
-                            RANDO_SAVE_OPTIONS[RO_SHUFFLE_FREESTANDING_ITEMS] == RO_GENERIC_NO) {
-                            continue;
-                        }
-
-                        if (randoStaticCheck.randoCheckType == RCTYPE_SNOWBALL &&
-                            RANDO_SAVE_OPTIONS[RO_SHUFFLE_SNOWBALL_DROPS] == RO_GENERIC_NO) {
-                            continue;
-                        }
-
-                        if (randoStaticCheck.randoCheckType == RCTYPE_FROG &&
-                            RANDO_SAVE_OPTIONS[RO_SHUFFLE_FROGS] == RO_GENERIC_NO) {
-                            continue;
-                        }
-
-                        if (randoStaticCheck.randoCheckType == RCTYPE_REMAINS &&
-                            RANDO_SAVE_OPTIONS[RO_SHUFFLE_BOSS_REMAINS] == RO_GENERIC_NO) {
-                            continue;
-                        }
-
-                        if (randoStaticCheck.randoCheckType == RCTYPE_COW &&
-                            RANDO_SAVE_OPTIONS[RO_SHUFFLE_COWS] == RO_GENERIC_NO) {
-                            continue;
-                        }
-
-                        if (randoStaticCheck.randoCheckType == RCTYPE_ENEMY_DROP &&
-                            RANDO_SAVE_OPTIONS[RO_SHUFFLE_ENEMY_DROPS] == RO_GENERIC_NO) {
-                            continue;
-                        }
-
-                        if (randoStaticCheck.randoCheckType == RCTYPE_TINGLE_SHOP &&
-                            RANDO_SAVE_OPTIONS[RO_SHUFFLE_TINGLE_SHOPS] == RO_GENERIC_NO) {
-                            continue;
-                        } else {
-                            int price = Ship_Random(0, 200);
-                            RANDO_SAVE_CHECKS[randoCheckId].price = price;
-                        }
-
-                        if (randoStaticCheck.randoCheckType == RCTYPE_SHOP) {
-                            // We always want shuffle RC_CURIOSITY_SHOP_SPECIAL_ITEM &
-                            // RC_BOMB_SHOP_ITEM_04_OR_CURIOSITY_SHOP_ITEM
-                            if (RANDO_SAVE_OPTIONS[RO_SHUFFLE_SHOPS] == RO_GENERIC_NO &&
-                                randoCheckId != RC_CURIOSITY_SHOP_SPECIAL_ITEM &&
-                                randoCheckId != RC_BOMB_SHOP_ITEM_04_OR_CURIOSITY_SHOP_ITEM) {
-                                continue;
-                            } else {
-                                // We may come up with a better solution for this in the future, but for now we choose a
-                                // random price ahead of time, logic will account for whatever price we choose
-                                int price = Ship_Random(0, 200);
-                                RANDO_SAVE_CHECKS[randoCheckId].price = price;
-                            }
-                        }
-
-                        // Skip checks that have been excluded in the Locations menu and add their vanilla item to the
-                        // pool except if Logic is set to Vanilla.
-                        if (RANDO_SAVE_OPTIONS[RO_LOGIC] <= RO_LOGIC_NEARLY_NO_LOGIC) {
-                            auto it = std::find(excludedChecks.begin(), excludedChecks.end(), randoCheckId);
-                            if (it != excludedChecks.end()) {
-                                RandoItemId vanillaItem = Rando::StaticData::Checks[randoCheckId].randoItemId;
-                                itemPool.push_back(vanillaItem);
-
-                                RANDO_SAVE_CHECKS[randoCheckId].randoItemId = RI_JUNK;
-                                RANDO_SAVE_CHECKS[randoCheckId].skipped = true;
-
-                                checkPool.emplace_back(randoCheckId);
-                                continue;
-                            }
-                        }
-
-                        checkPool.emplace_back(randoCheckId);
-                        itemPool.push_back(randoStaticCheck.randoItemId);
-                    }
-                }
-
-                // Add sword and shield to the pool because they don't have a vanilla location, if you are starting with
-                // them they will be removed from the pool in the next step
-                itemPool.push_back(RI_PROGRESSIVE_SWORD);
-                itemPool.push_back(RI_SHIELD_HERO);
-
-                // Add other items that don't have a vanilla location like Sun's Song or Song of Double Time
-                if (RANDO_SAVE_OPTIONS[RO_SHUFFLE_BOSS_SOULS] == RO_GENERIC_YES) {
-                    for (int i = RI_SOUL_GOHT; i <= RI_SOUL_TWINMOLD; i++) {
-                        if (i == RI_SOUL_MAJORA && RANDO_SAVE_OPTIONS[RO_SHUFFLE_TRIFORCE_PIECES] == RO_GENERIC_YES) {
-                            continue;
-                        }
-                        itemPool.push_back((RandoItemId)i);
-                    }
-                }
-
-                if (RANDO_SAVE_OPTIONS[RO_SHUFFLE_SWIM] == RO_GENERIC_YES) {
-                    itemPool.push_back(RI_ABILITY_SWIM);
-                } else {
-                    Flags_SetRandoInf(RANDO_INF_OBTAINED_SWIM);
-                }
-
-                // Remove starting items from the pool (but only one per entry in startingItems)
-                for (RandoItemId startingItem : startingItems) {
-                    auto it = std::find(itemPool.begin(), itemPool.end(), startingItem);
-                    if (it != itemPool.end()) {
-                        itemPool.erase(it);
-                    }
-                }
-
-                // Shuffle Triforce Pieces into the Pool
-                int piecesShuffled = 0;
-                if (RANDO_SAVE_OPTIONS[RO_SHUFFLE_TRIFORCE_PIECES] == RO_GENERIC_YES) {
-                    int piecesToShuffle = RANDO_SAVE_OPTIONS[RO_TRIFORCE_PIECES_MAX];
-                    for (auto& item : itemPool) {
-                        if (piecesToShuffle == 0) {
-                            break;
-                        }
-                        itemPool.push_back(RI_TRIFORCE_PIECE);
-                        piecesToShuffle--;
-                        piecesShuffled++;
-                    }
-                }
-
-                if (RANDO_SAVE_OPTIONS[RO_PLENTIFUL_ITEMS] == RO_GENERIC_YES) {
-                    int replaceableItems = 0;
-                    std::vector<RandoItemId> plentifulItems;
-                    std::vector<RandoItemId> potentialPlentifulItems;
-                    for (size_t i = 0; i < itemPool.size(); i++) {
-                        switch (Rando::StaticData::Items[itemPool[i]].randoItemType) {
-                            case RITYPE_BOSS_KEY:
-                            case RITYPE_SMALL_KEY:
-                            case RITYPE_MASK:
-                            case RITYPE_MAJOR:
-                                plentifulItems.push_back(itemPool[i]);
-                                break;
-                            case RITYPE_LESSER:
-                            case RITYPE_SKULLTULA_TOKEN:
-                            case RITYPE_STRAY_FAIRY:
-                                if (Ship_Random(0, 2) == 1) {
-                                    potentialPlentifulItems.push_back(itemPool[i]);
-                                }
-                                break;
-                            case RITYPE_HEALTH:
-                            case RITYPE_JUNK:
-                            default:
-                                replaceableItems++;
-                                break;
-                        }
-                    }
-
-                    if (replaceableItems > plentifulItems.size()) {
-                        for (RandoItemId plentifulItem : plentifulItems) {
-                            itemPool.push_back(plentifulItem);
-                        }
-                    }
-
-                    // Only add potentialPlentifulItems if we think we have enough room (this might not be perfect)
-                    if ((replaceableItems - plentifulItems.size() - 10) > potentialPlentifulItems.size()) {
-                        for (RandoItemId plentifulItem : potentialPlentifulItems) {
-                            itemPool.push_back(plentifulItem);
-                        }
-                    }
-                }
+                Rando::Logic::GeneratePools(gSaveContext.save.shipSaveInfo.rando, checkPool, itemPool);
 
                 if (checkPool.empty()) {
                     throw std::runtime_error("No checks in logic");
@@ -329,20 +117,8 @@ void Rando::MiscBehavior::OnFileCreate(s16 fileNum) {
                     throw std::runtime_error("No items in logic");
                 }
 
-                // Handle Shuffling Traps
-                if (RANDO_SAVE_OPTIONS[RO_SHUFFLE_TRAPS] == RO_GENERIC_YES) {
-                    for (int i = 0; i < RANDO_SAVE_OPTIONS[RO_TRAP_AMOUNT]; i++) {
-                        for (int j = 0; j < itemPool.size(); j++) {
-                            if (itemPool[j] == RI_JUNK) {
-                                itemPool[j] = RI_TRAP;
-                                break;
-                            }
-                        }
-                    }
-                }
-
+                // Balance pools
                 int heartPiecesRemoved = 0;
-                // Add/Remove junk items to/from the pool to make the item pool size match the check pool size
                 while (checkPool.size() != itemPool.size()) {
                     if (checkPool.size() > itemPool.size()) {
                         itemPool.push_back(RI_JUNK);
@@ -383,48 +159,14 @@ void Rando::MiscBehavior::OnFileCreate(s16 fileNum) {
                             continue;
                         }
 
-                        // If Triforce Hunt is enabled, removed pieces as a last resort
-                        if (RANDO_SAVE_OPTIONS[RO_SHUFFLE_TRIFORCE_PIECES] == RO_GENERIC_YES) {
-                            bool removedTriforcePiece = false;
-                            for (int i = 0; i < itemPool.size(); i++) {
-                                if (Rando::StaticData::Items[itemPool[i]].randoItemId == RI_TRIFORCE_PIECE) {
-                                    itemPool.erase(itemPool.begin() + i);
-                                    removedTriforcePiece = true;
-                                    piecesShuffled--;
-                                    break;
-                                }
-                            }
-
-                            if (removedTriforcePiece) {
-                                continue;
-                            }
-                        }
-
                         SPDLOG_ERROR("Could not match item pool size to check pool size {}/{}", itemPool.size(),
                                      checkPool.size());
                         throw std::runtime_error("Could not match item pool size to check pool size");
                     }
                 }
 
-                // Update Required Triforce Pieces if piecesShuffled falls below max shuffled
-                if (RANDO_SAVE_OPTIONS[RO_SHUFFLE_TRIFORCE_PIECES] == RO_GENERIC_YES) {
-                    if (piecesShuffled != RANDO_SAVE_OPTIONS[RO_TRIFORCE_PIECES_MAX]) {
-                        float currentRatio = ((float)RANDO_SAVE_OPTIONS[RO_TRIFORCE_PIECES_REQUIRED] /
-                                              (float)RANDO_SAVE_OPTIONS[RO_TRIFORCE_PIECES_MAX]);
-
-                        RANDO_SAVE_OPTIONS[RO_TRIFORCE_PIECES_MAX] = piecesShuffled;
-                        RANDO_SAVE_OPTIONS[RO_TRIFORCE_PIECES_REQUIRED] = (piecesShuffled * currentRatio) + 1;
-                    }
-                }
-
-                // Grant the starting items
-                for (RandoItemId startingItem : startingItems) {
-                    GiveItem(ConvertItem(startingItem));
-                }
-
-                if (RANDO_SAVE_OPTIONS[RO_STARTING_RUPEES]) {
-                    gSaveContext.save.saveInfo.playerData.rupees = CUR_CAPACITY(UPG_WALLET);
-                }
+                // Grant the starting stuff
+                GrantStarters();
 
                 if (RANDO_SAVE_OPTIONS[RO_LOGIC] == RO_LOGIC_VANILLA) {
                     GiveItem(RI_SWORD_KOKIRI);
@@ -466,6 +208,8 @@ void Rando::MiscBehavior::OnFileCreate(s16 fileNum) {
                 nlohmann::json spoiler = Rando::Spoiler::LoadFromFile(fileName);
 
                 Rando::Spoiler::ApplyToSaveContext(spoiler);
+                // Grant the starting stuff
+                GrantStarters();
 
                 Audio_PlaySfx(NA_SE_SY_ATTENTION_SOUND);
             }
