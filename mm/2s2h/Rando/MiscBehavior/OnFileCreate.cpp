@@ -28,6 +28,10 @@ void GrantStarters() {
         }
     }
 
+    if (RANDO_SAVE_OPTIONS[RO_SHUFFLE_SWIM] != RO_GENERIC_YES) {
+        startingItems.push_back(RI_ABILITY_SWIM);
+    }
+
     for (RandoItemId startingItem : startingItems) {
         Rando::GiveItem(Rando::ConvertItem(startingItem));
     }
