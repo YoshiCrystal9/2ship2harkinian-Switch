@@ -17,6 +17,11 @@ void Rando::ActorBehavior::InitEnAlBehavior() {
 
     COND_VB_SHOULD(VB_MADAME_AROMA_ASK_FOR_HELP, IS_RANDO,
                    { *should = !RANDO_SAVE_CHECKS[RC_MAYORS_OFFICE_KAFEIS_MASK].cycleObtained; });
+    // "I'm counting on you"
+    COND_ID_HOOK(OnOpenText, 0x2AA2, IS_RANDO, [](u16* textId, bool* loadFromMessageTable) {
+        Message_BombersNotebookQueueEvent(gPlayState, BOMBERS_NOTEBOOK_EVENT_MET_MADAME_AROMA);
+        Message_BombersNotebookQueueEvent(gPlayState, BOMBERS_NOTEBOOK_EVENT_RECEIVED_KAFEIS_MASK);
+    });
 
     COND_VB_SHOULD(VB_EXEC_MSG_EVENT, IS_RANDO, {
         u32 cmdId = va_arg(args, u32);
@@ -31,16 +36,13 @@ void Rando::ActorBehavior::InitEnAlBehavior() {
                 GetItemId getItemId = (GetItemId)SCRIPT_PACK_16(cmd->itemIdH, cmd->itemIdL);
                 skipCmds.clear();
                 if (getItemId == GI_MASK_KAFEIS_MASK) { // Mayor's Residence
-                    // Prevents the player from moving freely in case a notebook event message pops afterward
-                    Player_SetupWaitForPutAway(gPlayState, player, Player_SetupTalk);
                     // There is no usable flag for this check, so grant it manually
                     RANDO_SAVE_CHECKS[RC_MAYORS_OFFICE_KAFEIS_MASK].eligible = true;
                 } else { // Express Mail reward
                     /*
                      * We do something a little tricky here. We manually open a textbox with the message that normally
                      * plays after the player receives the reward (0x2B20), then also skip the MsgScript commands to
-                     * open that textbox and wait on it. The Player_SetupWaitForPutAway call above does not work for
-                     * this scenario, as it will softlock. More naive attempts at handling this actor case resulted in
+                     * open that textbox and wait on it. More naive attempts at handling this actor case resulted in
                      * softlocks, not appropriately locking textboxes, duplicate textboxes, or Bombers' Notebook
                      * messages being eaten. The method below handles the intended behavior, both with or without
                      * notebook messages, even if it is a little counterintuitive.
