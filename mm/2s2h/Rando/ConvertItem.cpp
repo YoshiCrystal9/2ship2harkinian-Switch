@@ -1,4 +1,5 @@
 #include "Rando/Rando.h"
+#include "Rando/MiscBehavior/ClockShuffle.h"
 #include "2s2h/ShipUtils.h"
 #include <cassert>
 
@@ -427,6 +428,16 @@ bool Rando::IsItemObtainable(RandoItemId randoItemId, RandoCheckId randoCheckId)
         case RI_SOUL_ODOLWA:
         case RI_SOUL_TWINMOLD:
             return !Flags_GetRandoInf(RANDO_INF_OBTAINED_SOUL_OF_GOHT + (randoItemId - RI_SOUL_GOHT));
+        case RI_TIME_DAY_1:
+        case RI_TIME_NIGHT_1:
+        case RI_TIME_DAY_2:
+        case RI_TIME_NIGHT_2:
+        case RI_TIME_DAY_3:
+        case RI_TIME_NIGHT_3:
+            return !Flags_GetRandoInf(RANDO_INF_OBTAINED_CLOCK_DAY_1 +
+                                      Rando::ClockItems::GetHalfDayIndexFromClockItem(randoItemId));
+        case RI_TIME_PROGRESSIVE:
+            return true;
         // These items are technically fine to receive again because they don't do anything, but we'll convert them to
         // ensure it's clear to the player something didn't go wrong. We just simply check the inventory state
         // Masks
@@ -471,6 +482,31 @@ bool Rando::IsItemObtainable(RandoItemId randoItemId, RandoCheckId randoCheckId)
 RandoItemId Rando::ConvertItem(RandoItemId randoItemId, RandoCheckId randoCheckId) {
     if (IsItemObtainable(randoItemId, randoCheckId)) {
         switch (randoItemId) {
+            case RI_TIME_PROGRESSIVE: {
+                // Choose the next clock according to mode and current owned half-days
+                int mode = RANDO_SAVE_OPTIONS[RO_CLOCK_SHUFFLE_PROGRESSIVE];
+
+                if (mode == RO_CLOCK_SHUFFLE_RANDOM) {
+                    // Random mode should never have progressive items
+                    return RI_JUNK;
+                }
+
+                // Build list in target order
+                RandoItemId ascending[] = { RI_TIME_DAY_1,   RI_TIME_NIGHT_1, RI_TIME_DAY_2,
+                                            RI_TIME_NIGHT_2, RI_TIME_DAY_3,   RI_TIME_NIGHT_3 };
+                RandoItemId descending[] = { RI_TIME_NIGHT_3, RI_TIME_DAY_3,   RI_TIME_NIGHT_2,
+                                             RI_TIME_DAY_2,   RI_TIME_NIGHT_1, RI_TIME_DAY_1 };
+                RandoItemId* order = (mode == RO_CLOCK_SHUFFLE_DESCENDING) ? descending : ascending;
+                for (int i = 0; i < 6; ++i) {
+                    int halfIndex = Rando::ClockItems::GetHalfDayIndexFromClockItem(order[i]);
+                    if (halfIndex >= 0 &&
+                        !Flags_GetRandoInf(static_cast<RandoInf>(RANDO_INF_OBTAINED_CLOCK_DAY_1 + halfIndex))) {
+                        return order[i];
+                    }
+                }
+                // All owned; degrade to junk
+                return RI_JUNK;
+            }
             case RI_PROGRESSIVE_BOMB_BAG:
                 if (CUR_UPG_VALUE(UPG_BOMB_BAG) == 0) {
                     return RI_BOMB_BAG_20;

@@ -25,6 +25,9 @@ void ApplyGlitchlessLogicToSaveContext(std::vector<RandoCheckId>& checkPool, std
     std::map<RandoCheckId, bool> checksInLogic;
     std::set<std::pair<RandoEvent, std::function<bool()>>*> eventsInLogic;
 
+    // Initialize time states using shared function
+    std::unordered_map<RandoRegionId, RegionTimeState> regionTimeStates = InitializeRegionTimeStates(RR_MAX);
+
     RandoCheckId checkWithJunk = RC_UNKNOWN;
     std::set<RandoItemId> nonJunkItemsThatWeHaveTried;
     std::vector<RandoCheckId> checksWithJunk;
@@ -68,7 +71,7 @@ void ApplyGlitchlessLogicToSaveContext(std::vector<RandoCheckId>& checkPool, std
         // Crawl through all reachable regions and add any new reachable regions
         auto prevRegionsInLogicSize = regionsInLogic.size();
         for (RandoRegionId regionId : regionsInLogic) {
-            FindReachableRegions(regionId, regionsInLogic);
+            FindReachableRegions(regionId, regionsInLogic, regionTimeStates);
         }
         if (regionsInLogic.size() != prevRegionsInLogicSize) {
             regionsInLogicChanged = true;
@@ -77,18 +80,31 @@ void ApplyGlitchlessLogicToSaveContext(std::vector<RandoCheckId>& checkPool, std
         for (RandoRegionId regionId : regionsInLogic) {
             auto& randoRegion = Regions[regionId];
 
+            // Set current region time for check evaluation
+            SetCurrentRegionTime(regionTimeStates, regionId);
+
             // Apply any new events
             for (auto& randoEvent : randoRegion.events) {
-                if (!eventsInLogic.contains(&randoEvent) && randoEvent.second()) {
-                    RANDO_EVENTS[randoEvent.first]++;
-                    eventsInLogic.insert(&randoEvent);
-                    eventsInLogicChanged = true;
+                // When Clock Shuffle is active, always check events (don't skip based on eventsInLogic)
+                bool skipEventCheck = !SettingClocks() && eventsInLogic.contains(&randoEvent);
+
+                if (!skipEventCheck && randoEvent.second()) {
+                    // Only increment if not already triggered
+                    if (!eventsInLogic.contains(&randoEvent)) {
+                        RANDO_EVENTS[randoEvent.first]++;
+                        eventsInLogic.insert(&randoEvent);
+                        eventsInLogicChanged = true;
+                    }
                 }
             }
 
             // Apply any new checks
             for (auto& [randoCheckId, checkLogic] : randoRegion.checks) {
                 if (checksInLogic.find(randoCheckId) == checksInLogic.end() && checkLogic.first()) {
+                    // VALIDATION: Verify check is reachable with owned time
+                    TimeLogic::ValidateRegionTimeOwnership(regionId, randoCheckId,
+                                                           regionTimeStates[regionId].timeSlices, "Glitchless");
+
                     auto it = std::find(checkPool.begin(), checkPool.end(), randoCheckId);
                     bool isShuffled = it != checkPool.end();
                     checksInLogic.insert({ randoCheckId, isShuffled });
@@ -116,6 +132,28 @@ void ApplyGlitchlessLogicToSaveContext(std::vector<RandoCheckId>& checkPool, std
                     RANDO_SAVE_CHECKS[randoCheckId].randoItemId = randoItemId;
                     RANDO_SAVE_CHECKS[randoCheckId].shuffled = isShuffled;
                     GiveItem(ConvertItem(randoItemId));
+
+                    // Update time states for all regions when time items are obtained
+                    if (randoItemId >= RI_TIME_DAY_1 && randoItemId <= RI_TIME_PROGRESSIVE) {
+                        uint64_t newTimeSlices = TimeLogic::GetOwnedTimeSlices();
+                        // Update RR_MAX time state first - this is the source for new region discoveries
+                        if (regionTimeStates.find(RR_MAX) != regionTimeStates.end()) {
+                            regionTimeStates[RR_MAX].timeSlices = newTimeSlices;
+                        }
+                        // Update existing region time states to reflect new owned time
+                        for (auto& [regionId, timeState] : regionTimeStates) {
+                            timeState.timeSlices = newTimeSlices;
+                            // Expand time forward based on region's stay restrictions
+                            if (timeState.canStayOverTime) {
+                                timeState.timeSlices = TimeLogic::ExpandTimeForward(newTimeSlices, Regions[regionId]);
+                            }
+                        }
+                        // Trigger region re-exploration to discover new regions accessible with expanded time
+                        // Also trigger event re-evaluation since time-gated events may now be accessible
+                        regionsInLogicChanged = true;
+                        eventsInLogicChanged = true;
+                    }
+
                     checksInLogicChanged = true;
                 }
             }

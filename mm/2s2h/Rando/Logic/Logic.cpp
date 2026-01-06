@@ -9,6 +9,9 @@ namespace Logic {
 
 std::map<RandoRegionId, RandoRegion> Regions = {};
 
+// Thread-local storage for current region time during check evaluation
+thread_local uint64_t gCurrentRegionTime = 0;
+
 RandoRegionId GetRegionIdFromEntrance(s32 entrance) {
     static std::map<s32, RandoRegionId> entranceToRegionId;
     if (entranceToRegionId.empty()) {
@@ -32,23 +35,102 @@ RandoRegionId GetRegionIdFromEntrance(s32 entrance) {
     return RR_MAX;
 }
 
-void FindReachableRegions(RandoRegionId currentRegion, std::set<RandoRegionId>& reachableRegions) {
-    auto& randoRegion = Rando::Logic::Regions[currentRegion];
+// Helper: Convert runtime game time to TimeSlice enum for dynamic time checking
+TimeSlice TimeSliceFromGameTime(s32 day, u16 time) {
+    // Handle edge cases: day 0 or invalid inputs
+    if (day < 1 || day > 3) {
+        return TIME_DAY1_AM_06_00; // Default fallback
+    }
 
-    for (auto& [connectedRegionId, condition] : randoRegion.connections) {
-        // Check if the region is accessible and hasn’t been visited yet
+    // Convert to time slice based on day/time ranges
+    // This is approximate - exact mapping would need game time constants
+    bool isNight = (time >= GAME_TIME_NIGHT_START || time < GAME_TIME_DAY_START);
+    int halfDayOffset = (day - 1) * 2 + (isNight ? 1 : 0);
+
+    // Map to approximate time slice within the half-day
+    if (halfDayOffset >= 6)
+        return TIME_NIGHT3_AM_05_00;
+
+    const auto& range = HALF_DAY_TIME_RANGES[halfDayOffset];
+    return static_cast<TimeSlice>(range.startSlice);
+}
+
+// Helper: Returns the initial time state for logic solving (start at Day 1, 6:00 AM)
+RegionTimeState InitialTimeState() {
+    return { .timeSlices = (TIME_BIT_ONE << TIME_DAY1_AM_06_00), .canStayOverTime = false };
+}
+
+// Shared initialization function for region time states
+std::unordered_map<RandoRegionId, RegionTimeState> InitializeRegionTimeStates(RandoRegionId startRegion) {
+    std::unordered_map<RandoRegionId, RegionTimeState> states;
+
+    // Start with appropriate time based on Clock Shuffle
+    if (SettingClocks()) {
+        // Clock Shuffle: start with owned time slices only
+        states[startRegion] = { .timeSlices = TimeLogic::GetOwnedTimeSlices(), .canStayOverTime = false };
+    } else {
+        // No Clock Shuffle: start at Day 1 6am
+        states[startRegion] = InitialTimeState();
+    }
+
+    return states;
+}
+
+// Helper to ensure region time state exists
+void EnsureRegionTimeState(std::unordered_map<RandoRegionId, RegionTimeState>& regionTimeStates,
+                           RandoRegionId regionId) {
+    if (regionTimeStates.find(regionId) == regionTimeStates.end()) {
+        auto& region = Regions[regionId];
+        regionTimeStates[regionId] = { .timeSlices = TimeLogic::GetOwnedTimeSlices(),
+                                       .canStayOverTime = region.canStayOverTime };
+    }
+}
+
+// Time expansion during region traversal with stay restrictions
+// Time expansion semantics: if canStayOverTime, sequentially test each future time slice
+// Stop permanently if any timeStayRestrictions check fails
+void FindReachableRegions(RandoRegionId currentRegion, std::set<RandoRegionId>& reachableRegions,
+                          std::unordered_map<RandoRegionId, RegionTimeState>& regionTimeStates) {
+    // Ensure current region has time state
+    EnsureRegionTimeState(regionTimeStates, currentRegion);
+
+    auto& sourceRegion = Regions[currentRegion];
+    auto& sourceTimeState = regionTimeStates[currentRegion];
+
+    // Expand time if player can wait in this region
+    uint64_t currentTime = sourceTimeState.timeSlices;
+    if (sourceTimeState.canStayOverTime) {
+        currentTime = TimeLogic::ExpandTimeForward(currentTime, sourceRegion);
+        sourceTimeState.timeSlices = currentTime;
+    }
+
+    // Set global time for check evaluation
+    gCurrentRegionTime = currentTime;
+
+    // Explore connections
+    for (auto& [connectedRegionId, condition] : sourceRegion.connections) {
         if (reachableRegions.count(connectedRegionId) == 0 && condition.first()) {
-            reachableRegions.insert(connectedRegionId);                // Mark region as visited
-            FindReachableRegions(connectedRegionId, reachableRegions); // Recursively visit neighbors
+            reachableRegions.insert(connectedRegionId);
+
+            auto& targetRegion = Regions[connectedRegionId];
+            regionTimeStates[connectedRegionId] = { .timeSlices = currentTime,
+                                                    .canStayOverTime = targetRegion.canStayOverTime };
+
+            FindReachableRegions(connectedRegionId, reachableRegions, regionTimeStates);
         }
     }
 
-    for (auto& [exitId, regionExit] : randoRegion.exits) {
+    // Explore exits
+    for (auto& [exitId, regionExit] : sourceRegion.exits) {
         RandoRegionId connectedRegionId = GetRegionIdFromEntrance(exitId);
-        // Check if the region is accessible and hasn’t been visited yet
         if (reachableRegions.count(connectedRegionId) == 0 && regionExit.condition()) {
-            reachableRegions.insert(connectedRegionId);                // Mark region as visited
-            FindReachableRegions(connectedRegionId, reachableRegions); // Recursively visit neighbors
+            reachableRegions.insert(connectedRegionId);
+
+            auto& targetRegion = Regions[connectedRegionId];
+            regionTimeStates[connectedRegionId] = { .timeSlices = currentTime,
+                                                    .canStayOverTime = targetRegion.canStayOverTime };
+
+            FindReachableRegions(connectedRegionId, reachableRegions, regionTimeStates);
         }
     }
 }

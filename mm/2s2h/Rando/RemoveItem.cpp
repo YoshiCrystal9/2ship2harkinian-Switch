@@ -1,4 +1,5 @@
 #include "Rando/Rando.h"
+#include "Rando/MiscBehavior/ClockShuffle.h"
 
 extern "C" {
 #include "variables.h"
@@ -282,6 +283,29 @@ void Rando::RemoveItem(RandoItemId randoItemId) {
         case RI_TINGLE_MAP_STONE_TOWER:
             CLEAR_WEEKEVENTREG(WEEKEVENTREG_TINGLE_MAP_BOUGHT_STONE_TOWER);
             break;
+        case RI_TIME_DAY_1:
+        case RI_TIME_NIGHT_1:
+        case RI_TIME_DAY_2:
+        case RI_TIME_NIGHT_2:
+        case RI_TIME_DAY_3:
+        case RI_TIME_NIGHT_3: {
+            int index = Rando::ClockItems::GetHalfDayIndexFromClockItem(randoItemId);
+            if (index != Rando::ClockItems::INVALID) {
+                Flags_ClearRandoInf(static_cast<RandoInf>(RANDO_INF_OBTAINED_CLOCK_DAY_1 + index));
+            }
+            break;
+        }
+        case RI_TIME_PROGRESSIVE: {
+            // Remove most recently earned half-day per current mode
+            const bool descending = (RANDO_SAVE_OPTIONS[RO_CLOCK_SHUFFLE_PROGRESSIVE] == RO_CLOCK_SHUFFLE_DESCENDING);
+            // For ascending mode, remove the latest (search from end)
+            // For descending mode, remove the earliest (search from front)
+            int toRemove = Rando::ClockItems::FindEarliestOwnedHalfDay(!descending);
+            if (toRemove >= 0) {
+                Flags_ClearRandoInf(static_cast<RandoInf>(RANDO_INF_OBTAINED_CLOCK_DAY_1 + toRemove));
+            }
+            break;
+        }
         case RI_HEART_CONTAINER:
             gSaveContext.save.saveInfo.playerData.healthCapacity -= 0x10;
             gSaveContext.save.saveInfo.playerData.health =

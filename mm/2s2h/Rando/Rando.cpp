@@ -2,6 +2,7 @@
 #include "2s2h/GameInteractor/GameInteractor.h"
 #include "Rando/ActorBehavior/ActorBehavior.h"
 #include "Rando/MiscBehavior/MiscBehavior.h"
+#include "Rando/MiscBehavior/ClockShuffle.h"
 #include "Rando/Spoiler/Spoiler.h"
 #include "Rando/CheckTracker/CheckTracker.h"
 #include "2s2h/ShipInit.hpp"
@@ -13,6 +14,7 @@ void OnSaveLoadHandler(s16 fileNum) {
     Rando::MiscBehavior::OnFileLoad();
     Rando::ActorBehavior::OnFileLoad();
     Rando::CheckTracker::OnFileLoad();
+    Rando::ClockShuffle::OnFileLoad();
 
     // Re-initalizes enhancements that are effected by the save being rando or not
     ShipInit::Init("IS_RANDO");

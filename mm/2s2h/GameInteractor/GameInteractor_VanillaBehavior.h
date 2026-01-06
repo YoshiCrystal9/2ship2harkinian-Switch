@@ -1637,6 +1637,14 @@ typedef enum {
 
     // #### `result`
     // ```c
+    // true
+    // ```
+    // #### `args`
+    // - None
+    VB_SCARECROW_DANCE_SET_TIME,
+
+    // #### `result`
+    // ```c
     // gSaveContext.save.saveInfo.inventory.items[ITEM_OCARINA_OF_TIME] == ITEM_NONE
     // ```
     // #### `args`
@@ -1949,6 +1957,14 @@ typedef enum {
     // #### `args`
     // - None
     VB_THIEF_BIRD_STEAL,
+
+    // #### `result`
+    // ```c
+    // TIME_UNTIL_MOON_CRASH
+    // ```
+    // #### `args`
+    // - `*u32` (time variable)
+    VB_TIME_UNTIL_MOON_CRASH_CALCULATION,
 
     // #### `result`
     // ```c

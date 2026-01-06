@@ -30,7 +30,9 @@ extern "C" int SavingEnhancements_GetSaveEntrance() {
         for (int i = 0; i < RESPAWN_MODE_MAX; i++) {
             gSaveContext.save.shipSaveInfo.respawn[i] = gSaveContext.respawn[i];
         }
-        return entranceToSave;
+        // Daytelop on new game, with Time Shuffle, makes it possible for entranceToSave to be -1. Given that the player
+        // must be at this entrance in that scenario, just use it as a fallback.
+        return entranceToSave < 0 ? ENTRANCE(SOUTH_CLOCK_TOWN, 0) : entranceToSave;
     } else {
         switch (gPlayState->sceneId) {
             // Woodfall Temple + Odolwa

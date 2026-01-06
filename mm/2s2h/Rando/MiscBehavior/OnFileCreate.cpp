@@ -3,6 +3,7 @@
 #include "Rando/Logic/Logic.h"
 #include "2s2h/ShipUtils.h"
 #include <libultraship/bridge/consolevariablebridge.h>
+#include "ClockShuffle.h"
 #include <spdlog/spdlog.h>
 
 extern "C" {

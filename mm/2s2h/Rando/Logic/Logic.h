@@ -17,7 +17,112 @@ namespace Rando {
 
 namespace Logic {
 
-void FindReachableRegions(RandoRegionId currentRegion, std::set<RandoRegionId>& reachableRegions);
+// Time slice enum - 45 granular time points throughout MM's 3-day cycle
+enum TimeSlice {
+    TIME_DAY1_AM_06_00 = 0,
+    TIME_DAY1_AM_07_00,
+    TIME_DAY1_AM_08_00,
+    TIME_DAY1_AM_10_00,
+    TIME_DAY1_PM_01_45,
+    TIME_DAY1_PM_03_00,
+    TIME_DAY1_PM_04_00,
+    TIME_NIGHT1_PM_06_00,
+    TIME_NIGHT1_PM_08_00,
+    TIME_NIGHT1_PM_09_00,
+    TIME_NIGHT1_PM_10_00,
+    TIME_NIGHT1_PM_11_00,
+    TIME_NIGHT1_AM_12_00,
+    TIME_NIGHT1_AM_02_30,
+    TIME_NIGHT1_AM_04_00,
+    TIME_NIGHT1_AM_05_00,
+    TIME_DAY2_AM_06_00,
+    TIME_DAY2_AM_07_00,
+    TIME_DAY2_AM_08_00,
+    TIME_DAY2_AM_10_00,
+    TIME_DAY2_AM_11_30,
+    TIME_DAY2_PM_02_00,
+    TIME_DAY2_PM_04_00,
+    TIME_NIGHT2_PM_06_00,
+    TIME_NIGHT2_PM_08_00,
+    TIME_NIGHT2_PM_09_00,
+    TIME_NIGHT2_PM_10_00,
+    TIME_NIGHT2_PM_11_00,
+    TIME_NIGHT2_AM_12_00,
+    TIME_NIGHT2_AM_04_00,
+    TIME_NIGHT2_AM_05_00,
+    TIME_DAY3_AM_06_00,
+    TIME_DAY3_AM_07_00,
+    TIME_DAY3_AM_08_00,
+    TIME_DAY3_AM_10_00,
+    TIME_DAY3_AM_11_30,
+    TIME_DAY3_PM_01_00,
+    TIME_NIGHT3_PM_06_00,
+    TIME_NIGHT3_PM_08_00,
+    TIME_NIGHT3_PM_09_00,
+    TIME_NIGHT3_PM_10_00,
+    TIME_NIGHT3_PM_11_00,
+    TIME_NIGHT3_AM_12_00,
+    TIME_NIGHT3_AM_04_00,
+    TIME_NIGHT3_AM_05_00 // = 44
+};
+
+// Time slice count and bitmask constants
+// Derived from enum - update if last enum value changes
+constexpr int TIME_SLICE_COUNT = TIME_NIGHT3_AM_05_00 + 1;
+constexpr uint64_t TIME_BIT_ONE = 1ULL;              // Base value for bit shifting
+constexpr uint64_t TIME_ALL_SLICES = 0x1FFFFFFFFFFF; // All 45 time bits set
+
+// Half-day period definitions for Clock Shuffle
+struct HalfDayRange {
+    int startSlice;
+    int endSlice;
+};
+
+// Map half-day indices to their time slice ranges
+// Index 0-5 correspond to HALF_DAY1_DAY through HALF_DAY3_NIGHT
+constexpr HalfDayRange HALF_DAY_TIME_RANGES[6] = {
+    { 0, 6 },   // HALF_DAY1_DAY   (TIME_DAY1_AM_06_00 to TIME_DAY1_PM_04_00)
+    { 7, 15 },  // HALF_DAY1_NIGHT (TIME_NIGHT1_PM_06_00 to TIME_NIGHT1_AM_05_00)
+    { 16, 22 }, // HALF_DAY2_DAY   (TIME_DAY2_AM_06_00 to TIME_DAY2_PM_04_00)
+    { 23, 30 }, // HALF_DAY2_NIGHT (TIME_NIGHT2_PM_06_00 to TIME_NIGHT2_AM_05_00)
+    { 31, 36 }, // HALF_DAY3_DAY   (TIME_DAY3_AM_06_00 to TIME_DAY3_PM_01_00)
+    { 37, 44 }, // HALF_DAY3_NIGHT (TIME_NIGHT3_PM_06_00 to TIME_NIGHT3_AM_05_00)
+};
+
+// Game time constants for day/night transitions
+constexpr u16 GAME_TIME_DAY_START = 0x4000;   // 6:00 AM
+constexpr u16 GAME_TIME_NIGHT_START = 0xc000; // 6:00 PM
+
+// Time state for tracking time accessibility during logic solving
+struct RegionTimeState {
+    uint64_t timeSlices;
+    bool canStayOverTime;
+};
+
+// Thread-local current region time for check evaluation
+extern thread_local uint64_t gCurrentRegionTime;
+
+// Helper: Convert runtime game time to TimeSlice enum
+TimeSlice TimeSliceFromGameTime(s32 day, u16 time);
+
+// Helper: Returns the initial time state for logic solving
+RegionTimeState InitialTimeState();
+
+// Shared initialization function for region time states
+std::unordered_map<RandoRegionId, RegionTimeState> InitializeRegionTimeStates(RandoRegionId startRegion);
+
+// Helper to ensure region time state exists
+void EnsureRegionTimeState(std::unordered_map<RandoRegionId, RegionTimeState>& regionTimeStates,
+                           RandoRegionId regionId);
+
+// Helper to set current region time
+inline void SetCurrentRegionTime(const std::unordered_map<RandoRegionId, RegionTimeState>& regionTimeStates,
+                                 RandoRegionId regionId) {
+    gCurrentRegionTime = regionTimeStates.at(regionId).timeSlices;
+}
+
+void FindReachableRegions(RandoRegionId currentRegion, std::set<RandoRegionId>& reachableRegions,
+                          std::unordered_map<RandoRegionId, RegionTimeState>& regionTimeStates);
 RandoRegionId GetRegionIdFromEntrance(s32 entrance);
 void GeneratePools(RandoSaveInfo& saveInfo, std::vector<RandoCheckId>& checkPool, std::vector<RandoItemId>& itemPool);
 void ApplyGlitchlessLogicToSaveContext(std::vector<RandoCheckId>& checkPool, std::vector<RandoItemId>& itemPool);
@@ -38,9 +143,30 @@ struct RandoRegion {
     std::map<RandoRegionId, std::pair<std::function<bool()>, std::string>> connections;
     std::vector<std::pair<RandoEvent, std::function<bool()>>> events;
     std::set<s32> oneWayEntrances;
+
+    // Time logic fields for Clock Shuffle and time-based region access
+    uint64_t timeSlices = 0;     // Bitfield: accessible time slices (bits 0-44) - unused in current implementation
+    bool canStayOverTime = true; // Can player wait for time to pass? Set false for dungeons, shops with closing hours
+    std::unordered_map<TimeSlice, std::function<bool()>>
+        timeStayRestrictions; // Time slices where staying is restricted - use STAY() macro in region definitions
 };
 
 extern std::map<RandoRegionId, RandoRegion> Regions;
+
+// ============================================================================
+// TIME LOGIC NAMESPACE
+// ============================================================================
+namespace TimeLogic {
+// Core expansion function - sequential time expansion with stay restrictions
+uint64_t ExpandTimeForward(uint64_t timeSlices, const RandoRegion& region);
+
+// Owned time calculation - aggregates all owned half-day time slices
+uint64_t GetOwnedTimeSlices();
+
+// Validation helper for clock ownership during logic generation
+void ValidateRegionTimeOwnership(RandoRegionId regionId, RandoCheckId checkId, uint64_t regionTime,
+                                 const char* context);
+} // namespace TimeLogic
 
 // TODO: This may not stay here
 #define IS_DEKU (GET_PLAYER_FORM == PLAYER_FORM_DEKU)
@@ -59,7 +185,9 @@ extern std::map<RandoRegionId, RandoRegion> Regions;
 #define CHECK_MAX_HP(TARGET_HP) ((TARGET_HP * 16) <= gSaveContext.save.saveInfo.playerData.healthCapacity)
 #define HAS_MAGIC (gSaveContext.save.saveInfo.playerData.isMagicAcquired)
 #define CAN_HOOK_SCARECROW (HAS_ITEM(ITEM_OCARINA_OF_TIME) && HAS_ITEM(ITEM_HOOKSHOT))
-#define CAN_USE_EXPLOSIVE ((HAS_ITEM(ITEM_BOMB) || HAS_ITEM(ITEM_BOMBCHU) || HAS_ITEM(ITEM_MASK_BLAST)))
+#define CAN_USE_EXPLOSIVE                                                           \
+    ((HAS_ITEM(ITEM_BOMB) || HAS_ITEM(ITEM_BOMBCHU) || HAS_ITEM(ITEM_MASK_BLAST) || \
+      (HAS_ITEM(ITEM_POWDER_KEG) && CAN_BE_GORON)))
 #define CAN_USE_HUMAN_SWORD (GET_CUR_EQUIP_VALUE(EQUIP_TYPE_SWORD) >= EQUIP_VALUE_SWORD_KOKIRI)
 #define CAN_USE_SWORD (CAN_USE_HUMAN_SWORD || HAS_ITEM(ITEM_SWORD_GREAT_FAIRY) || CAN_BE_DEITY)
 // Be careful here, as some checks require you to play the song as a specific form
@@ -83,6 +211,10 @@ extern std::map<RandoRegionId, RandoRegion> Regions;
 #define CAN_GROW_BEAN_PLANT        \
     (HAS_ITEM(ITEM_MAGIC_BEANS) && \
      (CAN_PLAY_SONG(STORMS) || (HAS_BOTTLE && (CAN_ACCESS(SPRING_WATER) || CAN_ACCESS(HOT_SPRING_WATER)))))
+// Bean patches that auto-water on Day 2 (Doggy Racetrack, Deku Palace Upper)
+// Rain only occurs Day 2 from 7:00 AM to 5:30 PM (not Night 2)
+// Requires magic beans and (Day 2 OR manual watering)
+#define CAN_USE_DAY2_RAIN_BEAN (CAN_GROW_BEAN_PLANT || (HAS_ITEM(ITEM_MAGIC_BEANS) && CLOCK_DAY2()))
 #define CAN_USE_MAGIC_ARROW(arrowType) (HAS_ITEM(ITEM_BOW) && HAS_ITEM(ITEM_ARROW_##arrowType) && HAS_MAGIC)
 #define CAN_LIGHT_TORCH_NEAR_ANOTHER (HAS_ITEM(ITEM_DEKU_STICK) || CAN_USE_MAGIC_ARROW(FIRE))
 #define KEY_COUNT(dungeon) (gSaveContext.save.shipSaveInfo.rando.foundDungeonKeys[DUNGEON_SCENE_INDEX_##dungeon])
@@ -119,6 +251,16 @@ extern std::map<RandoRegionId, RandoRegion> Regions;
         check, {                                              \
             [] { return condition; }, LogicString(#condition) \
         }                                                     \
+    }
+// STAY macro for region time restrictions - defines when player can stay in a region over time
+// Usage in region definitions: .timeStayRestrictions = { STAY(TIME_NIGHT1_PM_08_00, !HAS_ROOM_KEY) }
+// If condition is false at the specified time, player is kicked out (expansion stops permanently)
+// Examples:
+//   STAY(TIME_NIGHT1_PM_08_00, !Flags_GetRandoInf(RANDO_INF_OBTAINED_ROOM_KEY)) // Kicked out without room key
+//   STAY(TIME_NIGHT3_PM_10_00, false) // Always kicked out at this time (shop closes)
+#define STAY(timeSlice, condition)          \
+    {                                       \
+        timeSlice, [] { return condition; } \
     }
 
 inline std::string LogicString(std::string condition) {
@@ -186,6 +328,185 @@ inline bool MeetsMoonRequirements() {
     return RemainsCount() >= RANDO_SAVE_OPTIONS[RO_ACCESS_MOON_REMAINS_COUNT] &&
            MoonMaskCount() >= RANDO_SAVE_OPTIONS[RO_ACCESS_MOON_MASKS_COUNT];
 }
+
+// ============================================================================
+// CLOCK OWNERSHIP HELPERS
+// ============================================================================
+
+inline uint32_t ClockCount() {
+    uint32_t count = 0;
+    for (int i = 0; i < 6; ++i) {
+        if (Flags_GetRandoInf(static_cast<RandoInf>(RANDO_INF_OBTAINED_CLOCK_DAY_1 + i))) {
+            count++;
+        }
+    }
+    return count;
+}
+
+inline bool SettingClocks() {
+    return RANDO_SAVE_OPTIONS[RO_CLOCK_SHUFFLE] != 0;
+}
+
+// Centralized clock ownership check
+inline bool OwnsClockHalfDay(int halfDayIndex) {
+    if (halfDayIndex < 0 || halfDayIndex >= 6)
+        return false;
+    RandoInf clockFlag = static_cast<RandoInf>(RANDO_INF_OBTAINED_CLOCK_DAY_1 + halfDayIndex);
+    return Flags_GetRandoInf(clockFlag);
+}
+
+// New consolidated helper that encapsulates ascending/descending/random logic
+inline bool OwnsHalfDayForMode(int halfDayIndex) {
+    if (!SettingClocks() || halfDayIndex < 0 || halfDayIndex >= 6) {
+        return !SettingClocks(); // If not shuffling clocks, all time is available
+    }
+
+    int clockMode = RANDO_SAVE_OPTIONS[RO_CLOCK_SHUFFLE_PROGRESSIVE];
+    uint32_t totalClocks = ClockCount();
+
+    switch (clockMode) {
+        case RO_CLOCK_SHUFFLE_RANDOM:
+            // Random mode: check if this specific half-day is owned
+            return OwnsClockHalfDay(halfDayIndex);
+
+        case RO_CLOCK_SHUFFLE_ASCENDING:
+            // Ascending: own first N half-days in sequence (0,1,2,3,4,5)
+            return totalClocks > halfDayIndex;
+
+        case RO_CLOCK_SHUFFLE_DESCENDING:
+            // Descending: own last N half-days in reverse sequence (5,4,3,2,1,0)
+            return totalClocks > (5 - halfDayIndex);
+
+        default:
+            return false;
+    }
+}
+
+// ============================================================================
+// TIME OPERATOR FUNCTIONS
+// ============================================================================
+
+inline bool RawAt(TimeSlice slice) {
+    return (gCurrentRegionTime & (TIME_BIT_ONE << slice)) != 0;
+}
+
+inline bool RawBefore(TimeSlice slice) {
+    if (slice == 0)
+        return false;
+    uint64_t mask = (TIME_BIT_ONE << slice) - 1;
+    return (gCurrentRegionTime & mask) != 0;
+}
+
+inline bool RawAfter(TimeSlice slice) {
+    uint64_t mask = ~((TIME_BIT_ONE << slice) - 1) & TIME_ALL_SLICES;
+    return (gCurrentRegionTime & mask) != 0;
+}
+
+inline bool RawBetween(TimeSlice start, TimeSlice end) {
+    uint64_t mask = ((TIME_BIT_ONE << end) - 1) & ~((TIME_BIT_ONE << start) - 1);
+    return (gCurrentRegionTime & mask) != 0;
+}
+
+// Generate bitmask for a half-day period's time slices
+inline constexpr uint64_t GetHalfDayTimeMask(int halfDayIndex) {
+    if (halfDayIndex < 0 || halfDayIndex >= 6)
+        return 0;
+
+    uint64_t mask = 0;
+    const auto& range = HALF_DAY_TIME_RANGES[halfDayIndex];
+    for (int slice = range.startSlice; slice <= range.endSlice; ++slice) {
+        mask |= (1ULL << slice);
+    }
+    return mask;
+}
+
+// ============================================================================
+// CLOCK ITEM MACROS
+// ============================================================================
+
+// Simplified clock macros using consolidated helper
+#define CLOCK_DAY1() OwnsHalfDayForMode(0)
+#define CLOCK_NIGHT1() OwnsHalfDayForMode(1)
+#define CLOCK_DAY2() OwnsHalfDayForMode(2)
+#define CLOCK_NIGHT2() OwnsHalfDayForMode(3)
+#define CLOCK_DAY3() OwnsHalfDayForMode(4)
+#define CLOCK_NIGHT3() OwnsHalfDayForMode(5)
+
+// ============================================================================
+// CLOCK SHUFFLE VALIDATION FUNCTIONS
+// ============================================================================
+
+// Validation: Check if a time slice is in an owned half-day period
+inline bool IsTimeSliceOwned(TimeSlice slice) {
+    if (!SettingClocks())
+        return true;
+
+    for (int i = 0; i < 6; ++i) {
+        const auto& range = HALF_DAY_TIME_RANGES[i];
+        if (slice >= range.startSlice && slice <= range.endSlice) {
+            return OwnsClockHalfDay(i);
+        }
+    }
+    return false;
+}
+
+// Validation: Check if any time in the timeslice mask is owned
+inline bool HasAnyOwnedTime(uint64_t timeSlices) {
+    if (!SettingClocks())
+        return true;
+
+    for (int i = 0; i < 6; ++i) {
+        if (OwnsClockHalfDay(i)) {
+            uint64_t halfDayMask = GetHalfDayTimeMask(i);
+            if (timeSlices & halfDayMask) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+// ============================================================================
+// COMPOSITE TIME CHECKS
+// ============================================================================
+
+#define IS_DAY1() (RawBefore(TIME_NIGHT1_PM_06_00) && CLOCK_DAY1())
+#define IS_NIGHT1() (RawBetween(TIME_NIGHT1_PM_06_00, TIME_DAY2_AM_06_00) && CLOCK_NIGHT1())
+#define IS_DAY2() (RawBetween(TIME_DAY2_AM_06_00, TIME_NIGHT2_PM_06_00) && CLOCK_DAY2())
+#define IS_NIGHT2() (RawBetween(TIME_NIGHT2_PM_06_00, TIME_DAY3_AM_06_00) && CLOCK_NIGHT2())
+#define IS_DAY3() (RawBetween(TIME_DAY3_AM_06_00, TIME_NIGHT3_PM_06_00) && CLOCK_DAY3())
+#define IS_NIGHT3() (RawAfter(TIME_NIGHT3_PM_06_00) && CLOCK_NIGHT3())
+
+// Global clock filter for owned time periods
+// Returns true if Clock Shuffle is disabled OR if player has access to any time period
+inline bool ClockFilter() {
+    if (!SettingClocks())
+        return true;
+
+    return IS_DAY1() || IS_NIGHT1() || IS_DAY2() || IS_NIGHT2() || IS_DAY3() || IS_NIGHT3();
+}
+
+#define IS_DAY() (IS_DAY1() || IS_DAY2() || IS_DAY3())
+#define IS_NIGHT() (IS_NIGHT1() || IS_NIGHT2() || IS_NIGHT3())
+#define FIRST_DAY() (IS_DAY1() || IS_NIGHT1())
+#define SECOND_DAY() (IS_DAY2() || IS_NIGHT2())
+#define FINAL_DAY() (IS_DAY3() || IS_NIGHT3())
+
+// ============================================================================
+// PUBLIC TIME API
+// ============================================================================
+
+#define AT(slice) (RawAt(slice) && ClockFilter())
+
+#define BEFORE(slice) (RawBefore(slice) && ClockFilter())
+
+#define AFTER(slice) (RawAfter(slice) && ClockFilter())
+
+#define BETWEEN(s, e) (RawBetween(s, e) && ClockFilter())
+
+#define MIDNIGHT()                                                                                             \
+    (BETWEEN(TIME_NIGHT1_AM_12_00, TIME_DAY2_AM_06_00) || BETWEEN(TIME_NIGHT2_AM_12_00, TIME_DAY3_AM_06_00) || \
+     AFTER(TIME_NIGHT3_AM_12_00))
 
 inline bool CanKillEnemy(ActorId EnemyId) {
     switch (EnemyId) {

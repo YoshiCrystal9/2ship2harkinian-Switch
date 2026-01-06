@@ -3,6 +3,7 @@
 #include "MiscBehavior.h"
 #include "Rando/ActorBehavior/ActorBehavior.h"
 #include "2s2h/DeveloperTools/SaveEditor.h"
+#include "2s2h/ShipUtils.h"
 
 extern "C" {
 #include "variables.h"
@@ -12,11 +13,6 @@ void func_80833B18(PlayState* play, Player* thisx, s32 arg2, f32 speed, f32 velo
                    s32 invincibilityTimer);
 void EnTimeTag_KickOut_Transition(EnTimeTag* enTimeTag, PlayState* play);
 }
-
-#define MORNING_TIME 0x4000
-#define DAY_LENGTH 0x10000
-// Adjust so that 6 A.M. is 0 and 5:59 A.M. is 0xFFFF
-#define ZERO_DAY_START(time) (((u16)(time - MORNING_TIME) % DAY_LENGTH))
 
 extern void UpdateGameTime(u16 gameTime);
 

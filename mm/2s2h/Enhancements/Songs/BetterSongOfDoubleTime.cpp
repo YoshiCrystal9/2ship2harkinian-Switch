@@ -3,6 +3,8 @@
 #include "2s2h/Enhancements/FrameInterpolation/FrameInterpolation.h"
 #include "2s2h/GameInteractor/GameInteractor.h"
 #include "2s2h/ShipInit.hpp"
+#include "2s2h/Rando/MiscBehavior/ClockShuffle.h"
+#include "2s2h/CustomMessage/CustomMessage.h"
 
 extern "C" {
 #include "variables.h"
@@ -113,7 +115,21 @@ void OnPlayerUpdate(Actor* actor) {
     }
 
     // Pressing A should confirm the song
-    if (CHECK_BTN_ALL(input->press.button, BTN_A)) {
+    if (CHECK_BTN_ALL(input->press.button, BTN_A) && gPlayState->msgCtx.msgMode == MSGMODE_NONE) {
+        // Check if the selected time is owned in ClockShuffle mode
+        if (!Rando::ClockShuffle::IsTimeOwnedForClockShuffle(sSelectedDay, sSelectedTime)) {
+            // Play error sound
+            Audio_PlaySfx(NA_SE_SY_OCARINA_ERROR);
+
+            // Get time description for the error message
+            std::string timeDescription =
+                Rando::ClockShuffle::GetTimeDescriptionForMessage(sSelectedDay, sSelectedTime);
+
+            // Show message FIRST
+            CustomMessage::StartTextbox(timeDescription + " is beyond your reach!");
+            return;
+        }
+
         Audio_PlaySfx_MessageDecide();
         gPlayState->msgCtx.ocarinaMode = OCARINA_MODE_APPLY_DOUBLE_SOT;
         sActivelyChangingTime = false;

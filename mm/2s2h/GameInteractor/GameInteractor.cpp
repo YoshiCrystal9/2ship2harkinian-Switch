@@ -498,7 +498,9 @@ void ProcessEvents(Actor* actor) {
         enItem00->actor.destroy = [](Actor* actor, PlayState* play) {
             if (!(CUSTOM_ITEM_FLAGS & CustomItem::CALLED_ACTION)) {
                 // Event was not handled, requeue it
-                GameInteractor::Instance->events.push_back(GameInteractor::Instance->currentEvent);
+                auto lostEvent = GameInteractor::Instance->currentEvent;
+                GameInteractor::Instance->currentEvent = GIEventNone{};
+                GameInteractor::Instance->events.push_back(lostEvent);
             }
         };
     } else if (auto e = std::get_if<GIEventTransition>(&nextEvent)) {

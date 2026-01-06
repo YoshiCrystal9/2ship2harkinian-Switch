@@ -1,6 +1,8 @@
 #include <libultraship/bridge/consolevariablebridge.h>
 #include "2s2h/GameInteractor/GameInteractor.h"
 #include "2s2h/ShipInit.hpp"
+#include "2s2h/Rando/MiscBehavior/ClockShuffle.h"
+#include "2s2h/Rando/Logic/Logic.h"
 
 extern "C" {
 #include "functions.h"
@@ -27,8 +29,28 @@ void RegisterSkipSoTCutscenes() {
 
             // Normally set by EnTest6
             gSaveContext.save.eventDayCount = 0;
-            gSaveContext.save.day = 0;
-            gSaveContext.save.time = CLOCK_TIME(6, 0) - 1;
+
+            // Set time appropriately if clock shuffle is enabled
+            if (IS_RANDO && RANDO_SAVE_OPTIONS[RO_CLOCK_SHUFFLE]) {
+                const int earliestOwnedHalfDay = Rando::ClockItems::FindEarliestOwnedHalfDay(false);
+                if (earliestOwnedHalfDay != -1) {
+                    bool isDayHalf = (earliestOwnedHalfDay % 2 == 0);
+                    int targetDay = (earliestOwnedHalfDay / 2) + 1;
+
+                    if (isDayHalf) {
+                        // Set to previous day at 5:59 AM to trigger day transition
+                        // Vanilla will detect the transition and show DayTelop
+                        gSaveContext.save.day = targetDay - 1;
+                        gSaveContext.save.time = CLOCK_TIME(6, 0) - 1;
+                    } else {
+                        // Night halves: set time directly
+                        Rando::ClockShuffle::SetTimeToHalfDayStart(earliestOwnedHalfDay);
+                    }
+                }
+            } else {
+                gSaveContext.save.day = 0;
+                gSaveContext.save.time = CLOCK_TIME(6, 0) - 1;
+            }
 
             if (gSaveContext.save.entrance == ENTRANCE(CUTSCENE, 1)) {
                 // Loads to flash back montage before going to Dawn of... in clock town

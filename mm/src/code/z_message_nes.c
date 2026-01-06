@@ -204,7 +204,9 @@ void Message_LoadTimeNES(PlayState* play, u8 curChar, s32* offset, f32* arg3, s1
     s16 i;
 
     if (curChar == MESSAGE_TIME_UNTIL_MOON_CRASH) {
-        timeLeft = TIME_UNTIL_MOON_CRASH;
+        if (GameInteractor_Should(VB_TIME_UNTIL_MOON_CRASH_CALCULATION, true, &timeLeft)) {
+            timeLeft = TIME_UNTIL_MOON_CRASH;
+        }
     } else {
         timeLeft = TIME_UNTIL_NEW_DAY;
     }
@@ -1714,7 +1716,9 @@ void Message_DecodeNES(PlayState* play) {
 
             msgCtx->decodedBuffer.schar[decodedBufPos] = 0;
         } else if (curChar == MESSAGE_HOURS_UNTIL_MOON_CRASH) {
-            timeToMoonCrash = TIME_UNTIL_MOON_CRASH;
+            if (GameInteractor_Should(VB_TIME_UNTIL_MOON_CRASH_CALCULATION, true, &timeToMoonCrash)) {
+                timeToMoonCrash = TIME_UNTIL_MOON_CRASH;
+            }
             digits[0] = 0;
             digits[1] = TIME_TO_HOURS_F_ALT(timeToMoonCrash);
 

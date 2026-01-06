@@ -956,13 +956,15 @@ void EnKakasi_DancingNightAway(EnKakasi* this, PlayState* play) {
                                     PLAYER_PARAMS(0xFF, PLAYER_START_MODE_B), &player->unk_3C0, player->unk_3CC);
                 func_80169EFC(play);
 
-                if ((CURRENT_TIME > CLOCK_TIME(18, 0)) || (CURRENT_TIME < CLOCK_TIME(6, 0))) {
-                    gSaveContext.save.time = CLOCK_TIME(6, 0);
-                    gSaveContext.respawnFlag = -4;
-                    SET_EVENTINF(EVENTINF_TRIGGER_DAYTELOP);
-                } else {
-                    gSaveContext.save.time = CLOCK_TIME(18, 0);
-                    gSaveContext.respawnFlag = -8;
+                if (GameInteractor_Should(VB_SCARECROW_DANCE_SET_TIME, true)) {
+                    if ((CURRENT_TIME > CLOCK_TIME(18, 0)) || (CURRENT_TIME < CLOCK_TIME(6, 0))) {
+                        gSaveContext.save.time = CLOCK_TIME(6, 0);
+                        gSaveContext.respawnFlag = -4;
+                        SET_EVENTINF(EVENTINF_TRIGGER_DAYTELOP);
+                    } else {
+                        gSaveContext.save.time = CLOCK_TIME(18, 0);
+                        gSaveContext.respawnFlag = -8;
+                    }
                 }
                 SET_WEEKEVENTREG(WEEKEVENTREG_83_01);
                 this->unk190 = 0;

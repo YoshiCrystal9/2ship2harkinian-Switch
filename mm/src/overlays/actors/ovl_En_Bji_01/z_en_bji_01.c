@@ -5,6 +5,7 @@
  */
 
 #include "z_en_bji_01.h"
+#include "2s2h/GameInteractor/GameInteractor.h"
 
 #define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_UPDATE_CULLING_DISABLED)
 
@@ -189,7 +190,10 @@ void func_809CD028(EnBji01* this, PlayState* play) {
                             break;
 
                         case 3:
-                            timeUntilMoonCrash = TIME_UNTIL_MOON_CRASH;
+                            if (GameInteractor_Should(VB_TIME_UNTIL_MOON_CRASH_CALCULATION, true,
+                                                      &timeUntilMoonCrash)) {
+                                timeUntilMoonCrash = TIME_UNTIL_MOON_CRASH;
+                            }
                             if (timeUntilMoonCrash < CLOCK_TIME_F(1, 0)) {
                                 this->textId = 0x5E8;
                             } else {

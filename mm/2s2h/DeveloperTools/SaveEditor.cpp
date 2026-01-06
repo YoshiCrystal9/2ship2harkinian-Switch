@@ -2,6 +2,7 @@
 #include "2s2h/BenGui/UIWidgets.hpp"
 #include "2s2h/GameInteractor/GameInteractor.h"
 #include "2s2h/Rando/Rando.h"
+#include "2s2h/Rando/MiscBehavior/ClockShuffle.h"
 #include "2s2h/CustomMessage/CustomMessage.h"
 #include "2s2h/CustomItem/CustomItem.h"
 #include "2s2h/BenGui/Notification.h"
@@ -896,6 +897,72 @@ void DrawItemsAndMasksTab() {
     UIWidgets::Checkbox("Safe Mode", &safeMode);
 
     if (gSaveContext.save.shipSaveInfo.saveType == SAVETYPE_RANDO) {
+        if (RANDO_SAVE_OPTIONS[RO_CLOCK_SHUFFLE]) {
+            // Time Items Management Section
+            ImGui::SeparatorText("Time Items");
+
+            // Individual time items in 3x2 grid with static positioning
+            RandoItemId clockItems[] = { RI_TIME_DAY_1,   RI_TIME_DAY_2,   RI_TIME_DAY_3,
+                                         RI_TIME_NIGHT_1, RI_TIME_NIGHT_2, RI_TIME_NIGHT_3 };
+
+            const char* clockNames[] = { "Day 1", "Day 2", "Day 3", "Night 1", "Night 2", "Night 3" };
+
+            // Use table for static positioning - 3 columns, 2 rows
+            if (ImGui::BeginTable("ClockItemsTable", 3, ImGuiTableFlags_None)) {
+                ImGui::TableSetupColumn("Day 1", ImGuiTableColumnFlags_WidthStretch);
+                ImGui::TableSetupColumn("Day 2", ImGuiTableColumnFlags_WidthStretch);
+                ImGui::TableSetupColumn("Day 3", ImGuiTableColumnFlags_WidthStretch);
+
+                // First row - Day items
+                ImGui::TableNextRow();
+                for (int i = 0; i < 3; i++) {
+                    ImGui::TableNextColumn();
+                    RandoItemId clockItem = clockItems[i];
+                    int halfIndex = Rando::ClockItems::GetHalfDayIndexFromClockItem(clockItem);
+                    bool isOwned = Flags_GetRandoInf(static_cast<RandoInf>(RANDO_INF_OBTAINED_CLOCK_DAY_1 + halfIndex));
+
+                    std::string buttonText =
+                        isOwned ? ("Remove " + std::string(clockNames[i])) : ("No Item##" + std::to_string(i));
+                    std::string tooltipText = "";
+                    if (!isOwned) {
+                        tooltipText = "You don't own " + std::string(clockNames[i]);
+                    }
+                    UIWidgets::ButtonOptions buttonOpts;
+                    buttonOpts.disabled = !isOwned;
+                    buttonOpts.disabledTooltip = !isOwned ? tooltipText.c_str() : "";
+                    if (UIWidgets::Button(buttonText.c_str(), buttonOpts)) {
+                        Rando::RemoveItem(clockItem);
+                    }
+                }
+
+                // Second row - Night items
+                ImGui::TableNextRow();
+                for (int i = 3; i < 6; i++) {
+                    ImGui::TableNextColumn();
+                    RandoItemId clockItem = clockItems[i];
+                    int halfIndex = Rando::ClockItems::GetHalfDayIndexFromClockItem(clockItem);
+                    bool isOwned = Flags_GetRandoInf(static_cast<RandoInf>(RANDO_INF_OBTAINED_CLOCK_DAY_1 + halfIndex));
+
+                    std::string buttonText =
+                        isOwned ? ("Remove " + std::string(clockNames[i])) : ("No Item##" + std::to_string(i));
+                    std::string tooltipText = "";
+                    if (!isOwned) {
+                        tooltipText = "You don't own " + std::string(clockNames[i]);
+                    }
+                    UIWidgets::ButtonOptions buttonOpts;
+                    buttonOpts.disabled = !isOwned;
+                    buttonOpts.disabledTooltip = !isOwned ? tooltipText.c_str() : "";
+                    if (UIWidgets::Button(buttonText.c_str(), buttonOpts)) {
+                        Rando::RemoveItem(clockItem);
+                    }
+                }
+
+                ImGui::EndTable();
+            }
+        }
+
+        // Queue Randomizer Item Gives section
+        ImGui::Spacing();
         ImGui::SeparatorText("Queue Randomizer Item Gives");
 
         static ImGuiTextFilter riFilter;

@@ -3,6 +3,7 @@
 
 #include "2s2h/BenGui/UIWidgets.hpp"
 #include "Rando/Rando.h"
+#include "Rando/MiscBehavior/ClockShuffle.h"
 
 #include "2s2h/ShipUtils.h"
 #include <spdlog/fmt/fmt.h>
@@ -107,6 +108,22 @@ extern TrackerImageObject GetTextureObject(int16_t itemId, bool isRandoItem) {
                 break;
             case RI_TINGLE_MAP_STONE_TOWER:
                 itemObtained = CHECK_WEEKEVENTREG(WEEKEVENTREG_TINGLE_MAP_BOUGHT_STONE_TOWER);
+                break;
+            case RI_TIME_DAY_1:
+            case RI_TIME_DAY_2:
+            case RI_TIME_DAY_3:
+                randoImageObject.textureColor = ImVec4(1.0f, 0.9f, 0.3f, 1.0f); // Yellow/gold for sun
+                itemObtained = Flags_GetRandoInf(
+                    static_cast<RandoInf>(RANDO_INF_OBTAINED_CLOCK_DAY_1 +
+                                          Rando::ClockItems::GetHalfDayIndexFromClockItem((RandoItemId)itemId)));
+                break;
+            case RI_TIME_NIGHT_1:
+            case RI_TIME_NIGHT_2:
+            case RI_TIME_NIGHT_3:
+                randoImageObject.textureColor = ImVec4(0.5f, 0.7f, 1.0f, 1.0f); // Light blue for moon
+                itemObtained = Flags_GetRandoInf(
+                    static_cast<RandoInf>(RANDO_INF_OBTAINED_CLOCK_DAY_1 +
+                                          Rando::ClockItems::GetHalfDayIndexFromClockItem((RandoItemId)itemId)));
                 break;
             case RI_TRIFORCE_PIECE:
                 itemObtained = gSaveContext.save.shipSaveInfo.rando.foundTriforcePieces > 0;

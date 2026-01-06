@@ -1,4 +1,5 @@
 #include "Logic.h"
+#include "Rando/MiscBehavior/ClockShuffle.h"
 #include <libultraship/bridge/consolevariablebridge.h>
 #include <sstream>
 
@@ -174,6 +175,9 @@ void GeneratePools(RandoSaveInfo& saveInfo, std::vector<RandoCheckId>& checkPool
             itemPool.push_back((RandoItemId)i);
         }
     }
+
+    // Initialize shuffle time settings and item pool
+    ClockShuffle::InitializeFileClocks(itemPool);
 
     // Abilities
     if (saveInfo.randoSaveOptions[RO_SHUFFLE_SWIM] == RO_GENERIC_YES) {

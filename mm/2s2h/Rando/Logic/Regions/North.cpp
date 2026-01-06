@@ -128,7 +128,7 @@ static RegisterShipInitFunc initFunc([]() {
         .exits = { //     TO                                         FROM
             // During First Day a NPC Goron can open the door to the the Shrine
             EXIT(ENTRANCE(PATH_TO_GORON_VILLAGE_WINTER, 1),     ENTRANCE(GORON_VILLAGE_WINTER, 0), true),
-            EXIT(ENTRANCE(GORON_SHRINE, 0),                     ENTRANCE(GORON_VILLAGE_WINTER, 2), true),
+            EXIT(ENTRANCE(GORON_SHRINE, 0),                     ENTRANCE(GORON_VILLAGE_WINTER, 2), FIRST_DAY() || CAN_BE_GORON),
         },
         .connections = {
             CONNECTION(RR_LONE_PEAK_SHRINE_ENTRANCE, true)
@@ -252,7 +252,7 @@ static RegisterShipInitFunc initFunc([]() {
             CHECK(RC_MOUNTAIN_VILLAGE_SPRING_GRASS_30, RANDO_EVENTS[RE_CLEARED_SNOWHEAD_TEMPLE]),
             CHECK(RC_MOUNTAIN_VILLAGE_LARGE_SNOWBALL_01, CanKillEnemy(ACTOR_OBJ_SNOWBALL)),
             CHECK(RC_MOUNTAIN_VILLAGE_LARGE_SNOWBALL_02, CanKillEnemy(ACTOR_OBJ_SNOWBALL)),
-            CHECK(RC_MOUNTAIN_VILLAGE_LARGE_SNOWBALL_03, CanKillEnemy(ACTOR_OBJ_SNOWBALL)),
+            CHECK(RC_MOUNTAIN_VILLAGE_LARGE_SNOWBALL_03, (FIRST_DAY() || SECOND_DAY()) && CanKillEnemy(ACTOR_OBJ_SNOWBALL)), // Goron Elder inside on Final Day
             CHECK(RC_MOUNTAIN_VILLAGE_LARGE_SNOWBALL_04, CanKillEnemy(ACTOR_OBJ_SNOWBALL)),
             CHECK(RC_MOUNTAIN_VILLAGE_LARGE_SNOWBALL_05, CanKillEnemy(ACTOR_OBJ_SNOWBALL)),
             CHECK(RC_MOUNTAIN_VILLAGE_SMALL_SNOWBALL_01, true),
@@ -269,8 +269,8 @@ static RegisterShipInitFunc initFunc([]() {
             CHECK(RC_ENEMY_DROP_GUAY, RANDO_EVENTS[RE_CLEARED_SNOWHEAD_TEMPLE] && CanKillEnemy(ACTOR_EN_CROW)),
             CHECK(RC_ENEMY_DROP_GIANT_BEE, CanKillEnemy(ACTOR_EN_BEE) && RANDO_EVENTS[RE_CLEARED_SNOWHEAD_TEMPLE]),
             CHECK(RC_ENEMY_DROP_BOE, CanKillEnemy(ACTOR_EN_MKK) && RANDO_EVENTS[RE_CLEARED_SNOWHEAD_TEMPLE]),
-            CHECK(RC_ENEMY_DROP_TEKTITE, CanKillEnemy(ACTOR_OBJ_SNOWBALL) && CanKillEnemy(ACTOR_EN_TITE)), // Day 1 and 3 only
-            CHECK(RC_ENEMY_DROP_WOLFOS, CanKillEnemy(ACTOR_OBJ_SNOWBALL) && CanKillEnemy(ACTOR_EN_WF)), //  Day 2 only
+            CHECK(RC_ENEMY_DROP_TEKTITE, CanKillEnemy(ACTOR_OBJ_SNOWBALL) && CanKillEnemy(ACTOR_EN_TITE) && (FIRST_DAY() || FINAL_DAY())), // Day 1 and 3 only
+            CHECK(RC_ENEMY_DROP_WOLFOS, CanKillEnemy(ACTOR_OBJ_SNOWBALL) && CanKillEnemy(ACTOR_EN_WF) && SECOND_DAY()), // Day 2 only
         },
         .exits = { //     TO                                         FROM
             EXIT(ENTRANCE(MOUNTAIN_SMITHY, 0),              ENTRANCE(MOUNTAIN_VILLAGE_WINTER, 1), true),
@@ -345,19 +345,19 @@ static RegisterShipInitFunc initFunc([]() {
             CHECK(RC_TWIN_ISLANDS_SPRING_GRASS_10, RANDO_EVENTS[RE_CLEARED_SNOWHEAD_TEMPLE]),
             CHECK(RC_TWIN_ISLANDS_SPRING_GRASS_11, RANDO_EVENTS[RE_CLEARED_SNOWHEAD_TEMPLE]),
             CHECK(RC_TWIN_ISLANDS_SPRING_GRASS_12, RANDO_EVENTS[RE_CLEARED_SNOWHEAD_TEMPLE]),
-            CHECK(RC_TWIN_ISLANDS_LARGE_SNOWBALL_01, CanKillEnemy(ACTOR_OBJ_SNOWBALL)),
+            CHECK(RC_TWIN_ISLANDS_LARGE_SNOWBALL_01, (FIRST_DAY() || FINAL_DAY()) && CanKillEnemy(ACTOR_OBJ_SNOWBALL)), // Goron inside on Second Day
             CHECK(RC_TWIN_ISLANDS_LARGE_SNOWBALL_02, CanKillEnemy(ACTOR_OBJ_SNOWBALL)),
             CHECK(RC_TWIN_ISLANDS_LARGE_SNOWBALL_03, CanKillEnemy(ACTOR_OBJ_SNOWBALL)),
             CHECK(RC_TWIN_ISLANDS_LARGE_SNOWBALL_04, CanKillEnemy(ACTOR_OBJ_SNOWBALL)),
             CHECK(RC_TWIN_ISLANDS_LARGE_SNOWBALL_05, CanKillEnemy(ACTOR_OBJ_SNOWBALL)),
             CHECK(RC_TWIN_ISLANDS_LARGE_SNOWBALL_06, CanKillEnemy(ACTOR_OBJ_SNOWBALL)),
             CHECK(RC_TWIN_ISLANDS_LARGE_SNOWBALL_07, CanKillEnemy(ACTOR_OBJ_SNOWBALL)),
-            CHECK(RC_TWIN_ISLANDS_LARGE_SNOWBALL_08, CanKillEnemy(ACTOR_OBJ_SNOWBALL)),
+            CHECK(RC_TWIN_ISLANDS_LARGE_SNOWBALL_08, (SECOND_DAY() || FINAL_DAY()) && CanKillEnemy(ACTOR_OBJ_SNOWBALL)), // Goron inside on First Day
             CHECK(RC_TWIN_ISLANDS_LARGE_SNOWBALL_09, CanKillEnemy(ACTOR_OBJ_SNOWBALL)),
             CHECK(RC_TWIN_ISLANDS_LARGE_SNOWBALL_10, CanKillEnemy(ACTOR_OBJ_SNOWBALL)),
             CHECK(RC_TWIN_ISLANDS_LARGE_SNOWBALL_11, CanKillEnemy(ACTOR_OBJ_SNOWBALL)),
-            CHECK(RC_TWIN_ISLANDS_LARGE_SNOWBALL_12, CanKillEnemy(ACTOR_OBJ_SNOWBALL)),
-            CHECK(RC_TWIN_ISLANDS_LARGE_SNOWBALL_13, CanKillEnemy(ACTOR_OBJ_SNOWBALL)),
+            CHECK(RC_TWIN_ISLANDS_LARGE_SNOWBALL_12, (FIRST_DAY() || FINAL_DAY()) && CanKillEnemy(ACTOR_OBJ_SNOWBALL)), // Does not exist on Second Day
+            CHECK(RC_TWIN_ISLANDS_LARGE_SNOWBALL_13, (FIRST_DAY() || FINAL_DAY()) && CanKillEnemy(ACTOR_OBJ_SNOWBALL)), // Goron inside on Second Day
             CHECK(RC_TWIN_ISLANDS_SMALL_SNOWBALL_01, true),
             CHECK(RC_TWIN_ISLANDS_SMALL_SNOWBALL_02, true),
             CHECK(RC_TWIN_ISLANDS_SMALL_SNOWBALL_03, true),
@@ -394,9 +394,9 @@ static RegisterShipInitFunc initFunc([]() {
             CHECK(RC_PATH_TO_MOUNTAIN_VILLAGE_SMALL_SNOWBALL_02, true),
             CHECK(RC_PATH_TO_MOUNTAIN_VILLAGE_SMALL_SNOWBALL_03, true),
             CHECK(RC_ENEMY_DROP_TEKTITE, CanKillEnemy(ACTOR_EN_TITE)),
-            CHECK(RC_ENEMY_DROP_BOE, CanKillEnemy(ACTOR_EN_MKK)), // Night only
-            CHECK(RC_ENEMY_DROP_WOLFOS, CanKillEnemy(ACTOR_OBJ_SNOWBALL) && CanKillEnemy(ACTOR_EN_WF)), // Day 2 only
-            CHECK(RC_ENEMY_DROP_SNAPPER, CanKillEnemy(ACTOR_OBJ_SNOWBALL) && CanKillEnemy(ACTOR_EN_KAME)), // Day 3 only
+            CHECK(RC_ENEMY_DROP_BOE, CanKillEnemy(ACTOR_EN_MKK) && IS_NIGHT()), // Night only
+            CHECK(RC_ENEMY_DROP_WOLFOS, CanKillEnemy(ACTOR_OBJ_SNOWBALL) && CanKillEnemy(ACTOR_EN_WF) && SECOND_DAY()), // Day 2 only
+            CHECK(RC_ENEMY_DROP_SNAPPER, CanKillEnemy(ACTOR_OBJ_SNOWBALL) && CanKillEnemy(ACTOR_EN_KAME) && FINAL_DAY()), // Day 3 only
         },
         .exits = { //     TO                                         FROM
             EXIT(ENTRANCE(TERMINA_FIELD, 3),                ENTRANCE(PATH_TO_MOUNTAIN_VILLAGE, 0), true),
@@ -415,9 +415,9 @@ static RegisterShipInitFunc initFunc([]() {
             CHECK(RC_PATH_TO_MOUNTAIN_VILLAGE_LARGE_SNOWBALL_10, CanKillEnemy(ACTOR_OBJ_SNOWBALL)),
             CHECK(RC_PATH_TO_MOUNTAIN_VILLAGE_LARGE_SNOWBALL_11, CanKillEnemy(ACTOR_OBJ_SNOWBALL)),
             CHECK(RC_PATH_TO_MOUNTAIN_VILLAGE_SMALL_SNOWBALL_04, true),
-            CHECK(RC_ENEMY_DROP_BOE, CanKillEnemy(ACTOR_EN_MKK)), // Night only
-            CHECK(RC_ENEMY_DROP_WOLFOS, CanKillEnemy(ACTOR_OBJ_SNOWBALL) && CanKillEnemy(ACTOR_EN_WF)), // Day 2 only
-            CHECK(RC_ENEMY_DROP_SNAPPER, CanKillEnemy(ACTOR_OBJ_SNOWBALL) && CanKillEnemy(ACTOR_EN_KAME)), // Day 3 only
+            CHECK(RC_ENEMY_DROP_BOE, CanKillEnemy(ACTOR_EN_MKK) && IS_NIGHT()), // Night only
+            CHECK(RC_ENEMY_DROP_WOLFOS, CanKillEnemy(ACTOR_OBJ_SNOWBALL) && CanKillEnemy(ACTOR_EN_WF) && SECOND_DAY()), // Day 2 only
+            CHECK(RC_ENEMY_DROP_SNAPPER, CanKillEnemy(ACTOR_OBJ_SNOWBALL) && CanKillEnemy(ACTOR_EN_KAME) && FINAL_DAY()), // Day 3 only
         },
         .exits = { //     TO                                         FROM
             EXIT(ENTRANCE(MOUNTAIN_VILLAGE_WINTER, 6),      ENTRANCE(PATH_TO_MOUNTAIN_VILLAGE, 1), true),
@@ -524,7 +524,7 @@ static RegisterShipInitFunc initFunc([]() {
             CHECK(RC_SNOWHEAD_LARGE_SNOWBALL_06, CanKillEnemy(ACTOR_OBJ_SNOWBALL)),
             CHECK(RC_ENEMY_DROP_KEESE, CanKillEnemy(ACTOR_EN_FIREFLY)),
             CHECK(RC_ENEMY_DROP_WOLFOS, CanKillEnemy(ACTOR_EN_WF)),
-            CHECK(RC_ENEMY_DROP_BOE, CanKillEnemy(ACTOR_EN_MKK)), // Night only
+            CHECK(RC_ENEMY_DROP_BOE, CanKillEnemy(ACTOR_EN_MKK) && IS_NIGHT()), // Night only
         },
         .connections = {
             CONNECTION(RR_SNOWHEAD_NEAR_PATH, true),

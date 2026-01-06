@@ -2,6 +2,7 @@
 #include "Rando/Spoiler/Spoiler.h"
 #include "2s2h/BenGui/UIWidgets.hpp"
 #include "Rando/CheckTracker/CheckTracker.h"
+#include "Rando/MiscBehavior/ClockShuffle.h"
 #include "build.h"
 #include "2s2h/BenGui/BenMenu.h"
 #include "2s2h/BenGui/BenGui.hpp"
@@ -39,6 +40,7 @@ std::vector<int32_t> incompatibleWithVanilla = {
     RO_SHUFFLE_BOSS_SOULS,
     RO_SHUFFLE_SWIM,
     RO_PLENTIFUL_ITEMS,
+    RO_CLOCK_SHUFFLE,
 };
 
 std::vector<RandoCheckId> checkExclusionList;
@@ -57,6 +59,36 @@ extern "C" {
 #include "archives/icon_item_24_static/icon_item_24_static_yar.h"
 }
 
+// Clock UI rendering constants
+static const ImVec4 CLOCK_DAY_TINT = ImVec4(1.0f, 0.85f, 0.3f, 1.0f);
+static const ImVec4 CLOCK_NIGHT_TINT = ImVec4(0.3f, 0.5f, 1.0f, 1.0f);
+static const float DISABLED_ITEM_ALPHA = 0.3f;
+static const char* CLOCK_PROGRESSIVE_TOOLTIP =
+    "\n\nTime items are not compatible with Progressive Time modes.\nSwitch to Random mode to use starting time.";
+
+// Apply clock-specific rendering (tint colors and tooltips) based on progressive mode
+static void ApplyClockItemRendering(RandoItemId item, ImVec4& tintColor, std::string& tooltipText,
+                                    bool isProgressiveMode) {
+    using namespace Rando::ClockItems;
+
+    if (!IsClockItem(item)) {
+        return; // Not a clock item, no special handling needed
+    }
+
+    // Apply day/night color tint
+    if (IsDayClock(item)) {
+        tintColor = CLOCK_DAY_TINT;
+    } else {
+        tintColor = CLOCK_NIGHT_TINT;
+    }
+
+    // Grey out and add tooltip if progressive mode is active
+    if (isProgressiveMode) {
+        tintColor.w *= DISABLED_ITEM_ALPHA;
+        tooltipText += CLOCK_PROGRESSIVE_TOOLTIP;
+    }
+}
+
 void ClearIncompatibleSetting() {
     int32_t currentLogicSetting =
         CVarGetInteger(Rando::StaticData::Options[RO_LOGIC].cvar, Rando::StaticData::Options[RO_LOGIC].defaultValue);
@@ -66,6 +98,7 @@ void ClearIncompatibleSetting() {
             CVarClear(Rando::StaticData::Options[RO_PLENTIFUL_ITEMS].cvar);
             CVarClear(Rando::StaticData::Options[RO_SHUFFLE_BOSS_SOULS].cvar);
             CVarClear(Rando::StaticData::Options[RO_SHUFFLE_SWIM].cvar);
+            CVarClear(Rando::StaticData::Options[RO_CLOCK_SHUFFLE].cvar);
             break;
         default:
             break;
@@ -154,6 +187,7 @@ static RegisterShipInitFunc refreshMetricsInit(RefreshMetrics, {
                                                                    "gRando.Options.RO_ACCESS_MOON_MASKS_COUNT",
                                                                    "gRando.Options.RO_ACCESS_MOON_REMAINS_COUNT",
                                                                    "gRando.Options.RO_ACCESS_TRIALS",
+                                                                   "gRando.Options.RO_CLOCK_SHUFFLE",
                                                                    "gRando.Options.RO_HINTS_BOSS_REMAINS",
                                                                    "gRando.Options.RO_HINTS_GOSSIP_STONES",
                                                                    "gRando.Options.RO_HINTS_HOOKSHOT",
@@ -408,6 +442,51 @@ static void DrawItemsTab() {
                  CheckboxOptions({ { .tooltip = "Shuffles the first drop from a non Boss Enemy." } }));
     CVarCheckbox("Enemy Souls", "gPlaceholderBool",
                  CheckboxOptions({ { .disabled = true, .disabledTooltip = "Coming Soon" } }));
+    CVarCheckbox("Shuffle Time", Rando::StaticData::Options[RO_CLOCK_SHUFFLE].cvar,
+                 CheckboxOptions({ { .tooltip = "Breaks the 3-day cycle into 6 separate half-days (Day 1 Day/Night, "
+                                                "Day 2 Day/Night, Day 3 Day/Night) that must be unlocked as items. "
+                                                "Players can only access time periods they've obtained. Attempting to "
+                                                "access unowned time redirects to the next owned half-day.",
+                                     .disabled = IncompatibleWithLogicSetting(RO_CLOCK_SHUFFLE),
+                                     .disabledTooltip = "Incompatible with current Logic Setting" } }));
+    // Only show time progression options when shuffle time is enabled
+    if (CVarGetInteger(Rando::StaticData::Options[RO_CLOCK_SHUFFLE].cvar, 0)) {
+        static std::unordered_map<int32_t, const char*> clockModeOptions = {
+            { RO_CLOCK_SHUFFLE_RANDOM, "Random" },
+            { RO_CLOCK_SHUFFLE_ASCENDING, "Progressive: Ascending" },
+            { RO_CLOCK_SHUFFLE_DESCENDING, "Progressive: Descending" },
+        };
+        {
+            int32_t value =
+                CVarGetInteger(Rando::StaticData::Options[RO_CLOCK_SHUFFLE_PROGRESSIVE].cvar, RO_CLOCK_SHUFFLE_RANDOM);
+            if (UIWidgets::Combobox<int32_t>("Time Progression Mode", &value, &clockModeOptions)) {
+                CVarSetInteger(Rando::StaticData::Options[RO_CLOCK_SHUFFLE_PROGRESSIVE].cvar, value);
+                Ship::Context::GetInstance()->GetWindow()->GetGui()->SaveConsoleVariablesNextFrame();
+            }
+            UIWidgets::Tooltip("Random: All 6 half-days shuffled randomly. Player starts with one random half-day.\n\n"
+                               "Progressive Ascending: Unlocks half-days in order (D1, N1, D2, N2, D3, N3).\n\n"
+                               "Progressive Descending: Unlocks half-days in reverse order (N3, D3, N2, D2, N1, D1).");
+        }
+        // Terminal time slider (Final Hours start time)
+        {
+            int32_t terminalMinutes = CVarGetInteger(Rando::StaticData::Options[RO_CLOCK_TERMINAL_TIME].cvar, 0);
+            int hours = terminalMinutes / 60;
+            int minutes = terminalMinutes % 60;
+
+            ImGui::Spacing();
+            ImGui::Text("Final Hours Start Time: %02d:%02d", hours, minutes);
+            ImGui::Spacing();
+            UIWidgets::CVarSliderInt("Final Hours Start Time", Rando::StaticData::Options[RO_CLOCK_TERMINAL_TIME].cvar,
+                                     UIWidgets::IntSliderOptions().Min(0).Max(359).DefaultValue(0).LabelPosition(
+                                         UIWidgets::LabelPosition::None));
+            ImGui::Spacing();
+
+            UIWidgets::Tooltip("Controls when the final hours countdown begins (00:00 to 05:59). "
+                               "When you run out of owned half-days, this allows the player control over how much "
+                               "time is left before the moon crash.\n\n"
+                               "This setting is baked into the seed and cannot be changed after generation.");
+        }
+    }
 
     CVarCheckbox("Triforce Hunt", Rando::StaticData::Options[RO_SHUFFLE_TRIFORCE_PIECES].cvar);
     ImGui::BeginDisabled(!CVarGetInteger(Rando::StaticData::Options[RO_SHUFFLE_TRIFORCE_PIECES].cvar, RO_GENERIC_OFF));
@@ -550,10 +629,15 @@ static void DrawStartingItemsTab() {
         const char* texturePath = Rando::StaticData::GetIconTexturePath(startingItem);
         ImTextureID textureId = Ship::Context::GetInstance()->GetWindow()->GetGui()->GetTextureByName(texturePath);
 
-        if (ImGui::ImageButton(
-                std::to_string(listIndex).c_str(), textureId, imageSize, ImVec2(0, 0), ImVec2(1, 1), ImVec4(0, 0, 0, 0),
-                Ship_GetItemColorTint(startingItem == RI_PROGRESSIVE_LULLABY ? ITEM_SONG_LULLABY
-                                                                             : randoStaticItem.itemId))) {
+        ImVec4 tintColor =
+            Ship_GetItemColorTint(startingItem == RI_PROGRESSIVE_LULLABY ? ITEM_SONG_LULLABY : randoStaticItem.itemId);
+        std::string tooltipText = randoStaticItem.name;
+        bool isProgressiveMode = CVarGetInteger(Rando::StaticData::Options[RO_CLOCK_SHUFFLE_PROGRESSIVE].cvar,
+                                                RO_CLOCK_SHUFFLE_RANDOM) != RO_CLOCK_SHUFFLE_RANDOM;
+        ApplyClockItemRendering(startingItem, tintColor, tooltipText, isProgressiveMode);
+
+        if (ImGui::ImageButton(std::to_string(listIndex).c_str(), textureId, imageSize, ImVec2(0, 0), ImVec2(1, 1),
+                               ImVec4(0, 0, 0, 0), tintColor)) {
             for (size_t i = 0; i < setStartingItemsList.size(); i++) {
                 if (setStartingItemsList[i] == startingItem) {
                     setStartingItemsList.erase(setStartingItemsList.begin() + i);
@@ -563,7 +647,7 @@ static void DrawStartingItemsTab() {
             CVarSetString("gRando.StartingItems", CreateStartingItemsToCvar(setStartingItemsList).c_str());
             Ship::Context::GetInstance()->GetWindow()->GetGui()->SaveConsoleVariablesNextFrame();
         }
-        UIWidgets::Tooltip(randoStaticItem.name);
+        UIWidgets::Tooltip(tooltipText.c_str());
         listIndex++;
 
         if ((listIndex + 1) % 15 != 0) {
@@ -583,6 +667,8 @@ static void DrawStartingItemsTab() {
         tableColumns = 5;
         if (category.first == STARTING_ITEMS_MASK) {
             tableColumns++;
+        } else if (category.first == STARTING_ITEMS_MISC) {
+            tableColumns = 6; // Need 6 columns for the 6 time items on their own row
         }
         ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0, 0, 0, 0));
         if (ImGui::BeginChild(std::to_string(category.first).c_str(), ImVec2(0, 0),
@@ -609,15 +695,22 @@ static void DrawStartingItemsTab() {
                     ImTextureID textureId =
                         Ship::Context::GetInstance()->GetWindow()->GetGui()->GetTextureByName(texturePath);
 
-                    if (item == RI_SONG_TIME) {
+                    // Force new row for Song of Time, first frog, and first time item
+                    if (item == RI_SONG_TIME || item == RI_FROG_BLUE || item == RI_TIME_DAY_1) {
                         ImGui::TableNextRow();
                     }
                     ImGui::TableNextColumn();
+
+                    ImVec4 tintColor = Ship_GetItemColorTint(item == RI_PROGRESSIVE_LULLABY ? ITEM_SONG_LULLABY
+                                                                                            : randoStaticItem.itemId);
+                    std::string tooltipText = randoStaticItem.name;
+                    bool isProgressiveMode =
+                        CVarGetInteger(Rando::StaticData::Options[RO_CLOCK_SHUFFLE_PROGRESSIVE].cvar,
+                                       RO_CLOCK_SHUFFLE_RANDOM) != RO_CLOCK_SHUFFLE_RANDOM;
+                    ApplyClockItemRendering(item, tintColor, tooltipText, isProgressiveMode);
+
                     if (ImGui::ImageButton(std::to_string(item).c_str(), textureId, imageSize, ImVec2(0, 0),
-                                           ImVec2(1, 1), ImVec4(0, 0, 0, 0),
-                                           Ship_GetItemColorTint(item == RI_PROGRESSIVE_LULLABY
-                                                                     ? ITEM_SONG_LULLABY
-                                                                     : randoStaticItem.itemId))) {
+                                           ImVec2(1, 1), ImVec4(0, 0, 0, 0), tintColor)) {
                         std::string currentStartingItems =
                             CVarGetString("gRando.StartingItems", RANDO_STARTING_ITEMS_DEFAULT);
                         if (currentStartingItems.length() != 0) {
@@ -627,7 +720,7 @@ static void DrawStartingItemsTab() {
                         CVarSetString("gRando.StartingItems", currentStartingItems.c_str());
                         Ship::Context::GetInstance()->GetWindow()->GetGui()->SaveConsoleVariablesNextFrame();
                     }
-                    UIWidgets::Tooltip(randoStaticItem.name);
+                    UIWidgets::Tooltip(tooltipText.c_str());
                 }
                 ImGui::EndTable();
             }
