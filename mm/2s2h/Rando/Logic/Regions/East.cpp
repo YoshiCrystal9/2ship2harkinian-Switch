@@ -158,6 +158,7 @@ static RegisterShipInitFunc initFunc([]() {
             EXIT(ENTRANCE(SOUTHERN_SWAMP_POISONED, 9),               ONE_WAY_EXIT, CAN_USE_ABILITY(SWIM)),
         },
         .connections = {
+            // Octorok soul not needed; the player can also create ice platforms on the water itself.
             CONNECTION(RR_IKANA_CANYON_UPPER, HAS_ITEM(ITEM_HOOKSHOT) && CAN_USE_MAGIC_ARROW(ICE)),
             CONNECTION(RR_IKANA_CANYON_GROTTO, CAN_USE_ABILITY(SWIM)), // TODO: Grotto mapping
         },

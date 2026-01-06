@@ -447,6 +447,14 @@ typedef enum {
     // ```
     // #### `args`
     // - `*Actor`
+    VB_DRAW_LOCK_ON_ARROW,
+
+    // #### `result`
+    // ```c
+    // true
+    // ```
+    // #### `args`
+    // - `*Actor`
     // - `*u8` (type)
     VB_DRAW_DAMAGE_EFFECT,
 

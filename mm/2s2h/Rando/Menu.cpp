@@ -36,12 +36,15 @@ std::unordered_map<int32_t, const char*> accessTrialsOptions = {
     { RO_ACCESS_TRIALS_OPEN, "Open" },
 };
 
+// clang-format off
 std::vector<int32_t> incompatibleWithVanilla = {
     RO_SHUFFLE_BOSS_SOULS,
     RO_SHUFFLE_SWIM,
+    RO_SHUFFLE_ENEMY_SOULS,
     RO_PLENTIFUL_ITEMS,
     RO_CLOCK_SHUFFLE,
 };
+// clang-format on
 
 std::vector<RandoCheckId> checkExclusionList;
 bool isExcludedInitialized = false;
@@ -205,6 +208,7 @@ static RegisterShipInitFunc refreshMetricsInit(RefreshMetrics, {
                                                                    "gRando.Options.RO_SHUFFLE_COWS",
                                                                    "gRando.Options.RO_SHUFFLE_CRATE_DROPS",
                                                                    "gRando.Options.RO_SHUFFLE_ENEMY_DROPS",
+                                                                   "gRando.Options.RO_SHUFFLE_ENEMY_SOULS",
                                                                    "gRando.Options.RO_SHUFFLE_FREESTANDING_ITEMS",
                                                                    "gRando.Options.RO_SHUFFLE_FROGS",
                                                                    "gRando.Options.RO_SHUFFLE_GOLD_SKULLTULAS",
@@ -440,8 +444,12 @@ static void DrawItemsTab() {
                             .disabledTooltip = "Incompatible with current Logic Setting" } }));
     CVarCheckbox("Enemy Drops", Rando::StaticData::Options[RO_SHUFFLE_ENEMY_DROPS].cvar,
                  CheckboxOptions({ { .tooltip = "Shuffles the first drop from a non Boss Enemy." } }));
-    CVarCheckbox("Enemy Souls", "gPlaceholderBool",
-                 CheckboxOptions({ { .disabled = true, .disabledTooltip = "Coming Soon" } }));
+    CVarCheckbox(
+        "Enemy Souls", Rando::StaticData::Options[RO_SHUFFLE_ENEMY_SOULS].cvar,
+        CheckboxOptions({ { .tooltip = "Adds the \"souls\" of regular enemies to the item pool. Enemy Souls are items "
+                                       "that must be found in order for their corresponding enemy to spawn.",
+                            .disabled = IncompatibleWithLogicSetting(RO_SHUFFLE_ENEMY_SOULS),
+                            .disabledTooltip = "Incompatible with current Logic Setting" } }));
     CVarCheckbox("Shuffle Time", Rando::StaticData::Options[RO_CLOCK_SHUFFLE].cvar,
                  CheckboxOptions({ { .tooltip = "Breaks the 3-day cycle into 6 separate half-days (Day 1 Day/Night, "
                                                 "Day 2 Day/Night, Day 3 Day/Night) that must be unlocked as items. "

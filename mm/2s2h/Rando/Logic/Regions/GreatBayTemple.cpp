@@ -294,7 +294,7 @@ static RegisterShipInitFunc initFunc([]() {
             CONNECTION(RR_GREAT_BAY_TEMPLE_BEFORE_WART,     KEY_COUNT(GREAT_BAY_TEMPLE) >= 1),
         },
         .events = {
-           EVENT(RE_GREAT_BAY_RED_SWITCH_1, CAN_USE_MAGIC_ARROW(ICE)),
+           EVENT(RE_GREAT_BAY_RED_SWITCH_1, CAN_USE_MAGIC_ARROW(ICE) && Flags_GetRandoInf(RANDO_INF_OBTAINED_SOUL_OF_ENEMY_OCTOROKS)),
         }
     };
     Regions[RR_GREAT_BAY_TEMPLE_RED_PIPE_SWITCH_ROOM] = RandoRegion{ .sceneId = SCENE_SEA,

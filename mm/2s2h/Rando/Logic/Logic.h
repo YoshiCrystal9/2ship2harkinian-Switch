@@ -2,6 +2,7 @@
 #define RANDO_LOGIC_H
 
 #include "Rando/Rando.h"
+#include "Rando/ActorBehavior/Souls.h"
 #include "2s2h/GameInteractor/GameInteractor.h"
 #include "2s2h/ShipUtils.h"
 
@@ -509,24 +510,29 @@ inline bool ClockFilter() {
      AFTER(TIME_NIGHT3_AM_12_00))
 
 inline bool CanKillEnemy(ActorId EnemyId) {
+    // If enemy souls are shuffled, and the relevant soul is not obtained, we cannot kill that enemy.
+    if (RANDO_SAVE_OPTIONS[RO_SHUFFLE_ENEMY_SOULS] && !HaveEnemySoul(EnemyId)) {
+        return false;
+    }
+
     switch (EnemyId) {
         case ACTOR_BOSS_01: // Odolwa
             return (CAN_USE_SWORD || CAN_BE_GORON || CAN_BE_ZORA || CAN_USE_EXPLOSIVE || CAN_USE_MAGIC_ARROW(FIRE) ||
                     CAN_USE_MAGIC_ARROW(LIGHT)) &&
-                   (Flags_GetRandoInf(RANDO_INF_OBTAINED_SOUL_OF_ODOLWA) ||
+                   (Flags_GetRandoInf(RANDO_INF_OBTAINED_SOUL_OF_BOSS_ODOLWA) ||
                     RANDO_SAVE_OPTIONS[RO_SHUFFLE_BOSS_SOULS] == RO_GENERIC_NO);
         case ACTOR_BOSS_02: // Twinmold
             return (HAS_ITEM(ITEM_BOW) || (HAS_ITEM(ITEM_MASK_GIANT) && HAS_MAGIC && CAN_USE_HUMAN_SWORD)) &&
-                   (Flags_GetRandoInf(RANDO_INF_OBTAINED_SOUL_OF_TWINMOLD) ||
+                   (Flags_GetRandoInf(RANDO_INF_OBTAINED_SOUL_OF_BOSS_TWINMOLD) ||
                     RANDO_SAVE_OPTIONS[RO_SHUFFLE_BOSS_SOULS] == RO_GENERIC_NO);
         case ACTOR_BOSS_03: // Gyorg
             return ((CAN_BE_DEITY && HAS_MAGIC) || (CAN_BE_ZORA && HAS_MAGIC)) &&
-                   (Flags_GetRandoInf(RANDO_INF_OBTAINED_SOUL_OF_GYORG) ||
+                   (Flags_GetRandoInf(RANDO_INF_OBTAINED_SOUL_OF_BOSS_GYORG) ||
                     RANDO_SAVE_OPTIONS[RO_SHUFFLE_BOSS_SOULS] == RO_GENERIC_NO);
         case ACTOR_BOSS_04: // Wart
             return (HAS_ITEM(ITEM_BOW) || HAS_ITEM(ITEM_HOOKSHOT) || CAN_BE_ZORA);
         case ACTOR_BOSS_HAKUGIN: // Goht
-            return (CAN_USE_MAGIC_ARROW(FIRE)) && (Flags_GetRandoInf(RANDO_INF_OBTAINED_SOUL_OF_GOHT) ||
+            return (CAN_USE_MAGIC_ARROW(FIRE)) && (Flags_GetRandoInf(RANDO_INF_OBTAINED_SOUL_OF_BOSS_GOHT) ||
                                                    RANDO_SAVE_OPTIONS[RO_SHUFFLE_BOSS_SOULS] == RO_GENERIC_NO);
         case ACTOR_EN_KNIGHT: // Igos du Ikana/IdI Lackey
             return (CAN_USE_MAGIC_ARROW(FIRE) &&
@@ -535,7 +541,7 @@ inline bool CanKillEnemy(ActorId EnemyId) {
         case ACTOR_EN_KAIZOKU: // Fighter Pirate
             return (CAN_USE_SWORD || CAN_BE_ZORA);
         case ACTOR_EN_PAMETFROG: // Woodfall Temple Gekko (and Snapper)
-            return (HAS_ITEM(ITEM_BOW) && (CAN_BE_DEKU || CAN_USE_EXPLOSIVE || CAN_BE_GORON));
+            return (HAS_ITEM(ITEM_BOW) && CanKillEnemy(ACTOR_EN_BIGPAMET));
         case ACTOR_EN_BIGSLIME: // Great Bay Temple Gekko
             return (CAN_USE_MAGIC_ARROW(ICE));
         case ACTOR_EN_SW: // Gold Skulltula & Skullwalltula

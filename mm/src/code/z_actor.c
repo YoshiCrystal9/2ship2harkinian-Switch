@@ -648,9 +648,10 @@ void Attention_Draw(Attention* attention, PlayState* play) {
                          actor->focus.pos.z, MTXMODE_NEW);
         Matrix_RotateYS(play->gameplayFrames * 0xBB8, MTXMODE_APPLY);
         Matrix_Scale((iREG(27) + 35) / 1000.0f, (iREG(28) + 60) / 1000.0f, (iREG(29) + 50) / 1000.0f, MTXMODE_APPLY);
-
-        gDPSetPrimColor(POLY_XLU_DISP++, 0, 0, attentionColor->primary.r, attentionColor->primary.g,
-                        attentionColor->primary.b, 255);
+        if (GameInteractor_Should(VB_DRAW_LOCK_ON_ARROW, true, actor)) {
+            gDPSetPrimColor(POLY_XLU_DISP++, 0, 0, attentionColor->primary.r, attentionColor->primary.g,
+                            attentionColor->primary.b, 255);
+        }
         MATRIX_FINALIZE_AND_LOAD(POLY_XLU_DISP++, play->state.gfxCtx);
         gSPDisplayList(POLY_XLU_DISP++, gLockOnArrowDL);
         FrameInterpolation_RecordCloseChild();

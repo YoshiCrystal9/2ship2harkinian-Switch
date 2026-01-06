@@ -171,11 +171,58 @@ std::map<RandoItemId, RandoStaticItem> Items = {
     RI(RI_SONG_STORMS,                "the",  "Song of Storms",             RITYPE_MAJOR,           ITEM_SONG_STORMS,                GI_NONE,                     GID_NONE),
     RI(RI_SONG_SUN,                   "the",  "Sun's Song",                 RITYPE_MAJOR,           ITEM_SONG_SUN,                   GI_NONE,                     GID_NONE),
     RI(RI_SONG_TIME,                  "the",  "Song of Time",               RITYPE_MAJOR,           ITEM_SONG_TIME,                  GI_NONE,                     GID_NONE),
-    RI(RI_SOUL_GOHT,                  "the",  "Soul of Goht",               RITYPE_MAJOR,           ITEM_NONE,                       GI_NONE,                     GID_NONE),
-    RI(RI_SOUL_GYORG,                 "the",  "Soul of Gyorg",              RITYPE_MAJOR,           ITEM_NONE,                       GI_NONE,                     GID_NONE),
-    RI(RI_SOUL_MAJORA,                "the",  "Soul of Majora",             RITYPE_MAJOR,           ITEM_NONE,                       GI_NONE,                     GID_NONE),
-    RI(RI_SOUL_ODOLWA,                "the",  "Soul of Odolwa",             RITYPE_MAJOR,           ITEM_NONE,                       GI_NONE,                     GID_NONE),
-    RI(RI_SOUL_TWINMOLD,              "the",  "Soul of Twinmold",           RITYPE_MAJOR,           ITEM_NONE,                       GI_NONE,                     GID_NONE),
+	RI(RI_SOUL_BOSS_GOHT,             "the",  "Soul of Goht",               RITYPE_MAJOR,           ITEM_NONE,                       GI_NONE,                     GID_NONE),
+	RI(RI_SOUL_BOSS_GYORG,            "the",  "Soul of Gyorg",              RITYPE_MAJOR,           ITEM_NONE,                       GI_NONE,                     GID_NONE),
+	RI(RI_SOUL_BOSS_MAJORA,           "the",  "Soul of Majora",             RITYPE_MAJOR,           ITEM_NONE,                       GI_NONE,                     GID_NONE),
+	RI(RI_SOUL_BOSS_ODOLWA,           "the",  "Soul of Odolwa",             RITYPE_MAJOR,           ITEM_NONE,                       GI_NONE,                     GID_NONE),
+    RI(RI_SOUL_BOSS_TWINMOLD,         "the",  "Soul of Twinmold",           RITYPE_MAJOR,           ITEM_NONE,                       GI_NONE,                     GID_NONE),
+    RI(RI_SOUL_ENEMY_ALIEN,           "the",  "Soul of Aliens",             RITYPE_MAJOR,           ITEM_NONE,                       GI_NONE,                     GID_NONE),
+    RI(RI_SOUL_ENEMY_ARMOS,           "the",  "Soul of Armos",              RITYPE_MAJOR,           ITEM_NONE,                       GI_NONE,                     GID_NONE),
+    RI(RI_SOUL_ENEMY_BAD_BAT,         "the",  "Soul of Bad Bats",           RITYPE_MAJOR,           ITEM_NONE,                       GI_NONE,                     GID_NONE),
+    RI(RI_SOUL_ENEMY_BEAMOS,          "the",  "Soul of Beamos",             RITYPE_MAJOR,           ITEM_NONE,                       GI_NONE,                     GID_NONE),
+    RI(RI_SOUL_ENEMY_BOE,             "the",  "Soul of Boes",               RITYPE_MAJOR,           ITEM_NONE,                       GI_NONE,                     GID_NONE),
+    RI(RI_SOUL_ENEMY_BUBBLE,          "the",  "Soul of Bubbles",            RITYPE_MAJOR,           ITEM_NONE,                       GI_NONE,                     GID_NONE),
+    RI(RI_SOUL_ENEMY_CHUCHU,          "the",  "Soul of Chuchus",            RITYPE_MAJOR,           ITEM_NONE,                       GI_NONE,                     GID_NONE),
+    RI(RI_SOUL_ENEMY_CAPTAIN_KEETA,   "the",  "Soul of Captain Keeta",      RITYPE_MAJOR,           ITEM_NONE,                       GI_NONE,                     GID_NONE),
+    RI(RI_SOUL_ENEMY_DEATH_ARMOS,     "the",  "Soul of Death Armos",        RITYPE_MAJOR,           ITEM_NONE,                       GI_NONE,                     GID_NONE),
+    RI(RI_SOUL_ENEMY_DEEP_PYTHON,     "the",  "Soul of Deep Pythons",       RITYPE_MAJOR,           ITEM_NONE,                       GI_NONE,                     GID_NONE),
+    RI(RI_SOUL_ENEMY_DEKU_BABA,       "the",  "Soul of Deku Babas",         RITYPE_MAJOR,           ITEM_NONE,                       GI_NONE,                     GID_NONE),
+    RI(RI_SOUL_ENEMY_DEXIHAND,        "the",  "Soul of Dexihands",          RITYPE_MAJOR,           ITEM_NONE,                       GI_NONE,                     GID_NONE),
+    RI(RI_SOUL_ENEMY_DINOLFOS,        "the",  "Soul of Dinolfos",           RITYPE_MAJOR,           ITEM_NONE,                       GI_NONE,                     GID_NONE),
+    RI(RI_SOUL_ENEMY_DODONGO,         "the",  "Soul of Dodongos",           RITYPE_MAJOR,           ITEM_NONE,                       GI_NONE,                     GID_NONE),
+    RI(RI_SOUL_ENEMY_DRAGONFLY,       "the",  "Soul of Dragonflies",        RITYPE_MAJOR,           ITEM_NONE,                       GI_NONE,                     GID_NONE),
+    RI(RI_SOUL_ENEMY_EENO,            "the",  "Soul of Eenos",              RITYPE_MAJOR,           ITEM_NONE,                       GI_NONE,                     GID_NONE),
+    RI(RI_SOUL_ENEMY_EYEGORE,         "the",  "Soul of Eyegores",           RITYPE_MAJOR,           ITEM_NONE,                       GI_NONE,                     GID_NONE),
+    RI(RI_SOUL_ENEMY_FREEZARD,        "the",  "Soul of Freezards",          RITYPE_MAJOR,           ITEM_NONE,                       GI_NONE,                     GID_NONE),
+    RI(RI_SOUL_ENEMY_GARO,            "the",  "Soul of Garos",              RITYPE_MAJOR,           ITEM_NONE,                       GI_NONE,                     GID_NONE),
+    RI(RI_SOUL_ENEMY_GEKKO,           "the",  "Soul of Gekkos",             RITYPE_MAJOR,           ITEM_NONE,                       GI_NONE,                     GID_NONE),
+    RI(RI_SOUL_ENEMY_GIANT_BEE,       "the",  "Soul of Giant Bees",         RITYPE_MAJOR,           ITEM_NONE,                       GI_NONE,                     GID_NONE),
+	RI(RI_SOUL_ENEMY_GOMESS,          "the",  "Soul of Gomess",             RITYPE_MAJOR,           ITEM_NONE,                       GI_NONE,                     GID_NONE),
+    RI(RI_SOUL_ENEMY_GUAY,            "the",  "Soul of Guays",              RITYPE_MAJOR,           ITEM_NONE,                       GI_NONE,                     GID_NONE),
+    RI(RI_SOUL_ENEMY_HIPLOOP,         "the",  "Soul of Hiploops",           RITYPE_MAJOR,           ITEM_NONE,                       GI_NONE,                     GID_NONE),
+    RI(RI_SOUL_ENEMY_IGOS_DU_IKANA,   "the",  "Soul of Igos du Ikana",      RITYPE_MAJOR,           ITEM_NONE,                       GI_NONE,                     GID_NONE),
+    RI(RI_SOUL_ENEMY_IRON_KNUCKLE,    "the",  "Soul of Iron Knuckles",      RITYPE_MAJOR,           ITEM_NONE,                       GI_NONE,                     GID_NONE),
+    RI(RI_SOUL_ENEMY_KEESE,           "the",  "Soul of Keese",              RITYPE_MAJOR,           ITEM_NONE,                       GI_NONE,                     GID_NONE),
+    RI(RI_SOUL_ENEMY_LEEVER,          "the",  "Soul of Leevers",            RITYPE_MAJOR,           ITEM_NONE,                       GI_NONE,                     GID_NONE),
+    RI(RI_SOUL_ENEMY_LIKE_LIKE,       "the",  "Soul of Like Likes",         RITYPE_MAJOR,           ITEM_NONE,                       GI_NONE,                     GID_NONE),
+    RI(RI_SOUL_ENEMY_MAD_SCRUB,       "the",  "Soul of Mad Scrubs",         RITYPE_MAJOR,           ITEM_NONE,                       GI_NONE,                     GID_NONE),
+    RI(RI_SOUL_ENEMY_NEJIRON,         "the",  "Soul of Nejirons",           RITYPE_MAJOR,           ITEM_NONE,                       GI_NONE,                     GID_NONE),
+    RI(RI_SOUL_ENEMY_OCTOROK,         "the",  "Soul of Octoroks",           RITYPE_MAJOR,           ITEM_NONE,                       GI_NONE,                     GID_NONE),
+    RI(RI_SOUL_ENEMY_PEAHAT,          "the",  "Soul of Peahats",            RITYPE_MAJOR,           ITEM_NONE,                       GI_NONE,                     GID_NONE),
+    RI(RI_SOUL_ENEMY_PIRATE,          "the",  "Soul of Pirates",            RITYPE_MAJOR,           ITEM_NONE,                       GI_NONE,                     GID_NONE),
+    RI(RI_SOUL_ENEMY_POE,             "the",  "Soul of Poes",               RITYPE_MAJOR,           ITEM_NONE,                       GI_NONE,                     GID_NONE),
+    RI(RI_SOUL_ENEMY_REDEAD,          "the",  "Soul of Redeads",            RITYPE_MAJOR,           ITEM_NONE,                       GI_NONE,                     GID_NONE),
+    RI(RI_SOUL_ENEMY_SHELLBLADE,      "the",  "Soul of Shellblades",        RITYPE_MAJOR,           ITEM_NONE,                       GI_NONE,                     GID_NONE),
+    RI(RI_SOUL_ENEMY_SKULLFISH,       "the",  "Soul of Skullfish",          RITYPE_MAJOR,           ITEM_NONE,                       GI_NONE,                     GID_NONE),
+    RI(RI_SOUL_ENEMY_SKULLTULA,       "the",  "Soul of Skulltulas",         RITYPE_MAJOR,           ITEM_NONE,                       GI_NONE,                     GID_NONE),
+    RI(RI_SOUL_ENEMY_SNAPPER,         "the",  "Soul of Snappers",           RITYPE_MAJOR,           ITEM_NONE,                       GI_NONE,                     GID_NONE),
+    RI(RI_SOUL_ENEMY_STALCHILD,       "the",  "Soul of Stalchildren",       RITYPE_MAJOR,           ITEM_NONE,                       GI_NONE,                     GID_NONE),
+    RI(RI_SOUL_ENEMY_TAKKURI,         "the",  "Soul of Takkuri",            RITYPE_MAJOR,           ITEM_NONE,                       GI_NONE,                     GID_NONE),
+    RI(RI_SOUL_ENEMY_TEKTITE,         "the",  "Soul of Tektites",           RITYPE_MAJOR,           ITEM_NONE,                       GI_NONE,                     GID_NONE),
+	RI(RI_SOUL_ENEMY_WALLMASTER,      "the",  "Soul of Wallmasters",        RITYPE_MAJOR,           ITEM_NONE,                       GI_NONE,                     GID_NONE),
+    RI(RI_SOUL_ENEMY_WART,            "the",  "Soul of Warts",              RITYPE_MAJOR,           ITEM_NONE,                       GI_NONE,                     GID_NONE),
+    RI(RI_SOUL_ENEMY_WIZROBE,         "the",  "Soul of Wizrobes",           RITYPE_MAJOR,           ITEM_NONE,                       GI_NONE,                     GID_NONE),
+    RI(RI_SOUL_ENEMY_WOLFOS,          "the",  "Soul of Wolfos",             RITYPE_MAJOR,           ITEM_NONE,                       GI_NONE,                     GID_NONE),
     RI(RI_STONE_TOWER_BOSS_KEY,       "the",  "Stone Tower Boss Key",       RITYPE_BOSS_KEY,        ITEM_KEY_BOSS,                   GI_KEY_BOSS,                 GID_KEY_BOSS),
     RI(RI_STONE_TOWER_COMPASS,        "the",  "Stone Tower Compass",        RITYPE_LESSER,          ITEM_COMPASS,                    GI_COMPASS,                  GID_COMPASS),
     RI(RI_STONE_TOWER_MAP,            "the",  "Stone Tower Map",            RITYPE_LESSER,          ITEM_DUNGEON_MAP,                GI_MAP,                      GID_DUNGEON_MAP),
@@ -234,7 +281,7 @@ std::unordered_map<StartingItemCategory, std::vector<RandoItemId>> StartingItems
           RI_LETTER_TO_KAFEI, RI_PENDANT_OF_MEMORIES
         } },
     { STARTING_ITEMS_MISC, 
-        { RI_SOUL_GOHT, RI_SOUL_GYORG,  RI_SOUL_MAJORA, RI_SOUL_ODOLWA, RI_SOUL_TWINMOLD,
+        { RI_SOUL_BOSS_GOHT, RI_SOUL_BOSS_GYORG,  RI_SOUL_BOSS_MAJORA, RI_SOUL_BOSS_ODOLWA, RI_SOUL_BOSS_TWINMOLD,
           RI_FROG_BLUE, RI_FROG_CYAN,   RI_FROG_PINK,   RI_FROG_WHITE,
           RI_TIME_DAY_1, RI_TIME_DAY_2, RI_TIME_DAY_3, RI_TIME_NIGHT_1, RI_TIME_NIGHT_2, RI_TIME_NIGHT_3
         } }, 
@@ -333,11 +380,58 @@ const char* GetIconTexturePath(RandoItemId randoItemId) {
             return (const char*)gItemIcons[ITEM_SONG_LULLABY];
         case RI_PROGRESSIVE_MAGIC:
             return (const char*)gItemIcons[ITEM_MAGIC_JAR_SMALL];
-        case RI_SOUL_GOHT:
-        case RI_SOUL_GYORG:
-        case RI_SOUL_MAJORA:
-        case RI_SOUL_ODOLWA:
-        case RI_SOUL_TWINMOLD:
+        case RI_SOUL_BOSS_GOHT:
+        case RI_SOUL_BOSS_GYORG:
+        case RI_SOUL_BOSS_MAJORA:
+        case RI_SOUL_BOSS_ODOLWA:
+        case RI_SOUL_BOSS_TWINMOLD:
+        case RI_SOUL_ENEMY_ALIEN:
+        case RI_SOUL_ENEMY_ARMOS:
+        case RI_SOUL_ENEMY_BAD_BAT:
+        case RI_SOUL_ENEMY_BEAMOS:
+        case RI_SOUL_ENEMY_BOE:
+        case RI_SOUL_ENEMY_BUBBLE:
+        case RI_SOUL_ENEMY_CAPTAIN_KEETA:
+        case RI_SOUL_ENEMY_CHUCHU:
+        case RI_SOUL_ENEMY_DEATH_ARMOS:
+        case RI_SOUL_ENEMY_DEEP_PYTHON:
+        case RI_SOUL_ENEMY_DEKU_BABA:
+        case RI_SOUL_ENEMY_DEXIHAND:
+        case RI_SOUL_ENEMY_DINOLFOS:
+        case RI_SOUL_ENEMY_DODONGO:
+        case RI_SOUL_ENEMY_DRAGONFLY:
+        case RI_SOUL_ENEMY_EENO:
+        case RI_SOUL_ENEMY_EYEGORE:
+        case RI_SOUL_ENEMY_FREEZARD:
+        case RI_SOUL_ENEMY_GARO:
+        case RI_SOUL_ENEMY_GEKKO:
+        case RI_SOUL_ENEMY_GIANT_BEE:
+        case RI_SOUL_ENEMY_GOMESS:
+        case RI_SOUL_ENEMY_GUAY:
+        case RI_SOUL_ENEMY_HIPLOOP:
+        case RI_SOUL_ENEMY_IGOS_DU_IKANA:
+        case RI_SOUL_ENEMY_IRON_KNUCKLE:
+        case RI_SOUL_ENEMY_KEESE:
+        case RI_SOUL_ENEMY_LEEVER:
+        case RI_SOUL_ENEMY_LIKE_LIKE:
+        case RI_SOUL_ENEMY_MAD_SCRUB:
+        case RI_SOUL_ENEMY_NEJIRON:
+        case RI_SOUL_ENEMY_OCTOROK:
+        case RI_SOUL_ENEMY_PEAHAT:
+        case RI_SOUL_ENEMY_PIRATE:
+        case RI_SOUL_ENEMY_POE:
+        case RI_SOUL_ENEMY_REDEAD:
+        case RI_SOUL_ENEMY_SHELLBLADE:
+        case RI_SOUL_ENEMY_SKULLFISH:
+        case RI_SOUL_ENEMY_SKULLTULA:
+        case RI_SOUL_ENEMY_SNAPPER:
+        case RI_SOUL_ENEMY_STALCHILD:
+        case RI_SOUL_ENEMY_TAKKURI:
+        case RI_SOUL_ENEMY_TEKTITE:
+        case RI_SOUL_ENEMY_WALLMASTER:
+        case RI_SOUL_ENEMY_WART:
+        case RI_SOUL_ENEMY_WIZROBE:
+        case RI_SOUL_ENEMY_WOLFOS:
             return (const char*)gDungeonMapSkullTex;
         case RI_FROG_BLUE:
         case RI_FROG_CYAN:

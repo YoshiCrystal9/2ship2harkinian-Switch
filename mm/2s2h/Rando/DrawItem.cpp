@@ -401,6 +401,65 @@ void DrawAbilityItem(RandoItemId randoItemId, Actor* actor) {
     CLOSE_DISPS(gPlayState->state.gfxCtx);
 }
 
+// clang-format off
+std::unordered_map<RandoItemId, std::function<void()>> soulDrawMap = {
+    { RI_SOUL_ENEMY_ALIEN,          DrawAlien },
+    { RI_SOUL_ENEMY_ARMOS,          DrawArmos },
+    { RI_SOUL_ENEMY_BAD_BAT,        DrawBat },
+    { RI_SOUL_ENEMY_BEAMOS,         DrawBeamos },
+    { RI_SOUL_ENEMY_BUBBLE,         DrawBubble },
+    { RI_SOUL_ENEMY_BOE,            DrawBoe },
+    { RI_SOUL_ENEMY_CHUCHU,         DrawChuchu },
+    { RI_SOUL_ENEMY_CAPTAIN_KEETA,  DrawCaptainKeeta },
+    { RI_SOUL_ENEMY_DEATH_ARMOS,    DrawDeathArmos },
+    { RI_SOUL_ENEMY_DEEP_PYTHON,    DrawDeepPython },
+    { RI_SOUL_ENEMY_DEKU_BABA,      DrawDekuBaba },
+    { RI_SOUL_ENEMY_DEXIHAND,       DrawDexihand },
+    { RI_SOUL_ENEMY_DINOLFOS,       DrawDinolfos },
+    { RI_SOUL_ENEMY_DODONGO,        DrawDodongo },
+    { RI_SOUL_ENEMY_DRAGONFLY,      DrawDragonfly },
+    { RI_SOUL_ENEMY_EENO,           DrawEeno },
+    { RI_SOUL_ENEMY_EYEGORE,        DrawEyegore },
+    { RI_SOUL_ENEMY_FREEZARD,       DrawFreezard },
+    { RI_SOUL_ENEMY_GARO,           DrawGaro },
+    { RI_SOUL_ENEMY_GEKKO,          DrawGekko },
+    { RI_SOUL_ENEMY_GIANT_BEE,      DrawGiantBee },
+    { RI_SOUL_ENEMY_GOMESS,         DrawGomess },
+    { RI_SOUL_ENEMY_GUAY,           DrawGuay },
+    { RI_SOUL_ENEMY_HIPLOOP,        DrawHiploop },
+    { RI_SOUL_ENEMY_IGOS_DU_IKANA,  DrawIgosDuIkana },
+    { RI_SOUL_ENEMY_IRON_KNUCKLE,   DrawIronKnuckle },
+    { RI_SOUL_ENEMY_KEESE,          DrawKeese },
+    { RI_SOUL_ENEMY_LEEVER,         DrawLeever },
+    { RI_SOUL_ENEMY_LIKE_LIKE,      DrawLikeLike },
+    { RI_SOUL_ENEMY_MAD_SCRUB,      DrawMadScrub },
+    { RI_SOUL_ENEMY_NEJIRON,        DrawNejiron },
+    { RI_SOUL_ENEMY_OCTOROK,        DrawOctorok },
+    { RI_SOUL_ENEMY_PEAHAT,         DrawPeahat },
+    { RI_SOUL_ENEMY_PIRATE,         DrawPirate },
+    { RI_SOUL_ENEMY_POE,            DrawPoe },
+    { RI_SOUL_ENEMY_REDEAD,         DrawRedead },
+    { RI_SOUL_ENEMY_SHELLBLADE,     DrawShellBlade },
+    { RI_SOUL_ENEMY_SKULLFISH,      DrawSkullfish },
+    { RI_SOUL_ENEMY_SKULLTULA,      DrawSkulltula },
+    { RI_SOUL_ENEMY_SNAPPER,        DrawSnapper },
+    { RI_SOUL_ENEMY_STALCHILD,      DrawStalchild },
+    { RI_SOUL_ENEMY_TAKKURI,        DrawTakkuri },
+    { RI_SOUL_ENEMY_TEKTITE,        DrawTektite },
+    { RI_SOUL_ENEMY_WALLMASTER,     DrawWallmaster },
+    { RI_SOUL_ENEMY_WART,           DrawWart },
+    { RI_SOUL_ENEMY_WIZROBE,        DrawWizrobe },
+    { RI_SOUL_ENEMY_WOLFOS,         DrawWolfos },
+};
+// clang-format on
+
+void DrawSoul(RandoItemId randoItemId) {
+    auto it = soulDrawMap.find(randoItemId);
+    if (it != soulDrawMap.end()) {
+        it->second();
+    }
+}
+
 void DrawSparkles(RandoItemId randoItemId, Actor* actor) {
     if (actor == NULL) {
         return;
@@ -514,19 +573,68 @@ void Rando::DrawItem(RandoItemId randoItemId, Actor* actor) {
         case RI_PROGRESSIVE_WALLET:
             Rando::DrawItem(Rando::ConvertItem(randoItemId), actor);
             break;
-        case RI_SOUL_GOHT:
+        case RI_SOUL_ENEMY_ALIEN:
+        case RI_SOUL_ENEMY_ARMOS:
+        case RI_SOUL_ENEMY_BAD_BAT:
+        case RI_SOUL_ENEMY_BEAMOS:
+        case RI_SOUL_ENEMY_BOE:
+        case RI_SOUL_ENEMY_BUBBLE:
+        case RI_SOUL_ENEMY_CAPTAIN_KEETA:
+        case RI_SOUL_ENEMY_CHUCHU:
+        case RI_SOUL_ENEMY_DEATH_ARMOS:
+        case RI_SOUL_ENEMY_DEEP_PYTHON:
+        case RI_SOUL_ENEMY_DEKU_BABA:
+        case RI_SOUL_ENEMY_DEXIHAND:
+        case RI_SOUL_ENEMY_DINOLFOS:
+        case RI_SOUL_ENEMY_DODONGO:
+        case RI_SOUL_ENEMY_DRAGONFLY:
+        case RI_SOUL_ENEMY_EENO:
+        case RI_SOUL_ENEMY_EYEGORE:
+        case RI_SOUL_ENEMY_FREEZARD:
+        case RI_SOUL_ENEMY_GARO:
+        case RI_SOUL_ENEMY_GEKKO:
+        case RI_SOUL_ENEMY_GIANT_BEE:
+        case RI_SOUL_ENEMY_GOMESS:
+        case RI_SOUL_ENEMY_GUAY:
+        case RI_SOUL_ENEMY_HIPLOOP:
+        case RI_SOUL_ENEMY_IGOS_DU_IKANA:
+        case RI_SOUL_ENEMY_IRON_KNUCKLE:
+        case RI_SOUL_ENEMY_KEESE:
+        case RI_SOUL_ENEMY_LEEVER:
+        case RI_SOUL_ENEMY_LIKE_LIKE:
+        case RI_SOUL_ENEMY_MAD_SCRUB:
+        case RI_SOUL_ENEMY_NEJIRON:
+        case RI_SOUL_ENEMY_OCTOROK:
+        case RI_SOUL_ENEMY_PEAHAT:
+        case RI_SOUL_ENEMY_PIRATE:
+        case RI_SOUL_ENEMY_POE:
+        case RI_SOUL_ENEMY_REDEAD:
+        case RI_SOUL_ENEMY_SHELLBLADE:
+        case RI_SOUL_ENEMY_SKULLFISH:
+        case RI_SOUL_ENEMY_SKULLTULA:
+        case RI_SOUL_ENEMY_SNAPPER:
+        case RI_SOUL_ENEMY_STALCHILD:
+        case RI_SOUL_ENEMY_TAKKURI:
+        case RI_SOUL_ENEMY_TEKTITE:
+        case RI_SOUL_ENEMY_WALLMASTER:
+        case RI_SOUL_ENEMY_WART:
+        case RI_SOUL_ENEMY_WIZROBE:
+        case RI_SOUL_ENEMY_WOLFOS:
+            DrawSoul(randoItemId);
+            break;
+        case RI_SOUL_BOSS_GOHT:
             DrawGoht();
             break;
-        case RI_SOUL_GYORG:
+        case RI_SOUL_BOSS_GYORG:
             DrawGyorg();
             break;
-        case RI_SOUL_MAJORA:
+        case RI_SOUL_BOSS_MAJORA:
             DrawMajora();
             break;
-        case RI_SOUL_ODOLWA:
+        case RI_SOUL_BOSS_ODOLWA:
             DrawOdolwa();
             break;
-        case RI_SOUL_TWINMOLD:
+        case RI_SOUL_BOSS_TWINMOLD:
             DrawTwinmold();
             break;
         case RI_FROG_BLUE:
