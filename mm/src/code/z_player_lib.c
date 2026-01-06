@@ -4,6 +4,7 @@
  */
 
 #include "global.h"
+#include "2s2h/GameInteractor/GameInteractor.h"
 
 #include "objects/gameplay_keep/gameplay_keep.h"
 
@@ -789,6 +790,8 @@ ItemId Player_GetItemOnButton(PlayState* play, Player* player, EquipSlot slot) {
             (play->interfaceCtx.bButtonPlayerDoAction == DO_ACTION_DANCE)) {
             return ITEM_F2;
         }
+
+        GameInteractor_Should(VB_GET_ITEM_ON_BUTTON, item, slot, &item);
 
         return item;
     }

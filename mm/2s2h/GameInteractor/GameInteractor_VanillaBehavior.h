@@ -638,6 +638,16 @@ typedef enum {
     VB_GET_ITEM_ACTION_FROM_MASK,
 
     // #### `result`
+    // #### In `Player_GetItemOnButton`:
+    // ```c
+    // item
+    // ```
+    // #### `args`
+    // - `EquipSlot`
+    // - `*ItemId`
+    VB_GET_ITEM_ON_BUTTON,
+
+    // #### `result`
     // ```c
     // false
     // ```

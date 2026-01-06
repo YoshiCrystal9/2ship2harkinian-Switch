@@ -994,6 +994,11 @@ void BenMenu::AddEnhancements() {
         .CVar("gEnhancements.Equipment.InvertShieldY")
         .Options(CheckboxOptions().Tooltip(
             "Invert the Y axis while holding the shield so that it moves up with the left stick."));
+    AddWidget(path, "Great Fairy Sword B-Button Attack", WIDGET_CVAR_CHECKBOX)
+        .CVar("gEnhancements.Equipment.GreatFairySwordBButton")
+        .Options(CheckboxOptions().Tooltip(
+            "When the Great Fairy's Sword is held, pressing B attacks with it instead of drawing "
+            "your equipped sword. The sword can still be put away with A as normal."));
 
     path.column = SECTION_COLUMN_2;
     AddWidget(path, "Modes", WIDGET_SEPARATOR_TEXT);
