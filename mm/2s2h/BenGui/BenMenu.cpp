@@ -1391,6 +1391,12 @@ void BenMenu::AddEnhancements() {
         .CVar("gEnhancements.Timesavers.SkipBalladOfWindfish")
         .Options(CheckboxOptions().Tooltip(
             "Play the complete Ballad after playing in one form if you have all three transformation masks."));
+    AddWidget(path, "Auto Bank Deposit", WIDGET_CVAR_CHECKBOX)
+        .CVar("gEnhancements.Timesavers.AutoBankDeposit")
+        .Options(CheckboxOptions().Tooltip(
+            "Automatically deposits excess Rupees into your bank account when your wallet is full. "
+            "Deposits stop when the bank reaches maximum capacity. "
+            "Bank rewards are granted automatically. Notifications display deposit amount and new balance."));
 
     // Fixes
     path = { "Enhancements", "Fixes", SECTION_COLUMN_1 };

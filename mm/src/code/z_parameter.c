@@ -9663,8 +9663,10 @@ void Interface_Update(PlayState* play) {
                 Audio_PlaySfx(NA_SE_SY_RUPY_COUNT);
             } else {
                 // Max rupees
-                gSaveContext.save.saveInfo.playerData.rupees = CUR_CAPACITY(UPG_WALLET);
-                gSaveContext.rupeeAccumulator = 0;
+                if (!GameInteractor_Should(VB_DISCARD_EXCESS_RUPEES, false)) {
+                    gSaveContext.save.saveInfo.playerData.rupees = CUR_CAPACITY(UPG_WALLET);
+                    gSaveContext.rupeeAccumulator = 0;
+                }
             }
         } else if (gSaveContext.save.saveInfo.playerData.rupees != 0) {
             if (gSaveContext.rupeeAccumulator <= -50) {

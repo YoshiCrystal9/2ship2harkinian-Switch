@@ -403,6 +403,14 @@ typedef enum {
 
     // #### `result`
     // ```c
+    // gSaveContext.save.saveInfo.playerData.rupees >= CUR_CAPACITY(UPG_WALLET)
+    // ```
+    // #### `args`
+    // - None
+    VB_DISCARD_EXCESS_RUPEES,
+
+    // #### `result`
+    // ```c
     // true
     // ```
     // #### `args`
