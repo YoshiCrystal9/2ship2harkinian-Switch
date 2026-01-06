@@ -1653,6 +1653,10 @@ void BenMenu::AddEnhancements() {
     AddWidget(path, "Invincible", WIDGET_CVAR_CHECKBOX)
         .CVar("gEnhancements.Minigames.BoatArcheryInvincible")
         .Options(CheckboxOptions().Tooltip("Koume's health does not decrease when hit."));
+    AddWidget(path, "Treasure Chest Shop Show Full Maze", WIDGET_CVAR_CHECKBOX)
+        .CVar("gEnhancements.Minigames.TreasureChestShopShowFullMaze")
+        .Options(CheckboxOptions().Tooltip("Shows the entire maze layout in the Treasure Chest Shop minigame "
+                                           "instead of only revealing tiles near Link."));
 
     path.column = SECTION_COLUMN_3;
     AddWidget(path, "Other", WIDGET_SEPARATOR_TEXT);
