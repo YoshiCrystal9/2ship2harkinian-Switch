@@ -37,7 +37,7 @@ bool IsDayClock(RandoItemId itemId);
 
 namespace ClockShuffle {
 
-void InitializeFileClocks(std::vector<RandoItemId>& itemPool);
+void InitializeFileClocks(RandoSaveInfo& saveInfo, std::vector<RandoItemId>& itemPool);
 void OnFileLoad();
 void SetTimeToHalfDayStart(int halfDayIndex);
 

@@ -184,7 +184,7 @@ void GeneratePools(RandoSaveInfo& saveInfo, std::vector<RandoCheckId>& checkPool
     }
 
     // Initialize shuffle time settings and item pool
-    ClockShuffle::InitializeFileClocks(itemPool);
+    ClockShuffle::InitializeFileClocks(saveInfo, itemPool);
 
     // Abilities
     if (saveInfo.randoSaveOptions[RO_SHUFFLE_SWIM] == RO_GENERIC_YES) {
