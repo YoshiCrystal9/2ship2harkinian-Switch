@@ -1227,6 +1227,9 @@ void BenMenu::AddEnhancements() {
     AddSidebarEntry("Enhancements", "Items/Songs", 3);
     // Mask Enhancements
     AddWidget(path, "Masks", WIDGET_SEPARATOR_TEXT);
+    AddWidget(path, "Equippable While Swimming", WIDGET_CVAR_CHECKBOX)
+        .CVar("gEnhancements.Masks.EquipWhileSwimming")
+        .Options(CheckboxOptions().Tooltip("Human Link can equip any non-transformation mask while swimming."));
     AddWidget(path, "Blast Mask has Powder Keg Force", WIDGET_CVAR_CHECKBOX)
         .CVar("gEnhancements.Masks.BlastMaskKeg")
         .Options(CheckboxOptions().Tooltip("Blast Mask can also destroy objects only the Powder Keg can."));
