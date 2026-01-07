@@ -33,6 +33,12 @@ void GrantStarters() {
         startingItems.push_back(RI_ABILITY_SWIM);
     }
 
+    if (RANDO_SAVE_OPTIONS[RO_SHUFFLE_ENEMY_SOULS] != RO_GENERIC_YES) {
+        for (int i = RI_SOUL_ENEMY_ALIEN; i <= RI_SOUL_ENEMY_WOLFOS; i++) {
+            startingItems.push_back((RandoItemId)i);
+        }
+    }
+
     for (RandoItemId startingItem : startingItems) {
         Rando::GiveItem(Rando::ConvertItem(startingItem));
     }
