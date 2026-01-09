@@ -191,6 +191,13 @@ void GeneratePools(RandoSaveInfo& saveInfo, std::vector<RandoCheckId>& checkPool
         itemPool.push_back(RI_ABILITY_SWIM);
     }
 
+    // Ocarina Buttons
+    if (saveInfo.randoSaveOptions[RO_SHUFFLE_OCARINA_BUTTONS] == RO_GENERIC_YES) {
+        for (int i = RI_OCARINA_BUTTON_A; i <= RI_OCARINA_BUTTON_C_UP; i++) {
+            itemPool.push_back((RandoItemId)i);
+        }
+    }
+
     // Shuffle Triforce Pieces into the Pool
     if (saveInfo.randoSaveOptions[RO_SHUFFLE_TRIFORCE_PIECES] == RO_GENERIC_YES) {
         int piecesToShuffle = saveInfo.randoSaveOptions[RO_TRIFORCE_PIECES_MAX];

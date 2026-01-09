@@ -349,7 +349,9 @@ s32 func_80BA3EE8(EnToto* this, PlayState* play) {
 
 s32 func_80BA3F2C(EnToto* this, PlayState* play) {
     if (this->text->textId != 0) {
-        Message_ContinueTextbox(play, this->text->textId);
+        if (GameInteractor_Should(VB_TOTO_START_SOUND_CHECK, true, this)) {
+            Message_ContinueTextbox(play, this->text->textId);
+        }
     } else {
         Message_CloseTextbox(play);
         func_80BA3EE8(this, play);

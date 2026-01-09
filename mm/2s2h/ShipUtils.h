@@ -32,6 +32,7 @@ extern std::vector<std::pair<int16_t, std::string>> itemIdToItemNameMap;
 extern std::string Ship_GetItemNameById(int16_t itemId);
 extern std::map<uint32_t, ImVec4> itemColorMap;
 extern ImVec4 Ship_GetItemColorTint(uint32_t itemId);
+extern ImVec4 Ship_GetRandoItemColorTint(uint32_t randoItemId);
 uint32_t Ship_ConvertQuestIdToItem(uint32_t itemId);
 uint32_t Ship_ConvertItemIdToQuest(uint32_t itemId);
 extern uint32_t Ship_Hash(std::string str);

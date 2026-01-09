@@ -444,6 +444,13 @@ void Rando::RemoveItem(RandoItemId randoItemId) {
         case RI_FROG_WHITE:
             CLEAR_WEEKEVENTREG(WEEKEVENTREG_33_02);
             break;
+        case RI_OCARINA_BUTTON_A:
+        case RI_OCARINA_BUTTON_C_DOWN:
+        case RI_OCARINA_BUTTON_C_LEFT:
+        case RI_OCARINA_BUTTON_C_RIGHT:
+        case RI_OCARINA_BUTTON_C_UP:
+            Flags_ClearRandoInf(RANDO_INF_OBTAINED_OCARINA_BUTTON_A + (randoItemId - RI_OCARINA_BUTTON_A));
+            break;
         // Ignore Ammo
         case RI_BOMBCHU:
         case RI_DEKU_STICK:

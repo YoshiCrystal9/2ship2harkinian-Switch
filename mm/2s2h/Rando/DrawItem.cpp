@@ -401,6 +401,21 @@ void DrawAbilityItem(RandoItemId randoItemId, Actor* actor) {
     CLOSE_DISPS(gPlayState->state.gfxCtx);
 }
 
+void DrawOcarinaButtonItem(RandoItemId randoItemId, Actor* actor) {
+    Gfx* ocarinaButtonModel[5] = {
+        (Gfx*)gOcarinaAButtonDL,     (Gfx*)gOcarinaCDownButtonDL, (Gfx*)gOcarinaCRightButtonDL,
+        (Gfx*)gOcarinaCLeftButtonDL, (Gfx*)gOcarinaCUpButtonDL,
+    };
+
+    OPEN_DISPS(gPlayState->state.gfxCtx);
+    Gfx_SetupDL25_Opa(gPlayState->state.gfxCtx);
+
+    MATRIX_FINALIZE_AND_LOAD(POLY_OPA_DISP++, gPlayState->state.gfxCtx);
+    gSPDisplayList(POLY_OPA_DISP++, (Gfx*)ocarinaButtonModel[randoItemId - RI_OCARINA_BUTTON_A]);
+
+    CLOSE_DISPS(gPlayState->state.gfxCtx);
+}
+
 // clang-format off
 std::unordered_map<RandoItemId, std::function<void()>> soulDrawMap = {
     { RI_SOUL_ENEMY_ALIEN,          DrawAlien },
@@ -655,6 +670,13 @@ void Rando::DrawItem(RandoItemId randoItemId, Actor* actor) {
             break;
         case RI_MAX_TRAP:
             DrawTrapModel();
+            break;
+        case RI_OCARINA_BUTTON_A:
+        case RI_OCARINA_BUTTON_C_DOWN:
+        case RI_OCARINA_BUTTON_C_LEFT:
+        case RI_OCARINA_BUTTON_C_RIGHT:
+        case RI_OCARINA_BUTTON_C_UP:
+            DrawOcarinaButtonItem(randoItemId, actor);
             break;
         case RI_NONE:
         case RI_UNKNOWN:

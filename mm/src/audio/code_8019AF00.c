@@ -2666,7 +2666,7 @@ void AudioOcarina_PlayControllerInput(u8 isOcarinaSfxSuppressedWhenCancelled) {
             sCurOcarinaButtonIndex = OCARINA_BTN_C_UP;
         }
 
-        if (sOcarinaInputButtonCur) {}
+        if (GameInteractor_Should(VB_PLAY_OCARINA_NOTE, true, &sCurOcarinaButtonIndex, &sCurOcarinaPitch)) {}
 
         // Pressing the R Button will raise the pitch by 1 semitone
         if ((sCurOcarinaPitch != OCARINA_PITCH_NONE) && CHECK_BTN_ANY(sOcarinaInputButtonCur, BTN_R) &&

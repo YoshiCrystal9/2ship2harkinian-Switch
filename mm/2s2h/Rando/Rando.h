@@ -11,8 +11,10 @@
 #define RANDO_EVENTS gSaveContext.save.shipSaveInfo.rando.randoEvents
 #define RANDO_STARTING_ITEMS gSaveContext.save.shipSaveInfo.rando.randoStartingItems
 
-#define RANDO_STARTING_ITEMS_DEFAULT \
-    "109,126,91,146" // This includes a Progressive Sword, Hero's Shield, Ocarina of Time, and Song of Time
+#define RANDO_STARTING_ITEMS_DEFAULT                                                                                  \
+    (std::to_string(RI_PROGRESSIVE_SWORD) + "," + std::to_string(RI_SHIELD_HERO) + "," + std::to_string(RI_OCARINA) + \
+     "," + std::to_string(RI_SONG_TIME))                                                                              \
+        .c_str()
 
 namespace Rando {
 

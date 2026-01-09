@@ -27,7 +27,7 @@ std::vector<std::string> listOrder = {
 };
 
 std::vector<std::string> randoListOrder = {
-    "Frogs", "Boss Souls", "Enemy Souls", "Owl Statues", "Time", "Tingle Maps", "Misc",
+    "Frogs", "Ocarina Buttons", "Boss Souls", "Enemy Souls", "Owl Statues", "Time", "Tingle Maps", "Misc",
 };
 
 std::map<std::string, std::tuple<int16_t, int16_t, int16_t>> defaultItemLists = {
@@ -43,6 +43,7 @@ std::map<std::string, std::tuple<int16_t, int16_t, int16_t>> defaultItemLists = 
 
 std::map<std::string, std::tuple<int16_t, int16_t, int16_t>> randoItemLists = {
     { "Frogs", { RI_FROG_BLUE, RI_FROG_WHITE, 4 } },
+    { "Ocarina Buttons", { RI_OCARINA_BUTTON_A, RI_OCARINA_BUTTON_C_UP, 5 } },
     { "Boss Souls", { RI_SOUL_BOSS_GOHT, RI_SOUL_BOSS_TWINMOLD, 5 } },
     { "Enemy Souls", { RI_SOUL_ENEMY_ALIEN, RI_SOUL_ENEMY_WOLFOS, 6 } },
     { "Owl Statues", { RI_OWL_CLOCK_TOWN_SOUTH, RI_OWL_ZORA_CAPE, 5 } },
@@ -250,8 +251,9 @@ void DrawItemList(std::string listName, int columns) {
             ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(5, 5));
             std::vector<int16_t> emptyList;
 
-            if (listName == "Frogs" || listName == "Boss Souls" || listName == "Enemy Souls" ||
-                listName == "Owl Statues" || listName == "Tingle Maps" || listName == "Time" || listName == "Misc") {
+            if (listName == "Frogs" || listName == "Ocarina Buttons" || listName == "Boss Souls" ||
+                listName == "Enemy Souls" || listName == "Owl Statues" || listName == "Tingle Maps" ||
+                listName == "Time" || listName == "Misc") {
                 for (int j = std::get<0>(randoItemLists.at(listName)); j <= std::get<1>(randoItemLists.at(listName));
                      j++) {
                     ImGui::TableNextColumn();

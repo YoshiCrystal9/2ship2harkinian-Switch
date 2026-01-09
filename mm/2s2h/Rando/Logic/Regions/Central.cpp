@@ -338,7 +338,12 @@ static RegisterShipInitFunc initFunc([]() {
     };
     Regions[RR_MILK_BAR] = RandoRegion{ .sceneId = SCENE_MILK_BAR,
         .checks = {
-            CHECK(RC_MILK_BAR_CIRCUS_LEADER_MASK, CAN_BE_DEKU && CAN_BE_GORON && CAN_BE_ZORA && HAS_ITEM(ITEM_OCARINA_OF_TIME) && (BETWEEN(TIME_NIGHT1_PM_10_00, TIME_NIGHT1_AM_05_00) || BETWEEN(TIME_NIGHT2_PM_10_00, TIME_NIGHT2_AM_05_00))),
+            CHECK(RC_MILK_BAR_CIRCUS_LEADER_MASK, HAS_ITEM(ITEM_OCARINA_OF_TIME) && (BETWEEN(TIME_NIGHT1_PM_10_00, TIME_NIGHT1_AM_05_00) ||
+                                                                                    BETWEEN(TIME_NIGHT2_PM_10_00, TIME_NIGHT2_AM_05_00))
+                                                                                 && (canPlaySong(OCARINA_SONG_WIND_FISH_HUMAN) &&
+                                                                                    (CAN_BE_DEKU && canPlaySong(OCARINA_SONG_WIND_FISH_DEKU)) &&
+                                                                                    (CAN_BE_GORON && canPlaySong(OCARINA_SONG_WIND_FISH_GORON)) &&
+                                                                                    (CAN_BE_ZORA && canPlaySong(OCARINA_SONG_WIND_FISH_ZORA)))),
             CHECK(RC_MILK_BAR_MADAME_AROMA, HAS_ITEM(ITEM_MASK_KAFEIS_MASK) && Flags_GetRandoInf(RANDO_INF_OBTAINED_LETTER_TO_MAMA) && (BETWEEN(TIME_NIGHT3_PM_06_00, TIME_NIGHT3_PM_09_00) || AFTER(TIME_NIGHT3_PM_10_00))),
             CHECK(RC_MILK_BAR_PURCHASE_CHATEAU, CAN_AFFORD(RC_MILK_BAR_PURCHASE_CHATEAU) && HAS_ITEM(ITEM_MASK_ROMANI) && (BETWEEN(TIME_NIGHT1_PM_10_00, TIME_DAY2_AM_06_00) || BETWEEN(TIME_NIGHT2_PM_10_00, TIME_DAY3_AM_06_00) || BETWEEN(TIME_NIGHT3_PM_06_00, TIME_NIGHT3_PM_09_00) || AFTER(TIME_NIGHT3_PM_10_00))),
             CHECK(RC_MILK_BAR_PURCHASE_MILK, CAN_AFFORD(RC_MILK_BAR_PURCHASE_MILK) && HAS_ITEM(ITEM_MASK_ROMANI) && (BETWEEN(TIME_NIGHT1_PM_10_00, TIME_DAY2_AM_06_00) || BETWEEN(TIME_NIGHT2_PM_10_00, TIME_DAY3_AM_06_00) || BETWEEN(TIME_NIGHT3_PM_06_00, TIME_NIGHT3_PM_09_00) || AFTER(TIME_NIGHT3_PM_10_00))),

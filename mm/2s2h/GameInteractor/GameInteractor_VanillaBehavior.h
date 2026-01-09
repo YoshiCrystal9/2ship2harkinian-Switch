@@ -1504,6 +1504,15 @@ typedef enum {
 
     // #### `result`
     // ```c
+    // true
+    // ```
+    // #### `args`
+    // - `*u8` (current Ocarina button input index)
+    // - `*u8` (current Ocarina pitch)
+    VB_PLAY_OCARINA_NOTE,
+
+    // #### `result`
+    // ```c
     // false
     // ```
     // #### `args`
@@ -2007,6 +2016,14 @@ typedef enum {
     // #### `args`
     // - `*EnBjt` (unused)
     VB_TOILET_HAND_TAKE_ITEM,
+
+    // #### `result`
+    // ```c
+    // true
+    // ```
+    // #### `args`
+    // - `*EnToto`
+    VB_TOTO_START_SOUND_CHECK,
 
     // #### `result`
     // ```c

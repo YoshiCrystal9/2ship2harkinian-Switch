@@ -117,6 +117,11 @@ std::map<RandoItemId, RandoStaticItem> Items = {
     RI(RI_MUSHROOM,                   "a",    "Magic Mushroom",             RITYPE_MAJOR,           ITEM_MUSHROOM,                   GI_MUSHROOM,                 GID_MUSHROOM),
     RI(RI_NONE,                       "",     "literally nothing",          RITYPE_JUNK,            ITEM_NONE,                       GI_NONE,                     GID_NONE),
     RI(RI_OCARINA,                    "the",  "Ocarina of Time",            RITYPE_MAJOR,           ITEM_OCARINA_OF_TIME,            GI_OCARINA_OF_TIME,          GID_OCARINA),
+    RI(RI_OCARINA_BUTTON_A,           "the",  "A Button",                   RITYPE_MAJOR,           ITEM_NONE,                       GI_NONE,                     GID_NONE),
+    RI(RI_OCARINA_BUTTON_C_DOWN,      "the",  "C Down Button",              RITYPE_MAJOR,           ITEM_NONE,                       GI_NONE,                     GID_NONE),
+    RI(RI_OCARINA_BUTTON_C_LEFT,      "the",  "C Left Button",              RITYPE_MAJOR,           ITEM_NONE,                       GI_NONE,                     GID_NONE),
+    RI(RI_OCARINA_BUTTON_C_RIGHT,     "the",  "C Right Button",             RITYPE_MAJOR,           ITEM_NONE,                       GI_NONE,                     GID_NONE),
+    RI(RI_OCARINA_BUTTON_C_UP,        "the",  "C Up Button",                RITYPE_MAJOR,           ITEM_NONE,                       GI_NONE,                     GID_NONE),
     RI(RI_OWL_CLOCK_TOWN_SOUTH,       "the",  "Clock Town Owl Statue",      RITYPE_LESSER,          ITEM_NONE,                       GI_NONE,                     GID_NONE),
     RI(RI_OWL_GREAT_BAY_COAST,        "the",  "Great Bay Coast Owl Statue", RITYPE_LESSER,          ITEM_NONE,                       GI_NONE,                     GID_NONE),
     RI(RI_OWL_IKANA_CANYON,           "the",  "Ikana Canyon Owl Statue",    RITYPE_LESSER,          ITEM_NONE,                       GI_NONE,                     GID_NONE),
@@ -458,6 +463,16 @@ const char* GetIconTexturePath(RandoItemId randoItemId) {
             return (const char*)gItemIconTingleMapTex;
         case RI_TRIFORCE_PIECE:
             return (const char*)gTriforcePieceTex;
+        case RI_OCARINA_BUTTON_A:
+            return (const char*)gOcarinaATex;
+        case RI_OCARINA_BUTTON_C_DOWN:
+            return (const char*)gOcarinaCDownTex;
+        case RI_OCARINA_BUTTON_C_LEFT:
+            return (const char*)gOcarinaCLeftTex;
+        case RI_OCARINA_BUTTON_C_RIGHT:
+            return (const char*)gOcarinaCRightTex;
+        case RI_OCARINA_BUTTON_C_UP:
+            return (const char*)gOcarinaCUpTex;
         case RI_TIME_DAY_1:
         case RI_TIME_DAY_2:
         case RI_TIME_DAY_3:

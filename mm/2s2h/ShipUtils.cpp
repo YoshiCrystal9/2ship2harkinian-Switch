@@ -61,7 +61,7 @@ extern u16 sOwlWarpEntrancesForMods[OWL_WARP_MAX - 1] = {
 };
 
 // These textures are not in existing lists that we iterate over.
-std::array<const char*, 26> miscellaneousTextures = {
+std::array<const char*, 31> miscellaneousTextures = {
     gArcheryScoreIconTex,
     gBarrelTrackerIcon,
     gChestTrackerIcon,
@@ -88,6 +88,11 @@ std::array<const char*, 26> miscellaneousTextures = {
     gItemIconTingleMapTex,
     gThreeDayClockSunHourTex,
     gThreeDayClockMoonHourTex,
+    gOcarinaATex,
+    gOcarinaCDownTex,
+    gOcarinaCLeftTex,
+    gOcarinaCRightTex,
+    gOcarinaCUpTex,
 };
 
 std::array<const char*, 11> digitList = { gCounterDigit0Tex, gCounterDigit1Tex, gCounterDigit2Tex, gCounterDigit3Tex,
@@ -205,6 +210,23 @@ std::map<uint32_t, ImVec4> itemColorMap = {
 ImVec4 Ship_GetItemColorTint(uint32_t itemId) {
     auto findColor = itemColorMap.find(itemId);
     if (findColor != itemColorMap.end()) {
+        return findColor->second;
+    } else {
+        return ImVec4(1, 1, 1, 1);
+    }
+}
+
+std::map<uint32_t, ImVec4> randoItemColorMap = {
+    { RI_OCARINA_BUTTON_A, ImVec4(0.085f, 0.494f, 0.796f, 1) },
+    { RI_OCARINA_BUTTON_C_DOWN, ImVec4(0.84f, 0.768f, 0.089f, 1) },
+    { RI_OCARINA_BUTTON_C_LEFT, ImVec4(0.84f, 0.768f, 0.089f, 1) },
+    { RI_OCARINA_BUTTON_C_RIGHT, ImVec4(0.84f, 0.768f, 0.089f, 1) },
+    { RI_OCARINA_BUTTON_C_UP, ImVec4(0.84f, 0.768f, 0.089f, 1) },
+};
+
+ImVec4 Ship_GetRandoItemColorTint(uint32_t randoItemId) {
+    auto findColor = randoItemColorMap.find(randoItemId);
+    if (findColor != randoItemColorMap.end()) {
         return findColor->second;
     } else {
         return ImVec4(1, 1, 1, 1);
