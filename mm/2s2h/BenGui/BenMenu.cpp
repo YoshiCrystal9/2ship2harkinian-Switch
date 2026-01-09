@@ -1490,6 +1490,9 @@ void BenMenu::AddEnhancements() {
         .Options(CheckboxOptions().Tooltip("Restores the appearance of Woodfall mountain to not look poisoned "
                                            "when viewed from Termina Field after clearing Woodfall Temple\n\n"
                                            "Requires a scene reload to take effect."));
+    AddWidget(path, "JP Deku Palace Grottos", WIDGET_CVAR_CHECKBOX)
+        .CVar("gEnhancements.Restorations.JPGrottos")
+        .Options(CheckboxOptions().Tooltip("Restores the Deku Palace Grottos to their original Japanese layout."));
     AddWidget(path, "Bonk Collision", WIDGET_CVAR_CHECKBOX)
         .CVar("gEnhancements.Restorations.BonkCollision")
         .Options(
