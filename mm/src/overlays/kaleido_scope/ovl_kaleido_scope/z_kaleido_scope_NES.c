@@ -545,6 +545,9 @@ void KaleidoScope_HandlePageToggles(PlayState* play, Input* input) {
     }
 
     if (CHECK_BTN_ALL(input->cur.button, BTN_DRIGHT) || CHECK_BTN_ALL(input->press.button, BTN_R)) {
+        if (!GameInteractor_Should(VB_KALEIDO_SWITCH_PAGE_WITH_DPAD, true, BTN_DRIGHT)) {
+            return;
+        }
         // Switch the page to the right regardless of where the cursor is
         if (interfaceCtx->aButtonDoActionDelayed == DO_ACTION_DECIDE) {
             Interface_SetAButtonDoAction(play, DO_ACTION_INFO);
@@ -554,6 +557,9 @@ void KaleidoScope_HandlePageToggles(PlayState* play, Input* input) {
     }
 
     if (CHECK_BTN_ALL(input->cur.button, BTN_DLEFT) || CHECK_BTN_ALL(input->press.button, BTN_Z)) {
+        if (!GameInteractor_Should(VB_KALEIDO_SWITCH_PAGE_WITH_DPAD, true, BTN_DLEFT)) {
+            return;
+        }
         // Switch the page to the left regardless of where the cursor is
         if (interfaceCtx->aButtonDoActionDelayed == DO_ACTION_DECIDE) {
             Interface_SetAButtonDoAction(play, DO_ACTION_INFO);

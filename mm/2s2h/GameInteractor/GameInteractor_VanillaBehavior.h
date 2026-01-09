@@ -1106,6 +1106,23 @@ typedef enum {
     // true
     // ```
     // #### `args`
+    // - `u16` (cursor slot)
+    // - `u16` (cursor item)
+    VB_KALEIDO_EQUIP_ITEM_TO_BUTTON,
+
+    // #### `result`
+    // ```c
+    // true
+    // ```
+    // #### `args`
+    // - `u16` (button - BTN_DLEFT or BTN_DRIGHT)
+    VB_KALEIDO_SWITCH_PAGE_WITH_DPAD,
+
+    // #### `result`
+    // ```c
+    // true
+    // ```
+    // #### `args`
     // - None
     VB_KALEIDO_UNPAUSE_CLOSE,
 

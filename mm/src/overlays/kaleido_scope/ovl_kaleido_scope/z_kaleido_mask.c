@@ -661,6 +661,11 @@ void KaleidoScope_UpdateMaskCursor(PlayState* play) {
                     }
                     // #endregion
 
+                    if (!GameInteractor_Should(VB_KALEIDO_EQUIP_ITEM_TO_BUTTON, true, cursorSlot + ITEM_NUM_SLOTS,
+                                               cursorItem)) {
+                        return;
+                    }
+
                     // Equip item to the C buttons
                     pauseCtx->equipTargetItem = cursorItem;
                     pauseCtx->equipTargetSlot = cursorSlot + ITEM_NUM_SLOTS;

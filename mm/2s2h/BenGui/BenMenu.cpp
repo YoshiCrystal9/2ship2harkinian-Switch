@@ -962,6 +962,10 @@ void BenMenu::AddEnhancements() {
     AddWidget(path, "Dpad Equips", WIDGET_CVAR_CHECKBOX)
         .CVar("gEnhancements.Dpad.DpadEquips")
         .Options(CheckboxOptions().Tooltip("Allows you to equip items to your D-pad."));
+    AddWidget(path, "Unequip Items", WIDGET_CVAR_CHECKBOX)
+        .CVar("gEnhancements.Equipment.ItemUnequip")
+        .Options(CheckboxOptions().Tooltip("In the pause menu, press the same C-button or D-pad button an item is "
+                                           "equipped to in order to unequip it."));
     AddWidget(path, "Fast Magic Arrow Equip Animation", WIDGET_CVAR_CHECKBOX)
         .CVar("gEnhancements.Equipment.MagicArrowEquipSpeed")
         .Options(CheckboxOptions().Tooltip("Removes the animation for equipping Magic Arrows."));

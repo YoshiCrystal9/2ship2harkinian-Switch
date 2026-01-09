@@ -733,6 +733,9 @@ void KaleidoScope_UpdateItemCursor(PlayState* play) {
                         }
                     }
                     // #endregion
+                    if (!GameInteractor_Should(VB_KALEIDO_EQUIP_ITEM_TO_BUTTON, true, cursorSlot, cursorItem)) {
+                        return;
+                    }
 
                     // Equip item to the C buttons
                     pauseCtx->equipTargetItem = cursorItem;
