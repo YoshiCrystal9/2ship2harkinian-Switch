@@ -457,6 +457,7 @@ endif()
 # This file contains a few SIMD functions. Those functions are much more inefficient without optimizations. MSVC and GCC allow for optimizing a single function, but clang does not.
 set_source_files_properties(2s2h/mixer.c PROPERTIES
 COMPILE_FLAGS "-O2"
+SKIP_PRECOMPILE_HEADERS ON
 )
 
 ################################################################################

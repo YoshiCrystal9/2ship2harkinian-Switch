@@ -43,6 +43,34 @@ std::unordered_map<s16, const char*> sceneNames = {
 #undef DEFINE_SCENE
 #undef DEFINE_SCENE_UNSET
 
+std::array<const char*, ACTORCAT_MAX> actorCategoryNames = { "Switch", "Background", "Player", "Explosive",
+                                                             "NPC",    "Enemy",      "Prop",   "Item/Action",
+                                                             "Misc.",  "Boss",       "Door",   "Chest" };
+
+#define DEFINE_ACTOR(name, _enumValue, _allocType, _debugName, _humanName) { _enumValue, _humanName },
+#define DEFINE_ACTOR_INTERNAL(_name, _enumValue, _allocType, _debugName, _humanName) { _enumValue, _humanName },
+#define DEFINE_ACTOR_UNSET(_enumValue) { _enumValue, "Unset" },
+
+std::unordered_map<s16, const char*> actorDescriptions = {
+#include "tables/actor_table.h"
+};
+
+#undef DEFINE_ACTOR
+#undef DEFINE_ACTOR_INTERNAL
+#undef DEFINE_ACTOR_UNSET
+
+#define DEFINE_ACTOR(name, _enumValue, _allocType, _debugName, _humanName) { _enumValue, _debugName },
+#define DEFINE_ACTOR_INTERNAL(_name, _enumValue, _allocType, _debugName, _humanName) { _enumValue, _debugName },
+#define DEFINE_ACTOR_UNSET(_enumValue) { _enumValue, "Unset" },
+
+std::unordered_map<s16, const char*> actorDebugNames = {
+#include "tables/actor_table.h"
+};
+
+#undef DEFINE_ACTOR
+#undef DEFINE_ACTOR_INTERNAL
+#undef DEFINE_ACTOR_UNSET
+
 /*
  * This is identical to `sOwlWarpEntrances` in decomp code, which is a static variable defined in multiple places and
  * cannot be externed. We redundantly define it here and extern it, for use in port enhancements.
@@ -487,4 +515,19 @@ std::string convertEnumToReadableName(const std::string& input) {
     }
 
     return result;
+}
+
+std::string GetActorDescription(u16 actorNum) {
+    return actorDescriptions.contains(actorNum) ? actorDescriptions[actorNum] : "???";
+}
+
+std::string GetActorDebugName(u16 actorNum) {
+    return actorDebugNames.contains(actorNum) ? actorDebugNames[actorNum] : "???";
+}
+
+std::string GetActorCategoryName(u8 category) {
+    if (category < actorCategoryNames.size()) {
+        return actorCategoryNames[category];
+    }
+    return "Unknown";
 }

@@ -162,6 +162,7 @@ int32_t GetGIID(uint32_t itemID);
 extern "C" {
 #endif
 uint64_t GetUnixTimestamp();
+void CrashHandler_PrintExt(char* buffer, size_t* pos);
 #ifdef __cplusplus
 };
 #endif

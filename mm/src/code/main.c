@@ -14,6 +14,7 @@
 #include "stack.h"
 #include "stackcheck.h"
 #include "BenPort.h"
+#include <libultraship/bridge/crashhandlerbridge.h>
 
 // Variables are put before most headers as a hacky way to bypass bss reordering
 OSMesgQueue sSerialEventQueue;
@@ -72,6 +73,7 @@ void SDL_main(int argc, char** argv /* void* arg*/) {
 #endif // _WIN32
 
     InitOTR();
+    CrashHandlerRegisterCallback(CrashHandler_PrintExt);
     Heaps_Alloc();
 
     gScreenWidth = SCREEN_WIDTH;
