@@ -87,7 +87,7 @@ static void ApplyClockItemRendering(RandoItemId item, ImVec4& tintColor, std::st
     }
 
     // Grey out and add tooltip if progressive mode is active
-    if (isProgressiveMode) {
+    if (item != RI_TIME_PROGRESSIVE && isProgressiveMode) {
         tintColor.w *= DISABLED_ITEM_ALPHA;
         tooltipText += CLOCK_PROGRESSIVE_TOOLTIP;
     }
@@ -157,18 +157,20 @@ static int checksInPool = 0;
 static int itemsInPool = 0;
 static int junkInPool = 0;
 static bool ableToBalance = true;
+static std::set<RandoItemId> setOfItemsInPool;
 void RefreshMetrics() {
+    setOfItemsInPool.clear();
     RandoSaveInfo randoSaveInfo;
     std::vector<RandoCheckId> checkPool;
     std::vector<RandoItemId> itemPool;
 
-    // Load options into CVars
+    // Load options from CVars
     for (auto& [randoOptionId, randoStaticOption] : Rando::StaticData::Options) {
         randoSaveInfo.randoSaveOptions[randoOptionId] =
             (uint32_t)CVarGetInteger(randoStaticOption.cvar, randoStaticOption.defaultValue);
     }
-    std::string startingItemsString = CVarGetString("gRando.StartingItems", RANDO_STARTING_ITEMS_DEFAULT);
-    strncpy(randoSaveInfo.randoStartingItems, startingItemsString.c_str(), startingItemsString.size() + 1);
+    auto startingItems = Rando::GetStartingItemsFromConfig();
+    Rando::SetStartingItemsInSave(randoSaveInfo, startingItems);
 
     Rando::Logic::GeneratePools(randoSaveInfo, checkPool, itemPool);
 
@@ -176,9 +178,13 @@ void RefreshMetrics() {
     itemsInPool = itemPool.size();
     junkInPool = 0;
     for (auto& item : itemPool) {
+        setOfItemsInPool.insert(item);
         if (Rando::StaticData::Items[item].randoItemType == RITYPE_JUNK) {
             junkInPool++;
         }
+    }
+    for (auto& item : startingItems) {
+        setOfItemsInPool.insert(item);
     }
     ableToBalance = checksInPool >= (itemsInPool - junkInPool);
 }
@@ -192,6 +198,7 @@ static RegisterShipInitFunc refreshMetricsInit(RefreshMetrics, {
                                                                    "gRando.Options.RO_ACCESS_MOON_REMAINS_COUNT",
                                                                    "gRando.Options.RO_ACCESS_TRIALS",
                                                                    "gRando.Options.RO_CLOCK_SHUFFLE",
+                                                                   "gRando.Options.RO_CLOCK_SHUFFLE_PROGRESSIVE",
                                                                    "gRando.Options.RO_HINTS_BOSS_REMAINS",
                                                                    "gRando.Options.RO_HINTS_GOSSIP_STONES",
                                                                    "gRando.Options.RO_HINTS_HOOKSHOT",
@@ -473,15 +480,13 @@ static void DrawItemsTab() {
             { RO_CLOCK_SHUFFLE_DESCENDING, "Progressive: Descending" },
         };
         {
-            int32_t value =
-                CVarGetInteger(Rando::StaticData::Options[RO_CLOCK_SHUFFLE_PROGRESSIVE].cvar, RO_CLOCK_SHUFFLE_RANDOM);
-            if (UIWidgets::Combobox<int32_t>("Time Progression Mode", &value, &clockModeOptions)) {
-                CVarSetInteger(Rando::StaticData::Options[RO_CLOCK_SHUFFLE_PROGRESSIVE].cvar, value);
-                Ship::Context::GetInstance()->GetWindow()->GetGui()->SaveConsoleVariablesNextFrame();
-            }
-            UIWidgets::Tooltip("Random: All 6 half-days shuffled randomly. Player starts with one random half-day.\n\n"
-                               "Progressive Ascending: Unlocks half-days in order (D1, N1, D2, N2, D3, N3).\n\n"
-                               "Progressive Descending: Unlocks half-days in reverse order (N3, D3, N2, D2, N1, D1).");
+            UIWidgets::CVarCombobox(
+                "Time Progression Mode", Rando::StaticData::Options[RO_CLOCK_SHUFFLE_PROGRESSIVE].cvar,
+                &clockModeOptions,
+                UIWidgets::ComboboxOptions().Tooltip(
+                    "Random: All 6 half-days shuffled randomly. Player starts with one random half-day.\n\n"
+                    "Progressive Ascending: Unlocks half-days in order (D1, N1, D2, N2, D3, N3).\n\n"
+                    "Progressive Descending: Unlocks half-days in reverse order (N3, D3, N2, D2, N1, D1)."));
         }
         // Terminal time slider (Final Hours start time)
         {
@@ -492,15 +497,17 @@ static void DrawItemsTab() {
             ImGui::Spacing();
             ImGui::Text("Final Hours Start Time: %02d:%02d", hours, minutes);
             ImGui::Spacing();
-            UIWidgets::CVarSliderInt("Final Hours Start Time", Rando::StaticData::Options[RO_CLOCK_TERMINAL_TIME].cvar,
-                                     UIWidgets::IntSliderOptions().Min(0).Max(359).DefaultValue(0).LabelPosition(
-                                         UIWidgets::LabelPosition::None));
-            ImGui::Spacing();
-
-            UIWidgets::Tooltip("Controls when the final hours countdown begins (00:00 to 05:59). "
-                               "When you run out of owned half-days, this allows the player control over how much "
-                               "time is left before the moon crash.\n\n"
-                               "This setting is baked into the seed and cannot be changed after generation.");
+            UIWidgets::CVarSliderInt(
+                "Final Hours Start Time", Rando::StaticData::Options[RO_CLOCK_TERMINAL_TIME].cvar,
+                UIWidgets::IntSliderOptions()
+                    .Min(0)
+                    .Max(359)
+                    .DefaultValue(0)
+                    .LabelPosition(UIWidgets::LabelPosition::None)
+                    .Tooltip("Controls when the final hours countdown begins (00:00 to 05:59). "
+                             "When you run out of owned half-days, this allows the player control over how much "
+                             "time is left before the moon crash.\n\n"
+                             "This setting is baked into the seed and cannot be changed after generation."));
         }
     }
 
@@ -589,7 +596,7 @@ static void DrawStartingItemsTab() {
     f32 columnWidth = ImGui::GetContentRegionAvail().x / 2 - (ImGui::GetStyle().ItemSpacing.x * 2);
     f32 quarterHeight = ImGui::GetContentRegionAvail().y / 4 - (ImGui::GetStyle().ItemSpacing.y * 4);
     int tableColumns = 0;
-    ImGui::BeginChild("randoStartingOptions", ImVec2(0, quarterHeight));
+    ImGui::BeginChild("randoStartingOptions", ImVec2(0, 120.0f));
     ImGui::SeparatorText("Starting Options");
     if (ImGui::BeginTable("Starting Options", 3)) {
         ImGui::TableNextColumn();
@@ -631,8 +638,8 @@ static void DrawStartingItemsTab() {
     ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(1.0f, 1.0f, 1.0f, 0.2f));
     ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(1.0f, 1.0f, 1.0f, 0.1f));
 
-    std::vector<RandoItemId> setStartingItemsList =
-        convertStartingItemsToRandoItemId(CVarGetString("gRando.StartingItems", RANDO_STARTING_ITEMS_DEFAULT), ",");
+    auto setStartingItemsList = Rando::GetStartingItemsFromConfig();
+
     uint32_t listIndex = 0;
     for (auto& startingItem : setStartingItemsList) {
         ImGui::PushID(listIndex);
@@ -654,14 +661,9 @@ static void DrawStartingItemsTab() {
 
         if (ImGui::ImageButton(std::to_string(listIndex).c_str(), textureId, imageSize, ImVec2(0, 0), ImVec2(1, 1),
                                ImVec4(0, 0, 0, 0), tintColor)) {
-            for (size_t i = 0; i < setStartingItemsList.size(); i++) {
-                if (setStartingItemsList[i] == startingItem) {
-                    setStartingItemsList.erase(setStartingItemsList.begin() + i);
-                    break;
-                }
-            }
-            CVarSetString("gRando.StartingItems", CreateStartingItemsToCvar(setStartingItemsList).c_str());
-            Ship::Context::GetInstance()->GetWindow()->GetGui()->SaveConsoleVariablesNextFrame();
+            setStartingItemsList.erase(setStartingItemsList.begin() + listIndex);
+            Rando::SetStartingItemsInConfig(setStartingItemsList);
+            RefreshMetrics();
         }
         UIWidgets::Tooltip(tooltipText.c_str());
         listIndex++;
@@ -701,6 +703,11 @@ static void DrawStartingItemsTab() {
                     ImGui::TableSetupColumn("item", ImGuiTableColumnFlags_WidthFixed, 50.0f);
                 }
                 for (auto& item : category.second) {
+                    if (setOfItemsInPool.count(item) == 0) {
+                        // Skip items that are not in the item pool
+                        continue;
+                    }
+
                     ImVec2 imageSize = ImVec2(42.0f, 42.0f);
                     if ((item >= RI_SONG_ELEGY && item <= RI_SONG_TIME) || item == RI_PROGRESSIVE_LULLABY) {
                         imageSize.x /= 1.5f;
@@ -727,14 +734,15 @@ static void DrawStartingItemsTab() {
 
                     if (ImGui::ImageButton(std::to_string(item).c_str(), textureId, imageSize, ImVec2(0, 0),
                                            ImVec2(1, 1), ImVec4(0, 0, 0, 0), tintColor)) {
-                        std::string currentStartingItems =
-                            CVarGetString("gRando.StartingItems", RANDO_STARTING_ITEMS_DEFAULT);
-                        if (currentStartingItems.length() != 0) {
-                            currentStartingItems += ",";
+                        if (std::count(setStartingItemsList.begin(), setStartingItemsList.end(), item) <
+                            (Rando::StaticData::MaxStartingItemsMap.count(item)
+                                 ? Rando::StaticData::MaxStartingItemsMap[item]
+                                 : 1)) {
+
+                            setStartingItemsList.push_back(item);
+                            Rando::SetStartingItemsInConfig(setStartingItemsList);
+                            RefreshMetrics();
                         }
-                        currentStartingItems += std::to_string(item);
-                        CVarSetString("gRando.StartingItems", currentStartingItems.c_str());
-                        Ship::Context::GetInstance()->GetWindow()->GetGui()->SaveConsoleVariablesNextFrame();
                     }
                     UIWidgets::Tooltip(tooltipText.c_str());
                 }
@@ -941,7 +949,7 @@ static void DrawCheckFilterTab() {
 static void DrawHintsTab() {
     f32 columnWidth = ImGui::GetContentRegionAvail().x / 3 - (ImGui::GetStyle().ItemSpacing.x * 2);
     f32 halfHeight = ImGui::GetContentRegionAvail().y / 2 - (ImGui::GetStyle().ItemSpacing.y * 2);
-    ImGui::BeginChild("randoHintsColumn1", ImVec2(columnWidth, halfHeight));
+    ImGui::BeginChild("randoHintsColumn1", ImVec2(columnWidth, 0));
     CVarCheckbox(
         "Spider House", Rando::StaticData::Options[RO_HINTS_SPIDER_HOUSES].cvar,
         CheckboxOptions(

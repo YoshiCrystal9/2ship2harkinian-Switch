@@ -9,12 +9,6 @@
 #define RANDO_SAVE_CHECKS gSaveContext.save.shipSaveInfo.rando.randoSaveChecks
 #define RANDO_SAVE_OPTIONS gSaveContext.save.shipSaveInfo.rando.randoSaveOptions
 #define RANDO_EVENTS gSaveContext.save.shipSaveInfo.rando.randoEvents
-#define RANDO_STARTING_ITEMS gSaveContext.save.shipSaveInfo.rando.randoStartingItems
-
-#define RANDO_STARTING_ITEMS_DEFAULT                                                                                  \
-    (std::to_string(RI_PROGRESSIVE_SWORD) + "," + std::to_string(RI_SHIELD_HERO) + "," + std::to_string(RI_OCARINA) + \
-     "," + std::to_string(RI_SONG_TIME))                                                                              \
-        .c_str()
 
 namespace Rando {
 
@@ -27,6 +21,14 @@ bool IsItemObtainable(RandoItemId randoItemId, RandoCheckId randoCheckId = RC_UN
 RandoItemId ConvertItem(RandoItemId randoItemId, RandoCheckId randoCheckId = RC_UNKNOWN);
 RandoCheckId FindItemPlacement(RandoItemId randoItemId);
 void RegisterMenu();
+
+void GrantStartingItems();
+std::vector<RandoItemId> GetStartingItemsFromSpoiler(nlohmann::json& spoiler);
+void SetStartingItemsInSpoiler(nlohmann::json& spoiler, std::vector<RandoItemId>& startingItems);
+std::vector<RandoItemId> GetStartingItemsFromSave(RandoSaveInfo& randoSaveInfo);
+void SetStartingItemsInSave(RandoSaveInfo& randoSaveInfo, std::vector<RandoItemId>& startingItems);
+std::vector<RandoItemId> GetStartingItemsFromConfig();
+void SetStartingItemsInConfig(std::vector<RandoItemId>& startingItems);
 
 } // namespace Rando
 

@@ -13,7 +13,7 @@ namespace Rando {
 namespace Logic {
 
 void GeneratePools(RandoSaveInfo& saveInfo, std::vector<RandoCheckId>& checkPool, std::vector<RandoItemId>& itemPool) {
-    std::vector<RandoItemId> startingItems = convertStartingItemsToRandoItemId(saveInfo.randoStartingItems, ",");
+    std::vector<RandoItemId> startingItems = Rando::GetStartingItemsFromSave(saveInfo);
 
     if (saveInfo.randoSaveOptions[RO_STARTING_MAPS_AND_COMPASSES]) {
         std::vector<RandoItemId> MapsAndCompasses = {
@@ -183,8 +183,23 @@ void GeneratePools(RandoSaveInfo& saveInfo, std::vector<RandoCheckId>& checkPool
         }
     }
 
-    // Initialize shuffle time settings and item pool
-    ClockShuffle::InitializeFileClocks(saveInfo, itemPool);
+    // Shuffle Time
+    if (saveInfo.randoSaveOptions[RO_CLOCK_SHUFFLE] == RO_GENERIC_YES) {
+        auto clockShuffleMode = saveInfo.randoSaveOptions[RO_CLOCK_SHUFFLE_PROGRESSIVE];
+
+        if (clockShuffleMode == RO_CLOCK_SHUFFLE_RANDOM) {
+            itemPool.push_back(RI_TIME_DAY_1);
+            itemPool.push_back(RI_TIME_NIGHT_1);
+            itemPool.push_back(RI_TIME_DAY_2);
+            itemPool.push_back(RI_TIME_NIGHT_2);
+            itemPool.push_back(RI_TIME_DAY_3);
+            itemPool.push_back(RI_TIME_NIGHT_3);
+        } else {
+            for (int i = 0; i < ClockItems::HALF_COUNT; ++i) {
+                itemPool.push_back(RI_TIME_PROGRESSIVE);
+            }
+        }
+    }
 
     // Abilities
     if (saveInfo.randoSaveOptions[RO_SHUFFLE_SWIM] == RO_GENERIC_YES) {

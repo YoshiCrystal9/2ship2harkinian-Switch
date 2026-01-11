@@ -261,7 +261,7 @@ std::map<RandoItemId, RandoStaticItem> Items = {
     RI(RI_WOODFALL_STRAY_FAIRY,       "a",    "Woodfall Stray Fairy",       RITYPE_STRAY_FAIRY,     ITEM_STRAY_FAIRIES,              GI_STRAY_FAIRY,              GID_NONE),
 };
 
-std::unordered_map<StartingItemCategory, std::vector<RandoItemId>> StartingItemsMap = {
+std::map<StartingItemCategory, std::vector<RandoItemId>> StartingItemsMap = {
     { STARTING_ITEMS_INVENTORY, 
         { RI_OCARINA,               RI_PROGRESSIVE_BOW, RI_ARROW_FIRE,  RI_ARROW_ICE,   RI_ARROW_LIGHT,
           RI_PROGRESSIVE_BOMB_BAG,  RI_BOMBCHU,         RI_DEKU_STICK,  RI_DEKU_NUT,    RI_MAGIC_BEAN,
@@ -288,8 +288,14 @@ std::unordered_map<StartingItemCategory, std::vector<RandoItemId>> StartingItems
     { STARTING_ITEMS_MISC, 
         { RI_SOUL_BOSS_GOHT, RI_SOUL_BOSS_GYORG,  RI_SOUL_BOSS_MAJORA, RI_SOUL_BOSS_ODOLWA, RI_SOUL_BOSS_TWINMOLD,
           RI_FROG_BLUE, RI_FROG_CYAN,   RI_FROG_PINK,   RI_FROG_WHITE,
-          RI_TIME_DAY_1, RI_TIME_DAY_2, RI_TIME_DAY_3, RI_TIME_NIGHT_1, RI_TIME_NIGHT_2, RI_TIME_NIGHT_3
+          RI_TIME_DAY_1, RI_TIME_DAY_2, RI_TIME_DAY_3, RI_TIME_NIGHT_1, RI_TIME_NIGHT_2, RI_TIME_NIGHT_3, RI_TIME_PROGRESSIVE,
         } }, 
+};
+
+std::map<RandoItemId, u8> MaxStartingItemsMap = {
+    { RI_PROGRESSIVE_SWORD, 3 }, { RI_PROGRESSIVE_BOMB_BAG, 3 }, { RI_PROGRESSIVE_WALLET, 2 },
+    { RI_PROGRESSIVE_BOW, 3 },   { RI_PROGRESSIVE_LULLABY, 2 },  { RI_PROGRESSIVE_MAGIC, 2 },
+    { RI_TIME_PROGRESSIVE, 6 },
 };
 // clang-format on
 

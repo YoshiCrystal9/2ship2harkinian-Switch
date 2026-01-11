@@ -1,4 +1,5 @@
 #include "MiscBehavior.h"
+#include "Rando/Rando.h"
 #include "Rando/Spoiler/Spoiler.h"
 #include "Rando/Logic/Logic.h"
 #include "2s2h/ShipUtils.h"
@@ -11,59 +12,6 @@ extern "C" {
 #include "variables.h"
 #include "ShipUtils.h"
 #include "overlays/actors/ovl_En_Sth/z_en_sth.h"
-}
-
-void GrantStarters() {
-    std::vector<RandoItemId> startingItems = convertStartingItemsToRandoItemId(RANDO_STARTING_ITEMS, ",");
-
-    if (RANDO_SAVE_OPTIONS[RO_STARTING_MAPS_AND_COMPASSES]) {
-        std::vector<RandoItemId> MapsAndCompasses = {
-            RI_GREAT_BAY_COMPASS,       RI_GREAT_BAY_MAP,       RI_SNOWHEAD_COMPASS,       RI_SNOWHEAD_MAP,
-            RI_STONE_TOWER_COMPASS,     RI_STONE_TOWER_MAP,     RI_TINGLE_MAP_CLOCK_TOWN,  RI_TINGLE_MAP_GREAT_BAY,
-            RI_TINGLE_MAP_ROMANI_RANCH, RI_TINGLE_MAP_SNOWHEAD, RI_TINGLE_MAP_STONE_TOWER, RI_TINGLE_MAP_WOODFALL,
-            RI_WOODFALL_COMPASS,        RI_WOODFALL_MAP,
-        };
-
-        for (RandoItemId itemId : MapsAndCompasses) {
-            startingItems.push_back(itemId);
-        }
-    }
-
-    if (RANDO_SAVE_OPTIONS[RO_SHUFFLE_SWIM] != RO_GENERIC_YES) {
-        startingItems.push_back(RI_ABILITY_SWIM);
-    }
-
-    if (RANDO_SAVE_OPTIONS[RO_SHUFFLE_ENEMY_SOULS] != RO_GENERIC_YES) {
-        for (int i = RI_SOUL_ENEMY_ALIEN; i <= RI_SOUL_ENEMY_WOLFOS; i++) {
-            startingItems.push_back((RandoItemId)i);
-        }
-    }
-
-    if (RANDO_SAVE_OPTIONS[RO_SHUFFLE_OCARINA_BUTTONS] != RO_GENERIC_YES) {
-        for (int i = RI_OCARINA_BUTTON_A; i <= RI_OCARINA_BUTTON_C_UP; i++) {
-            startingItems.push_back((RandoItemId)i);
-        }
-    }
-
-    for (RandoItemId startingItem : startingItems) {
-        Rando::GiveItem(Rando::ConvertItem(startingItem));
-    }
-
-    if (RANDO_SAVE_OPTIONS[RO_STARTING_HEALTH] != 3) {
-        gSaveContext.save.saveInfo.playerData.healthCapacity = gSaveContext.save.saveInfo.playerData.health =
-            RANDO_SAVE_OPTIONS[RO_STARTING_HEALTH] * 0x10;
-    }
-
-    if (RANDO_SAVE_OPTIONS[RO_STARTING_CONSUMABLES]) {
-        Rando::GiveItem(RI_DEKU_STICK);
-        Rando::GiveItem(RI_DEKU_NUT);
-        AMMO(ITEM_DEKU_STICK) = CUR_CAPACITY(UPG_DEKU_STICKS);
-        AMMO(ITEM_DEKU_NUT) = CUR_CAPACITY(UPG_DEKU_NUTS);
-    }
-
-    if (RANDO_SAVE_OPTIONS[RO_STARTING_RUPEES]) {
-        gSaveContext.save.saveInfo.playerData.rupees = CUR_CAPACITY(UPG_WALLET);
-    }
 }
 
 // Very primitive randomizer implementation, when a save is created, if rando is enabled
@@ -120,8 +68,8 @@ void Rando::MiscBehavior::OnFileCreate(s16 fileNum) {
                 }
 
                 // Persist StartingItems to the save
-                std::string startingItemsString = CVarGetString("gRando.StartingItems", RANDO_STARTING_ITEMS_DEFAULT);
-                strncpy(RANDO_STARTING_ITEMS, startingItemsString.c_str(), startingItemsString.size() + 1);
+                auto startingItems = Rando::GetStartingItemsFromConfig();
+                Rando::SetStartingItemsInSave(gSaveContext.save.shipSaveInfo.rando, startingItems);
 
                 std::vector<RandoCheckId> checkPool;
                 std::vector<RandoItemId> itemPool;
@@ -183,7 +131,7 @@ void Rando::MiscBehavior::OnFileCreate(s16 fileNum) {
                 }
 
                 // Grant the starting stuff
-                GrantStarters();
+                Rando::GrantStartingItems();
 
                 if (RANDO_SAVE_OPTIONS[RO_LOGIC] == RO_LOGIC_VANILLA) {
                     GiveItem(RI_SWORD_KOKIRI);
@@ -226,7 +174,7 @@ void Rando::MiscBehavior::OnFileCreate(s16 fileNum) {
 
                 Rando::Spoiler::ApplyToSaveContext(spoiler);
                 // Grant the starting stuff
-                GrantStarters();
+                Rando::GrantStartingItems();
 
                 Audio_PlaySfx(NA_SE_SY_ATTENTION_SOUND);
             }

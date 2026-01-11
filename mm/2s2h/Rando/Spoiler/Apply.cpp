@@ -22,8 +22,8 @@ void ApplyToSaveContext(nlohmann::json spoiler) {
         RANDO_SAVE_OPTIONS[RO_MINIMUM_SKULLTULA_TOKENS] = SPIDER_HOUSE_TOKENS_REQUIRED;
     }
 
-    std::string startingItemsSave = spoiler["startingItems"].get<std::string>();
-    strncpy(RANDO_STARTING_ITEMS, startingItemsSave.c_str(), startingItemsSave.size() + 1);
+    auto startingItems = Rando::GetStartingItemsFromSpoiler(spoiler);
+    Rando::SetStartingItemsInSave(gSaveContext.save.shipSaveInfo.rando, startingItems);
 
     for (auto& [randoCheckId, randoStaticCheck] : Rando::StaticData::Checks) {
         if (randoStaticCheck.randoCheckId == RC_UNKNOWN) {
