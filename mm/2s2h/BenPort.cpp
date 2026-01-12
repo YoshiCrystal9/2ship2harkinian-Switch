@@ -37,7 +37,7 @@
 #endif
 
 #ifdef __SWITCH__
-#include <port/switch/SwitchImpl.h>
+#include <ship/port/switch/SwitchImpl.h>
 #endif
 
 #if not defined (__SWITCH__) && not defined(__WIIU__)
