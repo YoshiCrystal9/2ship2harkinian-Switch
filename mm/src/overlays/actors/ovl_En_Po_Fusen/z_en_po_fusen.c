@@ -8,9 +8,9 @@
 #include "overlays/actors/ovl_En_Clear_Tag/z_en_clear_tag.h"
 #include "overlays/actors/ovl_En_Ma4/z_en_ma4.h"
 
-#define FLAGS (ACTOR_FLAG_10 | ACTOR_FLAG_20 | ACTOR_FLAG_100000 | ACTOR_FLAG_80000000)
-
-#define THIS ((EnPoFusen*)thisx)
+#define FLAGS                                                                                              \
+    (ACTOR_FLAG_UPDATE_CULLING_DISABLED | ACTOR_FLAG_DRAW_CULLING_DISABLED | ACTOR_FLAG_FREEZE_EXCEPTION | \
+     ACTOR_FLAG_MINIMAP_ICON_ENABLED)
 
 void EnPoFusen_Init(Actor* thisx, PlayState* play);
 void EnPoFusen_Destroy(Actor* thisx, PlayState* play);
@@ -23,9 +23,8 @@ void EnPoFusen_InitFuse(EnPoFusen* this);
 void EnPoFusen_Pop(EnPoFusen* this, PlayState* play);
 void EnPoFusen_Idle(EnPoFusen* this, PlayState* play);
 void EnPoFusen_IdleFuse(EnPoFusen* this, PlayState* play);
-s32 EnPoFusen_OverrideLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3f* pos, Vec3s* rot, Actor* thisx);
 
-ActorInit En_Po_Fusen_InitVars = {
+ActorProfile En_Po_Fusen_Profile = {
     /**/ ACTOR_EN_PO_FUSEN,
     /**/ ACTORCAT_PROP,
     /**/ FLAGS,
@@ -39,7 +38,7 @@ ActorInit En_Po_Fusen_InitVars = {
 
 static ColliderSphereInit sSphereInit = {
     {
-        COLTYPE_NONE,
+        COL_MATERIAL_NONE,
         AT_NONE,
         AC_ON | AC_TYPE_PLAYER,
         OC1_ON | OC1_TYPE_ALL,
@@ -47,11 +46,11 @@ static ColliderSphereInit sSphereInit = {
         COLSHAPE_SPHERE,
     },
     {
-        ELEMTYPE_UNK0,
+        ELEM_MATERIAL_UNK0,
         { 0xF7CFFFFF, 0x00, 0x00 },
         { 0xF7CFFFFF, 0x00, 0x00 },
-        TOUCH_NONE | TOUCH_SFX_NORMAL,
-        BUMP_ON,
+        ATELEM_NONE | ATELEM_SFX_NORMAL,
+        ACELEM_ON,
         OCELEM_ON,
     },
     { 0, { { 0, 0, 0 }, 200 }, 100 },
@@ -98,11 +97,11 @@ static DamageTable sDamageTable = {
 };
 
 void EnPoFusen_Init(Actor* thisx, PlayState* play) {
-    EnPoFusen* this = THIS;
+    EnPoFusen* this = (EnPoFusen*)thisx;
     f32 flyingHeightMin;
 
     this->actor.scale.x = this->actor.scale.y = this->actor.scale.z = 0.007f;
-    this->actor.targetMode = TARGET_MODE_6;
+    this->actor.attentionRangeType = ATTENTION_RANGE_6;
     this->actor.colChkInfo.damageTable = &sDamageTable;
 
     Collider_InitSphere(play, &this->collider);
@@ -141,7 +140,7 @@ void EnPoFusen_Init(Actor* thisx, PlayState* play) {
 }
 
 void EnPoFusen_Destroy(Actor* thisx, PlayState* play) {
-    EnPoFusen* this = THIS;
+    EnPoFusen* this = (EnPoFusen*)thisx;
 
     Collider_DestroySphere(play, &this->collider);
 }
@@ -262,7 +261,7 @@ void EnPoFusen_IdleFuse(EnPoFusen* this, PlayState* play) {
 }
 
 void EnPoFusen_Update(Actor* thisx, PlayState* play) {
-    EnPoFusen* this = THIS;
+    EnPoFusen* this = (EnPoFusen*)thisx;
 
     this->actionFunc(this, play);
     if (EnPoFusen_CheckCollision(this, play)) {
@@ -271,7 +270,7 @@ void EnPoFusen_Update(Actor* thisx, PlayState* play) {
 }
 
 s32 EnPoFusen_OverrideLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3f* pos, Vec3s* rot, Actor* thisx) {
-    EnPoFusen* this = THIS;
+    EnPoFusen* this = (EnPoFusen*)thisx;
 
     if (limbIndex == POE_BALLOON_LIMB_BODY) {
         f32 zScale = (Math_CosS(this->randScaleChange) * 0.08f) + 1.0f;
@@ -302,8 +301,8 @@ s32 EnPoFusen_OverrideLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3
     } else if (limbIndex == POE_BALLOON_LEFT_HAND) {
         rot->z += this->limbRotLeftHand;
     } else if (limbIndex == POE_BALLOON_LIMB_CHAIN_AND_LANTERN) {
-        rot->y += (s16)(this->limbRotChainAndLantern * Math_SinS(this->randBaseRotChange));
-        rot->z += (s16)(this->limbRotChainAndLantern * Math_CosS(this->randBaseRotChange));
+        rot->y += TRUNCF_BINANG(this->limbRotChainAndLantern * Math_SinS(this->randBaseRotChange));
+        rot->z += TRUNCF_BINANG(this->limbRotChainAndLantern * Math_CosS(this->randBaseRotChange));
     }
     return false;
 }
@@ -315,7 +314,7 @@ void EnPoFusen_TransformLimbDraw(PlayState* play, s32 limbIndex, Actor* thisx) {
 }
 
 void EnPoFusen_Draw(Actor* thisx, PlayState* play) {
-    EnPoFusen* this = THIS;
+    EnPoFusen* this = (EnPoFusen*)thisx;
 
     Gfx_SetupDL25_Opa(play->state.gfxCtx);
     SkelAnime_DrawTransformFlexOpa(play, this->anime.skeleton, this->anime.jointTable, this->anime.dListCount,

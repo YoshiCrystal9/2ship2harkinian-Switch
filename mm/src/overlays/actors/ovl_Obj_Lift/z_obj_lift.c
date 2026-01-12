@@ -8,9 +8,7 @@
 #include "z64quake.h"
 #include "objects/object_d_lift/object_d_lift.h"
 
-#define FLAGS (ACTOR_FLAG_10)
-
-#define THIS ((ObjLift*)thisx)
+#define FLAGS (ACTOR_FLAG_UPDATE_CULLING_DISABLED)
 
 void ObjLift_Init(Actor* thisx, PlayState* play);
 void ObjLift_Destroy(Actor* thisx, PlayState* play);
@@ -27,7 +25,7 @@ void func_8093DB70(ObjLift* this);
 void func_8093DB90(ObjLift* this, PlayState* play);
 void func_8093DC90(Actor* thisx, PlayState* play);
 
-ActorInit Obj_Lift_InitVars = {
+ActorProfile Obj_Lift_Profile = {
     /**/ ACTOR_OBJ_LIFT,
     /**/ ACTORCAT_BG,
     /**/ FLAGS,
@@ -47,9 +45,11 @@ Vec2s D_8093DD60[] = {
 };
 
 static InitChainEntry sInitChain[] = {
-    ICHAIN_F32_DIV1000(gravity, -600, ICHAIN_CONTINUE),   ICHAIN_F32_DIV1000(terminalVelocity, -15000, ICHAIN_CONTINUE),
-    ICHAIN_F32(uncullZoneForward, 4000, ICHAIN_CONTINUE), ICHAIN_F32(uncullZoneScale, 350, ICHAIN_CONTINUE),
-    ICHAIN_F32(uncullZoneDownward, 350, ICHAIN_STOP),
+    ICHAIN_F32_DIV1000(gravity, -600, ICHAIN_CONTINUE),
+    ICHAIN_F32_DIV1000(terminalVelocity, -15000, ICHAIN_CONTINUE),
+    ICHAIN_F32(cullingVolumeDistance, 4000, ICHAIN_CONTINUE),
+    ICHAIN_F32(cullingVolumeScale, 350, ICHAIN_CONTINUE),
+    ICHAIN_F32(cullingVolumeDownward, 350, ICHAIN_STOP),
 };
 
 static f32 D_8093DD98[] = { 0.1f, 0.05f };
@@ -58,7 +58,7 @@ static f32 yOffsets[] = { -18.0f, -9.0f };
 
 void func_8093D3C0(ObjLift* this, PlayState* play) {
     Vec3f pos;
-    Vec3f vel;
+    Vec3f velocity;
     Vec3f* actorPos = &this->dyna.actor.world.pos;
     s32 i;
     s32 rand;
@@ -69,9 +69,9 @@ void func_8093D3C0(ObjLift* this, PlayState* play) {
         pos.y = actorPos->y;
         pos.z = (D_8093DD60[i].z * this->dyna.actor.scale.z) + actorPos->z;
 
-        vel.x = D_8093DD60[i].x * this->dyna.actor.scale.x * 0.8f;
-        vel.y = (Rand_ZeroOne() * 10.0f) + 6.0f;
-        vel.z = D_8093DD60[i].z * this->dyna.actor.scale.z * 0.8f;
+        velocity.x = D_8093DD60[i].x * this->dyna.actor.scale.x * 0.8f;
+        velocity.y = (Rand_ZeroOne() * 10.0f) + 6.0f;
+        velocity.z = D_8093DD60[i].z * this->dyna.actor.scale.z * 0.8f;
 
         if ((s32)Rand_Next() > 0) {
             rand = 0x40;
@@ -79,7 +79,7 @@ void func_8093D3C0(ObjLift* this, PlayState* play) {
             rand = 0x20;
         }
 
-        EffectSsKakera_Spawn(play, &pos, &vel, actorPos, -0x100, rand, 15, 15, 0,
+        EffectSsKakera_Spawn(play, &pos, &velocity, actorPos, -0x100, rand, 15, 15, 0,
                              ((Rand_ZeroOne() * 50.0f) + 50.0f) * this->dyna.actor.scale.x, 0, 32, 50, -1,
                              OBJECT_D_LIFT, gDampeGraveBrownElevatorDL);
     }
@@ -92,7 +92,7 @@ void func_8093D3C0(ObjLift* this, PlayState* play) {
 
 void ObjLift_Init(Actor* thisx, PlayState* play) {
     f32 temp_fv0;
-    ObjLift* this = THIS;
+    ObjLift* this = (ObjLift*)thisx;
 
     Actor_ProcessInitChain(&this->dyna.actor, sInitChain);
     this->dyna.actor.scale.x = this->dyna.actor.scale.z = D_8093DD98[OBJLIFT_GET_1(&this->dyna.actor)];
@@ -114,7 +114,7 @@ void ObjLift_Init(Actor* thisx, PlayState* play) {
 }
 
 void ObjLift_Destroy(Actor* thisx, PlayState* play) {
-    ObjLift* this = THIS;
+    ObjLift* this = (ObjLift*)thisx;
 
     DynaPoly_DeleteBgActor(play, &play->colCtx.dyna, this->dyna.bgId);
 }
@@ -180,14 +180,14 @@ void func_8093D9C0(ObjLift* this) {
 
 void func_8093DA48(ObjLift* this, PlayState* play) {
     s32 pad;
-    s32 sp38;
+    s32 bgId;
     Vec3f pos;
 
     Actor_MoveWithGravity(&this->dyna.actor);
     Math_Vec3f_Copy(&pos, &this->dyna.actor.prevPos);
     pos.y += yOffsets[OBJLIFT_GET_1(&this->dyna.actor)];
     this->dyna.actor.floorHeight =
-        BgCheck_EntityRaycastFloor5(&play->colCtx, &this->dyna.actor.floorPoly, &sp38, &this->dyna.actor, &pos);
+        BgCheck_EntityRaycastFloor5(&play->colCtx, &this->dyna.actor.floorPoly, &bgId, &this->dyna.actor, &pos);
     if ((yOffsets[OBJLIFT_GET_1(&this->dyna.actor)] - 0.001f) <=
         (this->dyna.actor.floorHeight - this->dyna.actor.world.pos.y)) {
         func_8093D3C0(this, play);
@@ -218,7 +218,7 @@ void func_8093DB90(ObjLift* this, PlayState* play) {
 }
 
 void ObjLift_Update(Actor* thisx, PlayState* play) {
-    ObjLift* this = THIS;
+    ObjLift* this = (ObjLift*)thisx;
 
     if (this->timer > 0) {
         this->timer--;
@@ -227,13 +227,13 @@ void ObjLift_Update(Actor* thisx, PlayState* play) {
 }
 
 void ObjLift_Draw(Actor* thisx, PlayState* play) {
-    ObjLift* this = THIS;
+    ObjLift* this = (ObjLift*)thisx;
 
     Gfx_DrawDListOpa(play, gDampeGraveBrownElevatorDL);
 }
 
 void func_8093DC90(Actor* thisx, PlayState* play) {
-    ObjLift* this = THIS;
+    ObjLift* this = (ObjLift*)thisx;
     Vec3f pos;
     Vec3s rot;
 

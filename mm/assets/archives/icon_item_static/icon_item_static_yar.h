@@ -123,11 +123,11 @@ static const ALIGN_ASSET(2) char gItemIconBottledHylianLoachTex[] = dgItemIconBo
 #define dgItemIconEmptyBottle2Tex "__OTR__icon_item_static_yar/gItemIconEmptyBottle2Tex"
 static const ALIGN_ASSET(2) char gItemIconEmptyBottle2Tex[] = dgItemIconEmptyBottle2Tex;
 
-#define dgItemIconLandDeedTex "__OTR__icon_item_static_yar/gItemIconLandDeedTex"
-static const ALIGN_ASSET(2) char gItemIconLandDeedTex[] = dgItemIconLandDeedTex;
-
 #define dgItemIconMoonsTearTex "__OTR__icon_item_static_yar/gItemIconMoonsTearTex"
 static const ALIGN_ASSET(2) char gItemIconMoonsTearTex[] = dgItemIconMoonsTearTex;
+
+#define dgItemIconLandDeedTex "__OTR__icon_item_static_yar/gItemIconLandDeedTex"
+static const ALIGN_ASSET(2) char gItemIconLandDeedTex[] = dgItemIconLandDeedTex;
 
 #define dgItemIconSwampDeedTex "__OTR__icon_item_static_yar/gItemIconSwampDeedTex"
 static const ALIGN_ASSET(2) char gItemIconSwampDeedTex[] = dgItemIconSwampDeedTex;

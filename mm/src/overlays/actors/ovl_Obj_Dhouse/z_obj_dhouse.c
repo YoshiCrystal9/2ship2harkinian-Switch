@@ -8,9 +8,7 @@
 #include "z64quake.h"
 #include "objects/object_dhouse/object_dhouse.h"
 
-#define FLAGS (ACTOR_FLAG_10 | ACTOR_FLAG_400000)
-
-#define THIS ((ObjDhouse*)thisx)
+#define FLAGS (ACTOR_FLAG_UPDATE_CULLING_DISABLED | ACTOR_FLAG_IGNORE_LEGACY_POINT_LIGHTS)
 
 void ObjDhouse_Init(Actor* thisx, PlayState* play);
 void ObjDhouse_Destroy(Actor* thisx, PlayState* play);
@@ -28,7 +26,7 @@ void func_80B139F4(ObjDhouse* this, PlayState* play);
 void func_80B13C08(Actor* thisx, PlayState* play);
 void func_80B13E40(Actor* thisx, PlayState* play);
 
-ActorInit Obj_Dhouse_InitVars = {
+ActorProfile Obj_Dhouse_Profile = {
     /**/ ACTOR_OBJ_DHOUSE,
     /**/ ACTORCAT_BG,
     /**/ FLAGS,
@@ -116,16 +114,16 @@ ObjDhouseStruct3 D_80B13E90[] = {
 Vec3f D_80B13FA8 = { 0.0f, 0.3f, 0.0f };
 
 static InitChainEntry sInitChain[] = {
-    ICHAIN_F32(uncullZoneForward, 8000, ICHAIN_CONTINUE),
-    ICHAIN_F32(uncullZoneScale, 1000, ICHAIN_CONTINUE),
-    ICHAIN_F32(uncullZoneDownward, 800, ICHAIN_CONTINUE),
+    ICHAIN_F32(cullingVolumeDistance, 8000, ICHAIN_CONTINUE),
+    ICHAIN_F32(cullingVolumeScale, 1000, ICHAIN_CONTINUE),
+    ICHAIN_F32(cullingVolumeDownward, 800, ICHAIN_CONTINUE),
     ICHAIN_VEC3F_DIV1000(scale, 100, ICHAIN_STOP),
 };
 
 Vec3f D_80B13FC4 = { 160.0f, 0.0f, 240.0f };
 
 void ObjDhouse_Init(Actor* thisx, PlayState* play) {
-    ObjDhouse* this = THIS;
+    ObjDhouse* this = (ObjDhouse*)thisx;
 
     Actor_ProcessInitChain(&this->dyna.actor, sInitChain);
 
@@ -136,13 +134,13 @@ void ObjDhouse_Init(Actor* thisx, PlayState* play) {
         func_80B13908(this);
     } else {
         DynaPolyActor_LoadMesh(play, &this->dyna, &object_dhouse_Colheader_008040);
-        this->dyna.actor.flags |= ACTOR_FLAG_10;
+        this->dyna.actor.flags |= ACTOR_FLAG_UPDATE_CULLING_DISABLED;
         func_80B1392C(this);
     }
 }
 
 void ObjDhouse_Destroy(Actor* thisx, PlayState* play) {
-    ObjDhouse* this = THIS;
+    ObjDhouse* this = (ObjDhouse*)thisx;
 
     DynaPoly_DeleteBgActor(play, &play->colCtx.dyna, this->dyna.bgId);
 }
@@ -154,7 +152,7 @@ void func_80B12A50(ObjDhouseStruct1* this, ObjDhouseStruct3* ptr3, Vec3f* arg2) 
 }
 
 void func_80B12A88(Actor* thisx) {
-    ObjDhouse* this = THIS;
+    ObjDhouse* this = (ObjDhouse*)thisx;
     s32 i;
     ObjDhouseStruct1* ptr;
     ObjDhouseStruct3* ptr3;
@@ -174,7 +172,7 @@ void func_80B12B38(ObjDhouse* this, PlayState* play) {
     CollisionPoly* sp90;
     s32 phi_s3;
     Vec3f sp80;
-    s32 sp7C;
+    s32 bgId;
     ObjDhouseStruct1* ptr;
     ObjDhouseStruct3* ptr3;
 
@@ -201,7 +199,7 @@ void func_80B12B38(ObjDhouse* this, PlayState* play) {
             phi_s3 = false;
             if (ptr->unk_0C.y < 0.0f) {
                 func_80B12A50(ptr, ptr3, &sp80);
-                temp_f0 = BgCheck_EntityRaycastFloor5(&play->colCtx, &sp90, &sp7C, thisx, &sp80);
+                temp_f0 = BgCheck_EntityRaycastFloor5(&play->colCtx, &sp90, &bgId, thisx, &sp80);
                 if (((sp80.y - 35.0f) < temp_f0) && (temp_f0 > (BGCHECK_Y_MIN + 1.0f))) {
                     phi_s3 = true;
                 }
@@ -385,7 +383,7 @@ void func_80B13724(ObjDhouse* this, PlayState* play) {
     CollisionPoly* sp80;
     ObjDhouseStruct2* ptr2;
     Vec3f sp70;
-    s32 sp6C;
+    s32 bgId;
 
     for (i = 0, ptr2 = &this->unk_240[0]; i < ARRAY_COUNT(this->unk_240); i++, ptr2++) {
         if (ptr2->unk_28 > 0) {
@@ -407,7 +405,7 @@ void func_80B13724(ObjDhouse* this, PlayState* play) {
 
                 if (ptr2->unk_29 & 1) {
                     temp_f0 =
-                        BgCheck_EntityRaycastFloor5(&play->colCtx, &sp80, &sp6C, &this->dyna.actor, &ptr2->unk_00);
+                        BgCheck_EntityRaycastFloor5(&play->colCtx, &sp80, &bgId, &this->dyna.actor, &ptr2->unk_00);
                     if (((ptr2->unk_00.y - 20.0f) < temp_f0) && (temp_f0 > BGCHECK_Y_MIN + 1.0f)) {
                         Math_Vec3f_Copy(&sp70, &ptr2->unk_00);
                         ptr2->unk_28 = 0;
@@ -443,7 +441,7 @@ void func_80B13940(ObjDhouse* this, PlayState* play2) {
         func_80B12A88(&this->dyna.actor);
         DynaPoly_DisableCollision(play, &play->colCtx.dyna, this->dyna.bgId);
         this->dyna.actor.draw = func_80B13C08;
-        this->dyna.actor.flags |= ACTOR_FLAG_20;
+        this->dyna.actor.flags |= ACTOR_FLAG_DRAW_CULLING_DISABLED;
         func_80B139D8(this);
     }
 }
@@ -477,8 +475,8 @@ void func_80B139F4(ObjDhouse* this, PlayState* play) {
     this->unk_1370--;
     if (this->unk_1370 <= 0) {
         this->dyna.actor.draw = func_80B13E40;
-        this->dyna.actor.flags &= ~ACTOR_FLAG_20;
-        this->dyna.actor.flags &= ~ACTOR_FLAG_10;
+        this->dyna.actor.flags &= ~ACTOR_FLAG_DRAW_CULLING_DISABLED;
+        this->dyna.actor.flags &= ~ACTOR_FLAG_UPDATE_CULLING_DISABLED;
         func_80B13908(this);
     } else {
         func_80B12B38(this, play);
@@ -487,7 +485,7 @@ void func_80B139F4(ObjDhouse* this, PlayState* play) {
 }
 
 void ObjDhouse_Update(Actor* thisx, PlayState* play) {
-    ObjDhouse* this = THIS;
+    ObjDhouse* this = (ObjDhouse*)thisx;
 
     this->actionFunc(this, play);
 }
@@ -497,7 +495,7 @@ void ObjDhouse_Draw(Actor* thisx, PlayState* play) {
 }
 
 void func_80B13C08(Actor* thisx, PlayState* play) {
-    ObjDhouse* this = THIS;
+    ObjDhouse* this = (ObjDhouse*)thisx;
     ObjDhouseStruct1* ptr;
     ObjDhouseStruct2* ptr2;
     ObjDhouseStruct3* ptr3;
@@ -507,7 +505,7 @@ void func_80B13C08(Actor* thisx, PlayState* play) {
 
     Gfx_SetupDL25_Opa(play->state.gfxCtx);
 
-    gSPMatrix(POLY_OPA_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    MATRIX_FINALIZE_AND_LOAD(POLY_OPA_DISP++, play->state.gfxCtx);
     gSPDisplayList(POLY_OPA_DISP++, object_dhouse_DL_004928);
 
     for (i = 0, ptr = &this->unk_160[0], ptr3 = &D_80B13E90[0]; i < ARRAY_COUNT(this->unk_160); i++, ptr3++, ptr++) {
@@ -517,7 +515,7 @@ void func_80B13C08(Actor* thisx, PlayState* play) {
             Matrix_Translate(-ptr3->unk_08.x, -ptr3->unk_08.y, -ptr3->unk_08.z, MTXMODE_APPLY);
             Matrix_Scale(0.1f, 0.1f, 0.1f, MTXMODE_APPLY);
 
-            gSPMatrix(POLY_OPA_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+            MATRIX_FINALIZE_AND_LOAD(POLY_OPA_DISP++, play->state.gfxCtx);
             gSPDisplayList(POLY_OPA_DISP++, ptr3->unk_00);
             gSPDisplayList(POLY_OPA_DISP++, ptr3->unk_04);
         }
@@ -528,7 +526,7 @@ void func_80B13C08(Actor* thisx, PlayState* play) {
             Matrix_SetTranslateRotateYXZ(ptr2->unk_00.x, ptr2->unk_00.y, ptr2->unk_00.z, &ptr2->unk_1C);
             Matrix_Scale(ptr2->unk_18, ptr2->unk_18, ptr2->unk_18, MTXMODE_APPLY);
 
-            gSPMatrix(POLY_OPA_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+            MATRIX_FINALIZE_AND_LOAD(POLY_OPA_DISP++, play->state.gfxCtx);
             gSPDisplayList(POLY_OPA_DISP++, object_dhouse_DL_0081D8);
         }
     }

@@ -1,37 +1,27 @@
 
 #include "DisplayOverlay.h"
 #include <spdlog/fmt/fmt.h>
-#include "public/bridge/consolevariablebridge.h"
-#include "Context.h"
-#include "Window.h"
+#include <libultraship/bridge/consolevariablebridge.h>
+#include <ship/Context.h>
+#include <ship/window/Window.h>
 
 extern "C" {
 #include "variables.h"
-#include "overlays/actors/ovl_Boss_07/z_boss_07.h"
 uint64_t GetUnixTimestamp();
-void Boss07_Wrath_Death(Boss07*, PlayState*);
 }
 
 #include "ShipUtils.h"
 #include "interface/parameter_static/parameter_static.h"
-#include "GameInteractor/GameInteractor.h"
+#include "2s2h/Enhancements/Enhancements.h"
 
 float windowScale = 1.0f;
 ImVec4 windowBG = ImVec4(0, 0, 0, 0.5f);
-
-std::string formatTimeDisplay(uint32_t value) {
-    uint32_t sec = value / 10;
-    uint32_t hh = sec / 3600;
-    uint32_t mm = (sec - hh * 3600) / 60;
-    uint32_t ss = sec - hh * 3600 - mm * 60;
-    uint32_t ds = value % 10;
-    return fmt::format("{}:{:0>2}:{:0>2}.{}", hh, mm, ss, ds);
-}
+static constexpr ImVec4 tintColor = {};
 
 void DrawInGameTimer(uint32_t timer, ImVec4 color = ImVec4(1, 1, 1, 1)) {
     float windowScale = MAX(CVarGetFloat("gDisplayOverlay.Scale", 1.0f), 1.0f);
 
-    std::string timerStr = formatTimeDisplay(timer);
+    std::string timerStr = Ship_FormatTimeDisplay(timer);
     uint16_t textureIndex = 0;
     for (const auto c : timerStr) {
         if (c == ':' || c == '.') {
@@ -42,10 +32,11 @@ void DrawInGameTimer(uint32_t timer, ImVec4 color = ImVec4(1, 1, 1, 1)) {
         if (c == '.') {
             ImGui::SetCursorPosY(ImGui::GetCursorPosY() + (8.0f * windowScale));
             ImGui::Image(Ship::Context::GetInstance()->GetWindow()->GetGui()->GetTextureByName(digitList[textureIndex]),
-                         ImVec2(8.0f * windowScale, 8.0f * windowScale), ImVec2(0, 0.5f), ImVec2(1, 1), color, ImVec4(0, 0, 0, 0));
+                         ImVec2(8.0f * windowScale, 8.0f * windowScale), ImVec2(0, 0.5f), ImVec2(1, 1), color,
+                         tintColor);
         } else {
             ImGui::Image(Ship::Context::GetInstance()->GetWindow()->GetGui()->GetTextureByName(digitList[textureIndex]),
-                         ImVec2(8.0f * windowScale, 16.0f * windowScale), ImVec2(0, 0), ImVec2(1, 1), color, ImVec4(0, 0, 0, 0));
+                         ImVec2(8.0f * windowScale, 16.0f * windowScale), ImVec2(0, 0), ImVec2(1, 1), color, tintColor);
         }
         ImGui::SameLine(0, 0);
     }
@@ -55,7 +46,8 @@ void DisplayOverlayWindow::Draw() {
     if (!gPlayState) {
         return;
     }
-    if (!CVarGetInteger("gWindows.DisplayOverlay", 0)) {
+    int displayOverlay = CVarGetInteger("gWindows.DisplayOverlay", 0);
+    if (displayOverlay == TIMER_DISPLAY_NONE) {
         return;
     }
 
@@ -75,12 +67,34 @@ void DisplayOverlayWindow::Draw() {
     ImGui::Image(Ship::Context::GetInstance()->GetWindow()->GetGui()->GetTextureByName(gTimerClockIconTex),
                  ImVec2(16.0f * windowScale, 16.0f * windowScale));
     ImGui::SameLine(0, 10.0f);
-    if (gSaveContext.save.shipSaveInfo.fileCompletedAt == 0) {
-        DrawInGameTimer((GetUnixTimestamp() - gSaveContext.save.shipSaveInfo.fileCreatedAt) / 100);
-    } else {
-        DrawInGameTimer(
-            (gSaveContext.save.shipSaveInfo.fileCompletedAt - gSaveContext.save.shipSaveInfo.fileCreatedAt) / 100,
-            ImVec4(0, 1, 0, 1));
+
+    uint64_t timeToDisplay = 0;
+    if (gSaveContext.save.shipSaveInfo.fileCompletedAt == 0) { // Player has not beaten the game
+        switch (displayOverlay) {
+            case TIMER_DISPLAY_RTA:
+                timeToDisplay = (GetUnixTimestamp() - gSaveContext.save.shipSaveInfo.fileCreatedAt);
+                break;
+            case TIMER_DISPLAY_IGT:
+                timeToDisplay = ((GetUnixTimestamp() - gSaveContext.shipSaveContext.lastTimeLog) +
+                                 gSaveContext.save.shipSaveInfo.filePlaytime);
+                break;
+            default:
+                break;
+        }
+        DrawInGameTimer(timeToDisplay / 100);
+    } else { // Player has beaten the game
+        switch (displayOverlay) {
+            case TIMER_DISPLAY_RTA:
+                timeToDisplay =
+                    (gSaveContext.save.shipSaveInfo.fileCompletedAt - gSaveContext.save.shipSaveInfo.fileCreatedAt);
+                break;
+            case TIMER_DISPLAY_IGT:
+                timeToDisplay = gSaveContext.save.shipSaveInfo.filePlaytime;
+                break;
+            default:
+                break;
+        }
+        DrawInGameTimer(timeToDisplay / 100, ImVec4(0, 1, 0, 1));
     }
 
     ImGui::End();
@@ -90,16 +104,4 @@ void DisplayOverlayWindow::Draw() {
 }
 
 void DisplayOverlayWindow::InitElement() {
-    COND_HOOK(OnSaveLoad, true, [](s16 fileNum) {
-        if (gSaveContext.save.shipSaveInfo.fileCreatedAt == 0) {
-            gSaveContext.save.shipSaveInfo.fileCreatedAt = GetUnixTimestamp();
-        }
-    });
-
-    COND_ID_HOOK(OnActorUpdate, ACTOR_BOSS_07, true, [](Actor* actor) {
-        Boss07* boss = (Boss07*)actor;
-        if (boss->actionFunc == Boss07_Wrath_Death && gSaveContext.save.shipSaveInfo.fileCompletedAt == 0) {
-            gSaveContext.save.shipSaveInfo.fileCompletedAt = GetUnixTimestamp();
-        }
-    })
 }

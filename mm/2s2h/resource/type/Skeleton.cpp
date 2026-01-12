@@ -1,4 +1,4 @@
-#include "resource/ResourceManager.h"
+#include <ship/resource/ResourceManager.h>
 #include "Skeleton.h"
 #include "2s2h/BenPort.h"
 

@@ -12,7 +12,7 @@ typedef struct {
 } AudioHeapInitSizes; // size = 0xC
 
 /**
- * Meta-data associated with a pool (contain withing the Audio Heap)
+ * Meta-data associated with a pool (contain within the Audio Heap)
  */
 typedef struct {
     /* 0x0 */ u8* startAddr; // start addr of the pool

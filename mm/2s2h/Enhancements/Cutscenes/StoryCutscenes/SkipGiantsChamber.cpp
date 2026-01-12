@@ -1,4 +1,4 @@
-#include "public/bridge/consolevariablebridge.h"
+#include <libultraship/bridge/consolevariablebridge.h>
 #include "2s2h/GameInteractor/GameInteractor.h"
 #include "2s2h/CustomMessage/CustomMessage.h"
 #include "2s2h/CustomItem/CustomItem.h"
@@ -146,6 +146,12 @@ void RegisterSkipGiantsChamber() {
                 GameInteractor::Instance->events.erase(it);
                 handleGiantsCheck((SceneId)transition.transitionType);
             }
+        } else if (gSaveContext.save.entrance == ENTRANCE(WOODFALL, 0) && gSaveContext.save.cutsceneIndex == 0xFFF0) {
+            // Odolwa's Lair repeat warps go straight to the Woodfall clear cutscene. Skip that too.
+            SET_WEEKEVENTREG(WEEKEVENTREG_CLEARED_WOODFALL_TEMPLE);
+            SET_WEEKEVENTREG(WEEKEVENTREG_ENTERED_WOODFALL_TEMPLE_PRISON);
+            gSaveContext.save.entrance = ENTRANCE(WOODFALL_TEMPLE, 1);
+            gSaveContext.save.cutsceneIndex = 0;
         }
     });
 

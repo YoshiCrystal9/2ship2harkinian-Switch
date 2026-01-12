@@ -1,4 +1,4 @@
-#include "public/bridge/consolevariablebridge.h"
+#include <libultraship/bridge/consolevariablebridge.h>
 #include "2s2h/GameInteractor/GameInteractor.h"
 #include "2s2h/CustomMessage/CustomMessage.h"
 #include "2s2h/CustomItem/CustomItem.h"
@@ -41,7 +41,7 @@ void RegisterSkipGreatFairyCutscene() {
             if (GameInteractor_Should(VB_GIVE_ITEM_FROM_STRAY_FAIRY_MANAGER, true, elfgrp)) {
                 switch (elfgrp->type) {
                     case ENELFGRP_TYPE_POWER:
-                        if (!CHECK_WEEKEVENTREG(WEEKEVENTREG_OBTAINED_GREAT_SPIN_ATTACK)) {
+                        if (!CHECK_WEEKEVENTREG(WEEKEVENTREG_RECEIVED_GREAT_SPIN_ATTACK)) {
                             GameInteractor::Instance->events.emplace_back(GIEventGiveItem{
                                 .showGetItemCutscene = true,
                                 .param = GID_SWORD_KOKIRI,
@@ -53,7 +53,7 @@ void RegisterSkipGreatFairyCutscene() {
                                         CustomMessage::StartTextbox("You received the Great Spin Attack!\x1C\x02\x10",
                                                                     { .textboxType = 2 });
                                     }
-                                    SET_WEEKEVENTREG(WEEKEVENTREG_OBTAINED_GREAT_SPIN_ATTACK);
+                                    SET_WEEKEVENTREG(WEEKEVENTREG_RECEIVED_GREAT_SPIN_ATTACK);
                                 } });
                         }
                         break;

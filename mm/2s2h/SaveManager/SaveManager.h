@@ -7,8 +7,8 @@
 #include <filesystem>
 #include <nlohmann/json.hpp>
 std::string SaveManager_GetFileName(int fileNum, bool isBackup = false);
-bool SaveManager_HandleFileDropped(const std::string& filePath);
-bool BinarySaveConverter_HandleFileDropped(const std::string& filePath);
+bool SaveManager_HandleFileDropped(char* filePath);
+bool BinarySaveConverter_HandleFileDropped(char* filePath);
 int SaveManager_GetOpenFileSlot();
 void SaveManager_WriteSaveFile(const std::filesystem::path& fileName, nlohmann::json j);
 #else

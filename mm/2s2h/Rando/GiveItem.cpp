@@ -1,4 +1,7 @@
 #include "Rando/Rando.h"
+#include "Rando/ActorBehavior/Souls.h"
+#include "Rando/MiscBehavior/MiscBehavior.h"
+#include "Rando/MiscBehavior/ClockShuffle.h"
 
 extern "C" {
 #include "variables.h"
@@ -11,19 +14,19 @@ void Rando::GiveItem(RandoItemId randoItemId) {
             SET_WEEKEVENTREG(WEEKEVENTREG_08_80);
             break;
         case RI_WOODFALL_STRAY_FAIRY:
-            gSaveContext.save.saveInfo.inventory.strayFairies[DUNGEON_INDEX_WOODFALL_TEMPLE]++;
+            gSaveContext.save.saveInfo.inventory.strayFairies[DUNGEON_SCENE_INDEX_WOODFALL_TEMPLE]++;
             break;
         case RI_SNOWHEAD_STRAY_FAIRY:
-            gSaveContext.save.saveInfo.inventory.strayFairies[DUNGEON_INDEX_SNOWHEAD_TEMPLE]++;
+            gSaveContext.save.saveInfo.inventory.strayFairies[DUNGEON_SCENE_INDEX_SNOWHEAD_TEMPLE]++;
             break;
         case RI_GREAT_BAY_STRAY_FAIRY:
-            gSaveContext.save.saveInfo.inventory.strayFairies[DUNGEON_INDEX_GREAT_BAY_TEMPLE]++;
+            gSaveContext.save.saveInfo.inventory.strayFairies[DUNGEON_SCENE_INDEX_GREAT_BAY_TEMPLE]++;
             break;
         case RI_STONE_TOWER_STRAY_FAIRY:
-            gSaveContext.save.saveInfo.inventory.strayFairies[DUNGEON_INDEX_STONE_TOWER_TEMPLE]++;
+            gSaveContext.save.saveInfo.inventory.strayFairies[DUNGEON_SCENE_INDEX_STONE_TOWER_TEMPLE]++;
             break;
         case RI_GREAT_SPIN_ATTACK:
-            SET_WEEKEVENTREG(WEEKEVENTREG_OBTAINED_GREAT_SPIN_ATTACK);
+            SET_WEEKEVENTREG(WEEKEVENTREG_RECEIVED_GREAT_SPIN_ATTACK);
             break;
         case RI_DOUBLE_DEFENSE:
             gSaveContext.save.saveInfo.playerData.doubleDefense = true;
@@ -47,60 +50,77 @@ void Rando::GiveItem(RandoItemId randoItemId) {
         case RI_WOODFALL_MAP:
         case RI_WOODFALL_COMPASS:
             SET_DUNGEON_ITEM(Rando::StaticData::Items[randoItemId].itemId - ITEM_KEY_BOSS,
-                             DUNGEON_INDEX_WOODFALL_TEMPLE);
+                             DUNGEON_SCENE_INDEX_WOODFALL_TEMPLE);
             break;
         case RI_WOODFALL_SMALL_KEY:
-            if (DUNGEON_KEY_COUNT(DUNGEON_INDEX_WOODFALL_TEMPLE) < 0) {
-                DUNGEON_KEY_COUNT(DUNGEON_INDEX_WOODFALL_TEMPLE) = 1;
-                gSaveContext.save.shipSaveInfo.rando.foundDungeonKeys[DUNGEON_INDEX_WOODFALL_TEMPLE] = 1;
+            if (DUNGEON_KEY_COUNT(DUNGEON_SCENE_INDEX_WOODFALL_TEMPLE) < 0) {
+                DUNGEON_KEY_COUNT(DUNGEON_SCENE_INDEX_WOODFALL_TEMPLE) = 1;
+                gSaveContext.save.shipSaveInfo.rando.foundDungeonKeys[DUNGEON_SCENE_INDEX_WOODFALL_TEMPLE] = 1;
             } else {
-                DUNGEON_KEY_COUNT(DUNGEON_INDEX_WOODFALL_TEMPLE)++;
-                gSaveContext.save.shipSaveInfo.rando.foundDungeonKeys[DUNGEON_INDEX_WOODFALL_TEMPLE]++;
+                DUNGEON_KEY_COUNT(DUNGEON_SCENE_INDEX_WOODFALL_TEMPLE)++;
+                gSaveContext.save.shipSaveInfo.rando.foundDungeonKeys[DUNGEON_SCENE_INDEX_WOODFALL_TEMPLE]++;
             }
             break;
         case RI_SNOWHEAD_BOSS_KEY:
         case RI_SNOWHEAD_MAP:
         case RI_SNOWHEAD_COMPASS:
             SET_DUNGEON_ITEM(Rando::StaticData::Items[randoItemId].itemId - ITEM_KEY_BOSS,
-                             DUNGEON_INDEX_SNOWHEAD_TEMPLE);
+                             DUNGEON_SCENE_INDEX_SNOWHEAD_TEMPLE);
             break;
         case RI_SNOWHEAD_SMALL_KEY:
-            if (DUNGEON_KEY_COUNT(DUNGEON_INDEX_SNOWHEAD_TEMPLE) < 0) {
-                DUNGEON_KEY_COUNT(DUNGEON_INDEX_SNOWHEAD_TEMPLE) = 1;
-                gSaveContext.save.shipSaveInfo.rando.foundDungeonKeys[DUNGEON_INDEX_SNOWHEAD_TEMPLE] = 1;
+            if (DUNGEON_KEY_COUNT(DUNGEON_SCENE_INDEX_SNOWHEAD_TEMPLE) < 0) {
+                DUNGEON_KEY_COUNT(DUNGEON_SCENE_INDEX_SNOWHEAD_TEMPLE) = 1;
+                gSaveContext.save.shipSaveInfo.rando.foundDungeonKeys[DUNGEON_SCENE_INDEX_SNOWHEAD_TEMPLE] = 1;
             } else {
-                DUNGEON_KEY_COUNT(DUNGEON_INDEX_SNOWHEAD_TEMPLE)++;
-                gSaveContext.save.shipSaveInfo.rando.foundDungeonKeys[DUNGEON_INDEX_SNOWHEAD_TEMPLE]++;
+                DUNGEON_KEY_COUNT(DUNGEON_SCENE_INDEX_SNOWHEAD_TEMPLE)++;
+                gSaveContext.save.shipSaveInfo.rando.foundDungeonKeys[DUNGEON_SCENE_INDEX_SNOWHEAD_TEMPLE]++;
             }
             break;
         case RI_GREAT_BAY_BOSS_KEY:
         case RI_GREAT_BAY_MAP:
         case RI_GREAT_BAY_COMPASS:
             SET_DUNGEON_ITEM(Rando::StaticData::Items[randoItemId].itemId - ITEM_KEY_BOSS,
-                             DUNGEON_INDEX_GREAT_BAY_TEMPLE);
+                             DUNGEON_SCENE_INDEX_GREAT_BAY_TEMPLE);
             break;
         case RI_GREAT_BAY_SMALL_KEY:
-            if (DUNGEON_KEY_COUNT(DUNGEON_INDEX_GREAT_BAY_TEMPLE) < 0) {
-                DUNGEON_KEY_COUNT(DUNGEON_INDEX_GREAT_BAY_TEMPLE) = 1;
-                gSaveContext.save.shipSaveInfo.rando.foundDungeonKeys[DUNGEON_INDEX_GREAT_BAY_TEMPLE] = 1;
+            if (DUNGEON_KEY_COUNT(DUNGEON_SCENE_INDEX_GREAT_BAY_TEMPLE) < 0) {
+                DUNGEON_KEY_COUNT(DUNGEON_SCENE_INDEX_GREAT_BAY_TEMPLE) = 1;
+                gSaveContext.save.shipSaveInfo.rando.foundDungeonKeys[DUNGEON_SCENE_INDEX_GREAT_BAY_TEMPLE] = 1;
             } else {
-                DUNGEON_KEY_COUNT(DUNGEON_INDEX_GREAT_BAY_TEMPLE)++;
-                gSaveContext.save.shipSaveInfo.rando.foundDungeonKeys[DUNGEON_INDEX_GREAT_BAY_TEMPLE]++;
+                DUNGEON_KEY_COUNT(DUNGEON_SCENE_INDEX_GREAT_BAY_TEMPLE)++;
+                gSaveContext.save.shipSaveInfo.rando.foundDungeonKeys[DUNGEON_SCENE_INDEX_GREAT_BAY_TEMPLE]++;
             }
             break;
         case RI_STONE_TOWER_BOSS_KEY:
         case RI_STONE_TOWER_MAP:
         case RI_STONE_TOWER_COMPASS:
             SET_DUNGEON_ITEM(Rando::StaticData::Items[randoItemId].itemId - ITEM_KEY_BOSS,
-                             DUNGEON_INDEX_STONE_TOWER_TEMPLE);
+                             DUNGEON_SCENE_INDEX_STONE_TOWER_TEMPLE);
             break;
         case RI_STONE_TOWER_SMALL_KEY:
-            if (DUNGEON_KEY_COUNT(DUNGEON_INDEX_STONE_TOWER_TEMPLE) < 0) {
-                DUNGEON_KEY_COUNT(DUNGEON_INDEX_STONE_TOWER_TEMPLE) = 1;
-                gSaveContext.save.shipSaveInfo.rando.foundDungeonKeys[DUNGEON_INDEX_STONE_TOWER_TEMPLE] = 1;
+            if (DUNGEON_KEY_COUNT(DUNGEON_SCENE_INDEX_STONE_TOWER_TEMPLE) < 0) {
+                DUNGEON_KEY_COUNT(DUNGEON_SCENE_INDEX_STONE_TOWER_TEMPLE) = 1;
+                gSaveContext.save.shipSaveInfo.rando.foundDungeonKeys[DUNGEON_SCENE_INDEX_STONE_TOWER_TEMPLE] = 1;
             } else {
-                DUNGEON_KEY_COUNT(DUNGEON_INDEX_STONE_TOWER_TEMPLE)++;
-                gSaveContext.save.shipSaveInfo.rando.foundDungeonKeys[DUNGEON_INDEX_STONE_TOWER_TEMPLE]++;
+                DUNGEON_KEY_COUNT(DUNGEON_SCENE_INDEX_STONE_TOWER_TEMPLE)++;
+                gSaveContext.save.shipSaveInfo.rando.foundDungeonKeys[DUNGEON_SCENE_INDEX_STONE_TOWER_TEMPLE]++;
+            }
+            break;
+        case RI_TRIFORCE_PIECE:
+        case RI_TRIFORCE_PIECE_PREVIOUS:
+            gSaveContext.save.shipSaveInfo.rando.foundTriforcePieces++;
+            if (gSaveContext.save.shipSaveInfo.rando.foundTriforcePieces ==
+                RANDO_SAVE_OPTIONS[RO_TRIFORCE_PIECES_REQUIRED]) {
+                // Blocks the ability to beat the game through killing Majora until all Triforce Pieces are found.
+                if (!Flags_GetRandoInf(RANDO_INF_OBTAINED_SOUL_OF_BOSS_MAJORA)) {
+                    Rando::GiveItem(RI_SOUL_BOSS_MAJORA);
+                }
+                GameInteractor_ExecuteOnGameCompletion();
+                GameInteractor::Instance->events.emplace_back(
+                    GIEventTransition{ .entrance = ENTRANCE(TERMINA_FIELD, 0),
+                                       .cutsceneIndex = 0xFFF7,
+                                       .transitionTrigger = TRANS_TRIGGER_START,
+                                       .transitionType = TRANS_TYPE_FADE_BLACK });
             }
             break;
         // Technically these should never be used, but leaving them here just in case
@@ -240,6 +260,26 @@ void Rando::GiveItem(RandoItemId randoItemId) {
         case RI_OWL_ZORA_CAPE:
             Sram_ActivateOwl(OWL_WARP_ZORA_CAPE);
             break;
+        case RI_TIME_DAY_1:
+        case RI_TIME_NIGHT_1:
+        case RI_TIME_DAY_2:
+        case RI_TIME_NIGHT_2:
+        case RI_TIME_DAY_3:
+        case RI_TIME_NIGHT_3: {
+            int index = Rando::ClockItems::GetHalfDayIndexFromClockItem(randoItemId);
+            if (index != Rando::ClockItems::INVALID) {
+                Flags_SetRandoInf(static_cast<RandoInf>(RANDO_INF_OBTAINED_CLOCK_DAY_1 + index));
+            }
+            break;
+        }
+        case RI_TIME_PROGRESSIVE: {
+            // Convert to actual half-day per mode
+            RandoItemId concrete = Rando::ConvertItem(RI_TIME_PROGRESSIVE);
+            if (concrete != RI_JUNK) {
+                Rando::GiveItem(concrete);
+            }
+            break;
+        }
         case RI_HEART_CONTAINER:
         case RI_HEART_PIECE:
             gSaveContext.healthAccumulator = gSaveContext.save.saveInfo.playerData.healthCapacity + 0x10;
@@ -250,12 +290,84 @@ void Rando::GiveItem(RandoItemId randoItemId) {
             // ITEM_POTION_RED will put a Red Potion bottle on the first bottle slot
             Item_Give(gPlayState, ITEM_LONGSHOT);
             break;
-        case RI_SOUL_GOHT:
-        case RI_SOUL_GYORG:
-        case RI_SOUL_MAJORA:
-        case RI_SOUL_ODOLWA:
-        case RI_SOUL_TWINMOLD:
-            Flags_SetRandoInf(RANDO_INF_OBTAINED_SOUL_OF_GOHT + (randoItemId - RI_SOUL_GOHT));
+        case RI_SOUL_BOSS_GOHT:
+        case RI_SOUL_BOSS_GYORG:
+        case RI_SOUL_BOSS_MAJORA:
+        case RI_SOUL_BOSS_ODOLWA:
+        case RI_SOUL_BOSS_TWINMOLD:
+        case RI_SOUL_ENEMY_ALIEN:
+        case RI_SOUL_ENEMY_ARMOS:
+        case RI_SOUL_ENEMY_BAD_BAT:
+        case RI_SOUL_ENEMY_BEAMOS:
+        case RI_SOUL_ENEMY_BOE:
+        case RI_SOUL_ENEMY_BUBBLE:
+        case RI_SOUL_ENEMY_CAPTAIN_KEETA:
+        case RI_SOUL_ENEMY_CHUCHU:
+        case RI_SOUL_ENEMY_DEATH_ARMOS:
+        case RI_SOUL_ENEMY_DEEP_PYTHON:
+        case RI_SOUL_ENEMY_DEKU_BABA:
+        case RI_SOUL_ENEMY_DEXIHAND:
+        case RI_SOUL_ENEMY_DINOLFOS:
+        case RI_SOUL_ENEMY_DODONGO:
+        case RI_SOUL_ENEMY_DRAGONFLY:
+        case RI_SOUL_ENEMY_EENO:
+        case RI_SOUL_ENEMY_EYEGORE:
+        case RI_SOUL_ENEMY_FREEZARD:
+        case RI_SOUL_ENEMY_GARO:
+        case RI_SOUL_ENEMY_GEKKO:
+        case RI_SOUL_ENEMY_GIANT_BEE:
+        case RI_SOUL_ENEMY_GOMESS:
+        case RI_SOUL_ENEMY_GUAY:
+        case RI_SOUL_ENEMY_HIPLOOP:
+        case RI_SOUL_ENEMY_IGOS_DU_IKANA:
+        case RI_SOUL_ENEMY_IRON_KNUCKLE:
+        case RI_SOUL_ENEMY_KEESE:
+        case RI_SOUL_ENEMY_LEEVER:
+        case RI_SOUL_ENEMY_LIKE_LIKE:
+        case RI_SOUL_ENEMY_MAD_SCRUB:
+        case RI_SOUL_ENEMY_NEJIRON:
+        case RI_SOUL_ENEMY_OCTOROK:
+        case RI_SOUL_ENEMY_PEAHAT:
+        case RI_SOUL_ENEMY_PIRATE:
+        case RI_SOUL_ENEMY_POE:
+        case RI_SOUL_ENEMY_REDEAD:
+        case RI_SOUL_ENEMY_SHELLBLADE:
+        case RI_SOUL_ENEMY_SKULLFISH:
+        case RI_SOUL_ENEMY_SKULLTULA:
+        case RI_SOUL_ENEMY_SNAPPER:
+        case RI_SOUL_ENEMY_STALCHILD:
+        case RI_SOUL_ENEMY_TAKKURI:
+        case RI_SOUL_ENEMY_TEKTITE:
+        case RI_SOUL_ENEMY_WALLMASTER:
+        case RI_SOUL_ENEMY_WART:
+        case RI_SOUL_ENEMY_WIZROBE:
+        case RI_SOUL_ENEMY_WOLFOS:
+            Flags_SetRandoInf(SOUL_RI_TO_RANDO_INF(randoItemId));
+            break;
+        case RI_FROG_BLUE:
+            SET_WEEKEVENTREG(WEEKEVENTREG_33_01);
+            break;
+        case RI_FROG_CYAN:
+            SET_WEEKEVENTREG(WEEKEVENTREG_32_40);
+            break;
+        case RI_FROG_PINK:
+            SET_WEEKEVENTREG(WEEKEVENTREG_32_80);
+            break;
+        case RI_FROG_WHITE:
+            SET_WEEKEVENTREG(WEEKEVENTREG_33_02);
+            break;
+        case RI_ABILITY_SWIM:
+            Flags_SetRandoInf(RANDO_INF_OBTAINED_SWIM);
+            break;
+        case RI_TRAP:
+            Rando::MiscBehavior::OfferTrapItem();
+            break;
+        case RI_OCARINA_BUTTON_A:
+        case RI_OCARINA_BUTTON_C_DOWN:
+        case RI_OCARINA_BUTTON_C_LEFT:
+        case RI_OCARINA_BUTTON_C_RIGHT:
+        case RI_OCARINA_BUTTON_C_UP:
+            Flags_SetRandoInf(RANDO_INF_OBTAINED_OCARINA_BUTTON_A + (randoItemId - RI_OCARINA_BUTTON_A));
             break;
         case RI_JUNK:
         case RI_NONE:

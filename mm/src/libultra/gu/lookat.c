@@ -15,7 +15,7 @@ void guLookAtF(f32 mf[4][4], f32 xEye, f32 yEye, f32 zEye, f32 xAt, f32 yAt, f32
     xLook = xAt - xEye;
     yLook = yAt - yEye;
     zLook = zAt - zEye;
-    length = -1.0 / sqrtf(SQ(xLook) + SQ(yLook) + SQ(zLook));
+    length = -1.0 / sqrtf((xLook * xLook) + (yLook * yLook) + (zLook * zLook));
     xLook *= length;
     yLook *= length;
     zLook *= length;
@@ -23,7 +23,7 @@ void guLookAtF(f32 mf[4][4], f32 xEye, f32 yEye, f32 zEye, f32 xAt, f32 yAt, f32
     xRight = yUp * zLook - zUp * yLook;
     yRight = zUp * xLook - xUp * zLook;
     zRight = xUp * yLook - yUp * xLook;
-    length = 1.0 / sqrtf(SQ(xRight) + SQ(yRight) + SQ(zRight));
+    length = 1.0 / sqrtf((xRight * xRight) + (yRight * yRight) + (zRight * zRight));
     xRight *= length;
     yRight *= length;
     zRight *= length;
@@ -31,7 +31,7 @@ void guLookAtF(f32 mf[4][4], f32 xEye, f32 yEye, f32 zEye, f32 xAt, f32 yAt, f32
     xUp = yLook * zRight - zLook * yRight;
     yUp = zLook * xRight - xLook * zRight;
     zUp = xLook * yRight - yLook * xRight;
-    length = 1.0 / sqrtf(SQ(xUp) + SQ(yUp) + SQ(zUp));
+    length = 1.0 / sqrtf((xUp * xUp) + (yUp * yUp) + (zUp * zUp));
     xUp *= length;
     yUp *= length;
     zUp *= length;

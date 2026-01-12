@@ -14,9 +14,7 @@
 
 #include "2s2h/GameInteractor/GameInteractor.h"
 
-#define FLAGS (ACTOR_FLAG_10 | ACTOR_FLAG_80000000)
-
-#define THIS ((EnRacedog*)thisx)
+#define FLAGS (ACTOR_FLAG_UPDATE_CULLING_DISABLED | ACTOR_FLAG_MINIMAP_ICON_ENABLED)
 
 void EnRacedog_Init(Actor* thisx, PlayState* play);
 void EnRacedog_Destroy(Actor* thisx, PlayState* play);
@@ -73,7 +71,7 @@ typedef struct {
     /* 0xE */ s16 textId;                    // Used to determine the dog's condition
 } RaceDogInfo;                               // size = 0x10
 
-ActorInit En_Racedog_InitVars = {
+ActorProfile En_Racedog_Profile = {
     /**/ ACTOR_EN_RACEDOG,
     /**/ ACTORCAT_NPC,
     /**/ FLAGS,
@@ -138,7 +136,7 @@ static RaceDogInfo sDogInfo[] = {
  * Stores the RacedogInfo for the dog that is selected by the player. These values are just
  * placeholders, and the actual value gets grabbed from sDogInfo in EnRacedog_Init.
  */
-static RaceDogInfo sSelectedDogInfo = { -1.0f, 1.0, DOG_COLOR_DEFAULT, -1, 0, 0x353E };
+static RaceDogInfo sSelectedDogInfo = { -1.0f, 1.0f, DOG_COLOR_DEFAULT, -1, 0, 0x353E };
 
 /**
  * The XZ-coordinates used to determine if the dog is inside the finish line.
@@ -153,7 +151,7 @@ static Vec2f sFinishLineCoordinates[] = {
 
 static ColliderCylinderInit sCylinderInit = {
     {
-        COLTYPE_NONE,
+        COL_MATERIAL_NONE,
         AT_NONE,
         AC_ON | AC_TYPE_PLAYER,
         OC1_ON | OC1_TYPE_ALL,
@@ -161,11 +159,11 @@ static ColliderCylinderInit sCylinderInit = {
         COLSHAPE_CYLINDER,
     },
     {
-        ELEMTYPE_UNK1,
+        ELEM_MATERIAL_UNK1,
         { 0x00000000, 0x00, 0x00 },
         { 0xF7CFFFFF, 0x00, 0x00 },
-        TOUCH_NONE | TOUCH_SFX_NORMAL,
-        BUMP_ON,
+        ATELEM_NONE | ATELEM_SFX_NORMAL,
+        ACELEM_ON,
         OCELEM_ON,
     },
     { 13, 19, 0, { 0, 0, 0 } },
@@ -228,33 +226,41 @@ typedef enum {
     /* 16 */ RACEDOG_ANIM_MAX
 } RacedogAnimation;
 
-static AnimationInfoS sAnimationInfo[] = {
-    { &gDogWalkAnim, 1.0f, 0, -1, ANIMMODE_LOOP, 0 },        { &gDogWalkAnim, 1.0f, 0, -1, ANIMMODE_LOOP, -6 },
-    { &gDogRunAnim, 1.0f, 0, -1, ANIMMODE_LOOP, 0 },         { &gDogBarkAnim, 1.0f, 0, -1, ANIMMODE_LOOP, -6 },
-    { &gDogSitAnim, 1.0f, 0, -1, ANIMMODE_ONCE, -6 },        { &gDogSitAnim, 1.0f, 0, -1, ANIMMODE_LOOP_PARTIAL, -6 },
-    { &gDogLyingDownAnim, 1.0f, 0, -1, ANIMMODE_ONCE, -6 },  { &gDogLyingDownLoopAnim, 1.0f, 0, -1, ANIMMODE_LOOP, -6 },
-    { &gDogLyingDownAnim, 1.0f, 0, 27, ANIMMODE_ONCE, -6 },  { &gDogLyingDownAnim, 1.0f, 28, -1, ANIMMODE_ONCE, -6 },
-    { &gDogLyingDownAnim, 1.0f, 54, 54, ANIMMODE_ONCE, -6 }, { &gDogWalkAnim, -1.5f, -1, 0, ANIMMODE_LOOP, -6 },
-    { &gDogJumpAnim, 1.0f, 0, -1, ANIMMODE_ONCE, 0 },        { &gDogLongJumpAnim, 1.2f, 0, -1, ANIMMODE_ONCE, 0 },
-    { &gDogJumpAttackAnim, 1.2f, 0, -1, ANIMMODE_ONCE, 0 },  { &gDogWalkAnim, 0.5f, 0, -1, ANIMMODE_LOOP, 0 },
+static AnimationInfoS sAnimationInfo[RACEDOG_ANIM_MAX] = {
+    { &gDogWalkAnim, 1.0f, 0, -1, ANIMMODE_LOOP, 0 },           // RACEDOG_ANIM_IDLE
+    { &gDogWalkAnim, 1.0f, 0, -1, ANIMMODE_LOOP, -6 },          // RACEDOG_ANIM_WALK_1
+    { &gDogRunAnim, 1.0f, 0, -1, ANIMMODE_LOOP, 0 },            // RACEDOG_ANIM_RUN
+    { &gDogBarkAnim, 1.0f, 0, -1, ANIMMODE_LOOP, -6 },          // RACEDOG_ANIM_BARK
+    { &gDogSitAnim, 1.0f, 0, -1, ANIMMODE_ONCE, -6 },           // RACEDOG_ANIM_SIT_DOWN_ONCE
+    { &gDogSitAnim, 1.0f, 0, -1, ANIMMODE_LOOP_PARTIAL, -6 },   // RACEDOG_ANIM_SIT_DOWN
+    { &gDogLyingDownAnim, 1.0f, 0, -1, ANIMMODE_ONCE, -6 },     // RACEDOG_ANIM_LYING_DOWN_START_1
+    { &gDogLyingDownLoopAnim, 1.0f, 0, -1, ANIMMODE_LOOP, -6 }, // RACEDOG_ANIM_LYING_DOWN_LOOP
+    { &gDogLyingDownAnim, 1.0f, 0, 27, ANIMMODE_ONCE, -6 },     // RACEDOG_ANIM_LYING_DOWN_START_2
+    { &gDogLyingDownAnim, 1.0f, 28, -1, ANIMMODE_ONCE, -6 },    // RACEDOG_ANIM_LYING_DOWN_START_3
+    { &gDogLyingDownAnim, 1.0f, 54, 54, ANIMMODE_ONCE, -6 },    // RACEDOG_ANIM_LYING_DOWN_START_4
+    { &gDogWalkAnim, -1.5f, -1, 0, ANIMMODE_LOOP, -6 },         // RACEDOG_ANIM_WALK_BACKWARDS
+    { &gDogJumpAnim, 1.0f, 0, -1, ANIMMODE_ONCE, 0 },           // RACEDOG_ANIM_JUMP
+    { &gDogLongJumpAnim, 1.2f, 0, -1, ANIMMODE_ONCE, 0 },       // RACEDOG_ANIM_LONG_JUMP
+    { &gDogJumpAttackAnim, 1.2f, 0, -1, ANIMMODE_ONCE, 0 },     // RACEDOG_ANIM_JUMP_ATTACK
+    { &gDogWalkAnim, 0.5f, 0, -1, ANIMMODE_LOOP, 0 },           // RACEDOG_ANIM_SWIM
 };
 
 static InitChainEntry sInitChain[] = {
-    ICHAIN_F32(uncullZoneForward, 1000, ICHAIN_STOP),
+    ICHAIN_F32(cullingVolumeDistance, 1000, ICHAIN_STOP),
 };
 
 void EnRacedog_ChangeAnim(SkelAnime* skelAnime, AnimationInfoS* animationInfo, s32 animIndex) {
-    f32 frameCount;
+    f32 endFrame;
 
     animationInfo += animIndex;
     if (animationInfo->frameCount < 0) {
-        frameCount = Animation_GetLastFrame(animationInfo->animation);
+        endFrame = Animation_GetLastFrame(animationInfo->animation);
     } else {
-        frameCount = animationInfo->frameCount;
+        endFrame = animationInfo->frameCount;
     }
 
     Animation_Change(skelAnime, animationInfo->animation, animationInfo->playSpeed + (BREG(88) * 0.1f),
-                     animationInfo->startFrame, frameCount, animationInfo->mode, animationInfo->morphFrames);
+                     animationInfo->startFrame, endFrame, animationInfo->mode, animationInfo->morphFrames);
 }
 
 void EnRacedog_UpdateCollision(EnRacedog* this, PlayState* play) {
@@ -307,7 +313,7 @@ void EnRacedog_GetFloorRot(EnRacedog* this, Vec3f* floorRot) {
 }
 
 void EnRacedog_Init(Actor* thisx, PlayState* play) {
-    EnRacedog* this = THIS;
+    EnRacedog* this = (EnRacedog*)thisx;
     ColliderCylinder* collider = &this->collider;
 
     ActorShape_Init(&this->actor.shape, 0.0f, ActorShadow_DrawCircle, 24.0f);
@@ -340,7 +346,7 @@ void EnRacedog_Init(Actor* thisx, PlayState* play) {
     // meaning that the IDs are just whatever their default values in sDogInfo are. As a result,
     // the blue dog, one beige dog, one white dog, one brown dog, and two gray dogs never bother
     // to do the random 1/20 check here, regardless of anything else.
-    if ((sDogInfo[this->index].textId > 0x353E) && (this->index == (s16)Rand_ZeroFloat(20.0f))) {
+    if ((sDogInfo[this->index].textId > 0x353E) && (this->index == TRUNCF_BINANG(Rand_ZeroFloat(20.0f)))) {
         this->extraTimeBeforeRaceStart = 5;
     } else {
         this->extraTimeBeforeRaceStart = 0;
@@ -353,8 +359,8 @@ void EnRacedog_Init(Actor* thisx, PlayState* play) {
     this->pointForCurrentTargetSpeed = -1;
 
     EnRacedog_UpdateTextId(this);
-    this->actor.flags |= ACTOR_FLAG_10;
-    this->actor.flags |= ACTOR_FLAG_20;
+    this->actor.flags |= ACTOR_FLAG_UPDATE_CULLING_DISABLED;
+    this->actor.flags |= ACTOR_FLAG_DRAW_CULLING_DISABLED;
 
     sSelectedDogInfo = sDogInfo[(s16)GET_EVENTINF_DOG_RACE_SELECTED_DOG_INDEX];
     this->selectedDogIndex = sSelectedDogInfo.index;
@@ -365,7 +371,7 @@ void EnRacedog_Init(Actor* thisx, PlayState* play) {
 }
 
 void EnRacedog_Destroy(Actor* thisx, PlayState* play) {
-    EnRacedog* this = THIS;
+    EnRacedog* this = (EnRacedog*)thisx;
 
     Collider_DestroyCylinder(play, &this->collider);
 }
@@ -702,7 +708,7 @@ void EnRacedog_PlaySfxWalk(EnRacedog* this) {
 
 void EnRacedog_Update(Actor* thisx, PlayState* play) {
     s32 pad;
-    EnRacedog* this = THIS;
+    EnRacedog* this = (EnRacedog*)thisx;
     Vec3f floorRot = { 0.0f, 0.0f, 0.0f };
 
     this->selectedDogIndex = sSelectedDogInfo.index;
@@ -763,7 +769,7 @@ void EnRacedog_DrawSelectionArrow(EnRacedog* this, PlayState* play) {
         gDPSetEnvColor(POLY_OPA_DISP++, 255, this->selectionArrowGreenEnvColor, 0, 255);
         Matrix_Scale(this->selectionArrowScale * 2.0f, this->selectionArrowScale * 2.0f,
                      this->selectionArrowScale * 2.0f, MTXMODE_APPLY);
-        gSPMatrix(POLY_OPA_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+        MATRIX_FINALIZE_AND_LOAD(POLY_OPA_DISP++, play->state.gfxCtx);
         gSPDisplayList(POLY_OPA_DISP++, gDogSelectionArrowEmptyDL);
         gSPDisplayList(POLY_OPA_DISP++, gDogSelectionArrowDL);
 
@@ -777,7 +783,7 @@ s32 EnRacedog_OverrideLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3
 
 void EnRacedog_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* rot, Actor* thisx) {
     s32 pad;
-    EnRacedog* this = THIS;
+    EnRacedog* this = (EnRacedog*)thisx;
     Vec3f focusOffset = { 0.0f, 20.0f, 0.0f };
 
     if (limbIndex == DOG_LIMB_HEAD) {
@@ -790,7 +796,7 @@ void EnRacedog_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* 
 }
 
 void EnRacedog_Draw(Actor* thisx, PlayState* play) {
-    EnRacedog* this = THIS;
+    EnRacedog* this = (EnRacedog*)thisx;
 
     OPEN_DISPS(play->state.gfxCtx);
 

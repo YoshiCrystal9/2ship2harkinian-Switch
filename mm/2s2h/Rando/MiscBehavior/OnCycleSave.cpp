@@ -46,6 +46,22 @@ void Rando::MiscBehavior::AfterEndOfCycleSave() {
         gSaveContext.save.saveInfo.skullTokenCount = saveContextCopy.save.saveInfo.skullTokenCount;
     }
 
+    // Persist found frogs in frog shuffle. TODO: Make this optional
+    if (RANDO_SAVE_OPTIONS[RO_SHUFFLE_FROGS]) {
+        if (saveContextCopy.save.saveInfo.weekEventReg[32] & 0x40) {
+            SET_WEEKEVENTREG(WEEKEVENTREG_32_40);
+        }
+        if (saveContextCopy.save.saveInfo.weekEventReg[32] & 0x80) {
+            SET_WEEKEVENTREG(WEEKEVENTREG_32_80);
+        }
+        if (saveContextCopy.save.saveInfo.weekEventReg[33] & 0x01) {
+            SET_WEEKEVENTREG(WEEKEVENTREG_33_01);
+        }
+        if (saveContextCopy.save.saveInfo.weekEventReg[33] & 0x02) {
+            SET_WEEKEVENTREG(WEEKEVENTREG_33_02);
+        }
+    }
+
     // For now, we're just going to always persist these slots. We may do something smarter here later if this causes
     // any issues.
     gSaveContext.save.saveInfo.inventory.items[SLOT_TRADE_DEED] =
@@ -87,8 +103,17 @@ void Rando::MiscBehavior::AfterEndOfCycleSave() {
                         ~(1 << (randoStaticCheck.flag & 0x1F));
                 }
                 break;
-                // most of the others are handled by the game, with the exception of PERSISTENT_CYCLE_FLAGS_SET, not
-                // sure if any of these cases affect us yet so ignoring for now
+            case FLAG_CYCL_SCENE_COLLECTIBLE:
+                // Clear the flag without triggering hook
+                if (gPlayState->sceneId == randoStaticCheck.sceneId) {
+                    gPlayState->actorCtx.sceneFlags.collectible[(randoStaticCheck.flag & ~0x1F) >> 5] &=
+                        ~(1 << (randoStaticCheck.flag & 0x1F));
+                }
+                gSaveContext.save.saveInfo.permanentSceneFlags[randoStaticCheck.sceneId].collectible &=
+                    ~(1 << (randoStaticCheck.flag & 0x1F));
+                gSaveContext.cycleSceneFlags[randoStaticCheck.sceneId].collectible &=
+                    ~(1 << (randoStaticCheck.flag & 0x1F));
+                break;
         }
     }
 

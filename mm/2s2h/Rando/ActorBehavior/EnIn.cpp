@@ -1,12 +1,11 @@
 #include "ActorBehavior.h"
-#include "public/bridge/consolevariablebridge.h"
+#include <libultraship/bridge/consolevariablebridge.h>
 #include "2s2h/CustomMessage/CustomMessage.h"
 
 extern "C" {
 #include "variables.h"
 #include "overlays/actors/ovl_En_In/z_en_in.h"
 void func_808F3C40(EnIn* enIn, PlayState* play);
-void Player_TalkWithPlayer(PlayState* play, Actor* actor);
 }
 
 void EnIn_OnOpenPurchaseText(u16* textId, bool* loadFromMessageTable) {
@@ -39,7 +38,7 @@ void Rando::ActorBehavior::InitEnInBehavior() {
 
     /*
      * This is the same block found for non-scripted actors in OfferGetItem.cpp, with the removal of
-     * Player_TalkWithPlayer() and addition of the rando check.
+     * Player_StartTalking() and addition of the rando check.
      */
     COND_VB_SHOULD(VB_GIVE_ITEM_FROM_OFFER, IS_RANDO, {
         GetItemId* item = va_arg(args, GetItemId*);
@@ -57,7 +56,8 @@ void Rando::ActorBehavior::InitEnInBehavior() {
         }
     });
 
-    COND_VB_SHOULD(VB_HAVE_GARO_MASK, IS_RANDO, { *should = RANDO_SAVE_CHECKS[RC_GORMAN_TRACK_GARO_MASK].obtained; });
+    COND_VB_SHOULD(VB_HAVE_GARO_MASK, IS_RANDO,
+                   { *should = RANDO_SAVE_CHECKS[RC_GORMAN_TRACK_GARO_MASK].cycleObtained; });
 
     // RC_GORMAN_MILK_PURCHASE
 

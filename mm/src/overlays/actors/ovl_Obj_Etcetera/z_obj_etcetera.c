@@ -6,9 +6,7 @@
 
 #include "z_obj_etcetera.h"
 
-#define FLAGS (ACTOR_FLAG_10)
-
-#define THIS ((ObjEtcetera*)thisx)
+#define FLAGS (ACTOR_FLAG_UPDATE_CULLING_DISABLED)
 
 void ObjEtcetera_Init(Actor* thisx, PlayState* play);
 void ObjEtcetera_Destroy(Actor* thisx, PlayState* play);
@@ -20,7 +18,7 @@ void ObjEtcetera_Setup(ObjEtcetera* this, PlayState* play);
 void ObjEtcetera_DrawIdle(Actor* thisx, PlayState* play);
 void ObjEtcetera_DrawAnimated(Actor* thisx, PlayState* play);
 
-ActorInit Obj_Etcetera_InitVars = {
+ActorProfile Obj_Etcetera_Profile = {
     ACTOR_OBJ_ETCETERA,
     ACTORCAT_BG,
     FLAGS,
@@ -34,7 +32,7 @@ ActorInit Obj_Etcetera_InitVars = {
 
 static ColliderCylinderInit sCylinderInit = {
     {
-        COLTYPE_NONE,
+        COL_MATERIAL_NONE,
         AT_NONE,
         AC_ON | AC_TYPE_PLAYER,
         OC1_NONE,
@@ -42,11 +40,11 @@ static ColliderCylinderInit sCylinderInit = {
         COLSHAPE_CYLINDER,
     },
     {
-        ELEMTYPE_UNK0,
+        ELEM_MATERIAL_UNK0,
         { 0x00000000, 0x00, 0x00 },
         { 0x01000202, 0x00, 0x00 },
-        TOUCH_NONE | TOUCH_SFX_NORMAL,
-        BUMP_ON,
+        ATELEM_NONE | ATELEM_SFX_NORMAL,
+        ACELEM_ON,
         OCELEM_NONE,
     },
     { 20, 14, 0, { 0, 0, 0 } },
@@ -64,13 +62,13 @@ static s16 sObjectIds[] = {
  * When these small oscillations happen, the game determines how to scale the appropriate
  * axes by using this table.
  */
-static f32 oscillationTable[] = {
+static f32 sOscillationTable[] = {
     -1.0f, -1.0f, -1.0f, -0.7f, 0.0f, 0.7f, 1.0f, 0.7f, 0.0f, -0.7f, -1.0f, -0.7f, 0.0f, 0.7f, 1.0f, 0.7f, 0.0f, -0.7f,
 };
 
 void ObjEtcetera_Init(Actor* thisx, PlayState* play) {
     s32 pad;
-    ObjEtcetera* this = THIS;
+    ObjEtcetera* this = (ObjEtcetera*)thisx;
     s32 objectSlot;
     s32 type = DEKU_FLOWER_TYPE(&this->dyna.actor);
     s32 floorBgId;
@@ -99,7 +97,7 @@ void ObjEtcetera_Init(Actor* thisx, PlayState* play) {
 }
 
 void ObjEtcetera_Destroy(Actor* thisx, PlayState* play) {
-    ObjEtcetera* this = THIS;
+    ObjEtcetera* this = (ObjEtcetera*)thisx;
 
     DynaPoly_DeleteBgActor(play, &play->colCtx.dyna, this->dyna.bgId);
     Collider_DestroyCylinder(play, &this->collider);
@@ -115,7 +113,7 @@ void ObjEtcetera_DoNormalOscillation(ObjEtcetera* this, PlayState* play) {
         s32 requiredScopeTemp;
 
         Actor_SetScale(&this->dyna.actor,
-                       (oscillationTable[play->gameplayFrames % 18] * (0.0001f * this->oscillationTimer)) + 0.01f);
+                       (sOscillationTable[play->gameplayFrames % 18] * (0.0001f * this->oscillationTimer)) + 0.01f);
         this->dyna.actor.scale.y = 0.02f;
         this->oscillationTimer--;
     } else {
@@ -298,7 +296,7 @@ void ObjEtcetera_Setup(ObjEtcetera* this, PlayState* play) {
                 Actor_SetScale(&this->dyna.actor, 0.01f);
                 this->dyna.actor.scale.y = 0.02f;
                 this->dyna.actor.focus.pos.y = this->dyna.actor.home.pos.y + 10.0f;
-                this->dyna.actor.targetMode = TARGET_MODE_3;
+                this->dyna.actor.attentionRangeType = ATTENTION_RANGE_3;
                 break;
 
             case DEKU_FLOWER_TYPE_PINK_WITH_INITIAL_BOUNCE:
@@ -311,7 +309,7 @@ void ObjEtcetera_Setup(ObjEtcetera* this, PlayState* play) {
                 this->oscillationTimer = 30;
                 this->bounceOscillationScale = 0.0f;
                 this->dyna.actor.focus.pos.y = this->dyna.actor.home.pos.y + 10.0f;
-                this->dyna.actor.targetMode = TARGET_MODE_3;
+                this->dyna.actor.attentionRangeType = ATTENTION_RANGE_3;
                 break;
 
             default:
@@ -321,7 +319,7 @@ void ObjEtcetera_Setup(ObjEtcetera* this, PlayState* play) {
 }
 
 void ObjEtcetera_Update(Actor* thisx, PlayState* play) {
-    ObjEtcetera* this = THIS;
+    ObjEtcetera* this = (ObjEtcetera*)thisx;
     CollisionPoly* floorPoly;
     u8 floorBgId = this->dyna.actor.floorBgId;
 
@@ -342,11 +340,11 @@ void ObjEtcetera_Update(Actor* thisx, PlayState* play) {
  * When an animation is finished, functions are expected to set the actor's draw function to this.
  */
 void ObjEtcetera_DrawIdle(Actor* thisx, PlayState* play) {
-    ObjEtcetera* this = THIS;
+    ObjEtcetera* this = (ObjEtcetera*)thisx;
 
     OPEN_DISPS(play->state.gfxCtx);
 
-    gSPMatrix(POLY_OPA_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    MATRIX_FINALIZE_AND_LOAD(POLY_OPA_DISP++, play->state.gfxCtx);
     Gfx_SetupDL25_Opa(play->state.gfxCtx);
     gSPDisplayList(POLY_OPA_DISP++, this->dList);
 
@@ -359,7 +357,7 @@ void ObjEtcetera_DrawIdle(Actor* thisx, PlayState* play) {
  * When a function wants to play an animation, it is expected to set the actor's draw function to this.
  */
 void ObjEtcetera_DrawAnimated(Actor* thisx, PlayState* play) {
-    ObjEtcetera* this = THIS;
+    ObjEtcetera* this = (ObjEtcetera*)thisx;
 
     Gfx_SetupDL37_Opa(play->state.gfxCtx);
     SkelAnime_DrawOpa(play, this->skelAnime.skeleton, this->skelAnime.jointTable, NULL, NULL, &this->dyna.actor);

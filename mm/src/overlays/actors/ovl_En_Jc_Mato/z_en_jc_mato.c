@@ -7,9 +7,7 @@
 #include "z_en_jc_mato.h"
 #include "objects/object_tru/object_tru.h"
 
-#define FLAGS (ACTOR_FLAG_10 | ACTOR_FLAG_20 | ACTOR_FLAG_4000)
-
-#define THIS ((EnJcMato*)thisx)
+#define FLAGS (ACTOR_FLAG_UPDATE_CULLING_DISABLED | ACTOR_FLAG_DRAW_CULLING_DISABLED | ACTOR_FLAG_CAN_ATTACH_TO_ARROW)
 
 void EnJcMato_Init(Actor* thisx, PlayState* play);
 void EnJcMato_Destroy(Actor* thisx, PlayState* play);
@@ -20,7 +18,7 @@ s32 EnJcMato_CheckForHit(EnJcMato* this, PlayState* play);
 void EnJcMato_SetupIdle(EnJcMato* this);
 void EnJcMato_Idle(EnJcMato* this, PlayState* play);
 
-ActorInit En_Jc_Mato_InitVars = {
+ActorProfile En_Jc_Mato_Profile = {
     /**/ ACTOR_EN_JC_MATO,
     /**/ ACTORCAT_PROP,
     /**/ FLAGS,
@@ -34,7 +32,7 @@ ActorInit En_Jc_Mato_InitVars = {
 
 static ColliderSphereInit sSphereInit = {
     {
-        COLTYPE_NONE,
+        COL_MATERIAL_NONE,
         AT_NONE,
         AC_ON | AC_TYPE_PLAYER,
         OC1_ON | OC1_TYPE_ALL,
@@ -42,11 +40,11 @@ static ColliderSphereInit sSphereInit = {
         COLSHAPE_SPHERE,
     },
     {
-        ELEMTYPE_UNK0,
+        ELEM_MATERIAL_UNK0,
         { 0xF7CFFFFF, 0x00, 0x00 },
         { 0xF7CFFFFF, 0x00, 0x00 },
-        TOUCH_NONE | TOUCH_SFX_NORMAL,
-        BUMP_ON,
+        ATELEM_NONE | ATELEM_SFX_NORMAL,
+        ACELEM_ON,
         OCELEM_ON,
     },
     { 0, { { 0, 0, 0 }, 15 }, 100 },
@@ -117,7 +115,7 @@ void EnJcMato_Idle(EnJcMato* this, PlayState* play) {
 }
 
 void EnJcMato_Init(Actor* thisx, PlayState* play) {
-    EnJcMato* this = THIS;
+    EnJcMato* this = (EnJcMato*)thisx;
 
     ActorShape_Init(&this->actor.shape, 0.0f, ActorShadow_DrawCircle, 24.0f);
     Collider_InitSphere(play, &this->collider);
@@ -131,13 +129,13 @@ void EnJcMato_Init(Actor* thisx, PlayState* play) {
 }
 
 void EnJcMato_Destroy(Actor* thisx, PlayState* play) {
-    EnJcMato* this = THIS;
+    EnJcMato* this = (EnJcMato*)thisx;
 
     Collider_DestroySphere(play, &this->collider);
 }
 
 void EnJcMato_Update(Actor* thisx, PlayState* play) {
-    EnJcMato* this = THIS;
+    EnJcMato* this = (EnJcMato*)thisx;
 
     this->actionFunc(this, play);
     if (!CHECK_EVENTINF(EVENTINF_40)) {
@@ -147,12 +145,12 @@ void EnJcMato_Update(Actor* thisx, PlayState* play) {
 
 void EnJcMato_Draw(Actor* thisx, PlayState* play) {
     static Vec3f sOffset = { 0.0f, -2500.0f, 0.0f };
-    EnJcMato* this = THIS;
+    EnJcMato* this = (EnJcMato*)thisx;
 
     OPEN_DISPS(play->state.gfxCtx);
 
     Gfx_SetupDL25_Opa(play->state.gfxCtx);
-    gSPMatrix(POLY_OPA_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    MATRIX_FINALIZE_AND_LOAD(POLY_OPA_DISP++, play->state.gfxCtx);
     gSPDisplayList(POLY_OPA_DISP++, gKoumeTargetDL);
     Matrix_MultVec3f(&sOffset, &this->pos);
 

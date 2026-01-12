@@ -7,11 +7,12 @@
 #include "z_en_wallmas.h"
 #include "overlays/actors/ovl_En_Clear_Tag/z_en_clear_tag.h"
 #include "overlays/actors/ovl_En_Encount1/z_en_encount1.h"
+#include "overlays/actors/ovl_Obj_Ice_Poly/z_obj_ice_poly.h"
 #include "objects/gameplay_keep/gameplay_keep.h"
 
-#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_UNFRIENDLY | ACTOR_FLAG_10 | ACTOR_FLAG_400)
-
-#define THIS ((EnWallmas*)thisx)
+#define FLAGS                                                                                 \
+    (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_HOSTILE | ACTOR_FLAG_UPDATE_CULLING_DISABLED | \
+     ACTOR_FLAG_HOOKSHOT_PULLS_PLAYER)
 
 void EnWallmas_Init(Actor* thisx, PlayState* play);
 void EnWallmas_Destroy(Actor* thisx, PlayState* play);
@@ -44,7 +45,7 @@ void EnWallmas_WaitForProximity(EnWallmas* this, PlayState* play);
 void EnWallmas_WaitForSwitchFlag(EnWallmas* this, PlayState* play);
 void EnWallmas_Stun(EnWallmas* this, PlayState* play);
 
-ActorInit En_Wallmas_InitVars = {
+ActorProfile En_Wallmas_Profile = {
     /**/ ACTOR_EN_WALLMAS,
     /**/ ACTORCAT_ENEMY,
     /**/ FLAGS,
@@ -58,7 +59,7 @@ ActorInit En_Wallmas_InitVars = {
 
 static ColliderCylinderInit sCylinderInit = {
     {
-        COLTYPE_HIT0,
+        COL_MATERIAL_HIT0,
         AT_NONE,
         AC_ON | AC_TYPE_PLAYER,
         OC1_ON | OC1_TYPE_ALL,
@@ -66,11 +67,11 @@ static ColliderCylinderInit sCylinderInit = {
         COLSHAPE_CYLINDER,
     },
     {
-        ELEMTYPE_UNK0,
+        ELEM_MATERIAL_UNK0,
         { 0x00000000, 0x00, 0x00 },
         { 0xF7CFFFFF, 0x00, 0x00 },
-        TOUCH_NONE | TOUCH_SFX_NORMAL,
-        BUMP_ON | BUMP_HOOKABLE,
+        ATELEM_NONE | ATELEM_SFX_NORMAL,
+        ACELEM_ON | ACELEM_HOOKABLE,
         OCELEM_ON,
     },
     { 30, 40, 0, { 0, 0, 0 } },
@@ -125,7 +126,7 @@ static CollisionCheckInfoInit sColChkInfoInit = { 3, 30, 40, 150 };
 
 static InitChainEntry sInitChain[] = {
     ICHAIN_S8(hintId, TATL_HINT_ID_WALLMASTER, ICHAIN_CONTINUE),
-    ICHAIN_F32(targetArrowOffset, 5500, ICHAIN_CONTINUE),
+    ICHAIN_F32(lockOnArrowOffset, 5500, ICHAIN_CONTINUE),
     ICHAIN_F32_DIV1000(gravity, -1500, ICHAIN_STOP),
 };
 
@@ -138,7 +139,7 @@ static f32 sYOffsetPerForm[PLAYER_FORM_MAX] = {
 };
 
 void EnWallmas_Init(Actor* thisx, PlayState* play) {
-    EnWallmas* this = THIS;
+    EnWallmas* this = (EnWallmas*)thisx;
 
     Actor_ProcessInitChain(&this->actor, sInitChain);
     ActorShape_Init(&this->actor.shape, 0.0f, NULL, 0.5f);
@@ -161,7 +162,8 @@ void EnWallmas_Init(Actor* thisx, PlayState* play) {
     if (WALLMASTER_IS_FROZEN(&this->actor)) {
         Actor_SpawnAsChild(&play->actorCtx, &this->actor, play, ACTOR_OBJ_ICE_POLY, this->actor.world.pos.x,
                            this->actor.world.pos.y - 15.0f, this->actor.world.pos.z, this->actor.world.rot.x,
-                           (this->actor.world.rot.y + 0x5900), this->actor.world.rot.z, 0xFF50);
+                           (this->actor.world.rot.y + 0x5900), this->actor.world.rot.z,
+                           OBJICEPOLY_PARAMS(80, OBJICEPOLY_SWITCH_FLAG_NONE));
         this->actor.params &= ~0x80;
         EnWallmas_SetupReturnToCeiling(this);
         return;
@@ -182,7 +184,7 @@ void EnWallmas_Init(Actor* thisx, PlayState* play) {
 }
 
 void EnWallmas_Destroy(Actor* thisx, PlayState* play) {
-    EnWallmas* this = THIS;
+    EnWallmas* this = (EnWallmas*)thisx;
 
     Collider_DestroyCylinder(play, &this->collider);
 
@@ -200,27 +202,27 @@ void EnWallmas_Freeze(EnWallmas* this) {
     this->drawDmgEffScale = 0.55f;
     this->drawDmgEffFrozenSteamScale = 825.0f * 0.001f;
     this->drawDmgEffAlpha = 1.0f;
-    this->collider.base.colType = 3;
+    this->collider.base.colMaterial = COL_MATERIAL_HIT3;
     this->timer = 80;
-    this->actor.flags &= ~ACTOR_FLAG_400;
+    this->actor.flags &= ~ACTOR_FLAG_HOOKSHOT_PULLS_PLAYER;
     Actor_SetColorFilter(&this->actor, COLORFILTER_COLORFLAG_RED, 255, COLORFILTER_BUFFLAG_OPA, 80);
 }
 
 void EnWallmas_ThawIfFrozen(EnWallmas* this, PlayState* play) {
     if (this->drawDmgEffType == ACTOR_DRAW_DMGEFF_FROZEN_NO_SFX) {
         this->drawDmgEffType = ACTOR_DRAW_DMGEFF_FIRE;
-        this->collider.base.colType = 0;
+        this->collider.base.colMaterial = COL_MATERIAL_HIT0;
         this->drawDmgEffAlpha = 0.0f;
         Actor_SpawnIceEffects(play, &this->actor, this->bodyPartsPos, WALLMASTER_BODYPART_MAX, 2, 0.3f, 0.2f);
-        this->actor.flags |= ACTOR_FLAG_400;
+        this->actor.flags |= ACTOR_FLAG_HOOKSHOT_PULLS_PLAYER;
     }
 }
 
 void EnWallmas_TimerInit(EnWallmas* this, PlayState* play) {
     Player* player = GET_PLAYER(play);
 
-    this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
-    this->actor.flags |= ACTOR_FLAG_20;
+    this->actor.flags &= ~ACTOR_FLAG_ATTENTION_ENABLED;
+    this->actor.flags |= ACTOR_FLAG_DRAW_CULLING_DISABLED;
     this->timer = 130;
     this->actor.velocity.y = 0.0f;
     this->actor.world.pos.y = player->actor.world.pos.y;
@@ -242,8 +244,8 @@ void EnWallmas_WaitToDrop(EnWallmas* this, PlayState* play) {
     }
 
     if ((player->stateFlags1 & (PLAYER_STATE1_100000 | PLAYER_STATE1_8000000)) ||
-        (player->stateFlags2 & PLAYER_STATE2_80) || (player->unk_B5E > 0) || (player->actor.freezeTimer > 0) ||
-        !(player->actor.bgCheckFlags & BGCHECKFLAG_GROUND) ||
+        (player->stateFlags2 & PLAYER_STATE2_80) || (player->textboxBtnCooldownTimer > 0) ||
+        (player->actor.freezeTimer > 0) || !(player->actor.bgCheckFlags & BGCHECKFLAG_GROUND) ||
         ((WALLMASTER_GET_TYPE(&this->actor) == WALLMASTER_TYPE_PROXIMITY) &&
          (Math_Vec3f_DistXZ(&this->actor.home.pos, playerPos) > (120.f + this->detectionRadius)))) {
         AudioSfx_StopById(NA_SE_EN_FALL_AIM);
@@ -270,8 +272,8 @@ void EnWallmas_SetupDrop(EnWallmas* this, PlayState* play) {
     this->actor.shape.rot.y = player->actor.shape.rot.y + 0x8000;
     this->actor.world.rot.y = this->actor.shape.rot.y;
     this->actor.floorHeight = player->actor.floorHeight;
-    this->actor.flags |= ACTOR_FLAG_TARGETABLE;
-    this->actor.flags &= ~ACTOR_FLAG_20;
+    this->actor.flags |= ACTOR_FLAG_ATTENTION_ENABLED;
+    this->actor.flags &= ~ACTOR_FLAG_DRAW_CULLING_DISABLED;
     this->actionFunc = EnWallmas_Drop;
 }
 
@@ -366,7 +368,7 @@ void EnWallmas_ReturnToCeiling(EnWallmas* this, PlayState* play) {
     if (this->skelAnime.curFrame > 20.0f) {
         this->actor.world.pos.y += 30.0f;
         this->timer += 9;
-        this->actor.flags &= ~ACTOR_FLAG_2000;
+        this->actor.flags &= ~ACTOR_FLAG_HOOKSHOT_ATTACHED;
     }
 
     if (Animation_OnFrame(&this->skelAnime, 20.0f)) {
@@ -497,14 +499,14 @@ void EnWallmas_TakePlayer(EnWallmas* this, PlayState* play) {
 
     if (this->timer == 30) {
         Audio_PlaySfx(NA_SE_OC_ABYSS);
-        func_80169FDC(&play->state);
+        func_80169FDC(play);
     }
 }
 
 void EnWallmas_ProximityOrSwitchInit(EnWallmas* this) {
     this->timer = 0;
     this->actor.draw = NULL;
-    this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
+    this->actor.flags &= ~ACTOR_FLAG_ATTENTION_ENABLED;
     if (WALLMASTER_GET_TYPE(&this->actor) == WALLMASTER_TYPE_PROXIMITY) {
         this->actionFunc = EnWallmas_WaitForProximity;
     } else {
@@ -556,14 +558,14 @@ void EnWallmas_Stun(EnWallmas* this, PlayState* play) {
 void EnWallmas_UpdateDamage(EnWallmas* this, PlayState* play) {
     if (this->collider.base.acFlags & AC_HIT) {
         this->collider.base.acFlags &= ~AC_HIT;
-        Actor_SetDropFlag(&this->actor, &this->collider.info);
+        Actor_SetDropFlag(&this->actor, &this->collider.elem);
 
         if ((this->drawDmgEffType != ACTOR_DRAW_DMGEFF_FROZEN_NO_SFX) ||
-            (!(this->collider.info.acHitInfo->toucher.dmgFlags & 0xDB0B3))) {
+            (!(this->collider.elem.acHitElem->atDmgInfo.dmgFlags & 0xDB0B3))) {
             if (Actor_ApplyDamage(&this->actor) == 0) {
                 Enemy_StartFinishingBlow(play, &this->actor);
                 Actor_PlaySfx(&this->actor, NA_SE_EN_DAIOCTA_REVERSE);
-                this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
+                this->actor.flags &= ~ACTOR_FLAG_ATTENTION_ENABLED;
             } else if (this->actor.colChkInfo.damage != 0) {
                 Actor_PlaySfx(&this->actor, NA_SE_EN_FALL_DAMAGE);
             }
@@ -601,9 +603,9 @@ void EnWallmas_UpdateDamage(EnWallmas* this, PlayState* play) {
                         this->drawDmgEffAlpha = 4.0f;
                         this->drawDmgEffScale = 0.55f;
                         this->drawDmgEffType = ACTOR_DRAW_DMGEFF_LIGHT_ORBS;
-                        Actor_Spawn(&play->actorCtx, play, ACTOR_EN_CLEAR_TAG, this->collider.info.bumper.hitPos.x,
-                                    this->collider.info.bumper.hitPos.y, this->collider.info.bumper.hitPos.z, 0, 0, 0,
-                                    CLEAR_TAG_PARAMS(CLEAR_TAG_LARGE_LIGHT_RAYS));
+                        Actor_Spawn(&play->actorCtx, play, ACTOR_EN_CLEAR_TAG, this->collider.elem.acDmgInfo.hitPos.x,
+                                    this->collider.elem.acDmgInfo.hitPos.y, this->collider.elem.acDmgInfo.hitPos.z, 0,
+                                    0, 0, CLEAR_TAG_PARAMS(CLEAR_TAG_LARGE_LIGHT_RAYS));
                     }
 
                     EnWallmas_SetupDamage(this, true);
@@ -615,7 +617,7 @@ void EnWallmas_UpdateDamage(EnWallmas* this, PlayState* play) {
 
 void EnWallmas_Update(Actor* thisx, PlayState* play) {
     s32 pad;
-    EnWallmas* this = THIS;
+    EnWallmas* this = (EnWallmas*)thisx;
 
     EnWallmas_UpdateDamage(this, play);
     this->actionFunc(this, play);
@@ -680,7 +682,7 @@ void EnWallmas_DrawShadow(EnWallmas* this, PlayState* play) {
         }
 
         Matrix_Scale(xzScale, 1.0f, xzScale, MTXMODE_APPLY);
-        gSPMatrix(&gfx[2], Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+        MATRIX_FINALIZE_AND_LOAD(&gfx[2], play->state.gfxCtx);
         gSPDisplayList(&gfx[3], gCircleShadowDL);
 
         POLY_OPA_DISP = &gfx[4];
@@ -690,7 +692,7 @@ void EnWallmas_DrawShadow(EnWallmas* this, PlayState* play) {
 }
 
 s32 EnWallmas_OverrideLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3f* pos, Vec3s* rot, Actor* thisx) {
-    EnWallmas* this = THIS;
+    EnWallmas* this = (EnWallmas*)thisx;
 
     if (limbIndex == WALLMASTER_LIMB_ROOT) {
         if (this->actionFunc != EnWallmas_TakePlayer) {
@@ -736,7 +738,7 @@ static s8 sLimbToBodyParts[WALLMASTER_LIMB_MAX] = {
 };
 
 void EnWallmas_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* rot, Actor* thisx) {
-    EnWallmas* this = THIS;
+    EnWallmas* this = (EnWallmas*)thisx;
     Gfx* gfx;
 
     if (sLimbToBodyParts[limbIndex] != BODYPART_NONE) {
@@ -757,7 +759,7 @@ void EnWallmas_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* 
         Matrix_RotateZS(0xAAA, MTXMODE_APPLY);
         Matrix_Scale(2.0f, 2.0f, 2.0f, MTXMODE_APPLY);
 
-        gSPMatrix(&gfx[0], Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+        MATRIX_FINALIZE_AND_LOAD(&gfx[0], play->state.gfxCtx);
         gSPDisplayList(&gfx[1], gWallmasterLittleFingerDL);
 
         POLY_OPA_DISP = &gfx[2];
@@ -769,7 +771,7 @@ void EnWallmas_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* 
 }
 
 void EnWallmas_Draw(Actor* thisx, PlayState* play) {
-    EnWallmas* this = THIS;
+    EnWallmas* this = (EnWallmas*)thisx;
 
     if (this->actionFunc != EnWallmas_WaitToDrop) {
         Gfx_SetupDL25_Opa(play->state.gfxCtx);

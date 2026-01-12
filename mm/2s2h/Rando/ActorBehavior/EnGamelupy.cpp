@@ -1,5 +1,5 @@
 #include "ActorBehavior.h"
-#include "public/bridge/consolevariablebridge.h"
+#include <libultraship/bridge/consolevariablebridge.h>
 #include "CustomItem/CustomItem.h"
 
 extern "C" {
@@ -82,7 +82,7 @@ void Rando::ActorBehavior::InitEnGamelupyBehavior() {
         }
 
         auto& randoSaveCheck = RANDO_SAVE_CHECKS[randoCheckId];
-        if (randoSaveCheck.obtained || !randoSaveCheck.shuffled) {
+        if (randoSaveCheck.cycleObtained || !randoSaveCheck.shuffled) {
             return;
         }
 

@@ -66,4 +66,10 @@ static const ALIGN_ASSET(2) char Z2_SEA_room_10DL_0051F8[] = dZ2_SEA_room_10DL_0
 #define dZ2_SEA_room_10DL_0059C0 "__OTR__scenes/nonmq/Z2_SEA_scene/Z2_SEA_room_10DL_0059C0"
 static const ALIGN_ASSET(2) char Z2_SEA_room_10DL_0059C0[] = dZ2_SEA_room_10DL_0059C0;
 
+#define dZ2_SEA_room_10DL_006A78 "__OTR__scenes/nonmq/Z2_SEA_scene/Z2_SEA_room_10DL_006A78"
+static const ALIGN_ASSET(2) char Z2_SEA_room_10DL_006A78[] = dZ2_SEA_room_10DL_006A78;
+
+#define dZ2_SEA_room_10DL_008B00 "__OTR__scenes/nonmq/Z2_SEA_scene/Z2_SEA_room_10DL_008B00"
+static const ALIGN_ASSET(2) char Z2_SEA_room_10DL_008B00[] = dZ2_SEA_room_10DL_008B00;
+
 #endif // Z2_SEA_Z2_SEA_ROOM_10_H

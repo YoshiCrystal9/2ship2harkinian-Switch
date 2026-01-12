@@ -5,11 +5,8 @@
  */
 
 #include "z_en_zow.h"
-#include "objects/object_zo/object_zo.h"
 
-#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_10)
-
-#define THIS ((EnZow*)thisx)
+#define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_UPDATE_CULLING_DISABLED)
 
 void EnZow_Init(Actor* thisx, PlayState* play);
 void EnZow_Destroy(Actor* thisx, PlayState* play);
@@ -22,7 +19,7 @@ void func_80BDD634(EnZow* this, PlayState* play);
 void func_80BDD6BC(EnZow* this, PlayState* play);
 void func_80BDD79C(EnZow* this, PlayState* play);
 
-ActorInit En_Zow_InitVars = {
+ActorProfile En_Zow_Profile = {
     /**/ ACTOR_EN_ZOW,
     /**/ ACTORCAT_NPC,
     /**/ FLAGS,
@@ -36,7 +33,7 @@ ActorInit En_Zow_InitVars = {
 
 static ColliderCylinderInit sCylinderInit = {
     {
-        COLTYPE_NONE,
+        COL_MATERIAL_NONE,
         AT_NONE,
         AC_ON | AC_TYPE_ENEMY,
         OC1_ON | OC1_TYPE_ALL,
@@ -44,11 +41,11 @@ static ColliderCylinderInit sCylinderInit = {
         COLSHAPE_CYLINDER,
     },
     {
-        ELEMTYPE_UNK0,
+        ELEM_MATERIAL_UNK0,
         { 0x00000000, 0x00, 0x00 },
         { 0xF7CFFFFF, 0x00, 0x00 },
-        TOUCH_NONE | TOUCH_SFX_NORMAL,
-        BUMP_ON,
+        ATELEM_NONE | ATELEM_SFX_NORMAL,
+        ACELEM_ON,
         OCELEM_ON,
     },
     { 30, 40, 0, { 0, 0, 0 } },
@@ -201,7 +198,7 @@ void func_80BDC830(EnZowStruct* ptr, PlayState* play) {
         Matrix_Translate(ptr->unk_14.x, ptr->unk_14.y, ptr->unk_14.z, MTXMODE_NEW);
         Matrix_Scale(ptr->unk_04, 1.0f, ptr->unk_04, MTXMODE_APPLY);
 
-        gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+        MATRIX_FINALIZE_AND_LOAD(POLY_XLU_DISP++, play->state.gfxCtx);
         gSPDisplayList(POLY_XLU_DISP++, gZoraRippleModelDL);
     }
 
@@ -233,7 +230,7 @@ void func_80BDC9DC(EnZowStruct* ptr, PlayState* play) {
         Matrix_ReplaceRotation(&play->billboardMtxF);
         Matrix_Scale(ptr->unk_04, ptr->unk_04, 1.0f, MTXMODE_APPLY);
 
-        gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+        MATRIX_FINALIZE_AND_LOAD(POLY_XLU_DISP++, play->state.gfxCtx);
         gSPDisplayList(POLY_XLU_DISP++, gZoraBubbleModelDL);
     }
 
@@ -266,7 +263,7 @@ void func_80BDCB84(EnZowStruct* ptr, PlayState* play) {
         Matrix_ReplaceRotation(&play->billboardMtxF);
         Matrix_Scale(ptr->unk_04, ptr->unk_04, 1.0f, MTXMODE_APPLY);
 
-        gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+        MATRIX_FINALIZE_AND_LOAD(POLY_XLU_DISP++, play->state.gfxCtx);
         gSPDisplayList(POLY_XLU_DISP++, gZoraSplashModelDL);
     }
 
@@ -306,16 +303,31 @@ void func_80BDCDA8(EnZow* this, EnZowStruct* ptr) {
     }
 }
 
+typedef enum EnZowAnimation {
+    /* -1 */ ENZOT_ANIM_NONE = -1,
+    /*  0 */ ENZOT_ANIM_0,
+    /*  1 */ ENZOT_ANIM_1,
+    /*  2 */ ENZOT_ANIM_2,
+    /*  3 */ ENZOT_ANIM_MAX,
+} EnZowAnimation;
+
+static AnimationHeader* sAnimations[ENZOT_ANIM_MAX] = {
+    &gZoraTreadingWaterAnim, // ENZOT_ANIM_0
+    &gZoraSurfacingAnim,     // ENZOT_ANIM_1
+    &gZoraSurfacingAnim,     // ENZOT_ANIM_2
+};
+
 void EnZow_Init(Actor* thisx, PlayState* play) {
     s32 pad;
-    EnZow* this = THIS;
+    EnZow* this = (EnZow*)thisx;
 
     ActorShape_Init(&this->actor.shape, 0.0f, ActorShadow_DrawCircle, 20.0f);
     Actor_SetScale(&this->actor, 0.01f);
     this->actionFunc = func_80BDD79C;
-    SkelAnime_InitFlex(play, &this->skelAnime, &gZoraSkel, &gZoraIdleAnim, this->jointTable, this->morphTable, 20);
+    SkelAnime_InitFlex(play, &this->skelAnime, &gZoraSkel, &gZoraIdleAnim, this->jointTable, this->morphTable,
+                       ZORA_LIMB_MAX);
     Animation_PlayOnce(&this->skelAnime, &gZoraSurfacingAnim);
-    this->unk_2C8 = 1;
+    this->animIndex = ENZOT_ANIM_1;
     Collider_InitAndSetCylinder(play, &this->collider, &this->actor, &sCylinderInit);
     this->actor.shape.rot.z = 0;
     this->unk_2CA = 0;
@@ -324,27 +336,25 @@ void EnZow_Init(Actor* thisx, PlayState* play) {
     this->actor.colChkInfo.mass = MASS_IMMOVABLE;
     this->actor.textId = 0;
     this->actor.world.rot.z = this->actor.shape.rot.z;
-    this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
+    this->actor.flags &= ~ACTOR_FLAG_ATTENTION_ENABLED;
 }
 
 void EnZow_Destroy(Actor* thisx, PlayState* play) {
-    EnZow* this = THIS;
+    EnZow* this = (EnZow*)thisx;
 
     Collider_DestroyCylinder(play, &this->collider);
 }
 
-static AnimationHeader* sAnimations[] = { &gZoraTreadingWaterAnim, &gZoraSurfacingAnim, &gZoraSurfacingAnim };
-
-void func_80BDD04C(EnZow* this, s16 arg1, u8 arg2) {
-    if ((arg1 >= 0) && (arg1 < 3)) {
-        if (arg1 < 2) {
-            Animation_Change(&this->skelAnime, sAnimations[arg1], 1.0f, 0.0f, Animation_GetLastFrame(sAnimations[arg1]),
-                             arg2, -5.0f);
+void EnZow_ChangeAnim(EnZow* this, s16 animIndex, u8 animMode) {
+    if ((animIndex > ENZOT_ANIM_NONE) && (animIndex < ENZOT_ANIM_MAX)) {
+        if (animIndex <= ENZOT_ANIM_1) {
+            Animation_Change(&this->skelAnime, sAnimations[animIndex], 1.0f, 0.0f,
+                             Animation_GetLastFrame(sAnimations[animIndex]), animMode, -5.0f);
         } else {
-            Animation_Change(&this->skelAnime, sAnimations[arg1], -1.0f, Animation_GetLastFrame(sAnimations[arg1]),
-                             0.0f, arg2, 0.0f);
+            Animation_Change(&this->skelAnime, sAnimations[animIndex], -1.0f,
+                             Animation_GetLastFrame(sAnimations[animIndex]), 0.0f, animMode, 0.0f);
         }
-        this->unk_2C8 = arg1;
+        this->animIndex = animIndex;
     }
 }
 
@@ -410,7 +420,7 @@ void func_80BDD350(EnZow* this, PlayState* play) {
     if (this->unk_2CA & 2) {
         Actor_PlaySfx(&this->actor, NA_SE_EV_DIVE_WATER);
         func_80BDCDA8(this, this->unk_2D0);
-        this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
+        this->actor.flags &= ~ACTOR_FLAG_ATTENTION_ENABLED;
         this->skelAnime.playSpeed = 0.0f;
         this->actor.velocity.y = -4.0f;
     }
@@ -442,9 +452,9 @@ void func_80BDD490(EnZow* this, PlayState* play) {
     this->actor.velocity.y = 0.0f;
     if (this->actor.xzDistToPlayer > 440.0f) {
         this->actionFunc = func_80BDD350;
-        func_80BDD04C(this, 2, ANIMMODE_ONCE);
+        EnZow_ChangeAnim(this, ENZOT_ANIM_2, ANIMMODE_ONCE);
     } else if (this->unk_2CA & 2) {
-        func_80BDD04C(this, 0, ANIMMODE_LOOP);
+        EnZow_ChangeAnim(this, ENZOT_ANIM_0, ANIMMODE_LOOP);
     }
 
     if ((play->gameplayFrames & 7) == 0) {
@@ -462,7 +472,7 @@ void func_80BDD570(EnZow* this, PlayState* play) {
     func_80BDD490(this, play);
 
     switch (Message_GetState(&play->msgCtx)) {
-        case TEXT_STATE_5:
+        case TEXT_STATE_EVENT:
             if (Message_ShouldAdvance(play)) {
                 switch (play->msgCtx.currentTextId) {
                     case 0x12E8:
@@ -498,7 +508,7 @@ void func_80BDD570(EnZow* this, PlayState* play) {
 
 void func_80BDD634(EnZow* this, PlayState* play) {
     func_80BDD490(this, play);
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+    if (Actor_TalkOfferAccepted(&this->actor, &play->state)) {
         this->actionFunc = func_80BDD570;
         func_80BDD1E0(this, play);
     } else if (func_80BDD154(this, play)) {
@@ -516,8 +526,8 @@ void func_80BDD6BC(EnZow* this, PlayState* play) {
     if (this->actor.depthInWater < 54.0f) {
         Actor_PlaySfx(&this->actor, NA_SE_EV_OUT_OF_WATER);
         func_80BDCDA8(this, this->unk_2D0);
-        func_80BDD04C(this, 1, ANIMMODE_ONCE);
-        this->actor.flags |= ACTOR_FLAG_TARGETABLE;
+        EnZow_ChangeAnim(this, ENZOT_ANIM_1, ANIMMODE_ONCE);
+        this->actor.flags |= ACTOR_FLAG_ATTENTION_ENABLED;
         this->actor.velocity.y = 0.0f;
         this->actionFunc = func_80BDD634;
     } else if (this->actor.depthInWater < 80.0f) {
@@ -544,7 +554,7 @@ void func_80BDD79C(EnZow* this, PlayState* play) {
 
 void EnZow_Update(Actor* thisx, PlayState* play) {
     s32 pad;
-    EnZow* this = THIS;
+    EnZow* this = (EnZow*)thisx;
     Vec3f sp34;
 
     Actor_MoveWithGravity(&this->actor);
@@ -602,14 +612,14 @@ Gfx* func_80BDDA7C(GraphicsContext* gfxCtx) {
 
 Vec3f D_80BDDD4C = { 400.0f, 0.0f, 0.0f };
 
-void func_80BDDAA0(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* rot, Actor* thisx) {
-    if (limbIndex == 15) {
+void EnZow_PostLimbDrawOpa(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* rot, Actor* thisx) {
+    if (limbIndex == ZORA_LIMB_HEAD) {
         Matrix_MultVec3f(&D_80BDDD4C, &thisx->focus.pos);
     }
 }
 
-void func_80BDDAE0(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* rot, Actor* thisx, Gfx** gfx) {
-    func_80BDDAA0(play, limbIndex, dList, rot, thisx);
+void EnZow_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* rot, Actor* thisx, Gfx** gfx) {
+    EnZow_PostLimbDrawOpa(play, limbIndex, dList, rot, thisx);
 }
 
 void EnZow_Draw(Actor* thisx, PlayState* play) {
@@ -618,7 +628,7 @@ void EnZow_Draw(Actor* thisx, PlayState* play) {
         gZoraEyeHalfTex,
         gZoraEyeClosedTex,
     };
-    EnZow* this = THIS;
+    EnZow* this = (EnZow*)thisx;
 
     Matrix_Push();
 
@@ -639,11 +649,11 @@ void EnZow_Draw(Actor* thisx, PlayState* play) {
             gSPSegment(POLY_OPA_DISP++, 0x0C, func_80BDDA7C(play->state.gfxCtx));
 
             SkelAnime_DrawFlexOpa(play, this->skelAnime.skeleton, this->skelAnime.jointTable,
-                                  this->skelAnime.dListCount, NULL, func_80BDDAA0, &this->actor);
+                                  this->skelAnime.dListCount, NULL, EnZow_PostLimbDrawOpa, &this->actor);
         } else {
             gSPSegment(POLY_XLU_DISP++, 0x08, Lib_SegmentedToVirtual(sp54[this->unk_2C4]));
 
-            func_800BDAA0(play, &this->skelAnime, NULL, func_80BDDAE0, &this->actor, this->unk_2CE);
+            func_800BDAA0(play, &this->skelAnime, NULL, EnZow_PostLimbDraw, &this->actor, this->unk_2CE);
         }
 
         CLOSE_DISPS(play->state.gfxCtx);

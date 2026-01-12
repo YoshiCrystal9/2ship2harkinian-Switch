@@ -6,16 +6,14 @@
 
 #include "z_dm_ah.h"
 
-#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_FRIENDLY)
-
-#define THIS ((DmAh*)thisx)
+#define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY)
 
 void DmAh_Init(Actor* thisx, PlayState* play);
 void DmAh_Destroy(Actor* thisx, PlayState* play);
 void DmAh_Update(Actor* thisx, PlayState* play);
 void DmAh_Draw(Actor* thisx, PlayState* play);
 
-ActorInit Dm_Ah_InitVars = {
+ActorProfile Dm_Ah_Profile = {
     /**/ ACTOR_DM_AH,
     /**/ ACTORCAT_NPC,
     /**/ FLAGS,
@@ -29,9 +27,9 @@ ActorInit Dm_Ah_InitVars = {
 
 typedef enum {
     /* -1 */ DMAH_ANIM_NONE = -1,
-    /* 0  */ DMAH_ANIM_0,
-    /* 1  */ DMAH_ANIM_1,
-    /* 2  */ DMAH_ANIM_MAX
+    /*  0 */ DMAH_ANIM_0,
+    /*  1 */ DMAH_ANIM_1,
+    /*  2 */ DMAH_ANIM_MAX
 } DmAhAnimation;
 
 static AnimationInfoS sAnimationInfo[DMAH_ANIM_MAX] = {
@@ -108,25 +106,27 @@ s32 func_80C1D6E0(DmAh* this, PlayState* play) {
     return true;
 }
 
-Actor* func_80C1D78C(PlayState* play) {
-    Actor* tempActor;
-    Actor* foundActor = NULL;
+Actor* DmAh_FindAnjuActor(PlayState* play) {
+    Actor* actorIter = NULL;
 
     while (true) {
-        foundActor = SubS_FindActor(play, foundActor, ACTORCAT_NPC, ACTOR_DM_AN);
+        actorIter = SubS_FindActor(play, actorIter, ACTORCAT_NPC, ACTOR_DM_AN);
 
-        if ((foundActor == NULL) || (foundActor->update != NULL)) {
+        if (actorIter == NULL) {
             break;
         }
 
-        tempActor = foundActor->next;
-        if ((tempActor == NULL) || false) {
-            foundActor = NULL;
+        if (actorIter->update != NULL) {
             break;
         }
-        foundActor = tempActor;
+
+        if ((actorIter->next == NULL) || false) {
+            actorIter = NULL;
+            break;
+        }
+        actorIter = actorIter->next;
     }
-    return foundActor;
+    return actorIter;
 }
 
 void DmAh_HandleCutscene(DmAh* this, PlayState* play) {
@@ -161,18 +161,18 @@ void DmAh_DoNothing(DmAh* this, PlayState* play) {
 }
 
 void DmAh_Init(Actor* thisx, PlayState* play) {
-    DmAh* this = THIS;
+    DmAh* this = (DmAh*)thisx;
 
     ActorShape_Init(&this->actor.shape, 0.0f, ActorShadow_DrawCircle, 20.0f);
     SkelAnime_InitFlex(play, &this->skelAnime, &object_ah_Skel_009E70, NULL, this->jointTable, this->morphTable,
                        OBJECT_AH_LIMB_MAX);
     this->animIndex = DMAH_ANIM_NONE;
     DmAh_ChangeAnim(this, DMAH_ANIM_0);
-    this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
+    this->actor.flags &= ~ACTOR_FLAG_ATTENTION_ENABLED;
     Actor_SetScale(&this->actor, 0.01f);
     this->unk_27C |= 1;
     if ((play->sceneId == SCENE_YADOYA) && (play->curSpawn == 4)) {
-        this->unk_280 = func_80C1D78C(play);
+        this->unk_280 = DmAh_FindAnjuActor(play);
         DmAh_ChangeAnim(this, DMAH_ANIM_1);
         this->actionFunc = DmAh_DoNothing;
     } else {
@@ -184,7 +184,7 @@ void DmAh_Destroy(Actor* thisx, PlayState* play) {
 }
 
 void DmAh_Update(Actor* thisx, PlayState* play) {
-    DmAh* this = THIS;
+    DmAh* this = (DmAh*)thisx;
 
     this->actionFunc(this, play);
     func_80C1D6E0(this, play);
@@ -203,7 +203,7 @@ void DmAh_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* rot, 
 }
 
 void DmAh_TransformLimbDraw(PlayState* play, s32 limbIndex, Actor* thisx) {
-    DmAh* this = THIS;
+    DmAh* this = (DmAh*)thisx;
     s32 stepRot;
     s32 overrideRot;
 
@@ -250,7 +250,7 @@ static TexturePtr D_80C1DE28[] = {
 };
 
 void DmAh_Draw(Actor* thisx, PlayState* play) {
-    DmAh* this = THIS;
+    DmAh* this = (DmAh*)thisx;
 
     OPEN_DISPS(play->state.gfxCtx);
 

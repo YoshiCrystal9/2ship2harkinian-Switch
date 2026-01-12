@@ -1,5 +1,5 @@
 #include "NameTag.h"
-#include "public/bridge/consolevariablebridge.h"
+#include <libultraship/bridge/consolevariablebridge.h>
 #include <vector>
 #include <algorithm>
 #include "2s2h/Enhancements/FrameInterpolation/FrameInterpolation.h"
@@ -86,7 +86,7 @@ void DrawNameTag(PlayState* play, const NameTag* nameTag) {
 
     // Prefer the highest between world position and focus position if targetable
     float posY = nameTag->actor->world.pos.y;
-    if (nameTag->actor->flags & ACTOR_FLAG_TARGETABLE) {
+    if (nameTag->actor->flags & ACTOR_FLAG_ATTENTION_ENABLED) {
         posY = std::max(posY, nameTag->actor->focus.pos.y);
     }
 

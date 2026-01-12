@@ -1,4 +1,4 @@
-#include "public/bridge/consolevariablebridge.h"
+#include <libultraship/bridge/consolevariablebridge.h>
 
 #include <vector>
 #include <map>
@@ -7,6 +7,8 @@
 
 #include "FrameInterpolation.h"
 #include "2s2h/BenPort.h"
+#include <sys_matrix.h>
+#include <z64skin_matrix.h>
 
 /*
 Frame interpolation.
@@ -39,44 +41,6 @@ We can interpolate an arbitrary amount of frames between two original frames,
 given a specific interpolation factor (0=old frame, 0.5=average of frames,
 1.0=new frame).
 */
-
-extern "C" {
-
-void Matrix_Init(struct GameState* gameState);
-void Matrix_Push(void);
-void Matrix_Pop(void);
-void Matrix_Get(MtxF* dest);
-void Matrix_Put(MtxF* src);
-void Matrix_Mult(MtxF* mf, u8 mode);
-void Matrix_Translate(f32 x, f32 y, f32 z, u8 mode);
-void Matrix_Scale(f32 x, f32 y, f32 z, u8 mode);
-void Matrix_RotateXF(f32 x, u8 mode);
-void Matrix_RotateYF(f32 y, u8 mode);
-void Matrix_RotateZF(f32 z, u8 mode);
-void Matrix_RotateZYX(s16 x, s16 y, s16 z, u8 mode);
-void Matrix_TranslateRotateZYX(Vec3f* translation, Vec3s* rotation);
-void Matrix_SetTranslateRotateYXZ(f32 translateX, f32 translateY, f32 translateZ, Vec3s* rot);
-Mtx* Matrix_MtxFToMtx(MtxF* src, Mtx* dest);
-Mtx* Matrix_ToMtx(Mtx* dest, char* file, s32 line);
-Mtx* Matrix_NewMtx(struct GraphicsContext* gfxCtx, char* file, s32 line);
-Mtx* Matrix_MtxFToNewMtx(MtxF* src, struct GraphicsContext* gfxCtx);
-void Matrix_MultVec3f(Vec3f* src, Vec3f* dest);
-void Matrix_MtxFCopy(MtxF* dest, MtxF* src);
-void Matrix_MtxToMtxF(Mtx* src, MtxF* dest);
-void Matrix_MultVec3fExt(Vec3f* src, Vec3f* dest, MtxF* mf);
-void Matrix_Transpose(MtxF* mf);
-void Matrix_ReplaceRotation(MtxF* mf);
-void Matrix_MtxFToYXZRotS(MtxF* mf, Vec3s* rotDest, s32 flag);
-void Matrix_MtxFToZYXRotS(MtxF* mf, Vec3s* rotDest, s32 flag);
-void Matrix_RotateAxisF(f32 angle, Vec3f* axis, u8 mode);
-MtxF* Matrix_CheckFloats(MtxF* mf, char* file, s32 line);
-void Matrix_SetTranslateScaleMtx2(Mtx* mtx, f32 scaleX, f32 scaleY, f32 scaleZ, f32 translateX, f32 translateY,
-                                  f32 translateZ);
-
-MtxF* Matrix_GetCurrent(void);
-
-void SkinMatrix_MtxFMtxFMult(MtxF* mfA, MtxF* mfB, MtxF* dest);
-}
 
 static bool invert_matrix(const float m[16], float invOut[16]);
 
@@ -344,20 +308,21 @@ struct InterpolateCtx {
 
                         case Op::MatrixMult:
                             interpolate_mtxf(&tmp_mtxf, &old_op.matrix_mult.mf, &new_op.matrix_mult.mf);
-                            Matrix_Mult(&tmp_mtxf, new_op.matrix_mult.mode);
+                            Matrix_Mult(&tmp_mtxf, (MatrixMode)new_op.matrix_mult.mode);
                             break;
 
                         case Op::MatrixTranslate:
                             Matrix_Translate(lerp(old_op.matrix_translate.x, new_op.matrix_translate.x),
                                              lerp(old_op.matrix_translate.y, new_op.matrix_translate.y),
                                              lerp(old_op.matrix_translate.z, new_op.matrix_translate.z),
-                                             new_op.matrix_translate.mode);
+                                             (MatrixMode)new_op.matrix_translate.mode);
                             break;
 
                         case Op::MatrixScale:
                             Matrix_Scale(lerp(old_op.matrix_scale.x, new_op.matrix_scale.x),
                                          lerp(old_op.matrix_scale.y, new_op.matrix_scale.y),
-                                         lerp(old_op.matrix_scale.z, new_op.matrix_scale.z), new_op.matrix_scale.mode);
+                                         lerp(old_op.matrix_scale.z, new_op.matrix_scale.z),
+                                         (MatrixMode)new_op.matrix_scale.mode);
                             break;
 
                         case Op::MatrixRotate1Coord: {
@@ -366,15 +331,15 @@ struct InterpolateCtx {
                             u8 mode = new_op.matrix_rotate_1_coord.mode;
                             switch (new_op.matrix_rotate_1_coord.coord) {
                                 case 0:
-                                    Matrix_RotateXF(v, mode);
+                                    Matrix_RotateXF(v, (MatrixMode)mode);
                                     break;
 
                                 case 1:
-                                    Matrix_RotateYF(v, mode);
+                                    Matrix_RotateYF(v, (MatrixMode)mode);
                                     break;
 
                                 case 2:
-                                    Matrix_RotateZF(v, mode);
+                                    Matrix_RotateZF(v, (MatrixMode)mode);
                                     break;
                             }
                             break;
@@ -384,7 +349,7 @@ struct InterpolateCtx {
                             Matrix_RotateZYX(interpolate_angle(old_op.matrix_rotate_zyx.x, new_op.matrix_rotate_zyx.x),
                                              interpolate_angle(old_op.matrix_rotate_zyx.y, new_op.matrix_rotate_zyx.y),
                                              interpolate_angle(old_op.matrix_rotate_zyx.z, new_op.matrix_rotate_zyx.z),
-                                             new_op.matrix_rotate_zyx.mode);
+                                             (MatrixMode)new_op.matrix_rotate_zyx.mode);
                             break;
 
                         case Op::MatrixTranslateRotateZYX:
@@ -441,7 +406,7 @@ struct InterpolateCtx {
                             lerp_vec3f(&tmp_vec3f, &old_op.matrix_rotate_axis.axis, &new_op.matrix_rotate_axis.axis);
                             Matrix_RotateAxisF(
                                 interpolate_angle(old_op.matrix_rotate_axis.angle, new_op.matrix_rotate_axis.angle),
-                                &tmp_vec3f, new_op.matrix_rotate_axis.mode);
+                                &tmp_vec3f, (MatrixMode)new_op.matrix_rotate_axis.mode);
                             break;
 
                         case Op::SkinMatrixMtxFToMtx:

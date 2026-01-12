@@ -6,16 +6,14 @@
 
 #include "z_en_zod.h"
 
-#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_FRIENDLY)
-
-#define THIS ((EnZod*)thisx)
+#define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY)
 
 void EnZod_Init(Actor* thisx, PlayState* play);
 void EnZod_Destroy(Actor* thisx, PlayState* play);
 void EnZod_Update(Actor* thisx, PlayState* play);
 void EnZod_Draw(Actor* thisx, PlayState* play);
 
-void EnZod_ChangeAnim(EnZod* this, s16 nextAnimIndex, u8 mode);
+void EnZod_ChangeAnim(EnZod* this, s16 nextAnimIndex, u8 animMode);
 void EnZod_PlayDrumsSequence(EnZod* this, PlayState* play);
 void func_80BAFB84(EnZod* this, PlayState* play);
 void func_80BAFDB4(EnZod* this, PlayState* play);
@@ -23,15 +21,6 @@ void func_80BAFF14(EnZod* this, PlayState* play);
 
 #define TIJO_STATE_1 (1 << 0)
 #define TIJO_STATE_2 (1 << 1)
-
-typedef enum {
-    /* 0 */ ENZOD_ANIM_PLAYING_VIVACE,
-    /* 1 */ ENZOD_ANIM_READY_TO_PLAY,
-    /* 2 */ ENZOD_ANIM_ARMS_FOLDED,
-    /* 3 */ ENZOD_ANIM_PLAYING_LENTO,
-    /* 4 */ ENZOD_ANIM_PLAYING_ANDANTINO,
-    /* 5 */ ENZOD_ANIM_MAX
-} EnZodAnimation;
 
 typedef enum {
     /* 1 */ ENZOD_INSTRUMENT_CYMBAL_1 = 1,
@@ -45,7 +34,7 @@ typedef enum {
     /* 9 */ ENZOD_INSTRUMENT_BASS_DRUM
 } EnZodInstrument;
 
-ActorInit En_Zod_InitVars = {
+ActorProfile En_Zod_Profile = {
     /**/ ACTOR_EN_ZOD,
     /**/ ACTORCAT_NPC,
     /**/ FLAGS,
@@ -59,7 +48,7 @@ ActorInit En_Zod_InitVars = {
 
 static ColliderCylinderInit sCylinderInit = {
     {
-        COLTYPE_NONE,
+        COL_MATERIAL_NONE,
         AT_NONE,
         AC_ON | AC_TYPE_ENEMY,
         OC1_ON | OC1_TYPE_ALL,
@@ -67,26 +56,37 @@ static ColliderCylinderInit sCylinderInit = {
         COLSHAPE_CYLINDER,
     },
     {
-        ELEMTYPE_UNK0,
+        ELEM_MATERIAL_UNK0,
         { 0x00000000, 0x00, 0x00 },
         { 0xF7CFFFFF, 0x00, 0x00 },
-        TOUCH_NONE | TOUCH_SFX_NORMAL,
-        BUMP_ON,
+        ATELEM_NONE | ATELEM_SFX_NORMAL,
+        ACELEM_ON,
         OCELEM_ON,
     },
     { 60, 40, 0, { 0, 0, 0 } },
 };
 
-static AnimationHeader* sAnimations[] = {
-    &gTijoPlayingVivaceAnim, &gTijoReadyToPlayAnim,      &gTijoArmsFoldedAnim,
-    &gTijoPlayingLentoAnim,  &gTijoPlayingAndantinoAnim,
-};
+typedef enum EnZodAnimation {
+    /* -1 */ ENZOD_ANIM_NONE = -1,
+    /*  0 */ ENZOD_ANIM_PLAYING_VIVACE,
+    /*  1 */ ENZOD_ANIM_READY_TO_PLAY,
+    /*  2 */ ENZOD_ANIM_ARMS_FOLDED,
+    /*  3 */ ENZOD_ANIM_PLAYING_LENTO,
+    /*  4 */ ENZOD_ANIM_PLAYING_ANDANTINO,
+    /*  5 */ ENZOD_ANIM_MAX
+} EnZodAnimation;
 
-static Vec3f D_80BB0580 = { 1300.0f, 1100.0f, 0.0f };
+static AnimationHeader* sAnimations[ENZOD_ANIM_MAX] = {
+    &gTijoPlayingVivaceAnim,    // ENZOD_ANIM_PLAYING_VIVACE
+    &gTijoReadyToPlayAnim,      // ENZOD_ANIM_READY_TO_PLAY
+    &gTijoArmsFoldedAnim,       // ENZOD_ANIM_ARMS_FOLDED
+    &gTijoPlayingLentoAnim,     // ENZOD_ANIM_PLAYING_LENTO
+    &gTijoPlayingAndantinoAnim, // ENZOD_ANIM_PLAYING_ANDANTINO
+};
 
 void EnZod_Init(Actor* thisx, PlayState* play) {
     s32 i;
-    EnZod* this = THIS;
+    EnZod* this = (EnZod*)thisx;
 
     ActorShape_Init(&this->actor.shape, 0.0f, ActorShadow_DrawCircle, 60.0f);
     this->actor.colChkInfo.mass = MASS_IMMOVABLE;
@@ -100,8 +100,8 @@ void EnZod_Init(Actor* thisx, PlayState* play) {
     this->actor.gravity = this->actor.terminalVelocity = -4.0f;
     this->cymbalRotVels[0] = this->cymbalRotVels[1] = this->cymbalRotVels[2] = 300;
     this->stateFlags = 0;
-    this->nextAnimIndex = -1;
-    this->curAnimIndex = -1;
+    this->nextAnimIndex = ENZOD_ANIM_NONE;
+    this->curAnimIndex = ENZOD_ANIM_NONE;
     this->actor.textId = 0;
     this->unk_298 = 0;
 
@@ -118,7 +118,7 @@ void EnZod_Init(Actor* thisx, PlayState* play) {
             if (CHECK_WEEKEVENTREG(WEEKEVENTREG_78_01)) {
                 this->actionFunc = func_80BAFDB4;
                 EnZod_ChangeAnim(this, ENZOD_ANIM_PLAYING_VIVACE, ANIMMODE_ONCE);
-                this->actor.flags |= ACTOR_FLAG_10;
+                this->actor.flags |= ACTOR_FLAG_UPDATE_CULLING_DISABLED;
                 CutsceneManager_Queue(this->actor.csId);
                 break;
             }
@@ -140,13 +140,13 @@ void EnZod_Init(Actor* thisx, PlayState* play) {
             if (CHECK_WEEKEVENTREG(WEEKEVENTREG_CLEARED_GREAT_BAY_TEMPLE)) {
                 Actor_Kill(&this->actor);
             }
-            this->actor.flags |= ACTOR_FLAG_10;
+            this->actor.flags |= ACTOR_FLAG_UPDATE_CULLING_DISABLED;
             break;
     }
 }
 
 void EnZod_Destroy(Actor* thisx, PlayState* play) {
-    EnZod* this = THIS;
+    EnZod* this = (EnZod*)thisx;
 
     Collider_DestroyCylinder(play, &this->collider);
 }
@@ -186,12 +186,12 @@ s32 EnZod_PlayerIsFacingTijo(EnZod* this, PlayState* play) {
     }
 }
 
-void EnZod_ChangeAnim(EnZod* this, s16 nextAnimIndex, u8 mode) {
-    if ((nextAnimIndex < ENZOD_ANIM_PLAYING_VIVACE) || (nextAnimIndex >= ENZOD_ANIM_MAX)) {
+void EnZod_ChangeAnim(EnZod* this, s16 nextAnimIndex, u8 animMode) {
+    if ((nextAnimIndex <= ENZOD_ANIM_NONE) || (nextAnimIndex >= ENZOD_ANIM_MAX)) {
         nextAnimIndex = ENZOD_ANIM_PLAYING_LENTO;
     }
     Animation_Change(&this->skelAnime, sAnimations[nextAnimIndex], 1.0f, 0.0f,
-                     Animation_GetLastFrame(sAnimations[nextAnimIndex]), mode, -5.0f);
+                     Animation_GetLastFrame(sAnimations[nextAnimIndex]), animMode, -5.0f);
     this->curAnimIndex = nextAnimIndex;
     this->nextAnimIndex = nextAnimIndex;
 }
@@ -226,7 +226,7 @@ void EnZod_UpdateInstruments(EnZod* this) {
 
     for (i = 0; i < ARRAY_COUNT(this->cymbalRots); i++) {
         this->cymbalRots[i] += this->cymbalRotVels[i];
-        this->cymbalRotVels[i] -= (s16)(this->cymbalRots[i] * 0.1f);
+        this->cymbalRotVels[i] -= TRUNCF_BINANG(this->cymbalRots[i] * 0.1f);
 
         if (ABS_ALT(this->cymbalRotVels[i]) > 100) {
             this->cymbalRotVels[i] *= 0.9f;
@@ -276,7 +276,7 @@ void EnZod_UpdateInstruments(EnZod* this) {
 
             case 3:
                 switch (this->curAnimIndex) {
-                    case 3:
+                    case ENZOD_ANIM_PLAYING_LENTO:
                         switch ((s32)this->skelAnime.curFrame) {
                             case 1:
                             case 7:
@@ -287,10 +287,13 @@ void EnZod_UpdateInstruments(EnZod* this) {
                         }
                         break;
 
-                    case 4:
+                    case ENZOD_ANIM_PLAYING_ANDANTINO:
                         if ((s32)this->skelAnime.curFrame == 1) {
                             this->drumScaleVels[i] = 0.1f;
                         }
+                        break;
+
+                    default:
                         break;
                 }
                 break;
@@ -327,7 +330,7 @@ void func_80BAF7CC(EnZod* this, PlayState* play) {
             }
             break;
 
-        case TEXT_STATE_5:
+        case TEXT_STATE_EVENT:
             if (Message_ShouldAdvance(play)) {
                 switch (play->msgCtx.currentTextId) {
                     case 0x121A:
@@ -376,7 +379,7 @@ void EnZod_PlayDrumsSequence(EnZod* this, PlayState* play) {
 
     EnZod_UpdateAnimation(this);
 
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+    if (Actor_TalkOfferAccepted(&this->actor, &play->state)) {
         EnZod_HandleRoomConversation(this, play);
         this->actionFunc = func_80BAF7CC;
     } else if (EnZod_PlayerIsFacingTijo(this, play)) {
@@ -418,7 +421,7 @@ void func_80BAFADC(EnZod* this, PlayState* play) {
     EnZod_UpdateAnimation(this);
     talkState = Message_GetState(&play->msgCtx);
     if (talkState != TEXT_STATE_CLOSING) {
-        if ((talkState == TEXT_STATE_5) && Message_ShouldAdvance(play)) {
+        if ((talkState == TEXT_STATE_EVENT) && Message_ShouldAdvance(play)) {
             Message_CloseTextbox(play);
             this->actionFunc = func_80BAFB84;
             EnZod_ChangeAnim(this, ENZOD_ANIM_PLAYING_LENTO, ANIMMODE_ONCE);
@@ -432,7 +435,7 @@ void func_80BAFADC(EnZod* this, PlayState* play) {
 void func_80BAFB84(EnZod* this, PlayState* play) {
     EnZod_UpdateAnimation(this);
 
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+    if (Actor_TalkOfferAccepted(&this->actor, &play->state)) {
         func_80BAFA44(this, play);
         this->actionFunc = func_80BAFADC;
     } else if (EnZod_PlayerIsFacingTijo(this, play)) {
@@ -464,7 +467,7 @@ void EnZod_Rehearse(EnZod* this, PlayState* play) {
 
 void EnZod_SetupRehearse(EnZod* this, PlayState* play) {
     EnZod_UpdateAnimation(this);
-    if ((Message_GetState(&play->msgCtx) == TEXT_STATE_5) && Message_ShouldAdvance(play)) {
+    if ((Message_GetState(&play->msgCtx) == TEXT_STATE_EVENT) && Message_ShouldAdvance(play)) {
         Message_CloseTextbox(play);
         EnZod_ChangeAnim(this, ENZOD_ANIM_PLAYING_LENTO, ANIMMODE_ONCE);
         this->actionFunc = EnZod_Rehearse;
@@ -521,7 +524,7 @@ void func_80BAFF14(EnZod* this, PlayState* play) {
 
 void EnZod_Update(Actor* thisx, PlayState* play) {
     s32 pad;
-    EnZod* this = THIS;
+    EnZod* this = (EnZod*)thisx;
     Vec3s torsoRot;
 
     Actor_MoveWithGravity(&this->actor);
@@ -559,7 +562,7 @@ void EnZod_Update(Actor* thisx, PlayState* play) {
 }
 
 s32 EnZod_OverrideLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3f* pos, Vec3s* rot, Actor* thisx) {
-    EnZod* this = THIS;
+    EnZod* this = (EnZod*)thisx;
 
     if (limbIndex == TIJO_LIMB_HEAD) {
         rot->x += this->headRot.y;
@@ -570,6 +573,7 @@ s32 EnZod_OverrideLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3f* p
 }
 
 void EnZod_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* rot, Actor* thisx) {
+    static Vec3f D_80BB0580 = { 1300.0f, 1100.0f, 0.0f };
     if (limbIndex == TIJO_LIMB_HEAD) {
         Matrix_MultVec3f(&D_80BB0580, &thisx->focus.pos);
     }
@@ -613,7 +617,7 @@ void EnZod_DrawDrums(EnZod* this, PlayState* play) {
                 break;
         }
 
-        gSPMatrix(POLY_OPA_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+        MATRIX_FINALIZE_AND_LOAD(POLY_OPA_DISP++, play->state.gfxCtx);
         gSPDisplayList(POLY_OPA_DISP++, sTijoDrumsDLs[i]);
         Matrix_Pop();
     }
@@ -622,8 +626,8 @@ void EnZod_DrawDrums(EnZod* this, PlayState* play) {
 }
 
 void EnZod_Draw(Actor* thisx, PlayState* play) {
-    static TexturePtr sTijoEyesTextures[] = { &gTijoEyesOpenTex, &gTijoEyesHalfOpenTex, &gTijoEyesClosedTex };
-    EnZod* this = THIS;
+    static TexturePtr sTijoEyeTextures[] = { &gTijoEyesOpenTex, &gTijoEyesHalfOpenTex, &gTijoEyesClosedTex };
+    EnZod* this = (EnZod*)thisx;
     Gfx* gfx;
 
     OPEN_DISPS(play->state.gfxCtx);
@@ -636,7 +640,7 @@ void EnZod_Draw(Actor* thisx, PlayState* play) {
 
     gfx = POLY_OPA_DISP;
 
-    gSPSegment(&gfx[0], 0x08, Lib_SegmentedToVirtual(sTijoEyesTextures[this->eyeIndex]));
+    gSPSegment(&gfx[0], 0x08, Lib_SegmentedToVirtual(sTijoEyeTextures[this->eyeIndex]));
     gSPSegment(&gfx[1], 0x09, Lib_SegmentedToVirtual(&gTijoMouthClosedTex));
 
     POLY_OPA_DISP = &gfx[2];

@@ -15,7 +15,7 @@ nlohmann::json GenerateFromSaveContext();
 void SaveToFile(const std::string& fileName, nlohmann::json spoiler);
 nlohmann::json LoadFromFile(const std::string& filePath);
 void ApplyToSaveContext(nlohmann::json spoiler);
-bool HandleFileDropped(const std::string& path);
+bool HandleFileDropped(char* path);
 
 } // namespace Spoiler
 

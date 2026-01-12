@@ -1,16 +1,16 @@
 #include "ActorBehavior.h"
-#include "public/bridge/consolevariablebridge.h"
+#include <libultraship/bridge/consolevariablebridge.h>
 
 extern "C" {
 #include "variables.h"
 #include "overlays/actors/ovl_En_Stone_heishi/z_en_stone_heishi.h"
-void Player_TalkWithPlayer(PlayState* play, Actor* actor);
+void Player_StartTalking(PlayState* play, Actor* actor);
 void func_80BC9E50(EnStoneheishi* enStoneheishi, PlayState* play);
 }
 
 /*
  * This is the same block found for non-scripted actors in OfferGetItem.cpp, with the addition of setting
- * ACTOR_FLAG_TALK_REQUESTED, other actor data, and finishes actor's dialogue.
+ * ACTOR_FLAG_TALK, other actor data, and finishes actor's dialogue.
  */
 void Rando::ActorBehavior::InitEnStoneheishiBehavior() {
     COND_VB_SHOULD(VB_GIVE_ITEM_FROM_OFFER, IS_RANDO, {
@@ -22,8 +22,8 @@ void Rando::ActorBehavior::InitEnStoneheishiBehavior() {
             player->talkActor = actor;
             player->talkActorDistance = actor->xzDistToPlayer;
             player->exchangeItemAction = PLAYER_IA_MINUS1;
-            Player_TalkWithPlayer(gPlayState, actor);
-            actor->flags |= ACTOR_FLAG_TALK_REQUESTED;
+            Player_StartTalking(gPlayState, actor);
+            actor->flags |= ACTOR_FLAG_TALK;
             SET_WEEKEVENTREG(WEEKEVENTREG_41_40);
             EnStoneheishi* enStoneheishi = (EnStoneheishi*)actor;
             enStoneheishi->textIdIndex++;

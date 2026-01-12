@@ -7,16 +7,14 @@
 #include "z_oceff_wipe2.h"
 #include "BenPort.h"
 
-#define FLAGS (ACTOR_FLAG_10 | ACTOR_FLAG_2000000)
-
-#define THIS ((OceffWipe2*)thisx)
+#define FLAGS (ACTOR_FLAG_UPDATE_CULLING_DISABLED | ACTOR_FLAG_UPDATE_DURING_OCARINA)
 
 void OceffWipe2_Init(Actor* thisx, PlayState* play);
 void OceffWipe2_Destroy(Actor* thisx, PlayState* play);
 void OceffWipe2_Update(Actor* thisx, PlayState* play);
 void OceffWipe2_Draw(Actor* thisx, PlayState* play);
 
-ActorInit Oceff_Wipe2_InitVars = {
+ActorProfile Oceff_Wipe2_Profile = {
     ACTOR_OCEFF_WIPE2,
     ACTORCAT_ITEMACTION,
     FLAGS,
@@ -30,10 +28,10 @@ ActorInit Oceff_Wipe2_InitVars = {
 
 #include "assets/overlays/ovl_Oceff_Wipe2/ovl_Oceff_Wipe2.h"
 
-s32 D_809879D0;
+static s32 sBssPad;
 
 void OceffWipe2_Init(Actor* thisx, PlayState* play) {
-    OceffWipe2* this = THIS;
+    OceffWipe2* this = (OceffWipe2*)thisx;
 
     Actor_SetScale(&this->actor, 0.1f);
     this->timer = 0;
@@ -41,14 +39,14 @@ void OceffWipe2_Init(Actor* thisx, PlayState* play) {
 }
 
 void OceffWipe2_Destroy(Actor* thisx, PlayState* play) {
-    OceffWipe2* this = THIS;
+    OceffWipe2* this = (OceffWipe2*)thisx;
 
     Magic_Reset(play);
     play->msgCtx.ocarinaSongEffectActive = false;
 }
 
 void OceffWipe2_Update(Actor* thisx, PlayState* play) {
-    OceffWipe2* this = THIS;
+    OceffWipe2* this = (OceffWipe2*)thisx;
 
     this->actor.world.pos = GET_ACTIVE_CAM(play)->eye;
     if (this->timer < 100) {
@@ -60,7 +58,7 @@ void OceffWipe2_Update(Actor* thisx, PlayState* play) {
 
 void OceffWipe2_Draw(Actor* thisx, PlayState* play) {
     u32 scroll = play->state.frames & 0xFF;
-    OceffWipe2* this = THIS;
+    OceffWipe2* this = (OceffWipe2*)thisx;
     f32 z;
     u8 alpha;
     s32 pad[2];
@@ -107,7 +105,7 @@ void OceffWipe2_Draw(Actor* thisx, PlayState* play) {
     Matrix_RotateXS(0x708, MTXMODE_APPLY);
     Matrix_Translate(0.0f, 0.0f, -z, MTXMODE_APPLY);
 
-    gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    MATRIX_FINALIZE_AND_LOAD(POLY_XLU_DISP++, play->state.gfxCtx);
     gDPSetPrimColor(POLY_XLU_DISP++, 0, 0, 255, 255, 170, 255);
     gDPSetEnvColor(POLY_XLU_DISP++, 255, 100, 0, 128);
     gSPDisplayList(POLY_XLU_DISP++, sEponaSongFrustumMaterialDL);

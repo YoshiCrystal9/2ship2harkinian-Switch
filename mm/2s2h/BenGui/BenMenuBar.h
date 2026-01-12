@@ -1,7 +1,7 @@
 #ifndef BenMenuBar_h
 #define BenMenuBar_h
 
-#include "window/gui/GuiMenuBar.h"
+#include <ship/window/gui/GuiMenuBar.h>
 
 namespace BenGui {
 class BenMenuBar : public Ship::GuiMenuBar {

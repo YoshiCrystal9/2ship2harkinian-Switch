@@ -3,145 +3,145 @@
 
 #include "align_asset_macro.h"
 
-#define dobject_tab_Anim_000758 "__OTR__objects/object_tab/object_tab_Anim_000758"
-static const ALIGN_ASSET(2) char object_tab_Anim_000758[] = dobject_tab_Anim_000758;
+#define dgBartenIdleAnim "__OTR__objects/object_tab/gBartenIdleAnim"
+static const ALIGN_ASSET(2) char gBartenIdleAnim[] = dgBartenIdleAnim;
 
-#define dobject_tab_DL_003E10 "__OTR__objects/object_tab/object_tab_DL_003E10"
-static const ALIGN_ASSET(2) char object_tab_DL_003E10[] = dobject_tab_DL_003E10;
+#define dgBartenPelvisDL "__OTR__objects/object_tab/gBartenPelvisDL"
+static const ALIGN_ASSET(2) char gBartenPelvisDL[] = dgBartenPelvisDL;
 
-#define dobject_tab_DL_003EF0 "__OTR__objects/object_tab/object_tab_DL_003EF0"
-static const ALIGN_ASSET(2) char object_tab_DL_003EF0[] = dobject_tab_DL_003EF0;
+#define dgBartenLeftHandDL "__OTR__objects/object_tab/gBartenLeftHandDL"
+static const ALIGN_ASSET(2) char gBartenLeftHandDL[] = dgBartenLeftHandDL;
 
-#define dobject_tab_DL_004270 "__OTR__objects/object_tab/object_tab_DL_004270"
-static const ALIGN_ASSET(2) char object_tab_DL_004270[] = dobject_tab_DL_004270;
+#define dgBartenLeftBroomDL "__OTR__objects/object_tab/gBartenLeftBroomDL"
+static const ALIGN_ASSET(2) char gBartenLeftBroomDL[] = dgBartenLeftBroomDL;
 
-#define dobject_tab_DL_004438 "__OTR__objects/object_tab/object_tab_DL_004438"
-static const ALIGN_ASSET(2) char object_tab_DL_004438[] = dobject_tab_DL_004438;
+#define dgBartenLeftForearmDL "__OTR__objects/object_tab/gBartenLeftForearmDL"
+static const ALIGN_ASSET(2) char gBartenLeftForearmDL[] = dgBartenLeftForearmDL;
 
-#define dobject_tab_DL_0046C8 "__OTR__objects/object_tab/object_tab_DL_0046C8"
-static const ALIGN_ASSET(2) char object_tab_DL_0046C8[] = dobject_tab_DL_0046C8;
+#define dgBartenLeftUpperArmDL "__OTR__objects/object_tab/gBartenLeftUpperArmDL"
+static const ALIGN_ASSET(2) char gBartenLeftUpperArmDL[] = dgBartenLeftUpperArmDL;
 
-#define dobject_tab_DL_0047F8 "__OTR__objects/object_tab/object_tab_DL_0047F8"
-static const ALIGN_ASSET(2) char object_tab_DL_0047F8[] = dobject_tab_DL_0047F8;
+#define dgBartenRightHandDL "__OTR__objects/object_tab/gBartenRightHandDL"
+static const ALIGN_ASSET(2) char gBartenRightHandDL[] = dgBartenRightHandDL;
 
-#define dobject_tab_DL_004B70 "__OTR__objects/object_tab/object_tab_DL_004B70"
-static const ALIGN_ASSET(2) char object_tab_DL_004B70[] = dobject_tab_DL_004B70;
+#define dgBartenRightForearmDL "__OTR__objects/object_tab/gBartenRightForearmDL"
+static const ALIGN_ASSET(2) char gBartenRightForearmDL[] = dgBartenRightForearmDL;
 
-#define dobject_tab_DL_004E00 "__OTR__objects/object_tab/object_tab_DL_004E00"
-static const ALIGN_ASSET(2) char object_tab_DL_004E00[] = dobject_tab_DL_004E00;
+#define dgBartenRightUpperArmDL "__OTR__objects/object_tab/gBartenRightUpperArmDL"
+static const ALIGN_ASSET(2) char gBartenRightUpperArmDL[] = dgBartenRightUpperArmDL;
 
-#define dobject_tab_DL_004F30 "__OTR__objects/object_tab/object_tab_DL_004F30"
-static const ALIGN_ASSET(2) char object_tab_DL_004F30[] = dobject_tab_DL_004F30;
+#define dgBartenChestDL "__OTR__objects/object_tab/gBartenChestDL"
+static const ALIGN_ASSET(2) char gBartenChestDL[] = dgBartenChestDL;
 
-#define dobject_tab_DL_005178 "__OTR__objects/object_tab/object_tab_DL_005178"
-static const ALIGN_ASSET(2) char object_tab_DL_005178[] = dobject_tab_DL_005178;
+#define dgBartenHeadDL "__OTR__objects/object_tab/gBartenHeadDL"
+static const ALIGN_ASSET(2) char gBartenHeadDL[] = dgBartenHeadDL;
 
-#define dobject_tab_DL_005668 "__OTR__objects/object_tab/object_tab_DL_005668"
-static const ALIGN_ASSET(2) char object_tab_DL_005668[] = dobject_tab_DL_005668;
+#define dgBartenLeftThighDL "__OTR__objects/object_tab/gBartenLeftThighDL"
+static const ALIGN_ASSET(2) char gBartenLeftThighDL[] = dgBartenLeftThighDL;
 
-#define dobject_tab_DL_005758 "__OTR__objects/object_tab/object_tab_DL_005758"
-static const ALIGN_ASSET(2) char object_tab_DL_005758[] = dobject_tab_DL_005758;
+#define dgBartenLeftLegDL "__OTR__objects/object_tab/gBartenLeftLegDL"
+static const ALIGN_ASSET(2) char gBartenLeftLegDL[] = dgBartenLeftLegDL;
 
-#define dobject_tab_DL_005840 "__OTR__objects/object_tab/object_tab_DL_005840"
-static const ALIGN_ASSET(2) char object_tab_DL_005840[] = dobject_tab_DL_005840;
+#define dgBartenLeftFootDL "__OTR__objects/object_tab/gBartenLeftFootDL"
+static const ALIGN_ASSET(2) char gBartenLeftFootDL[] = dgBartenLeftFootDL;
 
-#define dobject_tab_DL_005988 "__OTR__objects/object_tab/object_tab_DL_005988"
-static const ALIGN_ASSET(2) char object_tab_DL_005988[] = dobject_tab_DL_005988;
+#define dgBartenRightThighDL "__OTR__objects/object_tab/gBartenRightThighDL"
+static const ALIGN_ASSET(2) char gBartenRightThighDL[] = dgBartenRightThighDL;
 
-#define dobject_tab_DL_005A78 "__OTR__objects/object_tab/object_tab_DL_005A78"
-static const ALIGN_ASSET(2) char object_tab_DL_005A78[] = dobject_tab_DL_005A78;
+#define dgBartenRightLegDL "__OTR__objects/object_tab/gBartenRightLegDL"
+static const ALIGN_ASSET(2) char gBartenRightLegDL[] = dgBartenRightLegDL;
 
-#define dobject_tab_DL_005B60 "__OTR__objects/object_tab/object_tab_DL_005B60"
-static const ALIGN_ASSET(2) char object_tab_DL_005B60[] = dobject_tab_DL_005B60;
+#define dgBartenRightFootDL "__OTR__objects/object_tab/gBartenRightFootDL"
+static const ALIGN_ASSET(2) char gBartenRightFootDL[] = dgBartenRightFootDL;
 
-#define dobject_tab_TLUT_005CA8 "__OTR__objects/object_tab/object_tab_TLUT_005CA8"
-static const ALIGN_ASSET(2) char object_tab_TLUT_005CA8[] = dobject_tab_TLUT_005CA8;
+#define dgBartenTLUT "__OTR__objects/object_tab/gBartenTLUT"
+static const ALIGN_ASSET(2) char gBartenTLUT[] = dgBartenTLUT;
 
-#define dobject_tab_Tex_005EA8 "__OTR__objects/object_tab/object_tab_Tex_005EA8"
-static const ALIGN_ASSET(2) char object_tab_Tex_005EA8[] = dobject_tab_Tex_005EA8;
+#define dgBartenEyeTLUT "__OTR__objects/object_tab/gBartenEyeTLUT"
+static const ALIGN_ASSET(2) char gBartenEyeTLUT[] = dgBartenEyeTLUT;
 
-#define dobject_tab_Tex_0060A8 "__OTR__objects/object_tab/object_tab_Tex_0060A8"
-static const ALIGN_ASSET(2) char object_tab_Tex_0060A8[] = dobject_tab_Tex_0060A8;
+#define dgBartenBeardTex "__OTR__objects/object_tab/gBartenBeardTex"
+static const ALIGN_ASSET(2) char gBartenBeardTex[] = dgBartenBeardTex;
 
-#define dobject_tab_Tex_006128 "__OTR__objects/object_tab/object_tab_Tex_006128"
-static const ALIGN_ASSET(2) char object_tab_Tex_006128[] = dobject_tab_Tex_006128;
+#define dgBartenArmTex "__OTR__objects/object_tab/gBartenArmTex"
+static const ALIGN_ASSET(2) char gBartenArmTex[] = dgBartenArmTex;
 
-#define dobject_tab_Tex_006328 "__OTR__objects/object_tab/object_tab_Tex_006328"
-static const ALIGN_ASSET(2) char object_tab_Tex_006328[] = dobject_tab_Tex_006328;
+#define dgBartenMouthTex "__OTR__objects/object_tab/gBartenMouthTex"
+static const ALIGN_ASSET(2) char gBartenMouthTex[] = dgBartenMouthTex;
 
-#define dobject_tab_Tex_006368 "__OTR__objects/object_tab/object_tab_Tex_006368"
-static const ALIGN_ASSET(2) char object_tab_Tex_006368[] = dobject_tab_Tex_006368;
+#define dgBartenHairTex "__OTR__objects/object_tab/gBartenHairTex"
+static const ALIGN_ASSET(2) char gBartenHairTex[] = dgBartenHairTex;
 
-#define dobject_tab_Tex_0063E8 "__OTR__objects/object_tab/object_tab_Tex_0063E8"
-static const ALIGN_ASSET(2) char object_tab_Tex_0063E8[] = dobject_tab_Tex_0063E8;
+#define dgBartenEarTex "__OTR__objects/object_tab/gBartenEarTex"
+static const ALIGN_ASSET(2) char gBartenEarTex[] = dgBartenEarTex;
 
-#define dobject_tab_Tex_006428 "__OTR__objects/object_tab/object_tab_Tex_006428"
-static const ALIGN_ASSET(2) char object_tab_Tex_006428[] = dobject_tab_Tex_006428;
+#define dgBartenEyeOpenTex "__OTR__objects/object_tab/gBartenEyeOpenTex"
+static const ALIGN_ASSET(2) char gBartenEyeOpenTex[] = dgBartenEyeOpenTex;
 
-#define dobject_tab_Tex_006828 "__OTR__objects/object_tab/object_tab_Tex_006828"
-static const ALIGN_ASSET(2) char object_tab_Tex_006828[] = dobject_tab_Tex_006828;
+#define dgBartenHandTex "__OTR__objects/object_tab/gBartenHandTex"
+static const ALIGN_ASSET(2) char gBartenHandTex[] = dgBartenHandTex;
 
-#define dobject_tab_Tex_006928 "__OTR__objects/object_tab/object_tab_Tex_006928"
-static const ALIGN_ASSET(2) char object_tab_Tex_006928[] = dobject_tab_Tex_006928;
+#define dgBartenEyeHalfOpenTex "__OTR__objects/object_tab/gBartenEyeHalfOpenTex"
+static const ALIGN_ASSET(2) char gBartenEyeHalfOpenTex[] = dgBartenEyeHalfOpenTex;
 
-#define dobject_tab_Tex_006D28 "__OTR__objects/object_tab/object_tab_Tex_006D28"
-static const ALIGN_ASSET(2) char object_tab_Tex_006D28[] = dobject_tab_Tex_006D28;
+#define dgBartenEyeClosedTex "__OTR__objects/object_tab/gBartenEyeClosedTex"
+static const ALIGN_ASSET(2) char gBartenEyeClosedTex[] = dgBartenEyeClosedTex;
 
-#define dobject_tab_Tex_007128 "__OTR__objects/object_tab/object_tab_Tex_007128"
-static const ALIGN_ASSET(2) char object_tab_Tex_007128[] = dobject_tab_Tex_007128;
+#define dgBartenBroomTex "__OTR__objects/object_tab/gBartenBroomTex"
+static const ALIGN_ASSET(2) char gBartenBroomTex[] = dgBartenBroomTex;
 
-#define dobject_tab_Tex_007228 "__OTR__objects/object_tab/object_tab_Tex_007228"
-static const ALIGN_ASSET(2) char object_tab_Tex_007228[] = dobject_tab_Tex_007228;
+#define dgBartenBroomHeadTex "__OTR__objects/object_tab/gBartenBroomHeadTex"
+static const ALIGN_ASSET(2) char gBartenBroomHeadTex[] = dgBartenBroomHeadTex;
 
-#define dobject_tab_Tex_007328 "__OTR__objects/object_tab/object_tab_Tex_007328"
-static const ALIGN_ASSET(2) char object_tab_Tex_007328[] = dobject_tab_Tex_007328;
+#define dgBartenPantsTex "__OTR__objects/object_tab/gBartenPantsTex"
+static const ALIGN_ASSET(2) char gBartenPantsTex[] = dgBartenPantsTex;
 
-#define dobject_tab_Tex_007728 "__OTR__objects/object_tab/object_tab_Tex_007728"
-static const ALIGN_ASSET(2) char object_tab_Tex_007728[] = dobject_tab_Tex_007728;
+#define dgBartenBowtieTex "__OTR__objects/object_tab/gBartenBowtieTex"
+static const ALIGN_ASSET(2) char gBartenBowtieTex[] = dgBartenBowtieTex;
 
-#define dobject_tab_Tex_007828 "__OTR__objects/object_tab/object_tab_Tex_007828"
-static const ALIGN_ASSET(2) char object_tab_Tex_007828[] = dobject_tab_Tex_007828;
+#define dgBartenSkinTex "__OTR__objects/object_tab/gBartenSkinTex"
+static const ALIGN_ASSET(2) char gBartenSkinTex[] = dgBartenSkinTex;
 
-#define dobject_tab_Tex_007868 "__OTR__objects/object_tab/object_tab_Tex_007868"
-static const ALIGN_ASSET(2) char object_tab_Tex_007868[] = dobject_tab_Tex_007868;
+#define dgBartenCollarTex "__OTR__objects/object_tab/gBartenCollarTex"
+static const ALIGN_ASSET(2) char gBartenCollarTex[] = dgBartenCollarTex;
 
-#define dobject_tab_Tex_0078E8 "__OTR__objects/object_tab/object_tab_Tex_0078E8"
-static const ALIGN_ASSET(2) char object_tab_Tex_0078E8[] = dobject_tab_Tex_0078E8;
+#define dgBartenSleeveTex "__OTR__objects/object_tab/gBartenSleeveTex"
+static const ALIGN_ASSET(2) char gBartenSleeveTex[] = dgBartenSleeveTex;
 
-#define dobject_tab_Tex_0079E8 "__OTR__objects/object_tab/object_tab_Tex_0079E8"
-static const ALIGN_ASSET(2) char object_tab_Tex_0079E8[] = dobject_tab_Tex_0079E8;
+#define dgBartenJacketTex "__OTR__objects/object_tab/gBartenJacketTex"
+static const ALIGN_ASSET(2) char gBartenJacketTex[] = dgBartenJacketTex;
 
-#define dobject_tab_Tex_007A28 "__OTR__objects/object_tab/object_tab_Tex_007A28"
-static const ALIGN_ASSET(2) char object_tab_Tex_007A28[] = dobject_tab_Tex_007A28;
+#define dgBartenFootTex "__OTR__objects/object_tab/gBartenFootTex"
+static const ALIGN_ASSET(2) char gBartenFootTex[] = dgBartenFootTex;
 
-#define dobject_tab_Skel_007F78 "__OTR__objects/object_tab/object_tab_Skel_007F78"
-static const ALIGN_ASSET(2) char object_tab_Skel_007F78[] = dobject_tab_Skel_007F78;
+#define dgBartenSkel "__OTR__objects/object_tab/gBartenSkel"
+static const ALIGN_ASSET(2) char gBartenSkel[] = dgBartenSkel;
 
-#define dobject_tab_Anim_0086AC "__OTR__objects/object_tab/object_tab_Anim_0086AC"
-static const ALIGN_ASSET(2) char object_tab_Anim_0086AC[] = dobject_tab_Anim_0086AC;
+#define dgBartenIdleBarCounterAnim "__OTR__objects/object_tab/gBartenIdleBarCounterAnim"
+static const ALIGN_ASSET(2) char gBartenIdleBarCounterAnim[] = dgBartenIdleBarCounterAnim;
 
-typedef enum ObjectTabLimb {
-    /* 0x00 */ OBJECT_TAB_LIMB_NONE,
-    /* 0x01 */ OBJECT_TAB_LIMB_01,
-    /* 0x02 */ OBJECT_TAB_LIMB_02,
-    /* 0x03 */ OBJECT_TAB_LIMB_03,
-    /* 0x04 */ OBJECT_TAB_LIMB_04,
-    /* 0x05 */ OBJECT_TAB_LIMB_05,
-    /* 0x06 */ OBJECT_TAB_LIMB_06,
-    /* 0x07 */ OBJECT_TAB_LIMB_07,
-    /* 0x08 */ OBJECT_TAB_LIMB_08,
-    /* 0x09 */ OBJECT_TAB_LIMB_09,
-    /* 0x0A */ OBJECT_TAB_LIMB_0A,
-    /* 0x0B */ OBJECT_TAB_LIMB_0B,
-    /* 0x0C */ OBJECT_TAB_LIMB_0C,
-    /* 0x0D */ OBJECT_TAB_LIMB_0D,
-    /* 0x0E */ OBJECT_TAB_LIMB_0E,
-    /* 0x0F */ OBJECT_TAB_LIMB_0F,
-    /* 0x10 */ OBJECT_TAB_LIMB_10,
-    /* 0x11 */ OBJECT_TAB_LIMB_11,
-    /* 0x12 */ OBJECT_TAB_LIMB_12,
-    /* 0x13 */ OBJECT_TAB_LIMB_13,
-    /* 0x14 */ OBJECT_TAB_LIMB_MAX
-} ObjectTabLimb;
+typedef enum BartenLimb {
+    /* 0x00 */ BARTEN_LIMB_NONE,
+    /* 0x01 */ BARTEN_LIMB_PELVIS,
+    /* 0x02 */ BARTEN_LIMB_RIGHT_THIGH,
+    /* 0x03 */ BARTEN_LIMB_RIGHT_LEG,
+    /* 0x04 */ BARTEN_LIMB_RIGHT_FOOT,
+    /* 0x05 */ BARTEN_LIMB_LEFT_THIGH,
+    /* 0x06 */ BARTEN_LIMB_LEFT_LEG,
+    /* 0x07 */ BARTEN_LIMB_LEFT_FOOT,
+    /* 0x08 */ BARTEN_LIMB_CHEST,
+    /* 0x09 */ BARTEN_LIMB_HEAD,
+    /* 0x0A */ BARTEN_LIMB_RIGHT_UPPER_ARM,
+    /* 0x0B */ BARTEN_LIMB_RIGHT_FOREARM_ROOT,
+    /* 0x0C */ BARTEN_LIMB_RIGHT_FOREARM,
+    /* 0x0D */ BARTEN_LIMB_RIGHT_HAND,
+    /* 0x0E */ BARTEN_LIMB_LEFT_ARM_ROOT,
+    /* 0x0F */ BARTEN_LIMB_LEFT_UPPER_ARM,
+    /* 0x10 */ BARTEN_LIMB_LEFT_FOREARM,
+    /* 0x11 */ BARTEN_LIMB_LEFT_HAND_ROOT,
+    /* 0x12 */ BARTEN_LIMB_LEFT_BROOM,
+    /* 0x13 */ BARTEN_LIMB_LEFT_HAND,
+    /* 0x14 */ BARTEN_LIMB_MAX
+} BartenLimb;
 
 #endif // OBJECTS_OBJECT_TAB_H

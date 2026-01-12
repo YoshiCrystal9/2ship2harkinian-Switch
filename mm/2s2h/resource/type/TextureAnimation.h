@@ -1,5 +1,5 @@
 #pragma once
-#include "Resource.h"
+#include <ship/resource/Resource.h>
 
 namespace SOH {
 enum class TextureAnimationParamsType {

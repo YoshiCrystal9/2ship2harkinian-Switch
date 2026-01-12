@@ -8,9 +8,7 @@
 #include "overlays/actors/ovl_En_Elf/z_en_elf.h"
 #include "2s2h/GameInteractor/GameInteractor.h"
 
-#define FLAGS (ACTOR_FLAG_10)
-
-#define THIS ((ElfMsg*)thisx)
+#define FLAGS (ACTOR_FLAG_UPDATE_CULLING_DISABLED)
 
 void ElfMsg_Init(Actor* thisx, PlayState* play);
 void ElfMsg_Destroy(Actor* thisx, PlayState* play);
@@ -19,7 +17,7 @@ void ElfMsg_Update(Actor* thisx, PlayState* play);
 void ElfMsg_SetupAction(ElfMsg* this, ElfMsgActionFunc actionFunc);
 void func_8092E284(ElfMsg* this, PlayState* play);
 
-ActorInit Elf_Msg_InitVars = {
+ActorProfile Elf_Msg_Profile = {
     /**/ ACTOR_ELF_MSG,
     /**/ ACTORCAT_ITEMACTION,
     /**/ FLAGS,
@@ -33,7 +31,7 @@ ActorInit Elf_Msg_InitVars = {
 
 static InitChainEntry sInitChain[] = {
     ICHAIN_VEC3F_DIV1000(scale, 1000, ICHAIN_CONTINUE),
-    ICHAIN_F32(uncullZoneForward, 1000, ICHAIN_STOP),
+    ICHAIN_F32(cullingVolumeDistance, 1000, ICHAIN_STOP),
 };
 
 void ElfMsg_SetupAction(ElfMsg* this, ElfMsgActionFunc actionFunc) {
@@ -71,7 +69,7 @@ s32 func_8092DF9C(ElfMsg* this, PlayState* play) {
 }
 
 void ElfMsg_Init(Actor* thisx, PlayState* play) {
-    ElfMsg* this = THIS;
+    ElfMsg* this = (ElfMsg*)thisx;
 
     if (!func_8092DF9C(this, play)) {
         Actor_ProcessInitChain(&this->actor, sInitChain);
@@ -101,7 +99,7 @@ s32 func_8092E1D0(ElfMsg* this) {
     }
 }
 
-s32 func_8092E1FC(ElfMsg* this) {
+bool func_8092E1FC(ElfMsg* this) {
     return (this->actor.xzDistToPlayer < (100.0f * this->actor.scale.x)) && (this->actor.playerHeightRel >= 0.0f) &&
            (this->actor.playerHeightRel < (100.0f * this->actor.scale.y));
 }
@@ -110,7 +108,7 @@ void func_8092E284(ElfMsg* this, PlayState* play) {
     Player* player = GET_PLAYER(play);
     EnElf* tatl = (EnElf*)player->tatlActor;
 
-    if (GameInteractor_Should(VB_TATL_INTERUPT_MSG, (player->tatlActor != NULL) && ((func_8092E1FC(this))), this)) {
+    if (GameInteractor_Should(VB_TATL_INTERRUPT_MSG, (player->tatlActor != NULL) && ((func_8092E1FC(this))), this)) {
         player->tatlTextId = func_8092E1D0(this);
         CutsceneManager_Queue(CS_ID_GLOBAL_TALK);
         tatl->elfMsg = &this->actor;
@@ -133,10 +131,10 @@ void func_8092E284(ElfMsg* this, PlayState* play) {
 }
 
 void ElfMsg_Update(Actor* thisx, PlayState* play) {
-    ElfMsg* this = THIS;
+    ElfMsg* this = (ElfMsg*)thisx;
 
     if (func_8092DF9C(this, play) == 0) {
-        if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+        if (Actor_TalkOfferAccepted(&this->actor, &play->state)) {
             if (ELFMSG_GET_SWITCH_FLAG(thisx) != 0x7F) {
                 Flags_SetSwitch(play, ELFMSG_GET_SWITCH_FLAG(thisx));
             }

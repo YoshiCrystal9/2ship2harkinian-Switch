@@ -3,9 +3,9 @@
 extern "C" {
 #include "variables.h"
 
-void Player_TalkWithPlayer(PlayState* play, Actor* actor);
-void func_80837B60(PlayState* play, Player* player);
-s32 func_80832558(PlayState* play, Player* player, PlayerFuncD58 arg2);
+void Player_StartTalking(PlayState* play, Actor* actor);
+void Player_SetupTalk(PlayState* play, Player* player);
+s32 Player_SetupWaitForPutAway(PlayState* play, Player* player, AfterPutAwayFunc afterPutAwayFunc);
 }
 
 // This prevents actors from giving items with Actor_OfferGetItem, along with preventing them from waiting on the
@@ -20,11 +20,11 @@ void Rando::MiscBehavior::InitOfferGetItemBehavior() {
 
         // SPDLOG_INFO("VB_EXEC_MSG_EVENT {}", cmdId);
 
-        if (cmdId == MSCRIPT_CMD_06) { // MSCRIPT_OFFER_ITEM
+        if (cmdId == MSCRIPT_CMD_ID_OFFER_ITEM) {
             switch (actor->id) {
                 case ACTOR_EN_PST:
-                    actor->flags |= ACTOR_FLAG_TALK_REQUESTED; // Prevent softlock
-                    func_80832558(gPlayState, player, func_80837B60);
+                    actor->flags |= ACTOR_FLAG_TALK; // Prevent softlock
+                    Player_SetupWaitForPutAway(gPlayState, player, Player_SetupTalk);
                     *should = false;
                     return;
             }
@@ -65,7 +65,7 @@ void Rando::MiscBehavior::InitOfferGetItemBehavior() {
                 player->talkActor = actor;
                 player->talkActorDistance = actor->xzDistToPlayer;
                 player->exchangeItemAction = PLAYER_IA_MINUS1;
-                Player_TalkWithPlayer(gPlayState, actor);
+                Player_StartTalking(gPlayState, actor);
                 break;
         }
     });

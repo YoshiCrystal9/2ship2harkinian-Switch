@@ -81,6 +81,18 @@ static const ALIGN_ASSET(2) char Z2_IKANA_room_04DL_0029D0[] = dZ2_IKANA_room_04
 #define dZ2_IKANA_room_04Tex_0042C8 "__OTR__scenes/nonmq/Z2_IKANA_scene/Z2_IKANA_room_04Tex_0042C8"
 static const ALIGN_ASSET(2) char Z2_IKANA_room_04Tex_0042C8[] = dZ2_IKANA_room_04Tex_0042C8;
 
+#define dZ2_IKANA_room_04DL_000550 "__OTR__scenes/nonmq/Z2_IKANA_scene/Z2_IKANA_room_04DL_000550"
+static const ALIGN_ASSET(2) char Z2_IKANA_room_04DL_000550[] = dZ2_IKANA_room_04DL_000550;
+
+#define dZ2_IKANA_room_04DL_002A70 "__OTR__scenes/nonmq/Z2_IKANA_scene/Z2_IKANA_room_04DL_002A70"
+static const ALIGN_ASSET(2) char Z2_IKANA_room_04DL_002A70[] = dZ2_IKANA_room_04DL_002A70;
+
+#define dZ2_IKANA_room_04DL_007CD0 "__OTR__scenes/nonmq/Z2_IKANA_scene/Z2_IKANA_room_04DL_007CD0"
+static const ALIGN_ASSET(2) char Z2_IKANA_room_04DL_007CD0[] = dZ2_IKANA_room_04DL_007CD0;
+
+#define dZ2_IKANA_room_04DL_008840 "__OTR__scenes/nonmq/Z2_IKANA_scene/Z2_IKANA_room_04DL_008840"
+static const ALIGN_ASSET(2) char Z2_IKANA_room_04DL_008840[] = dZ2_IKANA_room_04DL_008840;
+
 #define dZ2_IKANA_room_04Set_000230DL_0007C8 "__OTR__scenes/nonmq/Z2_IKANA_scene/Z2_IKANA_room_04Set_000230DL_0007C8"
 static const ALIGN_ASSET(2) char Z2_IKANA_room_04Set_000230DL_0007C8[] = dZ2_IKANA_room_04Set_000230DL_0007C8;
 

@@ -1,10 +1,9 @@
-
-#include "2s2h/ActorExtension/ActorExtension.h"
+#include "2s2h/ObjectExtension/ObjectExtension.h"
 #include "2s2h/GameInteractor/GameInteractor.h"
 #include "2s2h/Enhancements/FrameInterpolation/FrameInterpolation.h"
 #include "2s2h/ShipInit.hpp"
 #include "2s2h/ShipUtils.h"
-#include "public/bridge/consolevariablebridge.h"
+#include <libultraship/bridge/consolevariablebridge.h>
 #include <cassert>
 
 extern "C" {
@@ -26,30 +25,33 @@ typedef enum {
     ENEMYHEALTH_ANCHOR_BOTTOM,
 } EnemyHealthBarAnchorType;
 
-ActorExtensionId actorEnemyHealthExtId = 0;
+struct ActorMaximumHealth {
+    u8 maximumHealth = 0;
+};
+static ObjectExtension::Register<ActorMaximumHealth> ActorMaximumHealthRegister;
 
 static Vtx sEnemyHealthVtx[16];
 static Mtx sEnemyHealthMtx[2];
 
 u8 GetActorMaxHealth(Actor* actor) {
-    u8* maxHealth = (u8*)ActorExtension_Get(actor, actorEnemyHealthExtId);
-    if (maxHealth == NULL) {
-        return 0;
-    }
+    const ActorMaximumHealth* maxHealth = ObjectExtension::GetInstance().Get<ActorMaximumHealth>(actor);
+    return maxHealth != nullptr ? maxHealth->maximumHealth : ActorMaximumHealth{}.maximumHealth;
+}
 
-    return *maxHealth;
+void SetActorMaximumHealth(const Actor* actor, u8 maximumHealth) {
+    ObjectExtension::GetInstance().Set<ActorMaximumHealth>(actor, ActorMaximumHealth{ maximumHealth });
 }
 
 // Draws an enemy health bar using the magic bar textures and positions it in a similar way to Z-Targeting
-void Interface_DrawEnemyHealthBar(TargetContext* targetCtx, PlayState* play) {
+void Interface_DrawEnemyHealthBar(Attention* attention, PlayState* play) {
     InterfaceContext* interfaceCtx = &play->interfaceCtx;
     PauseContext* pauseCtx = &play->pauseCtx;
     Player* player = GET_PLAYER(play);
-    Actor* actor = targetCtx->lockOnActor;
+    Actor* actor = attention->reticleActor;
     Actor* healthActor = actor;
 
     if (actor == NULL || (actor->category != ACTORCAT_ENEMY && actor->category != ACTORCAT_BOSS) ||
-        targetCtx->lockOnAlpha == 0 || ((s32)pauseCtx->state > PAUSE_STATE_OPENING_2)) {
+        attention->reticleFadeAlphaControl == 0 || ((s32)pauseCtx->state > PAUSE_STATE_OPENING_2)) {
         return;
     }
 
@@ -114,13 +116,13 @@ void Interface_DrawEnemyHealthBar(TargetContext* targetCtx, PlayState* play) {
     Ship_CreateQuadVertexGroup(&sEnemyHealthVtx[12], -floorf(halfBarWidth) + endTexWidth, (-texHeight / 2) + 3,
                                healthBarFill, 7, false);
 
-    if (((!(player->stateFlags1 & PLAYER_STATE1_40)) || (actor != player->lockOnActor)) &&
-        targetCtx->lockOnRadius < 500.0f) {
+    if (((!(player->stateFlags1 & PLAYER_STATE1_TALKING)) || (actor != player->focusActor)) &&
+        attention->reticleRadius < 500.0f) {
         f32 slideInOffsetY = 0;
 
         // Slide in the health bar from edge of the screen (mimic the Z-Target triangles fly in)
-        if (anchorType == ENEMYHEALTH_ANCHOR_ACTOR && targetCtx->lockOnRadius > 120.0f) {
-            slideInOffsetY = (targetCtx->lockOnRadius - 120.0f) / 2;
+        if (anchorType == ENEMYHEALTH_ANCHOR_ACTOR && attention->reticleRadius > 120.0f) {
+            slideInOffsetY = (attention->reticleRadius - 120.0f) / 2;
             // Slide in from the top if the bar is placed on the top half of the screen
             if (healthBar_offsetY - healthBar_actorOffset <= 0) {
                 slideInOffsetY *= -1;
@@ -186,29 +188,20 @@ void Interface_DrawEnemyHealthBar(TargetContext* targetCtx, PlayState* play) {
 static RegisterShipInitFunc initFunc(
     []() {
         // Register actor extension health data and actor init hook once
-        if (actorEnemyHealthExtId == 0) {
-            actorEnemyHealthExtId = ActorExtension_CreateForAll(sizeof(u8));
+        GameInteractor::Instance->RegisterGameHook<GameInteractor::OnActorInit>([](Actor* actor) {
+            u8 maxHealth = actor->colChkInfo.health;
 
-            GameInteractor::Instance->RegisterGameHook<GameInteractor::OnActorInit>([](Actor* actor) {
-                u8* maxHealth = (u8*)ActorExtension_Get(actor, actorEnemyHealthExtId);
-                if (maxHealth == NULL) {
-                    assert(false && "Actor Extension memory not valid");
-                    return;
-                }
-
-                *maxHealth = actor->colChkInfo.health;
-
-                // The remains in the Majora fight get their health set after init for the first time fighting,
-                // so we set the expected value now
-                if (actor->id == ACTOR_BOSS_07 && actor->params >= MAJORAS_REMAINS) {
-                    *maxHealth = 5;
-                }
-            });
-        }
+            // The remains in the Majora fight get their health set after init for the first time fighting,
+            // so we set the expected value now
+            if (actor->id == ACTOR_BOSS_07 && actor->params >= MAJORA_TYPE_REMAINS) {
+                maxHealth = 5;
+            }
+            SetActorMaximumHealth(actor, maxHealth);
+        });
 
         COND_HOOK(OnInterfaceDrawStart, CVAR, []() {
             if (gPlayState != NULL) {
-                Interface_DrawEnemyHealthBar(&gPlayState->actorCtx.targetCtx, gPlayState);
+                Interface_DrawEnemyHealthBar(&gPlayState->actorCtx.attention, gPlayState);
             }
         });
     },

@@ -6,9 +6,7 @@
 
 #include "z_en_ending_hero.h"
 
-#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_FRIENDLY)
-
-#define THIS ((EnEndingHero*)thisx)
+#define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY)
 
 void EnEndingHero_Init(Actor* thisx, PlayState* play);
 void EnEndingHero_Destroy(Actor* thisx, PlayState* play);
@@ -18,7 +16,7 @@ void EnEndingHero_Draw(Actor* thisx, PlayState* play);
 void EnEndingHero1_SetupIdle(EnEndingHero* this);
 void EnEndingHero1_Idle(EnEndingHero* this, PlayState* play);
 
-ActorInit En_Ending_Hero_InitVars = {
+ActorProfile En_Ending_Hero_Profile = {
     /**/ ACTOR_EN_ENDING_HERO,
     /**/ ACTORCAT_NPC,
     /**/ FLAGS,
@@ -31,13 +29,13 @@ ActorInit En_Ending_Hero_InitVars = {
 };
 
 void EnEndingHero_Init(Actor* thisx, PlayState* play) {
-    EnEndingHero* this = THIS;
+    EnEndingHero* this = (EnEndingHero*)thisx;
 
     this->actor.colChkInfo.mass = MASS_IMMOVABLE;
     Actor_SetScale(&this->actor, 0.01f);
-    this->actor.targetMode = TARGET_MODE_6;
+    this->actor.attentionRangeType = ATTENTION_RANGE_6;
     this->actor.gravity = -3.0f;
-    SkelAnime_InitFlex(play, &this->skelAnime, &object_dt_Skel_00B0CC, &object_dt_Anim_000BE0, this->jointTable,
+    SkelAnime_InitFlex(play, &this->skelAnime, &object_dt_Skel_00B0CC, &gDotourUprightAnim, this->jointTable,
                        this->morphTable, OBJECT_DT_LIMB_MAX);
     ActorShape_Init(&this->actor.shape, 0.0f, ActorShadow_DrawCircle, 25.0f);
     EnEndingHero1_SetupIdle(this);
@@ -56,13 +54,13 @@ void EnEndingHero1_Idle(EnEndingHero* this, PlayState* play) {
 }
 
 void EnEndingHero_Update(Actor* thisx, PlayState* play) {
-    EnEndingHero* this = THIS;
+    EnEndingHero* this = (EnEndingHero*)thisx;
 
     if (this->unk240 == 0) {
         this->unk242++;
         if (this->unk242 > 2) {
             this->unk242 = 0;
-            this->unk240 = (s16)Rand_ZeroFloat(60.0f) + 0x14;
+            this->unk240 = TRUNCF_BINANG(Rand_ZeroFloat(60.0f)) + 0x14;
         }
     }
     this->actionFunc(this, play);
@@ -82,7 +80,7 @@ static TexturePtr sEyebrowTextures[] = {
 };
 
 void EnEndingHero_Draw(Actor* thisx, PlayState* play) {
-    EnEndingHero* this = THIS;
+    EnEndingHero* this = (EnEndingHero*)thisx;
     s32 index = 0;
 
     OPEN_DISPS(play->state.gfxCtx);

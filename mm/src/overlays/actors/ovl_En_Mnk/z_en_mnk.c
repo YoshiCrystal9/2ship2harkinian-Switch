@@ -7,9 +7,7 @@
 #include "z_en_mnk.h"
 #include "2s2h/GameInteractor/GameInteractor.h"
 
-#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_10)
-
-#define THIS ((EnMnk*)thisx)
+#define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_UPDATE_CULLING_DISABLED)
 
 void EnMnk_Init(Actor* thisx, PlayState* play);
 void EnMnk_Destroy(Actor* thisx, PlayState* play);
@@ -43,7 +41,7 @@ void func_80AB92CC(EnMnk* this, PlayState* play);
 s32 EnMnk_ValidatePictograph(PlayState* play, Actor* thisx);
 s32 EnMnk_AlreadyExists(EnMnk* this, PlayState* play);
 
-ActorInit En_Mnk_InitVars = {
+ActorProfile En_Mnk_Profile = {
     /**/ ACTOR_EN_MNK,
     /**/ ACTORCAT_NPC,
     /**/ FLAGS,
@@ -57,7 +55,7 @@ ActorInit En_Mnk_InitVars = {
 
 static ColliderCylinderInit sCylinderInit = {
     {
-        COLTYPE_NONE,
+        COL_MATERIAL_NONE,
         AT_NONE,
         AC_ON | AC_TYPE_PLAYER,
         OC1_ON | OC1_TYPE_ALL,
@@ -65,11 +63,11 @@ static ColliderCylinderInit sCylinderInit = {
         COLSHAPE_CYLINDER,
     },
     {
-        ELEMTYPE_UNK0,
+        ELEM_MATERIAL_UNK0,
         { 0x00000000, 0x00, 0x00 },
         { 0x01000200, 0x00, 0x00 },
-        TOUCH_NONE | TOUCH_SFX_NORMAL,
-        BUMP_ON,
+        ATELEM_NONE | ATELEM_SFX_NORMAL,
+        ACELEM_ON,
         OCELEM_ON,
     },
     { 15, 30, 0, { 0, 0, 0 } },
@@ -232,7 +230,7 @@ void EnMnk_Monkey_SetupWaitToRunAndWaitAtEachPoint(EnMnk* this, PlayState* play)
 
 void EnMnk_Monkey_StartInvisible(EnMnk* this, PlayState* play) {
     this->picto.actor.draw = NULL;
-    this->picto.actor.flags &= ~ACTOR_FLAG_TARGETABLE;
+    this->picto.actor.flags &= ~ACTOR_FLAG_ATTENTION_ENABLED;
     this->collider.dim.radius = 100;
     this->flags |= MONKEY_FLAGS_8;
     this->flags |= MONKEY_FLAGS_20;
@@ -244,12 +242,12 @@ void EnMnk_Monkey_StartInvisible(EnMnk* this, PlayState* play) {
 }
 
 void EnMnk_MonkeyTiedUp_Init(Actor* thisx, PlayState* play) {
-    EnMnk* this = THIS;
+    EnMnk* this = (EnMnk*)thisx;
     s16 csId;
     s32 i;
 
     this->actionFunc = EnMnk_MonkeyTiedUp_Wait;
-    this->picto.actor.flags |= ACTOR_FLAG_2000000;
+    this->picto.actor.flags |= ACTOR_FLAG_UPDATE_DURING_OCARINA;
     SkelAnime_InitFlex(play, &this->propSkelAnime, &gMonkeyTiedUpPoleSkel, &object_mnk_Anim_003584,
                        this->propJointTable, this->propMorphTable, OBJECT_MNK_1_LIMB_MAX);
     this->cueId = 4;
@@ -273,9 +271,9 @@ void EnMnk_MonkeyTiedUp_Init(Actor* thisx, PlayState* play) {
 }
 
 void EnMnk_MonkeyHanging_Init(Actor* thisx, PlayState* play) {
-    EnMnk* this = THIS;
+    EnMnk* this = (EnMnk*)thisx;
 
-    func_800BC154(play, &play->actorCtx, &this->picto.actor, ACTORCAT_PROP);
+    Actor_ChangeCategory(play, &play->actorCtx, &this->picto.actor, ACTORCAT_PROP);
     this->actionFunc = EnMnk_MonkeyHanging_StruggleBeforeDunk;
     this->picto.actor.textId = 0x8E8;
     SkelAnime_InitFlex(play, &this->propSkelAnime, &gMonkeyHangingRopeSkel, &gMonkeyHangingStruggleAnim,
@@ -292,7 +290,7 @@ void EnMnk_MonkeyHanging_Init(Actor* thisx, PlayState* play) {
 }
 
 void EnMnk_Init(Actor* thisx, PlayState* play) {
-    EnMnk* this = THIS;
+    EnMnk* this = (EnMnk*)thisx;
     s32 pad;
 
     Actor_SetScale(&this->picto.actor, 0.012f);
@@ -422,7 +420,7 @@ void EnMnk_Init(Actor* thisx, PlayState* play) {
             this->actionFunc = EnMnk_Monkey_WaitToFollowPath;
             this->unk_3C8 = 0;
             this->flags |= MONKEY_FLAGS_2;
-            this->picto.actor.flags &= ~ACTOR_FLAG_TARGETABLE;
+            this->picto.actor.flags &= ~ACTOR_FLAG_ATTENTION_ENABLED;
             this->picto.actor.velocity.y = 0.0f;
             this->picto.actor.terminalVelocity = 0.0f;
             this->picto.actor.gravity = 0.0f;
@@ -492,7 +490,7 @@ void EnMnk_Init(Actor* thisx, PlayState* play) {
 }
 
 void EnMnk_Destroy(Actor* thisx, PlayState* play) {
-    EnMnk* this = THIS;
+    EnMnk* this = (EnMnk*)thisx;
 
     Collider_DestroyCylinder(play, &this->collider);
     if ((MONKEY_GET_TYPE(&this->picto.actor) == MONKEY_TIED_UP) && (this->flags & MONKEY_FLAGS_2000)) {
@@ -693,7 +691,7 @@ void func_80AB61E8(EnMnk* this, PlayState* play) {
     this->picto.actor.world.rot.y = this->picto.actor.yawTowardsPlayer;
     Math_SmoothStepToS(&this->picto.actor.shape.rot.y, this->picto.actor.world.rot.y, 2, 0xBB8, 0xC8);
 
-    if ((Message_GetState(&play->msgCtx) == TEXT_STATE_5) && Message_ShouldAdvance(play)) {
+    if ((Message_GetState(&play->msgCtx) == TEXT_STATE_EVENT) && Message_ShouldAdvance(play)) {
         switch (play->msgCtx.currentTextId) {
             case 0x7D9:
                 Message_ContinueTextbox(play, 0x7DA);
@@ -725,7 +723,7 @@ void func_80AB6304(EnMnk* this, PlayState* play) {
     this->picto.actor.world.rot.y = this->picto.actor.yawTowardsPlayer;
     Math_SmoothStepToS(&this->picto.actor.shape.rot.y, this->picto.actor.world.rot.y, 2, 0xBB8, 0xC8);
 
-    if ((Message_GetState(&play->msgCtx) == TEXT_STATE_5) && Message_ShouldAdvance(play)) {
+    if ((Message_GetState(&play->msgCtx) == TEXT_STATE_EVENT) && Message_ShouldAdvance(play)) {
         this->flags |= MONKEY_FLAGS_4;
     }
 
@@ -741,7 +739,7 @@ void func_80AB6304(EnMnk* this, PlayState* play) {
 void func_80AB63CC(EnMnk* this, PlayState* play) {
     s32 pad;
 
-    if ((Message_GetState(&play->msgCtx) == TEXT_STATE_5) && Message_ShouldAdvance(play)) {
+    if ((Message_GetState(&play->msgCtx) == TEXT_STATE_EVENT) && Message_ShouldAdvance(play)) {
         this->flags |= MONKEY_FLAGS_4;
     }
 
@@ -769,8 +767,8 @@ void func_80AB64B8(EnMnk* this, PlayState* play) {
         Math_SmoothStepToS(&this->picto.actor.shape.rot.y, this->picto.actor.world.rot.y, 2, 0xBB8, 0xC8);
     }
 
-    if (Actor_ProcessTalkRequest(&this->picto.actor, &play->state)) {
-        this->picto.actor.flags &= ~ACTOR_FLAG_10000;
+    if (Actor_TalkOfferAccepted(&this->picto.actor, &play->state)) {
+        this->picto.actor.flags &= ~ACTOR_FLAG_TALK_OFFER_AUTO_ACCEPTED;
         this->actionFunc = func_80AB63CC;
         EnMnk_Monkey_ChangeAnim(this, 9, ANIMMODE_ONCE, -5.0f);
         this->picto.actor.velocity.y = 3.6f;
@@ -779,10 +777,10 @@ void func_80AB64B8(EnMnk* this, PlayState* play) {
         this->flags &= ~MONKEY_FLAGS_1;
         this->flags &= ~MONKEY_FLAGS_4;
     } else if (this->picto.actor.xzDistToPlayer < 100.0f) {
-        this->picto.actor.flags |= ACTOR_FLAG_10000;
+        this->picto.actor.flags |= ACTOR_FLAG_TALK_OFFER_AUTO_ACCEPTED;
         Actor_OfferTalk(&this->picto.actor, play, 120.0f);
     } else {
-        this->picto.actor.flags &= ~ACTOR_FLAG_10000;
+        this->picto.actor.flags &= ~ACTOR_FLAG_TALK_OFFER_AUTO_ACCEPTED;
     }
 }
 
@@ -856,7 +854,7 @@ void EnMnk_Monkey_WaitToRunAndWaitAtEachPoint(EnMnk* this, PlayState* play) {
 }
 
 void EnMnk_Monkey_TalkAfterRun(EnMnk* this, PlayState* play) {
-    if ((Message_GetState(&play->msgCtx) == TEXT_STATE_5) && Message_ShouldAdvance(play)) {
+    if ((Message_GetState(&play->msgCtx) == TEXT_STATE_EVENT) && Message_ShouldAdvance(play)) {
         this->flags |= MONKEY_FLAGS_4;
         Message_CloseTextbox(play);
     }
@@ -877,7 +875,7 @@ void EnMnk_Monkey_WaitToTalkAfterRun(EnMnk* this, PlayState* play) {
     this->picto.actor.shape.rot.y = this->picto.actor.yawTowardsPlayer;
     this->picto.actor.world.rot.y = this->picto.actor.yawTowardsPlayer;
     SkelAnime_Update(&this->skelAnime);
-    if (Actor_ProcessTalkRequest(&this->picto.actor, &play->state)) {
+    if (Actor_TalkOfferAccepted(&this->picto.actor, &play->state)) {
         Animation_PlayOnce(&this->skelAnime, &object_mnk_Anim_009CC0);
         this->actionFunc = EnMnk_Monkey_TalkAfterRun;
         this->flags &= ~MONKEY_FLAGS_4;
@@ -968,7 +966,7 @@ void EnMnk_Monkey_TalkAfterApproach(EnMnk* this, PlayState* play) {
             }
             break;
 
-        case TEXT_STATE_5:
+        case TEXT_STATE_EVENT:
             if (Message_ShouldAdvance(play)) {
                 switch (play->msgCtx.currentTextId) {
                     case 0x7D0:
@@ -1058,7 +1056,7 @@ void EnMnk_Monkey_WaitToTalkAfterApproach(EnMnk* this, PlayState* play) {
     SkelAnime_Update(&this->skelAnime);
     EnMnk_Monkey_MoveRelativeToPlayer(this, play);
 
-    if (Actor_ProcessTalkRequest(&this->picto.actor, &play->state)) {
+    if (Actor_TalkOfferAccepted(&this->picto.actor, &play->state)) {
         if (MONKEY_GET_TYPE(&this->picto.actor) == MONKEY_OUTSIDECHAMBER) {
             EnMnk_Monkey_SetAnim(this, 2);
         } else {
@@ -1144,7 +1142,7 @@ void EnMnk_Monkey_SetupDrop(EnMnk* this) {
     this->actionFunc = EnMnk_Monkey_Drop;
     this->picto.actor.velocity.y = -10.0f;
     this->picto.actor.terminalVelocity = -10.0f;
-    this->picto.actor.flags |= ACTOR_FLAG_TARGETABLE;
+    this->picto.actor.flags |= ACTOR_FLAG_ATTENTION_ENABLED;
     this->picto.actor.draw = EnMnk_Draw;
     Animation_Change(&this->skelAnime, &object_mnk_Anim_008814, 1.0f, 10.0f,
                      Animation_GetLastFrame(&object_mnk_Anim_008814), ANIMMODE_ONCE, 0.0f);
@@ -1314,7 +1312,7 @@ void EnMnk_MonkeyTiedUp_ReactToWrongInstrument(EnMnk* this, PlayState* play) {
     SkelAnime_Update(&this->skelAnime);
     SkelAnime_Update(&this->propSkelAnime);
 
-    if ((Message_GetState(&play->msgCtx) == TEXT_STATE_5) && Message_ShouldAdvance(play)) {
+    if ((Message_GetState(&play->msgCtx) == TEXT_STATE_EVENT) && Message_ShouldAdvance(play)) {
         switch (play->msgCtx.currentTextId) {
             case 0x8D4:
             case 0x8DA:
@@ -1379,7 +1377,7 @@ void EnMnk_MonkeyTiedUp_TransitionAfterTalk(EnMnk* this, PlayState* play) {
         }
     }
 
-    if ((Message_GetState(&play->msgCtx) == TEXT_STATE_5) && Message_ShouldAdvance(play)) {
+    if ((Message_GetState(&play->msgCtx) == TEXT_STATE_EVENT) && Message_ShouldAdvance(play)) {
         switch (play->msgCtx.currentTextId) {
             case 0x8CA:
                 EnMnk_MonkeyTiedUp_SetAnim(this, MONKEY_TIEDUP_ANIM_SHAKEHEAD);
@@ -1454,7 +1452,7 @@ void EnMnk_MonkeyTiedUp_WaitUnused(EnMnk* this, PlayState* play) {
     SkelAnime_Update(&this->skelAnime);
     SkelAnime_Update(&this->propSkelAnime);
 
-    if (Actor_ProcessTalkRequest(&this->picto.actor, &play->state)) {
+    if (Actor_TalkOfferAccepted(&this->picto.actor, &play->state)) {
         this->actionFunc = EnMnk_MonkeyTiedUp_TalkUnused;
         this->unk_3E0 = 0;
     } else if (EnMnk_PlayerIsInTalkRange(this, play)) {
@@ -1467,7 +1465,7 @@ void EnMnk_MonkeyTiedUp_WaitForInstrument(EnMnk* this, PlayState* play) {
     SkelAnime_Update(&this->skelAnime);
     SkelAnime_Update(&this->propSkelAnime);
 
-    if (func_800B8718(&this->picto.actor, &play->state)) {
+    if (Actor_OcarinaInteractionAccepted(&this->picto.actor, &play->state)) {
         switch (gSaveContext.save.playerForm) {
             case PLAYER_FORM_HUMAN:
             case PLAYER_FORM_FIERCE_DEITY:
@@ -1505,13 +1503,13 @@ void EnMnk_MonkeyTiedUp_WaitForInstrument(EnMnk* this, PlayState* play) {
         this->picto.actor.csId = this->csIdList[0];
         Message_StartTextbox(play, this->picto.actor.textId, NULL);
         CutsceneManager_Queue(this->picto.actor.csId);
-    } else if (Actor_ProcessTalkRequest(&this->picto.actor, &play->state)) {
+    } else if (Actor_TalkOfferAccepted(&this->picto.actor, &play->state)) {
         this->actionFunc = EnMnk_MonkeyTiedUp_TransitionAfterTalk;
         EnMnk_MonkeyTiedUp_SetAnim(this, MONKEY_TIEDUP_ANIM_KICKAROUND);
     } else if (EnMnk_PlayerIsInTalkRange(this, play)) {
         this->picto.actor.textId = 0x8D3;
         Actor_OfferTalk(&this->picto.actor, play, 100.0f);
-        func_800B874C(&this->picto.actor, play, 100.0f, 100.0f);
+        Actor_OfferOcarinaInteraction(&this->picto.actor, play, 100.0f, 100.0f);
     }
 }
 
@@ -1519,9 +1517,9 @@ void EnMnk_MonkeyTiedUp_TalkAfterCutRope(EnMnk* this, PlayState* play) {
     SkelAnime_Update(&this->skelAnime);
     SkelAnime_Update(&this->propSkelAnime);
 
-    if (Actor_ProcessTalkRequest(&this->picto.actor, &play->state)) {
+    if (Actor_TalkOfferAccepted(&this->picto.actor, &play->state)) {
         this->actionFunc = EnMnk_MonkeyTiedUp_TransitionAfterTalk;
-        this->picto.actor.flags &= ~ACTOR_FLAG_10000;
+        this->picto.actor.flags &= ~ACTOR_FLAG_TALK_OFFER_AUTO_ACCEPTED;
     } else {
         Actor_OfferTalk(&this->picto.actor, play, 150.0f);
     }
@@ -1531,7 +1529,7 @@ void EnMnk_MonkeyTiedUp_WaitForCutRope(EnMnk* this, PlayState* play) {
     SkelAnime_Update(&this->skelAnime);
     SkelAnime_Update(&this->propSkelAnime);
 
-    if (Actor_ProcessTalkRequest(&this->picto.actor, &play->state)) {
+    if (Actor_TalkOfferAccepted(&this->picto.actor, &play->state)) {
         if ((gSaveContext.save.playerForm == PLAYER_FORM_FIERCE_DEITY) ||
             (gSaveContext.save.playerForm == PLAYER_FORM_HUMAN)) {
             EnMnk_MonkeyTiedUp_SetAnim(this, MONKEY_TIEDUP_ANIM_SHH);
@@ -1544,7 +1542,7 @@ void EnMnk_MonkeyTiedUp_WaitForCutRope(EnMnk* this, PlayState* play) {
         this->actionFunc = EnMnk_MonkeyTiedUp_TalkAfterCutRope;
         this->picto.actor.textId = 0x8D2;
         EnMnk_MonkeyTiedUp_SetAnim(this, MONKEY_TIEDUP_ANIM_SHAKEHEAD);
-        this->picto.actor.flags |= ACTOR_FLAG_10000;
+        this->picto.actor.flags |= ACTOR_FLAG_TALK_OFFER_AUTO_ACCEPTED;
     } else if (EnMnk_PlayerIsInTalkRange(this, play)) {
         if ((gSaveContext.save.playerForm != PLAYER_FORM_FIERCE_DEITY) &&
             (gSaveContext.save.playerForm != PLAYER_FORM_HUMAN)) {
@@ -1573,7 +1571,7 @@ void EnMnk_MonkeyTiedUp_Wait(EnMnk* this, PlayState* play) {
             SkelAnime_Update(&this->propSkelAnime);
         }
     }
-    if (func_800B8718(&this->picto.actor, &play->state)) {
+    if (Actor_OcarinaInteractionAccepted(&this->picto.actor, &play->state)) {
         this->picto.actor.textId = 0x8D8;
         EnMnk_MonkeyTiedUp_SetAnim(this, MONKEY_TIEDUP_ANIM_KICKUPANDDOWN);
         this->actionFunc = EnMnk_MonkeyTiedUp_TeachSong;
@@ -1582,7 +1580,7 @@ void EnMnk_MonkeyTiedUp_Wait(EnMnk* this, PlayState* play) {
         this->picto.actor.csId = this->csIdList[2];
         play->msgCtx.ocarinaMode = OCARINA_MODE_END;
         CutsceneManager_Queue(this->csIdList[2]);
-    } else if (Actor_ProcessTalkRequest(&this->picto.actor, &play->state)) {
+    } else if (Actor_TalkOfferAccepted(&this->picto.actor, &play->state)) {
         if (gSaveContext.save.playerForm == PLAYER_FORM_DEKU) {
             if (this->picto.actor.textId == 0x8EC) {
                 EnMnk_MonkeyTiedUp_SetAnim(this, MONKEY_TIEDUP_ANIM_SHAKEHEAD);
@@ -1600,7 +1598,7 @@ void EnMnk_MonkeyTiedUp_Wait(EnMnk* this, PlayState* play) {
             } else {
                 this->picto.actor.textId = 0x8CA;
             }
-            func_800B874C(&this->picto.actor, play, 100.0f, 100.0f);
+            Actor_OfferOcarinaInteraction(&this->picto.actor, play, 100.0f, 100.0f);
         } else {
             this->picto.actor.textId = 0x8CC;
         }
@@ -1616,7 +1614,7 @@ void EnMnk_MonkeyHanging_WaitForTextboxAfterDunk(EnMnk* this, PlayState* play) {
     SkelAnime_Update(&this->skelAnime);
     SkelAnime_Update(&this->propSkelAnime);
 
-    if ((Message_GetState(&play->msgCtx) == TEXT_STATE_5) && Message_ShouldAdvance(play)) {
+    if ((Message_GetState(&play->msgCtx) == TEXT_STATE_EVENT) && Message_ShouldAdvance(play)) {
         if (this->flags & MONKEY_FLAGS_800) {
             this->flags &= ~MONKEY_FLAGS_800;
             CutsceneManager_Stop(this->picto.actor.csId);
@@ -1687,7 +1685,7 @@ void EnMnk_MonkeyHanging_Plead(EnMnk* this, PlayState* play) {
     SkelAnime_Update(&this->skelAnime);
     SkelAnime_Update(&this->propSkelAnime);
 
-    if ((Message_GetState(&play->msgCtx) == TEXT_STATE_5) && Message_ShouldAdvance(play)) {
+    if ((Message_GetState(&play->msgCtx) == TEXT_STATE_EVENT) && Message_ShouldAdvance(play)) {
         switch (play->msgCtx.currentTextId) {
             case 0x8E8:
                 Message_ContinueTextbox(play, 0x8E9);
@@ -1721,7 +1719,7 @@ void EnMnk_MonkeyHanging_WaitAfterDunk(EnMnk* this, PlayState* play) {
     SkelAnime_Update(&this->skelAnime);
     SkelAnime_Update(&this->propSkelAnime);
 
-    if (Actor_ProcessTalkRequest(&this->picto.actor, &play->state)) {
+    if (Actor_TalkOfferAccepted(&this->picto.actor, &play->state)) {
         this->actionFunc = EnMnk_MonkeyHanging_Plead;
         CutsceneManager_Queue(this->picto.actor.csId);
         SET_WEEKEVENTREG(WEEKEVENTREG_83_08);
@@ -1791,7 +1789,7 @@ void EnMnk_MonkeyHanging_StruggleBeforeDunk(EnMnk* this, PlayState* play) {
     SkelAnime_Update(&this->skelAnime);
     SkelAnime_Update(&this->propSkelAnime);
 
-    if (Actor_ProcessTalkRequest(&this->picto.actor, &play->state)) {
+    if (Actor_TalkOfferAccepted(&this->picto.actor, &play->state)) {
         this->actionFunc = EnMnk_MonkeyHanging_Plead;
         CutsceneManager_Queue(this->picto.actor.csId);
         SET_WEEKEVENTREG(WEEKEVENTREG_83_08);
@@ -1864,7 +1862,7 @@ void EnMnk_Monkey_SetupTalkBeforeGuideThroughWoods(EnMnk* this) {
 
 void EnMnk_Monkey_WaitToGuideThroughWoods(EnMnk* this, PlayState* play) {
     func_80AB5F6C(this);
-    if (Actor_ProcessTalkRequest(&this->picto.actor, &play->state)) {
+    if (Actor_TalkOfferAccepted(&this->picto.actor, &play->state)) {
         EnMnk_Monkey_SetupTalkBeforeGuideThroughWoods(this);
     } else if (this->picto.actor.isLockedOn || (this->picto.actor.xzDistToPlayer < 100.0f)) {
         Actor_OfferTalk(&this->picto.actor, play, 120.0f);
@@ -1877,7 +1875,7 @@ void EnMnk_Monkey_WaitToGuideThroughWoods(EnMnk* this, PlayState* play) {
 void EnMnk_Monkey_TalkAfterSaved(EnMnk* this, PlayState* play) {
     SkelAnime_Update(&this->skelAnime);
 
-    if ((Message_GetState(&play->msgCtx) == TEXT_STATE_5) && Message_ShouldAdvance(play)) {
+    if ((Message_GetState(&play->msgCtx) == TEXT_STATE_EVENT) && Message_ShouldAdvance(play)) {
         switch (play->msgCtx.currentTextId) {
             case 0x8E5:
                 Message_ContinueTextbox(play, 0x8E6);
@@ -1906,7 +1904,7 @@ void EnMnk_Monkey_WaitToTalkAfterSaved(EnMnk* this, PlayState* play) {
     this->picto.actor.world.rot.y = this->picto.actor.yawTowardsPlayer;
     SkelAnime_Update(&this->skelAnime);
 
-    if (Actor_ProcessTalkRequest(&this->picto.actor, &play->state)) {
+    if (Actor_TalkOfferAccepted(&this->picto.actor, &play->state)) {
         this->actionFunc = EnMnk_Monkey_TalkAfterSaved;
         EnMnk_Monkey_SetAnim(this, 7);
     } else if ((this->picto.actor.xzDistToPlayer < 100.0f) && Player_IsFacingActor(&this->picto.actor, 0x3000, play)) {
@@ -2049,7 +2047,7 @@ void EnMnk_DoNothing(EnMnk* this, PlayState* play) {
 }
 
 void EnMnk_Update(Actor* thisx, PlayState* play) {
-    EnMnk* this = THIS;
+    EnMnk* this = (EnMnk*)thisx;
 
     if (!(this->flags & MONKEY_FLAGS_1)) {
         Actor_MoveWithGravity(&this->picto.actor);
@@ -2097,7 +2095,7 @@ void EnMnk_Update(Actor* thisx, PlayState* play) {
 }
 
 s32 EnMnk_Monkey_OverrideLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3f* pos, Vec3s* rot, Actor* thisx) {
-    EnMnk* this = THIS;
+    EnMnk* this = (EnMnk*)thisx;
 
     if (limbIndex == OBJECT_MNK_2_LIMB_03) {
         rot->x += this->unk_3CC;
@@ -2124,7 +2122,7 @@ s32 EnMnk_MonkeyHanging_PropOverrideLimbDraw(PlayState* play, s32 limbIndex, Gfx
 }
 
 void EnMnk_Monkey_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* rot, Actor* thisx) {
-    EnMnk* this = THIS;
+    EnMnk* this = (EnMnk*)thisx;
 
     if (limbIndex == OBJECT_MNK_2_LIMB_04) {
         Matrix_MultVec3f(&sMonkeyFocusPosOffset, &this->picto.actor.focus.pos);
@@ -2132,7 +2130,7 @@ void EnMnk_Monkey_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3
 }
 
 void EnMnk_MonkeyTiedUp_PropPostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* rot, Actor* thisx) {
-    EnMnk* this = THIS;
+    EnMnk* this = (EnMnk*)thisx;
 
     if (limbIndex == OBJECT_MNK_1_LIMB_04) {
         Matrix_Get(&this->unk_36C);
@@ -2140,7 +2138,7 @@ void EnMnk_MonkeyTiedUp_PropPostLimbDraw(PlayState* play, s32 limbIndex, Gfx** d
 }
 
 void EnMnk_MonkeyHanging_PropPostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* rot, Actor* thisx) {
-    EnMnk* this = THIS;
+    EnMnk* this = (EnMnk*)thisx;
 
     switch (limbIndex) {
         case OBJECT_MNK_3_LIMB_01:
@@ -2149,8 +2147,7 @@ void EnMnk_MonkeyHanging_PropPostLimbDraw(PlayState* play, s32 limbIndex, Gfx** 
 
                 Matrix_Push();
                 Matrix_RotateZS(this->cueId, MTXMODE_APPLY);
-                gSPMatrix(POLY_OPA_DISP++, Matrix_NewMtx(play->state.gfxCtx),
-                          G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+                MATRIX_FINALIZE_AND_LOAD(POLY_OPA_DISP++, play->state.gfxCtx);
                 gSPDisplayList(POLY_OPA_DISP++, *dList);
                 Matrix_Pop();
 
@@ -2163,8 +2160,7 @@ void EnMnk_MonkeyHanging_PropPostLimbDraw(PlayState* play, s32 limbIndex, Gfx** 
                 OPEN_DISPS(play->state.gfxCtx);
 
                 Matrix_Scale(this->approachPlayerRadius + 1.0f, 1.0f, 1.0f, MTXMODE_APPLY);
-                gSPMatrix(POLY_OPA_DISP++, Matrix_NewMtx(play->state.gfxCtx),
-                          G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+                MATRIX_FINALIZE_AND_LOAD(POLY_OPA_DISP++, play->state.gfxCtx);
                 gSPDisplayList(POLY_OPA_DISP++, *dList);
 
                 CLOSE_DISPS(play->state.gfxCtx);
@@ -2176,8 +2172,7 @@ void EnMnk_MonkeyHanging_PropPostLimbDraw(PlayState* play, s32 limbIndex, Gfx** 
                 OPEN_DISPS(play->state.gfxCtx);
 
                 Matrix_Scale(1.0f, 1.0f / (this->approachPlayerRadius + 1.0f), 1.0f, MTXMODE_APPLY);
-                gSPMatrix(POLY_OPA_DISP++, Matrix_NewMtx(play->state.gfxCtx),
-                          G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+                MATRIX_FINALIZE_AND_LOAD(POLY_OPA_DISP++, play->state.gfxCtx);
                 gSPDisplayList(POLY_OPA_DISP++, *dList);
 
                 CLOSE_DISPS(play->state.gfxCtx);
@@ -2221,7 +2216,7 @@ void EnMnk_Monkey_DrawFace(EnMnk* this, PlayState* play) {
 }
 
 void EnMnk_Draw(Actor* thisx, PlayState* play) {
-    EnMnk* this = THIS;
+    EnMnk* this = (EnMnk*)thisx;
 
     EnMnk_Monkey_DrawFace(this, play);
     SkelAnime_DrawFlexOpa(play, this->skelAnime.skeleton, this->skelAnime.jointTable, this->skelAnime.dListCount,
@@ -2229,7 +2224,7 @@ void EnMnk_Draw(Actor* thisx, PlayState* play) {
 }
 
 void EnMnk_MonkeyTiedUp_Draw(Actor* thisx, PlayState* play) {
-    EnMnk* this = THIS;
+    EnMnk* this = (EnMnk*)thisx;
 
     SkelAnime_DrawFlexOpa(play, this->propSkelAnime.skeleton, this->propSkelAnime.jointTable,
                           this->propSkelAnime.dListCount, EnMnk_MonkeyTiedUp_PropOverrideLimbDraw,
@@ -2241,7 +2236,7 @@ void EnMnk_MonkeyTiedUp_Draw(Actor* thisx, PlayState* play) {
 }
 
 void EnMnk_MonkeyHanging_Draw(Actor* thisx, PlayState* play) {
-    EnMnk* this = THIS;
+    EnMnk* this = (EnMnk*)thisx;
 
     SkelAnime_DrawFlexOpa(play, this->propSkelAnime.skeleton, this->propSkelAnime.jointTable,
                           this->propSkelAnime.dListCount, EnMnk_MonkeyHanging_PropOverrideLimbDraw,

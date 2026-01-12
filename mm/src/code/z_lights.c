@@ -1,5 +1,10 @@
-#include "global.h"
+#include "z64light.h"
+
 #include "sys_cfb.h"
+#include "z64skin_matrix.h"
+#include "z64.h"
+#include "functions.h"
+
 #include "objects/gameplay_keep/gameplay_keep.h"
 #include <string.h>
 #include "BenPort.h"
@@ -7,7 +12,7 @@
 
 LightsBuffer sLightsBuffer;
 
-void Lights_PointSetInfo(LightInfo* info, s16 x, s16 y, s16 z, u8 r, u8 g, u8 b, s16 radius, s32 type) {
+void Lights_PointSetInfo(LightInfo* info, s16 x, s16 y, s16 z, u8 r, u8 g, u8 b, s16 radius, LightType type) {
     info->type = type;
     info->params.point.x = x;
     info->params.point.y = y;
@@ -82,7 +87,7 @@ void Lights_Draw(Lights* lights, GraphicsContext* gfxCtx) {
 }
 
 Light* Lights_FindSlot(Lights* lights) {
-    if (lights->numLights >= 7) {
+    if (lights->numLights >= ARRAY_COUNT(lights->l.l)) {
         return NULL;
     }
     return &lights->l.l[lights->numLights++];
@@ -185,6 +190,9 @@ void Lights_BindDirectional(Lights* lights, LightParams* params, void* unused) {
     }
 }
 
+typedef void (*LightsBindFuncLegacy)(Lights* lights, LightParams* params, Vec3f* vec);
+typedef void (*LightsBindFunc)(Lights* lights, LightParams* params, struct PlayState* play);
+
 /**
  * For every light in a provided list, try to find a free slot in the provided Lights group and bind
  * a light to it. Then apply color and positional/directional info for each light
@@ -192,28 +200,32 @@ void Lights_BindDirectional(Lights* lights, LightParams* params, void* unused) {
  *
  * Note: Lights in a given list can only be binded to however many free slots are
  * available in the Lights group. This is at most 7 slots for a new group, but could be less.
+ *
+ * Note: In F3DZEX2 versions that predate MM, microcode point lights didn't exist so `PointLight_t` could not be used.
+ * Instead, fake point lights by using a directional light that constantly changes to face a reference position.
+ * `sBindFuncs` maps to the new microcode point lights, and `sBindFuncsLegacy` maps to the old fake point lights.
  */
 void Lights_BindAll(Lights* lights, LightNode* listHead, Vec3f* refPos, PlayState* play) {
-    static LightsPosBindFunc sPosBindFuncs[] = {
+    static LightsBindFunc sBindFuncs[] = {
         Lights_BindPoint,
-        (LightsPosBindFunc)Lights_BindDirectional,
+        (LightsBindFunc)Lights_BindDirectional,
         Lights_BindPoint,
     };
-    static LightsBindFunc sDirBindFuncs[] = {
+    static LightsBindFuncLegacy sBindFuncsLegacy[] = {
         Lights_BindPointWithReference,
-        (LightsBindFunc)Lights_BindDirectional,
+        (LightsBindFuncLegacy)Lights_BindDirectional,
         Lights_BindPointWithReference,
     };
 
     if (listHead != NULL) {
         if ((refPos == NULL) && (lights->enablePosLights == 1)) {
             do {
-                sPosBindFuncs[listHead->info->type](lights, &listHead->info->params, play);
+                sBindFuncs[listHead->info->type](lights, &listHead->info->params, play);
                 listHead = listHead->next;
             } while (listHead != NULL);
         } else {
             do {
-                sDirBindFuncs[listHead->info->type](lights, &listHead->info->params, refPos);
+                sBindFuncsLegacy[listHead->info->type](lights, &listHead->info->params, refPos);
                 listHead = listHead->next;
             } while (listHead != NULL);
         }
@@ -243,13 +255,15 @@ LightNode* Lights_FindBufSlot(void) {
 }
 
 void Lights_FreeNode(LightNode* light) {
-    if (light != NULL) {
-        sLightsBuffer.numOccupied--;
-        light->info = NULL;
-        sLightsBuffer.searchIndex =
-            (light - sLightsBuffer.lights) /
-            (s32)sizeof(LightNode); //! @bug Due to pointer arithmetic, the division is unnecessary
+    if (light == NULL) {
+        return;
     }
+
+    sLightsBuffer.numOccupied--;
+    light->info = NULL;
+
+    //! @bug Due to pointer arithmetic, the division is unnecessary
+    sLightsBuffer.searchIndex = (light - sLightsBuffer.lights) / (s32)sizeof(LightNode);
 }
 
 void LightContext_Init(PlayState* play, LightContext* lightCtx) {
@@ -418,16 +432,16 @@ void Lights_GlowCheck(PlayState* play) {
             worldPos.z = params->z;
             Actor_GetProjectedPos(play, &worldPos, &projectedPos, &invW);
 
-            params->drawGlow = 0;
+            params->drawGlow = false;
 
             if ((projectedPos.z > 1) && (fabsf(projectedPos.x * invW) < 1) && (fabsf(projectedPos.y * invW) < 1)) {
                 s32 screenPosX = PROJECTED_TO_SCREEN_X(projectedPos, invW);
                 s32 screenPosY = PROJECTED_TO_SCREEN_Y(projectedPos, invW);
-                s32 wZ = (s32)((projectedPos.z * invW) * 16352.0f) + 16352;
+                s32 wZ = (s32)(projectedPos.z * invW * ((G_MAXZ / 2) * 32)) + ((G_MAXZ / 2) * 32);
                 s32 zBuf = SysCfb_GetZBufferInt(screenPosX, screenPosY);
 
                 if (wZ < zBuf) {
-                    params->drawGlow = 1;
+                    params->drawGlow = true;
                 }
             }
         }
@@ -465,7 +479,7 @@ void Lights_DrawGlow(PlayState* play) {
                     Matrix_Translate(params->x, params->y, params->z, MTXMODE_NEW);
                     Matrix_Scale(scale, scale, scale, MTXMODE_APPLY);
 
-                    gSPMatrix(dl++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+                    MATRIX_FINALIZE_AND_LOAD(dl++, play->state.gfxCtx);
 
                     gSPDisplayList(dl++, gameplay_keep_DL_029CF0);
                     FrameInterpolation_RecordCloseChild();

@@ -1,5 +1,5 @@
 #include "ActorBehavior.h"
-#include "public/bridge/consolevariablebridge.h"
+#include <libultraship/bridge/consolevariablebridge.h>
 
 extern "C" {
 #include "variables.h"
@@ -17,7 +17,7 @@ void Rando::ActorBehavior::InitEnSellnutsBehavior() {
         EnSellnuts* enSellnuts = (EnSellnuts*)actor;
 
         if (enSellnuts->actionFunc == func_80ADBBEC) {
-            SET_WEEKEVENTREG(WEEKEVENTREG_17_80);
+            SET_WEEKEVENTREG(WEEKEVENTREG_RECEIVED_LAND_TITLE_DEED);
             enSellnuts->actor.parent = NULL;
             enSellnuts->actionFunc = func_80ADB0D8;
             enSellnuts->unk_340 = D_80ADD930_copy[enSellnuts->unk_33A];

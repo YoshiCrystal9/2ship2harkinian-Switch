@@ -8,9 +8,9 @@
 #include "overlays/actors/ovl_Boss_03/z_boss_03.h"
 #include "objects/object_boss03/object_boss03.h"
 
-#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_UNFRIENDLY | ACTOR_FLAG_10 | ACTOR_FLAG_20)
-
-#define THIS ((EnTanron3*)thisx)
+#define FLAGS                                                                                 \
+    (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_HOSTILE | ACTOR_FLAG_UPDATE_CULLING_DISABLED | \
+     ACTOR_FLAG_DRAW_CULLING_DISABLED)
 
 #define WORK_TIMER_PICK_NEW_DEVIATION 0
 #define WORK_TIMER_DIE 0
@@ -31,7 +31,7 @@ static Vec3f sZeroVec[] = { 0.0f, 0.0f, 0.0f };
 
 static Boss03* sGyorg = NULL;
 
-ActorInit En_Tanron3_InitVars = {
+ActorProfile En_Tanron3_Profile = {
     /**/ ACTOR_EN_TANRON3,
     /**/ ACTORCAT_BOSS,
     /**/ FLAGS,
@@ -45,7 +45,7 @@ ActorInit En_Tanron3_InitVars = {
 
 static ColliderCylinderInit sCylinderInit = {
     {
-        COLTYPE_HIT3,
+        COL_MATERIAL_HIT3,
         AT_ON | AT_TYPE_ENEMY,
         AC_ON | AC_TYPE_PLAYER,
         OC1_ON | OC1_TYPE_ALL,
@@ -53,11 +53,11 @@ static ColliderCylinderInit sCylinderInit = {
         COLSHAPE_CYLINDER,
     },
     {
-        ELEMTYPE_UNK3,
+        ELEM_MATERIAL_UNK3,
         { 0xF7CFFFFF, 0x00, 0x02 },
         { 0xF7CFFFFF, 0x00, 0x00 },
-        TOUCH_ON | TOUCH_SFX_NORMAL,
-        BUMP_ON,
+        ATELEM_ON | ATELEM_SFX_NORMAL,
+        ACELEM_ON,
         OCELEM_ON,
     },
     { 7, 10, -5, { 0, 0, 0 } },
@@ -67,7 +67,7 @@ static ColliderCylinderInit sCylinderInit = {
 // ColliderCylinderInit for both of them, leaving this one totally unused.
 static ColliderCylinderInit sUnusedCylinderInit = {
     {
-        COLTYPE_HIT3,
+        COL_MATERIAL_HIT3,
         AT_ON | AT_TYPE_ENEMY,
         AC_ON | AC_TYPE_PLAYER,
         OC1_ON | OC1_TYPE_ALL,
@@ -75,11 +75,11 @@ static ColliderCylinderInit sUnusedCylinderInit = {
         COLSHAPE_CYLINDER,
     },
     {
-        ELEMTYPE_UNK3,
+        ELEM_MATERIAL_UNK3,
         { 0xF7CFFFFF, 0x00, 0x02 },
         { 0xF7CFFFFF, 0x00, 0x00 },
-        TOUCH_ON | TOUCH_SFX_NORMAL,
-        BUMP_ON,
+        ATELEM_ON | ATELEM_SFX_NORMAL,
+        ACELEM_ON,
         OCELEM_ON,
     },
     { 20, 20, -10, { 0, 0, 0 } },
@@ -108,7 +108,7 @@ void EnTanron3_CreateEffect(PlayState* play, Vec3f* effectPos) {
 }
 
 void EnTanron3_Init(Actor* thisx, PlayState* play) {
-    EnTanron3* this = THIS;
+    EnTanron3* this = (EnTanron3*)thisx;
 
     this->actor.gravity = -1.0f;
     Collider_InitAndSetCylinder(play, &this->atCollider, &this->actor, &sCylinderInit);
@@ -117,7 +117,7 @@ void EnTanron3_Init(Actor* thisx, PlayState* play) {
                        this->morphTable, GYORG_SMALL_FISH_LIMB_MAX);
     Actor_SetScale(&this->actor, 0.02f);
     EnTanron3_SetupLive(this, play);
-    this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
+    this->actor.flags &= ~ACTOR_FLAG_ATTENTION_ENABLED;
     this->currentRotationAngle = Rand_ZeroFloat(500000.0f);
     this->waterSurfaceYPos = 430.0f;
     sGyorg = (Boss03*)this->actor.parent;
@@ -132,18 +132,17 @@ void EnTanron3_SpawnBubbles(EnTanron3* this, PlayState* play) {
     static Color_RGBA8 sEnvColor = { 50, 10, 10, 255 };
     s32 i;
     Vec3f velocity;
-    Vec3f acceleration;
+    Vec3f accel;
 
     for (i = 0; i < 20; i++) {
         Matrix_RotateYF(Rand_ZeroFloat(2 * M_PIf), MTXMODE_NEW);
         Matrix_RotateXFApply(Rand_ZeroFloat(2 * M_PIf));
         Matrix_MultVecZ(Rand_ZeroFloat(3.0f) + 2.0f, &velocity);
-        acceleration.x = velocity.x * -0.05f;
-        acceleration.y = velocity.y * -0.05f;
-        acceleration.z = velocity.z * -0.05f;
-        EffectSsDtBubble_SpawnCustomColor(play, &this->actor.world.pos, &velocity, &acceleration, &sPrimColor,
-                                          &sEnvColor, Rand_ZeroFloat(30.0f) + 70.0f, Rand_ZeroFloat(5.0f) + 15.0f,
-                                          false);
+        accel.x = velocity.x * -0.05f;
+        accel.y = velocity.y * -0.05f;
+        accel.z = velocity.z * -0.05f;
+        EffectSsDtBubble_SpawnCustomColor(play, &this->actor.world.pos, &velocity, &accel, &sPrimColor, &sEnvColor,
+                                          Rand_ZeroFloat(30.0f) + 70.0f, Rand_ZeroFloat(5.0f) + 15.0f, false);
     }
 }
 
@@ -240,6 +239,9 @@ void EnTanron3_Live(EnTanron3* this, PlayState* play) {
 
                 extraScaleY = 150.0f;
                 break;
+
+            default:
+                break;
         }
 
         if (this->workTimer[WORK_TIMER_OUT_OF_WATER] == 0) {
@@ -297,17 +299,17 @@ void EnTanron3_Live(EnTanron3* this, PlayState* play) {
                     this->actor.speed = Rand_ZeroFloat(2.0f) + 2.0f;
                     if (Rand_ZeroOne() < 0.5f) {
                         this->targetShapeRotation.x =
-                            (s16)(s32)Rand_CenteredFloat(0x1F4) + this->targetShapeRotation.x + 0x8000;
+                            TRUNCF_BINANG(Rand_CenteredFloat(0x1F4)) + this->targetShapeRotation.x + 0x8000;
                     }
                     if (Rand_ZeroOne() < 0.5f) {
                         this->targetShapeRotation.z =
-                            (s16)(s32)Rand_CenteredFloat(0x1F4) + this->targetShapeRotation.z + 0x8000;
+                            TRUNCF_BINANG(Rand_CenteredFloat(0x1F4)) + this->targetShapeRotation.z + 0x8000;
                     }
                     if (Rand_ZeroOne() < 0.5f) {
-                        this->targetShapeRotation.y = (s16)Rand_ZeroFloat(0x10000);
+                        this->targetShapeRotation.y = TRUNCF_BINANG(Rand_ZeroFloat(0x10000));
                     }
                     this->actor.world.rot.y = Math_Atan2S_XY(this->actor.world.pos.z, this->actor.world.pos.x) +
-                                              (s16)(s32)Rand_CenteredFloat(0xCE20);
+                                              TRUNCF_BINANG(Rand_CenteredFloat(0xCE20));
                 }
 
                 Math_ApproachS(&this->actor.shape.rot.y, this->targetShapeRotation.y, 3, 0x500);
@@ -321,6 +323,9 @@ void EnTanron3_Live(EnTanron3* this, PlayState* play) {
                     effectPos.z = Rand_CenteredFloat(30.0f) + this->actor.world.pos.z;
                     EnTanron3_CreateEffect(play, &effectPos);
                 }
+                break;
+
+            default:
                 break;
         }
         Actor_MoveWithGravity(&this->actor);
@@ -386,7 +391,7 @@ void EnTanron3_CheckCollisions(EnTanron3* this, PlayState* play) {
 
 void EnTanron3_Update(Actor* thisx, PlayState* play) {
     s32 pad;
-    EnTanron3* this = THIS;
+    EnTanron3* this = (EnTanron3*)thisx;
     s16 i;
     Vec3f splashPos;
 
@@ -432,7 +437,7 @@ void EnTanron3_Update(Actor* thisx, PlayState* play) {
 }
 
 s32 EnTanron3_OverrideLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3f* pos, Vec3s* rot, Actor* thisx) {
-    EnTanron3* this = THIS;
+    EnTanron3* this = (EnTanron3*)thisx;
 
     if (limbIndex == GYORG_SMALL_FISH_LIMB_ROOT) {
         rot->y += this->bodyRotation;
@@ -450,7 +455,7 @@ s32 EnTanron3_OverrideLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3
 }
 
 void EnTanron3_Draw(Actor* thisx, PlayState* play) {
-    EnTanron3* this = THIS;
+    EnTanron3* this = (EnTanron3*)thisx;
 
     OPEN_DISPS(play->state.gfxCtx);
 

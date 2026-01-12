@@ -111,6 +111,39 @@ static const ALIGN_ASSET(2) char object_gk_Anim_00C308[] = dobject_gk_Anim_00C30
 #define dobject_gk_TLUT_00C320 "__OTR__objects/object_gk/object_gk_TLUT_00C320"
 static const ALIGN_ASSET(2) char object_gk_TLUT_00C320[] = dobject_gk_TLUT_00C320;
 
+#define dobject_gk_Tex_00C520 "__OTR__objects/object_gk/object_gk_Tex_00C520"
+static const ALIGN_ASSET(2) char object_gk_Tex_00C520[] = dobject_gk_Tex_00C520;
+
+#define dobject_gk_Tex_00C920 "__OTR__objects/object_gk/object_gk_Tex_00C920"
+static const ALIGN_ASSET(2) char object_gk_Tex_00C920[] = dobject_gk_Tex_00C920;
+
+#define dobject_gk_Tex_00CB20 "__OTR__objects/object_gk/object_gk_Tex_00CB20"
+static const ALIGN_ASSET(2) char object_gk_Tex_00CB20[] = dobject_gk_Tex_00CB20;
+
+#define dobject_gk_Tex_00CB60 "__OTR__objects/object_gk/object_gk_Tex_00CB60"
+static const ALIGN_ASSET(2) char object_gk_Tex_00CB60[] = dobject_gk_Tex_00CB60;
+
+#define dobject_gk_Tex_00CBE0 "__OTR__objects/object_gk/object_gk_Tex_00CBE0"
+static const ALIGN_ASSET(2) char object_gk_Tex_00CBE0[] = dobject_gk_Tex_00CBE0;
+
+#define dobject_gk_Tex_00CCE0 "__OTR__objects/object_gk/object_gk_Tex_00CCE0"
+static const ALIGN_ASSET(2) char object_gk_Tex_00CCE0[] = dobject_gk_Tex_00CCE0;
+
+#define dobject_gk_Tex_00CD20 "__OTR__objects/object_gk/object_gk_Tex_00CD20"
+static const ALIGN_ASSET(2) char object_gk_Tex_00CD20[] = dobject_gk_Tex_00CD20;
+
+#define dobject_gk_Tex_00D520 "__OTR__objects/object_gk/object_gk_Tex_00D520"
+static const ALIGN_ASSET(2) char object_gk_Tex_00D520[] = dobject_gk_Tex_00D520;
+
+#define dobject_gk_Tex_00D720 "__OTR__objects/object_gk/object_gk_Tex_00D720"
+static const ALIGN_ASSET(2) char object_gk_Tex_00D720[] = dobject_gk_Tex_00D720;
+
+#define dobject_gk_Tex_00D820 "__OTR__objects/object_gk/object_gk_Tex_00D820"
+static const ALIGN_ASSET(2) char object_gk_Tex_00D820[] = dobject_gk_Tex_00D820;
+
+#define dobject_gk_Tex_00DA20 "__OTR__objects/object_gk/object_gk_Tex_00DA20"
+static const ALIGN_ASSET(2) char object_gk_Tex_00DA20[] = dobject_gk_Tex_00DA20;
+
 #define dobject_gk_Tex_00DE20 "__OTR__objects/object_gk/object_gk_Tex_00DE20"
 static const ALIGN_ASSET(2) char object_gk_Tex_00DE20[] = dobject_gk_Tex_00DE20;
 

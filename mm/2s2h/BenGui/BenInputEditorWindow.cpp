@@ -1,14 +1,19 @@
 #include "BenInputEditorWindow.h"
-#include <Context.h>
-#include "public/bridge/consolevariablebridge.h"
-#include "controller/controldevice/controller/mapping/ControllerRumbleMapping.h"
-#include "controller/controldeck/ControlDeck.h"
-#include "utils/StringHelper.h"
+#include <ship/Context.h>
+#include <libultraship/bridge/consolevariablebridge.h>
+#include <ship/controller/controldevice/controller/mapping/ControllerRumbleMapping.h>
+#include <ship/controller/controldeck/ControlDeck.h>
+#include <ship/utils/StringHelper.h>
+#include "2s2h/BenPort.h"
+#include "2s2h/BenGui/UIWidgets.hpp"
+#include "2s2h/BenGui/BenGui.hpp"
 #ifndef __WIIU__
-#include "controller/controldevice/controller/mapping/sdl/SDLAxisDirectionToButtonMapping.h"
+#include <ship/controller/controldevice/controller/mapping/sdl/SDLAxisDirectionToButtonMapping.h>
 #endif
 
 #define SCALE_IMGUI_SIZE(value) ((value / 13.0f) * ImGui::GetFontSize())
+
+using namespace UIWidgets;
 
 BenInputEditorWindow::~BenInputEditorWindow() {
 }
@@ -1196,6 +1201,65 @@ void BenInputEditorWindow::DrawGyroSection(uint8_t port) {
     }
 }
 
+void BenInputEditorWindow::DrawModifierButtonsSection(uint8_t port) {
+    DrawButtonLine("M1", port, BTN_CUSTOM_MODIFIER1);
+    DrawButtonLine("M2", port, BTN_CUSTOM_MODIFIER2);
+
+    ImGui::BeginDisabled(CVarGetInteger("gSettings.DisableChanges", 0));
+    CVarCheckbox("Enable Speed Modifiers", "gSettings.SpeedModifier.Enable",
+                 CheckboxOptions()
+                     .Color(THEME_COLOR)
+                     .Tooltip("Hold the assigned button to change the maximum walking or swimming speed."));
+    if (CVarGetInteger("gSettings.SpeedModifier.Enable", 0)) {
+        UIWidgets::Spacer(5);
+        Ship::GuiWindow::BeginGroupPanel("Speed Modifier", ImGui::GetContentRegionAvail());
+        CVarCheckbox("Toggle modifier instead of holding", "gSettings.SpeedModifier.Toggle",
+                     CheckboxOptions().Color(THEME_COLOR));
+        Ship::GuiWindow::BeginGroupPanel("Walk Modifier", ImGui::GetContentRegionAvail());
+        CVarCheckbox("Enable Walk Speed Modifier", "gSettings.SpeedModifier.WalkEnable",
+                     CheckboxOptions().Color(THEME_COLOR));
+        CVarSliderFloat("Walk Modifier 1: %.0f %%", "gSettings.SpeedModifier.WalkMapping1",
+                        FloatSliderOptions()
+                            .Color(THEME_COLOR)
+                            .IsPercentage()
+                            .Min(0.0f)
+                            .Max(15.0f)
+                            .DefaultValue(1.0f)
+                            .ShowAdjustmentButtons(true));
+        CVarSliderFloat("Walk Modifier 2: %.0f %%", "gSettings.SpeedModifier.WalkMapping2",
+                        FloatSliderOptions()
+                            .Color(THEME_COLOR)
+                            .IsPercentage()
+                            .Min(0.0f)
+                            .Max(15.0f)
+                            .DefaultValue(1.0f)
+                            .ShowAdjustmentButtons(true));
+        Ship::GuiWindow::EndGroupPanel(0);
+        Ship::GuiWindow::BeginGroupPanel("Swim Modifier", ImGui::GetContentRegionAvail());
+        CVarCheckbox("Enable Swim Speed Modifier", "gSettings.SpeedModifier.SwimEnable",
+                     CheckboxOptions().Color(THEME_COLOR));
+        CVarSliderFloat("Swim Modifier 1: %.0f %%", "gSettings.SpeedModifier.SwimMapping1",
+                        FloatSliderOptions()
+                            .Color(THEME_COLOR)
+                            .IsPercentage()
+                            .Min(0.0f)
+                            .Max(8.75f)
+                            .DefaultValue(1.0f)
+                            .ShowAdjustmentButtons(true));
+        CVarSliderFloat("Swim Modifier 2: %.0f %%", "gSettings.SpeedModifier.SwimMapping2",
+                        FloatSliderOptions()
+                            .Color(THEME_COLOR)
+                            .IsPercentage()
+                            .Min(0.0f)
+                            .Max(8.75f)
+                            .DefaultValue(1.0f)
+                            .ShowAdjustmentButtons(true));
+        Ship::GuiWindow::EndGroupPanel(0);
+        Ship::GuiWindow::EndGroupPanel(0);
+    }
+    ImGui::EndDisabled();
+}
+
 const ImGuiTableFlags PANEL_TABLE_FLAGS = ImGuiTableFlags_BordersH | ImGuiTableFlags_BordersV;
 const ImGuiTableColumnFlags PANEL_TABLE_COLUMN_FLAGS =
     ImGuiTableColumnFlags_IndentEnable | ImGuiTableColumnFlags_NoSort;
@@ -1394,6 +1458,10 @@ void BenInputEditorWindow::DrawPortTabContents(uint8_t portIndex) {
 
     if (ImGui::CollapsingHeader("LEDs")) {
         DrawLEDSection(portIndex);
+    }
+
+    if (ImGui::CollapsingHeader("Modifier Buttons")) {
+        DrawModifierButtonsSection(portIndex);
     }
 
     ImGui::PopStyleColor();

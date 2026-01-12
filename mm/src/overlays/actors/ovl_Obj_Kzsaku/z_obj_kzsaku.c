@@ -7,9 +7,7 @@
 #include "z_obj_kzsaku.h"
 #include "objects/object_kzsaku/object_kzsaku.h"
 
-#define FLAGS (ACTOR_FLAG_10 | ACTOR_FLAG_20)
-
-#define THIS ((ObjKzsaku*)thisx)
+#define FLAGS (ACTOR_FLAG_UPDATE_CULLING_DISABLED | ACTOR_FLAG_DRAW_CULLING_DISABLED)
 
 void ObjKzsaku_Init(Actor* thisx, PlayState* play);
 void ObjKzsaku_Destroy(Actor* thisx, PlayState* play);
@@ -23,7 +21,7 @@ void ObjKzsaku_Idle(ObjKzsaku* this, PlayState* play);
 void ObjKzsaku_Rise(ObjKzsaku* this, PlayState* play);
 void func_80C08CB0(ObjKzsaku* this, PlayState* play);
 
-ActorInit Obj_Kzsaku_InitVars = {
+ActorProfile Obj_Kzsaku_Profile = {
     /**/ ACTOR_OBJ_KZSAKU,
     /**/ ACTORCAT_PROP,
     /**/ FLAGS,
@@ -37,7 +35,7 @@ ActorInit Obj_Kzsaku_InitVars = {
 
 void ObjKzsaku_Init(Actor* thisx, PlayState* play) {
     s32 pad;
-    ObjKzsaku* this = THIS;
+    ObjKzsaku* this = (ObjKzsaku*)thisx;
     CollisionHeader* col = NULL;
 
     Actor_SetScale(&this->dyna.actor, 1.0f);
@@ -57,7 +55,7 @@ void ObjKzsaku_Init(Actor* thisx, PlayState* play) {
 }
 
 void ObjKzsaku_Destroy(Actor* thisx, PlayState* play) {
-    ObjKzsaku* this = THIS;
+    ObjKzsaku* this = (ObjKzsaku*)thisx;
 
     DynaPoly_DeleteBgActor(play, &play->colCtx.dyna, this->dyna.bgId);
 }
@@ -114,7 +112,7 @@ void func_80C08CB0(ObjKzsaku* this, PlayState* play) {
 }
 
 void ObjKzsaku_Update(Actor* thisx, PlayState* play) {
-    ObjKzsaku* this = THIS;
+    ObjKzsaku* this = (ObjKzsaku*)thisx;
 
     this->actionFunc(this, play);
 }
@@ -123,7 +121,7 @@ void ObjKzsaku_Draw(Actor* thisx, PlayState* play) {
     OPEN_DISPS(play->state.gfxCtx);
 
     Gfx_SetupDL25_Opa(play->state.gfxCtx);
-    gSPMatrix(POLY_OPA_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    MATRIX_FINALIZE_AND_LOAD(POLY_OPA_DISP++, play->state.gfxCtx);
     gSPDisplayList(POLY_OPA_DISP++, gUnderwaterGrateDL);
 
     CLOSE_DISPS(play->state.gfxCtx);

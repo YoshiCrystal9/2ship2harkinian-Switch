@@ -9,9 +9,9 @@
 
 #include "2s2h/Enhancements/FrameInterpolation/FrameInterpolation.h"
 
-#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_UNFRIENDLY | ACTOR_FLAG_10 | ACTOR_FLAG_20)
-
-#define THIS ((EnClearTag*)thisx)
+#define FLAGS                                                                                 \
+    (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_HOSTILE | ACTOR_FLAG_UPDATE_CULLING_DISABLED | \
+     ACTOR_FLAG_DRAW_CULLING_DISABLED)
 
 typedef enum {
     /* 0x00 */ CLEAR_TAG_EFFECT_AVAILABLE,
@@ -33,7 +33,7 @@ void EnClearTag_Draw(Actor* thisx, PlayState* play);
 void EnClearTag_UpdateEffects(EnClearTag* this, PlayState* play);
 void EnClearTag_DrawEffects(Actor* thisx, PlayState* play);
 
-ActorInit En_Clear_Tag_InitVars = {
+ActorProfile En_Clear_Tag_Profile = {
     /**/ ACTOR_EN_CLEAR_TAG,
     /**/ ACTORCAT_ITEMACTION,
     /**/ FLAGS,
@@ -417,14 +417,14 @@ void EnClearTag_Destroy(Actor* thisx, PlayState* play) {
  */
 void EnClearTag_Init(Actor* thisx, PlayState* play) {
     s32 pad[3];
-    EnClearTag* this = THIS;
+    EnClearTag* this = (EnClearTag*)thisx;
     f32 lightRayMaxScale;
     u8 i;
     Vec3f pos;
-    Vec3f vel;
+    Vec3f velocity;
     Vec3f accel;
 
-    this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
+    this->actor.flags &= ~ACTOR_FLAG_ATTENTION_ENABLED;
     if (thisx->params >= 0) {
         this->activeTimer = 70;
         Math_Vec3f_Copy(&pos, &this->actor.world.pos);
@@ -443,12 +443,12 @@ void EnClearTag_Init(Actor* thisx, PlayState* play) {
                         sLightRayMaxScale[thisx->params] + Rand_ZeroFloat(sLightRayMaxScale[thisx->params]);
                     Matrix_RotateYF(Rand_ZeroFloat(M_PIf * 2), MTXMODE_NEW);
                     Matrix_RotateXFApply(Rand_ZeroFloat(M_PIf * 2));
-                    Matrix_MultVecZ(lightRayMaxScale, &vel);
-                    accel.x = vel.x * -0.03f;
-                    accel.y = vel.y * -0.03f;
-                    accel.z = vel.z * -0.03f;
+                    Matrix_MultVecZ(lightRayMaxScale, &velocity);
+                    accel.x = velocity.x * -0.03f;
+                    accel.y = velocity.y * -0.03f;
+                    accel.z = velocity.z * -0.03f;
                     EnClearTag_CreateIsolatedLightRayEffect(
-                        this, &pos, &vel, &accel,
+                        this, &pos, &velocity, &accel,
                         sLightRayScale[thisx->params] + Rand_ZeroFloat(sLightRayScale[thisx->params] * 0.5f),
                         sLightRayMaxScaleTarget[thisx->params], this->actor.world.rot.z, Rand_ZeroFloat(10.0f) + 20.0f);
                 }
@@ -492,17 +492,17 @@ void EnClearTag_Init(Actor* thisx, PlayState* play) {
                 if (thisx->params != CLEAR_TAG_POP) {
                     pos.y = this->actor.world.pos.y;
                     for (i = 0; i < 18; i++) {
-                        vel.x = sinf(i * (33.0f / 40.0f)) * i * .5f;
-                        vel.z = cosf(i * (33.0f / 40.0f)) * i * .5f;
-                        vel.y = Rand_ZeroFloat(8.0f) + 7.0f;
+                        velocity.x = sinf(i * (33.0f / 40.0f)) * i * .5f;
+                        velocity.z = cosf(i * (33.0f / 40.0f)) * i * .5f;
+                        velocity.y = Rand_ZeroFloat(8.0f) + 7.0f;
 
-                        vel.x += Rand_CenteredFloat(0.5f);
-                        vel.z += Rand_CenteredFloat(0.5f);
+                        velocity.x += Rand_CenteredFloat(0.5f);
+                        velocity.z += Rand_CenteredFloat(0.5f);
 
                         accel.x = 0.0f;
                         accel.y = -1.0f;
                         accel.z = 0.0f;
-                        EnClearTag_CreateDebrisEffect(this, &pos, &vel, &accel,
+                        EnClearTag_CreateDebrisEffect(this, &pos, &velocity, &accel,
                                                       sDebrisScale[thisx->params] +
                                                           Rand_ZeroFloat(sDebrisScale[thisx->params]),
                                                       this->actor.floorHeight);
@@ -516,11 +516,11 @@ void EnClearTag_Init(Actor* thisx, PlayState* play) {
                 lightRayMaxScale = sLightRayMaxScale[thisx->params] + Rand_ZeroFloat(sLightRayMaxScale[thisx->params]);
                 Matrix_RotateYF(Rand_ZeroFloat(2 * M_PIf), MTXMODE_NEW);
                 Matrix_RotateXFApply(Rand_ZeroFloat(2 * M_PIf));
-                Matrix_MultVecZ(lightRayMaxScale, &vel);
-                accel.x = vel.x * -0.03f;
-                accel.y = vel.y * -0.03f;
-                accel.z = vel.z * -0.03f;
-                EnClearTag_CreateLightRayEffect(this, &pos, &vel, &accel,
+                Matrix_MultVecZ(lightRayMaxScale, &velocity);
+                accel.x = velocity.x * -0.03f;
+                accel.y = velocity.y * -0.03f;
+                accel.z = velocity.z * -0.03f;
+                EnClearTag_CreateLightRayEffect(this, &pos, &velocity, &accel,
                                                 sLightRayScale[thisx->params] +
                                                     Rand_ZeroFloat(sLightRayScale[thisx->params] * 0.5f),
                                                 sLightRayMaxScaleTarget[thisx->params], Rand_ZeroFloat(10.0f) + 20.0f);
@@ -606,7 +606,7 @@ void EnClearTag_UpdateCamera(EnClearTag* this, PlayState* play) {
  * Decides whether to update or to mark for death
  */
 void EnClearTag_Update(Actor* thisx, PlayState* play) {
-    EnClearTag* this = THIS;
+    EnClearTag* this = (EnClearTag*)thisx;
 
     if (this->activeTimer != 0) {
         this->activeTimer--;
@@ -804,7 +804,7 @@ void EnClearTag_DrawEffects(Actor* thisx, PlayState* play) {
     f32 ySurface;
     MtxF mtxF;
     GraphicsContext* gfxCtx = play->state.gfxCtx;
-    EnClearTag* this = THIS;
+    EnClearTag* this = (EnClearTag*)thisx;
     EnClearTagEffect* effect = this->effect;
     EnClearTagEffect* firstEffect = this->effect;
 
@@ -828,7 +828,7 @@ void EnClearTag_DrawEffects(Actor* thisx, PlayState* play) {
             Matrix_Scale(effect->scale, effect->scale, effect->scale, MTXMODE_APPLY);
             Matrix_RotateYF(effect->rotationY, MTXMODE_APPLY);
             Matrix_RotateXFApply(effect->rotationX);
-            gSPMatrix(POLY_OPA_DISP++, Matrix_NewMtx(gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+            MATRIX_FINALIZE_AND_LOAD(POLY_OPA_DISP++, gfxCtx);
             gSPDisplayList(POLY_OPA_DISP++, gClearTagDebrisEffectDL);
             FrameInterpolation_RecordCloseChild();
         }
@@ -847,7 +847,7 @@ void EnClearTag_DrawEffects(Actor* thisx, PlayState* play) {
                 func_800C0094(this->actor.floorPoly, effect->pos.x, effect->pos.y, effect->pos.z, &mtxF);
                 Matrix_Put(&mtxF);
                 Matrix_Scale(effect->scale, 1.0f, effect->scale, MTXMODE_APPLY);
-                gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+                MATRIX_FINALIZE_AND_LOAD(POLY_XLU_DISP++, gfxCtx);
                 gSPDisplayList(POLY_XLU_DISP++, gEffShockwaveDL);
                 FrameInterpolation_RecordCloseChild();
             }
@@ -873,7 +873,7 @@ void EnClearTag_DrawEffects(Actor* thisx, PlayState* play) {
                 func_800C0094(this->actor.floorPoly, effect->pos.x, this->actor.floorHeight, effect->pos.z, &mtxF);
                 Matrix_Put(&mtxF);
                 Matrix_Scale(effect->scale * 3.0f, 1.0f, effect->scale * 3.0f, MTXMODE_APPLY);
-                gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+                MATRIX_FINALIZE_AND_LOAD(POLY_XLU_DISP++, gfxCtx);
                 gSPDisplayList(POLY_XLU_DISP++, gClearTagFlashEffectGroundDL);
                 FrameInterpolation_RecordCloseChild();
             }
@@ -904,7 +904,7 @@ void EnClearTag_DrawEffects(Actor* thisx, PlayState* play) {
             Matrix_ReplaceRotation(&play->billboardMtxF);
             Matrix_Scale(effect->smokeScaleX * effect->scale, effect->smokeScaleY * effect->scale, 1.0f, MTXMODE_APPLY);
             Matrix_Translate(0.0f, 20.0f, 0.0f, MTXMODE_APPLY);
-            gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+            MATRIX_FINALIZE_AND_LOAD(POLY_XLU_DISP++, gfxCtx);
             gSPDisplayList(POLY_XLU_DISP++, gClearTagFireEffectDL);
             FrameInterpolation_RecordCloseChild();
         }
@@ -930,7 +930,7 @@ void EnClearTag_DrawEffects(Actor* thisx, PlayState* play) {
             Matrix_Translate(effect->pos.x, effect->pos.y, effect->pos.z, MTXMODE_NEW);
             Matrix_ReplaceRotation(&play->billboardMtxF);
             Matrix_Scale(effect->scale, effect->scale, 1.0f, MTXMODE_APPLY);
-            gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+            MATRIX_FINALIZE_AND_LOAD(POLY_XLU_DISP++, gfxCtx);
             gSPDisplayList(POLY_XLU_DISP++, gClearTagFireEffectDL);
             FrameInterpolation_RecordCloseChild();
         }
@@ -954,7 +954,7 @@ void EnClearTag_DrawEffects(Actor* thisx, PlayState* play) {
             Matrix_Translate(effect->pos.x, effect->pos.y, effect->pos.z, MTXMODE_NEW);
             Matrix_ReplaceRotation(&play->billboardMtxF);
             Matrix_Scale(2.0f * effect->scale, 2.0f * effect->scale, 1.0f, MTXMODE_APPLY);
-            gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+            MATRIX_FINALIZE_AND_LOAD(POLY_XLU_DISP++, gfxCtx);
             gSPDisplayList(POLY_XLU_DISP++, gClearTagFlashEffectDL);
             FrameInterpolation_RecordCloseChild();
         }
@@ -984,7 +984,7 @@ void EnClearTag_DrawEffects(Actor* thisx, PlayState* play) {
             Matrix_RotateZF(effect->rotationZ, MTXMODE_APPLY);
             Matrix_Scale(effect->scale * 0.5f, effect->scale * 0.5f, effect->maxScale * effect->scale, MTXMODE_APPLY);
             Matrix_RotateXFApply(M_PIf / 2);
-            gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+            MATRIX_FINALIZE_AND_LOAD(POLY_XLU_DISP++, gfxCtx);
             gSPDisplayList(POLY_XLU_DISP++, gClearTagLightRayEffectDL);
             FrameInterpolation_RecordCloseChild();
         }
@@ -1022,7 +1022,7 @@ void EnClearTag_DrawEffects(Actor* thisx, PlayState* play) {
                         Matrix_RotateYF(2.0f * (j * M_PIf) * (1.0f / 16.0f), MTXMODE_APPLY);
                         Matrix_RotateXFApply(effect->rotationX);
                         Matrix_Scale(effect->scale, effect->scale, effect->scale, MTXMODE_APPLY);
-                        gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+                        MATRIX_FINALIZE_AND_LOAD(POLY_XLU_DISP++, gfxCtx);
                         gSPDisplayList(POLY_XLU_DISP++, gEffWaterSplashDL);
                     }
                 }

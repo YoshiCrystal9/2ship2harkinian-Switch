@@ -396,7 +396,8 @@ void KaleidoScope_DrawQuestStatus(PlayState* play) {
                         POLY_OPA_DISP, sOcarinaButtonTextures[sQuestSongPlayedOcarinaButtons[i]], 16, 16, 0);
                 }
             }
-        } else if (IS_PAUSE_MAIN_STATE_SONG_PROMPT || (pauseCtx->mainState == PAUSE_MAIN_STATE_IDLE_CURSOR_ON_SONG)) {
+        } else if (IS_PAUSE_MAIN_STATE_SONG_PROMPT(pauseCtx) ||
+                   (pauseCtx->mainState == PAUSE_MAIN_STATE_IDLE_CURSOR_ON_SONG)) {
             // Draw the buttons for playing a song
             sp1C8 = pauseCtx->ocarinaSongIndex;
             sp1CA = gOcarinaSongButtons[sp1C8].numButtons;
@@ -627,7 +628,7 @@ void KaleidoScope_UpdateQuestCursor(PlayState* play) {
                 if (nextCursorPoint == CURSOR_TO_LEFT) {
                     KaleidoScope_MoveCursorToSpecialPos(play, PAUSE_CURSOR_PAGE_LEFT);
                     pauseCtx->mainState = PAUSE_MAIN_STATE_IDLE;
-                    if (interfaceCtx->aButtonHorseDoAction == DO_ACTION_DECIDE) {
+                    if (interfaceCtx->aButtonDoActionDelayed == DO_ACTION_DECIDE) {
                         Interface_SetAButtonDoAction(play, DO_ACTION_INFO);
                     }
                     return;
@@ -811,7 +812,7 @@ void KaleidoScope_UpdateQuestCursor(PlayState* play) {
 
                         pauseCtx->mainState = PAUSE_MAIN_STATE_IDLE_CURSOR_ON_SONG;
 
-                        if (interfaceCtx->aButtonHorseDoAction != DO_ACTION_DECIDE) {
+                        if (interfaceCtx->aButtonDoActionDelayed != DO_ACTION_DECIDE) {
                             Interface_SetAButtonDoAction(play, DO_ACTION_DECIDE);
                         }
 
@@ -824,7 +825,7 @@ void KaleidoScope_UpdateQuestCursor(PlayState* play) {
                             Interface_SetHudVisibility(HUD_VISIBILITY_ALL);
                         }
                     } else {
-                        if (interfaceCtx->aButtonHorseDoAction != DO_ACTION_DECIDE) {
+                        if (interfaceCtx->aButtonDoActionDelayed != DO_ACTION_DECIDE) {
                             Interface_SetAButtonDoAction(play, DO_ACTION_DECIDE);
                         }
                         if (gSaveContext.buttonStatus[EQUIP_SLOT_A] != BTN_DISABLED) {
@@ -835,11 +836,11 @@ void KaleidoScope_UpdateQuestCursor(PlayState* play) {
                     }
                 } else {
                     if ((cursor == QUEST_BOMBERS_NOTEBOOK) && (pauseCtx->cursorItem[PAUSE_QUEST] != PAUSE_ITEM_NONE)) {
-                        if (interfaceCtx->aButtonHorseDoAction != DO_ACTION_DECIDE) {
+                        if (interfaceCtx->aButtonDoActionDelayed != DO_ACTION_DECIDE) {
                             Interface_SetAButtonDoAction(play, DO_ACTION_DECIDE);
                         }
                         pauseCtx->cursorColorSet = PAUSE_CURSOR_COLOR_SET_BLUE;
-                    } else if (interfaceCtx->aButtonHorseDoAction == DO_ACTION_DECIDE) {
+                    } else if (interfaceCtx->aButtonDoActionDelayed == DO_ACTION_DECIDE) {
                         Interface_SetAButtonDoAction(play, DO_ACTION_INFO);
                     }
 

@@ -10,8 +10,6 @@
 
 #define FLAGS 0x00000000
 
-#define THIS ((BgFireWall*)thisx)
-
 void BgFireWall_Init(Actor* thisx, PlayState* play);
 void BgFireWall_Destroy(Actor* thisx, PlayState* play);
 void BgFireWall_Update(Actor* thisx, PlayState* play2);
@@ -21,7 +19,7 @@ void func_809AC638(BgFireWall* this, PlayState* play);
 void func_809AC68C(BgFireWall* this, PlayState* play);
 void func_809AC6C0(BgFireWall* this, PlayState* play);
 
-ActorInit Bg_Fire_Wall_InitVars = {
+ActorProfile Bg_Fire_Wall_Profile = {
     /**/ ACTOR_BG_FIRE_WALL,
     /**/ ACTORCAT_BG,
     /**/ FLAGS,
@@ -35,7 +33,7 @@ ActorInit Bg_Fire_Wall_InitVars = {
 
 static ColliderCylinderInit sCylinderInit = {
     {
-        COLTYPE_NONE,
+        COL_MATERIAL_NONE,
         AT_ON | AT_TYPE_ENEMY,
         AC_NONE,
         OC1_ON | OC1_TYPE_PLAYER,
@@ -43,11 +41,11 @@ static ColliderCylinderInit sCylinderInit = {
         COLSHAPE_CYLINDER,
     },
     {
-        ELEMTYPE_UNK0,
+        ELEM_MATERIAL_UNK0,
         { 0x20000000, 0x01, 0x04 },
         { 0xF7CFFFFF, 0x00, 0x00 },
-        TOUCH_ON | TOUCH_SFX_NONE,
-        BUMP_NONE,
+        ATELEM_ON | ATELEM_SFX_NONE,
+        ACELEM_NONE,
         OCELEM_ON,
     },
     { 34, 85, 0, { 0, 0, 0 } },
@@ -61,7 +59,7 @@ static TexturePtr sFlameTextures[] = {
 };
 
 void BgFireWall_Init(Actor* thisx, PlayState* play) {
-    BgFireWall* this = THIS;
+    BgFireWall* this = (BgFireWall*)thisx;
 
     this->unk_14C = this->actor.params;
     this->actor.scale.y = 0.005f;
@@ -74,23 +72,23 @@ void BgFireWall_Init(Actor* thisx, PlayState* play) {
     this->unk_158 = 0.1f;
     this->unk_160 = 300.0f;
     this->texIndex = Rand_S16Offset(0, ARRAY_COUNT(sFlameTextures) - 1);
-    this->actor.flags |= ACTOR_FLAG_10;
+    this->actor.flags |= ACTOR_FLAG_UPDATE_CULLING_DISABLED;
     this->collider.dim.pos.y = this->actor.world.pos.y;
     this->actionFunc = func_809AC638;
 }
 
 void BgFireWall_Destroy(Actor* thisx, PlayState* play) {
-    BgFireWall* this = THIS;
+    BgFireWall* this = (BgFireWall*)thisx;
 
     Collider_DestroyCylinder(play, &this->collider);
 }
 
 s32 func_809AC5C0(BgFireWall* thisx, PlayState* play) {
-    BgFireWall* this = THIS;
+    BgFireWall* this = (BgFireWall*)thisx;
     Player* player = GET_PLAYER(play);
     Vec3f sp1C;
 
-    Actor_OffsetOfPointInActorCoords(&this->actor, &sp1C, &player->actor.world.pos);
+    Actor_WorldToActorCoords(&this->actor, &sp1C, &player->actor.world.pos);
     if ((fabsf(sp1C.x) < this->unk_160) && (fabsf(sp1C.z) < (this->unk_160 + 20.0f))) {
         return true;
     }
@@ -143,7 +141,7 @@ void func_809AC7F8(BgFireWall* this, PlayState* play) {
     f32 sin;
     f32 cos;
 
-    Actor_OffsetOfPointInActorCoords(&this->actor, &sp38, &player->actor.world.pos);
+    Actor_WorldToActorCoords(&this->actor, &sp38, &player->actor.world.pos);
     sp38.x = CLAMP(sp38.x, -80.0f, 80.0f);
 
     if (this->step == 0) {
@@ -172,7 +170,7 @@ void func_809AC970(BgFireWall* this, PlayState* play) {
 
 void BgFireWall_Update(Actor* thisx, PlayState* play2) {
     PlayState* play = play2;
-    BgFireWall* this = THIS;
+    BgFireWall* this = (BgFireWall*)thisx;
 
     this->actionFunc(this, play);
     if ((this->unk_14C == 0) || ((this->unk_14C != 0) && (this->actor.xzDistToPlayer < 240.0f))) {
@@ -201,7 +199,7 @@ void BgFireWall_Update(Actor* thisx, PlayState* play2) {
 }
 
 void BgFireWall_Draw(Actor* thisx, PlayState* play) {
-    BgFireWall* this = THIS;
+    BgFireWall* this = (BgFireWall*)thisx;
 
     OPEN_DISPS(play->state.gfxCtx);
 
@@ -209,7 +207,7 @@ void BgFireWall_Draw(Actor* thisx, PlayState* play) {
     gSPSegment(POLY_XLU_DISP++, 0x08, Lib_SegmentedToVirtual(sFlameTextures[this->texIndex]));
     gDPSetPrimColor(POLY_XLU_DISP++, 0, 0x01, 255, 255, 0, 150);
     gDPSetEnvColor(POLY_XLU_DISP++, 255, 0, 0, 255);
-    gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    MATRIX_FINALIZE_AND_LOAD(POLY_XLU_DISP++, play->state.gfxCtx);
     gSPDisplayList(POLY_XLU_DISP++, object_fwall_DL_000040);
 
     CLOSE_DISPS(play->state.gfxCtx);

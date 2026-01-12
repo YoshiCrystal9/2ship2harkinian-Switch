@@ -1,5 +1,6 @@
 #include "ActorBehavior.h"
-#include "public/bridge/consolevariablebridge.h"
+#include <libultraship/bridge/consolevariablebridge.h>
+#include "2s2h/Rando/Logic/Logic.h"
 
 extern "C" {
 #include "variables.h"
@@ -37,5 +38,20 @@ void Rando::ActorBehavior::InitEnTotoBehavior() {
         Message_BombersNotebookQueueEvent(gPlayState, BOMBERS_NOTEBOOK_EVENT_RECEIVED_CIRCUS_LEADERS_MASK);
         Message_BombersNotebookQueueEvent(gPlayState, BOMBERS_NOTEBOOK_EVENT_MET_TOTO);
         Message_BombersNotebookQueueEvent(gPlayState, BOMBERS_NOTEBOOK_EVENT_MET_GORMAN);
+    });
+
+    COND_VB_SHOULD(VB_TOTO_START_SOUND_CHECK, IS_RANDO && RANDO_SAVE_OPTIONS[RO_SHUFFLE_OCARINA_BUTTONS], {
+        EnToto* totoActor = va_arg(args, EnToto*);
+        if (totoActor->text->textId == 0x2B24) {
+            if (!(Rando::Logic::canPlaySong(OCARINA_SONG_WIND_FISH_HUMAN) &&
+                  Rando::Logic::canPlaySong(OCARINA_SONG_WIND_FISH_DEKU) &&
+                  Rando::Logic::canPlaySong(OCARINA_SONG_WIND_FISH_GORON) &&
+                  Rando::Logic::canPlaySong(OCARINA_SONG_WIND_FISH_ZORA))) {
+                Message_ContinueTextbox(gPlayState, 0x2B25);
+                func_80BA36C0(totoActor, gPlayState, 0);
+                Flags_UnsetSwitch(gPlayState, ENTOTO_GET_SWITCH_FLAG_1(&totoActor->actor));
+                *should = false;
+            }
+        }
     });
 }

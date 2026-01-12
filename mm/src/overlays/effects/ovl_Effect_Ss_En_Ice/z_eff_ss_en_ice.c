@@ -28,7 +28,7 @@ void EffectSsEnIce_UpdateFlying(PlayState* play, u32 index, EffectSs* this);
 void EffectSsEnIce_Update(PlayState* play, u32 index, EffectSs* this);
 void EffectSsEnIce_Draw(PlayState* play, u32 index, EffectSs* this);
 
-EffectSsInit Effect_Ss_En_Ice_InitVars = {
+EffectSsProfile Effect_Ss_En_Ice_Profile = {
     EFFECT_SS_EN_ICE,
     EffectSsEnIce_Init,
 };
@@ -110,7 +110,7 @@ void EffectSsEnIce_Draw(PlayState* play, u32 index, EffectSs* this) {
     Matrix_Scale(scale, scale, scale, MTXMODE_APPLY);
     Matrix_RotateYS(this->rYaw, MTXMODE_APPLY);
     Matrix_RotateXS(this->rPitch, MTXMODE_APPLY);
-    gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    MATRIX_FINALIZE_AND_LOAD(POLY_XLU_DISP++, gfxCtx);
 
     Gfx_SetupDL25_Xlu(play->state.gfxCtx);
     func_800BCC68(&this->pos, play);
@@ -130,7 +130,7 @@ void EffectSsEnIce_UpdateFlying(PlayState* play, u32 index, EffectSs* this) {
     s16 rand;
 
     if ((this->actor != NULL) && (this->actor->update != NULL)) {
-        if ((this->life >= 9) && (this->actor->colorFilterTimer != 0) && (!(this->actor->colorFilterParams & 0xC000))) {
+        if ((this->life >= 9) && (this->actor->colorFilterTimer != 0) && !(this->actor->colorFilterParams & 0xC000)) {
             Math_Vec3f_Sum(&this->actor->world.pos, &this->vec, &this->pos);
             this->life++;
         } else if (this->life == 9) {

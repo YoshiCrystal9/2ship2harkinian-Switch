@@ -7,9 +7,7 @@
 #include "z_bg_f40_block.h"
 #include "objects/object_f40_obj/object_f40_obj.h"
 
-#define FLAGS (ACTOR_FLAG_10)
-
-#define THIS ((BgF40Block*)thisx)
+#define FLAGS (ACTOR_FLAG_UPDATE_CULLING_DISABLED)
 
 void BgF40Block_Init(Actor* thisx, PlayState* play);
 void BgF40Block_Destroy(Actor* thisx, PlayState* play);
@@ -26,7 +24,7 @@ void func_80BC44F4(BgF40Block* this, PlayState* play);
 void func_80BC4530(BgF40Block* this, PlayState* play);
 void func_80BC457C(BgF40Block* this, PlayState* play);
 
-ActorInit Bg_F40_Block_InitVars = {
+ActorProfile Bg_F40_Block_Profile = {
     /**/ ACTOR_BG_F40_BLOCK,
     /**/ ACTORCAT_BG,
     /**/ FLAGS,
@@ -44,9 +42,9 @@ static Vec3f D_80BC4620[] = {
 };
 
 static InitChainEntry sInitChain[] = {
-    ICHAIN_F32(uncullZoneForward, 4000, ICHAIN_CONTINUE),
-    ICHAIN_F32(uncullZoneScale, 400, ICHAIN_CONTINUE),
-    ICHAIN_F32(uncullZoneDownward, 400, ICHAIN_CONTINUE),
+    ICHAIN_F32(cullingVolumeDistance, 4000, ICHAIN_CONTINUE),
+    ICHAIN_F32(cullingVolumeScale, 400, ICHAIN_CONTINUE),
+    ICHAIN_F32(cullingVolumeDownward, 400, ICHAIN_CONTINUE),
     ICHAIN_VEC3F_DIV1000(scale, 100, ICHAIN_STOP),
 };
 
@@ -180,7 +178,7 @@ s32 func_80BC3D08(BgF40Block* this, PlayState* play, s32 arg2) {
         return false;
     }
 
-    if (arg2 != 0) {
+    if (arg2) {
         sp48.x =
             (D_80BC4620[this->unk_168].x * ((800.0f * this->dyna.actor.scale.x) - (this->dyna.actor.speed * 0.5f))) +
             this->dyna.actor.world.pos.x;
@@ -205,7 +203,7 @@ s32 func_80BC3D08(BgF40Block* this, PlayState* play, s32 arg2) {
     }
 
     if (BgCheck_AnyLineTest1(&play->colCtx, &sp48, &sp3C, &sp30, &sp54, true)) {
-        if (arg2 == 0) {
+        if (!arg2) {
             this->dyna.actor.world.pos.x -= sp3C.x - sp30.x;
             this->dyna.actor.world.pos.y -= sp3C.y - sp30.y;
             this->dyna.actor.world.pos.z -= sp3C.z - sp30.z;
@@ -225,7 +223,7 @@ void func_80BC4038(BgF40Block* this) {
 }
 
 void BgF40Block_Init(Actor* thisx, PlayState* play) {
-    BgF40Block* this = THIS;
+    BgF40Block* this = (BgF40Block*)thisx;
 
     Actor_ProcessInitChain(&this->dyna.actor, sInitChain);
     DynaPolyActor_Init(&this->dyna, DYNA_TRANSFORM_POS);
@@ -254,13 +252,13 @@ void BgF40Block_Init(Actor* thisx, PlayState* play) {
 }
 
 void BgF40Block_Destroy(Actor* thisx, PlayState* play) {
-    BgF40Block* this = THIS;
+    BgF40Block* this = (BgF40Block*)thisx;
 
     DynaPoly_DeleteBgActor(play, &play->colCtx.dyna, this->dyna.bgId);
 }
 
 void func_80BC41AC(BgF40Block* this, PlayState* play) {
-    if (func_80BC3D08(this, play, 1)) {
+    if (func_80BC3D08(this, play, true)) {
         if (!Flags_GetSwitch(play, BGF40BLOCK_GET_SWITCH_FLAG(&this->dyna.actor))) {
             func_80BC4038(this);
             this->actionFunc = func_80BC44F4;
@@ -282,7 +280,7 @@ void func_80BC4228(BgF40Block* this, PlayState* play) {
         }
     }
 
-    if (func_80BC3D08(this, play, 0)) {
+    if (func_80BC3D08(this, play, false)) {
         CutsceneManager_Stop(this->dyna.actor.csId);
         this->actionFunc = func_80BC41AC;
         Actor_PlaySfx(&this->dyna.actor, NA_SE_EV_IKANA_BLOCK_STOP_F);
@@ -320,7 +318,7 @@ void func_80BC4380(BgF40Block* this, PlayState* play) {
 }
 
 void func_80BC43CC(BgF40Block* this, PlayState* play) {
-    if (func_80BC3D08(this, play, 1)) {
+    if (func_80BC3D08(this, play, true)) {
         if (Flags_GetSwitch(play, BGF40BLOCK_GET_SWITCH_FLAG(&this->dyna.actor))) {
             func_80BC4038(this);
             this->actionFunc = func_80BC4344;
@@ -342,7 +340,7 @@ void func_80BC4448(BgF40Block* this, PlayState* play) {
         }
     }
 
-    if (func_80BC3D08(this, play, 0)) {
+    if (func_80BC3D08(this, play, false)) {
         CutsceneManager_Stop(this->dyna.actor.csId);
         this->actionFunc = func_80BC43CC;
         Actor_PlaySfx(&this->dyna.actor, NA_SE_EV_IKANA_BLOCK_STOP_F);
@@ -365,7 +363,7 @@ void func_80BC457C(BgF40Block* this, PlayState* play) {
 }
 
 void BgF40Block_Update(Actor* thisx, PlayState* play) {
-    BgF40Block* this = THIS;
+    BgF40Block* this = (BgF40Block*)thisx;
 
     this->actionFunc(this, play);
 

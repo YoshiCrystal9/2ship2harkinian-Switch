@@ -66,4 +66,10 @@ static const ALIGN_ASSET(2) char Z2_HAKUGIN_room_00DL_001620[] = dZ2_HAKUGIN_roo
 #define dZ2_HAKUGIN_room_00Tex_007BE0 "__OTR__scenes/nonmq/Z2_HAKUGIN_scene/Z2_HAKUGIN_room_00Tex_007BE0"
 static const ALIGN_ASSET(2) char Z2_HAKUGIN_room_00Tex_007BE0[] = dZ2_HAKUGIN_room_00Tex_007BE0;
 
+#define dZ2_HAKUGIN_room_00DL_003B88 "__OTR__scenes/nonmq/Z2_HAKUGIN_scene/Z2_HAKUGIN_room_00DL_003B88"
+static const ALIGN_ASSET(2) char Z2_HAKUGIN_room_00DL_003B88[] = dZ2_HAKUGIN_room_00DL_003B88;
+
+#define dZ2_HAKUGIN_room_00DL_008420 "__OTR__scenes/nonmq/Z2_HAKUGIN_scene/Z2_HAKUGIN_room_00DL_008420"
+static const ALIGN_ASSET(2) char Z2_HAKUGIN_room_00DL_008420[] = dZ2_HAKUGIN_room_00DL_008420;
+
 #endif // Z2_HAKUGIN_Z2_HAKUGIN_ROOM_00_H

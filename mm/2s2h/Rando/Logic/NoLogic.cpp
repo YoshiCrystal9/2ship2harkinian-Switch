@@ -9,12 +9,12 @@ namespace Rando {
 
 namespace Logic {
 
-void ApplyNoLogicToSaveContext(std::unordered_map<RandoCheckId, bool>& checkPool, std::vector<RandoItemId>& itemPool) {
+void ApplyNoLogicToSaveContext(std::vector<RandoCheckId>& checkPool, std::vector<RandoItemId>& itemPool) {
     for (size_t i = 0; i < itemPool.size(); i++) {
         std::swap(itemPool[i], itemPool[Ship_Random(0, itemPool.size() - 1)]);
     }
 
-    for (auto& [randoCheckId, _] : checkPool) {
+    for (auto& randoCheckId : checkPool) {
         if (randoCheckId == RC_UNKNOWN) {
             continue;
         }

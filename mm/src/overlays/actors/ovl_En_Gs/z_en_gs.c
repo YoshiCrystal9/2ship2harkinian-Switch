@@ -12,9 +12,9 @@
 #include "objects/gameplay_keep/gameplay_keep.h"
 #include "2s2h/GameInteractor/GameInteractor.h"
 
-#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_10 | ACTOR_FLAG_2000000)
-
-#define THIS ((EnGs*)thisx)
+#define FLAGS                                                                                  \
+    (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_UPDATE_CULLING_DISABLED | \
+     ACTOR_FLAG_UPDATE_DURING_OCARINA)
 
 void EnGs_Init(Actor* thisx, PlayState* play);
 void EnGs_Destroy(Actor* thisx, PlayState* play);
@@ -41,7 +41,7 @@ s32 func_809995A4(EnGs* this, PlayState* play);
 void func_80999A8C(EnGs* this, PlayState* play);
 void func_80999AC0(EnGs* this);
 
-ActorInit En_Gs_InitVars = {
+ActorProfile En_Gs_Profile = {
     /**/ ACTOR_EN_GS,
     /**/ ACTORCAT_PROP,
     /**/ FLAGS,
@@ -55,7 +55,7 @@ ActorInit En_Gs_InitVars = {
 
 static ColliderCylinderInit sCylinderInit = {
     {
-        COLTYPE_METAL,
+        COL_MATERIAL_METAL,
         AT_NONE,
         AC_ON | AC_HARD | AC_TYPE_PLAYER,
         OC1_ON | OC1_TYPE_ALL,
@@ -63,11 +63,11 @@ static ColliderCylinderInit sCylinderInit = {
         COLSHAPE_CYLINDER,
     },
     {
-        ELEMTYPE_UNK0,
+        ELEM_MATERIAL_UNK0,
         { 0x00000000, 0x00, 0x00 },
         { 0xF7CFFFFF, 0x00, 0x00 },
-        TOUCH_NONE | TOUCH_SFX_NORMAL,
-        BUMP_ON,
+        ATELEM_NONE | ATELEM_SFX_NORMAL,
+        ACELEM_ON,
         OCELEM_ON,
     },
     { 21, 48, 0, { 0, 0, 0 } },
@@ -138,7 +138,7 @@ static InitChainEntry sInitChain[] = {
 
 void EnGs_Init(Actor* thisx, PlayState* play) {
     s32 pad;
-    EnGs* this = THIS;
+    EnGs* this = (EnGs*)thisx;
 
     Actor_ProcessInitChain(&this->actor, sInitChain);
     this->unk_208 = -1;
@@ -150,7 +150,7 @@ void EnGs_Init(Actor* thisx, PlayState* play) {
     this->actor.world.rot.z = 0;
     Collider_InitAndSetCylinder(play, &this->collider, &this->actor, &sCylinderInit);
     CollisionCheck_SetInfo2(&this->actor.colChkInfo, &sDamageTable, &sColChkInfoInit);
-    this->actor.targetMode = TARGET_MODE_6;
+    this->actor.attentionRangeType = ATTENTION_RANGE_6;
     this->unk_216 = 0;
     this->unk_218 = 0;
     this->unk_200 = 1.0f;
@@ -161,7 +161,7 @@ void EnGs_Init(Actor* thisx, PlayState* play) {
     Math_Vec3f_Copy(&this->unk_1B0[0], &gOneVec3f);
     Math_Vec3f_Copy(&this->unk_1B0[1], &gOneVec3f);
     SubS_FillCutscenesList(&this->actor, this->csIdList, ARRAY_COUNT(this->csIdList));
-    func_801A5080(VOICE_WORD_ID_HOURS);
+    AudioVoice_InitWord(VOICE_WORD_ID_HOURS);
     if (this->actor.params == ENGS_1) {
         Actor_SetScale(&this->actor, 0.15f);
         this->collider.dim.radius *= 1.5f;
@@ -171,7 +171,7 @@ void EnGs_Init(Actor* thisx, PlayState* play) {
 }
 
 void EnGs_Destroy(Actor* thisx, PlayState* play) {
-    EnGs* this = THIS;
+    EnGs* this = (EnGs*)thisx;
 
     Collider_DestroyCylinder(play, &this->collider);
     Play_DisableMotionBlur();
@@ -193,7 +193,7 @@ void func_80997D38(EnGs* this, PlayState* play) {
     }
 
     if (this->actor.params != ENGS_2) {
-        func_800B874C(&this->actor, play, 100.0f, 100.0f);
+        Actor_OfferOcarinaInteraction(&this->actor, play, 100.0f, 100.0f);
     }
 }
 
@@ -213,13 +213,13 @@ void func_80997E4C(EnGs* this, PlayState* play) {
             Message_StartTextbox(play, this->unk_210, &this->actor);
             break;
 
-        case TEXT_STATE_1:
+        case TEXT_STATE_NEXT:
         case TEXT_STATE_CLOSING:
-        case TEXT_STATE_3:
+        case TEXT_STATE_FADING:
             break;
 
         case TEXT_STATE_CHOICE:
-        case TEXT_STATE_5:
+        case TEXT_STATE_EVENT:
         case TEXT_STATE_DONE:
             if (Message_ShouldAdvance(play)) {
                 switch (play->msgCtx.currentTextId) {
@@ -507,8 +507,8 @@ void func_8099874C(EnGs* this, PlayState* play) {
                         break;
                 }
 
-                if (!CHECK_WEEKEVENTREG(WEEKEVENTREG_90_10)) {
-                    SET_WEEKEVENTREG(WEEKEVENTREG_90_10);
+                if (!CHECK_WEEKEVENTREG(WEEKEVENTREG_RECEIVED_GOSSIP_STONE_GROTTO_HEART_PIECE)) {
+                    SET_WEEKEVENTREG(WEEKEVENTREG_RECEIVED_GOSSIP_STONE_GROTTO_HEART_PIECE);
                     this->getItemId = GI_HEART_PIECE;
                 }
 
@@ -710,7 +710,7 @@ s32 func_80998F9C(EnGs* this, PlayState* play) {
 
     if (this->unk_19D == 4) {
         sp48 = Math_SmoothStepToF(&this->unk_1DC, this->unk_1E0, 0.8f, 16384.0f, 3640.0f);
-        this->unk_19E[0].y += (s16)this->unk_1DC;
+        this->unk_19E[0].y += TRUNCF_BINANG(this->unk_1DC);
         if (sp48 == 0.0f) {
             phi_v0_2 = this->unk_19E[0].y;
             if (phi_v0_2 > 0) {
@@ -857,7 +857,7 @@ s32 func_809995A4(EnGs* this, PlayState* play) {
         if (this->unk_1D4++ >= 40) {
             this->unk_19A |= 0x10;
 
-            this->actor.uncullZoneForward = 12000.0f;
+            this->actor.cullingVolumeDistance = 12000.0f;
             this->actor.gravity = 0.3f;
             this->unk_1DC = 0.0f;
 
@@ -891,7 +891,7 @@ s32 func_809995A4(EnGs* this, PlayState* play) {
         Actor_MoveWithGravity(&this->actor);
         Math_SmoothStepToF(&this->unk_1DC, this->unk_1E0, 0.5f, 364.0f, 0.0f);
 
-        this->unk_19E[1].y += (s16)this->unk_1DC;
+        this->unk_19E[1].y += TRUNCF_BINANG(this->unk_1DC);
 
         if ((this->actor.world.pos.y - this->actor.home.pos.y) >= 4000.0f) {
             this->unk_216 = 0;
@@ -947,7 +947,7 @@ void func_80999B34(EnGs* this) {
 
 void func_80999BC8(Actor* thisx, PlayState* play2) {
     PlayState* play = play2;
-    EnGs* this = THIS;
+    EnGs* this = (EnGs*)thisx;
     s32 pad;
 
     if (this->actor.isLockedOn && (AudioVoice_GetWord() == VOICE_WORD_ID_HOURS)) {
@@ -1031,14 +1031,14 @@ void func_80999BC8(Actor* thisx, PlayState* play2) {
 
 void EnGs_Update(Actor* thisx, PlayState* play) {
     s32 pad;
-    EnGs* this = THIS;
+    EnGs* this = (EnGs*)thisx;
 
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+    if (Actor_TalkOfferAccepted(&this->actor, &play->state)) {
         play->msgCtx.msgMode = MSGMODE_NONE;
         play->msgCtx.msgLength = 0;
         this->collider.base.acFlags &= ~AC_HIT;
         func_80997DEC(this, play);
-    } else if (func_800B8718(&this->actor, &play->state)) {
+    } else if (Actor_OcarinaInteractionAccepted(&this->actor, &play->state)) {
         this->unk_19A |= 0x200;
         this->collider.base.acFlags &= ~AC_HIT;
         if (this->actor.csId != CS_ID_NONE) {
@@ -1047,14 +1047,15 @@ void EnGs_Update(Actor* thisx, PlayState* play) {
             func_80998040(this, play);
         }
     } else {
-        s16 sp2E;
-        s16 sp2C;
+        s16 screenPosX;
+        s16 screenPosY;
 
-        if ((this->actor.flags & ACTOR_FLAG_40) || (this->unk_19A & 0x100) || (this->unk_19A & 0x200)) {
+        if ((this->actor.flags & ACTOR_FLAG_INSIDE_CULLING_VOLUME) || (this->unk_19A & 0x100) ||
+            (this->unk_19A & 0x200)) {
             func_80999BC8(&this->actor, play);
-            Actor_GetScreenPos(play, &this->actor, &sp2E, &sp2C);
-            if ((this->actor.xyzDistToPlayerSq > SQ(400.0f)) || (sp2E < 0) || (sp2E > SCREEN_WIDTH) || (sp2C < 0) ||
-                (sp2C > SCREEN_HEIGHT)) {
+            Actor_GetScreenPos(play, &this->actor, &screenPosX, &screenPosY);
+            if ((this->actor.xyzDistToPlayerSq > SQ(400.0f)) || (screenPosX < 0) || (screenPosX > SCREEN_WIDTH) ||
+                (screenPosY < 0) || (screenPosY > SCREEN_HEIGHT)) {
                 this->unk_216 = 0;
             } else if (this->quakeY > 0) {
                 Actor_RequestQuakeAndRumble(&this->actor, play, this->quakeY, this->quakeDuration);
@@ -1086,7 +1087,7 @@ void EnGs_Update(Actor* thisx, PlayState* play) {
 
 void EnGs_Draw(Actor* thisx, PlayState* play) {
     s32 pad;
-    EnGs* this = THIS;
+    EnGs* this = (EnGs*)thisx;
     u32 frames;
 
     if (this->unk_19A & 8) {
@@ -1110,7 +1111,7 @@ void EnGs_Draw(Actor* thisx, PlayState* play) {
         Matrix_RotateZS(this->unk_19E[1].z, MTXMODE_APPLY);
     }
 
-    gSPMatrix(POLY_OPA_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    MATRIX_FINALIZE_AND_LOAD(POLY_OPA_DISP++, play->state.gfxCtx);
     gSPDisplayList(POLY_OPA_DISP++, gGossipStoneMaterialDL);
     gDPSetPrimColor(POLY_OPA_DISP++, 0, 0, this->unk_1FA.r, this->unk_1FA.g, this->unk_1FA.b, 255);
     gSPDisplayList(POLY_OPA_DISP++, gGossipStoneDL);
@@ -1123,7 +1124,7 @@ void EnGs_Draw(Actor* thisx, PlayState* play) {
         Matrix_ReplaceRotation(&play->billboardMtxF);
         Matrix_Scale(0.05f, -0.05f, 1.0f, MTXMODE_APPLY);
 
-        gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+        MATRIX_FINALIZE_AND_LOAD(POLY_XLU_DISP++, play->state.gfxCtx);
         gSPSegment(POLY_XLU_DISP++, 0x08,
                    Gfx_TwoTexScroll(play->state.gfxCtx, 0, 0, 0, 0x20, 0x40, 1, 0, -frames * 20, 0x20, 0x80));
         gDPSetPrimColor(POLY_XLU_DISP++, 0x80, 0x80, 255, 255, 0, 255);

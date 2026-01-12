@@ -1,10 +1,10 @@
 #include "ActorBehavior.h"
-#include "public/bridge/consolevariablebridge.h"
+#include <libultraship/bridge/consolevariablebridge.h>
 
 extern "C" {
 #include "variables.h"
 #include "overlays/actors/ovl_En_Yb/z_en_yb.h"
-void Player_TalkWithPlayer(PlayState* play, Actor* actor);
+void Player_StartTalking(PlayState* play, Actor* actor);
 }
 
 void Rando::ActorBehavior::InitEnYbBehavior() {
@@ -27,7 +27,7 @@ void Rando::ActorBehavior::InitEnYbBehavior() {
             player->talkActor = actor;
             player->talkActorDistance = actor->xzDistToPlayer;
             player->exchangeItemAction = PLAYER_IA_MINUS1;
-            Player_TalkWithPlayer(gPlayState, actor);
+            Player_StartTalking(gPlayState, actor);
             RANDO_SAVE_CHECKS[RC_TERMINA_FIELD_KAMARO_MASK].eligible = true;
         }
     });

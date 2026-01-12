@@ -6,11 +6,10 @@
 
 #include "z_en_pm.h"
 #include "overlays/actors/ovl_En_Door/z_en_door.h"
-#include "objects/object_mm/object_mm.h"
 
-#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_10 | ACTOR_FLAG_20)
-
-#define THIS ((EnPm*)thisx)
+#define FLAGS                                                                                  \
+    (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_UPDATE_CULLING_DISABLED | \
+     ACTOR_FLAG_DRAW_CULLING_DISABLED)
 
 void EnPm_Init(Actor* thisx, PlayState* play);
 void EnPm_Destroy(Actor* thisx, PlayState* play);
@@ -132,7 +131,7 @@ static u8 D_80AFAD80[] = {
     /* 0x239 */ SCHEDULE_CMD_RET_TIME(10, 21, 10, 35, 44),
     /* 0x23F */ SCHEDULE_CMD_RET_NONE(),
     /* 0x240 */ SCHEDULE_CMD_CHECK_NOT_IN_DAY_L(2, 0x414 - 0x245),
-    /* 0x245 */ SCHEDULE_CMD_CHECK_FLAG_L(WEEKEVENTREG_28_08, 0x2EF - 0x24A),
+    /* 0x245 */ SCHEDULE_CMD_CHECK_WEEK_EVENT_REG_L(WEEKEVENTREG_28_08, 0x2EF - 0x24A),
     /* 0x24A */ SCHEDULE_CMD_CHECK_TIME_RANGE_L(9, 0, 12, 0, 0x117 - 0x251),
     /* 0x251 */ SCHEDULE_CMD_CHECK_TIME_RANGE_L(12, 0, 13, 1, 0x2E4 - 0x258),
     /* 0x258 */ SCHEDULE_CMD_CHECK_TIME_RANGE_S(13, 1, 15, 0, 0x2DC - 0x25E),
@@ -226,8 +225,8 @@ static u8 D_80AFAD80[] = {
     /* 0x40D */ SCHEDULE_CMD_RET_TIME(12, 0, 13, 1, 21),
     /* 0x413 */ SCHEDULE_CMD_RET_NONE(),
     /* 0x414 */ SCHEDULE_CMD_CHECK_NOT_IN_DAY_L(3, 0x588 - 0x419),
-    /* 0x419 */ SCHEDULE_CMD_CHECK_FLAG_L(WEEKEVENTREG_28_08, 0x55D - 0x41E),
-    /* 0x41E */ SCHEDULE_CMD_CHECK_FLAG_L(WEEKEVENTREG_28_10, 0x52F - 0x423),
+    /* 0x419 */ SCHEDULE_CMD_CHECK_WEEK_EVENT_REG_L(WEEKEVENTREG_28_08, 0x55D - 0x41E),
+    /* 0x41E */ SCHEDULE_CMD_CHECK_WEEK_EVENT_REG_L(WEEKEVENTREG_28_10, 0x52F - 0x423),
     /* 0x423 */ SCHEDULE_CMD_CHECK_TIME_RANGE_L(9, 0, 12, 0, 0x117 - 0x42A),
     /* 0x42A */ SCHEDULE_CMD_CHECK_TIME_RANGE_L(12, 0, 13, 1, 0x527 - 0x431),
     /* 0x431 */ SCHEDULE_CMD_CHECK_TIME_RANGE_S(13, 1, 15, 0, 0x446 - 0x437),
@@ -388,270 +387,271 @@ static s32 D_80AFB430[] = {
 };
 
 static MsgScript D_80AFB5A0[] = {
-    /* 0x0000 0x05 */ MSCRIPT_BRANCH_ON_WEEK_EVENT_REG(0x56, 0x08, 0x004A - 0x0005),
-    /* 0x0005 0x03 */ MSCRIPT_BRANCH_ON_CALLBACK_OPTIONAL(0x0),
-    /* 0x0008 0x01 */ MSCRIPT_FOCUS_TO_CHILD(),
-    /* 0x0009 0x03 */ MSCRIPT_BEGIN_TEXT(0x28BA),
-    /* 0x000C 0x01 */ MSCRIPT_AWAIT_TEXT(),
-    /* 0x000D 0x03 */ MSCRIPT_BRANCH_ON_CALLBACK_OPTIONAL(0x0),
-    /* 0x0010 0x01 */ MSCRIPT_FOCUS_TO_SELF(),
-    /* 0x0011 0x03 */ MSCRIPT_BEGIN_TEXT(0x28BB),
-    /* 0x0014 0x01 */ MSCRIPT_AWAIT_TEXT(),
-    /* 0x0015 0x03 */ MSCRIPT_BRANCH_ON_CALLBACK_OPTIONAL(0x0),
-    /* 0x0018 0x01 */ MSCRIPT_FOCUS_TO_CHILD(),
-    /* 0x0019 0x03 */ MSCRIPT_BEGIN_TEXT(0x28BC),
-    /* 0x001C 0x01 */ MSCRIPT_AWAIT_TEXT(),
-    /* 0x001D 0x03 */ MSCRIPT_BRANCH_ON_CALLBACK_OPTIONAL(0x0),
-    /* 0x0020 0x01 */ MSCRIPT_FOCUS_TO_SELF(),
-    /* 0x0021 0x03 */ MSCRIPT_BEGIN_TEXT(0x28BD),
-    /* 0x0024 0x01 */ MSCRIPT_AWAIT_TEXT(),
-    /* 0x0025 0x03 */ MSCRIPT_BRANCH_ON_CALLBACK_OPTIONAL(0x0),
-    /* 0x0028 0x01 */ MSCRIPT_FOCUS_TO_CHILD(),
-    /* 0x0029 0x03 */ MSCRIPT_BEGIN_TEXT(0x28BE),
-    /* 0x002C 0x01 */ MSCRIPT_AWAIT_TEXT(),
-    /* 0x002D 0x03 */ MSCRIPT_BRANCH_ON_CALLBACK_OPTIONAL(0x0),
-    /* 0x0030 0x01 */ MSCRIPT_FOCUS_TO_SELF(),
-    /* 0x0031 0x03 */ MSCRIPT_BEGIN_TEXT(0x28BF),
-    /* 0x0034 0x01 */ MSCRIPT_AWAIT_TEXT(),
-    /* 0x0035 0x03 */ MSCRIPT_BRANCH_ON_CALLBACK_OPTIONAL(0x0),
-    /* 0x0038 0x01 */ MSCRIPT_FOCUS_TO_CHILD(),
-    /* 0x0039 0x03 */ MSCRIPT_BEGIN_TEXT(0x28C0),
-    /* 0x003C 0x03 */ MSCRIPT_NOTEBOOK_EVENT(BOMBERS_NOTEBOOK_EVENT_MET_ANJU),
-    /* 0x003F 0x03 */ MSCRIPT_NOTEBOOK_EVENT(BOMBERS_NOTEBOOK_EVENT_MET_POSTMAN),
-    /* 0x0042 0x01 */ MSCRIPT_AWAIT_TEXT(),
-    /* 0x0043 0x03 */ MSCRIPT_BRANCH_ON_CALLBACK_OPTIONAL(0x0),
-    /* 0x0046 0x03 */ MSCRIPT_WEEK_EVENT_REG_SET(0x56, 0x08),
-    /* 0x0049 0x01 */ MSCRIPT_DONE(),
+    /* 0x0000 0x05 */ MSCRIPT_CMD_CHECK_WEEK_EVENT_REG(WEEKEVENTREG_LISTENED_ANJU_POSTMAN_CONVERSATION,
+                                                       0x004A - 0x0005),
+    /* 0x0005 0x03 */ MSCRIPT_CMD_CHECK_CALLBACK(0x0),
+    /* 0x0008 0x01 */ MSCRIPT_CMD_FOCUS_TO_CHILD(),
+    /* 0x0009 0x03 */ MSCRIPT_CMD_BEGIN_TEXT(0x28BA),
+    /* 0x000C 0x01 */ MSCRIPT_CMD_AWAIT_TEXT(),
+    /* 0x000D 0x03 */ MSCRIPT_CMD_CHECK_CALLBACK(0x0),
+    /* 0x0010 0x01 */ MSCRIPT_CMD_FOCUS_TO_SELF(),
+    /* 0x0011 0x03 */ MSCRIPT_CMD_BEGIN_TEXT(0x28BB),
+    /* 0x0014 0x01 */ MSCRIPT_CMD_AWAIT_TEXT(),
+    /* 0x0015 0x03 */ MSCRIPT_CMD_CHECK_CALLBACK(0x0),
+    /* 0x0018 0x01 */ MSCRIPT_CMD_FOCUS_TO_CHILD(),
+    /* 0x0019 0x03 */ MSCRIPT_CMD_BEGIN_TEXT(0x28BC),
+    /* 0x001C 0x01 */ MSCRIPT_CMD_AWAIT_TEXT(),
+    /* 0x001D 0x03 */ MSCRIPT_CMD_CHECK_CALLBACK(0x0),
+    /* 0x0020 0x01 */ MSCRIPT_CMD_FOCUS_TO_SELF(),
+    /* 0x0021 0x03 */ MSCRIPT_CMD_BEGIN_TEXT(0x28BD),
+    /* 0x0024 0x01 */ MSCRIPT_CMD_AWAIT_TEXT(),
+    /* 0x0025 0x03 */ MSCRIPT_CMD_CHECK_CALLBACK(0x0),
+    /* 0x0028 0x01 */ MSCRIPT_CMD_FOCUS_TO_CHILD(),
+    /* 0x0029 0x03 */ MSCRIPT_CMD_BEGIN_TEXT(0x28BE),
+    /* 0x002C 0x01 */ MSCRIPT_CMD_AWAIT_TEXT(),
+    /* 0x002D 0x03 */ MSCRIPT_CMD_CHECK_CALLBACK(0x0),
+    /* 0x0030 0x01 */ MSCRIPT_CMD_FOCUS_TO_SELF(),
+    /* 0x0031 0x03 */ MSCRIPT_CMD_BEGIN_TEXT(0x28BF),
+    /* 0x0034 0x01 */ MSCRIPT_CMD_AWAIT_TEXT(),
+    /* 0x0035 0x03 */ MSCRIPT_CMD_CHECK_CALLBACK(0x0),
+    /* 0x0038 0x01 */ MSCRIPT_CMD_FOCUS_TO_CHILD(),
+    /* 0x0039 0x03 */ MSCRIPT_CMD_BEGIN_TEXT(0x28C0),
+    /* 0x003C 0x03 */ MSCRIPT_CMD_NOTEBOOK_EVENT(BOMBERS_NOTEBOOK_EVENT_MET_ANJU),
+    /* 0x003F 0x03 */ MSCRIPT_CMD_NOTEBOOK_EVENT(BOMBERS_NOTEBOOK_EVENT_MET_POSTMAN),
+    /* 0x0042 0x01 */ MSCRIPT_CMD_AWAIT_TEXT(),
+    /* 0x0043 0x03 */ MSCRIPT_CMD_CHECK_CALLBACK(0x0),
+    /* 0x0046 0x03 */ MSCRIPT_CMD_SET_WEEK_EVENT_REG(WEEKEVENTREG_LISTENED_ANJU_POSTMAN_CONVERSATION),
+    /* 0x0049 0x01 */ MSCRIPT_CMD_DONE(),
 
-    /* 0x004A 0x03 */ MSCRIPT_BRANCH_ON_CALLBACK_OPTIONAL(0x0),
-    /* 0x004D 0x01 */ MSCRIPT_FOCUS_TO_CHILD(),
-    /* 0x004E 0x03 */ MSCRIPT_BEGIN_TEXT(0x295C),
-    /* 0x0051 0x01 */ MSCRIPT_AWAIT_TEXT(),
-    /* 0x0052 0x03 */ MSCRIPT_BRANCH_ON_CALLBACK_OPTIONAL(0x0),
-    /* 0x0055 0x01 */ MSCRIPT_FOCUS_TO_SELF(),
-    /* 0x0056 0x03 */ MSCRIPT_BEGIN_TEXT(0x295D),
-    /* 0x0059 0x01 */ MSCRIPT_AWAIT_TEXT(),
-    /* 0x005A 0x03 */ MSCRIPT_BRANCH_ON_CALLBACK_OPTIONAL(0x0),
-    /* 0x005D 0x01 */ MSCRIPT_FOCUS_TO_CHILD(),
-    /* 0x005E 0x03 */ MSCRIPT_BEGIN_TEXT(0x295E),
-    /* 0x0061 0x03 */ MSCRIPT_NOTEBOOK_EVENT(BOMBERS_NOTEBOOK_EVENT_MET_ANJU),
-    /* 0x0064 0x03 */ MSCRIPT_NOTEBOOK_EVENT(BOMBERS_NOTEBOOK_EVENT_MET_POSTMAN),
-    /* 0x0067 0x01 */ MSCRIPT_AWAIT_TEXT(),
-    /* 0x0068 0x03 */ MSCRIPT_BRANCH_ON_CALLBACK_OPTIONAL(0x0),
-    /* 0x006B 0x01 */ MSCRIPT_DONE(),
+    /* 0x004A 0x03 */ MSCRIPT_CMD_CHECK_CALLBACK(0x0),
+    /* 0x004D 0x01 */ MSCRIPT_CMD_FOCUS_TO_CHILD(),
+    /* 0x004E 0x03 */ MSCRIPT_CMD_BEGIN_TEXT(0x295C),
+    /* 0x0051 0x01 */ MSCRIPT_CMD_AWAIT_TEXT(),
+    /* 0x0052 0x03 */ MSCRIPT_CMD_CHECK_CALLBACK(0x0),
+    /* 0x0055 0x01 */ MSCRIPT_CMD_FOCUS_TO_SELF(),
+    /* 0x0056 0x03 */ MSCRIPT_CMD_BEGIN_TEXT(0x295D),
+    /* 0x0059 0x01 */ MSCRIPT_CMD_AWAIT_TEXT(),
+    /* 0x005A 0x03 */ MSCRIPT_CMD_CHECK_CALLBACK(0x0),
+    /* 0x005D 0x01 */ MSCRIPT_CMD_FOCUS_TO_CHILD(),
+    /* 0x005E 0x03 */ MSCRIPT_CMD_BEGIN_TEXT(0x295E),
+    /* 0x0061 0x03 */ MSCRIPT_CMD_NOTEBOOK_EVENT(BOMBERS_NOTEBOOK_EVENT_MET_ANJU),
+    /* 0x0064 0x03 */ MSCRIPT_CMD_NOTEBOOK_EVENT(BOMBERS_NOTEBOOK_EVENT_MET_POSTMAN),
+    /* 0x0067 0x01 */ MSCRIPT_CMD_AWAIT_TEXT(),
+    /* 0x0068 0x03 */ MSCRIPT_CMD_CHECK_CALLBACK(0x0),
+    /* 0x006B 0x01 */ MSCRIPT_CMD_DONE(),
 };
 
 static MsgScript D_80AFB60C[] = {
-    /* 0x0000 0x03 */ MSCRIPT_BEGIN_TEXT(0x2774),
-    /* 0x0003 0x03 */ MSCRIPT_NOTEBOOK_EVENT(BOMBERS_NOTEBOOK_EVENT_MET_POSTMAN),
-    /* 0x0006 0x01 */ MSCRIPT_AWAIT_TEXT(),
-    /* 0x0007 0x01 */ MSCRIPT_DONE(),
+    /* 0x0000 0x03 */ MSCRIPT_CMD_BEGIN_TEXT(0x2774),
+    /* 0x0003 0x03 */ MSCRIPT_CMD_NOTEBOOK_EVENT(BOMBERS_NOTEBOOK_EVENT_MET_POSTMAN),
+    /* 0x0006 0x01 */ MSCRIPT_CMD_AWAIT_TEXT(),
+    /* 0x0007 0x01 */ MSCRIPT_CMD_DONE(),
 };
 
 static MsgScript D_80AFB614[] = {
-    /* 0x0000 0x03 */ MSCRIPT_BEGIN_TEXT(0x2775),
-    /* 0x0003 0x03 */ MSCRIPT_NOTEBOOK_EVENT(BOMBERS_NOTEBOOK_EVENT_MET_POSTMAN),
-    /* 0x0006 0x01 */ MSCRIPT_AWAIT_TEXT(),
-    /* 0x0007 0x01 */ MSCRIPT_DONE(),
+    /* 0x0000 0x03 */ MSCRIPT_CMD_BEGIN_TEXT(0x2775),
+    /* 0x0003 0x03 */ MSCRIPT_CMD_NOTEBOOK_EVENT(BOMBERS_NOTEBOOK_EVENT_MET_POSTMAN),
+    /* 0x0006 0x01 */ MSCRIPT_CMD_AWAIT_TEXT(),
+    /* 0x0007 0x01 */ MSCRIPT_CMD_DONE(),
 };
 
 static MsgScript D_80AFB61C[] = {
-    /* 0x0000 0x03 */ MSCRIPT_BEGIN_TEXT(0x2777),
-    /* 0x0003 0x03 */ MSCRIPT_NOTEBOOK_EVENT(BOMBERS_NOTEBOOK_EVENT_MET_POSTMAN),
-    /* 0x0006 0x01 */ MSCRIPT_AWAIT_TEXT(),
-    /* 0x0007 0x01 */ MSCRIPT_DONE(),
+    /* 0x0000 0x03 */ MSCRIPT_CMD_BEGIN_TEXT(0x2777),
+    /* 0x0003 0x03 */ MSCRIPT_CMD_NOTEBOOK_EVENT(BOMBERS_NOTEBOOK_EVENT_MET_POSTMAN),
+    /* 0x0006 0x01 */ MSCRIPT_CMD_AWAIT_TEXT(),
+    /* 0x0007 0x01 */ MSCRIPT_CMD_DONE(),
 };
 
 static MsgScript D_80AFB624[] = {
-    /* 0x0000 0x03 */ MSCRIPT_BEGIN_TEXT(0x2778),
-    /* 0x0003 0x03 */ MSCRIPT_NOTEBOOK_EVENT(BOMBERS_NOTEBOOK_EVENT_MET_POSTMAN),
-    /* 0x0006 0x01 */ MSCRIPT_AWAIT_TEXT(),
-    /* 0x0007 0x01 */ MSCRIPT_DONE(),
+    /* 0x0000 0x03 */ MSCRIPT_CMD_BEGIN_TEXT(0x2778),
+    /* 0x0003 0x03 */ MSCRIPT_CMD_NOTEBOOK_EVENT(BOMBERS_NOTEBOOK_EVENT_MET_POSTMAN),
+    /* 0x0006 0x01 */ MSCRIPT_CMD_AWAIT_TEXT(),
+    /* 0x0007 0x01 */ MSCRIPT_CMD_DONE(),
 };
 
 static MsgScript D_80AFB62C[] = {
-    /* 0x0000 0x03 */ MSCRIPT_BEGIN_TEXT(0x2779),
-    /* 0x0003 0x03 */ MSCRIPT_NOTEBOOK_EVENT(BOMBERS_NOTEBOOK_EVENT_MET_POSTMAN),
-    /* 0x0006 0x01 */ MSCRIPT_AWAIT_TEXT(),
-    /* 0x0007 0x01 */ MSCRIPT_DONE(),
+    /* 0x0000 0x03 */ MSCRIPT_CMD_BEGIN_TEXT(0x2779),
+    /* 0x0003 0x03 */ MSCRIPT_CMD_NOTEBOOK_EVENT(BOMBERS_NOTEBOOK_EVENT_MET_POSTMAN),
+    /* 0x0006 0x01 */ MSCRIPT_CMD_AWAIT_TEXT(),
+    /* 0x0007 0x01 */ MSCRIPT_CMD_DONE(),
 };
 
 static MsgScript D_80AFB634[] = {
-    /* 0x0000 0x03 */ MSCRIPT_BEGIN_TEXT(0x2781),
-    /* 0x0003 0x03 */ MSCRIPT_NOTEBOOK_EVENT(BOMBERS_NOTEBOOK_EVENT_MET_POSTMAN),
-    /* 0x0006 0x01 */ MSCRIPT_AWAIT_TEXT(),
-    /* 0x0007 0x01 */ MSCRIPT_DONE(),
+    /* 0x0000 0x03 */ MSCRIPT_CMD_BEGIN_TEXT(0x2781),
+    /* 0x0003 0x03 */ MSCRIPT_CMD_NOTEBOOK_EVENT(BOMBERS_NOTEBOOK_EVENT_MET_POSTMAN),
+    /* 0x0006 0x01 */ MSCRIPT_CMD_AWAIT_TEXT(),
+    /* 0x0007 0x01 */ MSCRIPT_CMD_DONE(),
 };
 
 static MsgScript D_80AFB63C[] = {
-    /* 0x0000 0x03 */ MSCRIPT_BEGIN_TEXT(0x277A),
-    /* 0x0003 0x03 */ MSCRIPT_NOTEBOOK_EVENT(BOMBERS_NOTEBOOK_EVENT_MET_POSTMAN),
-    /* 0x0006 0x01 */ MSCRIPT_AWAIT_TEXT(),
-    /* 0x0007 0x01 */ MSCRIPT_DONE(),
+    /* 0x0000 0x03 */ MSCRIPT_CMD_BEGIN_TEXT(0x277A),
+    /* 0x0003 0x03 */ MSCRIPT_CMD_NOTEBOOK_EVENT(BOMBERS_NOTEBOOK_EVENT_MET_POSTMAN),
+    /* 0x0006 0x01 */ MSCRIPT_CMD_AWAIT_TEXT(),
+    /* 0x0007 0x01 */ MSCRIPT_CMD_DONE(),
 };
 
 static MsgScript D_80AFB644[] = {
-    /* 0x0000 0x03 */ MSCRIPT_BEGIN_TEXT(0x2782),
-    /* 0x0003 0x03 */ MSCRIPT_NOTEBOOK_EVENT(BOMBERS_NOTEBOOK_EVENT_MET_POSTMAN),
-    /* 0x0006 0x01 */ MSCRIPT_AWAIT_TEXT(),
-    /* 0x0007 0x03 */ MSCRIPT_WEEK_EVENT_REG_SET(0x58, 0x02),
-    /* 0x000A 0x01 */ MSCRIPT_DONE(),
+    /* 0x0000 0x03 */ MSCRIPT_CMD_BEGIN_TEXT(0x2782),
+    /* 0x0003 0x03 */ MSCRIPT_CMD_NOTEBOOK_EVENT(BOMBERS_NOTEBOOK_EVENT_MET_POSTMAN),
+    /* 0x0006 0x01 */ MSCRIPT_CMD_AWAIT_TEXT(),
+    /* 0x0007 0x03 */ MSCRIPT_CMD_SET_WEEK_EVENT_REG(WEEKEVENTREG_88_02),
+    /* 0x000A 0x01 */ MSCRIPT_CMD_DONE(),
 };
 
 static MsgScript D_80AFB650[] = {
-    /* 0x0000 0x03 */ MSCRIPT_BEGIN_TEXT(0x2783),
-    /* 0x0003 0x03 */ MSCRIPT_NOTEBOOK_EVENT(BOMBERS_NOTEBOOK_EVENT_MET_POSTMAN),
-    /* 0x0006 0x01 */ MSCRIPT_AWAIT_TEXT(),
-    /* 0x0007 0x01 */ MSCRIPT_DONE(),
+    /* 0x0000 0x03 */ MSCRIPT_CMD_BEGIN_TEXT(0x2783),
+    /* 0x0003 0x03 */ MSCRIPT_CMD_NOTEBOOK_EVENT(BOMBERS_NOTEBOOK_EVENT_MET_POSTMAN),
+    /* 0x0006 0x01 */ MSCRIPT_CMD_AWAIT_TEXT(),
+    /* 0x0007 0x01 */ MSCRIPT_CMD_DONE(),
 };
 
 static MsgScript D_80AFB658[] = {
-    /* 0x0000 0x05 */ MSCRIPT_BRANCH_ON_ITEM(ITEM_LETTER_MAMA, 0x001F - 0x0005),
-    /* 0x0005 0x05 */ MSCRIPT_BRANCH_ON_WEEK_EVENT_REG(0x52, 0x80, 0x0016 - 0x000A),
-    /* 0x000A 0x03 */ MSCRIPT_BEGIN_TEXT(0x277C),
-    /* 0x000D 0x03 */ MSCRIPT_NOTEBOOK_EVENT(BOMBERS_NOTEBOOK_EVENT_MET_POSTMAN),
-    /* 0x0010 0x01 */ MSCRIPT_AWAIT_TEXT(),
-    /* 0x0011 0x03 */ MSCRIPT_WEEK_EVENT_REG_SET(0x52, 0x80),
-    /* 0x0014 0x01 */ MSCRIPT_CLOSE_TEXT(),
-    /* 0x0015 0x01 */ MSCRIPT_DONE(),
+    /* 0x0000 0x05 */ MSCRIPT_CMD_CHECK_ITEM(ITEM_LETTER_MAMA, 0x001F - 0x0005),
+    /* 0x0005 0x05 */ MSCRIPT_CMD_CHECK_WEEK_EVENT_REG(WEEKEVENTREG_82_80, 0x0016 - 0x000A),
+    /* 0x000A 0x03 */ MSCRIPT_CMD_BEGIN_TEXT(0x277C),
+    /* 0x000D 0x03 */ MSCRIPT_CMD_NOTEBOOK_EVENT(BOMBERS_NOTEBOOK_EVENT_MET_POSTMAN),
+    /* 0x0010 0x01 */ MSCRIPT_CMD_AWAIT_TEXT(),
+    /* 0x0011 0x03 */ MSCRIPT_CMD_SET_WEEK_EVENT_REG(WEEKEVENTREG_82_80),
+    /* 0x0014 0x01 */ MSCRIPT_CMD_CLOSE_TEXT(),
+    /* 0x0015 0x01 */ MSCRIPT_CMD_DONE(),
 
-    /* 0x0016 0x03 */ MSCRIPT_BEGIN_TEXT(0x277D),
-    /* 0x0019 0x03 */ MSCRIPT_NOTEBOOK_EVENT(BOMBERS_NOTEBOOK_EVENT_MET_POSTMAN),
-    /* 0x001C 0x01 */ MSCRIPT_AWAIT_TEXT(),
-    /* 0x001D 0x01 */ MSCRIPT_CLOSE_TEXT(),
-    /* 0x001E 0x01 */ MSCRIPT_DONE(),
+    /* 0x0016 0x03 */ MSCRIPT_CMD_BEGIN_TEXT(0x277D),
+    /* 0x0019 0x03 */ MSCRIPT_CMD_NOTEBOOK_EVENT(BOMBERS_NOTEBOOK_EVENT_MET_POSTMAN),
+    /* 0x001C 0x01 */ MSCRIPT_CMD_AWAIT_TEXT(),
+    /* 0x001D 0x01 */ MSCRIPT_CMD_CLOSE_TEXT(),
+    /* 0x001E 0x01 */ MSCRIPT_CMD_DONE(),
 
-    /* 0x001F 0x03 */ MSCRIPT_BEGIN_TEXT(0x277C),
-    /* 0x0022 0x01 */ MSCRIPT_AWAIT_TEXT(),
-    /* 0x0023 0x03 */ MSCRIPT_BEGIN_TEXT(0x00FF),
-    /* 0x0026 0x09 */ MSCRIPT_BRANCH_ON_ITEMACTION(0x0033, 0x0, 0x0047 - 0x002F, 0x0057 - 0x002F),
-    /* 0x002F 0x03 */ MSCRIPT_CMD44(0xFFFF),
-    /* 0x0032 0x03 */ MSCRIPT_BRANCH_ON_CALLBACK_OPTIONAL(0x0),
-    /* 0x0035 0x03 */ MSCRIPT_BEGIN_TEXT(0x277E),
-    /* 0x0038 0x03 */ MSCRIPT_NOTEBOOK_EVENT(BOMBERS_NOTEBOOK_EVENT_MET_POSTMAN),
-    /* 0x003B 0x01 */ MSCRIPT_AWAIT_TEXT(),
-    /* 0x003C 0x03 */ MSCRIPT_WEEK_EVENT_REG_SET(0x52, 0x80),
-    /* 0x003F 0x03 */ MSCRIPT_WEEK_EVENT_REG_SET(0x56, 0x01),
-    /* 0x0042 0x03 */ MSCRIPT_DEL_ITEM(ITEM_LETTER_MAMA),
-    /* 0x0045 0x01 */ MSCRIPT_CLOSE_TEXT(),
-    /* 0x0046 0x01 */ MSCRIPT_DONE(),
+    /* 0x001F 0x03 */ MSCRIPT_CMD_BEGIN_TEXT(0x277C),
+    /* 0x0022 0x01 */ MSCRIPT_CMD_AWAIT_TEXT(),
+    /* 0x0023 0x03 */ MSCRIPT_CMD_BEGIN_TEXT(0x00FF),
+    /* 0x0026 0x09 */ MSCRIPT_CMD_CHECK_ITEM_ACTION(PLAYER_IA_LETTER_MAMA, 0x0, 0x0047 - 0x002F, 0x0057 - 0x002F),
+    /* 0x002F 0x03 */ MSCRIPT_CMD_PLAYER_TALK(0xFFFF),
+    /* 0x0032 0x03 */ MSCRIPT_CMD_CHECK_CALLBACK(0x0),
+    /* 0x0035 0x03 */ MSCRIPT_CMD_BEGIN_TEXT(0x277E),
+    /* 0x0038 0x03 */ MSCRIPT_CMD_NOTEBOOK_EVENT(BOMBERS_NOTEBOOK_EVENT_MET_POSTMAN),
+    /* 0x003B 0x01 */ MSCRIPT_CMD_AWAIT_TEXT(),
+    /* 0x003C 0x03 */ MSCRIPT_CMD_SET_WEEK_EVENT_REG(WEEKEVENTREG_82_80),
+    /* 0x003F 0x03 */ MSCRIPT_CMD_SET_WEEK_EVENT_REG(WEEKEVENTREG_86_01),
+    /* 0x0042 0x03 */ MSCRIPT_CMD_DELETE_ITEM(ITEM_LETTER_MAMA),
+    /* 0x0045 0x01 */ MSCRIPT_CMD_CLOSE_TEXT(),
+    /* 0x0046 0x01 */ MSCRIPT_CMD_DONE(),
 
-    /* 0x0047 0x03 */ MSCRIPT_CMD44(0x277D),
-    /* 0x004A 0x01 */ MSCRIPT_AWAIT_TEXT(),
-    /* 0x004B 0x03 */ MSCRIPT_JUMP_3(0x0),
-    /* 0x004E 0x03 */ MSCRIPT_NOTEBOOK_EVENT(BOMBERS_NOTEBOOK_EVENT_MET_POSTMAN),
-    /* 0x0051 0x01 */ MSCRIPT_AWAIT_TEXT(),
-    /* 0x0052 0x03 */ MSCRIPT_WEEK_EVENT_REG_SET(0x52, 0x80),
-    /* 0x0055 0x01 */ MSCRIPT_CLOSE_TEXT(),
-    /* 0x0056 0x01 */ MSCRIPT_DONE(),
+    /* 0x0047 0x03 */ MSCRIPT_CMD_PLAYER_TALK(0x277D),
+    /* 0x004A 0x01 */ MSCRIPT_CMD_AWAIT_TEXT(),
+    /* 0x004B 0x03 */ MSCRIPT_CMD_JUMP_3(0x0),
+    /* 0x004E 0x03 */ MSCRIPT_CMD_NOTEBOOK_EVENT(BOMBERS_NOTEBOOK_EVENT_MET_POSTMAN),
+    /* 0x0051 0x01 */ MSCRIPT_CMD_AWAIT_TEXT(),
+    /* 0x0052 0x03 */ MSCRIPT_CMD_SET_WEEK_EVENT_REG(WEEKEVENTREG_82_80),
+    /* 0x0055 0x01 */ MSCRIPT_CMD_CLOSE_TEXT(),
+    /* 0x0056 0x01 */ MSCRIPT_CMD_DONE(),
 
-    /* 0x0057 0x03 */ MSCRIPT_BEGIN_TEXT(0x277D),
-    /* 0x005A 0x03 */ MSCRIPT_NOTEBOOK_EVENT(BOMBERS_NOTEBOOK_EVENT_MET_POSTMAN),
-    /* 0x005D 0x01 */ MSCRIPT_AWAIT_TEXT(),
-    /* 0x005E 0x03 */ MSCRIPT_WEEK_EVENT_REG_SET(0x52, 0x80),
-    /* 0x0061 0x01 */ MSCRIPT_CLOSE_TEXT(),
-    /* 0x0062 0x01 */ MSCRIPT_DONE(),
+    /* 0x0057 0x03 */ MSCRIPT_CMD_BEGIN_TEXT(0x277D),
+    /* 0x005A 0x03 */ MSCRIPT_CMD_NOTEBOOK_EVENT(BOMBERS_NOTEBOOK_EVENT_MET_POSTMAN),
+    /* 0x005D 0x01 */ MSCRIPT_CMD_AWAIT_TEXT(),
+    /* 0x005E 0x03 */ MSCRIPT_CMD_SET_WEEK_EVENT_REG(WEEKEVENTREG_82_80),
+    /* 0x0061 0x01 */ MSCRIPT_CMD_CLOSE_TEXT(),
+    /* 0x0062 0x01 */ MSCRIPT_CMD_DONE(),
 };
 
 static MsgScript D_80AFB6BC[] = {
-    /* 0x0000 0x03 */ MSCRIPT_BRANCH_ON_CALLBACK_OPTIONAL(0x0),
-    /* 0x0003 0x03 */ MSCRIPT_BEGIN_TEXT(0x27A5),
-    /* 0x0006 0x01 */ MSCRIPT_AWAIT_TEXT(),
-    /* 0x0007 0x03 */ MSCRIPT_BRANCH_ON_CALLBACK_OPTIONAL(0x0),
-    /* 0x000A 0x01 */ MSCRIPT_FOCUS_TO_CHILD(),
-    /* 0x000B 0x03 */ MSCRIPT_BEGIN_TEXT(0x27A6),
-    /* 0x000E 0x01 */ MSCRIPT_AWAIT_TEXT(),
-    /* 0x000F 0x03 */ MSCRIPT_BRANCH_ON_CALLBACK_OPTIONAL(0x0),
-    /* 0x0012 0x01 */ MSCRIPT_FOCUS_TO_SELF(),
-    /* 0x0013 0x03 */ MSCRIPT_BEGIN_TEXT(0x27A7),
-    /* 0x0016 0x01 */ MSCRIPT_AWAIT_TEXT(),
-    /* 0x0017 0x03 */ MSCRIPT_BRANCH_ON_CALLBACK_OPTIONAL(0x0),
-    /* 0x001A 0x01 */ MSCRIPT_FOCUS_TO_CHILD(),
-    /* 0x001B 0x03 */ MSCRIPT_BEGIN_TEXT(0x27A8),
-    /* 0x001E 0x01 */ MSCRIPT_AWAIT_TEXT(),
-    /* 0x001F 0x03 */ MSCRIPT_BRANCH_ON_CALLBACK_OPTIONAL(0x0),
-    /* 0x0022 0x01 */ MSCRIPT_FOCUS_TO_SELF(),
-    /* 0x0023 0x03 */ MSCRIPT_BEGIN_TEXT(0x27A9),
-    /* 0x0026 0x01 */ MSCRIPT_AWAIT_TEXT(),
-    /* 0x0027 0x03 */ MSCRIPT_BRANCH_ON_CALLBACK_OPTIONAL(0x0),
-    /* 0x002A 0x01 */ MSCRIPT_FOCUS_TO_CHILD(),
-    /* 0x002B 0x03 */ MSCRIPT_BEGIN_TEXT(0x27AA),
-    /* 0x002E 0x01 */ MSCRIPT_AWAIT_TEXT(),
-    /* 0x002F 0x03 */ MSCRIPT_BRANCH_ON_CALLBACK_OPTIONAL(0x0),
-    /* 0x0032 0x01 */ MSCRIPT_FOCUS_TO_SELF(),
-    /* 0x0033 0x03 */ MSCRIPT_BEGIN_TEXT(0x27AB),
-    /* 0x0036 0x01 */ MSCRIPT_AWAIT_TEXT(),
-    /* 0x0037 0x03 */ MSCRIPT_BRANCH_ON_CALLBACK_OPTIONAL(0x0),
-    /* 0x003A 0x01 */ MSCRIPT_FOCUS_TO_CHILD(),
-    /* 0x003B 0x03 */ MSCRIPT_BEGIN_TEXT(0x27AC),
-    /* 0x003E 0x01 */ MSCRIPT_AWAIT_TEXT(),
-    /* 0x003F 0x03 */ MSCRIPT_BRANCH_ON_CALLBACK_OPTIONAL(0x0),
-    /* 0x0042 0x01 */ MSCRIPT_FOCUS_TO_SELF(),
-    /* 0x0043 0x03 */ MSCRIPT_BEGIN_TEXT(0x27AD),
-    /* 0x0046 0x03 */ MSCRIPT_NOTEBOOK_EVENT(BOMBERS_NOTEBOOK_EVENT_MET_POSTMAN),
-    /* 0x0049 0x03 */ MSCRIPT_NOTEBOOK_EVENT(BOMBERS_NOTEBOOK_EVENT_MET_MADAME_AROMA),
-    /* 0x004C 0x01 */ MSCRIPT_AWAIT_TEXT(),
-    /* 0x004D 0x03 */ MSCRIPT_WEEK_EVENT_REG_SET(0x59, 0x08),
-    /* 0x0050 0x03 */ MSCRIPT_BRANCH_ON_CALLBACK_OPTIONAL(0x0),
-    /* 0x0053 0x01 */ MSCRIPT_DONE(),
+    /* 0x0000 0x03 */ MSCRIPT_CMD_CHECK_CALLBACK(0x0),
+    /* 0x0003 0x03 */ MSCRIPT_CMD_BEGIN_TEXT(0x27A5),
+    /* 0x0006 0x01 */ MSCRIPT_CMD_AWAIT_TEXT(),
+    /* 0x0007 0x03 */ MSCRIPT_CMD_CHECK_CALLBACK(0x0),
+    /* 0x000A 0x01 */ MSCRIPT_CMD_FOCUS_TO_CHILD(),
+    /* 0x000B 0x03 */ MSCRIPT_CMD_BEGIN_TEXT(0x27A6),
+    /* 0x000E 0x01 */ MSCRIPT_CMD_AWAIT_TEXT(),
+    /* 0x000F 0x03 */ MSCRIPT_CMD_CHECK_CALLBACK(0x0),
+    /* 0x0012 0x01 */ MSCRIPT_CMD_FOCUS_TO_SELF(),
+    /* 0x0013 0x03 */ MSCRIPT_CMD_BEGIN_TEXT(0x27A7),
+    /* 0x0016 0x01 */ MSCRIPT_CMD_AWAIT_TEXT(),
+    /* 0x0017 0x03 */ MSCRIPT_CMD_CHECK_CALLBACK(0x0),
+    /* 0x001A 0x01 */ MSCRIPT_CMD_FOCUS_TO_CHILD(),
+    /* 0x001B 0x03 */ MSCRIPT_CMD_BEGIN_TEXT(0x27A8),
+    /* 0x001E 0x01 */ MSCRIPT_CMD_AWAIT_TEXT(),
+    /* 0x001F 0x03 */ MSCRIPT_CMD_CHECK_CALLBACK(0x0),
+    /* 0x0022 0x01 */ MSCRIPT_CMD_FOCUS_TO_SELF(),
+    /* 0x0023 0x03 */ MSCRIPT_CMD_BEGIN_TEXT(0x27A9),
+    /* 0x0026 0x01 */ MSCRIPT_CMD_AWAIT_TEXT(),
+    /* 0x0027 0x03 */ MSCRIPT_CMD_CHECK_CALLBACK(0x0),
+    /* 0x002A 0x01 */ MSCRIPT_CMD_FOCUS_TO_CHILD(),
+    /* 0x002B 0x03 */ MSCRIPT_CMD_BEGIN_TEXT(0x27AA),
+    /* 0x002E 0x01 */ MSCRIPT_CMD_AWAIT_TEXT(),
+    /* 0x002F 0x03 */ MSCRIPT_CMD_CHECK_CALLBACK(0x0),
+    /* 0x0032 0x01 */ MSCRIPT_CMD_FOCUS_TO_SELF(),
+    /* 0x0033 0x03 */ MSCRIPT_CMD_BEGIN_TEXT(0x27AB),
+    /* 0x0036 0x01 */ MSCRIPT_CMD_AWAIT_TEXT(),
+    /* 0x0037 0x03 */ MSCRIPT_CMD_CHECK_CALLBACK(0x0),
+    /* 0x003A 0x01 */ MSCRIPT_CMD_FOCUS_TO_CHILD(),
+    /* 0x003B 0x03 */ MSCRIPT_CMD_BEGIN_TEXT(0x27AC),
+    /* 0x003E 0x01 */ MSCRIPT_CMD_AWAIT_TEXT(),
+    /* 0x003F 0x03 */ MSCRIPT_CMD_CHECK_CALLBACK(0x0),
+    /* 0x0042 0x01 */ MSCRIPT_CMD_FOCUS_TO_SELF(),
+    /* 0x0043 0x03 */ MSCRIPT_CMD_BEGIN_TEXT(0x27AD),
+    /* 0x0046 0x03 */ MSCRIPT_CMD_NOTEBOOK_EVENT(BOMBERS_NOTEBOOK_EVENT_MET_POSTMAN),
+    /* 0x0049 0x03 */ MSCRIPT_CMD_NOTEBOOK_EVENT(BOMBERS_NOTEBOOK_EVENT_MET_MADAME_AROMA),
+    /* 0x004C 0x01 */ MSCRIPT_CMD_AWAIT_TEXT(),
+    /* 0x004D 0x03 */ MSCRIPT_CMD_SET_WEEK_EVENT_REG(WEEKEVENTREG_89_08),
+    /* 0x0050 0x03 */ MSCRIPT_CMD_CHECK_CALLBACK(0x0),
+    /* 0x0053 0x01 */ MSCRIPT_CMD_DONE(),
 };
 
 static MsgScript D_80AFB710[] = {
-    /* 0x0000 0x05 */ MSCRIPT_BRANCH_ON_ITEM(ITEM_MASK_POSTMAN, 0x0028 - 0x0005),
-    /* 0x0005 0x03 */ MSCRIPT_BEGIN_TEXT(0x2780),
-    /* 0x0008 0x01 */ MSCRIPT_AWAIT_TEXT(),
-    /* 0x0009 0x03 */ MSCRIPT_CONTINUE_TEXT(0x27AE),
-    /* 0x000C 0x01 */ MSCRIPT_AWAIT_TEXT(),
-    /* 0x000D 0x01 */ MSCRIPT_CLOSE_TEXT(),
-    /* 0x000E 0x05 */ MSCRIPT_OFFER_ITEM(GI_MASK_POSTMAN, 0x0),
-    /* 0x0013 0x03 */ MSCRIPT_COLLECT_SET(0x0084),
-    /* 0x0016 0x03 */ MSCRIPT_WEEK_EVENT_REG_SET(0x5A, 0x04),
-    /* 0x0019 0x03 */ MSCRIPT_JUMP_3(0x0),
-    /* 0x001C 0x01 */ MSCRIPT_CMD46(),
-    /* 0x001D 0x03 */ MSCRIPT_NOTEBOOK_EVENT(BOMBERS_NOTEBOOK_EVENT_MET_POSTMAN),
-    /* 0x0020 0x03 */ MSCRIPT_NOTEBOOK_EVENT(BOMBERS_NOTEBOOK_EVENT_RECEIVED_POSTMANS_HAT),
-    /* 0x0023 0x01 */ MSCRIPT_AWAIT_TEXT(),
-    /* 0x0024 0x03 */ MSCRIPT_WEEK_EVENT_REG_SET(0x5A, 0x01),
-    /* 0x0027 0x01 */ MSCRIPT_DONE(),
+    /* 0x0000 0x05 */ MSCRIPT_CMD_CHECK_ITEM(ITEM_MASK_POSTMAN, 0x0028 - 0x0005),
+    /* 0x0005 0x03 */ MSCRIPT_CMD_BEGIN_TEXT(0x2780),
+    /* 0x0008 0x01 */ MSCRIPT_CMD_AWAIT_TEXT(),
+    /* 0x0009 0x03 */ MSCRIPT_CMD_CONTINUE_TEXT(0x27AE),
+    /* 0x000C 0x01 */ MSCRIPT_CMD_AWAIT_TEXT(),
+    /* 0x000D 0x01 */ MSCRIPT_CMD_CLOSE_TEXT(),
+    /* 0x000E 0x05 */ MSCRIPT_CMD_OFFER_ITEM(GI_MASK_POSTMAN, 0x0),
+    /* 0x0013 0x03 */ MSCRIPT_CMD_SET_COLLECTIBLE(0x0084),
+    /* 0x0016 0x03 */ MSCRIPT_CMD_SET_WEEK_EVENT_REG(WEEKEVENTREG_90_04),
+    /* 0x0019 0x03 */ MSCRIPT_CMD_JUMP_3(0x0),
+    /* 0x001C 0x01 */ MSCRIPT_CMD_AWAIT_TEXT_DONE(),
+    /* 0x001D 0x03 */ MSCRIPT_CMD_NOTEBOOK_EVENT(BOMBERS_NOTEBOOK_EVENT_MET_POSTMAN),
+    /* 0x0020 0x03 */ MSCRIPT_CMD_NOTEBOOK_EVENT(BOMBERS_NOTEBOOK_EVENT_RECEIVED_POSTMANS_HAT),
+    /* 0x0023 0x01 */ MSCRIPT_CMD_AWAIT_TEXT(),
+    /* 0x0024 0x03 */ MSCRIPT_CMD_SET_WEEK_EVENT_REG(WEEKEVENTREG_90_01),
+    /* 0x0027 0x01 */ MSCRIPT_CMD_DONE(),
 
-    /* 0x0028 0x03 */ MSCRIPT_BEGIN_TEXT(0x2780),
-    /* 0x002B 0x03 */ MSCRIPT_NOTEBOOK_EVENT(BOMBERS_NOTEBOOK_EVENT_MET_POSTMAN),
-    /* 0x002E 0x01 */ MSCRIPT_AWAIT_TEXT(),
-    /* 0x002F 0x03 */ MSCRIPT_WEEK_EVENT_REG_SET(0x5A, 0x01),
-    /* 0x0032 0x01 */ MSCRIPT_CLOSE_TEXT(),
-    /* 0x0033 0x01 */ MSCRIPT_DONE(),
+    /* 0x0028 0x03 */ MSCRIPT_CMD_BEGIN_TEXT(0x2780),
+    /* 0x002B 0x03 */ MSCRIPT_CMD_NOTEBOOK_EVENT(BOMBERS_NOTEBOOK_EVENT_MET_POSTMAN),
+    /* 0x002E 0x01 */ MSCRIPT_CMD_AWAIT_TEXT(),
+    /* 0x002F 0x03 */ MSCRIPT_CMD_SET_WEEK_EVENT_REG(WEEKEVENTREG_90_01),
+    /* 0x0032 0x01 */ MSCRIPT_CMD_CLOSE_TEXT(),
+    /* 0x0033 0x01 */ MSCRIPT_CMD_DONE(),
 };
 
 static MsgScript D_80AFB744[] = {
-    /* 0x0000 0x03 */ MSCRIPT_BEGIN_TEXT(0x2369),
-    /* 0x0003 0x03 */ MSCRIPT_NOTEBOOK_EVENT(BOMBERS_NOTEBOOK_EVENT_MET_POSTMAN),
-    /* 0x0006 0x01 */ MSCRIPT_AWAIT_TEXT(),
-    /* 0x0007 0x01 */ MSCRIPT_DONE(),
+    /* 0x0000 0x03 */ MSCRIPT_CMD_BEGIN_TEXT(0x2369),
+    /* 0x0003 0x03 */ MSCRIPT_CMD_NOTEBOOK_EVENT(BOMBERS_NOTEBOOK_EVENT_MET_POSTMAN),
+    /* 0x0006 0x01 */ MSCRIPT_CMD_AWAIT_TEXT(),
+    /* 0x0007 0x01 */ MSCRIPT_CMD_DONE(),
 };
 
 static MsgScript D_80AFB74C[] = {
-    /* 0x0000 0x03 */ MSCRIPT_CMD44(0xFFFF),
-    /* 0x0003 0x03 */ MSCRIPT_BRANCH_ON_CALLBACK_OPTIONAL(0x0),
-    /* 0x0006 0x03 */ MSCRIPT_BEGIN_TEXT(0x277E),
-    /* 0x0009 0x03 */ MSCRIPT_NOTEBOOK_EVENT(BOMBERS_NOTEBOOK_EVENT_MET_POSTMAN),
-    /* 0x000C 0x01 */ MSCRIPT_AWAIT_TEXT(),
-    /* 0x000D 0x03 */ MSCRIPT_WEEK_EVENT_REG_SET(0x52, 0x80),
-    /* 0x0010 0x03 */ MSCRIPT_WEEK_EVENT_REG_SET(0x56, 0x01),
-    /* 0x0013 0x03 */ MSCRIPT_DEL_ITEM(ITEM_LETTER_MAMA),
-    /* 0x0016 0x01 */ MSCRIPT_CLOSE_TEXT(),
-    /* 0x0017 0x01 */ MSCRIPT_DONE(),
+    /* 0x0000 0x03 */ MSCRIPT_CMD_PLAYER_TALK(0xFFFF),
+    /* 0x0003 0x03 */ MSCRIPT_CMD_CHECK_CALLBACK(0x0),
+    /* 0x0006 0x03 */ MSCRIPT_CMD_BEGIN_TEXT(0x277E),
+    /* 0x0009 0x03 */ MSCRIPT_CMD_NOTEBOOK_EVENT(BOMBERS_NOTEBOOK_EVENT_MET_POSTMAN),
+    /* 0x000C 0x01 */ MSCRIPT_CMD_AWAIT_TEXT(),
+    /* 0x000D 0x03 */ MSCRIPT_CMD_SET_WEEK_EVENT_REG(WEEKEVENTREG_82_80),
+    /* 0x0010 0x03 */ MSCRIPT_CMD_SET_WEEK_EVENT_REG(WEEKEVENTREG_86_01),
+    /* 0x0013 0x03 */ MSCRIPT_CMD_DELETE_ITEM(ITEM_LETTER_MAMA),
+    /* 0x0016 0x01 */ MSCRIPT_CMD_CLOSE_TEXT(),
+    /* 0x0017 0x01 */ MSCRIPT_CMD_DONE(),
 };
 
 static MsgScript D_80AFB764[] = {
-    /* 0x0000 0x03 */ MSCRIPT_CMD44(0x277D),
-    /* 0x0003 0x03 */ MSCRIPT_NOTEBOOK_EVENT(BOMBERS_NOTEBOOK_EVENT_MET_POSTMAN),
-    /* 0x0006 0x01 */ MSCRIPT_AWAIT_TEXT(),
-    /* 0x0007 0x03 */ MSCRIPT_WEEK_EVENT_REG_SET(0x52, 0x80),
-    /* 0x000A 0x01 */ MSCRIPT_CLOSE_TEXT(),
-    /* 0x000B 0x01 */ MSCRIPT_DONE(),
+    /* 0x0000 0x03 */ MSCRIPT_CMD_PLAYER_TALK(0x277D),
+    /* 0x0003 0x03 */ MSCRIPT_CMD_NOTEBOOK_EVENT(BOMBERS_NOTEBOOK_EVENT_MET_POSTMAN),
+    /* 0x0006 0x01 */ MSCRIPT_CMD_AWAIT_TEXT(),
+    /* 0x0007 0x03 */ MSCRIPT_CMD_SET_WEEK_EVENT_REG(WEEKEVENTREG_82_80),
+    /* 0x000A 0x01 */ MSCRIPT_CMD_CLOSE_TEXT(),
+    /* 0x000B 0x01 */ MSCRIPT_CMD_DONE(),
 };
 
-ActorInit En_Pm_InitVars = {
+ActorProfile En_Pm_Profile = {
     /**/ ACTOR_EN_PM,
     /**/ ACTORCAT_NPC,
     /**/ FLAGS,
@@ -665,7 +665,7 @@ ActorInit En_Pm_InitVars = {
 
 static ColliderCylinderInit sCylinderInit = {
     {
-        COLTYPE_HIT1,
+        COL_MATERIAL_HIT1,
         AT_NONE,
         AC_NONE,
         OC1_ON | OC1_TYPE_ALL,
@@ -673,11 +673,11 @@ static ColliderCylinderInit sCylinderInit = {
         COLSHAPE_CYLINDER,
     },
     {
-        ELEMTYPE_UNK1,
+        ELEM_MATERIAL_UNK1,
         { 0x00000000, 0x00, 0x00 },
         { 0x00000000, 0x00, 0x00 },
-        TOUCH_NONE | TOUCH_SFX_NORMAL,
-        BUMP_NONE,
+        ATELEM_NONE | ATELEM_SFX_NORMAL,
+        ACELEM_NONE,
         OCELEM_ON,
     },
     { 14, 62, 0, { 0, 0, 0 } },
@@ -685,7 +685,7 @@ static ColliderCylinderInit sCylinderInit = {
 
 static ColliderSphereInit sSphereInit = {
     {
-        COLTYPE_NONE,
+        COL_MATERIAL_NONE,
         AT_NONE,
         AC_NONE,
         OC1_ON | OC1_TYPE_ALL,
@@ -693,11 +693,11 @@ static ColliderSphereInit sSphereInit = {
         COLSHAPE_SPHERE,
     },
     {
-        ELEMTYPE_UNK0,
+        ELEM_MATERIAL_UNK0,
         { 0x00000000, 0x00, 0x00 },
         { 0x00000000, 0x00, 0x00 },
-        TOUCH_NONE | TOUCH_SFX_NORMAL,
-        BUMP_NONE,
+        ATELEM_NONE | ATELEM_SFX_NORMAL,
+        ACELEM_NONE,
         OCELEM_ON,
     },
     { 0, { { 0, 0, 0 }, 26 }, 100 },
@@ -705,21 +705,40 @@ static ColliderSphereInit sSphereInit = {
 
 static CollisionCheckInfoInit2 sColChkInfoInit = { 0, 0, 0, 0, MASS_IMMOVABLE };
 
-static AnimationInfoS sAnimationInfo[] = {
-    { &object_mm_Anim_002238, 1.0f, 0, -1, ANIMMODE_LOOP, 0 },
-    { &object_mm_Anim_002238, 1.0f, 0, -1, ANIMMODE_LOOP, -4 },
-    { &object_mm_Anim_00A4E0, 1.0f, 0, -1, ANIMMODE_ONCE, 0 },
-    { &object_mm_Anim_00B09C, 1.0f, 0, -1, ANIMMODE_LOOP, 0 },
-    { &object_mm_Anim_00B09C, 1.0f, 0, -1, ANIMMODE_LOOP, -4 },
-    { &object_mm_Anim_00BA78, 1.0f, 0, -1, ANIMMODE_ONCE, 0 },
-    { &object_mm_Anim_00C32C, 1.0f, 0, -1, ANIMMODE_LOOP, -4 },
-    { &object_mm_Anim_0099B4, 1.0f, 0, -1, ANIMMODE_LOOP, 0 },
-    { &object_mm_Anim_000FC4, 1.0f, 0, -1, ANIMMODE_LOOP, 0 },
-    { &object_mm_Anim_00A8D8, 1.0f, 0, -1, ANIMMODE_LOOP, 0 },
-    { &object_mm_Anim_00099C, 1.0f, 0, -1, ANIMMODE_LOOP, 0 },
-    { &object_mm_Anim_001F84, 1.0f, 0, -1, ANIMMODE_ONCE, 0 },
-    { &object_mm_Anim_000468, 1.0f, 0, -1, ANIMMODE_LOOP, 0 },
-    { &object_mm_Anim_00C640, 1.0f, 0, -1, ANIMMODE_LOOP, 0 },
+typedef enum EnPmAnimation {
+    /* -1 */ ENPM_ANIM_NONE = -1,
+    /*  0 */ ENPM_ANIM_0,
+    /*  1 */ ENPM_ANIM_1,
+    /*  2 */ ENPM_ANIM_2,
+    /*  3 */ ENPM_ANIM_3,
+    /*  4 */ ENPM_ANIM_4,
+    /*  5 */ ENPM_ANIM_5,
+    /*  6 */ ENPM_ANIM_6,
+    /*  7 */ ENPM_ANIM_7,
+    /*  8 */ ENPM_ANIM_8,
+    /*  9 */ ENPM_ANIM_9,
+    /* 10 */ ENPM_ANIM_10,
+    /* 11 */ ENPM_ANIM_11,
+    /* 12 */ ENPM_ANIM_12,
+    /* 13 */ ENPM_ANIM_13,
+    /* 14 */ ENPM_ANIM_MAX
+} EnPmAnimation;
+
+static AnimationInfoS sAnimationInfo[ENPM_ANIM_MAX] = {
+    { &object_mm_Anim_002238, 1.0f, 0, -1, ANIMMODE_LOOP, 0 },  // ENPM_ANIM_0
+    { &object_mm_Anim_002238, 1.0f, 0, -1, ANIMMODE_LOOP, -4 }, // ENPM_ANIM_1
+    { &object_mm_Anim_00A4E0, 1.0f, 0, -1, ANIMMODE_ONCE, 0 },  // ENPM_ANIM_2
+    { &object_mm_Anim_00B09C, 1.0f, 0, -1, ANIMMODE_LOOP, 0 },  // ENPM_ANIM_3
+    { &object_mm_Anim_00B09C, 1.0f, 0, -1, ANIMMODE_LOOP, -4 }, // ENPM_ANIM_4
+    { &object_mm_Anim_00BA78, 1.0f, 0, -1, ANIMMODE_ONCE, 0 },  // ENPM_ANIM_5
+    { &object_mm_Anim_00C32C, 1.0f, 0, -1, ANIMMODE_LOOP, -4 }, // ENPM_ANIM_6
+    { &object_mm_Anim_0099B4, 1.0f, 0, -1, ANIMMODE_LOOP, 0 },  // ENPM_ANIM_7
+    { &object_mm_Anim_000FC4, 1.0f, 0, -1, ANIMMODE_LOOP, 0 },  // ENPM_ANIM_8
+    { &object_mm_Anim_00A8D8, 1.0f, 0, -1, ANIMMODE_LOOP, 0 },  // ENPM_ANIM_9
+    { &object_mm_Anim_00099C, 1.0f, 0, -1, ANIMMODE_LOOP, 0 },  // ENPM_ANIM_10
+    { &object_mm_Anim_001F84, 1.0f, 0, -1, ANIMMODE_ONCE, 0 },  // ENPM_ANIM_11
+    { &object_mm_Anim_000468, 1.0f, 0, -1, ANIMMODE_LOOP, 0 },  // ENPM_ANIM_12
+    { &object_mm_Anim_00C640, 1.0f, 0, -1, ANIMMODE_LOOP, 0 },  // ENPM_ANIM_13
 };
 
 s32 func_80AF7B40(void) {
@@ -746,14 +765,14 @@ s32 func_80AF7BAC(EnPm* this) {
     switch (this->unk_38C) {
         case 0:
             if (CHECK_WEEKEVENTREG(WEEKEVENTREG_86_01)) {
-                D_801F4E78 = gSaveContext.save.time;
+                D_801F4E78 = CURRENT_TIME;
                 this->unk_38C++;
             }
             break;
 
         case 1:
             if (CHECK_WEEKEVENTREG(WEEKEVENTREG_89_08)) {
-                D_801F4E78 = gSaveContext.save.time;
+                D_801F4E78 = CURRENT_TIME;
                 this->unk_38C++;
             }
             break;
@@ -767,7 +786,7 @@ s32 func_80AF7BAC(EnPm* this) {
 
         case 3:
             if (CHECK_WEEKEVENTREG(WEEKEVENTREG_90_01)) {
-                D_801F4E78 = gSaveContext.save.time;
+                D_801F4E78 = CURRENT_TIME;
                 this->unk_38C++;
             }
             break;
@@ -776,139 +795,133 @@ s32 func_80AF7BAC(EnPm* this) {
     return true;
 }
 
-Actor* func_80AF7CB0(EnPm* this, PlayState* play, u8 actorCat, s16 actorId) {
-    Actor* phi_s0 = NULL;
-    Actor* actor;
+Actor* EnPm_FindActor(EnPm* this, PlayState* play, u8 actorCategory, s16 actorId) {
+    Actor* actorIter = NULL;
 
     while (true) {
-        actor = SubS_FindActor(play, phi_s0, actorCat, actorId);
-        phi_s0 = actor;
+        actorIter = SubS_FindActor(play, actorIter, actorCategory, actorId);
 
-        if (actor == NULL) {
+        if (actorIter == NULL) {
             break;
         }
 
-        if (((EnPm*)phi_s0 != this) && (actor->update != NULL)) {
+        if ((this != (EnPm*)actorIter) && (actorIter->update != NULL)) {
             break;
         }
 
-        actor = actor->next;
-        if (actor == NULL) {
-            phi_s0 = NULL;
+        if (actorIter->next == NULL) {
+            actorIter = NULL;
             break;
         }
 
-        phi_s0 = actor;
+        actorIter = actorIter->next;
     }
 
-    return phi_s0;
+    return actorIter;
 }
 
-EnDoor* func_80AF7D60(PlayState* play, s32 arg1) {
-    s32 phi_a1;
+EnDoor* EnPm_FindScheduleDoor(PlayState* play, s32 scheduleOutputResult) {
+    EnDoorScheduleType schType;
 
-    switch (arg1) {
+    switch (scheduleOutputResult) {
         case 1:
         case 2:
         case 32:
         case 33:
-            phi_a1 = 1;
+            schType = ENDOOR_SCH_TYPE_POST_OFFICE;
             break;
 
         case 34:
         case 35:
         case 36:
         case 37:
-            phi_a1 = 10;
+            schType = ENDOOR_SCH_TYPE_MILK_BAR;
             break;
 
         case 10:
         case 11:
         case 12:
         case 13:
-            phi_a1 = 11;
+            schType = ENDOOR_SCH_TYPE_INN_MAIN_ENTRANCE;
             break;
 
         default:
             return NULL;
     }
 
-    return SubS_FindDoor(play, phi_a1);
+    return SubS_FindScheduleDoor(play, schType);
 }
 
 Actor* func_80AF7DC4(EnPm* this, PlayState* play, s32 arg2) {
-    Actor* phi_s0 = NULL;
-    Actor* actor;
+    Actor* actorIter = NULL;
 
     while (true) {
-        actor = SubS_FindActor(play, phi_s0, ACTORCAT_PROP, ACTOR_EN_PST);
-        phi_s0 = actor;
+        actorIter = SubS_FindActor(play, actorIter, ACTORCAT_PROP, ACTOR_EN_PST);
 
-        if (actor == NULL) {
+        if (actorIter == NULL) {
             break;
         }
 
-        if (((EnPm*)actor != this) && (actor->update != NULL) && (actor->params == (s16)arg2)) {
+        if ((this != (EnPm*)actorIter) && (actorIter->update != NULL) && (actorIter->params == (s16)arg2)) {
             break;
         }
 
-        actor = actor->next;
-        if (actor == NULL) {
-            phi_s0 = NULL;
+        if (actorIter->next == NULL) {
+            actorIter = NULL;
             break;
         }
 
-        phi_s0 = actor;
+        actorIter = actorIter->next;
     }
 
-    return phi_s0;
+    return actorIter;
 }
 
-void func_80AF7E6C(EnPm* this) {
-    this->skelAnime.playSpeed = this->unk_35C;
+void EnPm_UpdateSkelAnime(EnPm* this) {
+    this->skelAnime.playSpeed = this->animPlaySpeed;
     SkelAnime_Update(&this->skelAnime);
 }
 
-s32 func_80AF7E98(EnPm* this, s32 arg1) {
-    s32 phi_v1 = false;
-    s32 ret = false;
+s32 EnPm_ChangeAnim(EnPm* this, s32 animIndex) {
+    s32 changeAnim = false;
+    s32 didAnimChange = false;
 
-    switch (arg1) {
-        case 0:
-        case 1:
-            if ((this->unk_384 != 0) && (this->unk_384 != 1)) {
-                phi_v1 = true;
+    switch (animIndex) {
+        case ENPM_ANIM_0:
+        case ENPM_ANIM_1:
+            if ((this->animIndex != ENPM_ANIM_0) && (this->animIndex != ENPM_ANIM_1)) {
+                changeAnim = true;
             }
             break;
 
-        case 3:
-        case 4:
-            if ((this->unk_384 != 3) && (this->unk_384 != 4)) {
-                phi_v1 = true;
+        case ENPM_ANIM_3:
+        case ENPM_ANIM_4:
+            if ((this->animIndex != ENPM_ANIM_3) && (this->animIndex != ENPM_ANIM_4)) {
+                changeAnim = true;
             }
             break;
 
         default:
-            if (arg1 != this->unk_384) {
-                phi_v1 = true;
+            if (this->animIndex != animIndex) {
+                changeAnim = true;
             }
             break;
     }
 
-    if (phi_v1) {
-        this->unk_384 = arg1;
-        ret = SubS_ChangeAnimationByInfoS(&this->skelAnime, sAnimationInfo, arg1);
-        this->unk_35C = this->skelAnime.playSpeed;
+    if (changeAnim) {
+        this->animIndex = animIndex;
+        didAnimChange = SubS_ChangeAnimationByInfoS(&this->skelAnime, sAnimationInfo, animIndex);
+        this->animPlaySpeed = this->skelAnime.playSpeed;
     }
 
-    return ret;
+    return didAnimChange;
 }
 
 void func_80AF7F68(EnPm* this, PlayState* play) {
     f32 temp;
     s32 pad;
 
-    switch (this->unk_258) {
+    switch (this->scheduleResult) {
         case 9:
         case 20:
         case 21:
@@ -931,17 +944,17 @@ void func_80AF7F68(EnPm* this, PlayState* play) {
 Actor* func_80AF8040(EnPm* this, PlayState* play) {
     Actor* actor;
 
-    switch (this->unk_258) {
+    switch (this->scheduleResult) {
         case 16:
-            actor = func_80AF7CB0(this, play, ACTORCAT_NPC, ACTOR_EN_AN);
+            actor = EnPm_FindActor(this, play, ACTORCAT_NPC, ACTOR_EN_AN);
             break;
 
         case 17:
-            actor = func_80AF7CB0(this, play, ACTORCAT_NPC, ACTOR_EN_TEST3);
+            actor = EnPm_FindActor(this, play, ACTORCAT_NPC, ACTOR_EN_TEST3);
             break;
 
         case 28:
-            actor = func_80AF7CB0(this, play, ACTORCAT_NPC, ACTOR_EN_AL);
+            actor = EnPm_FindActor(this, play, ACTORCAT_NPC, ACTOR_EN_AL);
             break;
 
         case 3:
@@ -949,7 +962,7 @@ Actor* func_80AF8040(EnPm* this, PlayState* play) {
         case 5:
         case 6:
         case 7:
-            actor = func_80AF7DC4(this, play, this->unk_258 - 3);
+            actor = func_80AF7DC4(this, play, this->scheduleResult - 3);
             break;
 
         case 19:
@@ -998,7 +1011,7 @@ s16 func_80AF8170(EnPm* this, s32 numCutscenes) {
 }
 
 s32 func_80AF81E8(Actor* thisx, PlayState* play) {
-    EnPm* this = THIS;
+    EnPm* this = (EnPm*)thisx;
     s16 csId = func_80AF8170(this, 0);
     s32 ret = false;
 
@@ -1041,7 +1054,7 @@ s32 func_80AF81E8(Actor* thisx, PlayState* play) {
 }
 
 s32 func_80AF8348(Actor* thisx, PlayState* play) {
-    EnPm* this = THIS;
+    EnPm* this = (EnPm*)thisx;
     s16 csId = func_80AF8170(this, 0);
     s32 ret = false;
 
@@ -1083,12 +1096,12 @@ s32 func_80AF8348(Actor* thisx, PlayState* play) {
 }
 
 s32 func_80AF8478(Actor* thisx, PlayState* play) {
-    EnPm* this = THIS;
+    EnPm* this = (EnPm*)thisx;
     s32 ret = false;
 
     switch (this->unk_378) {
         case 0:
-            func_80AF7E98(this, 2);
+            EnPm_ChangeAnim(this, ENPM_ANIM_2);
             this->unk_356 &= ~0x20;
             this->unk_356 |= 0x200;
             this->unk_378++;
@@ -1096,7 +1109,7 @@ s32 func_80AF8478(Actor* thisx, PlayState* play) {
 
         case 1:
             if (Animation_OnFrame(&this->skelAnime, this->skelAnime.endFrame)) {
-                func_80AF7E98(this, 4);
+                EnPm_ChangeAnim(this, ENPM_ANIM_4);
                 this->unk_356 &= ~0x200;
                 this->unk_356 |= 0x20;
                 this->unk_378++;
@@ -1107,17 +1120,17 @@ s32 func_80AF8478(Actor* thisx, PlayState* play) {
     return ret;
 }
 
-MsgScript* func_80AF8540(EnPm* this, PlayState* play) {
-    switch (this->unk_258) {
+MsgScript* EnPm_GetMsgScript(EnPm* this, PlayState* play) {
+    switch (this->scheduleResult) {
         case 28:
-            this->unk_37C = func_80AF8348;
+            this->msgScriptCallback = func_80AF8348;
             return D_80AFB6BC;
 
         case 29:
             return D_80AFB710;
 
         case 16:
-            this->unk_37C = func_80AF81E8;
+            this->msgScriptCallback = func_80AF81E8;
             return D_80AFB5A0;
 
         case 17:
@@ -1125,12 +1138,12 @@ MsgScript* func_80AF8540(EnPm* this, PlayState* play) {
 
         case 24:
             if (this->unk_356 & 0x2000) {
-                this->unk_37C = func_80AF8478;
+                this->msgScriptCallback = func_80AF8478;
                 return D_80AFB74C;
             } else if (this->unk_356 & 0x4000) {
                 return D_80AFB764;
             } else {
-                this->unk_37C = func_80AF8478;
+                this->msgScriptCallback = func_80AF8478;
                 return D_80AFB658;
             }
             break;
@@ -1143,7 +1156,7 @@ MsgScript* func_80AF8540(EnPm* this, PlayState* play) {
                 return D_80AFB744;
             }
 
-            switch (this->unk_258) {
+            switch (this->scheduleResult) {
                 case 9:
                     return D_80AFB614;
 
@@ -1179,15 +1192,15 @@ s32 func_80AF86F0(EnPm* this, PlayState* play) {
     s32 ret = false;
 
     if (((this->unk_356 & SUBS_OFFER_MODE_MASK) != SUBS_OFFER_MODE_NONE) &&
-        Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+        Actor_TalkOfferAccepted(&this->actor, &play->state)) {
         SubS_SetOfferMode(&this->unk_356, SUBS_OFFER_MODE_NONE, SUBS_OFFER_MODE_MASK);
         this->unk_398 = 0;
         this->unk_378 = 0;
-        this->unk_37C = NULL;
+        this->msgScriptCallback = NULL;
         this->actor.child = this->unk_268;
-        this->unk_25C = func_80AF8540(this, play);
-        if ((this->unk_258 != 24) && (this->unk_258 != 9) && (this->unk_258 != 20) && (this->unk_258 != 21) &&
-            (this->unk_258 != 22)) {
+        this->msgScript = EnPm_GetMsgScript(this, play);
+        if ((this->scheduleResult != 24) && (this->scheduleResult != 9) && (this->scheduleResult != 20) &&
+            (this->scheduleResult != 21) && (this->scheduleResult != 22)) {
             this->unk_356 |= 0x20;
         }
         this->actionFunc = func_80AFA5FC;
@@ -1202,15 +1215,15 @@ s32 func_80AF87C4(EnPm* this, PlayState* play) {
     if ((play->csCtx.state != CS_STATE_IDLE) && (play->sceneId == SCENE_00KEIKOKU) && (gSaveContext.sceneLayer == 9) &&
         (play->curSpawn == 1)) {
         if (!this->unk_380) {
-            func_80AF7E98(this, 0);
-            this->unk_258 = 255;
+            EnPm_ChangeAnim(this, ENPM_ANIM_0);
+            this->scheduleResult = 255;
             this->unk_380 = true;
             this->actor.speed = 4.0f;
             this->actor.gravity = -1.0f;
         }
         ret = true;
     } else if (this->unk_380) {
-        this->unk_258 = 0;
+        this->scheduleResult = 0;
         this->unk_380 = false;
         this->actor.speed = 0.0f;
     }
@@ -1319,8 +1332,8 @@ void func_80AF8C68(EnPm* this, PlayState* play) {
     s32 talkState = Message_GetState(&play->msgCtx);
     u16 textId = play->msgCtx.currentTextId;
 
-    if ((player->talkActor == &this->actor) && ((textId < 0xFF) || (textId > 0x200)) && (talkState == TEXT_STATE_3) &&
-        (this->prevTalkState == TEXT_STATE_3)) {
+    if ((player->talkActor == &this->actor) && ((textId < 0xFF) || (textId > 0x200)) &&
+        (talkState == TEXT_STATE_FADING) && (this->prevTalkState == TEXT_STATE_FADING)) {
         if ((play->state.frames % 3) == 0) {
             if (this->unk_360 == 120.0f) {
                 this->unk_360 = 0.0f;
@@ -1337,13 +1350,16 @@ void func_80AF8C68(EnPm* this, PlayState* play) {
 }
 
 s32 func_80AF8D84(EnPm* this, PlayState* play) {
-    switch (this->unk_384) {
-        case 10:
-            func_80AF7E98(this, 9);
+    switch (this->animIndex) {
+        case ENPM_ANIM_10:
+            EnPm_ChangeAnim(this, ENPM_ANIM_9);
             break;
 
-        case 7:
-            func_80AF7E98(this, 0);
+        case ENPM_ANIM_7:
+            EnPm_ChangeAnim(this, ENPM_ANIM_0);
+            break;
+
+        default:
             break;
     }
     return true;
@@ -1354,14 +1370,14 @@ s32 func_80AF8DD4(EnPm* this, PlayState* play) {
     u16 textId = play->msgCtx.currentTextId;
     s32 pad;
 
-    if (player->stateFlags1 & (PLAYER_STATE1_40 | PLAYER_STATE1_400)) {
+    if (player->stateFlags1 & (PLAYER_STATE1_TALKING | PLAYER_STATE1_400)) {
         this->unk_356 |= 0x400;
         if (this->unk_358 != textId) {
-            if ((this->unk_384 == 0) || (this->unk_384 == 1)) {
-                func_80AF7E98(this, 7);
+            if ((this->animIndex == ENPM_ANIM_0) || (this->animIndex == ENPM_ANIM_1)) {
+                EnPm_ChangeAnim(this, ENPM_ANIM_7);
             }
             if ((textId == 0x277C) || (textId == 0x277D)) {
-                func_80AF7E98(this, 10);
+                EnPm_ChangeAnim(this, ENPM_ANIM_10);
             }
         }
         this->unk_358 = textId;
@@ -1380,7 +1396,7 @@ s32 func_80AF8DD4(EnPm* this, PlayState* play) {
     return 0;
 }
 
-s32 func_80AF8ED4(EnPm* this, PlayState* play, ScheduleOutput* scheduleOutput, u8 actorCat, s16 actorId) {
+s32 func_80AF8ED4(EnPm* this, PlayState* play, ScheduleOutput* scheduleOutput, u8 actorCategory, s16 actorId) {
     u8 pathIndex = ENPM_GET_PATH_INDEX(&this->actor);
     Vec3s* sp48;
     Vec3f sp3C;
@@ -1390,7 +1406,7 @@ s32 func_80AF8ED4(EnPm* this, PlayState* play, ScheduleOutput* scheduleOutput, u
     s32 ret = false;
 
     this->timePath = NULL;
-    sp2C = func_80AF7CB0(this, play, actorCat, actorId);
+    sp2C = EnPm_FindActor(this, play, actorCategory, actorId);
     if (D_80AFB430[scheduleOutput->result] >= 0) {
         this->timePath = SubS_GetAdditionalPath(play, pathIndex, D_80AFB430[scheduleOutput->result]);
     }
@@ -1411,7 +1427,7 @@ s32 func_80AF8ED4(EnPm* this, PlayState* play, ScheduleOutput* scheduleOutput, u
 }
 
 s32 func_80AF9008(EnPm* this, PlayState* play, ScheduleOutput* scheduleOutput) {
-    u16 sp56 = SCHEDULE_TIME_NOW;
+    u16 sp56 = SCRIPT_TIME_NOW;
     u8 pathIndex = ENPM_GET_PATH_INDEX(&this->actor);
     EnDoor* door;
     Vec3s* sp4C;
@@ -1421,7 +1437,7 @@ s32 func_80AF9008(EnPm* this, PlayState* play, ScheduleOutput* scheduleOutput) {
     s32 ret = false;
 
     this->timePath = NULL;
-    door = func_80AF7D60(play, scheduleOutput->result);
+    door = EnPm_FindScheduleDoor(play, scheduleOutput->result);
     if (D_80AFB430[scheduleOutput->result] >= 0) {
         this->timePath = SubS_GetAdditionalPath(play, pathIndex, D_80AFB430[scheduleOutput->result]);
     }
@@ -1444,13 +1460,13 @@ s32 func_80AF9008(EnPm* this, PlayState* play, ScheduleOutput* scheduleOutput) {
 
             this->unk_36C = scheduleOutput->time1 - scheduleOutput->time0;
             this->unk_36E = sp56 - scheduleOutput->time0;
-            this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
+            this->actor.flags &= ~ACTOR_FLAG_ATTENTION_ENABLED;
             if (CHECK_WEEKEVENTREG(WEEKEVENTREG_90_08)) {
                 this->unk_356 |= 0x800;
             }
             this->unk_356 |= 0x9000;
             this->unk_356 |= 0x200;
-            func_80AF7E98(this, 0);
+            EnPm_ChangeAnim(this, ENPM_ANIM_0);
             this->actor.gravity = 0.0f;
             ret = true;
         }
@@ -1459,7 +1475,7 @@ s32 func_80AF9008(EnPm* this, PlayState* play, ScheduleOutput* scheduleOutput) {
 }
 
 s32 func_80AF91E8(EnPm* this, PlayState* play, ScheduleOutput* scheduleOutput) {
-    u16 sp2E = SCHEDULE_TIME_NOW;
+    u16 sp2E = SCRIPT_TIME_NOW;
     u16 phi_v1;
     u8 pathIndex = ENPM_GET_PATH_INDEX(&this->actor);
     u16 tmp;
@@ -1477,7 +1493,7 @@ s32 func_80AF91E8(EnPm* this, PlayState* play, ScheduleOutput* scheduleOutput) {
     }
 
     if (this->timePath != 0) {
-        if ((this->unk_258 < 38) && (this->unk_258 != 0) && (this->timePathTimeSpeed >= 0)) {
+        if ((this->scheduleResult < 38) && (this->scheduleResult != 0) && (this->timePathTimeSpeed >= 0)) {
             phi_v1 = sp2E;
         } else {
             phi_v1 = scheduleOutput->time0;
@@ -1496,7 +1512,7 @@ s32 func_80AF91E8(EnPm* this, PlayState* play, ScheduleOutput* scheduleOutput) {
             (this->timePathElapsedTime / this->timePathWaypointTime) + (SUBS_TIME_PATHING_ORDER - 1);
         this->unk_356 &= ~8;
         this->unk_356 &= ~0x10;
-        if (this->unk_258 == 27) {
+        if (this->scheduleResult == 27) {
             Actor_PlaySfx(&this->actor, NA_SE_EV_ROOM_CARTAIN);
             Flags_UnsetSwitch(play, 0);
         }
@@ -1514,17 +1530,17 @@ s32 func_80AF91E8(EnPm* this, PlayState* play, ScheduleOutput* scheduleOutput) {
                 this->unk_356 |= 0x200;
 
             case 82:
-                func_80AF7E98(this, 0);
+                EnPm_ChangeAnim(this, ENPM_ANIM_0);
                 break;
 
             case 91:
                 this->unk_356 |= 0x9000;
-                func_80AF7E98(this, 12);
+                EnPm_ChangeAnim(this, ENPM_ANIM_12);
                 break;
 
             default:
                 SubS_SetOfferMode(&this->unk_356, SUBS_OFFER_MODE_ONSCREEN, SUBS_OFFER_MODE_MASK);
-                func_80AF7E98(this, 0);
+                EnPm_ChangeAnim(this, ENPM_ANIM_0);
                 if (CHECK_WEEKEVENTREG(WEEKEVENTREG_90_08)) {
                     this->unk_356 |= 0x800;
                 }
@@ -1566,7 +1582,7 @@ s32 func_80AF94AC(EnPm* this, PlayState* play, ScheduleOutput* scheduleOutput) {
             Flags_UnsetSwitch(play, 1);
             this->unk_394 = PLAYER_IA_NONE;
             this->unk_368 = 60.0f;
-            func_80AF7E98(this, 9);
+            EnPm_ChangeAnim(this, ENPM_ANIM_9);
         }
         ret = true;
     }
@@ -1621,7 +1637,7 @@ s32 func_80AF95E8(EnPm* this, PlayState* play, ScheduleOutput* scheduleOutput) {
                 Flags_SetSwitch(play, 0);
                 this->unk_36C = 20;
                 SubS_SetOfferMode(&this->unk_356, SUBS_OFFER_MODE_ONSCREEN, SUBS_OFFER_MODE_MASK);
-                func_80AF7E98(this, 3);
+                EnPm_ChangeAnim(this, ENPM_ANIM_3);
                 break;
 
             case 3:
@@ -1631,13 +1647,13 @@ s32 func_80AF95E8(EnPm* this, PlayState* play, ScheduleOutput* scheduleOutput) {
             case 7:
             case 19:
                 this->unk_356 |= 0x9000;
-                func_80AF7E98(this, 11);
+                EnPm_ChangeAnim(this, ENPM_ANIM_11);
                 break;
 
             case 18:
                 this->unk_356 |= 0x9000;
                 this->unk_356 |= 0x800;
-                func_80AF7E98(this, 5);
+                EnPm_ChangeAnim(this, ENPM_ANIM_5);
                 break;
 
             case 23:
@@ -1652,7 +1668,7 @@ s32 func_80AF95E8(EnPm* this, PlayState* play, ScheduleOutput* scheduleOutput) {
                 }
                 SubS_SetOfferMode(&this->unk_356, SUBS_OFFER_MODE_ONSCREEN, SUBS_OFFER_MODE_MASK);
                 this->unk_356 |= 0x9000;
-                func_80AF7E98(this, 3);
+                EnPm_ChangeAnim(this, ENPM_ANIM_3);
                 break;
         }
         ret = true;
@@ -1680,15 +1696,15 @@ s32 func_80AF992C(EnPm* this, PlayState* play, ScheduleOutput* scheduleOutput) {
     Math_Vec3s_Copy(&this->actor.world.rot, &D_80AFB8F8);
     Math_Vec3s_Copy(&this->actor.shape.rot, &this->actor.world.rot);
     SubS_SetOfferMode(&this->unk_356, SUBS_OFFER_MODE_ONSCREEN, SUBS_OFFER_MODE_MASK);
-    this->actor.targetMode = TARGET_MODE_6;
+    this->actor.attentionRangeType = ATTENTION_RANGE_6;
     this->actor.gravity = -1.0f;
     this->unk_368 = 80.0f;
     if (scheduleOutput->result == 14) {
         this->unk_356 &= ~0x200;
-        func_80AF7E98(this, 13);
+        EnPm_ChangeAnim(this, ENPM_ANIM_13);
     } else {
         this->unk_356 &= ~0x200;
-        func_80AF7E98(this, 8);
+        EnPm_ChangeAnim(this, ENPM_ANIM_8);
     }
     return true;
 }
@@ -1700,11 +1716,11 @@ s32 func_80AF9A0C(EnPm* this, PlayState* play, ScheduleOutput* scheduleOutput) {
         SubS_SetOfferMode(&this->unk_356, SUBS_OFFER_MODE_ONSCREEN, SUBS_OFFER_MODE_MASK);
         this->unk_356 |= 0x20;
         this->unk_356 |= 0x9000;
-        if (this->unk_258 != 0) {
+        if (this->scheduleResult != 0) {
             this->unk_356 |= 0x800;
-            func_80AF7E98(this, 5);
+            EnPm_ChangeAnim(this, ENPM_ANIM_5);
         } else {
-            func_80AF7E98(this, 3);
+            EnPm_ChangeAnim(this, ENPM_ANIM_3);
         }
         ret = true;
     }
@@ -1718,11 +1734,11 @@ s32 func_80AF9AB0(EnPm* this, PlayState* play, ScheduleOutput* scheduleOutput) {
         SubS_SetOfferMode(&this->unk_356, SUBS_OFFER_MODE_ONSCREEN, SUBS_OFFER_MODE_MASK);
         this->unk_356 |= 0x20;
         this->unk_356 |= 0x9000;
-        if (this->unk_258 != 0) {
+        if (this->scheduleResult != 0) {
             this->unk_356 |= 0x800;
-            func_80AF7E98(this, 5);
+            EnPm_ChangeAnim(this, ENPM_ANIM_5);
         } else {
-            func_80AF7E98(this, 3);
+            EnPm_ChangeAnim(this, ENPM_ANIM_3);
         }
         ret = true;
     }
@@ -1736,11 +1752,11 @@ s32 func_80AF9B54(EnPm* this, PlayState* play, ScheduleOutput* scheduleOutput) {
         SubS_SetOfferMode(&this->unk_356, SUBS_OFFER_MODE_ONSCREEN, SUBS_OFFER_MODE_MASK);
         this->unk_356 |= 0x9000;
         this->unk_356 |= 0x20;
-        if (this->unk_258 != 0) {
+        if (this->scheduleResult != 0) {
             this->unk_356 |= 0x800;
-            func_80AF7E98(this, 5);
+            EnPm_ChangeAnim(this, ENPM_ANIM_5);
         } else {
-            func_80AF7E98(this, 3);
+            EnPm_ChangeAnim(this, ENPM_ANIM_3);
         }
         ret = true;
     }
@@ -1750,8 +1766,8 @@ s32 func_80AF9B54(EnPm* this, PlayState* play, ScheduleOutput* scheduleOutput) {
 s32 func_80AF9BF8(EnPm* this, PlayState* play, ScheduleOutput* scheduleOutput) {
     s32 ret;
 
-    this->actor.flags |= ACTOR_FLAG_TARGETABLE;
-    this->actor.targetMode = TARGET_MODE_0;
+    this->actor.flags |= ACTOR_FLAG_ATTENTION_ENABLED;
+    this->actor.attentionRangeType = ATTENTION_RANGE_0;
     this->unk_394 = PLAYER_IA_NONE;
     this->unk_356 = 0;
     this->unk_368 = 40.0f;
@@ -1882,7 +1898,7 @@ s32 func_80AF9BF8(EnPm* this, PlayState* play, ScheduleOutput* scheduleOutput) {
 }
 
 s32 func_80AF9D04(EnPm* this, PlayState* play) {
-    EnDoor* door = (EnDoor*)func_80AF7D60(play, this->unk_258);
+    EnDoor* door = EnPm_FindScheduleDoor(play, this->scheduleResult);
     Vec3f sp38;
     s32 pad;
     f32 temp;
@@ -1958,12 +1974,12 @@ s32 func_80AF9E7C(EnPm* this, PlayState* play) {
         this->timePathElapsedTime = sp54;
         this->timePathWaypoint = sp50;
         this->timePathTargetPos = timePathTargetPos;
-    } else if ((this->unk_258 != 91) &&
+    } else if ((this->scheduleResult != 91) &&
                (Animation_OnFrame(&this->skelAnime, 3.0f) || Animation_OnFrame(&this->skelAnime, 8.0f))) {
         Actor_PlaySfx(&this->actor, NA_SE_EV_POSTMAN_WALK);
     }
 
-    if ((this->unk_356 & 0x10) && (this->unk_258 == 90)) {
+    if ((this->unk_356 & 0x10) && (this->scheduleResult == 90)) {
         //! @bug Uses SET_WEEKEVENTREG instead of CHECK_WEEKEVENTREG
         // 2S2H [Port] We opted to fix this, doesn't have any effect on the outcome
         if (!CHECK_WEEKEVENTREG(WEEKEVENTREG_89_40)) {
@@ -1978,21 +1994,21 @@ s32 func_80AFA170(EnPm* this, PlayState* play) {
     Vec3f sp34;
     Vec3f sp28;
 
-    switch (this->unk_258) {
+    switch (this->scheduleResult) {
         case 28:
-            if (gSaveContext.save.time >= CLOCK_TIME(1, 39)) {
+            if (CURRENT_TIME >= CLOCK_TIME(1, 39)) {
                 SET_WEEKEVENTREG(WEEKEVENTREG_89_08);
             }
 
         case 16:
         case 17:
         case 18:
-            if ((this->unk_384 == 5) && Animation_OnFrame(&this->skelAnime, this->skelAnime.endFrame)) {
-                func_80AF7E98(this, 6);
+            if ((this->animIndex == ENPM_ANIM_5) && Animation_OnFrame(&this->skelAnime, this->skelAnime.endFrame)) {
+                EnPm_ChangeAnim(this, ENPM_ANIM_6);
                 this->unk_36C = 40;
-            } else if ((this->unk_384 == 6) && (DECR(this->unk_36C) == 0)) {
+            } else if ((this->animIndex == ENPM_ANIM_6) && (DECR(this->unk_36C) == 0)) {
                 this->unk_356 &= ~0x800;
-                func_80AF7E98(this, 4);
+                EnPm_ChangeAnim(this, ENPM_ANIM_4);
             }
             break;
 
@@ -2002,18 +2018,18 @@ s32 func_80AFA170(EnPm* this, PlayState* play) {
         case 6:
         case 7:
         case 19:
-            if ((this->unk_384 == 11) && Animation_OnFrame(&this->skelAnime, this->skelAnime.endFrame)) {
-                func_80AF7E98(this, 4);
+            if ((this->animIndex == ENPM_ANIM_11) && Animation_OnFrame(&this->skelAnime, this->skelAnime.endFrame)) {
+                EnPm_ChangeAnim(this, ENPM_ANIM_4);
             }
 
-            if ((this->unk_384 == 11) && Animation_OnFrame(&this->skelAnime, 8.0f)) {
+            if ((this->animIndex == ENPM_ANIM_11) && Animation_OnFrame(&this->skelAnime, 8.0f)) {
                 Actor_PlaySfx(&this->actor, NA_SE_EV_POSTMACHINE_HIT_OPEN);
             }
 
-            if (this->unk_258 == 19) {
+            if (this->scheduleResult == 19) {
                 func_80AF8BA8(4);
             } else {
-                func_80AF8BA8(this->unk_258 - 3);
+                func_80AF8BA8(this->scheduleResult - 3);
             }
             break;
     }
@@ -2030,7 +2046,7 @@ s32 func_80AFA170(EnPm* this, PlayState* play) {
 s32 func_80AFA334(EnPm* this, PlayState* play) {
     s16 temp_v0;
 
-    switch (this->unk_258) {
+    switch (this->scheduleResult) {
         case 14:
         case 24:
             temp_v0 = this->actor.yawTowardsPlayer - this->actor.shape.rot.y;
@@ -2064,7 +2080,7 @@ s32 func_80AFA334(EnPm* this, PlayState* play) {
 }
 
 void func_80AFA438(EnPm* this, PlayState* play) {
-    switch (this->unk_258) {
+    switch (this->scheduleResult) {
         case 3:
         case 4:
         case 5:
@@ -2170,28 +2186,28 @@ void func_80AFA4D0(EnPm* this, PlayState* play) {
     static u8* D_80AFB900[] = {
         D_80AFAD80, D_80AFB30C, D_80AFB3C0, D_80AFB3FC, D_80AFB41C,
     };
-    u16 time = gSaveContext.save.time;
+    u16 time = CURRENT_TIME;
     u16 sp3C = 0;
-    ScheduleOutput sp2C;
+    ScheduleOutput scheduleOutput;
 
     this->timePathTimeSpeed = R_TIME_SPEED + ((void)0, gSaveContext.save.timeSpeedOffset);
     if (this->unk_38C != 0) {
-        time = gSaveContext.save.time - D_801F4E78;
-        sp3C = gSaveContext.save.time;
+        time = CURRENT_TIME - D_801F4E78;
+        sp3C = CURRENT_TIME;
         gSaveContext.save.time = time;
     }
 
-    if (!Schedule_RunScript(play, D_80AFB900[this->unk_38C], &sp2C) ||
-        ((this->unk_258 != sp2C.result) && !func_80AF9BF8(this, play, &sp2C))) {
+    if (!Schedule_RunScript(play, D_80AFB900[this->unk_38C], &scheduleOutput) ||
+        ((this->scheduleResult != scheduleOutput.result) && !func_80AF9BF8(this, play, &scheduleOutput))) {
         this->actor.shape.shadowDraw = NULL;
-        this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
-        sp2C.result = 0;
+        this->actor.flags &= ~ACTOR_FLAG_ATTENTION_ENABLED;
+        scheduleOutput.result = 0;
     } else {
         this->actor.shape.shadowDraw = ActorShadow_DrawCircle;
-        this->actor.flags |= ACTOR_FLAG_TARGETABLE;
+        this->actor.flags |= ACTOR_FLAG_ATTENTION_ENABLED;
     }
 
-    this->unk_258 = sp2C.result;
+    this->scheduleResult = scheduleOutput.result;
     this->unk_268 = func_80AF8040(this, play);
     func_80AFA438(this, play);
     if (this->unk_38C != 0) {
@@ -2204,20 +2220,20 @@ void func_80AFA5FC(EnPm* this, PlayState* play) {
     Vec3f sp38;
     Vec3f sp2C;
 
-    if (MsgEvent_RunScript(&this->actor, play, this->unk_25C, this->unk_37C, &this->unk_264)) {
-        SubS_SetOfferMode(&this->unk_356, 3, 7);
+    if (MsgEvent_RunScript(&this->actor, play, this->msgScript, this->msgScriptCallback, &this->msgScriptPos)) {
+        SubS_SetOfferMode(&this->unk_356, SUBS_OFFER_MODE_ONSCREEN, SUBS_OFFER_MODE_MASK);
         this->unk_356 &= ~0x20;
         this->unk_356 |= 0x200;
         this->actor.child = NULL;
         this->unk_376 = 20;
-        this->unk_264 = 0;
+        this->msgScriptPos = 0;
         this->actionFunc = func_80AFA4D0;
         return;
     }
 
-    if ((this->unk_258 != 9) && (this->unk_258 != 14) && (this->unk_258 != 16) && (this->unk_258 != 17) &&
-        (this->unk_258 != 20) && (this->unk_258 != 21) && (this->unk_258 != 22) && (this->unk_258 != 24) &&
-        (this->unk_258 != 25)) {
+    if ((this->scheduleResult != 9) && (this->scheduleResult != 14) && (this->scheduleResult != 16) &&
+        (this->scheduleResult != 17) && (this->scheduleResult != 20) && (this->scheduleResult != 21) &&
+        (this->scheduleResult != 22) && (this->scheduleResult != 24) && (this->scheduleResult != 25)) {
         if ((this->unk_268 != NULL) && (this->unk_268->update != NULL)) {
             Math_Vec3f_Copy(&sp38, &this->unk_268->world.pos);
             Math_Vec3f_Copy(&sp2C, &this->actor.world.pos);
@@ -2236,43 +2252,44 @@ void func_80AFA724(EnPm* this, PlayState* play) {
 }
 
 void EnPm_Init(Actor* thisx, PlayState* play) {
-    EnPm* this = THIS;
+    EnPm* this = (EnPm*)thisx;
 
     ActorShape_Init(&this->actor.shape, 0.0f, NULL, 14.0f);
-    SkelAnime_InitFlex(play, &this->skelAnime, &object_mm_Skel_0096E8, NULL, this->jointTable, this->morphTable, 16);
-    this->unk_384 = -1;
-    func_80AF7E98(this, 0);
+    SkelAnime_InitFlex(play, &this->skelAnime, &object_mm_Skel_0096E8, NULL, this->jointTable, this->morphTable,
+                       OBJECT_MM_LIMB_MAX);
+    this->animIndex = ENPM_ANIM_NONE;
+    EnPm_ChangeAnim(this, ENPM_ANIM_0);
     Collider_InitAndSetCylinder(play, &this->colliderCylinder, &this->actor, &sCylinderInit);
     Collider_InitAndSetSphere(play, &this->colliderSphere, &this->actor, &sSphereInit);
     CollisionCheck_SetInfo2(&this->actor.colChkInfo, DamageTable_Get(0x16), &sColChkInfoInit);
     Actor_SetScale(&this->actor, 0.01f);
     this->unk_38C = func_80AF7B40();
-    this->unk_258 = 0;
+    this->scheduleResult = 0;
     this->unk_356 = 0;
     this->actionFunc = func_80AFA4D0;
     this->actionFunc(this, play);
 }
 
 void EnPm_Destroy(Actor* thisx, PlayState* play) {
-    EnPm* this = THIS;
+    EnPm* this = (EnPm*)thisx;
 
     Collider_DestroyCylinder(play, &this->colliderCylinder);
     Collider_DestroySphere(play, &this->colliderSphere);
 }
 
 void EnPm_Update(Actor* thisx, PlayState* play) {
-    EnPm* this = THIS;
+    EnPm* this = (EnPm*)thisx;
 
     if (!func_80AF86F0(this, play) && func_80AF87C4(this, play)) {
         func_80AFA724(this, play);
-        func_80AF7E6C(this);
+        EnPm_UpdateSkelAnime(this);
         func_80AF8AC8(this);
     } else {
         this->actionFunc(this, play);
         func_80AF7BAC(this);
-        if (this->unk_258 != 0) {
+        if (this->scheduleResult != 0) {
             func_80AF8DD4(this, play);
-            func_80AF7E6C(this);
+            EnPm_UpdateSkelAnime(this);
             func_80AF8AC8(this);
             SubS_Offer(&this->actor, play, this->unk_368, 30.0f, this->unk_394, this->unk_356 & SUBS_OFFER_MODE_MASK);
             Actor_MoveWithGravity(&this->actor);
@@ -2284,21 +2301,21 @@ void EnPm_Update(Actor* thisx, PlayState* play) {
 
 s32 EnPm_OverrideLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3f* pos, Vec3s* rot, Actor* thisx,
                           Gfx** gfx) {
-    EnPm* this = THIS;
+    EnPm* this = (EnPm*)thisx;
 
-    if (limbIndex == 15) {
+    if (limbIndex == OBJECT_MM_LIMB_0F) {
         func_80AF8C68(this, play);
     }
     return false;
 }
 
 void EnPm_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* rot, Actor* thisx, Gfx** gfx) {
-    EnPm* this = THIS;
+    EnPm* this = (EnPm*)thisx;
     s32 pad;
     Vec3f sp2C;
 
     switch (limbIndex) {
-        case 15:
+        case OBJECT_MM_LIMB_0F:
             if (CutsceneManager_GetCurrentCsId() == CS_ID_NONE) {
                 Matrix_MultVec3f(&gZeroVec3f, &this->actor.focus.pos);
                 Math_Vec3s_Copy(&this->actor.focus.rot, &this->actor.world.rot);
@@ -2308,27 +2325,31 @@ void EnPm_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* rot, 
             }
             break;
 
-        case 11:
+        case OBJECT_MM_LIMB_0B:
             if (this->unk_356 & 0x800) {
                 func_80AF8890(this, gfx, 0);
             }
             break;
 
-        case 8:
-            if ((this->unk_258 == 9) || (this->unk_258 == 20) || (this->unk_258 == 21) || (this->unk_258 == 22)) {
+        case OBJECT_MM_LIMB_08:
+            if ((this->scheduleResult == 9) || (this->scheduleResult == 20) || (this->scheduleResult == 21) ||
+                (this->scheduleResult == 22)) {
                 Matrix_MultVec3f(&gZeroVec3f, &sp2C);
                 Math_Vec3f_ToVec3s(&this->colliderSphere.dim.worldSphere.center, &sp2C);
-            } else if (this->unk_258 == 24) {
+            } else if (this->scheduleResult == 24) {
                 Matrix_MultVec3f(&gZeroVec3f, &sp2C);
                 Math_Vec3f_ToVec3s(&this->colliderSphere.dim.worldSphere.center, &sp2C);
             }
             func_80AF8890(this, gfx, 2);
             break;
+
+        default:
+            break;
     }
 }
 
 void EnPm_TransformLimbDraw(PlayState* play, s32 limbIndex, Actor* thisx, Gfx** gfx) {
-    EnPm* this = THIS;
+    EnPm* this = (EnPm*)thisx;
     s32 stepRot;
     s32 overrideRot;
 
@@ -2344,7 +2365,7 @@ void EnPm_TransformLimbDraw(PlayState* play, s32 limbIndex, Actor* thisx, Gfx** 
         stepRot = false;
     }
 
-    if (limbIndex == 15) {
+    if (limbIndex == OBJECT_MM_LIMB_0F) {
         SubS_UpdateLimb(this->unk_370 + 0x4000, this->unk_372 + this->actor.shape.rot.y + 0x4000, &this->unk_284,
                         &this->unk_290, stepRot, overrideRot);
         Matrix_Pop();
@@ -2362,10 +2383,10 @@ void EnPm_Draw(Actor* thisx, PlayState* play) {
         object_mm_Tex_002950,
         object_mm_Tex_002750,
     };
-    EnPm* this = THIS;
+    EnPm* this = (EnPm*)thisx;
     s32 pad;
 
-    if (this->unk_258 != 0) {
+    if (this->scheduleResult != 0) {
         Gfx_SetupDL25_Opa(play->state.gfxCtx);
 
         OPEN_DISPS(play->state.gfxCtx);

@@ -33,4 +33,7 @@ static const ALIGN_ASSET(2) char Z2_DANPEI_room_08Tex_004808[] = dZ2_DANPEI_room
 #define dZ2_DANPEI_room_08DL_001B08 "__OTR__scenes/nonmq/Z2_DANPEI_scene/Z2_DANPEI_room_08DL_001B08"
 static const ALIGN_ASSET(2) char Z2_DANPEI_room_08DL_001B08[] = dZ2_DANPEI_room_08DL_001B08;
 
+#define dZ2_DANPEI_room_08DL_003DE8 "__OTR__scenes/nonmq/Z2_DANPEI_scene/Z2_DANPEI_room_08DL_003DE8"
+static const ALIGN_ASSET(2) char Z2_DANPEI_room_08DL_003DE8[] = dZ2_DANPEI_room_08DL_003DE8;
+
 #endif // Z2_DANPEI_Z2_DANPEI_ROOM_08_H

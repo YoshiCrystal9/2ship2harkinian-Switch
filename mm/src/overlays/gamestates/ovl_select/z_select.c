@@ -9,11 +9,14 @@
 #include "z64view.h"
 #include "libc/alloca.h"
 #include "overlays/gamestates/ovl_title/z_title.h"
-#include "public/bridge/consolevariablebridge.h"
+#include <libultraship/bridge/consolevariablebridge.h>
 #include "2s2h/DeveloperTools/BetterMapSelect.h"
 #include "2s2h/GameInteractor/GameInteractor.h"
 
-void MapSelect_LoadConsoleLogo(MapSelectState* this) {
+void MapSelect_LoadConsoleLogo(MapSelectState* this, u32 entrance, s32 spawn) {
+    s32 unused1 = entrance ? 0 : 0;
+    s32 unused2 = spawn ? 0 : 0;
+
     STOP_GAMESTATE(&this->state);
     SET_NEXT_GAMESTATE(&this->state, ConsoleLogo_Init, sizeof(ConsoleLogoState));
 }
@@ -535,7 +538,7 @@ SceneSelectEntry sScenes[] = {
     { "X 1:SPOT00", MapSelect_LoadGame, ENTRANCE(CUTSCENE, 0) },
 
     // "Title" (Title Screen)
-    { "title", (void*)MapSelect_LoadConsoleLogo, 0 },
+    { "title", MapSelect_LoadConsoleLogo, 0 },
 };
 
 void MapSelect_UpdateMenu(MapSelectState* this) {
@@ -983,7 +986,7 @@ void MapSelect_PrintCutsceneSetting(MapSelectState* this, GfxPrint* printer, u16
             stage = "???";
             break;
     }
-    gSaveContext.skyboxTime = gSaveContext.save.time;
+    gSaveContext.skyboxTime = CURRENT_TIME;
     GfxPrint_Printf(printer, "Stage:" GFXP_KATAKANA "%s", stage);
 
     GfxPrint_SetPos(printer, 23, 25);

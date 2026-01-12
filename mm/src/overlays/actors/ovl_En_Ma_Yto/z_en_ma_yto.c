@@ -8,9 +8,9 @@
 #include "overlays/actors/ovl_En_Ma_Yts/z_en_ma_yts.h"
 #include "2s2h/GameInteractor/GameInteractor.h"
 
-#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_100000 | ACTOR_FLAG_2000000)
-
-#define THIS ((EnMaYto*)thisx)
+#define FLAGS                                                                           \
+    (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_FREEZE_EXCEPTION | \
+     ACTOR_FLAG_UPDATE_DURING_OCARINA)
 
 void EnMaYto_Init(Actor* thisx, PlayState* play);
 void EnMaYto_Destroy(Actor* thisx, PlayState* play);
@@ -70,7 +70,7 @@ s32 EnMaYto_HasSpokenToPlayerToday(void);
 s32 EnMaYto_HasSpokenToPlayer(void);
 void EnMaYto_SetTalkedFlag(void);
 
-ActorInit En_Ma_Yto_InitVars = {
+ActorProfile En_Ma_Yto_Profile = {
     /**/ ACTOR_EN_MA_YTO,
     /**/ ACTORCAT_NPC,
     /**/ FLAGS,
@@ -84,7 +84,7 @@ ActorInit En_Ma_Yto_InitVars = {
 
 static ColliderCylinderInit sCylinderInit = {
     {
-        COLTYPE_NONE,
+        COL_MATERIAL_NONE,
         AT_NONE,
         AC_NONE,
         OC1_ON | OC1_TYPE_ALL,
@@ -92,11 +92,11 @@ static ColliderCylinderInit sCylinderInit = {
         COLSHAPE_CYLINDER,
     },
     {
-        ELEMTYPE_UNK0,
+        ELEM_MATERIAL_UNK0,
         { 0x00000000, 0x00, 0x00 },
         { 0x00000000, 0x00, 0x00 },
-        TOUCH_NONE | TOUCH_SFX_NORMAL,
-        BUMP_NONE,
+        ATELEM_NONE | ATELEM_SFX_NORMAL,
+        ACELEM_NONE,
         OCELEM_ON,
     },
     { 18, 46, 0, { 0, 0, 0 } },
@@ -169,21 +169,21 @@ static TexturePtr sMouthTextures[] = {
     gCremiaMouthHangingOpenTex,
 };
 
-static TexturePtr sEyesTextures[] = {
+static TexturePtr sEyeTextures[] = {
     gCremiaEyeOpenTex, gCremiaEyeHalfTex, gCremiaEyeClosedTex, gCremiaEyeHappyTex, gCremiaEyeAngryTex, gCremiaEyeSadTex,
 };
 
 void EnMaYto_Init(Actor* thisx, PlayState* play) {
-    EnMaYto* this = THIS;
+    EnMaYto* this = (EnMaYto*)thisx;
     s32 pad;
 
-    this->actor.targetMode = TARGET_MODE_0;
+    this->actor.attentionRangeType = ATTENTION_RANGE_0;
     this->unk200 = 0;
     this->unk310 = 0;
     this->unk320 = 0;
     this->eyeTexIndex = 0;
 
-    if ((CURRENT_DAY == 1) || CHECK_WEEKEVENTREG(WEEKEVENTREG_DEFENDED_AGAINST_THEM)) {
+    if ((CURRENT_DAY == 1) || CHECK_WEEKEVENTREG(WEEKEVENTREG_DEFENDED_AGAINST_ALIENS)) {
         EnMaYto_SetFaceExpression(this, 0, 1);
     } else {
         EnMaYto_SetFaceExpression(this, 5, 2);
@@ -216,26 +216,26 @@ void EnMaYto_Init(Actor* thisx, PlayState* play) {
 s32 EnMaYto_CheckValidSpawn(EnMaYto* this, PlayState* play) {
     switch (this->type) {
         case MA_YTO_TYPE_DEFAULT:
-            if ((CURRENT_DAY == 3) && !CHECK_WEEKEVENTREG(WEEKEVENTREG_DEFENDED_AGAINST_THEM)) {
+            if ((CURRENT_DAY == 3) && !CHECK_WEEKEVENTREG(WEEKEVENTREG_DEFENDED_AGAINST_ALIENS)) {
                 return false;
             }
             break;
 
         case MA_YTO_TYPE_DINNER:
-            if ((CURRENT_DAY != 1) && CHECK_WEEKEVENTREG(WEEKEVENTREG_DEFENDED_AGAINST_THEM)) {
+            if ((CURRENT_DAY != 1) && CHECK_WEEKEVENTREG(WEEKEVENTREG_DEFENDED_AGAINST_ALIENS)) {
                 return false;
             }
             break;
 
         case MA_YTO_TYPE_BARN:
-            if (CHECK_WEEKEVENTREG(WEEKEVENTREG_DEFENDED_AGAINST_THEM)) {
+            if (CHECK_WEEKEVENTREG(WEEKEVENTREG_DEFENDED_AGAINST_ALIENS)) {
                 if (((this->actor.params & 0x0F00) >> 8) != 0) {
                     return false;
                 }
             } else if (((this->actor.params & 0x0F00) >> 8) == 0) {
                 return false;
             }
-            if ((gSaveContext.save.time >= CLOCK_TIME(20, 0)) && (CURRENT_DAY == 3)) {
+            if ((CURRENT_TIME >= CLOCK_TIME(20, 0)) && (CURRENT_DAY == 3)) {
                 return false;
             }
             break;
@@ -270,7 +270,7 @@ void EnMaYto_InitAnimation(EnMaYto* this, PlayState* play) {
             break;
 
         case MA_YTO_TYPE_BARN:
-            if (CHECK_WEEKEVENTREG(WEEKEVENTREG_DEFENDED_AGAINST_THEM)) {
+            if (CHECK_WEEKEVENTREG(WEEKEVENTREG_DEFENDED_AGAINST_ALIENS)) {
                 EnMaYto_ChangeAnim(this, CREMIA_ANIM_12);
             } else {
                 EnMaYto_ChangeAnim(this, CREMIA_ANIM_8);
@@ -298,7 +298,7 @@ void EnMaYto_ChooseAction(EnMaYto* this, PlayState* play) {
             break;
 
         case MA_YTO_TYPE_DINNER:
-            this->actor.targetMode = TARGET_MODE_6;
+            this->actor.attentionRangeType = ATTENTION_RANGE_6;
             EnMaYto_SetupDinnerWait(this);
             break;
 
@@ -318,7 +318,7 @@ void EnMaYto_ChooseAction(EnMaYto* this, PlayState* play) {
             break;
 
         case MA_YTO_TYPE_4:
-            this->actor.flags |= ACTOR_FLAG_10;
+            this->actor.flags |= ACTOR_FLAG_UPDATE_CULLING_DISABLED;
             EnMaYto_SetupWarmFuzzyFeelingCs(this);
             break;
 
@@ -364,7 +364,7 @@ s32 EnMaYto_TryFindRomani(EnMaYto* this, PlayState* play) {
             return 0;
 
         case MA_YTO_TYPE_DINNER:
-            if (!CHECK_WEEKEVENTREG(WEEKEVENTREG_DEFENDED_AGAINST_THEM) && (CURRENT_DAY == 2)) {
+            if (!CHECK_WEEKEVENTREG(WEEKEVENTREG_DEFENDED_AGAINST_ALIENS) && (CURRENT_DAY == 2)) {
                 return 0;
             }
             if (EnMaYto_SearchRomani(this, play)) {
@@ -373,7 +373,7 @@ s32 EnMaYto_TryFindRomani(EnMaYto* this, PlayState* play) {
             return 1;
 
         case MA_YTO_TYPE_BARN:
-            if (CHECK_WEEKEVENTREG(WEEKEVENTREG_DEFENDED_AGAINST_THEM)) {
+            if (CHECK_WEEKEVENTREG(WEEKEVENTREG_DEFENDED_AGAINST_ALIENS)) {
                 if (EnMaYto_SearchRomani(this, play)) {
                     return 2;
                 }
@@ -393,7 +393,7 @@ s32 EnMaYto_TryFindRomani(EnMaYto* this, PlayState* play) {
 }
 
 void EnMaYto_Destroy(Actor* thisx, PlayState* play) {
-    EnMaYto* this = THIS;
+    EnMaYto* this = (EnMaYto*)thisx;
 
     Collider_DestroyCylinder(play, &this->collider);
 }
@@ -433,7 +433,7 @@ void EnMaYto_DefaultWait(EnMaYto* this, PlayState* play) {
         EnMaYto_ChangeAnim(this, CREMIA_ANIM_11);
     }
 
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+    if (Actor_TalkOfferAccepted(&this->actor, &play->state)) {
         EnMaYto_DefaultStartDialogue(this, play);
         EnMaYto_SetupDefaultDialogueHandler(this);
     } else if (ABS_ALT(direction) < 0x1555) {
@@ -453,7 +453,7 @@ void EnMaYto_DefaultDialogueHandler(EnMaYto* this, PlayState* play) {
             EnMaYto_DefaultHandlePlayerChoice(this, play);
             break;
 
-        case TEXT_STATE_5:
+        case TEXT_STATE_EVENT:
             EnMaYto_DefaultChooseNextDialogue(this, play);
             break;
 
@@ -465,9 +465,9 @@ void EnMaYto_DefaultDialogueHandler(EnMaYto* this, PlayState* play) {
             break;
 
         case TEXT_STATE_NONE:
-        case TEXT_STATE_1:
+        case TEXT_STATE_NEXT:
         case TEXT_STATE_CLOSING:
-        case TEXT_STATE_3:
+        case TEXT_STATE_FADING:
         default:
             break;
     }
@@ -530,7 +530,7 @@ void EnMaYto_DefaultChooseNextDialogue(EnMaYto* this, PlayState* play) {
 }
 
 void EnMaYto_SetupDinnerWait(EnMaYto* this) {
-    if ((CURRENT_DAY == 1) || CHECK_WEEKEVENTREG(WEEKEVENTREG_DEFENDED_AGAINST_THEM)) {
+    if ((CURRENT_DAY == 1) || CHECK_WEEKEVENTREG(WEEKEVENTREG_DEFENDED_AGAINST_ALIENS)) {
         func_80B90E50(this, 0);
         this->unk31E = 0;
     } else {
@@ -545,13 +545,13 @@ void EnMaYto_SetupDinnerWait(EnMaYto* this) {
 void EnMaYto_DinnerWait(EnMaYto* this, PlayState* play) {
     s16 direction = this->actor.shape.rot.y - this->actor.yawTowardsPlayer;
 
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+    if (Actor_TalkOfferAccepted(&this->actor, &play->state)) {
         EnMaYto_DinnerStartDialogue(this, play);
         EnMaYto_SetupDinnerDialogueHandler(this);
     } else {
         Actor* child = this->actor.child;
 
-        if ((child != NULL) && Actor_ProcessTalkRequest(child, &play->state)) {
+        if ((child != NULL) && Actor_TalkOfferAccepted(child, &play->state)) {
             Actor_ChangeFocus(&this->actor, play, &this->actor);
             EnMaYto_DinnerStartDialogue(this, play);
             EnMaYto_SetupDinnerDialogueHandler(this);
@@ -571,7 +571,7 @@ void EnMaYto_DinnerWait(EnMaYto* this, PlayState* play) {
 }
 
 void EnMaYto_SetupDinnerDialogueHandler(EnMaYto* this) {
-    if ((CURRENT_DAY == 1) || CHECK_WEEKEVENTREG(WEEKEVENTREG_DEFENDED_AGAINST_THEM)) {
+    if ((CURRENT_DAY == 1) || CHECK_WEEKEVENTREG(WEEKEVENTREG_DEFENDED_AGAINST_ALIENS)) {
         func_80B90E50(this, 1);
     } else {
         func_80B90E50(this, 2);
@@ -587,7 +587,7 @@ void EnMaYto_DinnerDialogueHandler(EnMaYto* this, PlayState* play) {
             EnMaYto_DinnerHandlePlayerChoice(this, play);
             break;
 
-        case TEXT_STATE_5:
+        case TEXT_STATE_EVENT:
             EnMaYto_DinnerChooseNextDialogue(this, play);
             break;
 
@@ -598,9 +598,9 @@ void EnMaYto_DinnerDialogueHandler(EnMaYto* this, PlayState* play) {
             break;
 
         case TEXT_STATE_NONE:
-        case TEXT_STATE_1:
+        case TEXT_STATE_NEXT:
         case TEXT_STATE_CLOSING:
-        case TEXT_STATE_3:
+        case TEXT_STATE_FADING:
         default:
             break;
     }
@@ -724,7 +724,7 @@ void EnMaYto_DinnerChooseNextDialogue(EnMaYto* this, PlayState* play) {
 }
 
 void EnMaYto_SetupBarnWait(EnMaYto* this) {
-    if ((CURRENT_DAY == 1) || CHECK_WEEKEVENTREG(WEEKEVENTREG_DEFENDED_AGAINST_THEM)) {
+    if ((CURRENT_DAY == 1) || CHECK_WEEKEVENTREG(WEEKEVENTREG_DEFENDED_AGAINST_ALIENS)) {
         EnMaYto_ChangeAnim(this, CREMIA_ANIM_13);
         func_80B90E50(this, 0);
         this->unk31E = 0;
@@ -742,17 +742,17 @@ void EnMaYto_BarnWait(EnMaYto* this, PlayState* play) {
     s16 direction = this->actor.shape.rot.y + 0x471C;
 
     direction -= this->actor.yawTowardsPlayer;
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+    if (Actor_TalkOfferAccepted(&this->actor, &play->state)) {
         EnMaYto_BarnStartDialogue(this, play);
         EnMaYto_SetupBarnDialogueHandler(this);
     } else {
         Actor* child = this->actor.child;
 
-        if ((child != NULL) && Actor_ProcessTalkRequest(child, &play->state)) {
+        if ((child != NULL) && Actor_TalkOfferAccepted(child, &play->state)) {
             Actor_ChangeFocus(&this->actor, play, &this->actor);
             EnMaYto_BarnStartDialogue(this, play);
             EnMaYto_SetupBarnDialogueHandler(this);
-        } else if (!CHECK_WEEKEVENTREG(WEEKEVENTREG_DEFENDED_AGAINST_THEM) || (ABS_ALT(direction) < 0x2000)) {
+        } else if (!CHECK_WEEKEVENTREG(WEEKEVENTREG_DEFENDED_AGAINST_ALIENS) || (ABS_ALT(direction) < 0x2000)) {
             Actor_OfferTalk(&this->actor, play, 100.0f);
 
             child = this->actor.child;
@@ -764,7 +764,7 @@ void EnMaYto_BarnWait(EnMaYto* this, PlayState* play) {
 }
 
 void EnMaYto_SetupBarnDialogueHandler(EnMaYto* this) {
-    if ((CURRENT_DAY == 1) || CHECK_WEEKEVENTREG(WEEKEVENTREG_DEFENDED_AGAINST_THEM)) {
+    if ((CURRENT_DAY == 1) || CHECK_WEEKEVENTREG(WEEKEVENTREG_DEFENDED_AGAINST_ALIENS)) {
         func_80B90E50(this, 1);
     } else {
         func_80B90E50(this, 2);
@@ -775,7 +775,7 @@ void EnMaYto_SetupBarnDialogueHandler(EnMaYto* this) {
 
 void EnMaYto_BarnDialogueHandler(EnMaYto* this, PlayState* play) {
     switch (Message_GetState(&play->msgCtx)) {
-        case TEXT_STATE_5:
+        case TEXT_STATE_EVENT:
             EnMaYto_BarnChooseNextDialogue(this, play);
             break;
 
@@ -787,9 +787,9 @@ void EnMaYto_BarnDialogueHandler(EnMaYto* this, PlayState* play) {
             break;
 
         case TEXT_STATE_NONE:
-        case TEXT_STATE_1:
+        case TEXT_STATE_NEXT:
         case TEXT_STATE_CLOSING:
-        case TEXT_STATE_3:
+        case TEXT_STATE_FADING:
         case TEXT_STATE_CHOICE:
         default:
             break;
@@ -922,10 +922,10 @@ void EnMaYto_SetupAfterMilkRunInit(EnMaYto* this) {
 }
 
 void EnMaYto_AfterMilkRunInit(EnMaYto* this, PlayState* play) {
-    this->actor.flags |= ACTOR_FLAG_10000;
+    this->actor.flags |= ACTOR_FLAG_TALK_OFFER_AUTO_ACCEPTED;
 
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
-        this->actor.flags &= ~ACTOR_FLAG_10000;
+    if (Actor_TalkOfferAccepted(&this->actor, &play->state)) {
+        this->actor.flags &= ~ACTOR_FLAG_TALK_OFFER_AUTO_ACCEPTED;
 
         if (CHECK_WEEKEVENTREG(WEEKEVENTREG_ESCORTED_CREMIA)) {
             Message_StartTextbox(play, 0x33C1, &this->actor);
@@ -955,14 +955,14 @@ void EnMaYto_SetupAfterMilkRunDialogueHandler(EnMaYto* this) {
 void EnMaYto_AfterMilkRunDialogueHandler(EnMaYto* this, PlayState* play) {
     switch (Message_GetState(&play->msgCtx)) {
         case TEXT_STATE_NONE:
-        case TEXT_STATE_1:
+        case TEXT_STATE_NEXT:
         case TEXT_STATE_CLOSING:
-        case TEXT_STATE_3:
+        case TEXT_STATE_FADING:
         case TEXT_STATE_CHOICE:
         case TEXT_STATE_DONE:
             break;
 
-        case TEXT_STATE_5:
+        case TEXT_STATE_EVENT:
             EnMaYto_AfterMilkRunChooseNextDialogue(this, play);
             break;
 
@@ -1017,7 +1017,7 @@ void EnMaYto_SetupPostMilkRunExplainReward(EnMaYto* this) {
 }
 
 void EnMaYto_PostMilkRunExplainReward(EnMaYto* this, PlayState* play) {
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+    if (Actor_TalkOfferAccepted(&this->actor, &play->state)) {
         if (this->unk310 == 1) {
             // Romani's mask explanation
             EnMaYto_SetFaceExpression(this, 0, 1);
@@ -1114,8 +1114,8 @@ void EnMaYto_SetupPostMilkRunWaitDialogueEnd(EnMaYto* this) {
 }
 
 void EnMaYto_PostMilkRunWaitDialogueEnd(EnMaYto* this, PlayState* play) {
-    if ((Message_GetState(&play->msgCtx) == TEXT_STATE_DONE) || (Message_GetState(&play->msgCtx) == TEXT_STATE_5)) {
-        if (Message_ShouldAdvance(play) && (Message_GetState(&play->msgCtx) == TEXT_STATE_5)) {
+    if ((Message_GetState(&play->msgCtx) == TEXT_STATE_DONE) || (Message_GetState(&play->msgCtx) == TEXT_STATE_EVENT)) {
+        if (Message_ShouldAdvance(play) && (Message_GetState(&play->msgCtx) == TEXT_STATE_EVENT)) {
             Player_SetCsActionWithHaltedActors(play, &this->actor, PLAYER_CSACTION_WAIT);
             Message_CloseTextbox(play);
         }
@@ -1272,7 +1272,7 @@ void EnMaYto_DinnerStartDialogue(EnMaYto* this, PlayState* play) {
 }
 
 void EnMaYto_BarnStartDialogue(EnMaYto* this, PlayState* play) {
-    if (CHECK_WEEKEVENTREG(WEEKEVENTREG_DEFENDED_AGAINST_THEM)) {
+    if (CHECK_WEEKEVENTREG(WEEKEVENTREG_DEFENDED_AGAINST_ALIENS)) {
         if (CURRENT_DAY == 2) {
             if (this->unk310 == 1) {
                 Message_StartTextbox(play, 0x33AE, &this->actor);
@@ -1395,7 +1395,7 @@ void EnMaYto_SetFaceExpression(EnMaYto* this, s16 overrideEyeTexIndex, s16 mouth
 }
 
 void EnMaYto_InitFaceExpression(EnMaYto* this) {
-    if ((CURRENT_DAY == 1) || CHECK_WEEKEVENTREG(WEEKEVENTREG_DEFENDED_AGAINST_THEM)) {
+    if ((CURRENT_DAY == 1) || CHECK_WEEKEVENTREG(WEEKEVENTREG_DEFENDED_AGAINST_ALIENS)) {
         EnMaYto_SetFaceExpression(this, 0, 1);
         EnMaYto_SetRomaniFaceExpression(this, 0, 0);
     } else {
@@ -1474,7 +1474,7 @@ void EnMaYto_SetTalkedFlag(void) {
 }
 
 void EnMaYto_Update(Actor* thisx, PlayState* play) {
-    EnMaYto* this = THIS;
+    EnMaYto* this = (EnMaYto*)thisx;
 
     this->actionFunc(this, play);
     EnMaYto_UpdateCollision(this, play);
@@ -1482,7 +1482,7 @@ void EnMaYto_Update(Actor* thisx, PlayState* play) {
 }
 
 s32 EnMaYto_OverrideLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3f* pos, Vec3s* rot, Actor* thisx) {
-    EnMaYto* this = THIS;
+    EnMaYto* this = (EnMaYto*)thisx;
     Vec3s limbRot;
 
     if (limbIndex == CREMIA_LIMB_HEAD) {
@@ -1506,7 +1506,7 @@ s32 EnMaYto_OverrideLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3f*
 }
 
 void EnMaYto_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* rot, Actor* thisx) {
-    EnMaYto* this = THIS;
+    EnMaYto* this = (EnMaYto*)thisx;
 
     if (limbIndex == CREMIA_LIMB_HEAD) {
         Matrix_MultZero(&this->actor.focus.pos);
@@ -1514,19 +1514,19 @@ void EnMaYto_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* ro
 }
 
 void EnMaYto_Draw(Actor* thisx, PlayState* play) {
-    EnMaYto* this = THIS;
+    EnMaYto* this = (EnMaYto*)thisx;
     s32 pad;
 
     OPEN_DISPS(play->state.gfxCtx);
 
-    if ((this->type == MA_YTO_TYPE_BARN) && CHECK_WEEKEVENTREG(WEEKEVENTREG_DEFENDED_AGAINST_THEM)) {
-        gSPMatrix(POLY_OPA_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    if ((this->type == MA_YTO_TYPE_BARN) && CHECK_WEEKEVENTREG(WEEKEVENTREG_DEFENDED_AGAINST_ALIENS)) {
+        MATRIX_FINALIZE_AND_LOAD(POLY_OPA_DISP++, play->state.gfxCtx);
         gSPDisplayList(POLY_OPA_DISP++, gCremiaWoodenBoxDL);
     }
     Gfx_SetupDL25_Opa(play->state.gfxCtx);
 
     gSPSegment(POLY_OPA_DISP++, 0x09, Lib_SegmentedToVirtual(sMouthTextures[this->mouthTexIndex]));
-    gSPSegment(POLY_OPA_DISP++, 0x08, Lib_SegmentedToVirtual(sEyesTextures[this->eyeTexIndex]));
+    gSPSegment(POLY_OPA_DISP++, 0x08, Lib_SegmentedToVirtual(sEyeTextures[this->eyeTexIndex]));
 
     SkelAnime_DrawFlexOpa(play, this->skelAnime.skeleton, this->skelAnime.jointTable, this->skelAnime.dListCount,
                           EnMaYto_OverrideLimbDraw, EnMaYto_PostLimbDraw, &this->actor);

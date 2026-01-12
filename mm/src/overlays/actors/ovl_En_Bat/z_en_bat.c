@@ -8,9 +8,8 @@
 #include "overlays/actors/ovl_En_Clear_Tag/z_en_clear_tag.h"
 #include "objects/object_bat/object_bat.h"
 
-#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_UNFRIENDLY | ACTOR_FLAG_IGNORE_QUAKE | ACTOR_FLAG_4000)
-
-#define THIS ((EnBat*)thisx)
+#define FLAGS \
+    (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_HOSTILE | ACTOR_FLAG_IGNORE_QUAKE | ACTOR_FLAG_CAN_ATTACH_TO_ARROW)
 
 #define BAD_BAT_FLAP_FRAME 5
 
@@ -30,7 +29,7 @@ void EnBat_DiveAttack(EnBat* this, PlayState* play);
 void EnBat_Die(EnBat* this, PlayState* play);
 void EnBat_Stunned(EnBat* this, PlayState* play);
 
-ActorInit En_Bat_InitVars = {
+ActorProfile En_Bat_Profile = {
     /**/ ACTOR_EN_BAT,
     /**/ ACTORCAT_ENEMY,
     /**/ FLAGS,
@@ -45,7 +44,7 @@ ActorInit En_Bat_InitVars = {
 
 static ColliderSphereInit sSphereInit = {
     {
-        COLTYPE_HIT3,
+        COL_MATERIAL_HIT3,
         AT_NONE | AT_TYPE_ENEMY,
         AC_ON | AC_TYPE_PLAYER,
         OC1_ON | OC1_TYPE_ALL,
@@ -53,11 +52,11 @@ static ColliderSphereInit sSphereInit = {
         COLSHAPE_SPHERE,
     },
     {
-        ELEMTYPE_UNK0,
+        ELEM_MATERIAL_UNK0,
         { 0xF7CFFFFF, 0x00, 0x04 },
         { 0xF7CFFFFF, 0x00, 0x00 },
-        TOUCH_ON | TOUCH_SFX_HARD,
-        BUMP_ON,
+        ATELEM_ON | ATELEM_SFX_HARD,
+        ACELEM_ON,
         OCELEM_ON,
     },
     { 1, { { 0, 0, 0 }, 15 }, 100 },
@@ -111,9 +110,9 @@ static CollisionCheckInfoInit sColChkInfoInit = { 1, 15, 30, 10 };
 
 static InitChainEntry sInitChain[] = {
     ICHAIN_S8(hintId, TATL_HINT_ID_BAD_BAT, ICHAIN_CONTINUE),
-    ICHAIN_F32(uncullZoneForward, 3000, ICHAIN_CONTINUE),
+    ICHAIN_F32(cullingVolumeDistance, 3000, ICHAIN_CONTINUE),
     ICHAIN_F32_DIV1000(gravity, -500, ICHAIN_CONTINUE),
-    ICHAIN_F32(targetArrowOffset, 2000, ICHAIN_STOP),
+    ICHAIN_F32(lockOnArrowOffset, 2000, ICHAIN_STOP),
 };
 
 static Gfx* sWingsDLs[] = {
@@ -127,7 +126,7 @@ s32 sNumberAttacking; //!< Limit number attacking player to at most `BAD_BAT_MAX
 s32 sAlreadySpawned;  //!< used for those spawned with room -1 in Graveyard to avoid respawn on room change
 
 void EnBat_Init(Actor* thisx, PlayState* play) {
-    EnBat* this = THIS;
+    EnBat* this = (EnBat*)thisx;
 
     Actor_ProcessInitChain(thisx, sInitChain);
     Collider_InitAndSetSphere(play, &this->collider, thisx, &sSphereInit);
@@ -174,7 +173,7 @@ void EnBat_Init(Actor* thisx, PlayState* play) {
 }
 
 void EnBat_Destroy(Actor* thisx, PlayState* play) {
-    EnBat* this = THIS;
+    EnBat* this = (EnBat*)thisx;
 
     Collider_DestroySphere(play, &this->collider);
 }
@@ -317,7 +316,7 @@ void EnBat_DiveAttack(EnBat* this, PlayState* play) {
 }
 
 void EnBat_SetupDie(EnBat* this, PlayState* play) {
-    this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
+    this->actor.flags &= ~ACTOR_FLAG_ATTENTION_ENABLED;
     Enemy_StartFinishingBlow(play, &this->actor);
     this->actor.speed *= Math_CosS(this->actor.world.rot.x);
     this->actor.bgCheckFlags &= ~BGCHECKFLAG_GROUND;
@@ -333,8 +332,8 @@ void EnBat_SetupDie(EnBat* this, PlayState* play) {
         this->drawDmgEffType = ACTOR_DRAW_DMGEFF_LIGHT_ORBS;
         this->drawDmgEffAlpha = 4.0f;
         this->drawDmgEffScale = 0.45f;
-        Actor_Spawn(&play->actorCtx, play, ACTOR_EN_CLEAR_TAG, this->collider.info.bumper.hitPos.x,
-                    this->collider.info.bumper.hitPos.y, this->collider.info.bumper.hitPos.z, 0, 0, 0,
+        Actor_Spawn(&play->actorCtx, play, ACTOR_EN_CLEAR_TAG, this->collider.elem.acDmgInfo.hitPos.x,
+                    this->collider.elem.acDmgInfo.hitPos.y, this->collider.elem.acDmgInfo.hitPos.z, 0, 0, 0,
                     CLEAR_TAG_PARAMS(CLEAR_TAG_SMALL_LIGHT_RAYS));
     } else if (this->actor.colChkInfo.damageEffect == BAD_BAT_DMGEFF_FIRE) {
         this->drawDmgEffType = ACTOR_DRAW_DMGEFF_FIRE;
@@ -344,12 +343,12 @@ void EnBat_SetupDie(EnBat* this, PlayState* play) {
 
     Actor_SetColorFilter(&this->actor, COLORFILTER_COLORFLAG_RED, 255, COLORFILTER_BUFFLAG_OPA, 40);
 
-    if (this->actor.flags & ACTOR_FLAG_8000) {
+    if (this->actor.flags & ACTOR_FLAG_ATTACHED_TO_ARROW) {
         this->actor.speed = 0.0f;
     }
 
     this->collider.base.acFlags &= ~AC_ON;
-    this->actor.flags |= ACTOR_FLAG_10;
+    this->actor.flags |= ACTOR_FLAG_UPDATE_CULLING_DISABLED;
     this->actionFunc = EnBat_Die;
 }
 
@@ -357,7 +356,7 @@ void EnBat_Die(EnBat* this, PlayState* play) {
     Math_StepToF(&this->actor.speed, 0.0f, 0.5f);
     this->actor.colorFilterTimer = 40;
 
-    if (!(this->actor.flags & ACTOR_FLAG_8000)) { // Carried by arrow
+    if (!(this->actor.flags & ACTOR_FLAG_ATTACHED_TO_ARROW)) {
         if (this->drawDmgEffType != ACTOR_DRAW_DMGEFF_FROZEN_NO_SFX) {
             Math_ScaledStepToS(&this->actor.shape.rot.x, 0x4000, 0x200);
             this->actor.shape.rot.z += 0x1780;
@@ -428,7 +427,7 @@ void EnBat_UpdateDamage(EnBat* this, PlayState* play) {
     if (this->collider.base.acFlags & AC_HIT) {
         this->collider.base.acFlags &= ~AC_HIT;
 
-        Actor_SetDropFlag(&this->actor, &this->collider.info);
+        Actor_SetDropFlag(&this->actor, &this->collider.elem);
         this->collider.base.atFlags &= ~AT_ON;
 
         if (this->actionFunc == EnBat_DiveAttack) {
@@ -453,7 +452,7 @@ void EnBat_UpdateDamage(EnBat* this, PlayState* play) {
 
 void EnBat_Update(Actor* thisx, PlayState* play) {
     s32 pad;
-    EnBat* this = THIS;
+    EnBat* this = (EnBat*)thisx;
 
     if (this->actor.room == -1) {
         sAlreadySpawned = true;
@@ -522,7 +521,7 @@ void EnBat_Update(Actor* thisx, PlayState* play) {
 }
 
 void EnBat_Draw(Actor* thisx, PlayState* play) {
-    EnBat* this = THIS;
+    EnBat* this = (EnBat*)thisx;
     Gfx* gfx;
 
     // Draw body and wings
@@ -532,7 +531,7 @@ void EnBat_Draw(Actor* thisx, PlayState* play) {
         gfx = POLY_OPA_DISP;
 
         gSPDisplayList(&gfx[0], gSetupDLs[SETUPDL_25]);
-        gSPMatrix(&gfx[1], Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+        MATRIX_FINALIZE_AND_LOAD(&gfx[1], play->state.gfxCtx);
         gSPDisplayList(&gfx[2], gBadBatSetupDL);
         gSPDisplayList(&gfx[3], gBadBatBodyDL);
         gSPDisplayList(&gfx[4], sWingsDLs[this->animationFrame]);

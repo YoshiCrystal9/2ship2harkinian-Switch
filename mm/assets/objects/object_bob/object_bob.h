@@ -3,108 +3,108 @@
 
 #include "align_asset_macro.h"
 
-#define dobject_bob_Skel_0000F0 "__OTR__objects/object_bob/object_bob_Skel_0000F0"
-static const ALIGN_ASSET(2) char object_bob_Skel_0000F0[] = dobject_bob_Skel_0000F0;
+#define dgHylianWoman2Skel "__OTR__objects/object_bob/gHylianWoman2Skel"
+static const ALIGN_ASSET(2) char gHylianWoman2Skel[] = dgHylianWoman2Skel;
 
-#define dobject_bob_TLUT_000108 "__OTR__objects/object_bob/object_bob_TLUT_000108"
-static const ALIGN_ASSET(2) char object_bob_TLUT_000108[] = dobject_bob_TLUT_000108;
+#define dgHylianWoman2TLUT "__OTR__objects/object_bob/gHylianWoman2TLUT"
+static const ALIGN_ASSET(2) char gHylianWoman2TLUT[] = dgHylianWoman2TLUT;
 
-#define dobject_bob_Tex_000308 "__OTR__objects/object_bob/object_bob_Tex_000308"
-static const ALIGN_ASSET(2) char object_bob_Tex_000308[] = dobject_bob_Tex_000308;
+#define dgHylianWoman2SkinTex "__OTR__objects/object_bob/gHylianWoman2SkinTex"
+static const ALIGN_ASSET(2) char gHylianWoman2SkinTex[] = dgHylianWoman2SkinTex;
 
-#define dobject_bob_Tex_000348 "__OTR__objects/object_bob/object_bob_Tex_000348"
-static const ALIGN_ASSET(2) char object_bob_Tex_000348[] = dobject_bob_Tex_000348;
+#define dgHylianWoman2HairTex "__OTR__objects/object_bob/gHylianWoman2HairTex"
+static const ALIGN_ASSET(2) char gHylianWoman2HairTex[] = dgHylianWoman2HairTex;
 
-#define dobject_bob_Tex_000388 "__OTR__objects/object_bob/object_bob_Tex_000388"
-static const ALIGN_ASSET(2) char object_bob_Tex_000388[] = dobject_bob_Tex_000388;
+#define dgHylianWoman2MouthTex "__OTR__objects/object_bob/gHylianWoman2MouthTex"
+static const ALIGN_ASSET(2) char gHylianWoman2MouthTex[] = dgHylianWoman2MouthTex;
 
-#define dobject_bob_Tex_000788 "__OTR__objects/object_bob/object_bob_Tex_000788"
-static const ALIGN_ASSET(2) char object_bob_Tex_000788[] = dobject_bob_Tex_000788;
+#define dgHylianWoman2EarTex "__OTR__objects/object_bob/gHylianWoman2EarTex"
+static const ALIGN_ASSET(2) char gHylianWoman2EarTex[] = dgHylianWoman2EarTex;
 
-#define dobject_bob_Tex_0007C8 "__OTR__objects/object_bob/object_bob_Tex_0007C8"
-static const ALIGN_ASSET(2) char object_bob_Tex_0007C8[] = dobject_bob_Tex_0007C8;
+#define dgHylianWoman2EyeOpenTex "__OTR__objects/object_bob/gHylianWoman2EyeOpenTex"
+static const ALIGN_ASSET(2) char gHylianWoman2EyeOpenTex[] = dgHylianWoman2EyeOpenTex;
 
-#define dobject_bob_Tex_000FC8 "__OTR__objects/object_bob/object_bob_Tex_000FC8"
-static const ALIGN_ASSET(2) char object_bob_Tex_000FC8[] = dobject_bob_Tex_000FC8;
+#define dgHylianWoman2EyeHalfTex "__OTR__objects/object_bob/gHylianWoman2EyeHalfTex"
+static const ALIGN_ASSET(2) char gHylianWoman2EyeHalfTex[] = dgHylianWoman2EyeHalfTex;
 
-#define dobject_bob_Tex_0017C8 "__OTR__objects/object_bob/object_bob_Tex_0017C8"
-static const ALIGN_ASSET(2) char object_bob_Tex_0017C8[] = dobject_bob_Tex_0017C8;
+#define dgHylianWoman2EyeClosedTex "__OTR__objects/object_bob/gHylianWoman2EyeClosedTex"
+static const ALIGN_ASSET(2) char gHylianWoman2EyeClosedTex[] = dgHylianWoman2EyeClosedTex;
 
-#define dobject_bob_Tex_001FC8 "__OTR__objects/object_bob/object_bob_Tex_001FC8"
-static const ALIGN_ASSET(2) char object_bob_Tex_001FC8[] = dobject_bob_Tex_001FC8;
+#define dgHylianWoman2FingersTex "__OTR__objects/object_bob/gHylianWoman2FingersTex"
+static const ALIGN_ASSET(2) char gHylianWoman2FingersTex[] = dgHylianWoman2FingersTex;
 
-#define dobject_bob_Tex_0020C8 "__OTR__objects/object_bob/object_bob_Tex_0020C8"
-static const ALIGN_ASSET(2) char object_bob_Tex_0020C8[] = dobject_bob_Tex_0020C8;
+#define dgHylianWoman2ShirtTex "__OTR__objects/object_bob/gHylianWoman2ShirtTex"
+static const ALIGN_ASSET(2) char gHylianWoman2ShirtTex[] = dgHylianWoman2ShirtTex;
 
-#define dobject_bob_Tex_0021C8 "__OTR__objects/object_bob/object_bob_Tex_0021C8"
-static const ALIGN_ASSET(2) char object_bob_Tex_0021C8[] = dobject_bob_Tex_0021C8;
+#define dgHylianWoman2CollarTex "__OTR__objects/object_bob/gHylianWoman2CollarTex"
+static const ALIGN_ASSET(2) char gHylianWoman2CollarTex[] = dgHylianWoman2CollarTex;
 
-#define dobject_bob_Tex_002208 "__OTR__objects/object_bob/object_bob_Tex_002208"
-static const ALIGN_ASSET(2) char object_bob_Tex_002208[] = dobject_bob_Tex_002208;
+#define dgHylianWoman2DressTex "__OTR__objects/object_bob/gHylianWoman2DressTex"
+static const ALIGN_ASSET(2) char gHylianWoman2DressTex[] = dgHylianWoman2DressTex;
 
-#define dobject_bob_DL_003B78 "__OTR__objects/object_bob/object_bob_DL_003B78"
-static const ALIGN_ASSET(2) char object_bob_DL_003B78[] = dobject_bob_DL_003B78;
+#define dgHylianWoman2HeadDL "__OTR__objects/object_bob/gHylianWoman2HeadDL"
+static const ALIGN_ASSET(2) char gHylianWoman2HeadDL[] = dgHylianWoman2HeadDL;
 
-#define dobject_bob_DL_003F68 "__OTR__objects/object_bob/object_bob_DL_003F68"
-static const ALIGN_ASSET(2) char object_bob_DL_003F68[] = dobject_bob_DL_003F68;
+#define dgHylianWoman2RightHandDL "__OTR__objects/object_bob/gHylianWoman2RightHandDL"
+static const ALIGN_ASSET(2) char gHylianWoman2RightHandDL[] = dgHylianWoman2RightHandDL;
 
-#define dobject_bob_DL_0040B0 "__OTR__objects/object_bob/object_bob_DL_0040B0"
-static const ALIGN_ASSET(2) char object_bob_DL_0040B0[] = dobject_bob_DL_0040B0;
+#define dgHylianWoman2RightForearmDL "__OTR__objects/object_bob/gHylianWoman2RightForearmDL"
+static const ALIGN_ASSET(2) char gHylianWoman2RightForearmDL[] = dgHylianWoman2RightForearmDL;
 
-#define dobject_bob_DL_0041E0 "__OTR__objects/object_bob/object_bob_DL_0041E0"
-static const ALIGN_ASSET(2) char object_bob_DL_0041E0[] = dobject_bob_DL_0041E0;
+#define dgHylianWoman2RightUpperArmDL "__OTR__objects/object_bob/gHylianWoman2RightUpperArmDL"
+static const ALIGN_ASSET(2) char gHylianWoman2RightUpperArmDL[] = dgHylianWoman2RightUpperArmDL;
 
-#define dobject_bob_DL_004310 "__OTR__objects/object_bob/object_bob_DL_004310"
-static const ALIGN_ASSET(2) char object_bob_DL_004310[] = dobject_bob_DL_004310;
+#define dgHylianWoman2LeftHandDL "__OTR__objects/object_bob/gHylianWoman2LeftHandDL"
+static const ALIGN_ASSET(2) char gHylianWoman2LeftHandDL[] = dgHylianWoman2LeftHandDL;
 
-#define dobject_bob_DL_004458 "__OTR__objects/object_bob/object_bob_DL_004458"
-static const ALIGN_ASSET(2) char object_bob_DL_004458[] = dobject_bob_DL_004458;
+#define dgHylianWoman2LeftForearmDL "__OTR__objects/object_bob/gHylianWoman2LeftForearmDL"
+static const ALIGN_ASSET(2) char gHylianWoman2LeftForearmDL[] = dgHylianWoman2LeftForearmDL;
 
-#define dobject_bob_DL_004588 "__OTR__objects/object_bob/object_bob_DL_004588"
-static const ALIGN_ASSET(2) char object_bob_DL_004588[] = dobject_bob_DL_004588;
+#define dgHylianWoman2LeftUpperArmDL "__OTR__objects/object_bob/gHylianWoman2LeftUpperArmDL"
+static const ALIGN_ASSET(2) char gHylianWoman2LeftUpperArmDL[] = dgHylianWoman2LeftUpperArmDL;
 
-#define dobject_bob_DL_0046B8 "__OTR__objects/object_bob/object_bob_DL_0046B8"
-static const ALIGN_ASSET(2) char object_bob_DL_0046B8[] = dobject_bob_DL_0046B8;
+#define dgHylianWoman2TorsoDL "__OTR__objects/object_bob/gHylianWoman2TorsoDL"
+static const ALIGN_ASSET(2) char gHylianWoman2TorsoDL[] = dgHylianWoman2TorsoDL;
 
-#define dobject_bob_DL_004A48 "__OTR__objects/object_bob/object_bob_DL_004A48"
-static const ALIGN_ASSET(2) char object_bob_DL_004A48[] = dobject_bob_DL_004A48;
+#define dgHylianWoman2RightFootDL "__OTR__objects/object_bob/gHylianWoman2RightFootDL"
+static const ALIGN_ASSET(2) char gHylianWoman2RightFootDL[] = dgHylianWoman2RightFootDL;
 
-#define dobject_bob_DL_004B18 "__OTR__objects/object_bob/object_bob_DL_004B18"
-static const ALIGN_ASSET(2) char object_bob_DL_004B18[] = dobject_bob_DL_004B18;
+#define dgHylianWoman2RightShinDL "__OTR__objects/object_bob/gHylianWoman2RightShinDL"
+static const ALIGN_ASSET(2) char gHylianWoman2RightShinDL[] = dgHylianWoman2RightShinDL;
 
-#define dobject_bob_DL_004BE8 "__OTR__objects/object_bob/object_bob_DL_004BE8"
-static const ALIGN_ASSET(2) char object_bob_DL_004BE8[] = dobject_bob_DL_004BE8;
+#define dgHylianWoman2RightThighDL "__OTR__objects/object_bob/gHylianWoman2RightThighDL"
+static const ALIGN_ASSET(2) char gHylianWoman2RightThighDL[] = dgHylianWoman2RightThighDL;
 
-#define dobject_bob_DL_004C38 "__OTR__objects/object_bob/object_bob_DL_004C38"
-static const ALIGN_ASSET(2) char object_bob_DL_004C38[] = dobject_bob_DL_004C38;
+#define dgHylianWoman2LeftFootDL "__OTR__objects/object_bob/gHylianWoman2LeftFootDL"
+static const ALIGN_ASSET(2) char gHylianWoman2LeftFootDL[] = dgHylianWoman2LeftFootDL;
 
-#define dobject_bob_DL_004D08 "__OTR__objects/object_bob/object_bob_DL_004D08"
-static const ALIGN_ASSET(2) char object_bob_DL_004D08[] = dobject_bob_DL_004D08;
+#define dgHylianWoman2LeftShinDL "__OTR__objects/object_bob/gHylianWoman2LeftShinDL"
+static const ALIGN_ASSET(2) char gHylianWoman2LeftShinDL[] = dgHylianWoman2LeftShinDL;
 
-#define dobject_bob_DL_004DD8 "__OTR__objects/object_bob/object_bob_DL_004DD8"
-static const ALIGN_ASSET(2) char object_bob_DL_004DD8[] = dobject_bob_DL_004DD8;
+#define dgHylianWoman2LeftThighDL "__OTR__objects/object_bob/gHylianWoman2LeftThighDL"
+static const ALIGN_ASSET(2) char gHylianWoman2LeftThighDL[] = dgHylianWoman2LeftThighDL;
 
-#define dobject_bob_DL_004E28 "__OTR__objects/object_bob/object_bob_DL_004E28"
-static const ALIGN_ASSET(2) char object_bob_DL_004E28[] = dobject_bob_DL_004E28;
+#define dgHylianWoman2PelvisDL "__OTR__objects/object_bob/gHylianWoman2PelvisDL"
+static const ALIGN_ASSET(2) char gHylianWoman2PelvisDL[] = dgHylianWoman2PelvisDL;
 
-typedef enum ObjectBobLimb {
-    /* 0x00 */ OBJECT_BOB_LIMB_NONE,
-    /* 0x01 */ OBJECT_BOB_LIMB_01,
-    /* 0x02 */ OBJECT_BOB_LIMB_02,
-    /* 0x03 */ OBJECT_BOB_LIMB_03,
-    /* 0x04 */ OBJECT_BOB_LIMB_04,
-    /* 0x05 */ OBJECT_BOB_LIMB_05,
-    /* 0x06 */ OBJECT_BOB_LIMB_06,
-    /* 0x07 */ OBJECT_BOB_LIMB_07,
-    /* 0x08 */ OBJECT_BOB_LIMB_08,
-    /* 0x09 */ OBJECT_BOB_LIMB_09,
-    /* 0x0A */ OBJECT_BOB_LIMB_0A,
-    /* 0x0B */ OBJECT_BOB_LIMB_0B,
-    /* 0x0C */ OBJECT_BOB_LIMB_0C,
-    /* 0x0D */ OBJECT_BOB_LIMB_0D,
-    /* 0x0E */ OBJECT_BOB_LIMB_0E,
-    /* 0x0F */ OBJECT_BOB_LIMB_0F,
-    /* 0x10 */ OBJECT_BOB_LIMB_MAX
-} ObjectBobLimb;
+typedef enum HylianWoman2Limb {
+    /* 0x00 */ HYLIAN_WOMMAN_2_LIMB_NONE,
+    /* 0x01 */ HYLIAN_WOMAN_2_LIMB_PELVIS,
+    /* 0x02 */ HYLIAN_WOMAN_2_LIMB_LEFT_THIGH,
+    /* 0x03 */ HYLIAN_WOMAN_2_LIMB_LEFT_SHIN,
+    /* 0x04 */ HYLIAN_WOMAN_2_LIMB_LEFT_FOOT,
+    /* 0x05 */ HYLIAN_WOMAN_2_LIMB_RIGHT_THIGH,
+    /* 0x06 */ HYLIAN_WOMAN_2_LIMB_RIGHT_SHIN,
+    /* 0x07 */ HYLIAN_WOMAN_2_LIMB_RIGHT_FOOT,
+    /* 0x08 */ HYLIAN_WOMAN_2_LIMB_TORSO,
+    /* 0x09 */ HYLIAN_WOMAN_2_LIMB_LEFT_UPPER_ARM,
+    /* 0x0A */ HYLIAN_WOMAN_2_LIMB_LEFT_FOREARM,
+    /* 0x0B */ HYLIAN_WOMAN_2_LIMB_LEFT_HAND,
+    /* 0x0C */ HYLIAN_WOMAN_2_LIMB_RIGHT_UPPER_ARM,
+    /* 0x0D */ HYLIAN_WOMAN_2_LIMB_RIGHT_FOREARM,
+    /* 0x0E */ HYLIAN_WOMAN_2_LIMB_RIGHT_HAND,
+    /* 0x0F */ HYLIAN_WOMAN_2_LIMB_HEAD,
+    /* 0x10 */ HYLIAN_WOMMAN_2_LIMB_MAX
+} HylianWoman2Limb;
 
 #endif // OBJECTS_OBJECT_BOB_H

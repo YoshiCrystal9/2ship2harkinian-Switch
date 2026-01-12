@@ -78,23 +78,23 @@ static const ALIGN_ASSET(2) char gameplay_field_keep_Tex_004600[] = dgameplay_fi
 #define dgFieldWoodDoorTex "__OTR__objects/gameplay_field_keep/gFieldWoodDoorTex"
 static const ALIGN_ASSET(2) char gFieldWoodDoorTex[] = dgFieldWoodDoorTex;
 
-#define dgameplay_field_keep_TLUT_005800 "__OTR__objects/gameplay_field_keep/gameplay_field_keep_TLUT_005800"
-static const ALIGN_ASSET(2) char gameplay_field_keep_TLUT_005800[] = dgameplay_field_keep_TLUT_005800;
+#define dgFieldSilverBoulderTLUT "__OTR__objects/gameplay_field_keep/gFieldSilverBoulderTLUT"
+static const ALIGN_ASSET(2) char gFieldSilverBoulderTLUT[] = dgFieldSilverBoulderTLUT;
 
-#define dgameplay_field_keep_Tex_005828 "__OTR__objects/gameplay_field_keep/gameplay_field_keep_Tex_005828"
-static const ALIGN_ASSET(2) char gameplay_field_keep_Tex_005828[] = dgameplay_field_keep_Tex_005828;
+#define dgFieldSilverBoulderTex "__OTR__objects/gameplay_field_keep/gFieldSilverBoulderTex"
+static const ALIGN_ASSET(2) char gFieldSilverBoulderTex[] = dgFieldSilverBoulderTex;
 
-#define dgameplay_field_keep_DL_0061E8 "__OTR__objects/gameplay_field_keep/gameplay_field_keep_DL_0061E8"
-static const ALIGN_ASSET(2) char gameplay_field_keep_DL_0061E8[] = dgameplay_field_keep_DL_0061E8;
+#define dgFieldSilverBoulderDL "__OTR__objects/gameplay_field_keep/gFieldSilverBoulderDL"
+static const ALIGN_ASSET(2) char gFieldSilverBoulderDL[] = dgFieldSilverBoulderDL;
 
-#define dgameplay_field_keep_DL_006420 "__OTR__objects/gameplay_field_keep/gameplay_field_keep_DL_006420"
-static const ALIGN_ASSET(2) char gameplay_field_keep_DL_006420[] = dgameplay_field_keep_DL_006420;
+#define dgFieldSilverBoulderDebrisDL "__OTR__objects/gameplay_field_keep/gFieldSilverBoulderDebrisDL"
+static const ALIGN_ASSET(2) char gFieldSilverBoulderDebrisDL[] = dgFieldSilverBoulderDebrisDL;
 
-#define dgameplay_field_keep_DL_0066B0 "__OTR__objects/gameplay_field_keep/gameplay_field_keep_DL_0066B0"
-static const ALIGN_ASSET(2) char gameplay_field_keep_DL_0066B0[] = dgameplay_field_keep_DL_0066B0;
+#define dgFieldSmallRockOpaDL "__OTR__objects/gameplay_field_keep/gFieldSmallRockOpaDL"
+static const ALIGN_ASSET(2) char gFieldSmallRockOpaDL[] = dgFieldSmallRockOpaDL;
 
-#define dgameplay_field_keep_DL_006760 "__OTR__objects/gameplay_field_keep/gameplay_field_keep_DL_006760"
-static const ALIGN_ASSET(2) char gameplay_field_keep_DL_006760[] = dgameplay_field_keep_DL_006760;
+#define dgFieldSmallRockXluDL "__OTR__objects/gameplay_field_keep/gFieldSmallRockXluDL"
+static const ALIGN_ASSET(2) char gFieldSmallRockXluDL[] = dgFieldSmallRockXluDL;
 
 #define dgameplay_field_keep_Tex_006810 "__OTR__objects/gameplay_field_keep/gameplay_field_keep_Tex_006810"
 static const ALIGN_ASSET(2) char gameplay_field_keep_Tex_006810[] = dgameplay_field_keep_Tex_006810;

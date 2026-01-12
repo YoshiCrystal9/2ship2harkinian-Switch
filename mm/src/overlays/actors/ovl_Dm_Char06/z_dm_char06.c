@@ -6,9 +6,7 @@
 
 #include "z_dm_char06.h"
 
-#define FLAGS (ACTOR_FLAG_10 | ACTOR_FLAG_20)
-
-#define THIS ((DmChar06*)thisx)
+#define FLAGS (ACTOR_FLAG_UPDATE_CULLING_DISABLED | ACTOR_FLAG_DRAW_CULLING_DISABLED)
 
 void DmChar06_Init(Actor* thisx, PlayState* play);
 void DmChar06_Destroy(Actor* thisx, PlayState* play);
@@ -18,7 +16,7 @@ void DmChar06_Draw(Actor* thisx, PlayState* play);
 void DmChar06_SetupAction(DmChar06* this, DmChar06ActionFunc actionFunc);
 void DmChar06_HandleCutscene(DmChar06* this, PlayState* play);
 
-ActorInit Dm_Char06_InitVars = {
+ActorProfile Dm_Char06_Profile = {
     /**/ ACTOR_DM_CHAR06,
     /**/ ACTORCAT_ITEMACTION,
     /**/ FLAGS,
@@ -35,7 +33,7 @@ void DmChar06_SetupAction(DmChar06* this, DmChar06ActionFunc actionFunc) {
 }
 
 void DmChar06_Init(Actor* thisx, PlayState* play) {
-    DmChar06* this = THIS;
+    DmChar06* this = (DmChar06*)thisx;
 
     SET_WEEKEVENTREG(WEEKEVENTREG_CLEARED_SNOWHEAD_TEMPLE);
     Actor_SetScale(&this->actor, 1.0f);
@@ -65,14 +63,14 @@ void DmChar06_HandleCutscene(DmChar06* this, PlayState* play) {
 }
 
 void DmChar06_Update(Actor* thisx, PlayState* play) {
-    DmChar06* this = THIS;
+    DmChar06* this = (DmChar06*)thisx;
 
     this->actionFunc(this, play);
 }
 
 void DmChar06_Draw(Actor* thisx, PlayState* play) {
     s32 pad;
-    DmChar06* this = THIS;
+    DmChar06* this = (DmChar06*)thisx;
 
     AnimatedMat_Draw(play, Lib_SegmentedToVirtual(object_yukiyama_Matanimheader_006868));
 
@@ -82,7 +80,7 @@ void DmChar06_Draw(Actor* thisx, PlayState* play) {
     Scene_SetRenderModeXlu(play, 1, 2);
     gDPPipeSync(POLY_XLU_DISP++);
     gDPSetEnvColor(POLY_XLU_DISP++, 0, 0, 0, this->alpha);
-    gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    MATRIX_FINALIZE_AND_LOAD(POLY_XLU_DISP++, play->state.gfxCtx);
     gSPDisplayList(POLY_XLU_DISP++, object_yukiyama_DL_0013A8);
 
     CLOSE_DISPS(play->state.gfxCtx);

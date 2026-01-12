@@ -6,9 +6,7 @@
 
 #include "z_en_okarina_tag.h"
 
-#define FLAGS (ACTOR_FLAG_10 | ACTOR_FLAG_2000000 | ACTOR_FLAG_CANT_LOCK_ON)
-
-#define THIS ((EnOkarinaTag*)thisx)
+#define FLAGS (ACTOR_FLAG_UPDATE_CULLING_DISABLED | ACTOR_FLAG_UPDATE_DURING_OCARINA | ACTOR_FLAG_LOCK_ON_DISABLED)
 
 void EnOkarinaTag_Init(Actor* thisx, PlayState* play);
 void EnOkarinaTag_Destroy(Actor* thisx, PlayState* play);
@@ -17,7 +15,7 @@ void EnOkarinaTag_Update(Actor* thisx, PlayState* play);
 void func_8093E518(EnOkarinaTag* this, PlayState* play);
 void func_8093E68C(EnOkarinaTag* this, PlayState* play);
 
-ActorInit En_Okarina_Tag_InitVars = {
+ActorProfile En_Okarina_Tag_Profile = {
     /**/ ACTOR_EN_OKARINA_TAG,
     /**/ ACTORCAT_SWITCH,
     /**/ FLAGS,
@@ -33,11 +31,11 @@ void EnOkarinaTag_Destroy(Actor* thisx, PlayState* play) {
 }
 
 void EnOkarinaTag_Init(Actor* thisx, PlayState* play) {
-    EnOkarinaTag* this = THIS;
+    EnOkarinaTag* this = (EnOkarinaTag*)thisx;
     f32 zRot = 0.0f;
     s32 i = 0;
 
-    this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
+    this->actor.flags &= ~ACTOR_FLAG_ATTENTION_ENABLED;
     this->unk148 = ENOKARINATAG_GET_F800(thisx);
     this->unk14A = ENOKARINATAG_GET_780(thisx);
     this->switchFlag = ENOKARINATAG_GET_SWITCH_FLAG(thisx);
@@ -56,7 +54,7 @@ void EnOkarinaTag_Init(Actor* thisx, PlayState* play) {
     if (this->unk14A == 0xF) {
         this->unk14A = -1;
     }
-    this->actor.targetMode = TARGET_MODE_1;
+    this->actor.attentionRangeType = ATTENTION_RANGE_1;
     this->actionFunc = func_8093E518;
 }
 
@@ -88,7 +86,7 @@ void func_8093E518(EnOkarinaTag* this, PlayState* play) {
     if (this->unk14A == -1) {
         var_v1 = 0;
     }
-    if (func_800B8718(&this->actor, &play->state)) {
+    if (Actor_OcarinaInteractionAccepted(&this->actor, &play->state)) {
         Message_DisplayOcarinaStaff(play, OCARINA_ACTION_CHECK_HEALING + var_v1);
         this->actionFunc = func_8093E68C;
     } else {
@@ -106,7 +104,7 @@ void func_8093E518(EnOkarinaTag* this, PlayState* play) {
         if (yRange == 0.0f) {
             yRange = 50000.0f;
         }
-        func_800B874C(&this->actor, play, xzRange, yRange);
+        Actor_OfferOcarinaInteraction(&this->actor, play, xzRange, yRange);
     }
 }
 
@@ -127,15 +125,20 @@ void func_8093E68C(EnOkarinaTag* this, PlayState* play) {
                     case 0:
                         Flags_SetSwitch(play, this->switchFlag);
                         break;
+
                     case 1:
                         Flags_UnsetSwitch(play, this->switchFlag);
                         break;
+
                     case 2:
                         if (Flags_GetSwitch(play, this->switchFlag)) {
                             Flags_UnsetSwitch(play, this->switchFlag);
                         } else {
                             Flags_SetSwitch(play, this->switchFlag);
                         }
+                        break;
+
+                    default:
                         break;
                 }
             }
@@ -147,7 +150,7 @@ void func_8093E68C(EnOkarinaTag* this, PlayState* play) {
 }
 
 void EnOkarinaTag_Update(Actor* thisx, PlayState* play) {
-    EnOkarinaTag* this = THIS;
+    EnOkarinaTag* this = (EnOkarinaTag*)thisx;
 
     this->actionFunc(this, play);
 }

@@ -7,16 +7,14 @@
 #include "z_dm_tsg.h"
 #include "objects/object_open_obj/object_open_obj.h"
 
-#define FLAGS (ACTOR_FLAG_10 | ACTOR_FLAG_20)
-
-#define THIS ((DmTsg*)thisx)
+#define FLAGS (ACTOR_FLAG_UPDATE_CULLING_DISABLED | ACTOR_FLAG_DRAW_CULLING_DISABLED)
 
 void DmTsg_Init(Actor* thisx, PlayState* play);
 void DmTsg_Destroy(Actor* thisx, PlayState* play);
 void DmTsg_Update(Actor* thisx, PlayState* play);
 void DmTsg_Draw(Actor* thisx, PlayState* play2);
 
-ActorInit Dm_Tsg_InitVars = {
+ActorProfile Dm_Tsg_Profile = {
     /**/ ACTOR_DM_TSG,
     /**/ ACTORCAT_ITEMACTION,
     /**/ FLAGS,
@@ -29,7 +27,7 @@ ActorInit Dm_Tsg_InitVars = {
 };
 
 void DmTsg_Init(Actor* thisx, PlayState* play) {
-    DmTsg* this = THIS;
+    DmTsg* this = (DmTsg*)thisx;
     s32 i;
 
     if (gSaveContext.save.entrance == ENTRANCE(OPENING_DUNGEON, 0)) {
@@ -47,7 +45,7 @@ void DmTsg_Destroy(Actor* thisx, PlayState* play) {
 }
 
 void DmTsg_Update(Actor* thisx, PlayState* play) {
-    DmTsg* this = THIS;
+    DmTsg* this = (DmTsg*)thisx;
     s32 cueChannel;
     s16 i;
 
@@ -73,7 +71,7 @@ void DmTsg_Update(Actor* thisx, PlayState* play) {
 
 void DmTsg_Draw(Actor* thisx, PlayState* play2) {
     PlayState* play = play2;
-    DmTsg* this = THIS;
+    DmTsg* this = (DmTsg*)thisx;
     s32 i;
     u32 j;
 

@@ -1,11 +1,11 @@
 #include "ActorBehavior.h"
-#include "public/bridge/consolevariablebridge.h"
+#include <libultraship/bridge/consolevariablebridge.h>
 
 extern "C" {
 #include "variables.h"
 
 #include "overlays/actors/ovl_En_Bom_Bowl_Man/z_en_bom_bowl_man.h"
-void Player_TalkWithPlayer(PlayState* play, Actor* actor);
+void Player_StartTalking(PlayState* play, Actor* actor);
 void func_809C4DA4(EnBomBowlMan* thisx, PlayState* play);
 void func_809C5598(EnBomBowlMan* thisx, PlayState* play);
 }
@@ -28,7 +28,7 @@ void Rando::ActorBehavior::InitEnBomBowlManBehavior() {
         player->talkActor = actor;
         player->talkActorDistance = actor->xzDistToPlayer;
         player->exchangeItemAction = PLAYER_IA_MINUS1;
-        Player_TalkWithPlayer(gPlayState, actor);
+        Player_StartTalking(gPlayState, actor);
         actor->textId = 0x735;
         SET_WEEKEVENTREG(WEEKEVENTREG_84_80);
     });
@@ -50,7 +50,7 @@ void Rando::ActorBehavior::InitEnBomBowlManBehavior() {
     });
 
     // Override the original requirement, which is the absence of the Bombers' Notebook
-    COND_VB_SHOULD(VB_BE_ELIGBLE_FOR_BOMBERS_NOTEBOOK, IS_RANDO, {
+    COND_VB_SHOULD(VB_BE_ELIGIBLE_FOR_BOMBERS_NOTEBOOK, IS_RANDO, {
         *should = CHECK_WEEKEVENTREG(WEEKEVENTREG_73_80) && !RANDO_SAVE_CHECKS[RC_CLOCK_TOWN_BOMBERS_NOTEBOOK].obtained;
     });
 };

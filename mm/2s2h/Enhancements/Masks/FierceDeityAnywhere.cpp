@@ -1,5 +1,5 @@
-#include "2s2h/ActorExtension/ActorExtension.h"
-#include "public/bridge/consolevariablebridge.h"
+#include "2s2h/ObjectExtension/ObjectExtension.h"
+#include <libultraship/bridge/consolevariablebridge.h>
 #include "2s2h/GameInteractor/GameInteractor.h"
 #include "2s2h/ShipInit.hpp"
 
@@ -14,32 +14,24 @@ extern "C" {
 #include "overlays/actors/ovl_En_Neo_Reeba/z_en_neo_reeba.h"
 }
 
-ActorExtensionId actorHitBySwordBeamExtId = 0;
-
 #define CVAR_NAME "gEnhancements.Masks.FierceDeitysAnywhere"
 #define CVAR CVarGetInteger(CVAR_NAME, 0)
 
-bool GetActorHitBySwordBeam(Actor* actor) {
-    bool* swordBeamCollisionFlag = (bool*)ActorExtension_Get(actor, actorHitBySwordBeamExtId);
-    if (swordBeamCollisionFlag == NULL) {
-        return false;
-    }
+struct SwordBeamCollision {
+    bool hitBySwordBeam = false;
+};
+static ObjectExtension::Register<SwordBeamCollision> SwordBeamCollisionRegister;
 
-    return *swordBeamCollisionFlag;
+bool GetActorHitBySwordBeam(Actor* actor) {
+    const SwordBeamCollision* collision = ObjectExtension::GetInstance().Get<SwordBeamCollision>(actor);
+    return collision != nullptr ? collision->hitBySwordBeam : SwordBeamCollision{}.hitBySwordBeam;
 }
 
-void SetActorHitBySwordBeam(Actor* actor, bool flag) {
-    bool* swordBeamCollisionFlag = (bool*)ActorExtension_Get(actor, actorHitBySwordBeamExtId);
-    if (swordBeamCollisionFlag != NULL) {
-        *swordBeamCollisionFlag = flag;
-    }
+void SetActorHitBySwordBeam(const Actor* actor, bool hitBySwordBeam) {
+    ObjectExtension::GetInstance().Set<SwordBeamCollision>(actor, SwordBeamCollision{ hitBySwordBeam });
 }
 
 void RegisterFierceDeityAnywhere() {
-    if (actorHitBySwordBeamExtId == 0) {
-        actorHitBySwordBeamExtId = ActorExtension_CreateForAll(sizeof(bool));
-    }
-
     COND_VB_SHOULD(VB_DISABLE_FD_MASK, CVAR, { *should = false; });
 
     COND_VB_SHOULD(VB_DAMAGE_MULTIPLIER, CVAR, {
@@ -142,8 +134,8 @@ void RegisterFierceDeityAnywhere() {
      * enemies in a damaging way, such as Skulltulas and Big Octos.
      */
     COND_VB_SHOULD(VB_CHECK_BUMPER_COLLISION, CVAR, {
-        ColliderInfo* toucher = va_arg(args, ColliderInfo*);
-        if (toucher->toucher.dmgFlags & DMG_SWORD_BEAM) {
+        ColliderElement* toucher = va_arg(args, ColliderElement*);
+        if (toucher->atDmgInfo.dmgFlags & DMG_SWORD_BEAM) {
             *should = false;
         }
     });
@@ -155,8 +147,8 @@ void RegisterFierceDeityAnywhere() {
     COND_VB_SHOULD(VB_PERFORM_AC_COLLISION, CVAR, {
         Collider* at = va_arg(args, Collider*);
         Collider* ac = va_arg(args, Collider*);
-        ColliderInfo* atInfo = va_arg(args, ColliderInfo*);
-        ColliderInfo* acInfo = va_arg(args, ColliderInfo*);
+        ColliderElement* atInfo = va_arg(args, ColliderElement*);
+        ColliderElement* acInfo = va_arg(args, ColliderElement*);
         /*
          * If the AT actor is EnMThunder with a subtype > ENMTHUNDER_SUBTYPE_SPIN_REGULAR, it is a sword beam. If the AC
          * actor is not an enemy/boss and does not normally collide with sword beams, then do not handle the sword beam
@@ -164,7 +156,7 @@ void RegisterFierceDeityAnywhere() {
          */
         if (at->actor->id == ACTOR_EN_M_THUNDER && ((EnMThunder*)at->actor)->subtype > 1 &&
             ac->actor->category != ACTORCAT_ENEMY && ac->actor->category != ACTORCAT_BOSS &&
-            !(acInfo->bumper.dmgFlags & DMG_SWORD_BEAM)) {
+            !(acInfo->acDmgInfo.dmgFlags & DMG_SWORD_BEAM)) {
             *should = false;
         }
     });
@@ -176,14 +168,14 @@ void RegisterFierceDeityAnywhere() {
     COND_ID_HOOK(ShouldActorUpdate, ACTOR_EN_BIGOKUTA, CVAR, [](Actor* actor, bool* result) {
         EnBigokuta* enBigOkuta = (EnBigokuta*)actor;
         if (enBigOkuta->bodyCollider.base.acFlags & AC_HIT &&
-            enBigOkuta->bodyCollider.info.acHitInfo->toucher.dmgFlags & DMG_SWORD_BEAM) {
+            enBigOkuta->bodyCollider.elem.acHitElem->atDmgInfo.dmgFlags & DMG_SWORD_BEAM) {
             enBigOkuta->drawDmgEffType = ACTOR_DRAW_DMGEFF_BLUE_LIGHT_ORBS;
             enBigOkuta->drawDmgEffScale = 1.2f;
             enBigOkuta->drawDmgEffAlpha = 4.0f;
-            Actor_Spawn(&gPlayState->actorCtx, gPlayState, ACTOR_EN_CLEAR_TAG,
-                        enBigOkuta->bodyCollider.info.bumper.hitPos.x, enBigOkuta->bodyCollider.info.bumper.hitPos.y,
-                        enBigOkuta->bodyCollider.info.bumper.hitPos.z, 0, 0, 3,
-                        CLEAR_TAG_PARAMS(CLEAR_TAG_LARGE_LIGHT_RAYS));
+            Actor_Spawn(
+                &gPlayState->actorCtx, gPlayState, ACTOR_EN_CLEAR_TAG, enBigOkuta->bodyCollider.elem.acDmgInfo.hitPos.x,
+                enBigOkuta->bodyCollider.elem.acDmgInfo.hitPos.y, enBigOkuta->bodyCollider.elem.acDmgInfo.hitPos.z, 0,
+                0, 3, CLEAR_TAG_PARAMS(CLEAR_TAG_LARGE_LIGHT_RAYS));
         }
     });
 
@@ -204,6 +196,26 @@ void RegisterFierceDeityAnywhere() {
         // Vanilla proximity is 50.0f, but FD cannot get that close to some doors
         if (GET_PLAYER_FORM == PLAYER_FORM_FIERCE_DEITY && fabsf(playerZPosRelToDoor) < 60.0f) {
             *should = true;
+        }
+    });
+
+    /*
+     * Allow the FD Mask to be usable in water. This requires two pieces: using VB_DISABLE_ITEM_UNDERWATER to make the
+     * assigned button itself enabled and using VB_USE_ITEM_CONSIDER_ITEM_ACTION to ensure the item action can be
+     * completed in water. This is how, normally, Zora Mask is the only usable item in water.
+     */
+    COND_VB_SHOULD(VB_USE_ITEM_CONSIDER_ITEM_ACTION, CVAR, {
+        PlayerItemAction itemAction = *va_arg(args, PlayerItemAction*);
+        if (itemAction == PLAYER_IA_MASK_FIERCE_DEITY) {
+            *should = true;
+        }
+    });
+
+    COND_VB_SHOULD(VB_DISABLE_ITEM_UNDERWATER, CVAR, {
+        s32 item = va_arg(args, s32);
+        if (item == ITEM_MASK_FIERCE_DEITY &&
+            Player_GetEnvironmentalHazard(gPlayState) > PLAYER_ENV_HAZARD_UNDERWATER_FLOOR) {
+            *should = false;
         }
     });
 }

@@ -2,10 +2,10 @@
 #include "global.h"
 #include "fault.h"
 
-// Init Vars declarations (also used in the table below)
+// Segment and Profile declarations (also used in the table below)
 // 2S2H Added columns to actor table: _humanName
-#define DEFINE_ACTOR(name, _enumValue, _allocType, _debugName, _humanName) extern ActorInit name##_InitVars;
-#define DEFINE_ACTOR_INTERNAL(name, _enumValue, _allocType, _debugName, _humanName) extern ActorInit name##_InitVars;
+#define DEFINE_ACTOR(name, _enumValue, _allocType, _debugName, _humanName) extern ActorProfile name##_Profile;
+#define DEFINE_ACTOR_INTERNAL(name, _enumValue, _allocType, _debugName, _humanName) extern ActorProfile name##_Profile;
 #define DEFINE_ACTOR_UNSET(_enumValue)
 
 #include "tables/actor_table.h"
@@ -21,14 +21,14 @@
 //      SEGMENT_START(ovl_##name),                              \
 //      SEGMENT_END(ovl_##name),                                \
 //      NULL,                                                   \
-//      &name##_InitVars,                                       \
+//      &name##_Profile,                                       \
 //      NULL,                                                   \
 //      allocType,                                              \
 //      0 },
 
 // 2S2H Added columns to actor table: _humanName
 #define DEFINE_ACTOR_INTERNAL(name, _enumValue, allocType, _debugName, _humanName) \
-    { 0, 0, NULL, NULL, NULL, &name##_InitVars, NULL, allocType, 0 },
+    { 0, 0, NULL, NULL, NULL, &name##_Profile, NULL, allocType, 0 },
 
 #define DEFINE_ACTOR(name, _enumValue, allocType, _debugName, _humanName) \
     DEFINE_ACTOR_INTERNAL(name, _enumValue, allocType, _debugName, _humanName)
@@ -70,7 +70,7 @@ void ActorOverlayTable_FaultClient(void* arg0, void* arg1) {
 uintptr_t ActorOverlayTable_FaultAddrConv(uintptr_t address, void* param) {
     uintptr_t addr = address;
     ActorOverlay* actorOvl = &gActorOverlayTable[0];
-    size_t ramConv;
+    uintptr_t ramConv;
     void* ramStart;
     size_t diff;
     ActorId actorId;

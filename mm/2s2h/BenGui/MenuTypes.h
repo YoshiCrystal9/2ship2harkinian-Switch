@@ -28,6 +28,10 @@ typedef enum {
     DISABLE_FOR_ADVANCED_RESOLUTION_ON,
     DISABLE_FOR_VERTICAL_RES_TOGGLE_ON,
     DISABLE_FOR_LOW_RES_MODE_ON,
+    DISABLE_FOR_ADVANCED_RESOLUTION_OFF,
+    DISABLE_FOR_VERTICAL_RESOLUTION_OFF,
+    DISABLE_FOR_LINKS_VOICE_PITCH_MULTIPLIER_OFF,
+    DISABLE_FOR_KOUME_INVINCIBLE,
 } DisableOption;
 
 struct WidgetInfo;
@@ -122,6 +126,7 @@ struct WidgetInfo {
     const char* windowName = "";
     bool isHidden = false;
     bool sameLine = false;
+    bool hideInSearch = false;
 
     WidgetInfo& CVar(const char* cVar_) {
         cVar = cVar_;
@@ -199,6 +204,11 @@ struct WidgetInfo {
         customFunction = customFunction_;
         return *this;
     }
+
+    WidgetInfo& HideInSearch(bool hide) {
+        hideInSearch = hide;
+        return *this;
+    }
 };
 
 struct WidgetPath {
@@ -251,6 +261,15 @@ struct SidebarEntry {
     std::vector<std::vector<WidgetInfo>> columnWidgets;
 };
 
+struct SearchWidget {
+    // First four required
+    WidgetInfo& info;
+    std::string menuName;
+    std::string sidebarName;
+    std::string location;
+    std::string extraTerms = "";
+};
+
 // Contains entries for what's listed in the header at the top, including the name displayed on the top bar (label),
 // a vector of the SidebarEntries for that header entry, and the name of the cvar used to track what sidebar entry is
 // the last viewed for that header.
@@ -264,6 +283,7 @@ struct MainMenuEntry {
 static const std::unordered_map<Ship::AudioBackend, const char*> audioBackendsMap = {
     { Ship::AudioBackend::WASAPI, "Windows Audio Session API" },
     { Ship::AudioBackend::SDL, "SDL" },
+    { Ship::AudioBackend::NUL, "Null" },
 };
 
 static const std::unordered_map<Ship::WindowBackend, const char*> windowBackendsMap = {

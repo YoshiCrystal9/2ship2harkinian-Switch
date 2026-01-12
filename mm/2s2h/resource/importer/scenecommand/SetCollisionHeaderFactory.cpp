@@ -1,7 +1,7 @@
 #include "2s2h/resource/importer/scenecommand/SetCollisionHeaderFactory.h"
 #include "2s2h/resource/type/scenecommand/SetCollisionHeader.h"
-#include "Context.h"
-#include "ResourceManager.h"
+#include <ship/Context.h>
+#include <ship/resource/ResourceManager.h>
 
 namespace SOH {
 std::shared_ptr<Ship::IResource>

@@ -3,9 +3,9 @@
 #include "regs.h"
 #include "functions.h"
 #include "fault.h"
-#include "public/bridge/gfxdebuggerbridge.h"
-#include "public/bridge/consolevariablebridge.h"
-#include "public/bridge/windowbridge.h"
+#include <libultraship/bridge/gfxdebuggerbridge.h>
+#include <libultraship/bridge/consolevariablebridge.h>
+#include <libultraship/bridge/windowbridge.h>
 #include <string.h>
 
 // Variables are put before most headers as a hacky way to bypass bss reordering
@@ -104,7 +104,7 @@ GameStateOverlay* Graph_GetNextGameState(GameState* gameState) {
 uintptr_t Graph_FaultAddrConv(uintptr_t address, void* param) {
     uintptr_t addr = address;
     GameStateOverlay* gameStateOvl = &gGameStateOverlayTable[0];
-    size_t ramConv;
+    uintptr_t ramConv;
     void* ramStart;
     size_t diff;
     s32 i;

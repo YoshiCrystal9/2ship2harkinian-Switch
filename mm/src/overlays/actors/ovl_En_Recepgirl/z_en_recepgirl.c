@@ -5,11 +5,8 @@
  */
 
 #include "z_en_recepgirl.h"
-#include "objects/object_bg/object_bg.h"
 
-#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_FRIENDLY)
-
-#define THIS ((EnRecepgirl*)thisx)
+#define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY)
 
 void EnRecepgirl_Init(Actor* thisx, PlayState* play);
 void EnRecepgirl_Destroy(Actor* thisx, PlayState* play);
@@ -21,7 +18,7 @@ void EnRecepgirl_Wait(EnRecepgirl* this, PlayState* play);
 void EnRecepgirl_SetupTalk(EnRecepgirl* this);
 void EnRecepgirl_Talk(EnRecepgirl* this, PlayState* play);
 
-ActorInit En_Recepgirl_InitVars = {
+ActorProfile En_Recepgirl_Profile = {
     /**/ ACTOR_EN_RECEPGIRL,
     /**/ ACTORCAT_NPC,
     /**/ FLAGS,
@@ -33,24 +30,28 @@ ActorInit En_Recepgirl_InitVars = {
     /**/ EnRecepgirl_Draw,
 };
 
-static TexturePtr sEyeTextures[] = { object_bg_Tex_00F8F0, object_bg_Tex_00FCF0, object_bg_Tex_0100F0,
-                                     object_bg_Tex_00FCF0 };
+static TexturePtr sEyeTextures[] = {
+    object_bg_Tex_00F8F0,
+    object_bg_Tex_00FCF0,
+    object_bg_Tex_0100F0,
+    object_bg_Tex_00FCF0,
+};
 
 static InitChainEntry sInitChain[] = {
-    ICHAIN_U8(targetMode, TARGET_MODE_6, ICHAIN_CONTINUE),
-    ICHAIN_F32(targetArrowOffset, 1000, ICHAIN_STOP),
+    ICHAIN_U8(attentionRangeType, ATTENTION_RANGE_6, ICHAIN_CONTINUE),
+    ICHAIN_F32(lockOnArrowOffset, 1000, ICHAIN_STOP),
 };
 
 static s32 sTexturesDesegmented = false;
 
 void EnRecepgirl_Init(Actor* thisx, PlayState* play) {
-    EnRecepgirl* this = THIS;
+    EnRecepgirl* this = (EnRecepgirl*)thisx;
     s32 i;
 
     Actor_ProcessInitChain(&this->actor, sInitChain);
     ActorShape_Init(&this->actor.shape, -60.0f, NULL, 0.0f);
     SkelAnime_InitFlex(play, &this->skelAnime, &object_bg_Skel_011B60, &object_bg_Anim_009890, this->jointTable,
-                       this->morphTable, 24);
+                       this->morphTable, OBJECT_BG_2_LIMB_MAX);
 
     if (!sTexturesDesegmented) {
         for (i = 0; i < ARRAY_COUNT(sEyeTextures); i++) {
@@ -92,7 +93,7 @@ void EnRecepgirl_SetupWait(EnRecepgirl* this) {
 }
 
 void EnRecepgirl_Wait(EnRecepgirl* this, PlayState* play) {
-    if (SkelAnime_Update(&this->skelAnime) != 0) {
+    if (SkelAnime_Update(&this->skelAnime)) {
         if (this->skelAnime.animation == &object_bg_Anim_00A280) {
             Animation_MorphToPlayOnce(&this->skelAnime, &object_bg_Anim_00AD98, 5.0f);
         } else {
@@ -100,7 +101,7 @@ void EnRecepgirl_Wait(EnRecepgirl* this, PlayState* play) {
         }
     }
 
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+    if (Actor_TalkOfferAccepted(&this->actor, &play->state)) {
         EnRecepgirl_SetupTalk(this);
     } else if (Actor_IsFacingPlayer(&this->actor, 0x2000)) {
         Actor_OfferTalk(&this->actor, play, 60.0f);
@@ -144,12 +145,12 @@ void EnRecepgirl_Talk(EnRecepgirl* this, PlayState* play) {
     if (talkState == TEXT_STATE_CLOSING) {
         this->actor.textId = 0x2ADC; // hear directions again?
         EnRecepgirl_SetupWait(this);
-    } else if ((talkState == TEXT_STATE_5) && Message_ShouldAdvance(play)) {
+    } else if ((talkState == TEXT_STATE_EVENT) && Message_ShouldAdvance(play)) {
         if (this->actor.textId == 0x2AD9) {
             Flags_SetSwitch(play, ENRECEPGIRL_GET_SWITCH_FLAG(&this->actor));
             Animation_MorphToPlayOnce(&this->skelAnime, &object_bg_Anim_00AD98, 10.0f);
 
-            if (CHECK_WEEKEVENTREG(WEEKEVENTREG_63_80)) {
+            if (CHECK_WEEKEVENTREG(WEEKEVENTREG_RESOLVED_MAYOR_MEETING)) {
                 this->actor.textId = 0x2ADF; // Mayor's office is on the left (meeting ended)
             } else {
                 this->actor.textId = 0x2ADA; // Mayor's office is on the left (meeting ongoing)
@@ -174,34 +175,34 @@ void EnRecepgirl_Talk(EnRecepgirl* this, PlayState* play) {
 
 void EnRecepgirl_Update(Actor* thisx, PlayState* play) {
     s32 pad;
-    EnRecepgirl* this = THIS;
-    Vec3s sp30;
+    EnRecepgirl* this = (EnRecepgirl*)thisx;
+    Vec3s torsoRot;
 
     this->actionFunc(this, play);
-    Actor_TrackPlayer(play, &this->actor, &this->headRot, &sp30, this->actor.focus.pos);
+    Actor_TrackPlayer(play, &this->actor, &this->headRot, &torsoRot, this->actor.focus.pos);
     EnRecepgirl_UpdateEyes(this);
 }
 
 s32 EnRecepgirl_OverrideLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3f* pos, Vec3s* rot, Actor* thisx) {
-    EnRecepgirl* this = THIS;
+    EnRecepgirl* this = (EnRecepgirl*)thisx;
 
-    if (limbIndex == 5) {
+    if (limbIndex == OBJECT_BG_2_LIMB_05) {
         rot->x += this->headRot.y;
     }
     return false;
 }
 
 void EnRecepgirl_TransformLimbDraw(PlayState* play, s32 limbIndex, Actor* thisx) {
-    EnRecepgirl* this = THIS;
+    EnRecepgirl* this = (EnRecepgirl*)thisx;
 
-    if (limbIndex == 5) {
+    if (limbIndex == OBJECT_BG_2_LIMB_05) {
         Matrix_RotateYS(0x400 - this->headRot.x, MTXMODE_APPLY);
         Matrix_MultVecX(500.0f, &this->actor.focus.pos);
     }
 }
 
 void EnRecepgirl_Draw(Actor* thisx, PlayState* play) {
-    EnRecepgirl* this = THIS;
+    EnRecepgirl* this = (EnRecepgirl*)thisx;
 
     OPEN_DISPS(play->state.gfxCtx);
 

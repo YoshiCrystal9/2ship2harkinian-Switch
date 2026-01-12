@@ -3,15 +3,15 @@
 
 #include "align_asset_macro.h"
 
-#define dobject_b_heart_DL_000240 "__OTR__objects/object_b_heart/object_b_heart_DL_000240"
-static const ALIGN_ASSET(2) char object_b_heart_DL_000240[] = dobject_b_heart_DL_000240;
+#define dgUnusedHeartContainerDL "__OTR__objects/object_b_heart/gUnusedHeartContainerDL"
+static const ALIGN_ASSET(2) char gUnusedHeartContainerDL[] = dgUnusedHeartContainerDL;
 
-#define dobject_b_heart_DL_000348 "__OTR__objects/object_b_heart/object_b_heart_DL_000348"
-static const ALIGN_ASSET(2) char object_b_heart_DL_000348[] = dobject_b_heart_DL_000348;
+#define dgUnusedHeartSpriteDL "__OTR__objects/object_b_heart/gUnusedHeartSpriteDL"
+static const ALIGN_ASSET(2) char gUnusedHeartSpriteDL[] = dgUnusedHeartSpriteDL;
 
-#define dobject_b_heart_Tex_0003C0 "__OTR__objects/object_b_heart/object_b_heart_Tex_0003C0"
-static const ALIGN_ASSET(2) char object_b_heart_Tex_0003C0[] = dobject_b_heart_Tex_0003C0;
+#define dgUnusedHeartContainerTex "__OTR__objects/object_b_heart/gUnusedHeartContainerTex"
+static const ALIGN_ASSET(2) char gUnusedHeartContainerTex[] = dgUnusedHeartContainerTex;
 
-#define dobject_b_heart_Tex_0005C0 "__OTR__objects/object_b_heart/object_b_heart_Tex_0005C0"
-static const ALIGN_ASSET(2) char object_b_heart_Tex_0005C0[] = dobject_b_heart_Tex_0005C0;
+#define dgUnusedHeartSpriteTex "__OTR__objects/object_b_heart/gUnusedHeartSpriteTex"
+static const ALIGN_ASSET(2) char gUnusedHeartSpriteTex[] = dgUnusedHeartSpriteTex;
 #endif // OBJECTS_OBJECT_B_HEART_H

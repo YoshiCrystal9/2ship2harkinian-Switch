@@ -3,11 +3,11 @@
 #include <nlohmann/json.hpp>
 
 #include "2s2h/SaveManager/SaveManager.h"
-#include "utils/binarytools/BinaryReader.h"
+#include <ship/utils/binarytools/BinaryReader.h>
 #include <string>
-#include "spdlog/spdlog.h"
-#include "Context.h"
-#include "Window.h"
+#include <spdlog/spdlog.h>
+#include <ship/Context.h>
+#include <ship/window/Window.h>
 
 extern "C" {
 #include "z64math.h"
@@ -640,7 +640,7 @@ void BinarySaveConverter_ReadBufferToSave(Legacy_SaveContext* saveContext, std::
     saveContext->save.saveInfo.checksum = 1;
 }
 
-bool BinarySaveConverter_HandleFileDropped(const std::string& filePath) {
+bool BinarySaveConverter_HandleFileDropped(char* filePath) {
     try {
         std::ifstream fileStream(filePath, std::ios::binary | std::ios::ate);
 

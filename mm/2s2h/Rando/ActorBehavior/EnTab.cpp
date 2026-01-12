@@ -1,6 +1,6 @@
 #include "ActorBehavior.h"
 #include "Rando/MiscBehavior/MiscBehavior.h"
-#include "public/bridge/consolevariablebridge.h"
+#include <libultraship/bridge/consolevariablebridge.h>
 #include "2s2h/CustomMessage/CustomMessage.h"
 
 extern "C" {
@@ -91,11 +91,11 @@ void Rando::ActorBehavior::InitEnTabBehavior() {
         }
 
         MsgScript* script = va_arg(args, MsgScript*);
-        MsgEventCallback* callback = va_arg(args, MsgEventCallback*);
+        MsgScriptCallback* callback = va_arg(args, MsgScriptCallback*);
 
         // Override actor parent to skip item grant if the player is trying to buy
         // vanilla milk items and does not have a bottle
-        if (cmdId == MSCRIPT_CMD_06) {
+        if (cmdId == MSCRIPT_CMD_ID_OFFER_ITEM) {
             RandoCheckId checkId =
                 gPlayState->msgCtx.choiceIndex == 0 ? RC_MILK_BAR_PURCHASE_MILK : RC_MILK_BAR_PURCHASE_CHATEAU;
 
@@ -132,7 +132,7 @@ void Rando::ActorBehavior::InitEnTabBehavior() {
         }
 
         // Use check prices instead of vanilla for MSCRIPT_BRANCH_ON_RUPEES
-        if (cmdId == MSCRIPT_CMD_08) {
+        if (cmdId == MSCRIPT_CMD_ID_CHECK_RUPEES) {
             s16 checkPrice = 0;
             if (gPlayState->msgCtx.choiceIndex == 0) {
                 checkPrice = 20;
@@ -153,12 +153,12 @@ void Rando::ActorBehavior::InitEnTabBehavior() {
         }
 
         // MSCRIPT_BEGIN_TEXT
-        if (cmdId == MSCRIPT_CMD_14) {
+        if (cmdId == MSCRIPT_CMD_ID_BEGIN_TEXT) {
             isInitialGiveItemMscriptCommandExecution = true;
         }
 
         // Need to reset actor parent which otherwise would've been reset by vanilla Give Item cutscene in MSCRIPT_DONE
-        if (cmdId == MSCRIPT_CMD_16) {
+        if (cmdId == MSCRIPT_CMD_ID_DONE) {
             Player* player = GET_PLAYER(gPlayState);
             EnTab* tabActor = (EnTab*)actor;
             tabActor->actor.parent = NULL;
@@ -166,7 +166,7 @@ void Rando::ActorBehavior::InitEnTabBehavior() {
 
         // Charge Link the randomized price when calling MSCRIPT_CHANGE_RUPEES
         // Will not charge Link when purchasing vanilla refills without an empty bottle
-        if (cmdId == MSCRIPT_CMD_20) {
+        if (cmdId == MSCRIPT_CMD_ID_CHANGE_RUPEES) {
             RandoCheckId checkId =
                 gPlayState->msgCtx.choiceIndex == 0 ? RC_MILK_BAR_PURCHASE_MILK : RC_MILK_BAR_PURCHASE_CHATEAU;
             s16 rupeeChangeAmt = gPlayState->msgCtx.choiceIndex == 0 ? -20 : -200;
@@ -182,7 +182,7 @@ void Rando::ActorBehavior::InitEnTabBehavior() {
         }
 
         // Override callback function depending on actor state for MSCRIPT_BRANCH_ON_CALLBACK_2
-        if (cmdId == MSCRIPT_CMD_40) {
+        if (cmdId == MSCRIPT_CMD_ID_CHECK_CALLBACK_CONTINUE) {
             *callback = EnTab_OverrideBottleCheckCallback;
         }
     });

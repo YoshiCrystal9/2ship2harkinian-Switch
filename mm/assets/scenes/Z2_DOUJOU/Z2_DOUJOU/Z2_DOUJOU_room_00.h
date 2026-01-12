@@ -39,4 +39,10 @@ static const ALIGN_ASSET(2) char Z2_DOUJOU_room_00DL_003638[] = dZ2_DOUJOU_room_
 #define dZ2_DOUJOU_room_00DL_003EE0 "__OTR__scenes/nonmq/Z2_DOUJOU_scene/Z2_DOUJOU_room_00DL_003EE0"
 static const ALIGN_ASSET(2) char Z2_DOUJOU_room_00DL_003EE0[] = dZ2_DOUJOU_room_00DL_003EE0;
 
+#define dZ2_DOUJOU_room_00DL_0062B0 "__OTR__scenes/nonmq/Z2_DOUJOU_scene/Z2_DOUJOU_room_00DL_0062B0"
+static const ALIGN_ASSET(2) char Z2_DOUJOU_room_00DL_0062B0[] = dZ2_DOUJOU_room_00DL_0062B0;
+
+#define dZ2_DOUJOU_room_00DL_0064C0 "__OTR__scenes/nonmq/Z2_DOUJOU_scene/Z2_DOUJOU_room_00DL_0064C0"
+static const ALIGN_ASSET(2) char Z2_DOUJOU_room_00DL_0064C0[] = dZ2_DOUJOU_room_00DL_0064C0;
+
 #endif // Z2_DOUJOU_Z2_DOUJOU_ROOM_00_H

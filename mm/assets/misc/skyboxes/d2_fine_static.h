@@ -3,18 +3,18 @@
 
 #include "align_asset_macro.h"
 
-#define dgClearSkybox1Tex "__OTR__misc/d2_fine_static/gClearSkybox1Tex"
-static const ALIGN_ASSET(2) char gClearSkybox1Tex[] = dgClearSkybox1Tex;
+#define dgSkyboxClear1Tex "__OTR__misc/d2_fine_static/gSkyboxClear1Tex"
+static const ALIGN_ASSET(2) char gSkyboxClear1Tex[] = dgSkyboxClear1Tex;
 
-#define dgClearSkybox2Tex "__OTR__misc/d2_fine_static/gClearSkybox2Tex"
-static const ALIGN_ASSET(2) char gClearSkybox2Tex[] = dgClearSkybox2Tex;
+#define dgSkyboxClear2Tex "__OTR__misc/d2_fine_static/gSkyboxClear2Tex"
+static const ALIGN_ASSET(2) char gSkyboxClear2Tex[] = dgSkyboxClear2Tex;
 
-#define dgClearSkybox3Tex "__OTR__misc/d2_fine_static/gClearSkybox3Tex"
-static const ALIGN_ASSET(2) char gClearSkybox3Tex[] = dgClearSkybox3Tex;
+#define dgSkyboxClear3Tex "__OTR__misc/d2_fine_static/gSkyboxClear3Tex"
+static const ALIGN_ASSET(2) char gSkyboxClear3Tex[] = dgSkyboxClear3Tex;
 
-#define dgClearSkybox4Tex "__OTR__misc/d2_fine_static/gClearSkybox4Tex"
-static const ALIGN_ASSET(2) char gClearSkybox4Tex[] = dgClearSkybox4Tex;
+#define dgSkyboxClear4Tex "__OTR__misc/d2_fine_static/gSkyboxClear4Tex"
+static const ALIGN_ASSET(2) char gSkyboxClear4Tex[] = dgSkyboxClear4Tex;
 
-#define dgClearSkybox5Tex "__OTR__misc/d2_fine_static/gClearSkybox5Tex"
-static const ALIGN_ASSET(2) char gClearSkybox5Tex[] = dgClearSkybox5Tex;
+#define dgSkyboxClear5Tex "__OTR__misc/d2_fine_static/gSkyboxClear5Tex"
+static const ALIGN_ASSET(2) char gSkyboxClear5Tex[] = dgSkyboxClear5Tex;
 #endif // MISC_D2_FINE_STATIC_H

@@ -9,8 +9,6 @@
 
 #define FLAGS 0x00000000
 
-#define THIS ((BgHakuginBombwall*)thisx)
-
 void BgHakuginBombwall_Init(Actor* thisx, PlayState* play);
 void BgHakuginBombwall_Destroy(Actor* thisx, PlayState* play);
 void BgHakuginBombwall_Update(Actor* thisx, PlayState* play);
@@ -26,7 +24,7 @@ void func_80ABCCE4(BgHakuginBombwall* this, PlayState* play);
 void func_80ABCD98(BgHakuginBombwall* this, PlayState* play);
 void func_80ABCE60(BgHakuginBombwall* this, PlayState* play);
 
-ActorInit Bg_Hakugin_Bombwall_InitVars = {
+ActorProfile Bg_Hakugin_Bombwall_Profile = {
     /**/ ACTOR_BG_HAKUGIN_BOMBWALL,
     /**/ ACTORCAT_BG,
     /**/ FLAGS,
@@ -40,7 +38,7 @@ ActorInit Bg_Hakugin_Bombwall_InitVars = {
 
 static ColliderCylinderInit sCylinderInit = {
     {
-        COLTYPE_NONE,
+        COL_MATERIAL_NONE,
         AT_NONE,
         AC_ON | AC_TYPE_PLAYER,
         OC1_NONE,
@@ -48,11 +46,11 @@ static ColliderCylinderInit sCylinderInit = {
         COLSHAPE_CYLINDER,
     },
     {
-        ELEMTYPE_UNK0,
+        ELEM_MATERIAL_UNK0,
         { 0x00000000, 0x00, 0x00 },
         { 0x00000008, 0x00, 0x00 },
-        TOUCH_NONE | TOUCH_SFX_NORMAL,
-        BUMP_ON,
+        ATELEM_NONE | ATELEM_SFX_NORMAL,
+        ACELEM_ON,
         OCELEM_NONE,
     },
     { 80, 80, 0, { 0, 0, 0 } },
@@ -117,7 +115,7 @@ s32 D_80ABD020[] = { -73, -40, -8, 24, 57 };
 Vec3f D_80ABD034 = { 0.0f, 3.0f, 0.0f };
 
 static InitChainEntry sInitChain[] = {
-    ICHAIN_F32(uncullZoneForward, 4000, ICHAIN_CONTINUE),
+    ICHAIN_F32(cullingVolumeDistance, 4000, ICHAIN_CONTINUE),
     ICHAIN_VEC3F_DIV1000(scale, 100, ICHAIN_STOP),
 };
 
@@ -309,7 +307,7 @@ void func_80ABC7FC(BgHakuginBombwall* this, PlayState* play) {
 
 void BgHakuginBombwall_Init(Actor* thisx, PlayState* play) {
     s32 pad;
-    BgHakuginBombwall* this = THIS;
+    BgHakuginBombwall* this = (BgHakuginBombwall*)thisx;
     BgHakuginBombwallStruct* ptr = &D_80ABCFC0[BGHAKUGIN_BOMBWALL_100(&this->dyna.actor)];
 
     Actor_ProcessInitChain(&this->dyna.actor, sInitChain);
@@ -326,17 +324,17 @@ void BgHakuginBombwall_Init(Actor* thisx, PlayState* play) {
     Collider_SetCylinder(play, &this->collider, &this->dyna.actor, &sCylinderInit);
     this->collider.dim.radius = ptr->unk_14;
     this->collider.dim.height = ptr->unk_16;
-    this->collider.info.bumper.dmgFlags = ptr->unk_18;
+    this->collider.elem.acDmgInfo.dmgFlags = ptr->unk_18;
     Collider_UpdateCylinder(&this->dyna.actor, &this->collider);
 
     Actor_SetFocus(&this->dyna.actor, ptr->unk_08);
-    this->dyna.actor.uncullZoneScale = ptr->unk_0C;
-    this->dyna.actor.uncullZoneDownward = ptr->unk_10;
+    this->dyna.actor.cullingVolumeScale = ptr->unk_0C;
+    this->dyna.actor.cullingVolumeDownward = ptr->unk_10;
     this->actionFunc = func_80ABCCE4;
 }
 
 void BgHakuginBombwall_Destroy(Actor* thisx, PlayState* play) {
-    BgHakuginBombwall* this = THIS;
+    BgHakuginBombwall* this = (BgHakuginBombwall*)thisx;
 
     DynaPoly_DeleteBgActor(play, &play->colCtx.dyna, this->dyna.bgId);
     Collider_DestroyCylinder(play, &this->collider);
@@ -359,7 +357,7 @@ s32 func_80ABCB5C(BgHakuginBombwall* this, PlayState* play) {
 
 s32 func_80ABCC00(BgHakuginBombwall* this, PlayState* play) {
     if (this->collider.base.acFlags & AC_HIT) {
-        if (this->collider.info.acHitInfo->toucher.dmgFlags & 8) {
+        if (this->collider.elem.acHitElem->atDmgInfo.dmgFlags & 8) {
             if (this->collider.base.ac != NULL) {
                 Actor* thisx = &this->dyna.actor;
 
@@ -381,7 +379,7 @@ void func_80ABCCE4(BgHakuginBombwall* this, PlayState* play) {
     BgHakuginBombwallStruct* ptr = &D_80ABCFC0[BGHAKUGIN_BOMBWALL_100(&this->dyna.actor)];
 
     if (ptr->unk_20(this, play)) {
-        this->dyna.actor.flags |= ACTOR_FLAG_10;
+        this->dyna.actor.flags |= ACTOR_FLAG_UPDATE_CULLING_DISABLED;
         CutsceneManager_Queue(this->dyna.actor.csId);
         this->actionFunc = func_80ABCD98;
     } else {
@@ -421,7 +419,7 @@ void func_80ABCE60(BgHakuginBombwall* this, PlayState* play) {
 }
 
 void BgHakuginBombwall_Update(Actor* thisx, PlayState* play) {
-    BgHakuginBombwall* this = THIS;
+    BgHakuginBombwall* this = (BgHakuginBombwall*)thisx;
 
     this->actionFunc(this, play);
 }

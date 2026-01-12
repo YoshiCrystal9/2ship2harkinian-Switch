@@ -1,5 +1,11 @@
 #include "Spoiler.h"
 #include "Rando/Rando.h"
+#include <libultraship/bridge/consolevariablebridge.h>
+#include "ShipUtils.h"
+
+extern "C" {
+#include "overlays/actors/ovl_En_Sth/z_en_sth.h"
+}
 
 namespace Rando {
 
@@ -12,55 +18,12 @@ void ApplyToSaveContext(nlohmann::json spoiler) {
         RANDO_SAVE_OPTIONS[randoOptionId] = spoiler["options"][randoStaticOption.name].get<uint32_t>();
     }
 
-    if (RANDO_SAVE_OPTIONS[RO_STARTING_HEALTH] != 3) {
-        gSaveContext.save.saveInfo.playerData.healthCapacity = gSaveContext.save.saveInfo.playerData.health =
-            RANDO_SAVE_OPTIONS[RO_STARTING_HEALTH] * 0x10;
+    if (!RANDO_SAVE_OPTIONS[RO_SHUFFLE_GOLD_SKULLTULAS]) {
+        RANDO_SAVE_OPTIONS[RO_MINIMUM_SKULLTULA_TOKENS] = SPIDER_HOUSE_TOKENS_REQUIRED;
     }
 
-    if (RANDO_SAVE_OPTIONS[RO_STARTING_CONSUMABLES]) {
-        GiveItem(RI_DEKU_STICK);
-        GiveItem(RI_DEKU_NUT);
-        AMMO(ITEM_DEKU_STICK) = CUR_CAPACITY(UPG_DEKU_STICKS);
-        AMMO(ITEM_DEKU_NUT) = CUR_CAPACITY(UPG_DEKU_NUTS);
-    }
-
-    std::vector<RandoItemId> startingItems = {};
-
-    for (size_t i = 0; i < Rando::StaticData::StartingItemsMap.size(); i++) {
-        RandoItemId itemId = Rando::StaticData::StartingItemsMap[i];
-        RandoOptionId optionId;
-        if (i < 32) {
-            optionId = RO_STARTING_ITEMS_1;
-        } else if (i < 64) {
-            optionId = RO_STARTING_ITEMS_2;
-        } else {
-            optionId = RO_STARTING_ITEMS_3;
-        }
-        uint32_t startingItemsBits = RANDO_SAVE_OPTIONS[optionId];
-        if ((startingItemsBits & (1 << (i % 32))) != 0) {
-            startingItems.push_back(itemId);
-        }
-    }
-
-    if (RANDO_SAVE_OPTIONS[RO_STARTING_MAPS_AND_COMPASSES]) {
-        std::vector<RandoItemId> MapsAndCompasses = {
-            RI_GREAT_BAY_COMPASS,       RI_GREAT_BAY_MAP,       RI_SNOWHEAD_COMPASS,       RI_SNOWHEAD_MAP,
-            RI_STONE_TOWER_COMPASS,     RI_STONE_TOWER_MAP,     RI_TINGLE_MAP_CLOCK_TOWN,  RI_TINGLE_MAP_GREAT_BAY,
-            RI_TINGLE_MAP_ROMANI_RANCH, RI_TINGLE_MAP_SNOWHEAD, RI_TINGLE_MAP_STONE_TOWER, RI_TINGLE_MAP_WOODFALL,
-            RI_WOODFALL_COMPASS,        RI_WOODFALL_MAP,
-        };
-        for (RandoItemId itemId : MapsAndCompasses) {
-            startingItems.push_back(itemId);
-        }
-    }
-
-    for (RandoItemId startingItem : startingItems) {
-        GiveItem(ConvertItem(startingItem));
-    }
-
-    if (RANDO_SAVE_OPTIONS[RO_STARTING_RUPEES]) {
-        gSaveContext.save.saveInfo.playerData.rupees = CUR_CAPACITY(UPG_WALLET);
-    }
+    auto startingItems = Rando::GetStartingItemsFromSpoiler(spoiler);
+    Rando::SetStartingItemsInSave(gSaveContext.save.shipSaveInfo.rando, startingItems);
 
     for (auto& [randoCheckId, randoStaticCheck] : Rando::StaticData::Checks) {
         if (randoStaticCheck.randoCheckId == RC_UNKNOWN) {

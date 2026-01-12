@@ -6,9 +6,7 @@
 
 #include "z_en_onpuman.h"
 
-#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_FRIENDLY)
-
-#define THIS ((EnOnpuman*)thisx)
+#define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY)
 
 void EnOnpuman_Init(Actor* thisx, PlayState* play);
 void EnOnpuman_Destroy(Actor* thisx, PlayState* play);
@@ -16,7 +14,7 @@ void EnOnpuman_Update(Actor* thisx, PlayState* play);
 
 void func_80B121D8(EnOnpuman* this, PlayState* play);
 
-ActorInit En_Onpuman_InitVars = {
+ActorProfile En_Onpuman_Profile = {
     /**/ ACTOR_EN_ONPUMAN,
     /**/ ACTORCAT_NPC,
     /**/ FLAGS,
@@ -30,7 +28,7 @@ ActorInit En_Onpuman_InitVars = {
 
 static ColliderCylinderInit sCylinderInit = {
     {
-        COLTYPE_NONE,
+        COL_MATERIAL_NONE,
         AT_NONE,
         AC_ON | AC_TYPE_PLAYER,
         OC1_ON | OC1_TYPE_ALL,
@@ -38,25 +36,25 @@ static ColliderCylinderInit sCylinderInit = {
         COLSHAPE_CYLINDER,
     },
     {
-        ELEMTYPE_UNK0,
+        ELEM_MATERIAL_UNK0,
         { 0x00000000, 0x00, 0x00 },
         { 0x00000000, 0x00, 0x00 },
-        TOUCH_NONE | TOUCH_SFX_NORMAL,
-        BUMP_ON,
+        ATELEM_NONE | ATELEM_SFX_NORMAL,
+        ACELEM_ON,
         OCELEM_ON,
     },
     { 30, 40, 0, { 0, 0, 0 } },
 };
 
 void EnOnpuman_Init(Actor* thisx, PlayState* play) {
-    EnOnpuman* this = THIS;
+    EnOnpuman* this = (EnOnpuman*)thisx;
 
     ActorShape_Init(&this->actor.shape, 0.0f, ActorShadow_DrawCircle, 36.0f);
-    this->actor.flags |= ACTOR_FLAG_2000000;
+    this->actor.flags |= ACTOR_FLAG_UPDATE_DURING_OCARINA;
     Collider_InitAndSetCylinder(play, &this->collider, &this->actor, &sCylinderInit);
     this->actor.colChkInfo.mass = MASS_IMMOVABLE;
     Actor_SetScale(&this->actor, 0.01f);
-    this->actor.targetMode = TARGET_MODE_6;
+    this->actor.attentionRangeType = ATTENTION_RANGE_6;
     this->unk_2A4 = 0;
     this->unk_2A0 = NULL;
     this->actionFunc = func_80B121D8;
@@ -66,7 +64,7 @@ void EnOnpuman_Init(Actor* thisx, PlayState* play) {
 }
 
 void EnOnpuman_Destroy(Actor* thisx, PlayState* play) {
-    EnOnpuman* this = THIS;
+    EnOnpuman* this = (EnOnpuman*)thisx;
 
     Collider_DestroyCylinder(play, &this->collider);
 }
@@ -102,7 +100,7 @@ void func_80B11F78(EnOnpuman* this, PlayState* play) {
 void func_80B1202C(EnOnpuman* this, PlayState* play2) {
     PlayState* play = play2;
 
-    if ((Message_GetState(&play->msgCtx) == TEXT_STATE_5) && Message_ShouldAdvance(play)) {
+    if ((Message_GetState(&play->msgCtx) == TEXT_STATE_EVENT) && Message_ShouldAdvance(play)) {
         switch (play->msgCtx.currentTextId) {
             case 0x8D4:
                 this->unk_2A4 |= 1;
@@ -123,6 +121,9 @@ void func_80B1202C(EnOnpuman* this, PlayState* play2) {
                     this->unk_2A0->home.rot.x = 0;
                 }
                 break;
+
+            default:
+                break;
         }
     }
     if (this->unk_2A4 & 1) {
@@ -138,7 +139,7 @@ void func_80B1202C(EnOnpuman* this, PlayState* play2) {
 }
 
 void func_80B1217C(EnOnpuman* this, PlayState* play) {
-    if ((Message_GetState(&play->msgCtx) == TEXT_STATE_5) && Message_ShouldAdvance(play)) {
+    if ((Message_GetState(&play->msgCtx) == TEXT_STATE_EVENT) && Message_ShouldAdvance(play)) {
         this->actionFunc = func_80B121D8;
         Message_CloseTextbox(play);
     }
@@ -147,11 +148,11 @@ void func_80B1217C(EnOnpuman* this, PlayState* play) {
 void func_80B121D8(EnOnpuman* this, PlayState* play) {
     s16 yaw;
 
-    if (func_800B8718(&this->actor, &play->state)) {
+    if (Actor_OcarinaInteractionAccepted(&this->actor, &play->state)) {
         this->actionFunc = func_80B1202C;
         Message_StartTextbox(play, 0x8D4, NULL);
         this->unk_2A0 = func_80B11F44(play);
-    } else if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+    } else if (Actor_TalkOfferAccepted(&this->actor, &play->state)) {
         this->actionFunc = func_80B1217C;
     } else {
         yaw = this->actor.yawTowardsPlayer - this->actor.shape.rot.y;
@@ -159,7 +160,7 @@ void func_80B121D8(EnOnpuman* this, PlayState* play) {
             if (ABS_ALT(yaw) <= 0x4300) {
                 this->actor.textId = 0x8D3;
                 Actor_OfferTalk(&this->actor, play, 100.0f);
-                func_800B874C(&this->actor, play, 100.0f, 100.0f);
+                Actor_OfferOcarinaInteraction(&this->actor, play, 100.0f, 100.0f);
             }
         }
     }
@@ -167,7 +168,7 @@ void func_80B121D8(EnOnpuman* this, PlayState* play) {
 
 void EnOnpuman_Update(Actor* thisx, PlayState* play) {
     s32 pad;
-    EnOnpuman* this = THIS;
+    EnOnpuman* this = (EnOnpuman*)thisx;
 
     Collider_UpdateCylinder(&this->actor, &this->collider);
     CollisionCheck_SetOC(play, &play->colChkCtx, &this->collider.base);

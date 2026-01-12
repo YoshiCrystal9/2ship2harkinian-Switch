@@ -7,9 +7,7 @@
 #include "z_bg_icefloe.h"
 #include "objects/object_icefloe/object_icefloe.h"
 
-#define FLAGS (ACTOR_FLAG_10)
-
-#define THIS ((BgIcefloe*)thisx)
+#define FLAGS (ACTOR_FLAG_UPDATE_CULLING_DISABLED)
 
 void BgIcefloe_Init(Actor* thisx, PlayState* play);
 void BgIcefloe_Destroy(Actor* thisx, PlayState* play);
@@ -24,7 +22,7 @@ void func_80AC4D2C(BgIcefloe* this, PlayState* play);
 void func_80AC4C34(BgIcefloe* this, PlayState* play);
 void func_80AC4CF0(BgIcefloe* this);
 
-ActorInit Bg_Icefloe_InitVars = {
+ActorProfile Bg_Icefloe_Profile = {
     /**/ ACTOR_BG_ICEFLOE,
     /**/ ACTORCAT_BG,
     /**/ FLAGS,
@@ -45,7 +43,7 @@ static InitChainEntry sInitChain[] = {
 static s32 numberSpawned;
 
 void BgIcefloe_Init(Actor* thisx, PlayState* play) {
-    BgIcefloe* this = THIS;
+    BgIcefloe* this = (BgIcefloe*)thisx;
 
     Actor_ProcessInitChain(&this->dyna.actor, sInitChain);
     DynaPolyActor_Init(&this->dyna, 0);
@@ -70,7 +68,7 @@ void BgIcefloe_Init(Actor* thisx, PlayState* play) {
 }
 
 void BgIcefloe_Destroy(Actor* thisx, PlayState* play) {
-    BgIcefloe* this = THIS;
+    BgIcefloe* this = (BgIcefloe*)thisx;
     s32 i;
 
     DynaPoly_DeleteBgActor(play, &play->colCtx.dyna, this->dyna.bgId);
@@ -120,12 +118,12 @@ void func_80AC4C18(BgIcefloe* this) {
 }
 
 void func_80AC4C34(BgIcefloe* this, PlayState* play) {
-    WaterBox* water;
+    WaterBox* waterBox;
 
     this->timer--;
     if ((this->timer == 0) ||
         !WaterBox_GetSurface1_2(play, &play->colCtx, this->dyna.actor.world.pos.x, this->dyna.actor.world.pos.z,
-                                &this->dyna.actor.home.pos.y, &water)) {
+                                &this->dyna.actor.home.pos.y, &waterBox)) {
         func_80AC4CF0(this);
     } else {
         this->dyna.actor.world.pos.y =
@@ -165,7 +163,7 @@ void func_80AC4D2C(BgIcefloe* this, PlayState* play) {
 }
 
 void BgIcefloe_Update(Actor* thisx, PlayState* play) {
-    BgIcefloe* this = THIS;
+    BgIcefloe* this = (BgIcefloe*)thisx;
 
     if (!Play_InCsMode(play)) {
         this->actionFunc(this, play);
@@ -173,7 +171,7 @@ void BgIcefloe_Update(Actor* thisx, PlayState* play) {
 }
 
 void BgIcefloe_Draw(Actor* thisx, PlayState* play) {
-    BgIcefloe* this = THIS;
+    BgIcefloe* this = (BgIcefloe*)thisx;
 
     Gfx_DrawDListOpa(play, gIcefloeIcePlatformDL);
 }

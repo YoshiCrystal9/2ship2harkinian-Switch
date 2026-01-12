@@ -6,9 +6,7 @@
 
 #include "z_oceff_spot.h"
 
-#define FLAGS (ACTOR_FLAG_10 | ACTOR_FLAG_2000000)
-
-#define THIS ((OceffSpot*)thisx)
+#define FLAGS (ACTOR_FLAG_UPDATE_CULLING_DISABLED | ACTOR_FLAG_UPDATE_DURING_OCARINA)
 
 void OceffSpot_Init(Actor* thisx, PlayState* play2);
 void OceffSpot_Destroy(Actor* thisx, PlayState* play2);
@@ -21,7 +19,7 @@ void OceffSpot_End(OceffSpot* this, PlayState* play);
 
 void OceffSpot_SetupAction(OceffSpot* this, OceffSpotActionFunc actionFunc);
 
-ActorInit Oceff_Spot_InitVars = {
+ActorProfile Oceff_Spot_Profile = {
     /**/ ACTOR_OCEFF_SPOT,
     /**/ ACTORCAT_ITEMACTION,
     /**/ FLAGS,
@@ -37,7 +35,7 @@ ActorInit Oceff_Spot_InitVars = {
 
 static InitChainEntry sInitChain[] = {
     ICHAIN_VEC3F_DIV1000(scale, 0, ICHAIN_CONTINUE),
-    ICHAIN_F32(uncullZoneForward, 1500, ICHAIN_STOP),
+    ICHAIN_F32(cullingVolumeDistance, 1500, ICHAIN_STOP),
 };
 
 void OceffSpot_SetupAction(OceffSpot* this, OceffSpotActionFunc actionFunc) {
@@ -46,7 +44,7 @@ void OceffSpot_SetupAction(OceffSpot* this, OceffSpotActionFunc actionFunc) {
 
 void OceffSpot_Init(Actor* thisx, PlayState* play2) {
     PlayState* play = play2;
-    OceffSpot* this = THIS;
+    OceffSpot* this = (OceffSpot*)thisx;
     Player* player = GET_PLAYER(play);
 
     Actor_ProcessInitChain(&this->actor, sInitChain);
@@ -68,7 +66,7 @@ void OceffSpot_Init(Actor* thisx, PlayState* play2) {
 
 void OceffSpot_Destroy(Actor* thisx, PlayState* play2) {
     PlayState* play = play2;
-    OceffSpot* this = THIS;
+    OceffSpot* this = (OceffSpot*)thisx;
 
     LightContext_RemoveLight(play, &play->lightCtx, this->lightNode1);
     LightContext_RemoveLight(play, &play->lightCtx, this->lightNode2);
@@ -113,7 +111,7 @@ void OceffSpot_Update(Actor* thisx, PlayState* play) {
     s32 pad;
     Player* player = GET_PLAYER(play);
     f32 temp;
-    OceffSpot* this = THIS;
+    OceffSpot* this = (OceffSpot*)thisx;
 
     temp = (1.0f - cosf(this->unk16C * M_PIf)) * 0.5f;
     this->actionFunc(this, play);
@@ -140,7 +138,7 @@ void OceffSpot_Update(Actor* thisx, PlayState* play) {
     this->actor.scale.x = (scale * 0.42f) * temp;
 
     this->actor.world.pos = player->actor.world.pos;
-    this->actor.world.pos.y = this->actor.world.pos.y + 5.0f;
+    this->actor.world.pos.y += 5.0f;
 
     temp = (2.0f - this->unk16C) * this->unk16C;
 
@@ -156,14 +154,14 @@ void OceffSpot_Update(Actor* thisx, PlayState* play) {
 }
 
 void OceffSpot_Draw(Actor* thisx, PlayState* play) {
-    OceffSpot* this = THIS;
+    OceffSpot* this = (OceffSpot*)thisx;
     u32 scroll = play->state.frames & 0xFFFF;
 
     OPEN_DISPS(play->state.gfxCtx);
 
     Gfx_SetupDL25_Xlu(play->state.gfxCtx);
 
-    gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    MATRIX_FINALIZE_AND_LOAD(POLY_XLU_DISP++, play->state.gfxCtx);
     gSPDisplayList(POLY_XLU_DISP++, &sSunSongEffectCylinderMaterialDL);
     gSPDisplayList(POLY_XLU_DISP++, Gfx_TwoTexScroll(play->state.gfxCtx, 0, scroll * 2, scroll * -2, 0x20, 0x20, 1, 0,
                                                      scroll * -8, 0x20, 0x20));

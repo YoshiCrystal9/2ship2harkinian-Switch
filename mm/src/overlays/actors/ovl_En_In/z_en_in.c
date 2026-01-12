@@ -9,9 +9,7 @@
 #include "overlays/actors/ovl_En_Horse_Game_Check/z_en_horse_game_check.h"
 #include "2s2h/GameInteractor/GameInteractor.h"
 
-#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_10)
-
-#define THIS ((EnIn*)thisx)
+#define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_UPDATE_CULLING_DISABLED)
 
 void EnIn_Init(Actor* thisx, PlayState* play);
 void EnIn_Destroy(Actor* thisx, PlayState* play);
@@ -23,7 +21,7 @@ void func_808F3690(EnIn* this, PlayState* play);
 void func_808F5A34(EnIn* this, PlayState* play);
 s32 func_808F5994(EnIn* this, PlayState* play, Vec3f* arg2, s16 arg3);
 
-ActorInit En_In_InitVars = {
+ActorProfile En_In_Profile = {
     /**/ ACTOR_EN_IN,
     /**/ ACTORCAT_NPC,
     /**/ FLAGS,
@@ -37,7 +35,7 @@ ActorInit En_In_InitVars = {
 
 static ColliderCylinderInit sCylinderInit = {
     {
-        COLTYPE_HIT0,
+        COL_MATERIAL_HIT0,
         AT_NONE,
         AC_ON | AC_TYPE_PLAYER,
         OC1_ON | OC1_TYPE_ALL,
@@ -45,11 +43,11 @@ static ColliderCylinderInit sCylinderInit = {
         COLSHAPE_CYLINDER,
     },
     {
-        ELEMTYPE_UNK1,
+        ELEM_MATERIAL_UNK1,
         { 0x00000000, 0x00, 0x00 },
         { 0xF7CFFFFF, 0x00, 0x00 },
-        TOUCH_NONE | TOUCH_SFX_NORMAL,
-        BUMP_ON,
+        ATELEM_NONE | ATELEM_SFX_NORMAL,
+        ACELEM_ON,
         OCELEM_ON,
     },
     { 18, 64, 0, { 0, 0, 0 } },
@@ -58,11 +56,11 @@ static ColliderCylinderInit sCylinderInit = {
 static ColliderJntSphElementInit sJntSphElementsInit[1] = {
     {
         {
-            ELEMTYPE_UNK0,
+            ELEM_MATERIAL_UNK0,
             { 0xF7CFFFFF, 0x00, 0x00 },
             { 0x00000000, 0x00, 0x00 },
-            TOUCH_ON | TOUCH_SFX_NORMAL,
-            BUMP_NONE,
+            ATELEM_ON | ATELEM_SFX_NORMAL,
+            ACELEM_NONE,
             OCELEM_NONE,
         },
         { 12, { { 1600, 0, 0 }, 5 }, 200 },
@@ -71,7 +69,7 @@ static ColliderJntSphElementInit sJntSphElementsInit[1] = {
 
 static ColliderJntSphInit sJntSphInit = {
     {
-        COLTYPE_NONE,
+        COL_MATERIAL_NONE,
         AT_ON | AT_TYPE_ENEMY,
         AC_NONE,
         OC1_NONE,
@@ -223,9 +221,9 @@ s32 func_808F3334(EnIn* this, PlayState* play) {
 
 s32 func_808F33B8(void) {
     s32 ret = (((gSaveContext.save.day == 1) &&
-                ((gSaveContext.save.time >= CLOCK_TIME(5, 30)) && (gSaveContext.save.time <= CLOCK_TIME(6, 0)))) ||
+                ((CURRENT_TIME >= CLOCK_TIME(5, 30)) && (CURRENT_TIME <= CLOCK_TIME(6, 0)))) ||
                (gSaveContext.save.day >= 2)) &&
-              !CHECK_WEEKEVENTREG(WEEKEVENTREG_DEFENDED_AGAINST_THEM);
+              !CHECK_WEEKEVENTREG(WEEKEVENTREG_DEFENDED_AGAINST_ALIENS);
 
     return ret;
 }
@@ -349,8 +347,8 @@ void func_808F395C(EnIn* this, PlayState* play) {
     if (this->unk4B0 == WEEKEVENTREG_HORSE_RACE_STATE_END) {
         this->actionFunc = func_808F5A94;
     }
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
-        this->actor.flags &= ~ACTOR_FLAG_10000;
+    if (Actor_TalkOfferAccepted(&this->actor, &play->state)) {
+        this->actor.flags &= ~ACTOR_FLAG_TALK_OFFER_AUTO_ACCEPTED;
         this->actionFunc = func_808F5A34;
         this->unk48C = 1;
     } else {
@@ -390,7 +388,7 @@ void func_808F39DC(EnIn* this, PlayState* play) {
         }
         SET_WEEKEVENTREG_HORSE_RACE_STATE(WEEKEVENTREG_HORSE_RACE_STATE_END);
     }
-    this->actor.flags |= ACTOR_FLAG_10000;
+    this->actor.flags |= ACTOR_FLAG_TALK_OFFER_AUTO_ACCEPTED;
     this->actor.textId = textId;
     this->actionFunc = func_808F395C;
     if (this->unk4B0 == WEEKEVENTREG_HORSE_RACE_STATE_2) {
@@ -401,8 +399,8 @@ void func_808F39DC(EnIn* this, PlayState* play) {
 }
 
 void func_808F3AD4(EnIn* this, PlayState* play) {
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
-        this->actor.flags &= ~ACTOR_FLAG_10000;
+    if (Actor_TalkOfferAccepted(&this->actor, &play->state)) {
+        this->actor.flags &= ~ACTOR_FLAG_TALK_OFFER_AUTO_ACCEPTED;
         this->unk48C = 1;
         this->actionFunc = func_808F5A94;
     } else {
@@ -415,7 +413,7 @@ void func_808F3B40(EnIn* this, PlayState* play) {
 
     if (Actor_HasParent(&this->actor, play)) {
         this->actor.parent = NULL;
-        this->actor.flags |= ACTOR_FLAG_10000;
+        this->actor.flags |= ACTOR_FLAG_TALK_OFFER_AUTO_ACCEPTED;
         this->actionFunc = func_808F3AD4;
         textId = (gSaveContext.save.day != 3) ? 0x3481 : 0x34A4;
         this->actor.textId = textId;
@@ -425,8 +423,8 @@ void func_808F3B40(EnIn* this, PlayState* play) {
 }
 
 void func_808F3BD4(EnIn* this, PlayState* play) {
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
-        this->actor.flags &= ~ACTOR_FLAG_10000;
+    if (Actor_TalkOfferAccepted(&this->actor, &play->state)) {
+        this->actor.flags &= ~ACTOR_FLAG_TALK_OFFER_AUTO_ACCEPTED;
         this->unk48C = 1;
         this->actionFunc = func_808F5A94;
     } else {
@@ -439,7 +437,7 @@ void func_808F3C40(EnIn* this, PlayState* play) {
 
     if (Actor_HasParent(&this->actor, play)) {
         this->actor.parent = NULL;
-        this->actor.flags |= ACTOR_FLAG_10000;
+        this->actor.flags |= ACTOR_FLAG_TALK_OFFER_AUTO_ACCEPTED;
         this->actionFunc = func_808F3BD4;
         textId = gSaveContext.save.day != 3 ? 0x346A : 0x3492;
         this->actor.textId = textId;
@@ -449,8 +447,8 @@ void func_808F3C40(EnIn* this, PlayState* play) {
 }
 
 void func_808F3CD4(EnIn* this, PlayState* play) {
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
-        this->actor.flags &= ~ACTOR_FLAG_10000;
+    if (Actor_TalkOfferAccepted(&this->actor, &play->state)) {
+        this->actor.flags &= ~ACTOR_FLAG_TALK_OFFER_AUTO_ACCEPTED;
         this->unk48C = 1;
         this->actionFunc = func_808F5A94;
     } else {
@@ -466,7 +464,7 @@ void func_808F3D40(EnIn* this, PlayState* play) {
         this->actionFunc = func_808F3CD4;
         textId = gSaveContext.save.day != 3 ? 0x347D : 0x34A0;
         this->actor.textId = textId;
-        this->actor.flags |= ACTOR_FLAG_10000;
+        this->actor.flags |= ACTOR_FLAG_TALK_OFFER_AUTO_ACCEPTED;
     } else {
         Actor_OfferGetItem(&this->actor, play, GI_MASK_GARO, 500.0f, 100.0f);
     }
@@ -632,13 +630,13 @@ s32 func_808F4270(PlayState* play, EnIn* this, s32 arg2, MessageContext* msgCtx,
         if (gSaveContext.save.saveInfo.playerData.rupees >= fee) {
             Rupees_ChangeBy(-fee);
             if (!CHECK_WEEKEVENTREG(WEEKEVENTREG_57_01)) {
-                if (arg4 != 0) {
+                if (arg4) {
                     Actor_ContinueText(play, &this->actor, 0x3474);
                 } else {
                     func_808F4108(this, play, 0x3474);
                 }
             } else {
-                if (arg4 != 0) {
+                if (arg4) {
                     Actor_ContinueText(play, &this->actor, 0x3475);
                 } else {
                     func_808F4108(this, play, 0x3475);
@@ -646,7 +644,7 @@ s32 func_808F4270(PlayState* play, EnIn* this, s32 arg2, MessageContext* msgCtx,
             }
         } else {
             Audio_PlaySfx(NA_SE_SY_ERROR);
-            if (arg4 != 0) {
+            if (arg4) {
                 Actor_ContinueText(play, &this->actor, 0x3473);
             } else {
                 func_808F4108(this, play, 0x3473);
@@ -1255,7 +1253,7 @@ s32 func_808F4414(PlayState* play, EnIn* this, s32 arg2) {
 
                 case 0x349B:
                     if (msgCtx->choiceIndex == 0) {
-                        func_808F4270(play, this, arg2, msgCtx, 1);
+                        func_808F4270(play, this, arg2, msgCtx, true);
                         ret = false;
                     } else {
                         Audio_PlaySfx_MessageCancel();
@@ -1290,7 +1288,7 @@ s32 func_808F4414(PlayState* play, EnIn* this, s32 arg2) {
                     break;
 
                 case 0x3471:
-                    func_808F4270(play, this, arg2, msgCtx, 0);
+                    func_808F4270(play, this, arg2, msgCtx, false);
                     ret = false;
                     break;
 
@@ -1329,7 +1327,7 @@ s32 func_808F5674(PlayState* play, EnIn* this, s32 arg2) {
             break;
 
         case TEXT_STATE_CHOICE:
-        case TEXT_STATE_5:
+        case TEXT_STATE_EVENT:
             if (Message_ShouldAdvance(play) && func_808F4414(play, this, arg2)) {
                 Message_CloseTextbox(play);
                 ret = true;
@@ -1359,7 +1357,7 @@ s32 func_808F5728(PlayState* play, EnIn* this, s32 arg2, s32* arg3) {
         *arg3 = 1;
         return 0;
     }
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+    if (Actor_TalkOfferAccepted(&this->actor, &play->state)) {
         *arg3 = 1;
         return 1;
     }
@@ -1490,12 +1488,12 @@ void func_808F5C98(EnIn* this, PlayState* play) {
 }
 
 static InitChainEntry sInitChain[] = {
-    ICHAIN_F32(uncullZoneScale, 1200, ICHAIN_CONTINUE),
-    ICHAIN_F32(uncullZoneDownward, 300, ICHAIN_STOP),
+    ICHAIN_F32(cullingVolumeScale, 1200, ICHAIN_CONTINUE),
+    ICHAIN_F32(cullingVolumeDownward, 300, ICHAIN_STOP),
 };
 
 void EnIn_Init(Actor* thisx, PlayState* play) {
-    EnIn* this = THIS;
+    EnIn* this = (EnIn*)thisx;
     s32 pad[2];
     s16 type;
 
@@ -1593,13 +1591,13 @@ void EnIn_Init(Actor* thisx, PlayState* play) {
 }
 
 void EnIn_Destroy(Actor* thisx, PlayState* play) {
-    EnIn* this = THIS;
+    EnIn* this = (EnIn*)thisx;
 
     Collider_DestroyCylinder(play, &this->colliderCylinder);
 }
 
 void EnIn_Update(Actor* thisx, PlayState* play) {
-    EnIn* this = THIS;
+    EnIn* this = (EnIn*)thisx;
 
     func_808F3310(this, play);
     func_808F3334(this, play);
@@ -1627,8 +1625,8 @@ void func_808F6334(EnIn* this, PlayState* play) {
 
     Matrix_Translate(this->unk4C4, 0.0f, 0.0f, MTXMODE_APPLY);
     if ((&this->actor == player->talkActor) &&
-        ((play->msgCtx.currentTextId < 0xFF) || (play->msgCtx.currentTextId > 0x200)) && (talkState == TEXT_STATE_3) &&
-        (this->prevTalkState == TEXT_STATE_3)) {
+        ((play->msgCtx.currentTextId < 0xFF) || (play->msgCtx.currentTextId > 0x200)) &&
+        (talkState == TEXT_STATE_FADING) && (this->prevTalkState == TEXT_STATE_FADING)) {
         if (!(play->state.frames & 1)) {
             this->unk4C0 = (this->unk4C0 != 0.0f) ? 0.0f : 1.0f;
         }
@@ -1639,7 +1637,7 @@ void func_808F6334(EnIn* this, PlayState* play) {
 }
 
 s32 EnIn_OverrideLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3f* pos, Vec3s* rot, Actor* thisx) {
-    EnIn* this = THIS;
+    EnIn* this = (EnIn*)thisx;
     s32 pad;
     Gfx* sp50[OBJECT_IN_LIMB_MAX] = {
         NULL,                // OBJECT_IN_LIMB_NONE
@@ -1700,8 +1698,8 @@ s32 EnIn_OverrideLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3f* po
     }
 
     if ((limbIndex == OBJECT_IN_LIMB_09) || (limbIndex == OBJECT_IN_LIMB_0A) || (limbIndex == OBJECT_IN_LIMB_0D)) {
-        rot->y += (s16)(Math_SinS(this->fidgetTableY[limbIndex]) * 200.0f);
-        rot->z += (s16)(Math_CosS(this->fidgetTableZ[limbIndex]) * 200.0f);
+        rot->y += TRUNCF_BINANG(Math_SinS(this->fidgetTableY[limbIndex]) * 200.0f);
+        rot->z += TRUNCF_BINANG(Math_CosS(this->fidgetTableZ[limbIndex]) * 200.0f);
     }
 
     if (this->unk4AC & 0x40) {
@@ -1723,7 +1721,7 @@ s32 EnIn_OverrideLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3f* po
 }
 
 void EnIn_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* rot, Actor* thisx) {
-    EnIn* this = THIS;
+    EnIn* this = (EnIn*)thisx;
     Vec3f sp50 = { 1600.0f, 0.0f, 0.0f };
     Vec3f sp44 = { 0.0f, 0.0f, 0.0f };
 
@@ -1766,7 +1764,7 @@ void EnIn_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* rot, 
 }
 
 void EnIn_Draw(Actor* thisx, PlayState* play) {
-    EnIn* this = THIS;
+    EnIn* this = (EnIn*)thisx;
 
     OPEN_DISPS(play->state.gfxCtx);
 

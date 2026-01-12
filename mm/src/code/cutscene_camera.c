@@ -38,7 +38,7 @@ s32 CutsceneCamera_Init(Camera* camera, CutsceneCamera* csCamera) {
 
     csCamera->nextSplineTimer = csCamera->updateSplineTimer = 0;
     csCamera->cmdIndex = 0;
-    csCamera->splineIndex = 0xFFFF;
+    csCamera->splineIndex = -1;
     csCamera->splineNeedsInit = true;
     csCamera->state = CS_CAM_STATE_UPDATE_ALL;
 
@@ -299,7 +299,7 @@ s32 CutsceneCamera_UpdateSplines(u8* script, CutsceneCamera* csCamera) {
                 csCamera->atCmd = (CsCmdCamPoint*)&script[csCamera->cmdIndex];
                 csCamera->cmdIndex += (s16)(csCamera->eyeInterp.numEntries * sizeof(CsCmdCamPoint));
 
-                // Misc Point
+                // Eye Point
                 csCamera->eyeCmd = (CsCmdCamPoint*)&script[csCamera->cmdIndex];
                 csCamera->cmdIndex += (s16)(csCamera->eyeInterp.numEntries * sizeof(CsCmdCamPoint));
 
@@ -308,12 +308,10 @@ s32 CutsceneCamera_UpdateSplines(u8* script, CutsceneCamera* csCamera) {
                 csCamera->cmdIndex += (s16)(csCamera->eyeInterp.numEntries * sizeof(CsCmdCamMisc));
 
                 // Other Params
-                csCamera->eyeInterp.curPoint = 0;
-                csCamera->atInterp.curPoint = 0;
+                csCamera->eyeInterp.curPoint = csCamera->atInterp.curPoint = 0;
 
                 csCamera->splineNeedsInit = false;
-                //! FAKE: csCamera->splineIndex++;
-                csCamera->splineIndex = (csCamera->splineIndex & 0xFFFF) + 1;
+                csCamera->splineIndex++;
                 csCamera->state = CS_CAM_STATE_UPDATE_ALL;
                 csCamera->nextSplineTimer = csCamera->updateSplineTimer = 0;
                 csCamera->eyeInterp.type = csCamera->atInterp.type = CS_CAM_INTERP_OFF;
@@ -406,9 +404,9 @@ s16 CutsceneCamera_Interp_Linear(Vec3f* camPos, f32* camFov, s16* camRoll, CsCmd
 
         targetRoll = CAM_DEG_TO_BINANG(miscCmd->roll);
 
-        rollDiffToTarget = (s16)(targetRoll - (s16)interpState->initRoll);
+        rollDiffToTarget = (s16)(targetRoll - TRUNCF_BINANG(interpState->initRoll));
 
-        *camRoll = (s16)interpState->initRoll + (s16)(rollDiffToTarget * lerp);
+        *camRoll = TRUNCF_BINANG(interpState->initRoll) + TRUNCF_BINANG(rollDiffToTarget * lerp);
     }
 
     if (interpState->curFrame >= pointCmd->duration) {
@@ -472,9 +470,9 @@ s16 CutsceneCamera_Interp_Scale(Vec3f* camPos, f32* camFov, s16* camRoll, CsCmdC
 
         targetRoll = CAM_DEG_TO_BINANG(miscCmd->roll);
 
-        rollDiffToTarget = (s16)(targetRoll - (s16)interpState->initRoll);
+        rollDiffToTarget = (s16)(targetRoll - TRUNCF_BINANG(interpState->initRoll));
 
-        *camRoll += (s16)(rollDiffToTarget * lerp);
+        *camRoll += TRUNCF_BINANG(rollDiffToTarget * lerp);
     }
 
     if (interpState->curFrame >= pointCmd->duration) {
@@ -537,9 +535,9 @@ s16 CutsceneCamera_Interp_Geo(Vec3f* camPos, f32* camFov, s16* camRoll, CsCmdCam
 
         targetRoll = CAM_DEG_TO_BINANG(miscCmd->roll);
 
-        rollDiffToTarget = (s16)(targetRoll - (s16)interpState->initRoll);
+        rollDiffToTarget = (s16)(targetRoll - TRUNCF_BINANG(interpState->initRoll));
 
-        *camRoll += (s16)(rollDiffToTarget * lerp);
+        *camRoll += TRUNCF_BINANG(rollDiffToTarget * lerp);
     }
 
     if (interpState->curFrame >= pointCmd->duration) {

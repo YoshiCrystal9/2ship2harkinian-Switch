@@ -42,6 +42,15 @@ static const ALIGN_ASSET(2) char Z2_ICHIBA_room_00DL_002080[] = dZ2_ICHIBA_room_
 #define dZ2_ICHIBA_room_00DL_008D50 "__OTR__scenes/nonmq/Z2_ICHIBA_scene/Z2_ICHIBA_room_00DL_008D50"
 static const ALIGN_ASSET(2) char Z2_ICHIBA_room_00DL_008D50[] = dZ2_ICHIBA_room_00DL_008D50;
 
+#define dZ2_ICHIBA_room_00DL_000530 "__OTR__scenes/nonmq/Z2_ICHIBA_scene/Z2_ICHIBA_room_00DL_000530"
+static const ALIGN_ASSET(2) char Z2_ICHIBA_room_00DL_000530[] = dZ2_ICHIBA_room_00DL_000530;
+
+#define dZ2_ICHIBA_room_00DL_008CF0 "__OTR__scenes/nonmq/Z2_ICHIBA_scene/Z2_ICHIBA_room_00DL_008CF0"
+static const ALIGN_ASSET(2) char Z2_ICHIBA_room_00DL_008CF0[] = dZ2_ICHIBA_room_00DL_008CF0;
+
+#define dZ2_ICHIBA_room_00DL_00AAB8 "__OTR__scenes/nonmq/Z2_ICHIBA_scene/Z2_ICHIBA_room_00DL_00AAB8"
+static const ALIGN_ASSET(2) char Z2_ICHIBA_room_00DL_00AAB8[] = dZ2_ICHIBA_room_00DL_00AAB8;
+
 #define dZ2_ICHIBA_room_00Set_000370DL_008F40 "__OTR__scenes/nonmq/Z2_ICHIBA_scene/Z2_ICHIBA_room_00Set_000370DL_008F40"
 static const ALIGN_ASSET(2) char Z2_ICHIBA_room_00Set_000370DL_008F40[] = dZ2_ICHIBA_room_00Set_000370DL_008F40;
 

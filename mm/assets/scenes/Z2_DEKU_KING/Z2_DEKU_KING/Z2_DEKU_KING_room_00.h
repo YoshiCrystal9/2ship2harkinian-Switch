@@ -102,6 +102,12 @@ static const ALIGN_ASSET(2) char Z2_DEKU_KING_room_00DL_0092B0[] = dZ2_DEKU_KING
 #define dZ2_DEKU_KING_room_00DL_003BD8 "__OTR__scenes/nonmq/Z2_DEKU_KING_scene/Z2_DEKU_KING_room_00DL_003BD8"
 static const ALIGN_ASSET(2) char Z2_DEKU_KING_room_00DL_003BD8[] = dZ2_DEKU_KING_room_00DL_003BD8;
 
+#define dZ2_DEKU_KING_room_00DL_0093A0 "__OTR__scenes/nonmq/Z2_DEKU_KING_scene/Z2_DEKU_KING_room_00DL_0093A0"
+static const ALIGN_ASSET(2) char Z2_DEKU_KING_room_00DL_0093A0[] = dZ2_DEKU_KING_room_00DL_0093A0;
+
+#define dZ2_DEKU_KING_room_00DL_0094B0 "__OTR__scenes/nonmq/Z2_DEKU_KING_scene/Z2_DEKU_KING_room_00DL_0094B0"
+static const ALIGN_ASSET(2) char Z2_DEKU_KING_room_00DL_0094B0[] = dZ2_DEKU_KING_room_00DL_0094B0;
+
 #define dZ2_DEKU_KING_room_00Set_0003D0DL_003FD0 "__OTR__scenes/nonmq/Z2_DEKU_KING_scene/Z2_DEKU_KING_room_00Set_0003D0DL_003FD0"
 static const ALIGN_ASSET(2) char Z2_DEKU_KING_room_00Set_0003D0DL_003FD0[] = dZ2_DEKU_KING_room_00Set_0003D0DL_003FD0;
 

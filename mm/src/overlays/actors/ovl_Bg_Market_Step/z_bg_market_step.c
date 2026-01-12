@@ -7,14 +7,12 @@
 #include "z_bg_market_step.h"
 #include "objects/object_market_obj/object_market_obj.h"
 
-#define FLAGS (ACTOR_FLAG_20 | ACTOR_FLAG_10000000)
-
-#define THIS ((BgMarketStep*)thisx)
+#define FLAGS (ACTOR_FLAG_DRAW_CULLING_DISABLED | ACTOR_FLAG_UCODE_POINT_LIGHT_ENABLED)
 
 void BgMarketStep_Init(Actor* thisx, PlayState* play);
 void BgMarketStep_Draw(Actor* thisx, PlayState* play);
 
-ActorInit Bg_Market_Step_InitVars = {
+ActorProfile Bg_Market_Step_Profile = {
     /**/ ACTOR_BG_MARKET_STEP,
     /**/ ACTORCAT_BG,
     /**/ FLAGS,
@@ -27,9 +25,9 @@ ActorInit Bg_Market_Step_InitVars = {
 };
 
 static InitChainEntry sInitChain[] = {
-    ICHAIN_F32(uncullZoneForward, 1, ICHAIN_CONTINUE),
-    ICHAIN_F32(uncullZoneScale, 1, ICHAIN_CONTINUE),
-    ICHAIN_F32(uncullZoneDownward, 1, ICHAIN_CONTINUE),
+    ICHAIN_F32(cullingVolumeDistance, 1, ICHAIN_CONTINUE),
+    ICHAIN_F32(cullingVolumeScale, 1, ICHAIN_CONTINUE),
+    ICHAIN_F32(cullingVolumeDownward, 1, ICHAIN_CONTINUE),
     ICHAIN_VEC3F_DIV1000(scale, 1000, ICHAIN_STOP),
 };
 
@@ -44,7 +42,7 @@ Gfx* sBankAdvertisementsAndDoorDLs[] = {
 };
 
 void BgMarketStep_Init(Actor* thisx, PlayState* play) {
-    BgMarketStep* this = THIS;
+    BgMarketStep* this = (BgMarketStep*)thisx;
 
     Actor_ProcessInitChain(&this->actor, sInitChain);
 }

@@ -87,8 +87,8 @@ static const ALIGN_ASSET(2) char object_zm_Tex_0082E8[] = dobject_zm_Tex_0082E8;
 #define dobject_zm_Tex_0086E8 "__OTR__objects/object_zm/object_zm_Tex_0086E8"
 static const ALIGN_ASSET(2) char object_zm_Tex_0086E8[] = dobject_zm_Tex_0086E8;
 
-#define dobject_zm_Tex_008AE8 "__OTR__objects/object_zm/object_zm_Tex_008AE8"
-static const ALIGN_ASSET(2) char object_zm_Tex_008AE8[] = dobject_zm_Tex_008AE8;
+#define dgTotoEyesOpenTex "__OTR__objects/object_zm/gTotoEyesOpenTex"
+static const ALIGN_ASSET(2) char gTotoEyesOpenTex[] = dgTotoEyesOpenTex;
 
 #define dobject_zm_Tex_008EE8 "__OTR__objects/object_zm/object_zm_Tex_008EE8"
 static const ALIGN_ASSET(2) char object_zm_Tex_008EE8[] = dobject_zm_Tex_008EE8;
@@ -111,11 +111,11 @@ static const ALIGN_ASSET(2) char object_zm_Tex_009A68[] = dobject_zm_Tex_009A68;
 #define dobject_zm_Tex_009C68 "__OTR__objects/object_zm/object_zm_Tex_009C68"
 static const ALIGN_ASSET(2) char object_zm_Tex_009C68[] = dobject_zm_Tex_009C68;
 
-#define dobject_zm_Tex_00A068 "__OTR__objects/object_zm/object_zm_Tex_00A068"
-static const ALIGN_ASSET(2) char object_zm_Tex_00A068[] = dobject_zm_Tex_00A068;
+#define dgTotoEyesHalfTex "__OTR__objects/object_zm/gTotoEyesHalfTex"
+static const ALIGN_ASSET(2) char gTotoEyesHalfTex[] = dgTotoEyesHalfTex;
 
-#define dobject_zm_Tex_00A468 "__OTR__objects/object_zm/object_zm_Tex_00A468"
-static const ALIGN_ASSET(2) char object_zm_Tex_00A468[] = dobject_zm_Tex_00A468;
+#define dgTotoEyesClosedTex "__OTR__objects/object_zm/gTotoEyesClosedTex"
+static const ALIGN_ASSET(2) char gTotoEyesClosedTex[] = dgTotoEyesClosedTex;
 
 #define dobject_zm_Skel_00A978 "__OTR__objects/object_zm/object_zm_Skel_00A978"
 static const ALIGN_ASSET(2) char object_zm_Skel_00A978[] = dobject_zm_Skel_00A978;

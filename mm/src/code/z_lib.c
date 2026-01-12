@@ -1,4 +1,10 @@
-#include "global.h"
+#include "z64lib.h"
+#include "ichain.h"
+
+#include "main.h"
+#include "sfx.h"
+#include "z64game.h"
+
 #include "BenPort.h"
 #include "2s2h/GameInteractor/GameInteractor.h"
 
@@ -47,7 +53,7 @@ s32 Math_ScaledStepToS(s16* pValue, s16 target, s16 step) {
             step = -step;
         }
 
-        *pValue += (s16)(step * f0);
+        *pValue += TRUNCF_BINANG(step * f0);
 
         if (((s16)(*pValue - target) * step) >= 0) {
             *pValue = target;
@@ -426,7 +432,7 @@ void (*sInitChainHandlers[])(u8* ptr, InitChainEntry* ichain) = {
     IChain_Apply_Vec3f, IChain_Apply_Vec3fdiv1000, IChain_Apply_Vec3s,
 };
 
-void Actor_ProcessInitChain(Actor* actor, InitChainEntry* ichain) {
+void Actor_ProcessInitChain(struct Actor* actor, InitChainEntry* ichain) {
     do {
         sInitChainHandlers[ichain->type]((u8*)actor, ichain);
     } while ((ichain++)->cont);
@@ -664,10 +670,10 @@ f32 Math_Vec3f_StepTo(Vec3f* start, Vec3f* target, f32 speed) {
     f0 = Math3D_Vec3fMagnitude(&diff);
     if (speed < f0) {
         f2 = speed / f0;
-        f0 = f0 - speed;
-        start->x = start->x + f2 * diff.x;
-        start->y = start->y + f2 * diff.y;
-        start->z = start->z + f2 * diff.z;
+        f0 -= speed;
+        start->x += f2 * diff.x;
+        start->y += f2 * diff.y;
+        start->z += f2 * diff.z;
     } else {
         Math_Vec3f_Copy(start, target);
         f0 = 0.0f;

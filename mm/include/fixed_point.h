@@ -2,6 +2,10 @@
 #define FIXED_POINT_H
 #include "ultra64.h"
 
+extern f32 gPositiveInfinity;
+extern f32 gNegativeInfinity;
+extern f32 gPositiveZero;
+extern f32 gNegativeZero;
 extern f32 qNaN0x3FFFFF;
 extern f32 qNaN0x10000;
 extern f32 sNaN0x3FFFFF;

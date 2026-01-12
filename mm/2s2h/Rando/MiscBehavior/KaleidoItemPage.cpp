@@ -183,7 +183,7 @@ void DrawItemCycleExtras(PlayState* play, u8 slot, u8 canCycle, u8 leftItem, u8 
             Matrix_Scale(finalScale, finalScale, 1.0f, MTXMODE_APPLY);
         }
 
-        gSPMatrix(POLY_OPA_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+        MATRIX_FINALIZE_AND_LOAD(POLY_OPA_DISP++, play->state.gfxCtx);
 
         // Render A button indicator when hovered and not cycling
         if (!isCycling && sCycleActiveAnimTimer == 0 && pauseCtx->cursorSlot[PAUSE_ITEM] == slot &&
@@ -262,7 +262,7 @@ void Rando::MiscBehavior::InitKaleidoItemPage() {
             if (sPrevKaleidoCursorSlot == SLOT_TRADE_DEED || sPrevKaleidoCursorSlot == SLOT_TRADE_KEY_MAMA ||
                 sPrevKaleidoCursorSlot == SLOT_TRADE_COUPLE) {
                 // Reset A button back to Info when going away from a cycle-able item
-                if (interfaceCtx->aButtonHorseDoAction != DO_ACTION_INFO) {
+                if (interfaceCtx->aButtonDoActionDelayed != DO_ACTION_INFO) {
                     Interface_SetAButtonDoAction(gPlayState, DO_ACTION_INFO);
                 }
             }
@@ -277,7 +277,7 @@ void Rando::MiscBehavior::InitKaleidoItemPage() {
 
         if (availableItems.size() == 0) {
             // Nothing to cycle, switch back to Info on A button
-            if (interfaceCtx->aButtonHorseDoAction != DO_ACTION_INFO) {
+            if (interfaceCtx->aButtonDoActionDelayed != DO_ACTION_INFO) {
                 Interface_SetAButtonDoAction(gPlayState, DO_ACTION_INFO);
             }
 
@@ -311,7 +311,7 @@ void Rando::MiscBehavior::InitKaleidoItemPage() {
 
         if (sCurrentItemCyclingSlot != SLOT_NONE) {
             // Update HUD A button
-            if (interfaceCtx->aButtonHorseDoAction != DO_ACTION_STOP) {
+            if (interfaceCtx->aButtonDoActionDelayed != DO_ACTION_STOP) {
                 Interface_SetAButtonDoAction(gPlayState, DO_ACTION_STOP);
             }
             if (gSaveContext.buttonStatus[EQUIP_SLOT_A] != BTN_ENABLED) {
@@ -338,7 +338,7 @@ void Rando::MiscBehavior::InitKaleidoItemPage() {
             }
         } else if (itemId == PAUSE_ITEM_NONE || availableItems.size() > 1) {
             // Update HUD A button
-            if (interfaceCtx->aButtonHorseDoAction != DO_ACTION_DECIDE) {
+            if (interfaceCtx->aButtonDoActionDelayed != DO_ACTION_DECIDE) {
                 Interface_SetAButtonDoAction(gPlayState, DO_ACTION_DECIDE);
             }
             if (gSaveContext.buttonStatus[EQUIP_SLOT_A] != BTN_ENABLED) {
@@ -348,7 +348,7 @@ void Rando::MiscBehavior::InitKaleidoItemPage() {
             }
         } else {
             // Nothing to cycle, switch back to Info on A button
-            if (interfaceCtx->aButtonHorseDoAction != DO_ACTION_INFO) {
+            if (interfaceCtx->aButtonDoActionDelayed != DO_ACTION_INFO) {
                 Interface_SetAButtonDoAction(gPlayState, DO_ACTION_INFO);
             }
         }

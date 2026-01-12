@@ -1,5 +1,5 @@
 #include "ActorBehavior.h"
-#include "public/bridge/consolevariablebridge.h"
+#include <libultraship/bridge/consolevariablebridge.h>
 #include "2s2h/Enhancements/FrameInterpolation/FrameInterpolation.h"
 #include "2s2h/Rando/StaticData/StaticData.h"
 #include "2s2h/ShipInit.hpp"
@@ -9,7 +9,7 @@ extern "C" {
 #include "variables.h"
 #include "src/overlays/actors/ovl_En_Box/z_en_box.h"
 
-s32 func_80832558(PlayState* play, Player* player, PlayerFuncD58 arg2);
+s32 Player_SetupWaitForPutAway(PlayState* play, Player* player, AfterPutAwayFunc afterPutAwayFunc);
 void Player_SetAction_PreserveMoveFlags(PlayState* play, Player* player, PlayerActionFunc actionFunc, s32 arg3);
 void Player_StopCutscene(Player* player);
 void func_80848294(PlayState* play, Player* player);
@@ -100,7 +100,7 @@ void EnBox_RandoPostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s*
             break;
     }
 
-    gSPMatrix((*gfx)++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    MATRIX_FINALIZE_AND_LOAD((*gfx)++, play->state.gfxCtx);
     switch (randoItemType) {
         case RITYPE_BOSS_KEY:
         case RITYPE_HEALTH:
@@ -167,7 +167,7 @@ void Rando::ActorBehavior::InitEnBoxBehavior() {
         Actor* actor = (Actor*)enBox;
         Player* player = GET_PLAYER(gPlayState);
         if (ENBOX_RC != RC_UNKNOWN) {
-            func_80832558(gPlayState, player, func_80837C78_override);
+            Player_SetupWaitForPutAway(gPlayState, player, func_80837C78_override);
             *should = false;
         }
     });

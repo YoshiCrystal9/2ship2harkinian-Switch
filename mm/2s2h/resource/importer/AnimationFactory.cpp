@@ -1,8 +1,8 @@
 #include "2s2h/resource/importer/AnimationFactory.h"
 #include "2s2h/resource/type/Animation.h"
 #include "2s2h/resource/importer/PlayerAnimationFactory.h"
-#include "Context.h"
-#include "ResourceManager.h"
+#include <ship/Context.h>
+#include <ship/resource/ResourceManager.h>
 
 #include <spdlog/spdlog.h>
 

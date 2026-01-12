@@ -1,4 +1,4 @@
-#include "public/bridge/consolevariablebridge.h"
+#include <libultraship/bridge/consolevariablebridge.h>
 #include "2s2h/GameInteractor/GameInteractor.h"
 #include "2s2h/Enhancements/FrameInterpolation/FrameInterpolation.h"
 #include "2s2h/ShipInit.hpp"
@@ -45,7 +45,7 @@ void DrawBowReticle(PlayState* play, Player* player, f32 bowDistance) {
     Matrix_Translate(pos.x, pos.y, pos.z, MTXMODE_NEW);
     Matrix_Scale(scale, scale, scale, MTXMODE_APPLY);
 
-    gSPMatrix(OVERLAY_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    MATRIX_FINALIZE_AND_LOAD(OVERLAY_DISP++, play->state.gfxCtx);
 
     gSPSegment(OVERLAY_DISP++, 0x06, (uintptr_t)play->objectCtx.slots[player->actor.objectSlot].segment);
     gSPDisplayList(OVERLAY_DISP++, (Gfx*)gHookshotReticleDL);

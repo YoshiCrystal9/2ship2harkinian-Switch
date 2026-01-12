@@ -1,5 +1,6 @@
 #include "ActorBehavior.h"
-#include "public/bridge/consolevariablebridge.h"
+#include <libultraship/bridge/consolevariablebridge.h>
+#include "2s2h/ObjectExtension/ActorListIndex.h"
 #include "2s2h/CustomItem/CustomItem.h"
 #include "assets/2s2h_assets.h"
 
@@ -8,56 +9,54 @@ extern "C" {
 #include "src/overlays/actors/ovl_Obj_Taru/z_obj_taru.h"
 }
 
-#define OBJTARU_RC (actor->home.rot.x)
-
-std::map<std::pair<float, float>, RandoCheckId> barrelMap = {
+std::map<std::tuple<s16, s16, s16>, RandoCheckId> barrelMap = {
     // Great Bay Temple //
-    { { -540.0f, 3450.0f }, RC_GREAT_BAY_TEMPLE_ENTRANCE_BARREL_01 },
-    { { -480.0f, 3450.0f }, RC_GREAT_BAY_TEMPLE_ENTRANCE_BARREL_02 },
-    { { -540.0f, 3510.0f }, RC_GREAT_BAY_TEMPLE_ENTRANCE_BARREL_03 },
-    { { -480.0f, 3510.0f }, RC_GREAT_BAY_TEMPLE_ENTRANCE_BARREL_04 },
-    { { 480.0f, 3510.0f }, RC_GREAT_BAY_TEMPLE_ENTRANCE_BARREL_05 },
-    { { 540.0f, 3510.0f }, RC_GREAT_BAY_TEMPLE_ENTRANCE_BARREL_06 },
-    { { 480.0f, 3450.0f }, RC_GREAT_BAY_TEMPLE_ENTRANCE_BARREL_07 },
-    { { 540.0f, 3450.0f }, RC_GREAT_BAY_TEMPLE_ENTRANCE_BARREL_08 },
-    { { -360.0f, -1455.0f }, RC_GREAT_BAY_TEMPLE_GREEN_PIPE_1_BARREL_01 },
-    { { -240.0f, -1455.0f }, RC_GREAT_BAY_TEMPLE_GREEN_PIPE_1_BARREL_02 },
-    { { -300.0f, -1590.0f }, RC_GREAT_BAY_TEMPLE_GREEN_PIPE_1_BARREL_03 },
-    { { 2685.0f, -1200.0f }, RC_GREAT_BAY_TEMPLE_GREEN_PIPE_2_BARREL_01 },
-    { { 2685.0f, -1260.0f }, RC_GREAT_BAY_TEMPLE_GREEN_PIPE_2_BARREL_02 },
-    { { 1785.0f, 2190.0f }, RC_GREAT_BAY_TEMPLE_RED_PIPE_SWITCH_ROOM_BARREL_01 },
-    { { 1785.0f, 2070.0f }, RC_GREAT_BAY_TEMPLE_RED_PIPE_SWITCH_ROOM_BARREL_02 },
-    { { 1785.0f, 2010.0f }, RC_GREAT_BAY_TEMPLE_RED_PIPE_SWITCH_ROOM_BARREL_03 },
-    { { 1305.0f, 2058.0f }, RC_GREAT_BAY_TEMPLE_RED_PIPE_SWITCH_ROOM_BARREL_04 },
-    { { 1305.0f, 1998.0f }, RC_GREAT_BAY_TEMPLE_RED_PIPE_SWITCH_ROOM_BARREL_05 },
+    { { SCENE_SEA, 13, 0 }, RC_GREAT_BAY_TEMPLE_ENTRANCE_BARREL_01 },
+    { { SCENE_SEA, 13, 1 }, RC_GREAT_BAY_TEMPLE_ENTRANCE_BARREL_02 },
+    { { SCENE_SEA, 13, 2 }, RC_GREAT_BAY_TEMPLE_ENTRANCE_BARREL_03 },
+    { { SCENE_SEA, 13, 3 }, RC_GREAT_BAY_TEMPLE_ENTRANCE_BARREL_04 },
+    { { SCENE_SEA, 13, 4 }, RC_GREAT_BAY_TEMPLE_ENTRANCE_BARREL_05 },
+    { { SCENE_SEA, 13, 5 }, RC_GREAT_BAY_TEMPLE_ENTRANCE_BARREL_06 },
+    { { SCENE_SEA, 13, 6 }, RC_GREAT_BAY_TEMPLE_ENTRANCE_BARREL_07 },
+    { { SCENE_SEA, 13, 7 }, RC_GREAT_BAY_TEMPLE_ENTRANCE_BARREL_08 },
+    { { SCENE_SEA, 12, 11 }, RC_GREAT_BAY_TEMPLE_GREEN_PIPE_1_BARREL_01 },
+    { { SCENE_SEA, 12, 12 }, RC_GREAT_BAY_TEMPLE_GREEN_PIPE_1_BARREL_02 },
+    { { SCENE_SEA, 12, 10 }, RC_GREAT_BAY_TEMPLE_GREEN_PIPE_1_BARREL_03 },
+    { { SCENE_SEA, 9, 7 }, RC_GREAT_BAY_TEMPLE_GREEN_PIPE_2_BARREL_01 },
+    { { SCENE_SEA, 9, 6 }, RC_GREAT_BAY_TEMPLE_GREEN_PIPE_2_BARREL_02 },
+    { { SCENE_SEA, 2, 2 }, RC_GREAT_BAY_TEMPLE_RED_PIPE_SWITCH_ROOM_BARREL_01 },
+    { { SCENE_SEA, 2, 5 }, RC_GREAT_BAY_TEMPLE_RED_PIPE_SWITCH_ROOM_BARREL_02 },
+    { { SCENE_SEA, 2, 6 }, RC_GREAT_BAY_TEMPLE_RED_PIPE_SWITCH_ROOM_BARREL_03 },
+    { { SCENE_SEA, 2, 4 }, RC_GREAT_BAY_TEMPLE_RED_PIPE_SWITCH_ROOM_BARREL_04 },
+    { { SCENE_SEA, 2, 3 }, RC_GREAT_BAY_TEMPLE_RED_PIPE_SWITCH_ROOM_BARREL_05 },
 
     // Pirates Fortress //
-    { { 3880.0f, -850.0f }, RC_PIRATE_FORTRESS_CAPTAIN_ROOM_BARREL_01 },
-    { { 3880.0f, -910.0f }, RC_PIRATE_FORTRESS_CAPTAIN_ROOM_BARREL_02 },
-    { { -80.0f, 1320.0f }, RC_PIRATE_FORTRESS_ENTRANCE_BARREL },
-    { { 3740.0f, -1860.0f }, RC_PIRATE_FORTRESS_INTERIOR_GUARDED_BARREL },
-    { { 2680.0f, -1440.0f }, RC_PIRATE_FORTRESS_PLAZA_BARREL },
-    { { 2520.0f, 440.0f }, RC_PIRATE_FORTRESS_SEWERS_END_BARREL_01 },
-    { { 2580.0f, 400.0f }, RC_PIRATE_FORTRESS_SEWERS_END_BARREL_02 },
-    { { 2520.0f, 381.0f }, RC_PIRATE_FORTRESS_SEWERS_END_BARREL_03 },
-    { { 2580.0f, 341.0f }, RC_PIRATE_FORTRESS_SEWERS_END_BARREL_04 },
-    { { 2520.0f, 321.0f }, RC_PIRATE_FORTRESS_SEWERS_END_BARREL_05 },
-    { { 1880.0f, -2020.0f }, RC_PIRATE_FORTRESS_SEWERS_HEART_PIECE_ROOM_BARREL_01 },
-    { { 1880.0f, -2080.0f }, RC_PIRATE_FORTRESS_SEWERS_HEART_PIECE_ROOM_BARREL_02 },
-    { { 1880.0f, -2140.0f }, RC_PIRATE_FORTRESS_SEWERS_HEART_PIECE_ROOM_BARREL_03 },
-    { { 2171.0f, -1503.0f }, RC_PIRATE_FORTRESS_SEWERS_HEART_PIECE_ROOM_BARREL_04 },
-    { { 2171.0f, -1443.0f }, RC_PIRATE_FORTRESS_SEWERS_HEART_PIECE_ROOM_BARREL_05 },
-    { { 2171.0f, -1383.0f }, RC_PIRATE_FORTRESS_SEWERS_HEART_PIECE_ROOM_BARREL_06 },
-    { { 2070.0f, -2250.0f }, RC_PIRATE_FORTRESS_SEWERS_HEART_PIECE_ROOM_BARREL_07 },
-    { { 2070.0f, -2310.0f }, RC_PIRATE_FORTRESS_SEWERS_HEART_PIECE_ROOM_BARREL_08 },
-    { { 2070.0f, -2370.0f }, RC_PIRATE_FORTRESS_SEWERS_HEART_PIECE_ROOM_BARREL_09 },
-    { { 2070.0f, -2430.0f }, RC_PIRATE_FORTRESS_SEWERS_HEART_PIECE_ROOM_BARREL_10 },
-    { { 1570.0f, -2310.0f }, RC_PIRATE_FORTRESS_SEWERS_HEART_PIECE_ROOM_BARREL_11 },
-    { { 1510.0f, -2310.0f }, RC_PIRATE_FORTRESS_SEWERS_HEART_PIECE_ROOM_BARREL_12 },
-    { { 1570.0f, -2370.0f }, RC_PIRATE_FORTRESS_SEWERS_HEART_PIECE_ROOM_BARREL_13 },
-    { { 1570.0f, -2430.0f }, RC_PIRATE_FORTRESS_SEWERS_HEART_PIECE_ROOM_BARREL_14 },
-    { { 1510.0f, -2370.0f }, RC_PIRATE_FORTRESS_SEWERS_HEART_PIECE_ROOM_BARREL_15 },
-    { { 1510.0f, -2430.0f }, RC_PIRATE_FORTRESS_SEWERS_HEART_PIECE_ROOM_BARREL_16 },
+    { { SCENE_PIRATE, 3, 7 }, RC_PIRATE_FORTRESS_CAPTAIN_ROOM_BARREL_01 },
+    { { SCENE_PIRATE, 3, 6 }, RC_PIRATE_FORTRESS_CAPTAIN_ROOM_BARREL_02 },
+    { { SCENE_TORIDE, 0, 7 }, RC_PIRATE_FORTRESS_ENTRANCE_BARREL },
+    { { SCENE_PIRATE, 13, 1 }, RC_PIRATE_FORTRESS_INTERIOR_GUARDED_BARREL },
+    { { SCENE_KAIZOKU, 0, 8 }, RC_PIRATE_FORTRESS_PLAZA_BARREL },
+    { { SCENE_PIRATE, 9, 8 }, RC_PIRATE_FORTRESS_SEWERS_END_BARREL_01 },
+    { { SCENE_PIRATE, 9, 9 }, RC_PIRATE_FORTRESS_SEWERS_END_BARREL_02 },
+    { { SCENE_PIRATE, 9, 7 }, RC_PIRATE_FORTRESS_SEWERS_END_BARREL_03 },
+    { { SCENE_PIRATE, 9, 6 }, RC_PIRATE_FORTRESS_SEWERS_END_BARREL_04 },
+    { { SCENE_PIRATE, 9, 5 }, RC_PIRATE_FORTRESS_SEWERS_END_BARREL_05 },
+    { { SCENE_PIRATE, 11, 21 }, RC_PIRATE_FORTRESS_SEWERS_HEART_PIECE_ROOM_BARREL_01 },
+    { { SCENE_PIRATE, 11, 20 }, RC_PIRATE_FORTRESS_SEWERS_HEART_PIECE_ROOM_BARREL_02 },
+    { { SCENE_PIRATE, 11, 19 }, RC_PIRATE_FORTRESS_SEWERS_HEART_PIECE_ROOM_BARREL_03 },
+    { { SCENE_PIRATE, 11, 18 }, RC_PIRATE_FORTRESS_SEWERS_HEART_PIECE_ROOM_BARREL_04 },
+    { { SCENE_PIRATE, 11, 17 }, RC_PIRATE_FORTRESS_SEWERS_HEART_PIECE_ROOM_BARREL_05 },
+    { { SCENE_PIRATE, 11, 16 }, RC_PIRATE_FORTRESS_SEWERS_HEART_PIECE_ROOM_BARREL_06 },
+    { { SCENE_PIRATE, 11, 12 }, RC_PIRATE_FORTRESS_SEWERS_HEART_PIECE_ROOM_BARREL_07 },
+    { { SCENE_PIRATE, 11, 10 }, RC_PIRATE_FORTRESS_SEWERS_HEART_PIECE_ROOM_BARREL_08 },
+    { { SCENE_PIRATE, 11, 9 }, RC_PIRATE_FORTRESS_SEWERS_HEART_PIECE_ROOM_BARREL_09 },
+    { { SCENE_PIRATE, 11, 15 }, RC_PIRATE_FORTRESS_SEWERS_HEART_PIECE_ROOM_BARREL_10 },
+    { { SCENE_PIRATE, 11, 7 }, RC_PIRATE_FORTRESS_SEWERS_HEART_PIECE_ROOM_BARREL_11 },
+    { { SCENE_PIRATE, 11, 6 }, RC_PIRATE_FORTRESS_SEWERS_HEART_PIECE_ROOM_BARREL_12 },
+    { { SCENE_PIRATE, 11, 11 }, RC_PIRATE_FORTRESS_SEWERS_HEART_PIECE_ROOM_BARREL_13 },
+    { { SCENE_PIRATE, 11, 14 }, RC_PIRATE_FORTRESS_SEWERS_HEART_PIECE_ROOM_BARREL_14 },
+    { { SCENE_PIRATE, 11, 8 }, RC_PIRATE_FORTRESS_SEWERS_HEART_PIECE_ROOM_BARREL_15 },
+    { { SCENE_PIRATE, 11, 13 }, RC_PIRATE_FORTRESS_SEWERS_HEART_PIECE_ROOM_BARREL_16 },
 };
 
 void ObjTaru_RandoDraw(Actor* actor, PlayState* play) {
@@ -66,7 +65,8 @@ void ObjTaru_RandoDraw(Actor* actor, PlayState* play) {
         return;
     }
 
-    RandoItemId randoItemId = Rando::ConvertItem(RANDO_SAVE_CHECKS[OBJTARU_RC].randoItemId, (RandoCheckId)OBJTARU_RC);
+    RandoCheckId randoCheckId = Rando::ActorBehavior::GetObjectRandoCheckId(actor);
+    RandoItemId randoItemId = Rando::ConvertItem(RANDO_SAVE_CHECKS[randoCheckId].randoItemId, randoCheckId);
     RandoItemType randoItemType = Rando::StaticData::Items[randoItemId].randoItemType;
 
     switch (randoItemType) {
@@ -101,28 +101,29 @@ void ObjTaru_RandoDraw(Actor* actor, PlayState* play) {
 }
 
 void Rando::ActorBehavior::InitObjTaruBehavior() {
+    // Identify the barrel based on scene ID, room, and actor list index
     COND_ID_HOOK(OnActorInit, ACTOR_OBJ_TARU, IS_RANDO, [](Actor* actor) {
         RandoCheckId randoCheckId = RC_UNKNOWN;
 
-        auto it = barrelMap.find({ actor->home.pos.x, actor->home.pos.z });
-        if (it == barrelMap.end()) {
-            return;
+        s16 actorListIndex = GetActorListIndex(actor);
+        auto it = barrelMap.find({ gPlayState->sceneId, gPlayState->roomCtx.curRoom.num, actorListIndex });
+        if (it != barrelMap.end()) {
+            randoCheckId = it->second;
         }
-
-        randoCheckId = it->second;
 
         if (!RANDO_SAVE_CHECKS[randoCheckId].shuffled || RANDO_SAVE_CHECKS[randoCheckId].cycleObtained) {
             return;
         }
 
-        OBJTARU_RC = randoCheckId;
+        Rando::ActorBehavior::SetObjectRandoCheckId(actor, randoCheckId);
         actor->draw = ObjTaru_RandoDraw;
     });
 
     COND_VB_SHOULD(VB_BARREL_OR_CRATE_DROP_COLLECTIBLE, IS_RANDO, {
         Actor* actor = va_arg(args, Actor*);
+        RandoCheckId randoCheckId = GetObjectRandoCheckId(actor);
 
-        if (actor->id != ACTOR_OBJ_TARU || OBJTARU_RC == RC_UNKNOWN) {
+        if (actor->id != ACTOR_OBJ_TARU || randoCheckId == RC_UNKNOWN) {
             return;
         }
 
@@ -130,7 +131,7 @@ void Rando::ActorBehavior::InitObjTaruBehavior() {
 
         EnItem00* spawn = CustomItem::Spawn(
             actor->world.pos.x, actor->world.pos.y, actor->world.pos.z, 0,
-            CustomItem::KILL_ON_TOUCH | CustomItem::TOSS_ON_SPAWN, OBJTARU_RC,
+            CustomItem::KILL_ON_TOUCH | CustomItem::TOSS_ON_SPAWN, randoCheckId,
             [](Actor* actor, PlayState* play) {
                 auto& randoStaticCheck = Rando::StaticData::Checks[(RandoCheckId)CUSTOM_ITEM_PARAM];
                 switch (randoStaticCheck.flagType) {

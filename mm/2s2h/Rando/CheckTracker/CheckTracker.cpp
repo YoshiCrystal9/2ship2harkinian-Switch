@@ -60,7 +60,6 @@ ImVec4 trackerBG = ImVec4{ 0, 0, 0, 0.5f };
 
 std::map<SceneId, std::vector<RandoCheckId>> sceneChecks;
 std::vector<SceneId> sortedSceneIds;
-std::unordered_map<RandoCheckId, std::string> readableCheckNames;
 std::unordered_map<RandoCheckId, std::string> accessLogicFuncs;
 
 std::vector<const char*> checkTypeIconList = {
@@ -69,7 +68,9 @@ std::vector<const char*> checkTypeIconList = {
     /*RCTYPE_CHEST*/ gChestTrackerIcon,
     /*RCTYPE_COW*/ gItemIconRomaniMaskTex,
     /*RCTYPE_CRATE*/ gCrateTrackerIcon,
+    /*RCTYPE_ENEMY_DROP*/ gDungeonMapSkullTex,
     /*RCTYPE_FREESTANDING*/ gRupeeCounterIconTex,
+    /*RCTYPE_FROG*/ gItemIconDonGeroMaskTex,
     /*RCTYPE_GRASS*/ gameplay_keep_Tex_053140,
     /*RCTYPE_HEART*/ gQuestIconPieceOfHeartTex,
     /*RCTYPE_MINIGAME*/ gArcheryScoreIconTex,
@@ -84,6 +85,8 @@ std::vector<const char*> checkTypeIconList = {
     /*RCTYPE_STRAY_FAIRY*/ gStrayFairyGreatBayIconTex,
     /*RCTYPE_TINGLE_SHOP*/ gItemIconAdultsWalletTex,
 };
+
+static constexpr ImVec4 tintColor = {};
 
 std::string totalChecksFound() {
     std::string totalChecks;
@@ -111,7 +114,9 @@ void DrawCheckTypeIcon(RandoCheckId randoCheckId) {
                  : checkType == RCTYPE_OWL ? ImVec2(18.0f * trackerScale, 9.0f * trackerScale)
                                            : ImVec2(18.0f * trackerScale, 18.0f * trackerScale),
                  ImVec2(0, 0), ImVec2(1, 1),
-                 checkType == RCTYPE_FREESTANDING ? ImVec4(0.78f, 1, 0.39f, 1) : ImVec4(1, 1, 1, 1), ImVec4(0, 0, 0, 0));
+                 //checkType == RCTYPE_FREESTANDING ? ImVec4(0.78f, 1, 0.39f, 1) : ImVec4(1, 1, 1, 1), ImVec4(0, 0, 0, 0));
+                 //just in case i'll save it, i think i changed it for switch or else it wouldnt compile
+                 checkType == RCTYPE_FREESTANDING ? ImVec4(0.78f, 1, 0.39f, 1) : ImVec4(1, 1, 1, 1), tintColor);
 }
 
 void initializeSceneChecks() {
@@ -142,143 +147,6 @@ bool checkTrackerShouldShowRow(bool obtained, bool skipped) {
     return showCheck;
 }
 
-void CheckTrackerDrawLogicalList() {
-    std::set<RandoRegionId> reachableRegions = {};
-    // Get connected entrances from starting & warp points
-    Rando::Logic::FindReachableRegions(RR_MAX, reachableRegions);
-    // Get connected regions from current entrance (TODO: Make this optional)
-    Rando::Logic::FindReachableRegions(Rando::Logic::GetRegionIdFromEntrance(gSaveContext.save.entrance),
-                                       reachableRegions);
-
-    std::vector<RandoRegionId> sortedRegionIds;
-    for (auto& regionId : reachableRegions) {
-        sortedRegionIds.push_back(regionId);
-    }
-    std::sort(sortedRegionIds.begin(), sortedRegionIds.end(), [](RandoRegionId a, RandoRegionId b) {
-        return betterSceneIndex[Rando::Logic::Regions[a].sceneId] < betterSceneIndex[Rando::Logic::Regions[b].sceneId];
-    });
-
-    for (RandoRegionId regionId : sortedRegionIds) {
-        if (CVAR_SCROLL_TO_SCENE && sScrollToTargetEntrance != -1 &&
-            Rando::Logic::GetRegionIdFromEntrance(sScrollToTargetEntrance) == regionId) {
-            ImGui::SetScrollHereY(0.0f);
-            sScrollToTargetScene = -1;
-            sScrollToTargetEntrance = -1;
-        }
-        auto& randoRegion = Rando::Logic::Regions[regionId];
-        std::vector<std::pair<RandoCheckId, std::string>> availableChecks;
-        std::vector<std::pair<std::string, std::string>> availableEvents;
-        uint32_t obtainedCheckSum = 0;
-
-        for (auto& [randoCheckId, accessLogicFunc] : randoRegion.checks) {
-            auto& randoStaticCheck = Rando::StaticData::Checks[randoCheckId];
-            auto& randoSaveCheck = RANDO_SAVE_CHECKS[randoCheckId];
-            if (randoSaveCheck.shuffled && accessLogicFunc.first()) {
-                if (randoSaveCheck.obtained) {
-                    obtainedCheckSum++;
-                    if (CVAR_HIDE_COLLECTED) {
-                        continue;
-                    }
-                }
-
-                if (randoSaveCheck.skipped && CVAR_HIDE_SKIPPED) {
-                    continue;
-                }
-
-                if (!sCheckTrackerFilter.PassFilter(readableCheckNames[randoCheckId].c_str())) {
-                    continue;
-                }
-
-                availableChecks.push_back({ randoCheckId, accessLogicFunc.second });
-            }
-        }
-
-        for (auto& event : randoRegion.events) {
-            if (!RANDO_EVENTS[event.first] && event.second()) {
-                RANDO_EVENTS[event.first]++;
-            }
-        }
-
-        if (availableChecks.size() > 0 || availableEvents.size() > 0) {
-            std::string regionName = Ship_GetSceneName(randoRegion.sceneId);
-            if (randoRegion.name != "") {
-                regionName += " - ";
-                regionName += randoRegion.name;
-            }
-
-            regionName += " (" + std::to_string(obtainedCheckSum) + "/" + std::to_string(availableChecks.size()) + ")";
-
-            ImGui::PushID(regionId);
-            ImGui::Separator();
-            ImGui::PushStyleColor(ImGuiCol_Header, ImVec4(0, 0, 0, 0));
-            if (sExpandedHeadersState != sExpandedHeadersToggle) {
-                ImGui::SetNextItemOpen(sExpandedHeadersToggle);
-            }
-            if (ImGui::CollapsingHeader(regionName.c_str(), ImGuiTreeNodeFlags_DefaultOpen)) {
-                ImGui::Indent(20.0f);
-                if (ImGui::BeginTable("Check Tracker", 2)) {
-                    ImGui::TableSetupColumn("Type", ImGuiTableColumnFlags_WidthFixed, 16.0f);
-                    ImGui::TableSetupColumn("Check");
-                    ImGui::TableNextColumn();
-                    for (auto& [name, accessLogicString] : availableEvents) {
-                        ImGui::TableNextColumn();
-                        ImGui::PushStyleColor(ImGuiCol_Text, UIWidgets::ColorValues.at(UIWidgets::Colors::White));
-                        ImGui::Text("%s (Event)", name.c_str());
-                        if (accessLogicString != "") {
-                            UIWidgets::Tooltip(accessLogicString.c_str());
-                        }
-                        ImGui::PopStyleColor();
-                        ImGui::TableNextColumn();
-                    }
-                    for (auto& [checkId, accessLogicString] : availableChecks) {
-                        auto& randoStaticCheck = Rando::StaticData::Checks[checkId];
-                        auto& randoSaveCheck = RANDO_SAVE_CHECKS[checkId];
-                        ImGui::PushStyleColor(ImGuiCol_Text, randoSaveCheck.obtained
-                                                                 ? UIWidgets::ColorValues.at(UIWidgets::Colors::Green)
-                                                             : randoSaveCheck.skipped
-                                                                 ? UIWidgets::ColorValues.at(UIWidgets::Colors::Indigo)
-                                                                 : UIWidgets::ColorValues.at(UIWidgets::Colors::White));
-                        if (checkTrackerShouldShowRow(randoSaveCheck.obtained, randoSaveCheck.skipped)) {
-                            ImGui::BeginGroup();
-                            float cursorPosY = ImGui::GetCursorPosY();
-                            if (randoStaticCheck.randoCheckType == RCTYPE_OWL) {
-                                ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 3.5f);
-                            }
-                            DrawCheckTypeIcon(checkId);
-                            ImGui::TableNextColumn();
-                            ImGui::SetCursorPosY(cursorPosY);
-                            ImGui::Text("%s", readableCheckNames[checkId].c_str());
-                            if (accessLogicString != "") {
-                                UIWidgets::Tooltip(accessLogicString.c_str());
-                            }
-                            if (randoSaveCheck.obtained) {
-                                ImGui::SameLine(0, 25.0f);
-                                ImGui::Text("(%s)", Rando::StaticData::Items[randoSaveCheck.randoItemId].name);
-                            } else if (randoSaveCheck.skipped) {
-                                ImGui::SameLine(0, 25.0f);
-                                ImGui::Text("(Skipped)");
-                            }
-                            ImGui::EndGroup();
-                            ImGui::TableSetBgColor(ImGuiTableBgTarget_RowBg0, ImGui::IsItemHovered()
-                                                                                  ? IM_COL32(255, 255, 0, 128)
-                                                                                  : IM_COL32(255, 255, 255, 0));
-                            if (ImGui::IsItemClicked()) {
-                                randoSaveCheck.skipped = !randoSaveCheck.skipped;
-                            }
-                            ImGui::TableNextColumn();
-                        }
-                        ImGui::PopStyleColor();
-                    }
-                    ImGui::EndTable();
-                }
-                ImGui::Unindent(20.0f);
-            }
-            ImGui::PopStyleColor();
-            ImGui::PopID();
-        }
-    }
-}
-
 std::unordered_map<RandoCheckId, bool> checksInLogic;
 static u32 lastFrame = 0;
 
@@ -290,30 +158,59 @@ void RefreshChecksInLogic() {
     lastFrame = gGameState->frames;
     checksInLogic.clear();
 
+    // Clear all events so they're re-evaluated fresh each refresh
+    for (int i = 0; i < RE_MAX; i++) {
+        RANDO_EVENTS[i] = 0;
+    }
+
     std::set<RandoRegionId> reachableRegions = {
         RR_MAX,
         Rando::Logic::GetRegionIdFromEntrance(gSaveContext.save.entrance),
     };
-    // Get connected entrances from starting & warp points
-    Rando::Logic::FindReachableRegions(RR_MAX, reachableRegions);
-    // Get connected regions from current entrance (TODO: Make this optional)
-    Rando::Logic::FindReachableRegions(Rando::Logic::GetRegionIdFromEntrance(gSaveContext.save.entrance),
-                                       reachableRegions);
+    // Initialize time states using shared function
+    std::unordered_map<RandoRegionId, Rando::Logic::RegionTimeState> regionTimeStates =
+        Rando::Logic::InitializeRegionTimeStates(RR_MAX);
+
+    // Iteratively explore until no new regions/events discovered
+    bool changed = true;
+    while (changed) {
+        changed = false;
+        auto prevSize = reachableRegions.size();
+
+        // Explore from all currently reachable regions
+        std::set<RandoRegionId> regionsToExplore = reachableRegions;
+        for (RandoRegionId regionId : regionsToExplore) {
+            Rando::Logic::FindReachableRegions(regionId, reachableRegions, regionTimeStates);
+        }
+
+        // Trigger events for newly discovered regions
+        for (RandoRegionId regionId : reachableRegions) {
+            auto& randoRegion = Rando::Logic::Regions[regionId];
+            Rando::Logic::SetCurrentRegionTime(regionTimeStates, regionId);
+
+            for (auto& event : randoRegion.events) {
+                if (!RANDO_EVENTS[event.first] && event.second()) {
+                    RANDO_EVENTS[event.first]++;
+                    changed = true;
+                }
+            }
+        }
+
+        if (reachableRegions.size() != prevSize) {
+            changed = true;
+        }
+    }
+
+    // Evaluate checks for all reachable regions
     for (RandoRegionId regionId : reachableRegions) {
         auto& randoRegion = Rando::Logic::Regions[regionId];
-        std::vector<std::pair<RandoCheckId, std::string>> availableChecks;
+        Rando::Logic::SetCurrentRegionTime(regionTimeStates, regionId);
 
         for (auto& [randoCheckId, accessLogicFunc] : randoRegion.checks) {
             auto& randoStaticCheck = Rando::StaticData::Checks[randoCheckId];
             auto& randoSaveCheck = RANDO_SAVE_CHECKS[randoCheckId];
             if (randoSaveCheck.shuffled && !randoSaveCheck.obtained && accessLogicFunc.first()) {
                 checksInLogic.insert({ randoCheckId, true });
-            }
-        }
-
-        for (auto& event : randoRegion.events) {
-            if (!RANDO_EVENTS[event.first] && event.second()) {
-                RANDO_EVENTS[event.first]++;
             }
         }
     }
@@ -346,7 +243,7 @@ void CheckTrackerDrawNonLogicalList() {
                 }
             }
 
-            if (!sCheckTrackerFilter.PassFilter(readableCheckNames[checkId].c_str())) {
+            if (!sCheckTrackerFilter.PassFilter(Rando::StaticData::CheckNames[checkId].c_str())) {
                 continue;
             }
 
@@ -373,6 +270,9 @@ void CheckTrackerDrawNonLogicalList() {
         ImGui::Separator();
         ImGui::PushStyleColor(ImGuiCol_Header, ImVec4(0, 0, 0, 0));
         std::string headerText = Ship_GetSceneName(sceneId);
+        if (sceneId == SCENE_SPOT00) {
+            headerText = "Various Regions";
+        }
         headerText += " (" + std::to_string(obtainedCheckSum) + "/" + std::to_string(unfilteredChecks.size()) + ")";
 
         ImGui::PushStyleColor(ImGuiCol_Text, obtainedCheckSum == unfilteredChecks.size()
@@ -411,7 +311,7 @@ void CheckTrackerDrawNonLogicalList() {
                         ImGui::TableNextColumn();
 
                         ImGui::SetCursorPosY(cursorPosY);
-                        ImGui::Text("%s", readableCheckNames[randoCheckId].c_str());
+                        ImGui::Text("%s", Rando::StaticData::CheckNames[randoCheckId].c_str());
                         if (randoSaveCheck.obtained) {
                             ImGui::SameLine(0, 25.0f);
                             ImGui::Text("(%s)", Rando::StaticData::Items[randoSaveCheck.randoItemId].name);
@@ -426,7 +326,14 @@ void CheckTrackerDrawNonLogicalList() {
                         std::string accessLogicString = accessLogicFuncs.find(randoCheckId) != accessLogicFuncs.end()
                                                             ? accessLogicFuncs[randoCheckId]
                                                             : "";
-                        if (accessLogicString != "") {
+                        /*
+                         * Enemy drop checks are multiple in number and may have unique conditions per location. This
+                         * can result in arbitrary particular instances' conditions being displayed for the general
+                         * check. Since the basic requirement of defeating the enemy is self-explanatory and the
+                         * minimum, we'll omit the logic tooltip for them in particular.
+                         */
+                        if (accessLogicString != "" &&
+                            !(randoCheckId >= RC_ENEMY_DROP_ALIEN && randoCheckId <= RC_ENEMY_DROP_WOLFOS)) {
                             UIWidgets::Tooltip(accessLogicString.c_str());
                         }
                         ImGui::TableSetBgColor(ImGuiTableBgTarget_RowBg0, ImGui::IsItemHovered()
@@ -499,11 +406,7 @@ void CheckTrackerWindow::Draw() {
     ImGui::Text("Total: %s", totalChecksFound().c_str());
 
     ImGui::BeginChild("Checks");
-    // if (CVAR_SHOW_LOGIC) {
-    //     CheckTrackerDrawLogicalList();
-    // } else {
     CheckTrackerDrawNonLogicalList();
-    // }
     sExpandedHeadersState = sExpandedHeadersToggle;
     ImGui::EndChild();
 
@@ -554,9 +457,6 @@ void SettingsWindow::DrawElement() {
 }
 
 void Init() {
-    for (auto& [randoCheckId, randoStaticCheck] : Rando::StaticData::Checks) {
-        readableCheckNames[randoCheckId] = convertEnumToReadableName(randoStaticCheck.name);
-    }
     for (auto& [randoRegionId, randoRegion] : Rando::Logic::Regions) {
         for (auto& [randoCheckId, accessLogicFunc] : randoRegion.checks) {
             accessLogicFuncs[randoCheckId] = accessLogicFunc.second;

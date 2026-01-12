@@ -8,9 +8,7 @@
 #include "overlays/actors/ovl_En_Elf/z_en_elf.h"
 #include "2s2h/GameInteractor/GameInteractor.h"
 
-#define FLAGS (ACTOR_FLAG_10)
-
-#define THIS ((ElfMsg3*)thisx)
+#define FLAGS (ACTOR_FLAG_UPDATE_CULLING_DISABLED)
 
 void ElfMsg3_Init(Actor* thisx, PlayState* play);
 void ElfMsg3_Destroy(Actor* thisx, PlayState* play);
@@ -18,7 +16,7 @@ void ElfMsg3_Update(Actor* thisx, PlayState* play);
 
 void func_80A2CF7C(ElfMsg3* this, PlayState* play);
 
-ActorInit Elf_Msg3_InitVars = {
+ActorProfile Elf_Msg3_Profile = {
     /**/ ACTOR_ELF_MSG3,
     /**/ ACTORCAT_ITEMACTION,
     /**/ FLAGS,
@@ -32,7 +30,7 @@ ActorInit Elf_Msg3_InitVars = {
 
 static InitChainEntry sInitChain[] = {
     ICHAIN_VEC3F_DIV1000(scale, 1000, ICHAIN_CONTINUE),
-    ICHAIN_F32(uncullZoneForward, 1000, ICHAIN_STOP),
+    ICHAIN_F32(cullingVolumeDistance, 1000, ICHAIN_STOP),
 };
 
 void ElfMsg3_SetupAction(ElfMsg3* this, ElfMsg3ActionFunc actionFunc) {
@@ -70,7 +68,7 @@ s32 func_80A2CD1C(ElfMsg3* this, PlayState* play) {
 }
 
 void ElfMsg3_Init(Actor* thisx, PlayState* play) {
-    ElfMsg3* this = THIS;
+    ElfMsg3* this = (ElfMsg3*)thisx;
 
     if (!func_80A2CD1C(this, play)) {
         Actor_ProcessInitChain(&this->actor, sInitChain);
@@ -106,7 +104,7 @@ void func_80A2CF7C(ElfMsg3* this, PlayState* play) {
     EnElf* tatl = (EnElf*)player->tatlActor;
 
     if (GameInteractor_Should(
-            VB_TATL_INTERUPT_MSG3,
+            VB_TATL_INTERRUPT_MSG3,
             (((((player->tatlActor != NULL) &&
                 (fabsf(player->actor.world.pos.x - this->actor.world.pos.x) < (100.0f * this->actor.scale.x))) &&
                (this->actor.world.pos.y <= player->actor.world.pos.y)) &&
@@ -134,10 +132,10 @@ void func_80A2CF7C(ElfMsg3* this, PlayState* play) {
 }
 
 void ElfMsg3_Update(Actor* thisx, PlayState* play) {
-    ElfMsg3* this = THIS;
+    ElfMsg3* this = (ElfMsg3*)thisx;
 
     if (!func_80A2CD1C(this, play)) {
-        if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+        if (Actor_TalkOfferAccepted(&this->actor, &play->state)) {
             if (ELFMSG3_GET_SWITCH_FLAG(thisx) != 0x7F) {
                 Flags_SetSwitch(play, ELFMSG3_GET_SWITCH_FLAG(thisx));
             }

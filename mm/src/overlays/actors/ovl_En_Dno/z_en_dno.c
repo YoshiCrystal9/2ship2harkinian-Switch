@@ -12,9 +12,9 @@
 #include "overlays/actors/ovl_Bg_Crace_Movebg/z_bg_crace_movebg.h"
 #include "objects/gameplay_keep/gameplay_keep.h"
 
-#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_10 | ACTOR_FLAG_20)
-
-#define THIS ((EnDno*)thisx)
+#define FLAGS                                                                                  \
+    (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_UPDATE_CULLING_DISABLED | \
+     ACTOR_FLAG_DRAW_CULLING_DISABLED)
 
 void EnDno_Init(Actor* thisx, PlayState* play);
 void EnDno_Destroy(Actor* thisx, PlayState* play);
@@ -91,7 +91,7 @@ static AnimationSpeedInfo sAnimationSpeedInfo[EN_DNO_ANIM_MAX] = {
     { &gDekuButlerGrieveAnim, 1.0f, ANIMMODE_LOOP, 0.0f },                   // EN_DNO_ANIM_GRIEVE
 };
 
-ActorInit En_Dno_InitVars = {
+ActorProfile En_Dno_Profile = {
     /**/ ACTOR_EN_DNO,
     /**/ ACTORCAT_NPC,
     /**/ FLAGS,
@@ -105,7 +105,7 @@ ActorInit En_Dno_InitVars = {
 
 static ColliderCylinderInit sCylinderInit = {
     {
-        COLTYPE_HIT0,
+        COL_MATERIAL_HIT0,
         AT_NONE,
         AC_ON | AC_TYPE_PLAYER,
         OC1_ON | OC1_TYPE_ALL,
@@ -113,11 +113,11 @@ static ColliderCylinderInit sCylinderInit = {
         COLSHAPE_CYLINDER,
     },
     {
-        ELEMTYPE_UNK1,
+        ELEM_MATERIAL_UNK1,
         { 0x00000000, 0x00, 0x00 },
         { 0xF7CFFFFF, 0x00, 0x00 },
-        TOUCH_NONE | TOUCH_SFX_NORMAL,
-        BUMP_ON,
+        ATELEM_NONE | ATELEM_SFX_NORMAL,
+        ACELEM_ON,
         OCELEM_ON,
     },
     { 17, 58, 0, { 0, 0, 0 } },
@@ -126,8 +126,8 @@ static ColliderCylinderInit sCylinderInit = {
 static Vec3f D_80A73B2C = { 0.0f, 0.0f, 1.0f };
 
 static InitChainEntry sInitChain[] = {
-    ICHAIN_F32(uncullZoneDownward, 80, ICHAIN_CONTINUE),
-    ICHAIN_F32(uncullZoneForward, 4000, ICHAIN_STOP),
+    ICHAIN_F32(cullingVolumeDownward, 80, ICHAIN_CONTINUE),
+    ICHAIN_F32(cullingVolumeDistance, 4000, ICHAIN_STOP),
 };
 
 void func_80A711D0(EnDno* this, PlayState* play, Vec3f* vec) {
@@ -216,7 +216,7 @@ void func_80A71788(EnDno* this, PlayState* play) {
 }
 
 void EnDno_Init(Actor* thisx, PlayState* play) {
-    EnDno* this = THIS;
+    EnDno* this = (EnDno*)thisx;
     s32 pad;
     Actor* actor = NULL;
 
@@ -290,7 +290,7 @@ void EnDno_Init(Actor* thisx, PlayState* play) {
 }
 
 void EnDno_Destroy(Actor* thisx, PlayState* play) {
-    EnDno* this = THIS;
+    EnDno* this = (EnDno*)thisx;
 
     Collider_DestroyCylinder(play, &this->collider);
     LightContext_RemoveLight(play, &play->lightCtx, this->lightNode);
@@ -371,7 +371,7 @@ void func_80A71C3C(EnDno* this, PlayState* play) {
         Math_ScaledStepToS(&this->actor.shape.rot.y, this->actor.home.rot.y, 0x222);
     }
 
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+    if (Actor_TalkOfferAccepted(&this->actor, &play->state)) {
         play->msgCtx.msgMode = MSGMODE_NONE;
         play->msgCtx.msgLength = 0;
         func_80A71E54(this, play);
@@ -438,7 +438,7 @@ void func_80A71F18(EnDno* this, PlayState* play) {
             }
             break;
 
-        case TEXT_STATE_3:
+        case TEXT_STATE_FADING:
             if (play->msgCtx.currentTextId == 0x80B) {
                 switch (this->animIndex) {
                     case EN_DNO_ANIM_IMPLORE_START:
@@ -466,7 +466,7 @@ void func_80A71F18(EnDno* this, PlayState* play) {
             break;
 
         case TEXT_STATE_CHOICE:
-        case TEXT_STATE_5:
+        case TEXT_STATE_EVENT:
         case TEXT_STATE_DONE:
             switch (play->msgCtx.currentTextId) {
                 case 0x80B:
@@ -589,7 +589,7 @@ void func_80A724B8(EnDno* this, PlayState* play) {
         func_80A71424(&this->unk_466, 0, this->actor.yawTowardsPlayer, this->actor.home.rot.y, 0x2000, 0x2D8);
     }
 
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+    if (Actor_TalkOfferAccepted(&this->actor, &play->state)) {
         func_80A725E0(this, play);
     } else if (this->actor.xzDistToPlayer < 60.0f) {
         Actor_OfferTalk(&this->actor, play, 60.0f);
@@ -602,7 +602,7 @@ void func_80A7256C(EnDno* this, PlayState* play) {
 }
 
 void func_80A72598(EnDno* this, PlayState* play) {
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+    if (Actor_TalkOfferAccepted(&this->actor, &play->state)) {
         func_80A725E0(this, play);
     } else {
         func_80A7256C(this, play);
@@ -656,9 +656,9 @@ void func_80A725F8(EnDno* this, PlayState* play) {
             }
             break;
 
-        case TEXT_STATE_1:
+        case TEXT_STATE_NEXT:
         case TEXT_STATE_CLOSING:
-        case TEXT_STATE_3:
+        case TEXT_STATE_FADING:
             if (((play->msgCtx.currentTextId == 0x800) || (play->msgCtx.currentTextId == 0x801)) &&
                 (this->animIndex == EN_DNO_ANIM_OPEN_PARASOL)) {
                 Math_SmoothStepToF(&this->unk_454, 1.0f, 1.0f, 0.1f, 0.01f);
@@ -682,7 +682,7 @@ void func_80A725F8(EnDno* this, PlayState* play) {
             break;
 
         case TEXT_STATE_CHOICE:
-        case TEXT_STATE_5:
+        case TEXT_STATE_EVENT:
         case TEXT_STATE_DONE:
             switch (play->msgCtx.currentTextId) {
                 case 0x800:
@@ -777,8 +777,8 @@ void func_80A72BA4(EnDno* this, PlayState* play) {
 void func_80A72C04(EnDno* this, PlayState* play) {
     SubS_ChangeAnimationBySpeedInfo(&this->skelAnime, sAnimationSpeedInfo, EN_DNO_ANIM_START_RACE_START,
                                     &this->animIndex);
-    this->actor.flags |= ACTOR_FLAG_CANT_LOCK_ON;
-    this->actor.flags &= ~(ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_FRIENDLY);
+    this->actor.flags |= ACTOR_FLAG_LOCK_ON_DISABLED;
+    this->actor.flags &= ~(ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY);
     Math_Vec3f_Copy(&this->unk_334, &this->actor.world.pos);
     SubS_ActorPathing_Init(play, &this->unk_334, &this->actor, &this->actorPath, play->setupPathList,
                            EN_DNO_GET_7F(&this->actor), 1, 0, 1, 0);
@@ -906,8 +906,8 @@ void func_80A730A0(EnDno* this, PlayState* play) {
 }
 
 void func_80A73244(EnDno* this, PlayState* play) {
-    this->actor.flags &= ~ACTOR_FLAG_CANT_LOCK_ON;
-    this->actor.flags |= (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_FRIENDLY);
+    this->actor.flags &= ~ACTOR_FLAG_LOCK_ON_DISABLED;
+    this->actor.flags |= (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY);
     this->unk_328 = 2;
     this->actor.speed = 0.0f;
     Flags_UnsetSwitch(play, EN_DNO_GET_RACE_STARTED_SWITCH_FLAG(&this->actor));
@@ -991,7 +991,7 @@ void func_80A73408(EnDno* this, PlayState* play) {
 }
 
 void EnDno_Update(Actor* thisx, PlayState* play) {
-    EnDno* this = THIS;
+    EnDno* this = (EnDno*)thisx;
     s32 pad;
 
     SkelAnime_Update(&this->skelAnime);
@@ -1006,14 +1006,14 @@ void EnDno_Update(Actor* thisx, PlayState* play) {
 }
 
 void EnDno_Draw(Actor* thisx, PlayState* play) {
-    EnDno* this = THIS;
+    EnDno* this = (EnDno*)thisx;
 
     SkelAnime_DrawFlexOpa(play, this->skelAnime.skeleton, this->skelAnime.jointTable, this->skelAnime.dListCount,
                           EnDno_OverrideLimbDraw, EnDno_PostLimbDraw, &this->actor);
 }
 
 s32 EnDno_OverrideLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3f* pos, Vec3s* rot, Actor* thisx) {
-    EnDno* this = THIS;
+    EnDno* this = (EnDno*)thisx;
 
     *dList = NULL;
     if (limbIndex == DEKU_BUTLER_LIMB_EYES) {
@@ -1027,7 +1027,7 @@ void EnDno_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* rot,
     Gfx* gfxOpa;
     Gfx* gfxXlu;
     Vec3f sp84;
-    EnDno* this = THIS;
+    EnDno* this = (EnDno*)thisx;
     s32 pad;
     s32 phi_v0 = false;
 
@@ -1088,7 +1088,7 @@ void EnDno_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* rot,
         }
 
         gfxOpa = POLY_OPA_DISP;
-        gSPMatrix(gfxOpa, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+        MATRIX_FINALIZE_AND_LOAD(gfxOpa, play->state.gfxCtx);
         gSPDisplayList(&gfxOpa[1], *dList);
 
         POLY_OPA_DISP = &gfxOpa[2];
@@ -1109,7 +1109,7 @@ void EnDno_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* rot,
         Matrix_Translate(0.0f, -3200.0f, 0.0f, MTXMODE_APPLY);
         gfxXlu = Gfx_SetupDL71(POLY_XLU_DISP);
 
-        gSPMatrix(gfxXlu, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+        MATRIX_FINALIZE_AND_LOAD(gfxXlu, play->state.gfxCtx);
         gSPSegment(&gfxXlu[1], 0x08,
                    Gfx_TwoTexScroll(play->state.gfxCtx, 0, 0, 0, 0x20, 0x40, 1, 0, -frames * 20, 0x20, 0x80));
         gDPSetPrimColor(&gfxXlu[2], 0x80, 0x80, 255, 255, 0, 255);

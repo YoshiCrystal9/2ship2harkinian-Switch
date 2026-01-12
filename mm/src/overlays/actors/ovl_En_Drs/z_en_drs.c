@@ -8,8 +8,6 @@
 
 #define FLAGS 0x00000000
 
-#define THIS ((EnDrs*)thisx)
-
 void EnDrs_Init(Actor* thisx, PlayState* play);
 void EnDrs_Destroy(Actor* thisx, PlayState* play);
 void EnDrs_Update(Actor* thisx, PlayState* play);
@@ -17,7 +15,7 @@ void EnDrs_Draw(Actor* thisx, PlayState* play);
 
 void EnDrs_Idle(EnDrs* this, PlayState* play);
 
-ActorInit En_Drs_InitVars = {
+ActorProfile En_Drs_Profile = {
     /**/ ACTOR_EN_DRS,
     /**/ ACTORCAT_PROP,
     /**/ FLAGS,
@@ -31,7 +29,7 @@ ActorInit En_Drs_InitVars = {
 
 static ColliderCylinderInit sCylinderInit = {
     {
-        COLTYPE_HIT1,
+        COL_MATERIAL_HIT1,
         AT_NONE,
         AC_NONE,
         OC1_ON | OC1_TYPE_ALL,
@@ -39,11 +37,11 @@ static ColliderCylinderInit sCylinderInit = {
         COLSHAPE_CYLINDER,
     },
     {
-        ELEMTYPE_UNK1,
+        ELEM_MATERIAL_UNK1,
         { 0x00000000, 0x00, 0x00 },
         { 0x00000000, 0x00, 0x00 },
-        TOUCH_NONE | TOUCH_SFX_NORMAL,
-        BUMP_NONE,
+        ATELEM_NONE | ATELEM_SFX_NORMAL,
+        ACELEM_NONE,
         OCELEM_ON,
     },
     { 16, 62, 0, { 0, 0, 0 } },
@@ -85,20 +83,20 @@ void EnDrs_Idle(EnDrs* this, PlayState* play) {
 }
 
 void EnDrs_Init(Actor* thisx, PlayState* play) {
-    EnDrs* this = THIS;
+    EnDrs* this = (EnDrs*)thisx;
 
     this->moonMaskObjectSlot = SubS_GetObjectSlot(OBJECT_MSMO, play);
     this->actionFunc = EnDrs_Setup;
 }
 
 void EnDrs_Destroy(Actor* thisx, PlayState* play) {
-    EnDrs* this = THIS;
+    EnDrs* this = (EnDrs*)thisx;
 
     Collider_DestroyCylinder(play, &this->collider);
 }
 
 void EnDrs_Update(Actor* thisx, PlayState* play) {
-    EnDrs* this = THIS;
+    EnDrs* this = (EnDrs*)thisx;
 
     this->actionFunc(this, play);
     if (this->actor.draw != NULL) {
@@ -108,7 +106,7 @@ void EnDrs_Update(Actor* thisx, PlayState* play) {
 }
 
 void EnDrs_PostLimbDraw(PlayState* play2, s32 limbIndex, Gfx** dList, Vec3s* rot, Actor* thisx) {
-    EnDrs* this = THIS;
+    EnDrs* this = (EnDrs*)thisx;
     PlayState* play = play2;
     s8 temp = this->moonMaskObjectSlot;
     s8 temp2 = this->actor.objectSlot;
@@ -128,7 +126,7 @@ void EnDrs_PostLimbDraw(PlayState* play2, s32 limbIndex, Gfx** dList, Vec3s* rot
 }
 
 void EnDrs_Draw(Actor* thisx, PlayState* play) {
-    EnDrs* this = THIS;
+    EnDrs* this = (EnDrs*)thisx;
 
     Gfx_SetupDL37_Opa(play->state.gfxCtx);
     SkelAnime_DrawFlexOpa(play, this->skelAnime.skeleton, this->skelAnime.jointTable, this->skelAnime.dListCount, NULL,

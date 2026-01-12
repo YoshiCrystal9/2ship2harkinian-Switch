@@ -3,7 +3,7 @@
 
 #include "libc/stddef.h"
 
-typedef struct {
+typedef struct InitChainEntry {
     u32 cont:   1;
     u32 type:   4;
     u32 offset: 11;
@@ -54,5 +54,9 @@ typedef enum {
 
 #define ICHAIN_CONTINUE 1
 #define ICHAIN_STOP     0
+
+struct Actor;
+
+void Actor_ProcessInitChain(struct Actor* actor, struct InitChainEntry* ichain);
 
 #endif

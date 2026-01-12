@@ -81,4 +81,10 @@ static const ALIGN_ASSET(2) char Z2_BANDROOM_room_01DL_007130[] = dZ2_BANDROOM_r
 #define dZ2_BANDROOM_room_01Tex_007718 "__OTR__scenes/nonmq/Z2_BANDROOM_scene/Z2_BANDROOM_room_01Tex_007718"
 static const ALIGN_ASSET(2) char Z2_BANDROOM_room_01Tex_007718[] = dZ2_BANDROOM_room_01Tex_007718;
 
+#define dZ2_BANDROOM_room_01DL_004498 "__OTR__scenes/nonmq/Z2_BANDROOM_scene/Z2_BANDROOM_room_01DL_004498"
+static const ALIGN_ASSET(2) char Z2_BANDROOM_room_01DL_004498[] = dZ2_BANDROOM_room_01DL_004498;
+
+#define dZ2_BANDROOM_room_01DL_0076D0 "__OTR__scenes/nonmq/Z2_BANDROOM_scene/Z2_BANDROOM_room_01DL_0076D0"
+static const ALIGN_ASSET(2) char Z2_BANDROOM_room_01DL_0076D0[] = dZ2_BANDROOM_room_01DL_0076D0;
+
 #endif // Z2_BANDROOM_Z2_BANDROOM_ROOM_01_H

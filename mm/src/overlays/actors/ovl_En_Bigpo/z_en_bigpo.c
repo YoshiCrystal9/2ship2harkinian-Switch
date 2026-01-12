@@ -9,9 +9,9 @@
 #include "objects/object_bigpo/object_bigpo.h"
 #include "objects/gameplay_keep/gameplay_keep.h"
 
-#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_UNFRIENDLY | ACTOR_FLAG_10 | ACTOR_FLAG_200 | ACTOR_FLAG_IGNORE_QUAKE)
-
-#define THIS ((EnBigpo*)thisx)
+#define FLAGS                                                                                 \
+    (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_HOSTILE | ACTOR_FLAG_UPDATE_CULLING_DISABLED | \
+     ACTOR_FLAG_HOOKSHOT_PULLS_ACTOR | ACTOR_FLAG_IGNORE_QUAKE)
 
 void EnBigpo_Init(Actor* thisx, PlayState* play2);
 void EnBigpo_Destroy(Actor* thisx, PlayState* play2);
@@ -83,7 +83,7 @@ void EnBigpo_DrawLantern(Actor* thisx, PlayState* play);
 void EnBigpo_DrawCircleFlames(Actor* thisx, PlayState* play);
 void EnBigpo_RevealedFire(Actor* thisx, PlayState* play);
 
-ActorInit En_Bigpo_InitVars = {
+ActorProfile En_Bigpo_Profile = {
     /**/ ACTOR_EN_BIGPO,
     /**/ ACTORCAT_ENEMY,
     /**/ FLAGS,
@@ -97,7 +97,7 @@ ActorInit En_Bigpo_InitVars = {
 
 static ColliderCylinderInit sCylinderInit = {
     {
-        COLTYPE_HIT3,
+        COL_MATERIAL_HIT3,
         AT_NONE | AT_TYPE_ENEMY,
         AC_NONE | AC_TYPE_PLAYER,
         OC1_NONE | OC1_TYPE_ALL,
@@ -105,11 +105,11 @@ static ColliderCylinderInit sCylinderInit = {
         COLSHAPE_CYLINDER,
     },
     {
-        ELEMTYPE_UNK0,
+        ELEM_MATERIAL_UNK0,
         { 0xF7CFFFFF, 0x00, 0x10 },
         { 0xF7CFFFFF, 0x00, 0x00 },
-        TOUCH_ON | TOUCH_SFX_NORMAL,
-        BUMP_ON | BUMP_HOOKABLE,
+        ATELEM_ON | ATELEM_SFX_NORMAL,
+        ACELEM_ON | ACELEM_HOOKABLE,
         OCELEM_ON,
     },
     { 35, 100, 10, { 0, 0, 0 } },
@@ -154,7 +154,7 @@ static DamageTable sDamageTable = {
 
 static InitChainEntry sInitChain[] = {
     ICHAIN_S8(hintId, TATL_HINT_ID_BIG_POE, ICHAIN_CONTINUE),
-    ICHAIN_F32(targetArrowOffset, 3200, ICHAIN_STOP),
+    ICHAIN_F32(lockOnArrowOffset, 3200, ICHAIN_STOP),
 };
 
 // used in the burning death actionfunc
@@ -182,7 +182,7 @@ static Vec3f D_80B65084[] = {
 
 void EnBigpo_Init(Actor* thisx, PlayState* play2) {
     PlayState* play = play2;
-    EnBigpo* this = THIS;
+    EnBigpo* this = (EnBigpo*)thisx;
     EnBigpoFireEffect* firesPtr;
     s32 i;
 
@@ -226,8 +226,8 @@ void EnBigpo_Init(Actor* thisx, PlayState* play2) {
         Actor_Kill(&this->actor);
     }
 
-    if (thisx->params == BIG_POE_TYPE_REGULAR) { // the well poe, starts immediately
-        thisx->flags &= ~ACTOR_FLAG_10;          // always update OFF
+    if (thisx->params == BIG_POE_TYPE_REGULAR) {             // the well poe, starts immediately
+        thisx->flags &= ~ACTOR_FLAG_UPDATE_CULLING_DISABLED; // always update OFF
         this->storePrevBgm = true;
         EnBigpo_InitWellBigpo(this);
     } else if (thisx->params == BIG_POE_TYPE_SUMMONED) { // dampe type
@@ -237,7 +237,7 @@ void EnBigpo_Init(Actor* thisx, PlayState* play2) {
 
 void EnBigpo_Destroy(Actor* thisx, PlayState* play2) {
     PlayState* play = play2;
-    EnBigpo* this = THIS;
+    EnBigpo* this = (EnBigpo*)thisx;
     s32 fireCount;
 
     if ((thisx->params != BIG_POE_TYPE_POSSIBLE_FIRE) && (thisx->params != BIG_POE_TYPE_CHOSEN_FIRE) &&
@@ -265,7 +265,7 @@ void EnBigpo_RotateSpawnCutsceneFires(EnBigpo* this) {
 void EnBigpo_UpdateSpin(EnBigpo* this) {
     s16 oldYaw = this->actor.shape.rot.y;
 
-    this->actor.shape.rot.y += this->rotVelocity;
+    this->actor.shape.rot.y += this->angularVelocity;
     if ((oldYaw < 0) && (this->actor.shape.rot.y > 0)) {
         Actor_PlaySfx(&this->actor, NA_SE_EN_PO_ROLL); // spinning sfx during spin attack
     }
@@ -289,7 +289,7 @@ void EnBigpo_LowerCutsceneSubCamera(EnBigpo* this, PlayState* play) {
 }
 
 void EnBigpo_InitWellBigpo(EnBigpo* this) {
-    this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
+    this->actor.flags &= ~ACTOR_FLAG_ATTENTION_ENABLED;
     this->actionFunc = EnBigpo_WellWaitForProximity;
     this->fireRadius = 200.0f;
 }
@@ -364,7 +364,7 @@ void EnBigpo_SpawnCutsceneStage2(EnBigpo* this, PlayState* play) {
  * stage 3: switch to fires rotating
  */
 void EnBigpo_SpawnCutsceneStage3(EnBigpo* this) {
-    this->rotVelocity = 0x1000;
+    this->angularVelocity = 0x1000;
     this->actionFunc = EnBigpo_SpawnCutsceneStage4;
     this->fireRadius = 200.0f;
     this->actor.velocity.y = 0.0f;
@@ -377,10 +377,10 @@ void EnBigpo_SpawnCutsceneStage4(EnBigpo* this, PlayState* play) {
     s32 i;
 
     if (Math_StepToF(&this->fireRadius, 30.0f, 5.0f)) {
-        this->rotVelocity += 0x80;
+        this->angularVelocity += 0x80;
         this->actor.velocity.y += 0.25f;
     }
-    this->actor.shape.rot.y += this->rotVelocity;
+    this->actor.shape.rot.y += this->angularVelocity;
     EnBigpo_RotateSpawnCutsceneFires(this);
 
     for (i = 0; i < ARRAY_COUNT(this->fires); i++) {
@@ -415,11 +415,11 @@ void EnBigpo_SpawnCutsceneStage6(EnBigpo* this, PlayState* play) {
     s32 alphaPlus; // color alpha + 10
 
     SkelAnime_Update(&this->skelAnime);
-    this->actor.shape.rot.y += this->rotVelocity;
+    this->actor.shape.rot.y += this->angularVelocity;
     alphaPlus = this->mainColor.a + 10; // decrease transparency
     EnBigpo_RotateSpawnCutsceneFires(this);
     if (alphaPlus >= 90) {
-        this->rotVelocity -= 0x80;
+        this->angularVelocity -= 0x80;
         this->actor.velocity.y -= 0.25f;
         if (alphaPlus >= 180) {
             Math_ScaledStepToS(&this->actor.world.rot.y, 0, 0x180);
@@ -486,9 +486,9 @@ void EnBigpo_SpawnCutsceneStage8(EnBigpo* this, PlayState* play) {
 void EnBigpo_SetupWarpOut(EnBigpo* this) {
     this->collider.base.acFlags &= ~AC_ON;
     this->collider.base.ocFlags1 &= ~OC1_ON;
-    this->rotVelocity = 0x2000;
+    this->angularVelocity = 0x2000;
     this->idleTimer = 32;
-    this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
+    this->actor.flags &= ~ACTOR_FLAG_ATTENTION_ENABLED;
     this->actor.speed = 0.0f;
     Actor_PlaySfx(&this->actor, NA_SE_EN_PO_DISAPPEAR);
     this->actionFunc = EnBigpo_WarpingOut;
@@ -496,9 +496,9 @@ void EnBigpo_SetupWarpOut(EnBigpo* this) {
 
 void EnBigpo_WarpingOut(EnBigpo* this, PlayState* play) {
     DECR(this->idleTimer);
-    this->actor.shape.rot.y += this->rotVelocity;
+    this->actor.shape.rot.y += this->angularVelocity;
     if (this->idleTimer < 16) {
-        Math_ScaledStepToS(&this->rotVelocity, 0, 0x200);
+        Math_ScaledStepToS(&this->angularVelocity, 0, 0x200);
     }
     this->mainColor.a = this->idleTimer * (255.0f / 32.0f);
     if (this->idleTimer == 0) {
@@ -514,7 +514,7 @@ void EnBigpo_SetupWarpIn(EnBigpo* this, PlayState* play) {
 
     Actor_PlaySfx(&this->actor, NA_SE_EN_STALKIDS_APPEAR);
     Animation_PlayLoop(&this->skelAnime, &gBigPoeAwakenStretchAnim);
-    this->rotVelocity = 0x2000;
+    this->angularVelocity = 0x2000;
     this->actor.world.pos.x = (Math_SinS(randomYaw) * distance) + player->actor.world.pos.x;
     this->actor.world.pos.z = (Math_CosS(randomYaw) * distance) + player->actor.world.pos.z;
     this->actionFunc = EnBigpo_WarpingIn;
@@ -522,10 +522,10 @@ void EnBigpo_SetupWarpIn(EnBigpo* this, PlayState* play) {
 
 void EnBigpo_WarpingIn(EnBigpo* this, PlayState* play) {
     this->idleTimer++;
-    this->actor.shape.rot.y -= this->rotVelocity;
+    this->actor.shape.rot.y -= this->angularVelocity;
     if (this->idleTimer >= 16) {
         // after 16th frame, start slowing rotation
-        Math_ScaledStepToS(&this->rotVelocity, 0, 0x200);
+        Math_ScaledStepToS(&this->angularVelocity, 0, 0x200);
     }
 
     this->mainColor.a = this->idleTimer * (255.0f / 32.0f);
@@ -549,7 +549,7 @@ void EnBigpo_SetupIdleFlying(EnBigpo* this) {
     this->actor.world.rot.y = this->actor.shape.rot.y;
     this->collider.base.acFlags |= AC_ON;
     this->collider.base.ocFlags1 |= OC1_ON;
-    this->actor.flags |= ACTOR_FLAG_TARGETABLE;
+    this->actor.flags |= ACTOR_FLAG_ATTENTION_ENABLED;
     this->actionFunc = EnBigpo_IdleFlying;
 }
 
@@ -581,20 +581,20 @@ void EnBigpo_IdleFlying(EnBigpo* this, PlayState* play) {
 }
 
 void EnBigpo_SetupSpinUp(EnBigpo* this) {
-    this->collider.base.colType = COLTYPE_METAL;
+    this->collider.base.colMaterial = COL_MATERIAL_METAL;
     this->collider.base.acFlags |= AC_HARD;
-    this->collider.info.bumper.dmgFlags &= ~0x8000;
+    this->collider.elem.acDmgInfo.dmgFlags &= ~0x8000;
     this->collider.base.atFlags |= AT_ON;
-    this->rotVelocity = 0x800;
+    this->angularVelocity = 0x800;
     this->actionFunc = EnBigpo_SpinningUp;
     this->actor.speed = 0.0f;
 }
 
 void EnBigpo_SpinningUp(EnBigpo* this, PlayState* play) {
     SkelAnime_Update(&this->skelAnime);
-    this->rotVelocity += 0x200;
+    this->angularVelocity += 0x200;
     EnBigpo_UpdateSpin(this);
-    if (this->rotVelocity >= 0x3C00) {
+    if (this->angularVelocity >= 0x3C00) {
         EnBigpo_SetupSpinAttack(this);
     }
 }
@@ -614,7 +614,7 @@ void EnBigpo_SpinAttack(EnBigpo* this, PlayState* play) {
     Math_SmoothStepToF(&this->actor.world.pos.y, player->actor.world.pos.y, 0.3f, 7.5f, 1.0f);
     EnBigpo_UpdateSpin(this);
     yawDiff = this->actor.yawTowardsPlayer - this->actor.world.rot.y;
-    // because acFlags AC_HARD and COLTYPE_METAL, if we hit it means we contacted as attack
+    // because acFlags AC_HARD and COL_MATERIAL_METAL, if we hit it means we contacted as attack
     if ((this->collider.base.atFlags & AT_HIT) ||
         ((ABS_ALT(yawDiff) > 0x4000) && (this->actor.xzDistToPlayer > 50.0f))) {
         // hit the player OR the poe has missed and flew past player
@@ -636,11 +636,11 @@ void EnBigpo_SpinningDown(EnBigpo* this, PlayState* play) {
     SkelAnime_Update(&this->skelAnime);
     Math_SmoothStepToF(&this->actor.world.pos.y, player->actor.world.pos.y + 100.0f, 0.3f, 5.0f, 1.0f);
     Math_StepToF(&this->actor.speed, 0.0f, 0.2f);
-    if (Math_ScaledStepToS(&this->rotVelocity, 0, 0x200)) {
+    if (Math_ScaledStepToS(&this->angularVelocity, 0, 0x200)) {
         // spin down complete, re-allow hittable
-        this->collider.base.colType = COLTYPE_HIT3;
+        this->collider.base.colMaterial = COL_MATERIAL_HIT3;
         this->collider.base.acFlags &= ~AC_HARD;
-        this->collider.info.bumper.dmgFlags |= 0x8000;
+        this->collider.elem.acDmgInfo.dmgFlags |= 0x8000;
         EnBigpo_SetupIdleFlying(this);
     }
     EnBigpo_UpdateSpin(this);
@@ -748,8 +748,8 @@ void EnBigpo_SetupLanternDrop(EnBigpo* this, PlayState* play) {
     this->actor.shape.rot.x = -0x8000;
     this->actor.velocity.y = 0.0f;
     this->actor.world.pos.y -= 15.0f;
-    func_800BC154(play, &play->actorCtx, &this->actor, ACTORCAT_MISC);
-    this->actor.flags &= ~(ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_UNFRIENDLY); // targetable OFF, enemy music OFF
+    Actor_ChangeCategory(play, &play->actorCtx, &this->actor, ACTORCAT_MISC);
+    this->actor.flags &= ~(ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_HOSTILE); // targetable OFF, enemy music OFF
     this->actor.bgCheckFlags &= ~BGCHECKFLAG_PLAYER_400;
     this->actionFunc = EnBigpo_LanternFalling;
 }
@@ -817,7 +817,7 @@ void EnBigpo_SetupScoopSoulIdle(EnBigpo* this) {
     this->savedHeight = this->actor.world.pos.y;
     Actor_SetFocus(&this->actor, -10.0f);
     this->idleTimer = 400; // 20 seconds
-    this->actor.flags |= ACTOR_FLAG_TARGETABLE;
+    this->actor.flags |= ACTOR_FLAG_ATTENTION_ENABLED;
     this->actionFunc = EnBigpo_ScoopSoulIdle;
 }
 
@@ -839,7 +839,7 @@ void EnBigpo_ScoopSoulIdle(EnBigpo* this, PlayState* play) {
 }
 
 void EnBigpo_SetupScoopSoulLeaving(EnBigpo* this) {
-    this->actor.flags &= ~(ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_10000); // unknown OFF
+    this->actor.flags &= ~(ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_TALK_OFFER_AUTO_ACCEPTED);
     this->actionFunc = EnBigpo_ScoopSoulFadingAway;
 }
 
@@ -851,7 +851,7 @@ void EnBigpo_ScoopSoulFadingAway(EnBigpo* this, PlayState* play) {
 }
 
 void EnBigpo_InitDampeMainPo(EnBigpo* this) {
-    this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
+    this->actor.flags &= ~ACTOR_FLAG_ATTENTION_ENABLED;
     this->actionFunc = EnBigpo_SelectRandomFireLocations;
 }
 
@@ -895,9 +895,9 @@ void EnBigpo_SelectRandomFireLocations(EnBigpo* this, PlayState* play) {
                     Math_Vec3f_Copy(&this->fires[fireIndex].pos, &randomFirePo->actor.world.pos);
                     randomFirePo->actor.parent = (Actor*)this;
                     randomFirePo->actor.update = EnBigpo_UpdateFire;
-                    func_800BC154(play, &play->actorCtx, &randomFirePo->actor, ACTORCAT_PROP);
+                    Actor_ChangeCategory(play, &play->actorCtx, &randomFirePo->actor, ACTORCAT_PROP);
                     randomFirePo->unk20C = fireIndex;
-                    randomFirePo->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
+                    randomFirePo->actor.flags &= ~ACTOR_FLAG_ATTENTION_ENABLED;
                     // make invisible by size: 0
                     Actor_SetScale(&randomFirePo->actor, 0);
 
@@ -1067,7 +1067,7 @@ void EnBigpo_FlameCircleCutscene(EnBigpo* this, PlayState* play) {
         if (magnitude > 0.0001f) {
             Math_Vec3f_Scale(&posDiff, 1.0f / magnitude);
         }
-        magnitude = magnitude / this->idleTimer;
+        magnitude /= this->idleTimer;
         this->actor.world.pos.x -= magnitude * posDiff.x;
         this->actor.world.pos.y -= magnitude * posDiff.y;
         this->actor.world.pos.z -= magnitude * posDiff.z;
@@ -1129,7 +1129,7 @@ s32 EnBigpo_ApplyDamage(EnBigpo* this, PlayState* play) {
         }
 
         if (Actor_ApplyDamage(&this->actor) == 0) {
-            this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
+            this->actor.flags &= ~ACTOR_FLAG_ATTENTION_ENABLED;
             Actor_PlaySfx(&this->actor, NA_SE_EN_PO_DEAD);
             Enemy_StartFinishingBlow(play, &this->actor);
             if (this->actor.params == BIG_POE_TYPE_SUMMONED) { // dampe type
@@ -1143,8 +1143,8 @@ s32 EnBigpo_ApplyDamage(EnBigpo* this, PlayState* play) {
         if (this->actor.colChkInfo.damageEffect == 4) {
             this->drawDmgEffAlpha = 4.0f;
             this->drawDmgEffScale = 1.0f;
-            Actor_Spawn(&play->actorCtx, play, ACTOR_EN_CLEAR_TAG, this->collider.info.bumper.hitPos.x,
-                        this->collider.info.bumper.hitPos.y, this->collider.info.bumper.hitPos.z, 0, 0, 0,
+            Actor_Spawn(&play->actorCtx, play, ACTOR_EN_CLEAR_TAG, this->collider.elem.acDmgInfo.hitPos.x,
+                        this->collider.elem.acDmgInfo.hitPos.y, this->collider.elem.acDmgInfo.hitPos.z, 0, 0, 0,
                         CLEAR_TAG_PARAMS(CLEAR_TAG_LARGE_LIGHT_RAYS));
         }
         EnBigpo_HitStun(this);
@@ -1154,11 +1154,11 @@ s32 EnBigpo_ApplyDamage(EnBigpo* this, PlayState* play) {
 }
 
 void EnBigpo_Update(Actor* thisx, PlayState* play) {
-    EnBigpo* this = THIS;
+    EnBigpo* this = (EnBigpo*)thisx;
     s32 pad;
     ColliderCylinder* thisCollider;
 
-    if (CHECK_FLAG_ALL(this->actor.flags, ACTOR_FLAG_2000)) {
+    if (CHECK_FLAG_ALL(this->actor.flags, ACTOR_FLAG_HOOKSHOT_ATTACHED)) {
         this->hoverHeightCycleTimer = 0;
         this->savedHeight = this->actor.world.pos.y;
     }
@@ -1222,7 +1222,7 @@ void EnBigpo_Update(Actor* thisx, PlayState* play) {
  * alt update func: the revealed fires under dampe's house
  */
 void EnBigpo_UpdateFire(Actor* thisx, PlayState* play) {
-    EnBigpo* this = THIS;
+    EnBigpo* this = (EnBigpo*)thisx;
 
     this->actor.shape.rot.y = BINANG_ROT180(Camera_GetCamDirYaw(GET_ACTIVE_CAM(play)));
     this->actionFunc(this, play);
@@ -1230,7 +1230,7 @@ void EnBigpo_UpdateFire(Actor* thisx, PlayState* play) {
 
 s32 EnBigpo_OverrideLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3f* pos, Vec3s* rot, Actor* thisx,
                              Gfx** gfx) {
-    EnBigpo* this = THIS;
+    EnBigpo* this = (EnBigpo*)thisx;
     // not fully invisible
     if ((this->mainColor.a == 0) || (limbIndex == BIG_POE_LIMB_LANTERN) ||
         ((this->actionFunc == EnBigpo_BurnAwayDeath) && (this->idleTimer >= 2))) {
@@ -1240,7 +1240,7 @@ s32 EnBigpo_OverrideLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3f*
 }
 
 void EnBigpo_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* rot, Actor* thisx, Gfx** gfx) {
-    EnBigpo* this = THIS;
+    EnBigpo* this = (EnBigpo*)thisx;
     s8 bodyPartIndex;
     Vec3f* v1ptr; // todo: figure out better names
     Vec3f* v2ptr;
@@ -1251,7 +1251,7 @@ void EnBigpo_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* ro
 
     if ((this->actionFunc == EnBigpo_BurnAwayDeath) && (this->idleTimer >= 2) &&
         (limbIndex == BIG_POE_LIMB_HAT_AND_CLOAK)) {
-        gSPMatrix((*gfx)++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+        MATRIX_FINALIZE_AND_LOAD((*gfx)++, play->state.gfxCtx);
         gSPDisplayList((*gfx)++, &gBigPoeCrispyBodyDL);
     }
 
@@ -1261,7 +1261,7 @@ void EnBigpo_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* ro
         if ((this->actionFunc == EnBigpo_BurnAwayDeath) && (this->idleTimer > 18)) {
             if (this->actor.scale.x != 0.0f) {
                 Matrix_Scale(0.014f / this->actor.scale.x, 0.014f / this->actor.scale.x, 0.014f / this->actor.scale.x,
-                             1);
+                             MTXMODE_APPLY);
             }
         }
         Matrix_Get(&this->drawMtxF);
@@ -1292,7 +1292,7 @@ void EnBigpo_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* ro
 }
 
 void EnBigpo_DrawMainBigpo(Actor* thisx, PlayState* play) {
-    EnBigpo* this = THIS;
+    EnBigpo* this = (EnBigpo*)thisx;
     Gfx* dispHead;
 
     OPEN_DISPS(play->state.gfxCtx);
@@ -1334,7 +1334,7 @@ void EnBigpo_DrawMainBigpo(Actor* thisx, PlayState* play) {
 }
 
 void EnBigpo_DrawScoopSoul(Actor* thisx, PlayState* play) {
-    EnBigpo* this = THIS;
+    EnBigpo* this = (EnBigpo*)thisx;
     s32 pad;
 
     OPEN_DISPS(play->state.gfxCtx);
@@ -1355,7 +1355,7 @@ void EnBigpo_DrawScoopSoul(Actor* thisx, PlayState* play) {
 
     Matrix_RotateYS(BINANG_ROT180(Camera_GetCamDirYaw(GET_ACTIVE_CAM(play))), MTXMODE_APPLY);
 
-    gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    MATRIX_FINALIZE_AND_LOAD(POLY_XLU_DISP++, play->state.gfxCtx);
 
     gSPDisplayList(POLY_XLU_DISP++, &gBigPoeSoulDL);
 
@@ -1363,7 +1363,7 @@ void EnBigpo_DrawScoopSoul(Actor* thisx, PlayState* play) {
 }
 
 void EnBigpo_DrawLantern(Actor* thisx, PlayState* play) {
-    EnBigpo* this = THIS;
+    EnBigpo* this = (EnBigpo*)thisx;
     f32 magnitude;
     f32 magnitude2;
     Gfx* dispHead;
@@ -1401,7 +1401,7 @@ void EnBigpo_DrawLantern(Actor* thisx, PlayState* play) {
 
     gDPSetEnvColor(&dispHead[2], this->lanternColor.r, this->lanternColor.g, this->lanternColor.b, this->mainColor.a);
 
-    gSPMatrix(&dispHead[3], Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    MATRIX_FINALIZE_AND_LOAD(&dispHead[3], play->state.gfxCtx);
 
     gSPDisplayList(&dispHead[4], &gBigPoeLanternMainDL);
 
@@ -1418,7 +1418,7 @@ void EnBigpo_DrawLantern(Actor* thisx, PlayState* play) {
 }
 
 void EnBigpo_DrawCircleFlames(Actor* thisx, PlayState* play) {
-    EnBigpo* this = THIS;
+    EnBigpo* this = (EnBigpo*)thisx;
     s32 pad[3];
     s16 fireRadius;
     MtxF* mtfxPtr;
@@ -1435,7 +1435,7 @@ void EnBigpo_DrawCircleFlames(Actor* thisx, PlayState* play) {
         fireRadius = 500;
     } else {
         Matrix_Scale(thisx->scale.x, thisx->scale.y, thisx->scale.z, MTXMODE_APPLY);
-        fireRadius = (s16)(thisx->scale.x * 500.0f * 100.0f);
+        fireRadius = TRUNCF_BINANG(thisx->scale.x * 500.0f * 100.0f);
     }
     gSPSegment(POLY_XLU_DISP++, 0x08,
                Gfx_TwoTexScroll(play->state.gfxCtx, 0, 0, 0, 0x20, 0x40, 1, 0, (play->gameplayFrames * -20) % 512, 0x20,
@@ -1453,7 +1453,7 @@ void EnBigpo_DrawCircleFlames(Actor* thisx, PlayState* play) {
         mtfxPtr->yw = firePtr->pos.y;
         mtfxPtr->zw = firePtr->pos.z;
 
-        gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+        MATRIX_FINALIZE_AND_LOAD(POLY_XLU_DISP++, play->state.gfxCtx);
 
         gSPDisplayList(POLY_XLU_DISP++, gEffFire1DL);
     }
@@ -1462,7 +1462,7 @@ void EnBigpo_DrawCircleFlames(Actor* thisx, PlayState* play) {
 }
 
 void EnBigpo_RevealedFire(Actor* thisx, PlayState* play) {
-    EnBigpo* this = THIS;
+    EnBigpo* this = (EnBigpo*)thisx;
     EnBigpo* parent = (EnBigpo*)thisx->parent;
     s32 pad;
 
@@ -1480,7 +1480,7 @@ void EnBigpo_RevealedFire(Actor* thisx, PlayState* play) {
     Lights_PointNoGlowSetInfo(&parent->fires[this->unk20C].info, thisx->world.pos.x, thisx->world.pos.y,
                               thisx->world.pos.z, 170, 255, 255, (s32)(thisx->scale.x * 500.0f * 100.0f));
 
-    gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    MATRIX_FINALIZE_AND_LOAD(POLY_XLU_DISP++, play->state.gfxCtx);
 
     gSPDisplayList(POLY_XLU_DISP++, gEffFire1DL);
 

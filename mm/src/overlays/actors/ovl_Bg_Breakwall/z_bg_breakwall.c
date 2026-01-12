@@ -15,23 +15,21 @@
 #include "objects/object_kaizoku_obj/object_kaizoku_obj.h"
 #include "objects/object_spot11_obj/object_spot11_obj.h"
 
-#define FLAGS (ACTOR_FLAG_10 | ACTOR_FLAG_20)
-
-#define THIS ((BgBreakwall*)thisx)
+#define FLAGS (ACTOR_FLAG_UPDATE_CULLING_DISABLED | ACTOR_FLAG_DRAW_CULLING_DISABLED)
 
 void BgBreakwall_Init(Actor* thisx, PlayState* play);
 void BgBreakwall_Update(Actor* thisx, PlayState* play);
 
 void BgBreakwall_SetupAction(BgBreakwall* this, BgBreakwallActionFunc actionFunc);
-s32 func_808B736C(BgBreakwall* this, PlayState* play);
-s32 func_808B7380(BgBreakwall* this, PlayState* play);
-s32 func_808B73C4(BgBreakwall* this, PlayState* play);
-s32 func_808B73FC(BgBreakwall* this, PlayState* play);
-s32 func_808B7410(BgBreakwall* this, PlayState* play);
-s32 func_808B7460(BgBreakwall* this, PlayState* play);
-s32 func_808B74A8(BgBreakwall* this, PlayState* play);
-s32 func_808B74D8(BgBreakwall* this, PlayState* play);
-s32 func_808B751C(BgBreakwall* this, PlayState* play);
+bool func_808B736C(BgBreakwall* this, PlayState* play);
+bool func_808B7380(BgBreakwall* this, PlayState* play);
+bool func_808B73C4(BgBreakwall* this, PlayState* play);
+bool func_808B73FC(BgBreakwall* this, PlayState* play);
+bool func_808B7410(BgBreakwall* this, PlayState* play);
+bool func_808B7460(BgBreakwall* this, PlayState* play);
+bool func_808B74A8(BgBreakwall* this, PlayState* play);
+bool func_808B74D8(BgBreakwall* this, PlayState* play);
+bool func_808B751C(BgBreakwall* this, PlayState* play);
 void func_808B76CC(BgBreakwall* this, PlayState* play);
 void func_808B77D0(BgBreakwall* this, PlayState* play);
 void func_808B77E0(BgBreakwall* this, PlayState* play);
@@ -45,7 +43,7 @@ void func_808B7B54(Actor* thisx, PlayState* play);
 void func_808B7D34(Actor* thisx, PlayState* play);
 void BgBreakwall_Draw(Actor* thisx, PlayState* play);
 
-ActorInit Bg_Breakwall_InitVars = {
+ActorProfile Bg_Breakwall_Profile = {
     /**/ ACTOR_BG_BREAKWALL,
     /**/ ACTORCAT_ITEMACTION,
     /**/ FLAGS,
@@ -95,9 +93,9 @@ BgBreakwallStruct D_808B8140[] = {
 
 static InitChainEntry sInitChain[] = {
     ICHAIN_VEC3F(scale, 1, ICHAIN_CONTINUE),
-    ICHAIN_F32(uncullZoneForward, 4000, ICHAIN_CONTINUE),
-    ICHAIN_F32(uncullZoneScale, 400, ICHAIN_CONTINUE),
-    ICHAIN_F32(uncullZoneDownward, 800, ICHAIN_STOP),
+    ICHAIN_F32(cullingVolumeDistance, 4000, ICHAIN_CONTINUE),
+    ICHAIN_F32(cullingVolumeScale, 400, ICHAIN_CONTINUE),
+    ICHAIN_F32(cullingVolumeDownward, 800, ICHAIN_STOP),
 };
 
 Color_RGBA8 D_808B82F0[] = {
@@ -146,26 +144,26 @@ void BgBreakwall_SetupAction(BgBreakwall* this, BgBreakwallActionFunc actionFunc
     this->actionFunc = actionFunc;
 }
 
-s32 func_808B736C(BgBreakwall* this, PlayState* play) {
+bool func_808B736C(BgBreakwall* this, PlayState* play) {
     return true;
 }
 
-s32 func_808B7380(BgBreakwall* this, PlayState* play) {
-    if ((gSaveContext.save.day >= 2) && !CHECK_WEEKEVENTREG(WEEKEVENTREG_DEFENDED_AGAINST_THEM)) {
+bool func_808B7380(BgBreakwall* this, PlayState* play) {
+    if ((gSaveContext.save.day >= 2) && !CHECK_WEEKEVENTREG(WEEKEVENTREG_DEFENDED_AGAINST_ALIENS)) {
         return false;
     }
     return true;
 }
 
-s32 func_808B73C4(BgBreakwall* this, PlayState* play) {
+bool func_808B73C4(BgBreakwall* this, PlayState* play) {
     return CHECK_WEEKEVENTREG(WEEKEVENTREG_CLEARED_SNOWHEAD_TEMPLE) || CHECK_WEEKEVENTREG(WEEKEVENTREG_21_01);
 }
 
-s32 func_808B73FC(BgBreakwall* this, PlayState* play) {
+bool func_808B73FC(BgBreakwall* this, PlayState* play) {
     return true;
 }
 
-s32 func_808B7410(BgBreakwall* this, PlayState* play) {
+bool func_808B7410(BgBreakwall* this, PlayState* play) {
     if (Flags_GetSwitch(play, this->switchFlag)) {
         this->dyna.actor.draw = NULL;
     }
@@ -173,28 +171,28 @@ s32 func_808B7410(BgBreakwall* this, PlayState* play) {
     return true;
 }
 
-s32 func_808B7460(BgBreakwall* this, PlayState* play) {
+bool func_808B7460(BgBreakwall* this, PlayState* play) {
     if (!Flags_GetSwitch(play, this->switchFlag)) {
         this->dyna.actor.scale.x = 0.1f;
     }
     return true;
 }
 
-s32 func_808B74A8(BgBreakwall* this, PlayState* play) {
+bool func_808B74A8(BgBreakwall* this, PlayState* play) {
     if (CHECK_WEEKEVENTREG(WEEKEVENTREG_CLEARED_GREAT_BAY_TEMPLE)) {
         return false;
     }
     return true;
 }
 
-s32 func_808B74D8(BgBreakwall* this, PlayState* play) {
+bool func_808B74D8(BgBreakwall* this, PlayState* play) {
     if (!CHECK_WEEKEVENTREG(WEEKEVENTREG_09_80) || CHECK_WEEKEVENTREG(WEEKEVENTREG_23_20)) {
         return false;
     }
     return true;
 }
 
-s32 func_808B751C(BgBreakwall* this, PlayState* play) {
+bool func_808B751C(BgBreakwall* this, PlayState* play) {
     Actor_SetScale(&this->dyna.actor, 0.1f);
 
     if ((BGBREAKWALL_SWITCH_FLAG(&this->dyna.actor) != 0x7F) &&
@@ -214,7 +212,7 @@ s32 func_808B751C(BgBreakwall* this, PlayState* play) {
 
 void BgBreakwall_Init(Actor* thisx, PlayState* play) {
     s32 pad;
-    BgBreakwall* this = THIS;
+    BgBreakwall* this = (BgBreakwall*)thisx;
     BgBreakwallStruct* sp24 = &D_808B8140[BGBREAKWALL_GET_F(&this->dyna.actor)];
 
     Actor_ProcessInitChain(&this->dyna.actor, sInitChain);
@@ -230,7 +228,7 @@ void BgBreakwall_Init(Actor* thisx, PlayState* play) {
 }
 
 void BgBreakwall_Destroy(Actor* thisx, PlayState* play) {
-    BgBreakwall* this = THIS;
+    BgBreakwall* this = (BgBreakwall*)thisx;
     BgBreakwallStruct* temp_s1 = &D_808B8140[BGBREAKWALL_GET_F(&this->dyna.actor)];
 
     if (temp_s1->unk_10 != NULL) {
@@ -248,7 +246,7 @@ void func_808B76CC(BgBreakwall* this, PlayState* play) {
         if (((BGBREAKWALL_GET_F(&this->dyna.actor)) != BGBREAKWALL_F_7) &&
             ((BGBREAKWALL_GET_F(&this->dyna.actor)) != BGBREAKWALL_F_9) &&
             ((BGBREAKWALL_GET_F(&this->dyna.actor)) != BGBREAKWALL_F_11)) {
-            this->dyna.actor.flags &= ~ACTOR_FLAG_10;
+            this->dyna.actor.flags &= ~ACTOR_FLAG_UPDATE_CULLING_DISABLED;
         }
 
         Actor_SetObjectDependency(play, &this->dyna.actor);
@@ -333,7 +331,7 @@ void func_808B7A10(BgBreakwall* this, PlayState* play) {
 }
 
 void BgBreakwall_Update(Actor* thisx, PlayState* play) {
-    BgBreakwall* this = THIS;
+    BgBreakwall* this = (BgBreakwall*)thisx;
 
     this->actionFunc(this, play);
 }
@@ -362,7 +360,7 @@ void func_808B7B54(Actor* thisx, PlayState* play) {
 
     Gfx_SetupDL25_Xlu(play->state.gfxCtx);
 
-    gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    MATRIX_FINALIZE_AND_LOAD(POLY_XLU_DISP++, play->state.gfxCtx);
 
     Environment_LerpSandstormColors(D_808B8310, &sp50);
     Environment_LerpSandstormColors(D_808B8330, &sp4C);
@@ -382,7 +380,7 @@ void func_808B7B54(Actor* thisx, PlayState* play) {
 }
 
 void func_808B7D34(Actor* thisx, PlayState* play) {
-    BgBreakwall* this = THIS;
+    BgBreakwall* this = (BgBreakwall*)thisx;
     s32 sp48;
     s32 tempA;
     s32 tempB;
@@ -414,7 +412,7 @@ void func_808B7D34(Actor* thisx, PlayState* play) {
 
 void BgBreakwall_Draw(Actor* thisx, PlayState* play) {
     s32 pad;
-    BgBreakwall* this = THIS;
+    BgBreakwall* this = (BgBreakwall*)thisx;
     BgBreakwallStruct* temp_s2 = &D_808B8140[BGBREAKWALL_GET_F(&this->dyna.actor)];
 
     OPEN_DISPS(play->state.gfxCtx);
@@ -430,14 +428,14 @@ void BgBreakwall_Draw(Actor* thisx, PlayState* play) {
     if (temp_s2->unk_04 != NULL) {
         Gfx_SetupDL25_Opa(play->state.gfxCtx);
 
-        gSPMatrix(POLY_OPA_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+        MATRIX_FINALIZE_AND_LOAD(POLY_OPA_DISP++, play->state.gfxCtx);
         gSPDisplayList(POLY_OPA_DISP++, temp_s2->unk_04);
     }
 
     if (temp_s2->unk_08 != NULL) {
         Gfx_SetupDL25_Xlu(play->state.gfxCtx);
 
-        gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+        MATRIX_FINALIZE_AND_LOAD(POLY_XLU_DISP++, play->state.gfxCtx);
         gSPDisplayList(POLY_XLU_DISP++, temp_s2->unk_08);
     }
 

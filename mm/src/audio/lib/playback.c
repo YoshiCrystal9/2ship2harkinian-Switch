@@ -1,7 +1,7 @@
 #include "global.h"
 #include "audio/effects.h"
 #include "BenPort.h"
-#include "public/bridge/consolevariablebridge.h"
+#include <libultraship/bridge/consolevariablebridge.h>
 
 void AudioPlayback_NoteSetResamplingRate(NoteSampleState* sampleState, f32 resamplingRateInput);
 void AudioPlayback_AudioListPushFront(AudioListItem* list, AudioListItem* item);
@@ -18,13 +18,13 @@ void AudioPlayback_InitSampleState(Note* note, NoteSampleState* sampleState, Not
     u64 pad;
     u8 strongLeft;
     u8 strongRight;
-    f32 vel;
+    f32 velocity;
     u8 pan;
     u8 targetReverbVol;
     StereoData stereoData;
     s32 stereoHeadsetEffects = note->playbackState.stereoHeadsetEffects;
 
-    vel = subAttrs->velocity;
+    velocity = subAttrs->velocity;
     pan = subAttrs->pan;
     targetReverbVol = subAttrs->targetReverbVol;
     stereoData = subAttrs->stereoData;
@@ -107,12 +107,12 @@ void AudioPlayback_InitSampleState(Note* note, NoteSampleState* sampleState, Not
         volRight = gDefaultPanVolume[0x7F - pan];
     }
 
-    vel = 0.0f > vel ? 0.0f : vel;
-    vel = 1.0f < vel ? 1.0f : vel;
+    velocity = 0.0f > velocity ? 0.0f : velocity;
+    velocity = 1.0f < velocity ? 1.0f : velocity;
 
     float master_vol = CVarGetFloat("gSettings.Audio.MasterVolume", 1.0f);
-    sampleState->targetVolLeft = (s32)((vel * volLeft) * (0x1000 - 0.001f)) * master_vol;
-    sampleState->targetVolRight = (s32)((vel * volRight) * (0x1000 - 0.001f)) * master_vol;
+    sampleState->targetVolLeft = (s32)((velocity * volLeft) * (0x1000 - 0.001f)) * master_vol;
+    sampleState->targetVolRight = (s32)((velocity * volRight) * (0x1000 - 0.001f)) * master_vol;
 
     sampleState->gain = subAttrs->gain;
     sampleState->filter = subAttrs->filter;
@@ -718,11 +718,14 @@ void AudioPlayback_NotePoolClear(NotePool* pool) {
                 source = &pool->active;
                 dest = &gAudioCtx.noteFreeLists.active;
                 break;
+
+            default:
+                break;
         }
 
-        for (;;) {
+        while (true) {
             cur = source->next;
-            if (cur == source || cur == NULL) {
+            if ((cur == source) || (cur == NULL)) {
                 break;
             }
             AudioPlayback_AudioListRemove(cur);

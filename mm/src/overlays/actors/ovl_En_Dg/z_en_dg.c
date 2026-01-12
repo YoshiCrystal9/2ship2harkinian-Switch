@@ -7,9 +7,8 @@
 #include "z_en_dg.h"
 #include "overlays/actors/ovl_En_Aob_01/z_en_aob_01.h"
 
-#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_10 | ACTOR_FLAG_800000)
-
-#define THIS ((EnDg*)thisx)
+#define FLAGS \
+    (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_UPDATE_CULLING_DISABLED | ACTOR_FLAG_THROW_ONLY)
 
 void EnDg_Init(Actor* thisx, PlayState* play);
 void EnDg_Destroy(Actor* thisx, PlayState* play);
@@ -38,7 +37,7 @@ void EnDg_Thrown(EnDg* this, PlayState* play);
 void EnDg_SetupTalk(EnDg* this, PlayState* play);
 void EnDg_Talk(EnDg* this, PlayState* play);
 
-ActorInit En_Dg_InitVars = {
+ActorProfile En_Dg_Profile = {
     /**/ ACTOR_EN_DG,
     /**/ ACTORCAT_ENEMY,
     /**/ FLAGS,
@@ -112,7 +111,7 @@ static RacetrackDogInfo sSelectedRacetrackDogInfo = { DOG_COLOR_DEFAULT, -1, 0x3
 
 static ColliderCylinderInit sCylinderInit = {
     {
-        COLTYPE_NONE,
+        COL_MATERIAL_NONE,
         AT_ON | AT_TYPE_ENEMY,
         AC_ON | AC_TYPE_PLAYER,
         OC1_ON | OC1_TYPE_ALL,
@@ -120,11 +119,11 @@ static ColliderCylinderInit sCylinderInit = {
         COLSHAPE_CYLINDER,
     },
     {
-        ELEMTYPE_UNK1,
+        ELEM_MATERIAL_UNK1,
         { 0xF7CFFFFF, 0x04, 0x00 },
         { 0xF7CFFFFF, 0x00, 0x00 },
-        TOUCH_ON | TOUCH_SFX_NORMAL,
-        BUMP_ON,
+        ATELEM_ON | ATELEM_SFX_NORMAL,
+        ACELEM_ON,
         OCELEM_ON,
     },
     { 13, 19, 0, { 0, 0, 0 } },
@@ -207,7 +206,7 @@ static AnimationInfoS sAnimationInfo[DOG_ANIM_MAX] = {
 };
 
 static InitChainEntry sInitChain[] = {
-    ICHAIN_F32(uncullZoneForward, 1000, ICHAIN_STOP),
+    ICHAIN_F32(cullingVolumeDistance, 1000, ICHAIN_STOP),
 };
 
 void EnDg_ChangeAnim(SkelAnime* skelAnime, AnimationInfoS* animInfo, s32 animIndex) {
@@ -268,8 +267,8 @@ void EnDg_GetFloorRot(EnDg* this, Vec3f* floorRot) {
 
 s32 EnDg_HasReachedPoint(EnDg* this, Path* path, s32 pointIndex) {
     Vec3s* points = Lib_SegmentedToVirtual(path->points);
-    s32 pathCount = path->count;
-    s32 currentPoint = pointIndex;
+    s32 count = path->count;
+    s32 index = pointIndex;
     s32 reached = false;
     f32 diffX;
     f32 diffZ;
@@ -278,21 +277,22 @@ s32 EnDg_HasReachedPoint(EnDg* this, Path* path, s32 pointIndex) {
     f32 d;
     Vec3f point;
 
-    Math_Vec3s_ToVec3f(&point, &points[currentPoint]);
-    if (currentPoint == 0) {
+    Math_Vec3s_ToVec3f(&point, &points[index]);
+
+    if (index == 0) {
         diffX = points[1].x - points[0].x;
         diffZ = points[1].z - points[0].z;
-    } else if (currentPoint == pathCount - 1) {
-        diffX = points[pathCount - 1].x - points[pathCount - 2].x;
-        diffZ = points[pathCount - 1].z - points[pathCount - 2].z;
+    } else if (index == (count - 1)) {
+        diffX = points[count - 1].x - points[count - 2].x;
+        diffZ = points[count - 1].z - points[count - 2].z;
     } else {
-        diffX = points[currentPoint + 1].x - points[currentPoint - 1].x;
-        diffZ = points[currentPoint + 1].z - points[currentPoint - 1].z;
+        diffX = points[index + 1].x - points[index - 1].x;
+        diffZ = points[index + 1].z - points[index - 1].z;
     }
 
     Math3D_RotateXZPlane(&point, RAD_TO_BINANG(Math_FAtan2F(diffX, diffZ)), &px, &pz, &d);
 
-    if (((this->actor.world.pos.x * px) + (pz * this->actor.world.pos.z) + d) > 0.0f) {
+    if (((px * this->actor.world.pos.x) + (pz * this->actor.world.pos.z) + d) > 0.0f) {
         reached = true;
     }
 
@@ -415,6 +415,14 @@ void EnDg_SetupIdleMove(EnDg* this, PlayState* play) {
         } else if (play->sceneId == SCENE_CLOCKTOWER) {
             EnDg_ChangeAnim(&this->skelAnime, sAnimationInfo, DOG_ANIM_RUN);
         } else if (sRacetrackDogInfo[this->index].textId & 0x11) {
+            //! @bug: There is no bounds check on sRacetrackDogInfo access.
+            //! The dog in the Romani Ranch credits uses params of 0x03FF which means an index equal to
+            //! `ENDG_INDEX_SOUTH_CLOCK_TOWN`. Since the above condition just checks the scene not the index, this
+            //! results in an OOB access of `sRacetrackDogInfo` in this condition. With IDO, the OOB access results in
+            //! this condition evaluating as true and the dog uses the walking animation with morph frames. Due to this,
+            //! and since the dog doesn't update in the credits due to being considered an enemy, it ends up being
+            //! upside down. It isn't certain but it is speculated its default pose is upside down as well, so when
+            //! morphing from no animation it gets drawn upside down.
             EnDg_ChangeAnim(&this->skelAnime, sAnimationInfo, DOG_ANIM_WALK);
         } else {
             EnDg_ChangeAnim(&this->skelAnime, sAnimationInfo, DOG_ANIM_RUN);
@@ -475,10 +483,10 @@ void EnDg_StartTextBox(EnDg* this, PlayState* play) {
  */
 void EnDg_TryPickUp(EnDg* this, PlayState* play) {
     if (sIsAnyDogHeld && !(this->dogFlags & DOG_FLAG_HELD)) {
-        this->actor.flags |= ACTOR_FLAG_CANT_LOCK_ON;
+        this->actor.flags |= ACTOR_FLAG_LOCK_ON_DISABLED;
         this->dogFlags |= DOG_FLAG_HELD;
     } else if (!sIsAnyDogHeld && (this->dogFlags & DOG_FLAG_HELD)) {
-        this->actor.flags &= ~ACTOR_FLAG_CANT_LOCK_ON;
+        this->actor.flags &= ~ACTOR_FLAG_LOCK_ON_DISABLED;
         this->dogFlags &= ~DOG_FLAG_HELD;
     }
 
@@ -489,16 +497,16 @@ void EnDg_TryPickUp(EnDg* this, PlayState* play) {
             sSelectedRacetrackDogInfo = sRacetrackDogInfo[this->index];
         }
         if (!sIsAnyDogHeld) {
-            this->actor.flags |= ACTOR_FLAG_CANT_LOCK_ON;
+            this->actor.flags |= ACTOR_FLAG_LOCK_ON_DISABLED;
             sIsAnyDogHeld = true;
             this->dogFlags |= DOG_FLAG_HELD;
         }
 
         EnDg_ChangeAnim(&this->skelAnime, sAnimationInfo, DOG_ANIM_SIT_DOWN);
-        this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
+        this->actor.flags &= ~ACTOR_FLAG_ATTENTION_ENABLED;
         this->actor.speed = 0.0f;
         if (Player_GetMask(play) == PLAYER_MASK_TRUTH) {
-            this->actor.flags |= ACTOR_FLAG_10000;
+            this->actor.flags |= ACTOR_FLAG_TALK_OFFER_AUTO_ACCEPTED;
             Actor_OfferTalk(&this->actor, play, 100.0f);
             this->actionFunc = EnDg_SetupTalk;
         } else {
@@ -999,7 +1007,7 @@ void EnDg_ApproachPlayer(EnDg* this, PlayState* play) {
         EnDg_ChangeAnim(&this->skelAnime, sAnimationInfo, DOG_ANIM_SIT_DOWN);
         this->actionFunc = EnDg_SitNextToPlayer;
     } else if (player->stateFlags3 & PLAYER_STATE3_20000000) {
-        if ((this->actor.xzDistToPlayer > 40.0f) && (player->linearVelocity == 0.0f)) {
+        if ((this->actor.xzDistToPlayer > 40.0f) && (player->speedXZ == 0.0f)) {
             Math_ApproachF(&this->actor.speed, 1.5f, 0.2f, 1.0f);
         } else {
             Math_ApproachF(&this->actor.speed, player->actor.speed, 0.2f, 1.0f);
@@ -1245,9 +1253,9 @@ void EnDg_JumpOutOfWater(EnDg* this, PlayState* play) {
 void EnDg_Held(EnDg* this, PlayState* play) {
     if (Actor_HasNoParent(&this->actor, play)) {
         this->grabState = DOG_GRAB_STATE_THROWN_OR_SITTING_AFTER_THROW;
-        this->actor.flags |= ACTOR_FLAG_TARGETABLE;
+        this->actor.flags |= ACTOR_FLAG_ATTENTION_ENABLED;
         if (sIsAnyDogHeld) {
-            this->actor.flags &= ~ACTOR_FLAG_CANT_LOCK_ON;
+            this->actor.flags &= ~ACTOR_FLAG_LOCK_ON_DISABLED;
             sIsAnyDogHeld = false;
             this->dogFlags &= ~DOG_FLAG_HELD;
         }
@@ -1287,8 +1295,8 @@ void EnDg_Thrown(EnDg* this, PlayState* play) {
 }
 
 void EnDg_SetupTalk(EnDg* this, PlayState* play) {
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
-        this->actor.flags &= ~ACTOR_FLAG_10000;
+    if (Actor_TalkOfferAccepted(&this->actor, &play->state)) {
+        this->actor.flags &= ~ACTOR_FLAG_TALK_OFFER_AUTO_ACCEPTED;
         EnDg_StartTextBox(this, play);
         this->actionFunc = EnDg_Talk;
     } else {
@@ -1304,7 +1312,7 @@ void EnDg_Talk(EnDg* this, PlayState* play) {
 }
 
 void EnDg_Init(Actor* thisx, PlayState* play) {
-    EnDg* this = THIS;
+    EnDg* this = (EnDg*)thisx;
     s32 pad;
 
     ActorShape_Init(&this->actor.shape, 0.0f, ActorShadow_DrawCircle, 24.0f);
@@ -1316,7 +1324,7 @@ void EnDg_Init(Actor* thisx, PlayState* play) {
 
     this->path = SubS_GetPathByIndex(play, ENDG_GET_PATH_INDEX(&this->actor), ENDG_PATH_INDEX_NONE);
     Actor_SetScale(&this->actor, 0.0075f);
-    this->actor.targetMode = TARGET_MODE_1;
+    this->actor.attentionRangeType = ATTENTION_RANGE_1;
     this->actor.gravity = -3.0f;
     this->timer = Rand_S16Offset(60, 60);
     this->dogFlags = DOG_FLAG_NONE;
@@ -1334,13 +1342,13 @@ void EnDg_Init(Actor* thisx, PlayState* play) {
 }
 
 void EnDg_Destroy(Actor* thisx, PlayState* play) {
-    EnDg* this = THIS;
+    EnDg* this = (EnDg*)thisx;
 
     Collider_DestroyCylinder(play, &this->collider);
 }
 
 void EnDg_Update(Actor* thisx, PlayState* play) {
-    EnDg* this = THIS;
+    EnDg* this = (EnDg*)thisx;
     Player* player = GET_PLAYER(play);
     s32 pad;
     Vec3f floorRot = { 0.0f, 0.0f, 0.0f };
@@ -1373,7 +1381,7 @@ s32 EnDg_OverrideLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3f* po
 }
 
 void EnDg_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* rot, Actor* thisx) {
-    EnDg* this = THIS;
+    EnDg* this = (EnDg*)thisx;
     Vec3f sFocusOffset = { 0.0f, 20.0f, 0.0f };
 
     if (limbIndex == DOG_LIMB_HEAD) {
@@ -1387,7 +1395,7 @@ void EnDg_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* rot, 
 }
 
 void EnDg_Draw(Actor* thisx, PlayState* play) {
-    EnDg* this = THIS;
+    EnDg* this = (EnDg*)thisx;
 
     OPEN_DISPS(play->state.gfxCtx);
 

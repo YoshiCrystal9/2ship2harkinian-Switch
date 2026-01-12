@@ -42,4 +42,7 @@ static const ALIGN_ASSET(2) char Z2_LAST_LINK_room_05TLUT_003F10[] = dZ2_LAST_LI
 #define dZ2_LAST_LINK_room_05Tex_0036D0 "__OTR__scenes/nonmq/Z2_LAST_LINK_scene/Z2_LAST_LINK_room_05Tex_0036D0"
 static const ALIGN_ASSET(2) char Z2_LAST_LINK_room_05Tex_0036D0[] = dZ2_LAST_LINK_room_05Tex_0036D0;
 
+#define dZ2_LAST_LINK_room_05DL_0016A0 "__OTR__scenes/nonmq/Z2_LAST_LINK_scene/Z2_LAST_LINK_room_05DL_0016A0"
+static const ALIGN_ASSET(2) char Z2_LAST_LINK_room_05DL_0016A0[] = dZ2_LAST_LINK_room_05DL_0016A0;
+
 #endif // Z2_LAST_LINK_Z2_LAST_LINK_ROOM_05_H

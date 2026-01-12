@@ -1,5 +1,5 @@
 #include "ActorBehavior.h"
-#include "public/bridge/consolevariablebridge.h"
+#include <libultraship/bridge/consolevariablebridge.h>
 #include "2s2h/GameInteractor/GameInteractor.h"
 #include "2s2h/ShipUtils.h"
 #include "2s2h/CustomMessage/CustomMessage.h"
@@ -59,5 +59,21 @@ void Rando::ActorBehavior::InitEnSshBehavior() {
     COND_ID_HOOK(ShouldActorInit, ACTOR_EN_SSH, IS_RANDO, [](Actor* actor, bool* should) {
         // Skip first dialog
         SET_WEEKEVENTREG(WEEKEVENTREG_TALKED_SWAMP_SPIDER_HOUSE_MAN);
+    });
+
+    // Use RO setting for tokens required
+    COND_VB_SHOULD(VB_HAVE_ALL_SKULLTULA_TOKENS, IS_RANDO, {
+        /*
+         * Note that the use case for determining whether to spawn the squatter in South Clock Town directly checks the
+         * skullTokenCount value with the Oceanside bitwise operation, rather than call Inventory_GetSkullTokenCount
+         * with a scene ID. Inventory_GetSkullTokenCount only specially checks for the Swamp Spider House scene, with
+         * Oceanside as the else. South Clock Town is not the Swamp Spider House, so it will still return the Oceanside
+         * token count as expected.
+         */
+        *should = Inventory_GetSkullTokenCount(gPlayState->sceneId) >= RANDO_SAVE_OPTIONS[RO_MINIMUM_SKULLTULA_TOKENS];
+    });
+
+    COND_VB_SHOULD(VB_NOT_HAVE_ALL_SKULLTULA_TOKENS, IS_RANDO, {
+        *should = Inventory_GetSkullTokenCount(gPlayState->sceneId) < RANDO_SAVE_OPTIONS[RO_MINIMUM_SKULLTULA_TOKENS];
     });
 }

@@ -1,4 +1,4 @@
-#include "public/bridge/consolevariablebridge.h"
+#include <libultraship/bridge/consolevariablebridge.h>
 #include "2s2h/BenGui/HudEditor.h"
 #include "2s2h/GameInteractor/GameInteractor.h"
 #include "2s2h/Enhancements/Enhancements.h"
@@ -58,11 +58,11 @@ void Draw3DSClock() {
 
     if ((R_TIME_SPEED != 0) &&
         ((gPlayState->msgCtx.msgMode == MSGMODE_NONE) ||
-         ((gPlayState->actorCtx.flags & ACTORCTX_FLAG_1) && !Play_InCsMode(gPlayState)) ||
+         ((gPlayState->actorCtx.flags & ACTORCTX_FLAG_TELESCOPE_ON) && !Play_InCsMode(gPlayState)) ||
          (gPlayState->msgCtx.msgMode == MSGMODE_NONE) ||
          ((gPlayState->msgCtx.currentTextId >= 0x100) && (gPlayState->msgCtx.currentTextId <= 0x200)) ||
          (gSaveContext.gameMode == GAMEMODE_END_CREDITS)) &&
-        !FrameAdvance_IsEnabled(&gPlayState->state) && !Environment_IsTimeStopped() && (gSaveContext.save.day <= 3)) {
+        !FrameAdvance_IsEnabled(gPlayState) && !Environment_IsTimeStopped() && (gSaveContext.save.day <= 3)) {
 
         if ((gPlayState->pauseCtx.state == PAUSE_STATE_OFF) &&
             (gPlayState->pauseCtx.debugEditor == DEBUG_EDITOR_NONE)) {
@@ -165,13 +165,12 @@ void Draw3DSClock() {
             OVERLAY_DISP = Gfx_DrawTexRectIA8(OVERLAY_DISP, (TexturePtr)gThreeDayClock3DSArrowTex, 8, 8, counterX - 4,
                                               posY + 4, 8, 8, 1 << 10, 1 << 10);
 
-            u16 curMinutes = (s32)TIME_TO_MINUTES_F(gSaveContext.save.time) % 60;
-            u16 curHours = (s32)TIME_TO_MINUTES_F(gSaveContext.save.time) / 60;
+            u16 curMinutes = (s32)TIME_TO_MINUTES_F(CURRENT_TIME) % 60;
+            u16 curHours = (s32)TIME_TO_MINUTES_F(CURRENT_TIME) / 60;
 
             // Final hours timer
             if ((CURRENT_DAY >= 4) ||
-                ((CURRENT_DAY == 3) && (((void)0, gSaveContext.save.time) >= (CLOCK_TIME(0, 0) + 5)) &&
-                 (((void)0, gSaveContext.save.time) < CLOCK_TIME(6, 0)))) {
+                ((CURRENT_DAY == 3) && (CURRENT_TIME >= (CLOCK_TIME(0, 0) + 5)) && (CURRENT_TIME < CLOCK_TIME(6, 0)))) {
 
                 // This all just gets the time to display in each number slot
                 s32 timeInSeconds = timeUntilCrash % 60;
@@ -241,7 +240,7 @@ void Draw3DSClock() {
 
                 // Draw the background box
                 if (gSaveContext.save.timeSpeedOffset == -2) {
-                    u16 pulseTime = ((s32)TIME_TO_SECONDS_F(gSaveContext.save.time) % 120);
+                    u16 pulseTime = ((s32)TIME_TO_SECONDS_F(CURRENT_TIME) % 120);
                     u16 pulse;
                     if (pulseTime < 60) {
                         pulse = (pulseTime * 255) / 60;

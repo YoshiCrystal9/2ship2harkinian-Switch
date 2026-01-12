@@ -9,8 +9,38 @@ extern "C" {
 #include "alignment.h"
 #include "PR/os.h"
 #include "z64actor.h"
+#include "z64interface.h"
+#include "z64item.h"
+#include "z64light.h"
+#include "face_change.h"
 
 struct Player;
+struct PlayState;
+
+#define PLAYER_GET_BG_CAM_INDEX(thisx) ((thisx)->params & 0xFF)
+#define PLAYER_GET_START_MODE(thisx) (((thisx)->params & 0xF00) >> 8)
+
+typedef enum PlayerStartMode {
+    /*  0x0 */ PLAYER_START_MODE_NOTHING, // Update is empty and draw function is NULL, nothing occurs. Useful in cutscenes, for example.
+    /*  0x1 */ PLAYER_START_MODE_TIME_TRAVEL, // OoT Leftover. Arriving from time travel. Automatically adjusts by age.
+    /*  0x2 */ PLAYER_START_MODE_BLUE_WARP, // Arriving from a blue warp.
+    /*  0x3 */ PLAYER_START_MODE_DOOR, // Unused. Use a door immediately if one is nearby. If no door is in usable range, a softlock occurs.
+    /*  0x4 */ PLAYER_START_MODE_GROTTO, // Arriving from a grotto, launched upward from the ground.
+    /*  0x5 */ PLAYER_START_MODE_WARP_SONG, // OoT Leftover. Arriving from a warp song.
+    /*  0x6 */ PLAYER_START_MODE_OWL, // Arriving from an Owl Save or Song of Soaring (both overworld and dungeon warps).
+    /*  0x7 */ PLAYER_START_MODE_KNOCKED_OVER, // Knocked over on the ground and flashing red.
+    /*  0x8 */ PLAYER_START_MODE_8,
+    /*  0x9 */ PLAYER_START_MODE_9,
+    /*  0xA */ PLAYER_START_MODE_A,
+    /*  0xB */ PLAYER_START_MODE_B,
+    /*  0xC */ PLAYER_START_MODE_TELESCOPE,
+    /*  0xD */ PLAYER_START_MODE_D,
+    /*  0xE */ PLAYER_START_MODE_E,
+    /*  0xF */ PLAYER_START_MODE_F,
+    /* 0x10 */ PLAYER_START_MODE_MAX // Note: By default, this param has 4 bits allocated. The max value is 16.
+} PlayerStartMode;
+
+#define PLAYER_PARAMS(startBgCamIndex, startMode) ((startBgCamIndex & 0xFF) | ((startMode & 0xF) << 8))
 
 typedef enum PlayerShield {
     /* 0 */ PLAYER_SHIELD_NONE,
@@ -56,6 +86,12 @@ typedef enum {
     /* 4 */ PLAYER_ENV_HAZARD_UNDERWATER_FREE
 } PlayerEnvHazard;
 
+typedef enum PlayerIdleType {
+    /* -0x1 */ PLAYER_IDLE_CRIT_HEALTH = -1,
+    /*  0x0 */ PLAYER_IDLE_DEFAULT,
+    /*  0x1 */ PLAYER_IDLE_FIDGET
+} PlayerIdleType;
+
 /*
  * Current known usages for PLAYER_IA_MINUS1:
  *  1. With TalkExchange requests, used to continue a current conversation after a textbox is closed
@@ -64,7 +100,7 @@ typedef enum {
  */
 
 typedef enum PlayerItemAction {
-    /*   -1 */ PLAYER_IA_MINUS1 = -1, // TODO: determine usages with more player docs, possibly split into seperate values (see known usages above)
+    /*   -1 */ PLAYER_IA_MINUS1 = -1, // TODO: determine usages with more player docs, possibly split into separate values (see known usages above)
     /* 0x00 */ PLAYER_IA_NONE,
     /* 0x01 */ PLAYER_IA_LAST_USED,
     /* 0x02 */ PLAYER_IA_FISHING_ROD,
@@ -74,7 +110,7 @@ typedef enum PlayerItemAction {
     /* 0x05 */ PLAYER_IA_SWORD_GILDED,
     /* 0x06 */ PLAYER_IA_SWORD_TWO_HANDED,
     /* 0x07 */ PLAYER_IA_DEKU_STICK,
-    /* 0x08 */ PLAYER_IA_ZORA_FINS,
+    /* 0x08 */ PLAYER_IA_ZORA_BOOMERANG,
     /* 0x09 */ PLAYER_IA_BOW,
     /* 0x0A */ PLAYER_IA_BOW_FIRE,
     /* 0x0B */ PLAYER_IA_BOW_ICE,
@@ -178,7 +214,7 @@ typedef enum PlayerMeleeWeapon {
     /* 3 */ PLAYER_MELEEWEAPON_SWORD_GILDED = GET_MELEE_WEAPON_FROM_IA(PLAYER_IA_SWORD_GILDED),
     /* 4 */ PLAYER_MELEEWEAPON_SWORD_TWO_HANDED = GET_MELEE_WEAPON_FROM_IA(PLAYER_IA_SWORD_TWO_HANDED),
     /* 5 */ PLAYER_MELEEWEAPON_DEKU_STICK = GET_MELEE_WEAPON_FROM_IA(PLAYER_IA_DEKU_STICK),
-    /* 6 */ PLAYER_MELEEWEAPON_ZORA_FINS = GET_MELEE_WEAPON_FROM_IA(PLAYER_IA_ZORA_FINS),
+    /* 6 */ PLAYER_MELEEWEAPON_ZORA_BOOMERANG = GET_MELEE_WEAPON_FROM_IA(PLAYER_IA_ZORA_BOOMERANG),
     /* 7 */ PLAYER_MELEEWEAPON_MAX
 } PlayerMeleeWeapon;
 
@@ -322,6 +358,13 @@ typedef enum PlayerDoorType {
     /*  5 */ PLAYER_DOORTYPE_PROXIMITY
 } PlayerDoorType;
 
+// Some player animations are played at this reduced speed, for reasons yet unclear.
+// Perhaps to compress animation data?
+// This is called "adjusted" for now.
+// z_en_horse also has many instances of this adjusted speed
+#define PLAYER_ANIM_ADJUSTED_SPEED (2.0f / 3.0f)
+#define PLAYER_ANIM_NORMAL_SPEED   (3.0f / 3.0f)
+
 typedef enum PlayerAnimType {
     /* 0 */ PLAYER_ANIMTYPE_DEFAULT, // DEFAULT
     /* 1 */ PLAYER_ANIMTYPE_1,
@@ -333,50 +376,50 @@ typedef enum PlayerAnimType {
 } PlayerAnimType;
 
 typedef enum PlayerAnimGroup {
-    /*  0 */ PLAYER_ANIMGROUP_0, // STANDING_IDLE
-    /*  1 */ PLAYER_ANIMGROUP_1, // WALKING
-    /*  2 */ PLAYER_ANIMGROUP_2, // RUNNING
-    /*  3 */ PLAYER_ANIMGROUP_3,
-    /*  4 */ PLAYER_ANIMGROUP_4,
-    /*  5 */ PLAYER_ANIMGROUP_5, // Z-Targeting ?
-    /*  6 */ PLAYER_ANIMGROUP_6, // Start or finishing some animation
-    /*  7 */ PLAYER_ANIMGROUP_7, // DRAW_MELEE_WEAPON
-    /*  8 */ PLAYER_ANIMGROUP_8, // OPEN_DOOR_LEFT_FIERCE_DEITY
-    /*  9 */ PLAYER_ANIMGROUP_9, // OPEN_DOOR_LEFT_HUMAN
-    /* 10 */ PLAYER_ANIMGROUP_10, // OPEN_DOOR_RIGHT_FIERCE_DEITY
-    /* 11 */ PLAYER_ANIMGROUP_11, // OPEN_DOOR_RIGHT_HUMAN
-    /* 12 */ PLAYER_ANIMGROUP_12, // GRABBING
-    /* 13 */ PLAYER_ANIMGROUP_13, // FALLING/LANDING?
-    /* 14 */ PLAYER_ANIMGROUP_14, // landing from short distances?
-    /* 15 */ PLAYER_ANIMGROUP_15, // ROLLING
-    /* 16 */ PLAYER_ANIMGROUP_16, // BONK/BONKING
-    /* 17 */ PLAYER_ANIMGROUP_17,
-    /* 18 */ PLAYER_ANIMGROUP_18,
-    /* 19 */ PLAYER_ANIMGROUP_19, // START_SHIELDING
-    /* 20 */ PLAYER_ANIMGROUP_20, // SHIELDING
-    /* 21 */ PLAYER_ANIMGROUP_21, // STOP_SHIELDING/END_SHIELDING
-    /* 22 */ PLAYER_ANIMGROUP_22, // SLOW_SIDE_WALK?
-    /* 23 */ PLAYER_ANIMGROUP_23, // SIDE_WALK
-    /* 24 */ PLAYER_ANIMGROUP_24, // SIDE_WALK_RIGHT
-    /* 25 */ PLAYER_ANIMGROUP_25,
-    /* 26 */ PLAYER_ANIMGROUP_26,
-    /* 27 */ PLAYER_ANIMGROUP_27,
-    /* 28 */ PLAYER_ANIMGROUP_28, // THROWING
-    /* 29 */ PLAYER_ANIMGROUP_29, // PUT_DOWN_OBJECT?
-    /* 30 */ PLAYER_ANIMGROUP_30, // back walking slow?
-    /* 31 */ PLAYER_ANIMGROUP_31,
-    /* 32 */ PLAYER_ANIMGROUP_32,
-    /* 33 */ PLAYER_ANIMGROUP_33,
-    /* 34 */ PLAYER_ANIMGROUP_34, // PULLING_START
-    /* 35 */ PLAYER_ANIMGROUP_35, // PULLING
-    /* 36 */ PLAYER_ANIMGROUP_36, // PULLING_END
-    /* 37 */ PLAYER_ANIMGROUP_37, // climbing from a ledge?
-    /* 38 */ PLAYER_ANIMGROUP_38, // ledge
-    /* 39 */ PLAYER_ANIMGROUP_39, // ledge
-    /* 40 */ PLAYER_ANIMGROUP_40, // climbing from a ledge
-    /* 41 */ PLAYER_ANIMGROUP_41,
-    /* 42 */ PLAYER_ANIMGROUP_42,
-    /* 43 */ PLAYER_ANIMGROUP_43,
+    /*  0 */ PLAYER_ANIMGROUP_wait, // STANDING_IDLE
+    /*  1 */ PLAYER_ANIMGROUP_walk, // WALKING
+    /*  2 */ PLAYER_ANIMGROUP_run, // RUNNING
+    /*  3 */ PLAYER_ANIMGROUP_damage_run,
+    /*  4 */ PLAYER_ANIMGROUP_waitL,
+    /*  5 */ PLAYER_ANIMGROUP_waitR, // Z-Targeting ?
+    /*  6 */ PLAYER_ANIMGROUP_wait2waitR, // Start or finishing some animation
+    /*  7 */ PLAYER_ANIMGROUP_normal2fighter, // DRAW_MELEE_WEAPON
+    /*  8 */ PLAYER_ANIMGROUP_doorA_free, // OPEN_DOOR_LEFT_FIERCE_DEITY
+    /*  9 */ PLAYER_ANIMGROUP_doorA, // OPEN_DOOR_LEFT_HUMAN
+    /* 10 */ PLAYER_ANIMGROUP_doorB_free, // OPEN_DOOR_RIGHT_FIERCE_DEITY
+    /* 11 */ PLAYER_ANIMGROUP_doorB, // OPEN_DOOR_RIGHT_HUMAN
+    /* 12 */ PLAYER_ANIMGROUP_carryB, // GRABBING
+    /* 13 */ PLAYER_ANIMGROUP_landing, // FALLING/LANDING?
+    /* 14 */ PLAYER_ANIMGROUP_short_landing, // landing from short distances?
+    /* 15 */ PLAYER_ANIMGROUP_landing_roll, // ROLLING
+    /* 16 */ PLAYER_ANIMGROUP_hip_down, // BONK/BONKING
+    /* 17 */ PLAYER_ANIMGROUP_walk_endL,
+    /* 18 */ PLAYER_ANIMGROUP_walk_endR,
+    /* 19 */ PLAYER_ANIMGROUP_defense, // START_SHIELDING
+    /* 20 */ PLAYER_ANIMGROUP_defense_wait, // SHIELDING
+    /* 21 */ PLAYER_ANIMGROUP_defense_end, // STOP_SHIELDING/END_SHIELDING
+    /* 22 */ PLAYER_ANIMGROUP_side_walk, // SLOW_SIDE_WALK?
+    /* 23 */ PLAYER_ANIMGROUP_side_walkL, // SIDE_WALK
+    /* 24 */ PLAYER_ANIMGROUP_side_walkR, // SIDE_WALK_RIGHT
+    /* 25 */ PLAYER_ANIMGROUP_45_turn,
+    /* 26 */ PLAYER_ANIMGROUP_waitL2wait,
+    /* 27 */ PLAYER_ANIMGROUP_waitR2wait,
+    /* 28 */ PLAYER_ANIMGROUP_throw, // THROWING
+    /* 29 */ PLAYER_ANIMGROUP_put, // PUT_DOWN_OBJECT?
+    /* 30 */ PLAYER_ANIMGROUP_back_walk, // back walking slow?
+    /* 31 */ PLAYER_ANIMGROUP_check,
+    /* 32 */ PLAYER_ANIMGROUP_check_wait,
+    /* 33 */ PLAYER_ANIMGROUP_check_end,
+    /* 34 */ PLAYER_ANIMGROUP_pull_start, // PULLING_START
+    /* 35 */ PLAYER_ANIMGROUP_pulling, // PULLING
+    /* 36 */ PLAYER_ANIMGROUP_pull_end, // PULLING_END
+    /* 37 */ PLAYER_ANIMGROUP_fall_up, // climbing from a ledge?
+    /* 38 */ PLAYER_ANIMGROUP_jump_climb_hold, // ledge
+    /* 39 */ PLAYER_ANIMGROUP_jump_climb_wait, // ledge
+    /* 40 */ PLAYER_ANIMGROUP_jump_climb_up, // climbing from a ledge
+    /* 41 */ PLAYER_ANIMGROUP_down_slope_slip_end,
+    /* 42 */ PLAYER_ANIMGROUP_up_slope_slip_end,
+    /* 43 */ PLAYER_ANIMGROUP_nwait,
     /* 44 */ PLAYER_ANIMGROUP_MAX
 } PlayerAnimGroup;
 
@@ -430,48 +473,54 @@ typedef enum PlayerModelGroup {
     /* 11 */ PLAYER_MODELGROUP_INSTRUMENT,
     /* 12 */ PLAYER_MODELGROUP_BOTTLE,
     /* 13 */ PLAYER_MODELGROUP_13,
-    /* 14 */ PLAYER_MODELGROUP_ZORA_FINS,
+    /* 14 */ PLAYER_MODELGROUP_ZORA_BOOMERANG,
     /* 15 */ PLAYER_MODELGROUP_MAX
 } PlayerModelGroup;
 
-typedef enum PlayerEyeIndex {
+typedef struct PlayerFaceIndices {
+    /* 0x0 */ u8 eyeIndex;
+    /* 0x1 */ u8 mouthIndex;
+} PlayerFaceIndices; // size = 0x2
+
+typedef enum PlayerEyes {
     /* 0 */ PLAYER_EYES_OPEN,
     /* 1 */ PLAYER_EYES_HALF,
     /* 2 */ PLAYER_EYES_CLOSED,
-    /* 3 */ PLAYER_EYES_ROLL_RIGHT,
-    /* 4 */ PLAYER_EYES_ROLL_LEFT,
-    /* 5 */ PLAYER_EYES_ROLL_UP,
-    /* 6 */ PLAYER_EYES_ROLL_DOWN,
-    /* 7 */ PLAYER_EYES_7,
+    /* 3 */ PLAYER_EYES_RIGHT,
+    /* 4 */ PLAYER_EYES_LEFT,
+    /* 5 */ PLAYER_EYES_UP,
+    /* 6 */ PLAYER_EYES_DOWN,
+    /* 7 */ PLAYER_EYES_WINCING, // For Goron, this is a surprised eye
     /* 8 */ PLAYER_EYES_MAX
-} PlayerEyeIndex;
+} PlayerEyes;
 
-typedef enum PlayerMouthIndex {
+typedef enum PlayerMouth {
     /* 0 */ PLAYER_MOUTH_CLOSED,
-    /* 1 */ PLAYER_MOUTH_TEETH,
-    /* 2 */ PLAYER_MOUTH_ANGRY,
-    /* 3 */ PLAYER_MOUTH_HAPPY,
+    /* 1 */ PLAYER_MOUTH_HALF,
+    /* 2 */ PLAYER_MOUTH_OPEN,
+    /* 3 */ PLAYER_MOUTH_SMILE,
     /* 4 */ PLAYER_MOUTH_MAX
-} PlayerMouthIndex;
+} PlayerMouth;
 
-typedef enum PlayerFacialExpression {
-    /*  0 */ PLAYER_FACE_0,
-    /*  1 */ PLAYER_FACE_1,
-    /*  2 */ PLAYER_FACE_2,
-    /*  3 */ PLAYER_FACE_3,
-    /*  4 */ PLAYER_FACE_4,
-    /*  5 */ PLAYER_FACE_5,
-    /*  6 */ PLAYER_FACE_6,
-    /*  7 */ PLAYER_FACE_7,
-    /*  8 */ PLAYER_FACE_8,
-    /*  9 */ PLAYER_FACE_9,
-    /* 10 */ PLAYER_FACE_10,
-    /* 11 */ PLAYER_FACE_11,
-    /* 12 */ PLAYER_FACE_12,
-    /* 13 */ PLAYER_FACE_13,
-    /* 14 */ PLAYER_FACE_14,
-    /* 15 */ PLAYER_FACE_15
-} PlayerFacialExpression;
+typedef enum PlayerFace {
+    /*  0 */ PLAYER_FACE_NEUTRAL,
+    /*  1 */ PLAYER_FACE_NEUTRAL_BLINKING_HALF,
+    /*  2 */ PLAYER_FACE_NEUTRAL_BLINKING_CLOSED,
+    /*  3 */ PLAYER_FACE_NEUTRAL_2,
+    /*  4 */ PLAYER_FACE_NEUTRAL_BLINKING_HALF_2,
+    /*  5 */ PLAYER_FACE_NEUTRAL_BLINKING_CLOSED_2,
+    /*  6 */ PLAYER_FACE_LOOK_LEFT,
+    /*  7 */ PLAYER_FACE_SURPRISED,
+    /*  8 */ PLAYER_FACE_HURT,
+    /*  9 */ PLAYER_FACE_GASP,
+    /* 10 */ PLAYER_FACE_LOOK_RIGHT,
+    /* 11 */ PLAYER_FACE_LOOK_LEFT_2,
+    /* 12 */ PLAYER_FACE_EYES_CLOSED_MOUTH_OPEN,
+    /* 13 */ PLAYER_FACE_OPENING,
+    /* 14 */ PLAYER_FACE_EYES_AND_MOUTH_OPEN,
+    /* 15 */ PLAYER_FACE_SMILE,
+    /* 16 */ PLAYER_FACE_MAX
+} PlayerFace;
 
 typedef enum PlayerLimb {
     /* 0x00 */ PLAYER_LIMB_NONE,
@@ -546,6 +595,17 @@ typedef enum PlayerLedgeClimbType {
 
 #define LEDGE_DIST_MAX 399.96002f
 
+typedef enum PlayerStickDirection {
+    /* -1 */ PLAYER_STICK_DIR_NONE = -1,
+    /*  0 */ PLAYER_STICK_DIR_FORWARD,
+    /*  1 */ PLAYER_STICK_DIR_LEFT,
+    /*  2 */ PLAYER_STICK_DIR_BACKWARD,
+    /*  3 */ PLAYER_STICK_DIR_RIGHT
+} PlayerStickDirection;
+
+// TODO: less dumb name
+#define SFX_VOICE_BANK_SIZE 0x20
+
 typedef struct PlayerAgeProperties {
     /* 0x00 */ f32 ceilingCheckHeight;
     /* 0x04 */ f32 shadowScale;
@@ -573,8 +633,8 @@ typedef struct PlayerAgeProperties {
     /* 0x98 */ f32 unk_98;
     /* 0x9C */ f32 unk_9C;
     /* 0xA0 */ PlayerAnimationHeader* openChestAnim;
-    /* 0xA4 */ PlayerAnimationHeader* unk_A4; // OoT leftovers to interact with the Master Sword
-    /* 0xA8 */ PlayerAnimationHeader* unk_A8; // OoT leftovers to interact with the Master Sword
+    /* 0xA4 */ PlayerAnimationHeader* timeTravelStartAnim; // OoT leftovers to interact with the Master Sword
+    /* 0xA8 */ PlayerAnimationHeader* timeTravelEndAnim; // OoT leftovers to interact with the Master Sword
     /* 0xAC */ PlayerAnimationHeader* unk_AC;
     /* 0xB0 */ PlayerAnimationHeader* unk_B0;
     /* 0xB4 */ PlayerAnimationHeader* unk_B4[4];
@@ -603,13 +663,11 @@ typedef struct {
     /* 0x04 */ struct_80122D44_arg1_unk_04 unk_04[4];
 } struct_80122D44_arg1; // size >= 0x114
 
-typedef struct struct_80122744_arg1 {
-    /* 0x0 */ s8 unk_00;
-    /* 0x1 */ s8 unk_01;
-    /* 0x2 */ s8 unk_02;
-    /* 0x3 */ s8 unk_03;
-    /* 0x4 */ Vec3s* unk_04;
-} struct_80122744_arg1; // size = 0x8
+typedef struct PlayerOverrideInputEntry {
+    /* 0x0 */ s8 numPoints;
+    /* 0x1 */ s8 curPoint;
+    /* 0x4 */ Vec3s* targetPosList;
+} PlayerOverrideInputEntry; // size = 0x8
 
 typedef enum PlayerCsAction {
     /*   -1 */ PLAYER_CSACTION_NEG1 = -1, // Specific to Kafei, any negative number works
@@ -865,30 +923,31 @@ typedef enum PlayerCueId {
 #define PLAYER_STATE1_10         (1 << 4)
 // 
 #define PLAYER_STATE1_20         (1 << 5)
-// 
-#define PLAYER_STATE1_40         (1 << 6)
-// 
-#define PLAYER_STATE1_80         (1 << 7)
+// Currently talking to an actor. This includes item exchanges.
+#define PLAYER_STATE1_TALKING (1 << 6)
+// Player has died. Note that this gets set when the death cutscene has started, after landing from the air.
+// This also gets set when either deku/zora forms touches lava floor, or goron form enters water and the scene resets.
+#define PLAYER_STATE1_DEAD         (1 << 7)
 // 
 #define PLAYER_STATE1_100        (1 << 8)
 // 
 #define PLAYER_STATE1_200        (1 << 9)
 // 
 #define PLAYER_STATE1_400        (1 << 10)
-// 
-#define PLAYER_STATE1_800        (1 << 11)
-// charging spin attack
-#define PLAYER_STATE1_1000       (1 << 12)
+// Currently carrying an actor
+#define PLAYER_STATE1_CARRYING_ACTOR (1 << 11)
+// Currently charging a spin attack (by holding down the B button)
+#define PLAYER_STATE1_CHARGING_SPIN_ATTACK (1 << 12)
 // 
 #define PLAYER_STATE1_2000       (1 << 13)
 // 
 #define PLAYER_STATE1_4000       (1 << 14)
-// 
-#define PLAYER_STATE1_8000       (1 << 15)
-// 
-#define PLAYER_STATE1_10000      (1 << 16)
-// 
-#define PLAYER_STATE1_20000      (1 << 17)
+// Either lock-on or parallel is active. This flag is never checked for and is practically unused.
+#define PLAYER_STATE1_Z_TARGETING       (1 << 15)
+// Currently focusing on a friendly actor. Includes friendly lock-on, talking, and more. Usually does not include hostile actor lock-on, see `PLAYER_STATE3_HOSTILE_LOCK_ON`.
+#define PLAYER_STATE1_FRIENDLY_ACTOR_FOCUS      (1 << 16)
+// "Parallel" mode, Z-Target without an actor lock-on
+#define PLAYER_STATE1_PARALLEL   (1 << 17)
 // 
 #define PLAYER_STATE1_40000      (1 << 18)
 // 
@@ -901,10 +960,10 @@ typedef enum PlayerCueId {
 #define PLAYER_STATE1_400000     (1 << 22)
 // 
 #define PLAYER_STATE1_800000     (1 << 23)
-// 
-#define PLAYER_STATE1_1000000    (1 << 24)
-// 
-#define PLAYER_STATE1_2000000    (1 << 25)
+// Currently using the zora boomerang. This includes all phases (aiming, throwing, and catching).
+#define PLAYER_STATE1_USING_ZORA_BOOMERANG (1 << 24)
+// Zora boomerang has been thrown and is flying in the air
+#define PLAYER_STATE1_ZORA_BOOMERANG_THROWN (1 << 25)
 // 
 #define PLAYER_STATE1_4000000    (1 << 26)
 // Swimming?
@@ -913,16 +972,16 @@ typedef enum PlayerCueId {
 #define PLAYER_STATE1_10000000   (1 << 28)
 // Time is stopped but Link & NPC animations continue
 #define PLAYER_STATE1_20000000   (1 << 29)
-// 
-#define PLAYER_STATE1_40000000   (1 << 30)
+// Lock-on was released automatically, for example by leaving the lock-on leash range
+#define PLAYER_STATE1_LOCK_ON_FORCED_TO_RELEASE   (1 << 30)
 // Related to exit a grotto
 #define PLAYER_STATE1_80000000   (1 << 31)
 
 
 // 
 #define PLAYER_STATE2_1          (1 << 0)
-// 
-#define PLAYER_STATE2_2          (1 << 1)
+// Can accept a talk offer. "Speak" or "Check" is shown on the A button.
+#define PLAYER_STATE2_CAN_ACCEPT_TALK_OFFER          (1 << 1)
 // 
 #define PLAYER_STATE2_4          (1 << 2)
 // 
@@ -945,8 +1004,8 @@ typedef enum PlayerCueId {
 #define PLAYER_STATE2_800        (1 << 11)
 // 
 #define PLAYER_STATE2_1000       (1 << 12)
-// 
-#define PLAYER_STATE2_2000       (1 << 13)
+// Actor lock-on is active, specifically with Switch Targeting. Hold Targeting checks the state of the Z button instead of this flag.
+#define PLAYER_STATE2_LOCK_ON_WITH_SWITCH       (1 << 13)
 // 
 #define PLAYER_STATE2_4000       (1 << 14)
 // 
@@ -973,10 +1032,10 @@ typedef enum PlayerCueId {
 #define PLAYER_STATE2_2000000    (1 << 25)
 // 
 #define PLAYER_STATE2_4000000    (1 << 26)
-// 
-#define PLAYER_STATE2_8000000    (1 << 27)
-// 
-#define PLAYER_STATE2_10000000   (1 << 28)
+// Playing the ocarina
+#define PLAYER_STATE2_USING_OCARINA  (1 << 27)
+// Playing a fidget idle animation (under typical circumstances, see `Player_ChooseNextIdleAnim` for more info)
+#define PLAYER_STATE2_IDLE_FIDGET   (1 << 28)
 // Disable drawing player
 #define PLAYER_STATE2_20000000   (1 << 29)
 // Lunge: small forward boost at the end of certain attack animations
@@ -999,8 +1058,8 @@ typedef enum PlayerCueId {
 #define PLAYER_STATE3_20         (1 << 5)
 // 
 #define PLAYER_STATE3_40         (1 << 6)
-// 
-#define PLAYER_STATE3_80         (1 << 7)
+// Flying in the air with the hookshot as it pulls Player toward its destination
+#define PLAYER_STATE3_FLYING_WITH_HOOKSHOT (1 << 7)
 // Deku flower dive
 #define PLAYER_STATE3_100        (1 << 8)
 // 
@@ -1031,8 +1090,8 @@ typedef enum PlayerCueId {
 #define PLAYER_STATE3_200000     (1 << 21)
 // 
 #define PLAYER_STATE3_400000     (1 << 22)
-// 
-#define PLAYER_STATE3_800000     (1 << 23)
+// A Zora boomerang has been caught this frame
+#define PLAYER_STATE3_ZORA_BOOMERANG_CAUGHT (1 << 23)
 // 
 #define PLAYER_STATE3_1000000    (1 << 24)
 // 
@@ -1045,35 +1104,10 @@ typedef enum PlayerCueId {
 #define PLAYER_STATE3_10000000   (1 << 28)
 // breman mask march?
 #define PLAYER_STATE3_20000000   (1 << 29)
-// 
+// Item change process has begun
 #define PLAYER_STATE3_START_CHANGING_HELD_ITEM   (1 << 30)
-// TARGETING_HOSTILE?
-#define PLAYER_STATE3_80000000   (1 << 31)
-
-
-#define PLAYER_GET_BG_CAM_INDEX(thisx) ((thisx)->params & 0xFF)
-#define PLAYER_GET_INITMODE(thisx) (((thisx)->params & 0xF00) >> 8)
-
-typedef enum PlayerInitMode {
-    /* 0x0 */ PLAYER_INITMODE_0,
-    /* 0x1 */ PLAYER_INITMODE_1, // Spawning after pulling/putting-back Master sword // OoT leftover
-    /* 0x2 */ PLAYER_INITMODE_2,
-    /* 0x3 */ PLAYER_INITMODE_3,
-    /* 0x4 */ PLAYER_INITMODE_4,
-    /* 0x5 */ PLAYER_INITMODE_5,
-    /* 0x6 */ PLAYER_INITMODE_6,
-    /* 0x7 */ PLAYER_INITMODE_7,
-    /* 0x8 */ PLAYER_INITMODE_8,
-    /* 0x9 */ PLAYER_INITMODE_9,
-    /* 0xA */ PLAYER_INITMODE_A,
-    /* 0xB */ PLAYER_INITMODE_B,
-    /* 0xC */ PLAYER_INITMODE_TELESCOPE,
-    /* 0xD */ PLAYER_INITMODE_D,
-    /* 0xE */ PLAYER_INITMODE_E,
-    /* 0xF */ PLAYER_INITMODE_F
-} PlayerInitMode;
-
-#define PLAYER_PARAMS(startBgCamIndex, initMode) ((startBgCamIndex & 0xFF) | ((initMode & 0xF) << 8))
+// Currently locked onto a hostile actor. Triggers a "battle" variant of many actions.
+#define PLAYER_STATE3_HOSTILE_LOCK_ON   (1 << 31)
 
 typedef enum PlayerUnkAA5 {
     /* 0 */ PLAYER_UNKAA5_0,
@@ -1086,8 +1120,17 @@ typedef enum PlayerUnkAA5 {
 
 typedef void (*PlayerActionFunc)(struct Player* this, struct PlayState* play);
 typedef s32 (*PlayerUpperActionFunc)(struct Player* this, struct PlayState* play);
-typedef void (*PlayerFuncD58)(struct PlayState* play, struct Player* this);
+typedef void (*AfterPutAwayFunc)(struct PlayState* play, struct Player* this);
 
+#define UNKAA6_ROT_FOCUS_X (1 << 0)
+#define UNKAA6_ROT_FOCUS_Y (1 << 1)
+#define UNKAA6_ROT_FOCUS_Z (1 << 2)
+#define UNKAA6_ROT_HEAD_X (1 << 3)
+#define UNKAA6_ROT_HEAD_Y (1 << 4)
+#define UNKAA6_ROT_HEAD_Z (1 << 5)
+#define UNKAA6_ROT_UPPER_X (1 << 6)
+#define UNKAA6_ROT_UPPER_Y (1 << 7)
+#define UNKAA6_ROT_UPPER_Z (1 << 8)
 
 typedef struct Player {
     /* 0x000 */ Actor actor;
@@ -1115,7 +1158,7 @@ typedef struct Player {
     /* 0x164 */ Gfx** waistDLists;
     /* 0x168 */ UNK_TYPE1 unk_168[0x4C];
     /* 0x1B4 */ s16 unk_1B4;
-    /* 0x1B6 */ char unk_1B6[2];
+    /* 0x1B6 */ UNK_TYPE1 unk_1B6[0x2];
     /* 0x1B8 */ u8 giObjectLoading;
     /* 0x1BC */ DmaRequest giObjectDmaRequest;
     /* 0x1DC */ OSMesgQueue giObjectLoadQueue;
@@ -1132,7 +1175,7 @@ typedef struct Player {
     /* 0x2C8 */ SkelAnime unk_2C8;
     /* 0x30C */ Vec3s jointTable[5];
     /* 0x32A */ Vec3s morphTable[5];
-    /* 0x348 */ BlinkInfo blinkInfo;
+    /* 0x348 */ FaceChange faceChange;
     /* 0x34C */ Actor* heldActor;
     /* 0x350 */ PosRot leftHandWorld;
     /* 0x364 */ Actor* rightHandActor;
@@ -1161,7 +1204,6 @@ typedef struct Player {
                     s16 doorBgCamIndex; // `BgCamIndex` used during a sliding door and spiral staircase cutscenes
                 } cv; // "Cutscene Variable": context dependent variable that has different meanings depending on what function is called
     /* 0x3BC */ s16 subCamId;
-    /* 0x3BE */ char unk_3BE[2];
     /* 0x3C0 */ Vec3f unk_3C0;
     /* 0x3CC */ s16 unk_3CC;
     /* 0x3CE */ s8 unk_3CE;
@@ -1174,9 +1216,9 @@ typedef struct Player {
     /* 0x564 */ ColliderQuad meleeWeaponQuads[2];
     /* 0x664 */ ColliderQuad shieldQuad;
     /* 0x6E4 */ ColliderCylinder shieldCylinder;
-    /* 0x730 */ Actor* lockOnActor; // Z/L-Targeted actor
-    /* 0x734 */ char unk_734[4];
-    /* 0x738 */ s32 unk_738;
+    /* 0x730 */ Actor* focusActor; // Actor that Player and the camera are looking at; Used for lock-on, talking, and more
+    /* 0x734 */ UNK_TYPE1 unk_734[0x4];
+    /* 0x738 */ s32 zTargetActiveTimer; // Non-zero values indicate Z-Targeting should update; Values under 5 indicate lock-on is releasing
     /* 0x73C */ s32 meleeWeaponEffectIndex[3];
     /* 0x748 */ PlayerActionFunc actionFunc;
     /* 0x74C */ u8 jointTableBuffer[PLAYER_LIMB_BUF_SIZE];
@@ -1188,23 +1230,23 @@ typedef struct Player {
     /* 0xA6C */ u32 stateFlags1;
     /* 0xA70 */ u32 stateFlags2;
     /* 0xA74 */ u32 stateFlags3;
-    /* 0xA78 */ Actor* unk_A78;
-    /* 0xA7C */ Actor* boomerangActor;
+    /* 0xA78 */ Actor* autoLockOnActor; // Actor that is locked onto automatically without player input; see `Player_SetAutoLockOnActor`
+    /* 0xA7C */ Actor* zoraBoomerangActor; // Defaults to the left zora boomerang, but will switch to right if only the left boomerang is caught.
     /* 0xA80 */ Actor* tatlActor;
     /* 0xA84 */ s16 tatlTextId;
     /* 0xA86 */ s8 csId;
     /* 0xA87 */ s8 exchangeItemAction; // PlayerItemAction enum
     /* 0xA88 */ Actor* talkActor;
     /* 0xA8C */ f32 talkActorDistance;
-    /* 0xA90 */ Actor* unk_A90;
-    /* 0xA94 */ f32 unk_A94;
-    /* 0xA98 */ Actor* unk_A98;
+    /* 0xA90 */ Actor* ocarinaInteractionActor;
+    /* 0xA94 */ f32 ocarinaInteractionDistance;
+    /* 0xA98 */ UNK_TYPE1 unk_A98[0x4];
     /* 0xA9C */ f32 secretRumbleCharge; // builds per frame until discharges with a rumble request
     /* 0xAA0 */ f32 closestSecretDistSq; // Used to augment `secretRumbleCharge`. Cleared every frame
-    /* 0xAA4 */ s8 unk_AA4;
+    /* 0xAA4 */ s8 idleType;
     /* 0xAA5 */ u8 unk_AA5; // PlayerUnkAA5 enum
-    /* 0xAA6 */ u16 unk_AA6; // flags of some kind
-    /* 0xAA8 */ s16 unk_AA8;
+    /* 0xAA6 */ u16 unk_AA6_rotFlags; // See `UNKAA6_ROT_` macros. If its flag isn't set, a rot steps to 0.
+    /* 0xAA8 */ s16 upperLimbYawSecondary;
     /* 0xAAA */ s16 unk_AAA;
     /* 0xAAC */ Vec3s headLimbRot;
     /* 0xAB2 */ Vec3s upperLimbRot;
@@ -1215,23 +1257,29 @@ typedef struct Player {
     /* 0xAC8 */ f32 skelAnimeUpperBlendWeight;
     /* 0xACC */ s16 unk_ACC;
     /* 0xACE */ s8 unk_ACE;
-    /* 0xACF */ u8 putAwayCountdown; // Frames to wait before showing "Put Away" on A
-    /* 0xAD0 */ f32 linearVelocity;
-    /* 0xAD4 */ s16 currentYaw;
-    /* 0xAD6 */ s16 targetYaw;
+    /* 0xACF */ u8 putAwayCooldownTimer; // Frames to wait before showing "Put Away" on A
+    /* 0xAD0 */ f32 speedXZ; // Controls horizontal speed, used for `actor.speed`. Current or target value depending on context.
+    /* 0xAD4 */ s16 yaw; // General yaw value, used both for world and shape rotation. Current or target value depending on context.
+    /* 0xAD6 */ s16 parallelYaw; // yaw in "parallel" mode, Z-Target without an actor lock-on
     /* 0xAD8 */ u16 underwaterTimer;
     /* 0xADA */ s8 meleeWeaponAnimation;
     /* 0xADB */ s8 meleeWeaponState;
     /* 0xADC */ s8 unk_ADC;
     /* 0xADD */ s8 unk_ADD; // Some sort of combo counter
-    /* 0xADE */ u8 unk_ADE;
-    /* 0xADF */ s8 unk_ADF[4]; // Circular buffer used for testing for triggering a quickspin
-    /* 0xAE3 */ s8 unk_AE3[4]; // Circular buffer used for ?
-    /* 0xAE7 */ union { 
+    /* 0xADE */ u8 controlStickDataIndex; // cycles between 0 - 3. Used to index `controlStickSpinAngles` and `controlStickDirections`
+    /* 0xADF */ s8 controlStickSpinAngles[4]; // Stores a modified version of the control stick angle for the last 4 frames. Used for checking spins.
+    /* 0xAE3 */ s8 controlStickDirections[4]; // Stores the control stick direction (relative to shape yaw) for the last 4 frames. See `PlayerStickDirection`.
+    /* 0xAE7 */ union {
         s8 actionVar1;
+        s8 startedAnim; // Player_Action_TimeTravelEnd: Started playing the animation that was previously frozen
+        s8 facingUpSlope; // Player_Action_SlideOnSlope: Facing uphill when sliding on a slope
     } av1; // "Action Variable 1": context dependent variable that has different meanings depending on what action is currently running
-    /* 0xAE8 */ union { 
+    /* 0xAE8 */ union {
         s16 actionVar2;
+        s16 fallDamageStunTimer; // Player_Action_Idle: Prevents any movement and shakes model up and down quickly to indicate fall damage stun
+        s16 animDelayTimer; // Player_Action_TimeTravelEnd: Delays playing animation until finished counting down
+        s16 csDelayTimer; // Player_Action_WaitForCutscene: Number of frames to wait before responding to a cutscene
+        s16 playedLandingSfx; // Player_Action_BlueWarpArrive: Played sfx when landing on the ground
     } av2; // "Action Variable 2": context dependent variable that has different meanings depending on what action is currently running
     /* 0xAEC */ f32 unk_AEC;
     /* 0xAF0 */ union {
@@ -1254,18 +1302,18 @@ typedef struct Player {
     /* 0xB44 */ f32 unk_B44;
     /* 0xB48 */ f32 unk_B48;
     /* 0xB4C */ s16 unk_B4C;
-    /* 0xB4E */ s16 unk_B4E;
+    /* 0xB4E */ s16 turnRate; // Amount angle is changed every frame when turning in place
     /* 0xB50 */ f32 unk_B50;
     /* 0xB54 */ f32 yDistToLedge; // y distance to ground above an interact wall. LEDGE_DIST_MAX if no ground if found
     /* 0xB58 */ f32 distToInteractWall; // xyz distance to the interact wall
     /* 0xB5C */ u8 ledgeClimbType; // see PlayerLedgeClimbType enum
     /* 0xB5D */ u8 ledgeClimbDelayTimer;
-    /* 0xB5E */ u8 unk_B5E;
+    /* 0xB5E */ u8 textboxBtnCooldownTimer; // Prevents usage of A/B/C-up when counting down
     /* 0xB5F */ u8 unk_B5F;
     /* 0xB60 */ u16 blastMaskTimer;
     /* 0xB62 */ s16 unk_B62;
     /* 0xB64 */ u8 unk_B64;
-    /* 0xB65 */ u8 shockTimer;
+    /* 0xB65 */ u8 bodyShockTimer;
     /* 0xB66 */ u8 unk_B66;
     /* 0xB67 */ u8 remainingHopsCounter; // Deku hopping on water
     /* 0xB68 */ s16 fallStartHeight; // last truncated Y position before falling
@@ -1293,10 +1341,10 @@ typedef struct Player {
     /* 0xBEC */ Vec3f bodyPartsPos[PLAYER_BODYPART_MAX];
     /* 0xCC4 */ MtxF leftHandMf;
     /* 0xD04 */ MtxF shieldMf;
-    /* 0xD44 */ u8 isBurning;
-    /* 0xD45 */ u8 flameTimers[PLAYER_BODYPART_MAX]; // one flame per body part
+    /* 0xD44 */ u8 bodyIsBurning;
+    /* 0xD45 */ u8 bodyFlameTimers[PLAYER_BODYPART_MAX]; // one flame per body part
     /* 0xD57 */ u8 unk_D57;
-    /* 0xD58 */ PlayerFuncD58 unk_D58;
+    /* 0xD58 */ AfterPutAwayFunc afterPutAwayFunc; // See `Player_SetupWaitForPutAway` and `Player_Action_WaitForPutAway`
     /* 0xD5C */ s8 invincibilityTimer; // prevents damage when nonzero (positive = visible, counts towards zero each frame)
     /* 0xD5D */ u8 floorTypeTimer; // Unused remnant of OoT
     /* 0xD5E */ u8 floorProperty; // FloorProperty enum
@@ -1313,5 +1361,116 @@ typedef struct Player {
 }
 #undef this
 #endif
+
+// z_player_call.c functions
+
+void PlayerCall_Init(Actor* thisx, struct PlayState* play);
+void PlayerCall_Destroy(Actor* thisx, struct PlayState* play);
+void PlayerCall_Update(Actor* thisx, struct PlayState* play);
+void PlayerCall_Draw(Actor* thisx, struct PlayState* play);
+
+// z_actor.c functions
+
+f32 Player_GetHeight(Player* player);
+f32 Player_GetRunSpeedLimit(Player* player);
+bool func_800B7118(Player* player);
+bool func_800B7128(Player* player);
+bool func_800B715C(struct PlayState* play);
+void Player_SetCameraHorseSetting(struct PlayState* play, Player* player);
+void Player_MountHorse(struct PlayState* play, Player* player, Actor* horse);
+s32 Player_SetCsAction(struct PlayState* play, Actor* csActor, u8 csAction);
+s32 Player_SetCsActionWithHaltedActors(struct PlayState* play, Actor* csActor, u8 csAction);
+
+s32 Player_IsFacingActor(Actor* actor, s16 maxAngleDiff, struct PlayState* play);
+
+PlayerItemAction Player_GetExchangeItemAction(struct PlayState* play);
+
+void func_800B8D10(struct PlayState* play, Actor* actor, f32 arg2, s16 arg3, f32 arg4, s32 arg5, u32 arg6);
+void func_800B8D50(struct PlayState* play, Actor* actor, f32 arg2, s16 yaw, f32 arg4, u32 arg5);
+void func_800B8D98(struct PlayState* play, Actor* actor, f32 arg2, s16 arg3, f32 arg4);
+void func_800B8DD4(struct PlayState* play, Actor* actor, f32 arg2, s16 arg3, f32 arg4, u32 arg5);
+void func_800B8E1C(struct PlayState* play, Actor* actor, f32 arg2, s16 arg3, f32 arg4);
+void Player_PlaySfx(Player* player, u16 sfxId);
+
+// z_player_lib.c functions
+
+s32 func_801226E0(struct PlayState* play, s32 arg1);
+s32 Player_InitOverrideInput(struct PlayState* play, PlayerOverrideInputEntry* inputEntry, u32 numPoints, Vec3s* targetPosList);
+s32 Player_UpdateOverrideInput(struct PlayState* play, PlayerOverrideInputEntry* inputEntry, f32 distXZRange);
+void func_80122868(struct PlayState* play, Player* player);
+void func_801229A0(struct PlayState* play, Player* player);
+void Player_DoNothing(Actor* thisx, struct PlayState* play);
+void func_801229FC(Player* player);
+void func_80122BA4(struct PlayState* play, struct_80122D44_arg1* arg1, s32 arg2, s32 alpha);
+void func_80122C20(struct PlayState* play, struct_80122D44_arg1* arg1);
+void func_80122D44(struct PlayState* play, struct_80122D44_arg1* arg1);
+u8 Player_MaskIdToItemId(s32 maskIdMinusOne);
+s32 Player_GetCurMaskItemId(struct PlayState* play);
+void func_80122F28(Player* player);
+bool func_80122F9C(struct PlayState* play);
+bool func_80122FCC(struct PlayState* play);
+void func_8012300C(struct PlayState* play, s32 arg1);
+void func_8012301C(Actor* thisx, struct PlayState* play2);
+void func_80123140(struct PlayState* play, Player* player);
+bool Player_InBlockingCsMode(struct PlayState* play, Player* player);
+bool Player_InCsMode(struct PlayState* play);
+bool Player_CheckHostileLockOn(Player* player);
+bool Player_FriendlyLockOnOrParallel(Player* player);
+bool func_80123448(struct PlayState* play);
+bool Player_IsGoronOrDeku(Player* player);
+bool func_801234D4(struct PlayState* play);
+bool func_80123590(struct PlayState* play, Actor* actor);
+// #region 2S2H [Dpad]
+ItemId Player_Dpad_GetItemOnButton(struct PlayState* play, Player* player, DpadEquipSlot slot);
+// #endregion
+ItemId Player_GetItemOnButton(struct PlayState* play, Player* player, EquipSlot slot);
+PlayerItemAction func_80123810(struct PlayState* play);
+PlayerModelGroup Player_ActionToModelGroup(Player* player, PlayerItemAction itemAction);
+void Player_SetModelsForHoldingShield(Player* player);
+void Player_SetModels(Player* player, PlayerModelGroup modelGroup);
+void Player_SetModelGroup(Player* player, PlayerModelGroup modelGroup);
+void func_80123C58(Player* player);
+void Player_SetEquipmentData(struct PlayState* play, Player* player);
+void Player_UpdateBottleHeld(struct PlayState* play, Player* player, ItemId itemId, PlayerItemAction itemAction);
+void Player_ReleaseLockOn(Player* player);
+void Player_ClearZTargeting(Player* player);
+void Player_SetAutoLockOnActor(struct PlayState* play, Actor* actor);
+s32 Player_SetBButtonAmmo(struct PlayState* play, s32 ammo);
+bool Player_IsBurningStickInRange(struct PlayState* play, Vec3f* pos, f32 xzRange, f32 yRange);
+u8 Player_GetStrength(void);
+PlayerMask Player_GetMask(struct PlayState* play);
+void Player_RemoveMask(struct PlayState* play);
+bool Player_HasMirrorShieldEquipped(struct PlayState* play);
+bool Player_IsHoldingMirrorShield(struct PlayState* play);
+bool Player_IsHoldingHookshot(Player* player);
+bool func_801240DC(Player* player);
+PlayerBButtonSword Player_BButtonSwordFromIA(Player* player, PlayerItemAction itemAction);
+PlayerBButtonSword Player_GetHeldBButtonSword(Player* player);
+PlayerMeleeWeapon Player_MeleeWeaponFromIA(PlayerItemAction itemAction);
+PlayerMeleeWeapon Player_GetMeleeWeaponHeld(Player* player);
+s32 Player_IsHoldingTwoHandedWeapon(Player* player);
+PlayerBottle Player_BottleFromIA(Player* player, PlayerItemAction itemAction);
+PlayerBottle Player_GetBottleHeld(Player* Player);
+PlayerExplosive Player_ExplosiveFromIA(Player* player, PlayerItemAction itemAction);
+PlayerExplosive Player_GetExplosiveHeld(Player* player);
+PlayerSword Player_SwordFromIA(Player* player, PlayerItemAction itemAction);
+bool func_801242B4(Player* player);
+s32 Player_GetEnvironmentalHazard(struct PlayState* play);
+void Player_UpdateBunnyEars(Player* player);
+void func_80124618(struct_80124618 arg0[], f32 curFrame, Vec3f* arg2);
+void Player_DrawImpl(struct PlayState* play, void** skeleton, Vec3s* jointTable, s32 dListCount, s32 lod, PlayerTransformation playerForm, s32 boots, s32 face, OverrideLimbDrawFlex overrideLimbDraw, PostLimbDrawFlex postLimbDraw, Actor* actor);
+void func_80125318(Vec3f* arg0, Vec3s* arg1);
+void Player_DrawZoraShield(struct PlayState* play, Player* player);
+void func_80125500(struct PlayState* play, Player* player, s32 limbIndex, Vec3f* pos, Vec3s* rot);
+s32 Player_OverrideLimbDrawGameplayDefault(struct PlayState* play, s32 limbIndex, Gfx** dList, Vec3f* pos, Vec3s* rot, Actor* actor);
+s32 Player_OverrideLimbDrawGameplayFirstPerson(struct PlayState* play, s32 limbIndex, Gfx** dList, Vec3f* pos, Vec3s* rot, Actor* actor);
+s32 Player_OverrideLimbDrawGameplayCrawling(struct PlayState* play, s32 limbIndex, Gfx** dList, Vec3f* pos, Vec3s* rot, Actor* thisx);
+s32 func_80126440(struct PlayState* play, ColliderQuad* collider, WeaponInfo* weaponInfo, Vec3f* newTip, Vec3f* newBase);
+void Player_DrawGetItem(struct PlayState* play, Player* player);
+void func_80126B8C(struct PlayState* play, Player* player);
+s32 func_80127438(struct PlayState* play, Player* player, s32 currentMask);
+s32 func_80128640(struct PlayState* play, Player* player, Gfx* dlist);
+void Player_SetFeetPos(struct PlayState* play, Player* player, s32 limbIndex);
+void Player_PostLimbDrawGameplay(struct PlayState* play, s32 limbIndex, Gfx** dList1, Gfx** dList2, Vec3s* rot, Actor* actor);
 
 #endif

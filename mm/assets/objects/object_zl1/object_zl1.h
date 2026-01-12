@@ -207,8 +207,8 @@ static const ALIGN_ASSET(2) char gChildZelda1Anim_11348[] = dgChildZelda1Anim_11
 #define dgChildZelda1Anim_116E4 "__OTR__objects/object_zl1/gChildZelda1Anim_116E4"
 static const ALIGN_ASSET(2) char gChildZelda1Anim_116E4[] = dgChildZelda1Anim_116E4;
 
-#define dgChildZelda1Anim_12B88 "__OTR__objects/object_zl1/gChildZelda1Anim_12B88"
-static const ALIGN_ASSET(2) char gChildZelda1Anim_12B88[] = dgChildZelda1Anim_12B88;
+#define dgChildZelda1Anim_11B88 "__OTR__objects/object_zl1/gChildZelda1Anim_11B88"
+static const ALIGN_ASSET(2) char gChildZelda1Anim_11B88[] = dgChildZelda1Anim_11B88;
 
 #define dgChildZelda1Anim_12118 "__OTR__objects/object_zl1/gChildZelda1Anim_12118"
 static const ALIGN_ASSET(2) char gChildZelda1Anim_12118[] = dgChildZelda1Anim_12118;

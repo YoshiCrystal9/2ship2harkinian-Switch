@@ -6,9 +6,7 @@
 
 #include "z_en_sth2.h"
 
-#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_FRIENDLY)
-
-#define THIS ((EnSth2*)thisx)
+#define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY)
 
 void EnSth2_Init(Actor* thisx, PlayState* play);
 void EnSth2_Destroy(Actor* thisx, PlayState* play);
@@ -18,7 +16,7 @@ void EnSth2_Draw(Actor* thisx, PlayState* play2);
 void EnSth2_UpdateSkelAnime(EnSth2* this, PlayState* play);
 void EnSth2_UpdateActionFunc(Actor* thisx, PlayState* play);
 
-ActorInit En_Sth2_InitVars = {
+ActorProfile En_Sth2_Profile = {
     /**/ ACTOR_EN_STH2,
     /**/ ACTORCAT_NPC,
     /**/ FLAGS,
@@ -33,15 +31,15 @@ ActorInit En_Sth2_InitVars = {
 #include "overlays/ovl_En_Sth2/ovl_En_Sth2.h"
 
 void EnSth2_Init(Actor* thisx, PlayState* play) {
-    EnSth2* this = THIS;
+    EnSth2* this = (EnSth2*)thisx;
 
     this->objectSlot = Object_GetSlot(&play->objectCtx, OBJECT_STH);
     Actor_SetScale(&this->actor, 0.01f);
     ActorShape_Init(&this->actor.shape, 0.0f, ActorShadow_DrawCircle, 36.0f);
     this->unused = 0;
 
-    if (play->actorCtx.flags & ACTORCTX_FLAG_1) {
-        this->actor.flags |= (ACTOR_FLAG_10 | ACTOR_FLAG_20);
+    if (play->actorCtx.flags & ACTORCTX_FLAG_TELESCOPE_ON) {
+        this->actor.flags |= (ACTOR_FLAG_UPDATE_CULLING_DISABLED | ACTOR_FLAG_DRAW_CULLING_DISABLED);
     } else {
         Actor_Kill(&this->actor);
         return;
@@ -58,7 +56,7 @@ void EnSth2_UpdateSkelAnime(EnSth2* this, PlayState* play) {
 
 void EnSth2_Update(Actor* thisx, PlayState* play) {
     s32 pad;
-    EnSth2* this = THIS;
+    EnSth2* this = (EnSth2*)thisx;
 
     if (Object_IsLoaded(&play->objectCtx, this->objectSlot)) {
         this->actor.objectSlot = this->objectSlot;
@@ -72,7 +70,7 @@ void EnSth2_Update(Actor* thisx, PlayState* play) {
 }
 
 void EnSth2_UpdateActionFunc(Actor* thisx, PlayState* play) {
-    EnSth2* this = THIS;
+    EnSth2* this = (EnSth2*)thisx;
 
     this->actionFunc(this, play);
 }
@@ -85,17 +83,17 @@ s32 EnSth2_OverrideLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3f* 
     }
     if ((limbIndex == STH_LIMB_CHEST) || (limbIndex == STH_LIMB_LEFT_FOREARM) ||
         (limbIndex == STH_LIMB_RIGHT_FOREARM)) {
-        rot->y += (s16)(Math_SinS((play->state.frames * ((limbIndex * 50) + 0x814))) * 200.0f);
-        rot->z += (s16)(Math_CosS((play->state.frames * ((limbIndex * 50) + 0x940))) * 200.0f);
+        rot->y += TRUNCF_BINANG(Math_SinS(play->state.frames * ((limbIndex * 50) + 0x814)) * 200.0f);
+        rot->z += TRUNCF_BINANG(Math_CosS(play->state.frames * ((limbIndex * 50) + 0x940)) * 200.0f);
     }
     return false;
 }
 
 void EnSth2_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* rot, Actor* thisx) {
-    static Vec3f focusOffset = { 700.0f, 400.0f, 0.0f };
+    static Vec3f sFocusOffset = { 700.0f, 400.0f, 0.0f };
 
     if (limbIndex == STH_LIMB_HEAD) {
-        Matrix_MultVec3f(&focusOffset, &thisx->focus.pos);
+        Matrix_MultVec3f(&sFocusOffset, &thisx->focus.pos);
 
         OPEN_DISPS(play->state.gfxCtx);
 
@@ -110,7 +108,7 @@ void EnSth2_Draw(Actor* thisx, PlayState* play2) {
         { 190, 110, 0 }, { 0, 180, 110 }, { 0, 255, 80 }, { 255, 160, 60 }, { 190, 230, 250 }, { 240, 230, 120 },
     };
     PlayState* play = play2;
-    EnSth2* this = THIS;
+    EnSth2* this = (EnSth2*)thisx;
 
     OPEN_DISPS(play->state.gfxCtx);
 

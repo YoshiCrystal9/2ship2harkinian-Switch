@@ -1,6 +1,7 @@
 #include "ActorBehavior.h"
-#include "public/bridge/consolevariablebridge.h"
+#include <libultraship/bridge/consolevariablebridge.h>
 #include "2s2h/CustomMessage/CustomMessage.h"
+#include "2s2h/Rando/MiscBehavior/Traps.h"
 
 extern "C" {
 #include "variables.h"
@@ -67,6 +68,9 @@ void EnGirlA_RandoBuyFunc(PlayState* play, EnGirlA* enGirlA) {
     RandoItemId randoItemId = Rando::ConvertItem(randoSaveCheck.randoItemId, (RandoCheckId)enGirlA->actor.world.rot.z);
     randoSaveCheck.obtained = true;
     Rupees_ChangeBy(-play->msgCtx.unk1206C);
+    if (randoItemId == RI_TRAP) {
+        RollTrapType();
+    }
     Rando::GiveItem(randoItemId);
 }
 
@@ -75,7 +79,7 @@ void EnGirlA_RandoBuyFanfareFunc(PlayState* play, EnGirlA* enGirlA) {
 }
 
 void EnGirlA_RandoInit(EnGirlA* enGirlA, PlayState* play) {
-    enGirlA->actor.flags &= ~ACTOR_FLAG_10;
+    enGirlA->actor.flags &= ~ACTOR_FLAG_UPDATE_CULLING_DISABLED;
     enGirlA->actor.textId = RANDO_DESC_TEXT_ID;
     enGirlA->choiceTextId = RANDO_CHOICE_TEXT_ID;
 
@@ -85,7 +89,7 @@ void EnGirlA_RandoInit(EnGirlA* enGirlA, PlayState* play) {
     enGirlA->buyFunc = EnGirlA_RandoBuyFunc;
     enGirlA->buyFanfareFunc = EnGirlA_RandoBuyFanfareFunc;
 
-    enGirlA->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
+    enGirlA->actor.flags &= ~ACTOR_FLAG_ATTENTION_ENABLED;
     Actor_SetScale(&enGirlA->actor, 0.25f);
     enGirlA->actor.shape.yOffset = 24.0f;
     enGirlA->actor.shape.shadowScale = 4.0f;

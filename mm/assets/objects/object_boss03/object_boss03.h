@@ -45,8 +45,8 @@ static const ALIGN_ASSET(2) char gGyorgLowerTrunkDL[] = dgGyorgLowerTrunkDL;
 #define dgGyorgTailDL "__OTR__objects/object_boss03/gGyorgTailDL"
 static const ALIGN_ASSET(2) char gGyorgTailDL[] = dgGyorgTailDL;
 
-#define dgGyorgUnused5388TexAnim "__OTR__objects/object_boss03/gGyorgUnused5388TexAnim"
-static const ALIGN_ASSET(2) char gGyorgUnused5388TexAnim[] = dgGyorgUnused5388TexAnim;
+#define dgGyorgEmpty1TexAnim "__OTR__objects/object_boss03/gGyorgEmpty1TexAnim"
+static const ALIGN_ASSET(2) char gGyorgEmpty1TexAnim[] = dgGyorgEmpty1TexAnim;
 
 #define dgGyorgFinsSpikesAndJawTLUT "__OTR__objects/object_boss03/gGyorgFinsSpikesAndJawTLUT"
 static const ALIGN_ASSET(2) char gGyorgFinsSpikesAndJawTLUT[] = dgGyorgFinsSpikesAndJawTLUT;
@@ -144,8 +144,8 @@ static const ALIGN_ASSET(2) char gGyorgSeaweedTopTex[] = dgGyorgSeaweedTopTex;
 #define dgGyorgSeaweedTex "__OTR__objects/object_boss03/gGyorgSeaweedTex"
 static const ALIGN_ASSET(2) char gGyorgSeaweedTex[] = dgGyorgSeaweedTex;
 
-#define dgGyorgUnusedBB00TexAnim "__OTR__objects/object_boss03/gGyorgUnusedBB00TexAnim"
-static const ALIGN_ASSET(2) char gGyorgUnusedBB00TexAnim[] = dgGyorgUnusedBB00TexAnim;
+#define dgGyorgEmpty2TexAnim "__OTR__objects/object_boss03/gGyorgEmpty2TexAnim"
+static const ALIGN_ASSET(2) char gGyorgEmpty2TexAnim[] = dgGyorgEmpty2TexAnim;
 
 #define dgUnusedGyorgSmallFishHeadDL "__OTR__objects/object_boss03/gUnusedGyorgSmallFishHeadDL"
 static const ALIGN_ASSET(2) char gUnusedGyorgSmallFishHeadDL[] = dgUnusedGyorgSmallFishHeadDL;

@@ -1,7 +1,7 @@
 #include "global.h"
-#include "resourcebridge.h"
+#include <libultraship/bridge/resourcebridge.h>
 #include "2s2h/mixer.h"
-#include "public/bridge/consolevariablebridge.h"
+#include <libultraship/bridge/consolevariablebridge.h>
 
 // DMEM Addresses for the RSP
 #define DMEM_TEMP 0x3B0
@@ -1157,9 +1157,8 @@ Acmd* AudioSynth_ProcessSample(s32 noteIndex, NoteSampleState* sampleState, Note
                         numSamplesProcessed += numSamplesToLoadAdj;
                         dmemUncompressedAddrOffset1 = numSamplesToLoadAdj;
 
-                        if (((synthState->samplePosInt * 2) + (numSamplesToLoadAdj + 16) * SAMPLE_SIZE) <
-                            sample->size) {
-                            bytesToRead = (numSamplesToLoadAdj + 16) * SAMPLE_SIZE;
+                        if (((synthState->samplePosInt * 2) + (numSamplesToLoadAdj)*SAMPLE_SIZE) < sample->size) {
+                            bytesToRead = (numSamplesToLoadAdj)*SAMPLE_SIZE;
                         } else {
                             bytesToRead = sample->size - (synthState->samplePosInt * 2);
                         }

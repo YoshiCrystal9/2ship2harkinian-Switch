@@ -9,8 +9,6 @@
 
 #define FLAGS 0x00000000
 
-#define THIS ((ObjComb*)thisx)
-
 void ObjComb_Init(Actor* thisx, PlayState* play);
 void ObjComb_Destroy(Actor* thisx, PlayState* play2);
 void ObjComb_Update(Actor* thisx, PlayState* play);
@@ -22,7 +20,7 @@ void func_8098DEA0(ObjComb* this, PlayState* play);
 void func_8098E098(ObjComb* this);
 void func_8098E0B8(ObjComb* this, PlayState* play);
 
-ActorInit Obj_Comb_InitVars = {
+ActorProfile Obj_Comb_Profile = {
     /**/ ACTOR_OBJ_COMB,
     /**/ ACTORCAT_PROP,
     /**/ FLAGS,
@@ -37,11 +35,11 @@ ActorInit Obj_Comb_InitVars = {
 static ColliderJntSphElementInit sJntSphElementsInit[1] = {
     {
         {
-            ELEMTYPE_UNK0,
+            ELEM_MATERIAL_UNK0,
             { 0x00000000, 0x00, 0x00 },
             { 0x05CBFFBE, 0x00, 0x00 },
-            TOUCH_NONE | TOUCH_SFX_NORMAL,
-            BUMP_ON,
+            ATELEM_NONE | ATELEM_SFX_NORMAL,
+            ACELEM_ON,
             OCELEM_ON,
         },
         { 0, { { 0, 0, 0 }, 15 }, 100 },
@@ -50,7 +48,7 @@ static ColliderJntSphElementInit sJntSphElementsInit[1] = {
 
 static ColliderJntSphInit sJntSphInit = {
     {
-        COLTYPE_NONE,
+        COL_MATERIAL_NONE,
         AT_NONE,
         AC_ON | AC_TYPE_PLAYER,
         OC1_ON | OC1_TYPE_PLAYER,
@@ -63,12 +61,12 @@ static ColliderJntSphInit sJntSphInit = {
 
 static InitChainEntry sInitChain[] = {
     ICHAIN_VEC3F_DIV1000(scale, 100, ICHAIN_CONTINUE),
-    ICHAIN_F32(uncullZoneForward, 1200, ICHAIN_CONTINUE),
-    ICHAIN_F32(uncullZoneScale, 100, ICHAIN_CONTINUE),
-    ICHAIN_F32(uncullZoneDownward, 100, ICHAIN_STOP),
+    ICHAIN_F32(cullingVolumeDistance, 1200, ICHAIN_CONTINUE),
+    ICHAIN_F32(cullingVolumeScale, 100, ICHAIN_CONTINUE),
+    ICHAIN_F32(cullingVolumeDownward, 100, ICHAIN_STOP),
 };
 
-s32 func_8098CE40(ObjComb* this, PlayState* play) {
+bool func_8098CE40(ObjComb* this, PlayState* play) {
     s32 phi_a2 = -1;
     s32 temp_v0 = (OBJCOMB_GET_1F(&this->actor) << 2) | 0xFF01;
 
@@ -252,8 +250,8 @@ void func_8098D6E0(ObjComb* this, PlayState* play) {
     for (temp = 0, i = 0; i < 8; i++, temp += 0x2000) {
         temp_f0 = Rand_ZeroOne();
         temp_f20 = ((1.0f - SQ(temp_f0)) * 14.0f) + 4.0f;
-        sp70.x = (Math_SinS((s32)(Rand_ZeroOne() * 8000.0f) + temp) * temp_f20) + this->actor.world.pos.x;
-        sp70.z = (Math_CosS((s32)(Rand_ZeroOne() * 8000.0f) + temp) * temp_f20) + this->actor.world.pos.z;
+        sp70.x = this->actor.world.pos.x + (Math_SinS((s32)(Rand_ZeroOne() * 8000.0f) + temp) * temp_f20);
+        sp70.z = this->actor.world.pos.z + (Math_CosS((s32)(Rand_ZeroOne() * 8000.0f) + temp) * temp_f20);
         EffectSsGSplash_Spawn(play, &sp70, NULL, NULL, 0, 200);
     }
 
@@ -328,7 +326,7 @@ void func_8098DA74(ObjComb* this, PlayState* play) {
 
 void ObjComb_Init(Actor* thisx, PlayState* play) {
     s32 pad;
-    ObjComb* this = THIS;
+    ObjComb* this = (ObjComb*)thisx;
     s32 sp2C = OBJCOMB_GET_8000(&this->actor) | OBJCOMB_GET_80(&this->actor);
 
     Actor_ProcessInitChain(&this->actor, sInitChain);
@@ -343,7 +341,7 @@ void ObjComb_Init(Actor* thisx, PlayState* play) {
 
     if ((sp2C == 0) && Item_CanDropBigFairy(play, OBJCOMB_GET_3F(&this->actor), OBJCOMB_GET_7F00(&this->actor))) {
         this->unk_1B7 = 1;
-        this->actor.flags |= ACTOR_FLAG_10;
+        this->actor.flags |= ACTOR_FLAG_UPDATE_CULLING_DISABLED;
     }
 
     if ((sp2C != 2) || !func_8098CE40(this, play)) {
@@ -354,7 +352,7 @@ void ObjComb_Init(Actor* thisx, PlayState* play) {
 
 void ObjComb_Destroy(Actor* thisx, PlayState* play2) {
     PlayState* play = play2;
-    ObjComb* this = THIS;
+    ObjComb* this = (ObjComb*)thisx;
 
     Collider_DestroyJntSph(play, &this->collider);
 }
@@ -380,12 +378,12 @@ void func_8098DC60(ObjComb* this, PlayState* play) {
     }
 
     if (this->unk_1B3) {
-        if (this->collider.elements->info.acHitInfo->toucher.dmgFlags & 0x0182C29C) {
+        if (this->collider.elements[0].base.acHitElem->atDmgInfo.dmgFlags & 0x0182C29C) {
             func_8098CEAC(this, play);
             func_8098DA74(this, play);
             Actor_Kill(&this->actor);
         } else {
-            s32 dmgFlags = this->collider.elements->info.acHitInfo->toucher.dmgFlags;
+            s32 dmgFlags = this->collider.elements[0].base.acHitElem->atDmgInfo.dmgFlags;
 
             if (dmgFlags & 0x13820) {
                 this->unk_1A8 = 0xDAC;
@@ -398,7 +396,7 @@ void func_8098DC60(ObjComb* this, PlayState* play) {
             if ((this->unk_1B2 <= 0) && (dmgFlags & 0x13820)) {
                 if (this->unk_1B5 == 0) {
                     this->unk_1B5 = 1;
-                    this->actor.flags |= ACTOR_FLAG_10;
+                    this->actor.flags |= ACTOR_FLAG_UPDATE_CULLING_DISABLED;
                 }
                 this->unk_1B2 = 20;
             }
@@ -427,7 +425,7 @@ void func_8098DC60(ObjComb* this, PlayState* play) {
 }
 
 void func_8098DE58(ObjComb* this) {
-    this->actor.flags |= ACTOR_FLAG_10;
+    this->actor.flags |= ACTOR_FLAG_UPDATE_CULLING_DISABLED;
     this->unk_1B4 = 100;
     this->actor.terminalVelocity = -20.0f;
     this->actor.gravity = -1.5f;
@@ -493,7 +491,7 @@ void func_8098E0B8(ObjComb* this, PlayState* play) {
         return;
     }
 
-    if ((this->unk_1B4 == 10) && (this->unk_1B6 != 0) && (this->unk_1B5 == 2) && (this->actor.csId >= 0)) {
+    if ((this->unk_1B4 == 10) && (this->unk_1B6 != 0) && (this->unk_1B5 == 2) && (this->actor.csId > CS_ID_NONE)) {
         if (CutsceneManager_GetCurrentCsId() == this->actor.csId) {
             Player_SetCsActionWithHaltedActors(play, &this->actor, PLAYER_CSACTION_4);
         }
@@ -501,7 +499,7 @@ void func_8098E0B8(ObjComb* this, PlayState* play) {
 }
 
 void ObjComb_Update(Actor* thisx, PlayState* play) {
-    ObjComb* this = THIS;
+    ObjComb* this = (ObjComb*)thisx;
 
     this->unk_1B3 = (this->collider.base.acFlags & AC_HIT) != 0;
     if (this->unk_1B3) {
@@ -528,7 +526,7 @@ void ObjComb_Update(Actor* thisx, PlayState* play) {
             if (this->unk_1B5 == 1) {
                 if (CutsceneManager_IsNext(this->actor.csId)) {
                     CutsceneManager_StartWithPlayerCs(this->actor.csId, &this->actor);
-                    if (this->actor.csId >= 0) {
+                    if (this->actor.csId > CS_ID_NONE) {
                         Player_SetCsActionWithHaltedActors(play, &this->actor, PLAYER_CSACTION_1);
                     }
 
@@ -546,13 +544,13 @@ void ObjComb_Update(Actor* thisx, PlayState* play) {
 
         if (this->unk_1B7 != 0) {
             play->actorCtx.flags |= ACTORCTX_FLAG_3;
-            this->actor.flags |= ACTOR_FLAG_10;
+            this->actor.flags |= ACTOR_FLAG_UPDATE_CULLING_DISABLED;
         }
     }
 }
 
 void ObjComb_Draw(Actor* thisx, PlayState* play) {
-    ObjComb* this = THIS;
+    ObjComb* this = (ObjComb*)thisx;
 
     OPEN_DISPS(play->state.gfxCtx);
 
@@ -565,7 +563,7 @@ void ObjComb_Draw(Actor* thisx, PlayState* play) {
     Matrix_Translate(0.0f, -(this->actor.scale.y * 118.0f), 0.0f, MTXMODE_APPLY);
     Matrix_Scale(this->actor.scale.x, this->actor.scale.y, this->actor.scale.z, MTXMODE_APPLY);
 
-    gSPMatrix(POLY_OPA_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    MATRIX_FINALIZE_AND_LOAD(POLY_OPA_DISP++, play->state.gfxCtx);
     gSPDisplayList(POLY_OPA_DISP++, gBeehiveDL);
 
     Collider_UpdateSpheres(0, &this->collider);

@@ -17,12 +17,12 @@ u32 EffectSsGSplash_Init(PlayState* play, u32 index, EffectSs* this, void* initP
 void EffectSsGSplash_Update(PlayState* play, u32 index, EffectSs* this);
 void EffectSsGSplash_Draw(PlayState* play, u32 index, EffectSs* this);
 
-EffectSsInit Effect_Ss_G_Splash_InitVars = {
+EffectSsProfile Effect_Ss_G_Splash_Profile = {
     EFFECT_SS_G_SPLASH,
     EffectSsGSplash_Init,
 };
 
-static TexturePtr waterSplashTextures[] = {
+static TexturePtr sWaterSplashTextures[] = {
     gEffWaterSplash1Tex, gEffWaterSplash2Tex, gEffWaterSplash3Tex, gEffWaterSplash4Tex,
     gEffWaterSplash5Tex, gEffWaterSplash6Tex, gEffWaterSplash7Tex, gEffWaterSplash8Tex,
 };
@@ -105,7 +105,7 @@ void EffectSsGSplash_Draw(PlayState* play, u32 index, EffectSs* this) {
             if (texIndex > 7) {
                 texIndex = 7;
             }
-            EffectSs_DrawGEffect(play, this, waterSplashTextures[texIndex]);
+            EffectSs_DrawGEffect(play, this, sWaterSplashTextures[texIndex]);
             break;
 
         case EFFSSGSPLASH_TYPE_1:
@@ -113,7 +113,7 @@ void EffectSsGSplash_Draw(PlayState* play, u32 index, EffectSs* this) {
             if (texIndex > 7) {
                 texIndex = 7;
             }
-            EffectSs_DrawGEffect(play, this, waterSplashTextures[texIndex]);
+            EffectSs_DrawGEffect(play, this, sWaterSplashTextures[texIndex]);
             break;
 
         case EFFSSGSPLASH_TYPE_2:
@@ -121,7 +121,7 @@ void EffectSsGSplash_Draw(PlayState* play, u32 index, EffectSs* this) {
             if (texIndex > 7) {
                 texIndex = 7;
             }
-            EffectSs_DrawGEffect(play, this, waterSplashTextures[texIndex]);
+            EffectSs_DrawGEffect(play, this, sWaterSplashTextures[texIndex]);
             break;
     }
 }

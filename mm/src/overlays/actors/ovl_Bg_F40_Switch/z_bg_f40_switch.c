@@ -3,14 +3,12 @@
  * Overlay: ovl_Bg_F40_Switch
  * Description: Stone Tower FloorSwitch
  */
-
+#include "prevent_bss_reordering.h"
 #include "z_bg_f40_switch.h"
 #include "z64rumble.h"
 #include "objects/object_f40_switch/object_f40_switch.h"
 
-#define FLAGS (ACTOR_FLAG_10)
-
-#define THIS ((BgF40Switch*)thisx)
+#define FLAGS (ACTOR_FLAG_UPDATE_CULLING_DISABLED)
 
 void BgF40Switch_Init(Actor* thisx, PlayState* play);
 void BgF40Switch_Destroy(Actor* thisx, PlayState* play);
@@ -25,7 +23,7 @@ void BgF40Switch_Press(BgF40Switch* this, PlayState* play);
 void BgF40Switch_WaitToPress(BgF40Switch* this, PlayState* play);
 void BgF40Switch_IdleUnpressed(BgF40Switch* this, PlayState* play);
 
-ActorInit Bg_F40_Switch_InitVars = {
+ActorProfile Bg_F40_Switch_Profile = {
     /**/ ACTOR_BG_F40_SWITCH,
     /**/ ACTORCAT_SWITCH,
     /**/ FLAGS,
@@ -101,14 +99,14 @@ void BgF40Switch_CheckAll(BgF40Switch* this, PlayState* play) {
 }
 
 static InitChainEntry sInitChain[] = {
-    ICHAIN_F32(uncullZoneForward, 4000, ICHAIN_CONTINUE),
-    ICHAIN_F32(uncullZoneScale, 200, ICHAIN_CONTINUE),
-    ICHAIN_F32(uncullZoneDownward, 200, ICHAIN_CONTINUE),
+    ICHAIN_F32(cullingVolumeDistance, 4000, ICHAIN_CONTINUE),
+    ICHAIN_F32(cullingVolumeScale, 200, ICHAIN_CONTINUE),
+    ICHAIN_F32(cullingVolumeDownward, 200, ICHAIN_CONTINUE),
     ICHAIN_VEC3F_DIV1000(scale, 123, ICHAIN_STOP),
 };
 
 void BgF40Switch_Init(Actor* thisx, PlayState* play) {
-    BgF40Switch* this = THIS;
+    BgF40Switch* this = (BgF40Switch*)thisx;
 
     Actor_ProcessInitChain(&this->dyna.actor, sInitChain);
     this->dyna.actor.scale.y = 0.165f;
@@ -123,7 +121,7 @@ void BgF40Switch_Init(Actor* thisx, PlayState* play) {
 }
 
 void BgF40Switch_Destroy(Actor* thisx, PlayState* play) {
-    BgF40Switch* this = THIS;
+    BgF40Switch* this = (BgF40Switch*)thisx;
 
     DynaPoly_DeleteBgActor(play, &play->colCtx.dyna, this->dyna.bgId);
 }
@@ -182,14 +180,14 @@ void BgF40Switch_IdleUnpressed(BgF40Switch* this, PlayState* play) {
 }
 
 void BgF40Switch_Update(Actor* thisx, PlayState* play) {
-    BgF40Switch* this = THIS;
+    BgF40Switch* this = (BgF40Switch*)thisx;
 
     BgF40Switch_CheckAll(this, play);
     this->actionFunc(this, play);
 }
 
 void BgF40Switch_Draw(Actor* thisx, PlayState* play) {
-    BgF40Switch* this = THIS;
+    BgF40Switch* this = (BgF40Switch*)thisx;
 
     Gfx_DrawDListOpa(play, gStoneTowerFloorSwitchDL);
     Gfx_DrawDListOpa(play, gStoneTowerFloorSwitchOutlineDL);

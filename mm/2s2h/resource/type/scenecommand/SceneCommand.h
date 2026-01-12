@@ -2,7 +2,7 @@
 
 #include <cstdint>
 #include <memory>
-#include "Resource.h"
+#include <ship/resource/Resource.h>
 
 namespace SOH {
 

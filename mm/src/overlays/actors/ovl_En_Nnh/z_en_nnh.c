@@ -7,9 +7,7 @@
 #include "z_en_nnh.h"
 #include "objects/object_nnh/object_nnh.h"
 
-#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_10)
-
-#define THIS ((EnNnh*)thisx)
+#define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_UPDATE_CULLING_DISABLED)
 
 void EnNnh_Init(Actor* thisx, PlayState* play);
 void EnNnh_Destroy(Actor* thisx, PlayState* play);
@@ -21,7 +19,7 @@ void EnNnh_WaitForDialogue(EnNnh* this, PlayState* play);
 void EnNnh_SetupDialogue(EnNnh* this);
 void EnNnh_Dialogue(EnNnh* this, PlayState* play);
 
-ActorInit En_Nnh_InitVars = {
+ActorProfile En_Nnh_Profile = {
     /**/ ACTOR_EN_NNH,
     /**/ ACTORCAT_PROP,
     /**/ FLAGS,
@@ -35,7 +33,7 @@ ActorInit En_Nnh_InitVars = {
 
 static ColliderCylinderInit sCylinderInit = {
     {
-        COLTYPE_TREE,
+        COL_MATERIAL_TREE,
         AT_NONE,
         AC_ON | AC_TYPE_PLAYER,
         OC1_ON | OC1_TYPE_ALL,
@@ -43,30 +41,30 @@ static ColliderCylinderInit sCylinderInit = {
         COLSHAPE_CYLINDER,
     },
     {
-        ELEMTYPE_UNK1,
+        ELEM_MATERIAL_UNK1,
         { 0x00000000, 0x00, 0x00 },
         { 0xF7CFFFFF, 0x00, 0x00 },
-        TOUCH_NONE | TOUCH_SFX_NORMAL,
-        BUMP_ON,
+        ATELEM_NONE | ATELEM_SFX_NORMAL,
+        ACELEM_ON,
         OCELEM_ON,
     },
     { 20, 50, 0, { 0, 0, 0 } },
 };
 
 void EnNnh_Init(Actor* thisx, PlayState* play) {
-    EnNnh* this = THIS;
+    EnNnh* this = (EnNnh*)thisx;
 
     Actor_SetScale(&this->actor, 0.01f);
     Collider_InitCylinder(play, &this->collider);
     Collider_SetCylinder(play, &this->collider, &this->actor, &sCylinderInit);
-    this->actor.targetMode = TARGET_MODE_1;
+    this->actor.attentionRangeType = ATTENTION_RANGE_1;
     this->actor.focus.pos = this->actor.world.pos;
     this->actor.focus.pos.y += 30.0f;
     EnNnh_SetupWaitForDialogue(this);
 }
 
 void EnNnh_Destroy(Actor* thisx, PlayState* play) {
-    EnNnh* this = THIS;
+    EnNnh* this = (EnNnh*)thisx;
 
     Collider_DestroyCylinder(play, &this->collider);
 }
@@ -76,7 +74,7 @@ void EnNnh_SetupWaitForDialogue(EnNnh* this) {
 }
 
 void EnNnh_WaitForDialogue(EnNnh* this, PlayState* play) {
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+    if (Actor_TalkOfferAccepted(&this->actor, &play->state)) {
         Message_StartTextbox(play, 0x228, &this->actor);
         EnNnh_SetupDialogue(this);
     } else {
@@ -95,7 +93,7 @@ void EnNnh_Dialogue(EnNnh* this, PlayState* play) {
 }
 
 void EnNnh_Update(Actor* thisx, PlayState* play) {
-    EnNnh* this = THIS;
+    EnNnh* this = (EnNnh*)thisx;
     s32 pad;
 
     this->actionFunc(this, play);
@@ -107,7 +105,7 @@ void EnNnh_Draw(Actor* thisx, PlayState* play) {
     OPEN_DISPS(play->state.gfxCtx);
 
     Gfx_SetupDL25_Opa(play->state.gfxCtx);
-    gSPMatrix(POLY_OPA_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    MATRIX_FINALIZE_AND_LOAD(POLY_OPA_DISP++, play->state.gfxCtx);
     gSPDisplayList(POLY_OPA_DISP++, gButlerSonMainBodyDL);
 
     CLOSE_DISPS(play->state.gfxCtx);

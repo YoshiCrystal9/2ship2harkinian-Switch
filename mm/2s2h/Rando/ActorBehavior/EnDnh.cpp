@@ -1,13 +1,13 @@
 #include "ActorBehavior.h"
-#include "public/bridge/consolevariablebridge.h"
+#include <libultraship/bridge/consolevariablebridge.h>
 
 extern "C" {
 #include "variables.h"
 #include "overlays/actors/ovl_En_Dnh/z_en_dnh.h"
 
-void Player_TalkWithPlayer(PlayState* play, Actor* actor);
-void func_80837B60(PlayState* play, Player* player);
-s32 func_80832558(PlayState* play, Player* player, PlayerFuncD58 arg2);
+void Player_StartTalking(PlayState* play, Actor* actor);
+void Player_SetupTalk(PlayState* play, Player* player);
+s32 Player_SetupWaitForPutAway(PlayState* play, Player* player, AfterPutAwayFunc afterPutAwayFunc);
 }
 
 void Rando::ActorBehavior::InitEnDnhBehavior() {
@@ -23,24 +23,24 @@ void Rando::ActorBehavior::InitEnDnhBehavior() {
             return;
         }
 
-        if (cmdId == MSCRIPT_CMD_BRANCH_ON_ITEM) {
+        if (cmdId == MSCRIPT_CMD_ID_CHECK_ITEM) {
             *should = false;
-            if (!RANDO_SAVE_CHECKS[RC_TOURIST_INFORMATION_PICTOBOX].obtained) {
+            if (!RANDO_SAVE_CHECKS[RC_TOURIST_INFORMATION_PICTOBOX].cycleObtained) {
                 return;
             } else {
                 skipCmds.clear();
-                skipCmds.push_back(MSCRIPT_CMD_06);
-                skipCmds.push_back(MSCRIPT_CMD_07);
-                skipCmds.push_back(MSCRIPT_CMD_12);
+                skipCmds.push_back(MSCRIPT_CMD_ID_OFFER_ITEM);
+                skipCmds.push_back(MSCRIPT_CMD_ID_AUTOTALK);
+                skipCmds.push_back(MSCRIPT_CMD_ID_AWAIT_TEXT);
             }
         }
 
-        if (cmdId == MSCRIPT_CMD_06) { // MSCRIPT_OFFER_ITEM
-            func_80832558(gPlayState, player, func_80837B60);
+        if (cmdId == MSCRIPT_CMD_ID_OFFER_ITEM) {
+            Player_SetupWaitForPutAway(gPlayState, player, Player_SetupTalk);
             *should = false;
             skipCmds.clear();
-            skipCmds.push_back(MSCRIPT_CMD_07);
-            skipCmds.push_back(MSCRIPT_CMD_12);
+            skipCmds.push_back(MSCRIPT_CMD_ID_AUTOTALK);
+            skipCmds.push_back(MSCRIPT_CMD_ID_AWAIT_TEXT);
             return;
         }
 

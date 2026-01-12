@@ -895,10 +895,15 @@ u8 AudioSeq_ResetReverb(void) {
         } else {
             while (fadeReverb != 0) {
                 if (fadeReverb & 1) {
-                    AUDIOCMD_GLOBAL_SET_REVERB_DATA(
-                        reverbIndex, REVERB_DATA_TYPE_SETTINGS,
-                        (uintptr_t)(gReverbSettingsTable[(u8)(sResetAudioHeapSeqCmd & 0xFF)] + reverbIndex));
-                    AudioThread_ScheduleProcessCmds();
+                    //! @bug Triggering the ending cutscene during final hours can give an index of 12 here, which is
+                    // OOB. This does not normally happen in the game, but Triforce Hunt makes this a possibility.
+                    // Follow a condition similar to what is found in Audio_ResetForAudioHeapStep2.
+                    if (((u8)(sResetAudioHeapSeqCmd & 0xFF)) < ARRAY_COUNT(gReverbSettingsTable)) {
+                        AUDIOCMD_GLOBAL_SET_REVERB_DATA(
+                            reverbIndex, REVERB_DATA_TYPE_SETTINGS,
+                            (uintptr_t)(gReverbSettingsTable[(u8)(sResetAudioHeapSeqCmd & 0xFF)] + reverbIndex));
+                        AudioThread_ScheduleProcessCmds();
+                    }
                 }
                 reverbIndex++;
                 fadeReverb = fadeReverb >> 1;

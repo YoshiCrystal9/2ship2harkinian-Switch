@@ -7,9 +7,7 @@
 #include "z_eff_stk.h"
 #include "objects/object_stk2/object_stk2.h"
 
-#define FLAGS (ACTOR_FLAG_10 | ACTOR_FLAG_20)
-
-#define THIS ((EffStk*)thisx)
+#define FLAGS (ACTOR_FLAG_UPDATE_CULLING_DISABLED | ACTOR_FLAG_DRAW_CULLING_DISABLED)
 
 void EffStk_Init(Actor* thisx, PlayState* play);
 void EffStk_Destroy(Actor* thisx, PlayState* play);
@@ -18,7 +16,7 @@ void EffStk_Draw(Actor* thisx, PlayState* play);
 
 void func_80BF0DE0(EffStk* this, PlayState* play);
 
-ActorInit Eff_Stk_InitVars = {
+ActorProfile Eff_Stk_Profile = {
     /**/ ACTOR_EFF_STK,
     /**/ ACTORCAT_ITEMACTION,
     /**/ FLAGS,
@@ -31,7 +29,7 @@ ActorInit Eff_Stk_InitVars = {
 };
 
 void EffStk_Init(Actor* thisx, PlayState* play) {
-    EffStk* this = THIS;
+    EffStk* this = (EffStk*)thisx;
 
     Actor_SetScale(&this->actor, 0.2f);
     this->actionFunc = func_80BF0DE0;
@@ -71,13 +69,13 @@ void func_80BF0DE0(EffStk* this, PlayState* play) {
 }
 
 void EffStk_Update(Actor* thisx, PlayState* play) {
-    EffStk* this = THIS;
+    EffStk* this = (EffStk*)thisx;
 
     this->actionFunc(this, play);
 }
 
 void EffStk_Draw(Actor* thisx, PlayState* play) {
-    EffStk* this = THIS;
+    EffStk* this = (EffStk*)thisx;
     s32 pad;
     Camera* activeCam = GET_ACTIVE_CAM(play);
     Vec3f eye = activeCam->eye;
@@ -93,7 +91,7 @@ void EffStk_Draw(Actor* thisx, PlayState* play) {
     Matrix_ReplaceRotation(&play->billboardMtxF);
     Matrix_Translate(0.0f, 0.0f, this->unk148, MTXMODE_APPLY);
 
-    gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    MATRIX_FINALIZE_AND_LOAD(POLY_XLU_DISP++, play->state.gfxCtx);
     AnimatedMat_DrawAlphaStep(play, Lib_SegmentedToVirtual(object_stk2_Matanimheader_009F60), 1.0f, this->unk144);
     gDPSetColorDither(POLY_XLU_DISP++, G_CD_NOISE);
     gDPSetAlphaDither(POLY_XLU_DISP++, G_AD_NOISE);

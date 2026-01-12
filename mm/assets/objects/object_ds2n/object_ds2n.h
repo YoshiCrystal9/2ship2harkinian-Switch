@@ -99,6 +99,9 @@ static const ALIGN_ASSET(2) char gDs2nEyeOpenTex[] = dgDs2nEyeOpenTex;
 #define dgDs2nMouthOpenTex "__OTR__objects/object_ds2n/gDs2nMouthOpenTex"
 static const ALIGN_ASSET(2) char gDs2nMouthOpenTex[] = dgDs2nMouthOpenTex;
 
+#define dgDs2nEyeTexAnim "__OTR__objects/object_ds2n/gDs2nEyeTexAnim"
+static const ALIGN_ASSET(2) char gDs2nEyeTexAnim[] = dgDs2nEyeTexAnim;
+
 #define dgDs2nMain2TLUT "__OTR__objects/object_ds2n/gDs2nMain2TLUT"
 static const ALIGN_ASSET(2) char gDs2nMain2TLUT[] = dgDs2nMain2TLUT;
 

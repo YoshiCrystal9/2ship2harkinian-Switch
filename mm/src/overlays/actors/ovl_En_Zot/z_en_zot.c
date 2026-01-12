@@ -6,18 +6,15 @@
 
 #include "z_en_zot.h"
 #include "z64snap.h"
-#include "objects/object_zo/object_zo.h"
 
-#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_10)
-
-#define THIS ((EnZot*)thisx)
+#define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_UPDATE_CULLING_DISABLED)
 
 void EnZot_Init(Actor* thisx, PlayState* play2);
 void EnZot_Destroy(Actor* thisx, PlayState* play);
 void EnZot_Update(Actor* thisx, PlayState* play);
 void EnZot_Draw(Actor* thisx, PlayState* play);
 
-void func_80B96BEC(EnZot* this, s16 arg1, u8 arg2);
+void EnZot_ChangeAnim(EnZot* this, s16 animIndex, u8 animMode);
 void func_80B97100(EnZot* this, PlayState* play);
 void func_80B97240(EnZot* this, PlayState* play);
 void func_80B97708(EnZot* this, PlayState* play);
@@ -32,7 +29,7 @@ void func_80B990A4(EnZot* this, PlayState* play);
 void func_80B992C0(EnZot* this, PlayState* play);
 void func_80B99384(EnZot* this, PlayState* play);
 
-ActorInit En_Zot_InitVars = {
+ActorProfile En_Zot_Profile = {
     /**/ ACTOR_EN_ZOT,
     /**/ ACTORCAT_NPC,
     /**/ FLAGS,
@@ -46,7 +43,7 @@ ActorInit En_Zot_InitVars = {
 
 static ColliderCylinderInit sCylinderInit = {
     {
-        COLTYPE_NONE,
+        COL_MATERIAL_NONE,
         AT_NONE,
         AC_ON | AC_TYPE_ENEMY,
         OC1_ON | OC1_TYPE_ALL,
@@ -54,14 +51,42 @@ static ColliderCylinderInit sCylinderInit = {
         COLSHAPE_CYLINDER,
     },
     {
-        ELEMTYPE_UNK0,
+        ELEM_MATERIAL_UNK0,
         { 0x00000000, 0x00, 0x00 },
         { 0xF7CFFFFF, 0x00, 0x00 },
-        TOUCH_NONE | TOUCH_SFX_NORMAL,
-        BUMP_ON,
+        ATELEM_NONE | ATELEM_SFX_NORMAL,
+        ACELEM_ON,
         OCELEM_ON,
     },
     { 30, 40, 0, { 0, 0, 0 } },
+};
+
+typedef enum EnZotAnimation {
+    /* -1 */ ENZOT_ANIM_NONE = -1,
+    /*  0 */ ENZOT_ANIM_0,
+    /*  1 */ ENZOT_ANIM_1,
+    /*  2 */ ENZOT_ANIM_2,
+    /*  3 */ ENZOT_ANIM_3,
+    /*  4 */ ENZOT_ANIM_4,
+    /*  5 */ ENZOT_ANIM_5,
+    /*  6 */ ENZOT_ANIM_6,
+    /*  7 */ ENZOT_ANIM_7,
+    /*  8 */ ENZOT_ANIM_8,
+    /*  9 */ ENZOT_ANIM_9,
+    /* 10 */ ENZOT_ANIM_MAX,
+} EnZotAnimation;
+
+static AnimationHeader* sAnimations[ENZOT_ANIM_MAX] = {
+    &gZoraStandAnim,           // ENZOT_ANIM_0
+    &gZoraWalkAnim,            // ENZOT_ANIM_1
+    &gZoraSitAnim,             // ENZOT_ANIM_2
+    &gZoraRunAnim,             // ENZOT_ANIM_3
+    &gZoraFixSpeakerStartAnim, // ENZOT_ANIM_4
+    &gZoraFixSpeakerLoopAnim,  // ENZOT_ANIM_5
+    &gZoraFixSpeakerEndAnim,   // ENZOT_ANIM_6
+    &gZoraBobHandAnim,         // ENZOT_ANIM_7
+    &gZoraListenAnim,          // ENZOT_ANIM_8
+    &gZoraListenAnim,          // ENZOT_ANIM_9
 };
 
 void func_80B965D0(EnZot* this, PlayState* play) {
@@ -81,22 +106,23 @@ void func_80B965D0(EnZot* this, PlayState* play) {
 
 void EnZot_Init(Actor* thisx, PlayState* play2) {
     PlayState* play = play2;
-    EnZot* this = THIS;
+    EnZot* this = (EnZot*)thisx;
     s32 i;
 
     ActorShape_Init(&this->actor.shape, 0.0f, ActorShadow_DrawCircle, 20.0f);
     Actor_SetScale(&this->actor, 0.01f);
     this->actionFunc = func_80B97100;
-    SkelAnime_InitFlex(play, &this->skelAnime, &gZoraSkel, &gZoraIdleAnim, this->jointTable, this->morphTable, 20);
+    SkelAnime_InitFlex(play, &this->skelAnime, &gZoraSkel, &gZoraIdleAnim, this->jointTable, this->morphTable,
+                       ZORA_LIMB_MAX);
     Animation_PlayLoop(&this->skelAnime, &gZoraStandAnim);
-    this->unk_2F0 = 0;
+    this->animIndex = ENZOT_ANIM_0;
     Collider_InitAndSetCylinder(play, &this->collider, &this->actor, &sCylinderInit);
 
     this->unk_2F2 = 0;
     this->unk_2F4 = 0;
     this->actor.colChkInfo.mass = MASS_IMMOVABLE;
     this->actor.world.rot.z = this->actor.shape.rot.z = 0;
-    this->actor.targetMode = TARGET_MODE_6;
+    this->actor.attentionRangeType = ATTENTION_RANGE_6;
     this->actor.terminalVelocity = -4.0f;
     this->actor.gravity = -4.0f;
 
@@ -139,25 +165,25 @@ void EnZot_Init(Actor* thisx, PlayState* play2) {
             } else {
                 this->path = NULL;
             }
-            func_80B96BEC(this, 5, ANIMMODE_LOOP);
+            EnZot_ChangeAnim(this, ENZOT_ANIM_5, ANIMMODE_LOOP);
             break;
 
         case 6:
             this->actionFunc = func_80B98998;
-            func_80B96BEC(this, 2, ANIMMODE_LOOP);
+            EnZot_ChangeAnim(this, ENZOT_ANIM_2, ANIMMODE_LOOP);
             this->actor.colChkInfo.cylRadius = 0;
             this->actor.shape.yOffset = -1400.0f;
             break;
 
         case 7:
             this->actionFunc = func_80B98998;
-            func_80B96BEC(this, 0, ANIMMODE_LOOP);
+            EnZot_ChangeAnim(this, ENZOT_ANIM_0, ANIMMODE_LOOP);
             break;
 
         case 8:
-            this->actor.flags |= ACTOR_FLAG_2000000;
+            this->actor.flags |= ACTOR_FLAG_UPDATE_DURING_OCARINA;
             this->actionFunc = func_80B98CA8;
-            func_80B96BEC(this, 5, ANIMMODE_LOOP);
+            EnZot_ChangeAnim(this, ENZOT_ANIM_5, ANIMMODE_LOOP);
             break;
 
         case 9:
@@ -166,7 +192,7 @@ void EnZot_Init(Actor* thisx, PlayState* play2) {
 
         case 10:
             this->actionFunc = func_80B992C0;
-            func_80B96BEC(this, 1, ANIMMODE_LOOP);
+            EnZot_ChangeAnim(this, ENZOT_ANIM_1, ANIMMODE_LOOP);
             if (ENZOT_GET_PATH_INDEX(&this->actor) != ENZOT_PATH_INDEX_NONE) {
                 this->path = &play->setupPathList[ENZOT_GET_PATH_INDEX(&this->actor)];
             } else {
@@ -182,7 +208,7 @@ void EnZot_Init(Actor* thisx, PlayState* play2) {
         case 16:
         case 17:
             this->actionFunc = func_80B98998;
-            func_80B96BEC(this, 2, ANIMMODE_LOOP);
+            EnZot_ChangeAnim(this, ENZOT_ANIM_2, ANIMMODE_LOOP);
             this->actor.colChkInfo.cylRadius = 0;
             this->actor.shape.yOffset = -1400.0f;
             if (!CHECK_WEEKEVENTREG(WEEKEVENTREG_CLEARED_GREAT_BAY_TEMPLE)) {
@@ -198,15 +224,15 @@ void EnZot_Init(Actor* thisx, PlayState* play2) {
             break;
 
         case 19:
-            func_80B96BEC(this, 7, ANIMMODE_LOOP);
+            EnZot_ChangeAnim(this, ENZOT_ANIM_7, ANIMMODE_LOOP);
             break;
 
         case 20:
-            func_80B96BEC(this, 8, ANIMMODE_ONCE);
+            EnZot_ChangeAnim(this, ENZOT_ANIM_8, ANIMMODE_ONCE);
             break;
 
         case 21:
-            func_80B96BEC(this, 9, ANIMMODE_ONCE);
+            EnZot_ChangeAnim(this, ENZOT_ANIM_9, ANIMMODE_ONCE);
             break;
 
         case 22:
@@ -227,7 +253,7 @@ void EnZot_Init(Actor* thisx, PlayState* play2) {
 }
 
 void EnZot_Destroy(Actor* thisx, PlayState* play) {
-    EnZot* this = THIS;
+    EnZot* this = (EnZot*)thisx;
 
     Collider_DestroyCylinder(play, &this->collider);
     if (ENZOT_GET_1F(&this->actor) == 8) {
@@ -235,21 +261,17 @@ void EnZot_Destroy(Actor* thisx, PlayState* play) {
     }
 }
 
-void func_80B96BEC(EnZot* this, s16 arg1, u8 arg2) {
-    static AnimationHeader* sAnimations[] = {
-        &gZoraStandAnim,           &gZoraWalkAnim,           &gZoraSitAnim,           &gZoraRunAnim,
-        &gZoraFixSpeakerStartAnim, &gZoraFixSpeakerLoopAnim, &gZoraFixSpeakerEndAnim, &gZoraBobHandAnim,
-        &gZoraListenAnim,          &gZoraListenAnim,
-    };
+void EnZot_ChangeAnim(EnZot* this, s16 animIndex, u8 animMode) {
 
-    if ((arg1 >= 0) && (arg1 < 10)) {
-        if (arg1 >= 8) {
-            Animation_Change(&this->skelAnime, sAnimations[arg1], 0.0f, arg1 - 8, arg1 - 8, arg2, 0.0f);
+    if ((animIndex > ENZOT_ANIM_NONE) && (animIndex < ENZOT_ANIM_MAX)) {
+        if (animIndex >= ENZOT_ANIM_8) {
+            Animation_Change(&this->skelAnime, sAnimations[animIndex], 0.0f, animIndex - 8, animIndex - 8, animMode,
+                             0.0f);
         } else {
-            Animation_Change(&this->skelAnime, sAnimations[arg1], 1.0f, 0.0f, Animation_GetLastFrame(sAnimations[arg1]),
-                             arg2, -5.0f);
+            Animation_Change(&this->skelAnime, sAnimations[animIndex], 1.0f, 0.0f,
+                             Animation_GetLastFrame(sAnimations[animIndex]), animMode, -5.0f);
         }
-        this->unk_2F0 = arg1;
+        this->animIndex = animIndex;
     }
 }
 
@@ -299,7 +321,7 @@ s32 func_80B96E5C(EnZot* this) {
     temp_f12 = points->x - this->actor.world.pos.x;
     temp_f14 = points->z - this->actor.world.pos.z;
     this->actor.world.rot.y = Math_Atan2S(temp_f12, temp_f14);
-    Math_SmoothStepToS(&this->actor.shape.rot.y, this->actor.world.rot.y, 2, 2000, 200);
+    Math_SmoothStepToS(&this->actor.shape.rot.y, this->actor.world.rot.y, 2, 0x7D0, 0xC8);
     phi_f2 = SQ(this->actor.speed) * SQ(3.0f);
 
     if (this->unk_2D4 == 0) {
@@ -332,7 +354,7 @@ s32 func_80B96FB0(EnZot* this) {
     temp_f12 = points->x - this->actor.world.pos.x;
     temp_f14 = points->z - this->actor.world.pos.z;
     this->actor.world.rot.y = Math_Atan2S(temp_f12, temp_f14);
-    Math_SmoothStepToS(&this->actor.shape.rot.y, this->actor.world.rot.y, 2, 2000, 200);
+    Math_SmoothStepToS(&this->actor.shape.rot.y, this->actor.world.rot.y, 2, 0x7D0, 0xC8);
 
     if ((SQ(temp_f12) + SQ(temp_f14)) < SQ(10.0f)) {
         if (this->unk_2F2 & 0x20) {
@@ -380,7 +402,7 @@ void func_80B97110(EnZot* this, PlayState* play) {
 }
 
 void func_80B97194(EnZot* this, PlayState* play) {
-    if ((Message_GetState(&play->msgCtx) == TEXT_STATE_5) && Message_ShouldAdvance(play)) {
+    if ((Message_GetState(&play->msgCtx) == TEXT_STATE_EVENT) && Message_ShouldAdvance(play)) {
         switch (play->msgCtx.currentTextId) {
             case 0x125C:
             case 0x125F:
@@ -399,7 +421,7 @@ void func_80B97194(EnZot* this, PlayState* play) {
 }
 
 void func_80B97240(EnZot* this, PlayState* play) {
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+    if (Actor_TalkOfferAccepted(&this->actor, &play->state)) {
         this->actionFunc = func_80B97194;
         func_80B97110(this, play);
     } else if ((this->actor.xzDistToPlayer < 100.0f) && Player_IsFacingActor(&this->actor, 0x3000, play) &&
@@ -449,7 +471,7 @@ void func_80B973BC(EnZot* this, PlayState* play) {
     func_80B96D4C(this);
     Math_SmoothStepToS(&this->actor.shape.rot.y, this->actor.yawTowardsPlayer, 2, 0x800, 0x100);
     this->actor.world.rot.y = this->actor.shape.rot.y;
-    if ((Message_GetState(&play->msgCtx) == TEXT_STATE_5) && Message_ShouldAdvance(play)) {
+    if ((Message_GetState(&play->msgCtx) == TEXT_STATE_EVENT) && Message_ShouldAdvance(play)) {
         switch (play->msgCtx.currentTextId) {
             case 0x126E:
             case 0x1270:
@@ -486,7 +508,7 @@ void func_80B973BC(EnZot* this, PlayState* play) {
             case 0x1279:
                 Message_CloseTextbox(play);
                 func_80B965D0(this, play);
-                this->actor.flags &= ~ACTOR_FLAG_10000;
+                this->actor.flags &= ~ACTOR_FLAG_TALK_OFFER_AUTO_ACCEPTED;
                 this->actor.textId = 0;
                 this->actionFunc = func_80B97708;
                 if ((this->actor.csId != CS_ID_NONE) && !(this->unk_2F2 & 1)) {
@@ -514,7 +536,7 @@ void func_80B973BC(EnZot* this, PlayState* play) {
 
 void func_80B975F8(EnZot* this, PlayState* play) {
     func_80B96D4C(this);
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+    if (Actor_TalkOfferAccepted(&this->actor, &play->state)) {
         this->actionFunc = func_80B973BC;
     } else {
         Actor_OfferTalkExchange(&this->actor, play, 10000.0f, 1000.0f, PLAYER_IA_NONE);
@@ -523,7 +545,7 @@ void func_80B975F8(EnZot* this, PlayState* play) {
 
 void func_80B9765C(EnZot* this, PlayState* play) {
     func_80B96D4C(this);
-    if ((Message_GetState(&play->msgCtx) == TEXT_STATE_5) && Message_ShouldAdvance(play)) {
+    if ((Message_GetState(&play->msgCtx) == TEXT_STATE_EVENT) && Message_ShouldAdvance(play)) {
         s32 requiredScopeTemp;
 
         switch (play->msgCtx.currentTextId) {
@@ -549,13 +571,13 @@ void func_80B97708(EnZot* this, PlayState* play) {
     func_80B96D4C(this);
     Math_SmoothStepToS(&this->actor.shape.rot.y, this->actor.home.rot.y, 2, 0x400, 0x100);
     this->actor.world.rot.y = this->actor.shape.rot.y;
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+    if (Actor_TalkOfferAccepted(&this->actor, &play->state)) {
         this->actionFunc = func_80B9765C;
         func_80B972E8(this, play);
         return;
     }
 
-    if (!(player->stateFlags1 & PLAYER_STATE1_2000000)) {
+    if (!(player->stateFlags1 & PLAYER_STATE1_ZORA_BOOMERANG_THROWN)) {
         phi_v1 = func_80B96CE4(this);
     } else {
         phi_v1 = 0;
@@ -563,7 +585,7 @@ void func_80B97708(EnZot* this, PlayState* play) {
 
     if (phi_v1 != 0) {
         SET_WEEKEVENTREG(WEEKEVENTREG_29_10);
-        this->actor.flags |= ACTOR_FLAG_10000;
+        this->actor.flags |= ACTOR_FLAG_TALK_OFFER_AUTO_ACCEPTED;
         if (phi_v1 == 5) {
             if (GET_PLAYER_FORM == PLAYER_FORM_ZORA) {
                 this->actor.textId = 0x126E;
@@ -653,7 +675,7 @@ void func_80B9787C(EnZot* this, PlayState* play) {
 void func_80B979DC(EnZot* this, PlayState* play) {
     if (func_80B96E5C(this)) {
         this->actionFunc = func_80B97B5C;
-        func_80B96BEC(this, 0, ANIMMODE_LOOP);
+        EnZot_ChangeAnim(this, ENZOT_ANIM_0, ANIMMODE_LOOP);
         this->actor.speed = 0.0f;
     } else {
         this->actor.speed = 1.5f;
@@ -661,7 +683,7 @@ void func_80B979DC(EnZot* this, PlayState* play) {
 }
 
 void func_80B97A44(EnZot* this, PlayState* play) {
-    if ((Message_GetState(&play->msgCtx) == TEXT_STATE_5) && Message_ShouldAdvance(play)) {
+    if ((Message_GetState(&play->msgCtx) == TEXT_STATE_EVENT) && Message_ShouldAdvance(play)) {
         switch (play->msgCtx.currentTextId) {
             case 0x1279:
             case 0x127C:
@@ -682,7 +704,7 @@ void func_80B97A44(EnZot* this, PlayState* play) {
                 if (!(this->unk_2F2 & 2)) {
                     this->unk_2F2 |= 2;
                     this->actionFunc = func_80B979DC;
-                    func_80B96BEC(this, 1, ANIMMODE_LOOP);
+                    EnZot_ChangeAnim(this, ENZOT_ANIM_1, ANIMMODE_LOOP);
                 } else {
                     this->actionFunc = func_80B97B5C;
                 }
@@ -699,7 +721,7 @@ void func_80B97A44(EnZot* this, PlayState* play) {
 void func_80B97B5C(EnZot* this, PlayState* play) {
     Math_SmoothStepToS(&this->actor.shape.rot.y, this->actor.home.rot.y, 2, 0x400, 0x100);
     this->actor.world.rot.y = this->actor.shape.rot.y;
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+    if (Actor_TalkOfferAccepted(&this->actor, &play->state)) {
         this->actionFunc = func_80B97A44;
         func_80B9787C(this, play);
     } else if (func_80B96DF0(this, play)) {
@@ -721,14 +743,14 @@ void func_80B97BF8(EnZot* this, PlayState* play) {
 void func_80B97C40(EnZot* this, PlayState* play) {
     Math_SmoothStepToS(&this->actor.shape.rot.y, this->actor.yawTowardsPlayer, 2, 0x800, 0x100);
     this->actor.world.rot.y = this->actor.shape.rot.y;
-    if ((Message_GetState(&play->msgCtx) == TEXT_STATE_5) && Message_ShouldAdvance(play)) {
+    if ((Message_GetState(&play->msgCtx) == TEXT_STATE_EVENT) && Message_ShouldAdvance(play)) {
         Message_CloseTextbox(play);
         this->actionFunc = func_80B97CC8;
     }
 }
 
 void func_80B97CC8(EnZot* this, PlayState* play) {
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+    if (Actor_TalkOfferAccepted(&this->actor, &play->state)) {
         this->actionFunc = func_80B97C40;
         Message_StartTextbox(play, 0x128B, &this->actor);
     } else if (Player_IsFacingActor(&this->actor, 0x3000, play) && (this->actor.xzDistToPlayer < 100.0f)) {
@@ -740,7 +762,7 @@ void func_80B97D6C(EnZot* this, PlayState* play) {
     if (func_80B96E5C(this)) {
         this->actionFunc = func_80B97CC8;
         this->actor.speed = 0.0f;
-        func_80B96BEC(this, 0, ANIMMODE_LOOP);
+        EnZot_ChangeAnim(this, ENZOT_ANIM_0, ANIMMODE_LOOP);
     } else {
         this->actor.speed = 8.0f;
     }
@@ -753,13 +775,13 @@ void func_80B97D6C(EnZot* this, PlayState* play) {
 void func_80B97E0C(EnZot* this, PlayState* play) {
     if (this->unk_2F2 & 0x40) {
         this->actionFunc = func_80B97D6C;
-        func_80B96BEC(this, 3, ANIMMODE_LOOP);
+        EnZot_ChangeAnim(this, ENZOT_ANIM_3, ANIMMODE_LOOP);
     }
 }
 
 void func_80B97E4C(EnZot* this, PlayState* play) {
     if (this->unk_2F2 & 0x40) {
-        func_80B96BEC(this, 0, ANIMMODE_LOOP);
+        EnZot_ChangeAnim(this, ENZOT_ANIM_0, ANIMMODE_LOOP);
     }
 
     if (!(this->unk_2F2 & 4)) {
@@ -767,14 +789,14 @@ void func_80B97E4C(EnZot* this, PlayState* play) {
         this->actor.world.rot.y = this->actor.shape.rot.y;
     }
 
-    if ((Message_GetState(&play->msgCtx) != TEXT_STATE_5) || !Message_ShouldAdvance(play)) {
+    if ((Message_GetState(&play->msgCtx) != TEXT_STATE_EVENT) || !Message_ShouldAdvance(play)) {
         return;
     }
 
     switch (play->msgCtx.currentTextId) {
         case 0x128C:
             this->unk_2F2 &= ~4;
-            func_80B96BEC(this, 6, ANIMMODE_ONCE);
+            EnZot_ChangeAnim(this, ENZOT_ANIM_6, ANIMMODE_ONCE);
             Message_ContinueTextbox(play, play->msgCtx.currentTextId + 1);
             break;
 
@@ -788,7 +810,7 @@ void func_80B97E4C(EnZot* this, PlayState* play) {
             Message_CloseTextbox(play);
             this->actionFunc = func_80B97D6C;
             this->unk_2F2 |= 4;
-            func_80B96BEC(this, 3, ANIMMODE_LOOP);
+            EnZot_ChangeAnim(this, ENZOT_ANIM_3, ANIMMODE_LOOP);
             SET_WEEKEVENTREG(WEEKEVENTREG_38_08);
             break;
 
@@ -805,14 +827,14 @@ void func_80B97E4C(EnZot* this, PlayState* play) {
 void func_80B97FD0(EnZot* this, PlayState* play) {
     Math_SmoothStepToS(&this->actor.shape.rot.y, this->actor.home.rot.y, 2, 0x800, 0x100);
     this->actor.world.rot.y = this->actor.shape.rot.y;
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+    if (Actor_TalkOfferAccepted(&this->actor, &play->state)) {
         this->actionFunc = func_80B97E4C;
         func_80B97BF8(this, play);
     } else if (CHECK_WEEKEVENTREG(WEEKEVENTREG_38_08)) {
         if ((this->actor.xzDistToPlayer < 120.0f) && (GET_PLAYER_FORM == PLAYER_FORM_ZORA)) {
             this->unk_2F2 |= 4;
             this->actionFunc = func_80B97E0C;
-            func_80B96BEC(this, 6, ANIMMODE_ONCE);
+            EnZot_ChangeAnim(this, ENZOT_ANIM_6, ANIMMODE_ONCE);
         }
     } else if (Player_IsFacingActor(&this->actor, 0x3000, play) && (this->actor.xzDistToPlayer < 100.0f)) {
         Actor_OfferTalk(&this->actor, play, 120.0f);
@@ -827,8 +849,8 @@ void func_80B980FC(EnZot* this, PlayState* play) {
         this->actor.speed = 0.0f;
     } else {
         this->actor.speed = 8.0f;
-        if (this->unk_2F0 != 3) {
-            func_80B96BEC(this, 3, ANIMMODE_LOOP);
+        if (this->animIndex != ENZOT_ANIM_3) {
+            EnZot_ChangeAnim(this, ENZOT_ANIM_3, ANIMMODE_LOOP);
         }
     }
 }
@@ -913,22 +935,22 @@ void func_80B98348(EnZot* this, PlayState* play) {
         this->unk_2F2 &= ~8;
     } else {
         this->unk_2F2 |= 8;
-        Math_SmoothStepToS(&this->unk_2C4.x, 0, 6, 6200, 100);
-        Math_SmoothStepToS(&this->unk_2CA.x, 0, 6, 6200, 100);
+        Math_SmoothStepToS(&this->headRot.x, 0, 6, 0x1838, 0x64);
+        Math_SmoothStepToS(&this->torsoRot.x, 0, 6, 0x1838, 0x64);
         y = this->actor.yawTowardsPlayer - this->actor.shape.rot.y;
         if (y > 0) {
-            Math_SmoothStepToS(&this->unk_2C4.y, 0x3000, 6, 6200, 100);
-            Math_SmoothStepToS(&this->unk_2CA.y, 0x1000, 6, 6200, 100);
+            Math_SmoothStepToS(&this->headRot.y, 0x3000, 6, 0x1838, 0x64);
+            Math_SmoothStepToS(&this->torsoRot.y, 0x1000, 6, 0x1838, 0x64);
         } else {
-            Math_SmoothStepToS(&this->unk_2C4.y, -0x3000, 6, 6200, 100);
-            Math_SmoothStepToS(&this->unk_2CA.y, -0x1000, 6, 6200, 100);
+            Math_SmoothStepToS(&this->headRot.y, -0x3000, 6, 0x1838, 0x64);
+            Math_SmoothStepToS(&this->torsoRot.y, -0x1000, 6, 0x1838, 0x64);
         }
     }
 }
 
 void func_80B9849C(EnZot* this, PlayState* play) {
     func_80B98348(this, play);
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+    if (Actor_TalkOfferAccepted(&this->actor, &play->state)) {
         if (this->unk_2D4 == 2) {
             Message_StartTextbox(play, 0x12AD, &this->actor);
         } else {
@@ -945,7 +967,7 @@ void func_80B9854C(EnZot* this, PlayState* play) {
     if (Actor_HasParent(&this->actor, play)) {
         this->actor.parent = NULL;
         this->actionFunc = func_80B9849C;
-        this->actor.flags |= ACTOR_FLAG_10000;
+        this->actor.flags |= ACTOR_FLAG_TALK_OFFER_AUTO_ACCEPTED;
         Actor_OfferTalkExchange(&this->actor, play, 1000.0f, 1000.0f, PLAYER_IA_MINUS1);
     } else {
         Actor_OfferGetItem(&this->actor, play, this->unk_2D4, 10000.0f, 50.0f);
@@ -957,7 +979,7 @@ void func_80B985EC(EnZot* this, PlayState* play) {
     Player* player = GET_PLAYER(play);
 
     func_80B98348(this, play);
-    if (Message_GetState(&play->msgCtx) == TEXT_STATE_16) {
+    if (Message_GetState(&play->msgCtx) == TEXT_STATE_PAUSE_MENU) {
         itemAction = func_80123810(play);
 
         if (itemAction > PLAYER_IA_NONE) {
@@ -1001,7 +1023,7 @@ void func_80B98728(EnZot* this, PlayState* play) {
             }
             break;
 
-        case TEXT_STATE_5:
+        case TEXT_STATE_EVENT:
             if (Message_ShouldAdvance(play)) {
                 switch (play->msgCtx.currentTextId) {
                     case 0x1291:
@@ -1059,7 +1081,7 @@ void func_80B98728(EnZot* this, PlayState* play) {
                     default:
                         Message_CloseTextbox(play);
                         this->actionFunc = func_80B98998;
-                        this->actor.flags &= ~ACTOR_FLAG_10000;
+                        this->actor.flags &= ~ACTOR_FLAG_TALK_OFFER_AUTO_ACCEPTED;
                         break;
                 }
             }
@@ -1069,7 +1091,7 @@ void func_80B98728(EnZot* this, PlayState* play) {
 
 void func_80B98998(EnZot* this, PlayState* play) {
     this->unk_2F2 &= ~8;
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+    if (Actor_TalkOfferAccepted(&this->actor, &play->state)) {
         this->actionFunc = func_80B98728;
         func_80B98178(this, play);
     } else if ((this->actor.xzDistToPlayer < 100.0f) && Player_IsFacingActor(&this->actor, 0x3000, play) &&
@@ -1098,7 +1120,7 @@ void func_80B98A4C(EnZot* this, PlayState* play) {
 }
 
 void func_80B98AD0(EnZot* this, PlayState* play) {
-    if ((Message_GetState(&play->msgCtx) == TEXT_STATE_5) && Message_ShouldAdvance(play)) {
+    if ((Message_GetState(&play->msgCtx) == TEXT_STATE_EVENT) && Message_ShouldAdvance(play)) {
         switch (play->msgCtx.currentTextId) {
             case 0x12B1:
             case 0x12B4:
@@ -1130,8 +1152,8 @@ void func_80B98AD0(EnZot* this, PlayState* play) {
 }
 
 void func_80B98BF4(EnZot* this, PlayState* play) {
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
-        this->actor.flags &= ~ACTOR_FLAG_10000;
+    if (Actor_TalkOfferAccepted(&this->actor, &play->state)) {
+        this->actor.flags &= ~ACTOR_FLAG_TALK_OFFER_AUTO_ACCEPTED;
         if (CHECK_WEEKEVENTREG(WEEKEVENTREG_41_20)) {
             Message_StartTextbox(play, 0x12B7, &this->actor);
             this->actionFunc = func_80B98AD0;
@@ -1145,13 +1167,13 @@ void func_80B98BF4(EnZot* this, PlayState* play) {
 }
 
 void func_80B98CA8(EnZot* this, PlayState* play) {
-    if (func_800B8718(&this->actor, &play->state)) {
+    if (Actor_OcarinaInteractionAccepted(&this->actor, &play->state)) {
         play->msgCtx.ocarinaMode = OCARINA_MODE_END;
         AudioOcarina_StartDefault(0xFFFF);
         this->actionFunc = func_80B98BF4;
-        this->actor.flags |= ACTOR_FLAG_10000;
+        this->actor.flags |= ACTOR_FLAG_TALK_OFFER_AUTO_ACCEPTED;
         Actor_OfferTalk(&this->actor, play, 120.0f);
-    } else if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+    } else if (Actor_TalkOfferAccepted(&this->actor, &play->state)) {
         this->actionFunc = func_80B98AD0;
         func_80B98A4C(this, play);
     } else {
@@ -1160,7 +1182,7 @@ void func_80B98CA8(EnZot* this, PlayState* play) {
         }
 
         if ((GET_PLAYER_FORM == PLAYER_FORM_ZORA) || (this->actor.xzDistToPlayer < 100.0f)) {
-            func_800B874C(&this->actor, play, 120.0, 100.0f);
+            Actor_OfferOcarinaInteraction(&this->actor, play, 120.0f, 100.0f);
         }
     }
 
@@ -1220,7 +1242,7 @@ void func_80B98F94(EnZot* this, PlayState* play) {
         this->actor.world.rot.y = this->actor.shape.rot.y;
     }
 
-    if ((Message_GetState(&play->msgCtx) == TEXT_STATE_5) && Message_ShouldAdvance(play)) {
+    if ((Message_GetState(&play->msgCtx) == TEXT_STATE_EVENT) && Message_ShouldAdvance(play)) {
         switch (play->msgCtx.currentTextId) {
             case 0x12BB:
                 this->unk_2F2 &= ~4;
@@ -1248,7 +1270,7 @@ void func_80B98F94(EnZot* this, PlayState* play) {
 void func_80B990A4(EnZot* this, PlayState* play) {
     Math_SmoothStepToS(&this->actor.shape.rot.y, this->actor.home.rot.y, 2, 0x400, 0x100);
     this->actor.world.rot.y = this->actor.shape.rot.y;
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+    if (Actor_TalkOfferAccepted(&this->actor, &play->state)) {
         this->actionFunc = func_80B98F94;
         func_80B98E10(this, play);
     } else if (Player_IsFacingActor(&this->actor, 0x3000, play) && (this->actor.xzDistToPlayer < 100.0f)) {
@@ -1280,7 +1302,7 @@ void func_80B991E4(EnZot* this, PlayState* play) {
 
     Math_SmoothStepToS(&this->actor.shape.rot.y, this->actor.yawTowardsPlayer, 2, 0x800, 0x100);
     this->actor.world.rot.y = this->actor.shape.rot.y;
-    if ((Message_GetState(&play->msgCtx) == TEXT_STATE_5) && Message_ShouldAdvance(play)) {
+    if ((Message_GetState(&play->msgCtx) == TEXT_STATE_EVENT) && Message_ShouldAdvance(play)) {
         u16 temp = play->msgCtx.currentTextId;
         u32 temp2;
 
@@ -1290,17 +1312,17 @@ void func_80B991E4(EnZot* this, PlayState* play) {
         } else {
             Message_CloseTextbox(play);
             this->actionFunc = func_80B992C0;
-            func_80B96BEC(this, 1, ANIMMODE_LOOP);
+            EnZot_ChangeAnim(this, ENZOT_ANIM_1, ANIMMODE_LOOP);
         }
     }
 }
 
 void func_80B992C0(EnZot* this, PlayState* play) {
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+    if (Actor_TalkOfferAccepted(&this->actor, &play->state)) {
         this->actionFunc = func_80B991E4;
         func_80B99160(this, play);
         this->actor.speed = 0.0f;
-        func_80B96BEC(this, 0, ANIMMODE_LOOP);
+        EnZot_ChangeAnim(this, ENZOT_ANIM_0, ANIMMODE_LOOP);
     } else {
         if (Player_IsFacingActor(&this->actor, 0x3000, play) && (this->actor.xzDistToPlayer < 100.0f)) {
             Actor_OfferTalk(&this->actor, play, 120.0f);
@@ -1315,7 +1337,7 @@ void func_80B99384(EnZot* this, PlayState* play) {
 
 void EnZot_Update(Actor* thisx, PlayState* play) {
     s32 pad;
-    EnZot* this = THIS;
+    EnZot* this = (EnZot*)thisx;
 
     Actor_MoveWithGravity(&this->actor);
     Collider_UpdateCylinder(&this->actor, &this->collider);
@@ -1323,19 +1345,19 @@ void EnZot_Update(Actor* thisx, PlayState* play) {
     Actor_UpdateBgCheckInfo(play, &this->actor, 30.0f, 15.0f, 30.0f, UPDBGCHECKINFO_FLAG_1 | UPDBGCHECKINFO_FLAG_4);
 
     this->unk_2F2 &= ~0x40;
-    if (SkelAnime_Update(&this->skelAnime) && (this->unk_2F0 != 0)) {
+    if (SkelAnime_Update(&this->skelAnime) && (this->animIndex != ENZOT_ANIM_0)) {
         this->unk_2F2 |= 0x40;
     }
 
     this->actionFunc(this, play);
     if (!(this->unk_2F2 & 8)) {
         if (!(this->unk_2F2 & 4) && func_80B96DF0(this, play)) {
-            Actor_TrackPlayer(play, &this->actor, &this->unk_2C4, &this->unk_2CA, this->actor.focus.pos);
+            Actor_TrackPlayer(play, &this->actor, &this->headRot, &this->torsoRot, this->actor.focus.pos);
         } else {
-            Math_SmoothStepToS(&this->unk_2C4.x, 0, 6, 6200, 100);
-            Math_SmoothStepToS(&this->unk_2C4.y, 0, 6, 6200, 100);
-            Math_SmoothStepToS(&this->unk_2CA.x, 0, 6, 6200, 100);
-            Math_SmoothStepToS(&this->unk_2CA.y, 0, 6, 6200, 100);
+            Math_SmoothStepToS(&this->headRot.x, 0, 6, 0x1838, 0x64);
+            Math_SmoothStepToS(&this->headRot.y, 0, 6, 0x1838, 0x64);
+            Math_SmoothStepToS(&this->torsoRot.x, 0, 6, 0x1838, 0x64);
+            Math_SmoothStepToS(&this->torsoRot.y, 0, 6, 0x1838, 0x64);
         }
     }
 
@@ -1359,34 +1381,35 @@ Gfx* func_80B99580(GraphicsContext* gfxCtx) {
 }
 
 s32 EnZot_OverrideLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3f* pos, Vec3s* rot, Actor* thisx) {
-    EnZot* this = THIS;
+    EnZot* this = (EnZot*)thisx;
     s32 pad;
 
-    if (limbIndex == 15) {
+    if (limbIndex == ZORA_LIMB_HEAD) {
         Matrix_Translate(1500.0f, 0.0f, 0.0f, MTXMODE_APPLY);
-        Matrix_RotateXS(this->unk_2C4.y, MTXMODE_APPLY);
-        Matrix_RotateZS(this->unk_2C4.x, MTXMODE_APPLY);
+        Matrix_RotateXS(this->headRot.y, MTXMODE_APPLY);
+        Matrix_RotateZS(this->headRot.x, MTXMODE_APPLY);
         Matrix_Translate(-1500.0f, 0.0f, 0.0f, MTXMODE_APPLY);
     }
 
-    if (limbIndex == 8) {
-        Matrix_RotateXS(this->unk_2CA.y * -1, MTXMODE_APPLY);
-        Matrix_RotateZS(this->unk_2CA.x * -1, MTXMODE_APPLY);
+    if (limbIndex == ZORA_LIMB_TORSO) {
+        Matrix_RotateXS(this->torsoRot.y * -1, MTXMODE_APPLY);
+        Matrix_RotateZS(this->torsoRot.x * -1, MTXMODE_APPLY);
     }
 
-    if (((this->unk_2F0 == 8) || (this->unk_2F0 == 9)) &&
-        ((limbIndex == 8) || (limbIndex == 10) || (limbIndex == 13))) {
-        rot->y += (s16)(Math_SinS(play->state.frames * ((limbIndex * 50) + 0x814)) * 200.0f);
-        rot->z += (s16)(Math_CosS(play->state.frames * ((limbIndex * 50) + 0x940)) * 200.0f);
+    if (((this->animIndex == ENZOT_ANIM_8) || (this->animIndex == ENZOT_ANIM_9)) &&
+        ((limbIndex == ZORA_LIMB_TORSO) || (limbIndex == ZORA_LIMB_LEFT_FOREARM) ||
+         (limbIndex == ZORA_LIMB_RIGHT_FOREARM))) {
+        rot->y += TRUNCF_BINANG(Math_SinS(play->state.frames * ((limbIndex * 50) + 0x814)) * 200.0f);
+        rot->z += TRUNCF_BINANG(Math_CosS(play->state.frames * ((limbIndex * 50) + 0x940)) * 200.0f);
     }
     return false;
 }
 
 void EnZot_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* rot, Actor* thisx) {
     static Vec3f D_80B99934 = { 400.0f, 0.0f, 0.0f };
-    EnZot* this = THIS;
+    EnZot* this = (EnZot*)thisx;
 
-    if (limbIndex == 15) {
+    if (limbIndex == ZORA_LIMB_HEAD) {
         Matrix_MultVec3f(&D_80B99934, &this->actor.focus.pos);
     }
 }
@@ -1397,7 +1420,7 @@ void EnZot_Draw(Actor* thisx, PlayState* play) {
         gZoraEyeHalfTex,
         gZoraEyeClosedTex,
     };
-    EnZot* this = THIS;
+    EnZot* this = (EnZot*)thisx;
 
     OPEN_DISPS(play->state.gfxCtx);
 

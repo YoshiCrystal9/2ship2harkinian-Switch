@@ -9,7 +9,7 @@
 
 #include "2s2h/BenGui/HudEditor.h"
 #include "2s2h/GameInteractor/GameInteractor.h"
-#include "public/bridge/consolevariablebridge.h"
+#include <libultraship/bridge/consolevariablebridge.h>
 
 s16 sMaskEquipState = EQUIP_STATE_MAGIC_ARROW_GROW_ORB;
 
@@ -660,6 +660,11 @@ void KaleidoScope_UpdateMaskCursor(PlayState* play) {
                         }
                     }
                     // #endregion
+
+                    if (!GameInteractor_Should(VB_KALEIDO_EQUIP_ITEM_TO_BUTTON, true, cursorSlot + ITEM_NUM_SLOTS,
+                                               cursorItem)) {
+                        return;
+                    }
 
                     // Equip item to the C buttons
                     pauseCtx->equipTargetItem = cursorItem;

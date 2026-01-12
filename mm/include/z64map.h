@@ -30,8 +30,8 @@ mapCompactId
 #define MAPDATA_MAP_I_MAX 0x3A
 #define MAPDATA_MAP_GRAND 0x100
 #define MAPDATA_MAP_GRAND_MAX 0x162
-#define MAPDATA_GET_MAP_GRAND_ID_FROM_COMPACT_ID(id) (id + (MAPDATA_MAP_GRAND - MAPDATA_MAP_I_MAX))
-#define MAPDATA_GET_MAP_GRAND_ID_FROM_MAP_ID(mapId) (mapId - MAPDATA_MAP_GRAND)
+#define MAPDATA_GET_MAP_GRAND_ID_FROM_COMPACT_ID(id) ((id) + (MAPDATA_MAP_GRAND - MAPDATA_MAP_I_MAX))
+#define MAPDATA_GET_MAP_GRAND_ID_FROM_MAP_ID(mapId) ((mapId) - MAPDATA_MAP_GRAND)
 
 #define MAPDATA_MID_GAMEPLAY_DANGEON_KEEP 0
 #define MAPDATA_MID_MAP_GRAND_STATIC 1
@@ -130,9 +130,8 @@ void MapData_CPID_GetTexOffset(s32 mapCompactId, s32* offsetX, s32* offsetY);
 s16 MapData_CPID_GetMapScale(s32 mapCompactId);
 
 /* z_map_exp */
-s32 Map_GetDungeonOrBossAreaIndex(struct PlayState* play);
-s32 Map_IsInDungeonOrBossArea(struct PlayState* play);
-s32 MapExp_CurRoomHasMapI(struct PlayState* play);
+s32 Map_IsInDungeonOrBossScene(struct PlayState* play);
+s32 Map_CurRoomHasMapI(struct PlayState* play);
 s32 Map_IsInBossScene(struct PlayState* play);
 void Map_SetAreaEntrypoint(struct PlayState* play);
 void Map_InitRoomData(struct PlayState* play, s16 room);

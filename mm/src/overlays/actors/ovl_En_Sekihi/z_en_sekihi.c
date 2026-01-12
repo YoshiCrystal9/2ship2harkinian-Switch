@@ -12,9 +12,7 @@
 #include "objects/object_zog/object_zog.h"
 #include "2s2h/GameInteractor/GameInteractor.h"
 
-#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_10)
-
-#define THIS ((EnSekihi*)thisx)
+#define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_UPDATE_CULLING_DISABLED)
 
 void EnSekihi_Init(Actor* thisx, PlayState* play);
 void EnSekihi_Destroy(Actor* thisx, PlayState* play);
@@ -25,7 +23,7 @@ void func_80A44DE8(EnSekihi* this, PlayState* play);
 void func_80A450B0(EnSekihi* this, PlayState* play);
 void EnSekihi_DoNothing(EnSekihi* this, PlayState* play);
 
-ActorInit En_Sekihi_InitVars = {
+ActorProfile En_Sekihi_Profile = {
     /**/ ACTOR_EN_SEKIHI,
     /**/ ACTORCAT_PROP,
     /**/ FLAGS,
@@ -54,7 +52,7 @@ static Gfx* sXluDLists[] = {
 static u16 sTextIds[] = { 0, 0, 0, 0, 0x1018 };
 
 void EnSekihi_Init(Actor* thisx, PlayState* play) {
-    EnSekihi* this = THIS;
+    EnSekihi* this = (EnSekihi*)thisx;
     s32 type = ENSIKIHI_GET_TYPE(thisx);
     s32 objectSlot;
     s32 pad;
@@ -83,7 +81,7 @@ void EnSekihi_Init(Actor* thisx, PlayState* play) {
 }
 
 void EnSekihi_Destroy(Actor* thisx, PlayState* play) {
-    EnSekihi* this = THIS;
+    EnSekihi* this = (EnSekihi*)thisx;
 
     DynaPoly_DeleteBgActor(play, &play->colCtx.dyna, this->dyna.bgId);
 }
@@ -143,7 +141,7 @@ void func_80A44F40(EnSekihi* this, PlayState* play) {
                 break;
             }
             break;
-        case TEXT_STATE_5:
+        case TEXT_STATE_EVENT:
             if (Message_ShouldAdvance(play)) {
                 switch (play->msgCtx.currentTextId) {
                     case 0x1018:
@@ -161,7 +159,7 @@ void func_80A44F40(EnSekihi* this, PlayState* play) {
 }
 
 void func_80A450B0(EnSekihi* this, PlayState* play) {
-    if (Actor_ProcessTalkRequest(&this->dyna.actor, &play->state)) {
+    if (Actor_TalkOfferAccepted(&this->dyna.actor, &play->state)) {
         this->actionFunc = func_80A44F40;
     } else if ((this->dyna.actor.xzDistToPlayer < 100.0f) && Player_IsFacingActor(&this->dyna.actor, 0x2600, play)) {
         Actor_OfferTalk(&this->dyna.actor, play, 120.0f);
@@ -172,23 +170,23 @@ void EnSekihi_DoNothing(EnSekihi* this, PlayState* play) {
 }
 
 void EnSekihi_Update(Actor* thisx, PlayState* play) {
-    EnSekihi* this = THIS;
+    EnSekihi* this = (EnSekihi*)thisx;
 
     this->actionFunc(this, play);
 }
 
 void EnSekihi_Draw(Actor* thisx, PlayState* play) {
-    EnSekihi* this = THIS;
+    EnSekihi* this = (EnSekihi*)thisx;
 
     OPEN_DISPS(play->state.gfxCtx);
 
     if (this->xluDList != NULL) {
-        gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+        MATRIX_FINALIZE_AND_LOAD(POLY_XLU_DISP++, play->state.gfxCtx);
         Gfx_SetupDL25_Xlu(play->state.gfxCtx);
         gSPDisplayList(POLY_XLU_DISP++, this->xluDList);
     }
 
-    gSPMatrix(POLY_OPA_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    MATRIX_FINALIZE_AND_LOAD(POLY_OPA_DISP++, play->state.gfxCtx);
     Gfx_SetupDL25_Opa(play->state.gfxCtx);
     gSPDisplayList(POLY_OPA_DISP++, this->opaDList);
 

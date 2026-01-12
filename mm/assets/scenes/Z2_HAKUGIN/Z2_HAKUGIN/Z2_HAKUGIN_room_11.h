@@ -24,4 +24,7 @@ static const ALIGN_ASSET(2) char Z2_HAKUGIN_room_11DL_001108[] = dZ2_HAKUGIN_roo
 #define dZ2_HAKUGIN_room_11Tex_001F28 "__OTR__scenes/nonmq/Z2_HAKUGIN_scene/Z2_HAKUGIN_room_11Tex_001F28"
 static const ALIGN_ASSET(2) char Z2_HAKUGIN_room_11Tex_001F28[] = dZ2_HAKUGIN_room_11Tex_001F28;
 
+#define dZ2_HAKUGIN_room_11DL_001700 "__OTR__scenes/nonmq/Z2_HAKUGIN_scene/Z2_HAKUGIN_room_11DL_001700"
+static const ALIGN_ASSET(2) char Z2_HAKUGIN_room_11DL_001700[] = dZ2_HAKUGIN_room_11DL_001700;
+
 #endif // Z2_HAKUGIN_Z2_HAKUGIN_ROOM_11_H

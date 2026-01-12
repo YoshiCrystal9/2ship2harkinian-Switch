@@ -1,4 +1,5 @@
 #include "StaticData.h"
+#include "ShipUtils.h"
 
 extern "C" {
 s16 Play_GetOriginalSceneId(s16 sceneId);
@@ -7,6 +8,7 @@ s16 Play_GetOriginalSceneId(s16 sceneId);
 namespace Rando {
 
 namespace StaticData {
+std::array<std::string, RC_MAX> CheckNames = std::array<std::string, RC_MAX>();
 
 #define RC(id, type, scene, flagType, flag, item)      \
     {                                                  \
@@ -18,7 +20,7 @@ namespace StaticData {
 // clang-format off
 std::map<RandoCheckId, RandoStaticCheck> Checks = {
     RC(RC_UNKNOWN,                                                       RCTYPE_UNKNOWN,          SCENE_MAX,                      FLAG_NONE,                   0x00,                                                                RI_UNKNOWN),
-                                                                         
+
     RC(RC_ANCIENT_CASTLE_OF_IKANA_BOSS,                                  RCTYPE_SONG,             SCENE_IKNINSIDE,                FLAG_NONE,                   0x00,                                                                RI_SONG_ELEGY),
     RC(RC_ANCIENT_CASTLE_OF_IKANA_PIECE_OF_HEART,                        RCTYPE_HEART,            SCENE_CASTLE,                   FLAG_CYCL_SCENE_COLLECTIBLE, 0x0a,                                                                RI_HEART_PIECE),
     RC(RC_ASTRAL_OBSERVATORY_MOON_TEAR,                                  RCTYPE_NPC,              SCENE_TENMON_DAI,               FLAG_WEEK_EVENT_REG,         WEEKEVENTREG_74_40,                                                  RI_MOONS_TEAR),
@@ -38,7 +40,7 @@ std::map<RandoCheckId, RandoStaticCheck> Checks = {
     RC(RC_CLOCK_TOWER_ROOF_OCARINA,                                      RCTYPE_NPC,              SCENE_OKUJOU,                   FLAG_NONE,                   0x00,                                                                RI_OCARINA),
     RC(RC_CLOCK_TOWER_ROOF_SONG_OF_TIME,                                 RCTYPE_SONG,             SCENE_OKUJOU,                   FLAG_NONE,                   0x00,                                                                RI_SONG_TIME),
     RC(RC_CLOCK_TOWN_BOMBERS_NOTEBOOK,                                   RCTYPE_NPC,              SCENE_BACKTOWN,                 FLAG_WEEK_EVENT_REG,         WEEKEVENTREG_84_80,                                                  RI_BOMBERS_NOTEBOOK),
-    RC(RC_CLOCK_TOWN_EAST_HONEY_DARLING_ALL_DAYS,                        RCTYPE_MINIGAME,         SCENE_BOWLING,                  FLAG_WEEK_EVENT_REG,         WEEKEVENTREG_22_80,                                                  RI_HEART_PIECE),
+    RC(RC_CLOCK_TOWN_EAST_HONEY_DARLING_ALL_DAYS,                        RCTYPE_MINIGAME,         SCENE_BOWLING,                  FLAG_WEEK_EVENT_REG,         WEEKEVENTREG_RECEIVED_HONEY_AND_DARLING_HEART_PIECE,                 RI_HEART_PIECE),
     RC(RC_CLOCK_TOWN_EAST_HONEY_DARLING_ANY_DAY,                         RCTYPE_MINIGAME,         SCENE_BOWLING,                  FLAG_NONE,                   0x00,                                                                RI_RUPEE_PURPLE),
     RC(RC_CLOCK_TOWN_EAST_POSTMAN_HAT,                                   RCTYPE_NPC,              SCENE_TOWN,                     FLAG_WEEK_EVENT_REG,         WEEKEVENTREG_90_04,                                                  RI_MASK_POSTMAN),
     RC(RC_CLOCK_TOWN_EAST_SHOOTING_GALLERY_HIGH_SCORE,                   RCTYPE_MINIGAME,         SCENE_SYATEKI_MIZU,             FLAG_WEEK_EVENT_REG,         WEEKEVENTREG_RECEIVED_TOWN_SHOOTING_GALLERY_QUIVER_UPGRADE,          RI_PROGRESSIVE_BOW),
@@ -51,12 +53,12 @@ std::map<RandoCheckId, RandoStaticCheck> Checks = {
     RC(RC_CLOCK_TOWN_GREAT_FAIRY_ALT,                                    RCTYPE_NPC,              SCENE_YOUSEI_IZUMI,             FLAG_NONE,                   0x00,                                                                RI_MASK_GREAT_FAIRY),
     RC(RC_CLOCK_TOWN_GREAT_FAIRY,                                        RCTYPE_NPC,              SCENE_YOUSEI_IZUMI,             FLAG_NONE,                   0x00,                                                                RI_PROGRESSIVE_MAGIC),
     RC(RC_CLOCK_TOWN_LAUNDRY_GURU_GURU,                                  RCTYPE_NPC,              SCENE_ALLEY,                    FLAG_WEEK_EVENT_REG,         WEEKEVENTREG_38_40,                                                  RI_MASK_BREMEN),
-    RC(RC_CLOCK_TOWN_NORTH_BOMB_LADY,                                    RCTYPE_NPC,              SCENE_BACKTOWN,                 FLAG_CYCL_SCENE_COLLECTIBLE, WEEKEVENTREG_BOMBERS_NOTEBOOK_EVENT_RECEIVED_BLAST_MASK,             RI_MASK_BLAST),
+    RC(RC_CLOCK_TOWN_NORTH_BOMB_LADY,                                    RCTYPE_NPC,              SCENE_BACKTOWN,                 FLAG_WEEK_EVENT_REG,         WEEKEVENTREG_81_02,                                                  RI_MASK_BLAST),
     RC(RC_CLOCK_TOWN_NORTH_TINGLE_MAP_01,                                RCTYPE_TINGLE_SHOP,      SCENE_BACKTOWN,                 FLAG_NONE,                   0x00,                                                                RI_TINGLE_MAP_CLOCK_TOWN),
     RC(RC_CLOCK_TOWN_NORTH_TINGLE_MAP_02,                                RCTYPE_TINGLE_SHOP,      SCENE_BACKTOWN,                 FLAG_NONE,                   0x00,                                                                RI_TINGLE_MAP_WOODFALL),
     RC(RC_CLOCK_TOWN_NORTH_TREE_PIECE_OF_HEART,                          RCTYPE_HEART,            SCENE_BACKTOWN,                 FLAG_CYCL_SCENE_COLLECTIBLE, 0x0A,                                                                RI_HEART_PIECE),
     RC(RC_CLOCK_TOWN_POSTBOX,                                            RCTYPE_HEART,            SCENE_CLOCKTOWER,               FLAG_WEEK_EVENT_REG,         WEEKEVENTREG_81_08,                                                  RI_HEART_PIECE),
-    RC(RC_CLOCK_TOWN_SCRUB_DEED,                                         RCTYPE_NPC,              SCENE_CLOCKTOWER,               FLAG_WEEK_EVENT_REG,         WEEKEVENTREG_17_80,                                                  RI_DEED_LAND),
+    RC(RC_CLOCK_TOWN_SCRUB_DEED,                                         RCTYPE_NPC,              SCENE_CLOCKTOWER,               FLAG_WEEK_EVENT_REG,         WEEKEVENTREG_RECEIVED_LAND_TITLE_DEED,                               RI_DEED_LAND),
     RC(RC_CLOCK_TOWN_SOUTH_CHEST_LOWER,                                  RCTYPE_CHEST,            SCENE_CLOCKTOWER,               FLAG_CYCL_SCENE_CHEST,       0x00,                                                                RI_RUPEE_RED),
     RC(RC_CLOCK_TOWN_SOUTH_CHEST_UPPER,                                  RCTYPE_CHEST,            SCENE_CLOCKTOWER,               FLAG_CYCL_SCENE_CHEST,       0x01,                                                                RI_RUPEE_PURPLE),
     RC(RC_CLOCK_TOWN_SOUTH_OWL_STATUE,                                   RCTYPE_OWL,              SCENE_CLOCKTOWER,               FLAG_NONE,                   0x00,                                                                RI_OWL_CLOCK_TOWN_SOUTH),
@@ -66,9 +68,9 @@ std::map<RandoCheckId, RandoStaticCheck> Checks = {
     RC(RC_CLOCK_TOWN_WEST_BANK_INTEREST,                                 RCTYPE_NPC,              SCENE_ICHIBA,                   FLAG_WEEK_EVENT_REG,         WEEKEVENTREG_59_80,                                                  RI_RUPEE_BLUE),
     RC(RC_CLOCK_TOWN_WEST_BANK_PIECE_OF_HEART,                           RCTYPE_NPC,              SCENE_ICHIBA,                   FLAG_WEEK_EVENT_REG,         WEEKEVENTREG_60_01,                                                  RI_HEART_PIECE),
     RC(RC_CLOCK_TOWN_WEST_LOTTERY,                                       RCTYPE_NPC,              SCENE_TAKARAKUJI,               FLAG_NONE,                   0x00,                                                                RI_RUPEE_PURPLE),
-    RC(RC_CLOCK_TOWN_WEST_POSTMAN_MINIGAME,                              RCTYPE_MINIGAME,         SCENE_POSTHOUSE,                FLAG_WEEK_EVENT_REG,         WEEKEVENTREG_77_01,                                                  RI_HEART_PIECE),
-    RC(RC_CLOCK_TOWN_WEST_SISTERS_PIECE_OF_HEART,                        RCTYPE_NPC,              SCENE_ICHIBA,                   FLAG_WEEK_EVENT_REG,         WEEKEVENTREG_BOMBERS_NOTEBOOK_EVENT_RECEIVED_ROSA_SISTERS_HP,        RI_HEART_PIECE),
-    RC(RC_CREMIA_ESCORT,                                                 RCTYPE_NPC,              SCENE_KOEPONARACE,              FLAG_WEEK_EVENT_REG,         WEEKEVENTREG_ESCORTED_CREMIA,                                        RI_MASK_ROMANI),
+    RC(RC_CLOCK_TOWN_WEST_POSTMAN_MINIGAME,                              RCTYPE_MINIGAME,         SCENE_POSTHOUSE,                FLAG_WEEK_EVENT_REG,         WEEKEVENTREG_RECEIVED_POSTMAN_COUNTING_GAME_HEART_PIECE,             RI_HEART_PIECE),
+    RC(RC_CLOCK_TOWN_WEST_SISTERS_PIECE_OF_HEART,                        RCTYPE_NPC,              SCENE_ICHIBA,                   FLAG_WEEK_EVENT_REG,         WEEKEVENTREG_77_04,                                                  RI_HEART_PIECE),
+    RC(RC_CREMIA_ESCORT,                                                 RCTYPE_NPC,              SCENE_F01,                      FLAG_WEEK_EVENT_REG,         WEEKEVENTREG_ESCORTED_CREMIA,                                        RI_MASK_ROMANI),
     RC(RC_CURIOSITY_SHOP_SPECIAL_ITEM,                                   RCTYPE_SHOP,             SCENE_AYASHIISHOP,              FLAG_NONE,                   0x00,                                                                RI_MASK_ALL_NIGHT),
     RC(RC_DEKU_KINGS_CHAMBER_MONKEY,                                     RCTYPE_SONG,             SCENE_DEKU_KING,                FLAG_NONE,                   0x00,                                                                RI_SONG_SONATA),
     RC(RC_DEKU_PALACE_GROTTO_CHEST,                                      RCTYPE_CHEST,            SCENE_KAKUSIANA,                FLAG_CYCL_SCENE_CHEST,       0x05,                                                                RI_RUPEE_RED),
@@ -82,7 +84,7 @@ std::map<RandoCheckId, RandoStaticCheck> Checks = {
     RC(RC_GORMAN_MILK_PURCHASE,                                          RCTYPE_SHOP,             SCENE_KOEPONARACE,              FLAG_NONE,                   0x00,                                                                RI_MILK_REFILL),
     RC(RC_GORMAN_TRACK_GARO_MASK,                                        RCTYPE_NPC,              SCENE_KOEPONARACE,              FLAG_NONE,                   0x00,                                                                RI_MASK_GARO),
     RC(RC_GORON_GRAVEYARD_DARMANI,                                       RCTYPE_NPC,              SCENE_GORON_HAKA,               FLAG_NONE,                   0x00,                                                                RI_MASK_GORON),
-    RC(RC_GORON_RACETRACK_GOLD_DUST,                                     RCTYPE_MINIGAME,         SCENE_GORONRACE,                FLAG_WEEK_EVENT_REG,         WEEKEVENTREG_41_08,                                                  RI_BOTTLE_GOLD_DUST),
+    RC(RC_GORON_RACETRACK_GOLD_DUST,                                     RCTYPE_MINIGAME,         SCENE_GORONRACE,                FLAG_WEEK_EVENT_REG,         WEEKEVENTREG_RECEIVED_GORON_RACE_BOTTLE,                             RI_BOTTLE_GOLD_DUST),
     RC(RC_GORON_SHOP_ITEM_01,                                            RCTYPE_SHOP,             SCENE_GORONSHOP,                FLAG_NONE,                   0x00,                                                                RI_BOMBS_10),
     RC(RC_GORON_SHOP_ITEM_02,                                            RCTYPE_SHOP,             SCENE_GORONSHOP,                FLAG_NONE,                   0x00,                                                                RI_ARROWS_10),
     RC(RC_GORON_SHOP_ITEM_03,                                            RCTYPE_SHOP,             SCENE_GORONSHOP,                FLAG_NONE,                   0x00,                                                                RI_RED_POTION_REFILL),
@@ -95,7 +97,7 @@ std::map<RandoCheckId, RandoStaticCheck> Checks = {
     RC(RC_GREAT_BAY_COAST_COW_BACK,                                      RCTYPE_COW,              SCENE_KAKUSIANA,                FLAG_NONE,                   0x16,                                                                RI_MILK_REFILL),
     RC(RC_GREAT_BAY_COAST_COW_FRONT,                                     RCTYPE_COW,              SCENE_KAKUSIANA,                FLAG_NONE,                   0x15,                                                                RI_MILK_REFILL),
     RC(RC_GREAT_BAY_COAST_FISHERMAN_GROTTO_CHEST,                        RCTYPE_CHEST,            SCENE_KAKUSIANA,                FLAG_CYCL_SCENE_CHEST,       0x17,                                                                RI_RUPEE_RED),
-    RC(RC_GREAT_BAY_COAST_FISHERMAN_MINIGAME,                            RCTYPE_MINIGAME,         SCENE_30GYOSON,                 FLAG_WEEK_EVENT_REG,         WEEKEVENTREG_82_10,                                                  RI_HEART_PIECE),
+    RC(RC_GREAT_BAY_COAST_FISHERMAN_MINIGAME,                            RCTYPE_MINIGAME,         SCENE_30GYOSON,                 FLAG_WEEK_EVENT_REG,         WEEKEVENTREG_RECEIVED_FISHERMANS_JUMPING_GAME_HEART_PIECE,           RI_HEART_PIECE),
     RC(RC_GREAT_BAY_COAST_MARINE_LAB_FISH_PIECE_OF_HEART,                RCTYPE_NPC,              SCENE_LABO,                     FLAG_NONE,                   0x00,                                                                RI_HEART_PIECE),
     RC(RC_GREAT_BAY_COAST_MIKAU,                                         RCTYPE_NPC,              SCENE_30GYOSON,                 FLAG_NONE,                   0x00,                                                                RI_MASK_ZORA),
     RC(RC_GREAT_BAY_COAST_NEW_WAVE_BOSSA_NOVA,                           RCTYPE_SONG,             SCENE_LABO,                     FLAG_WEEK_EVENT_REG,         WEEKEVENTREG_20_40,                                                  RI_SONG_NOVA),
@@ -130,7 +132,7 @@ std::map<RandoCheckId, RandoStaticCheck> Checks = {
     RC(RC_HAGS_POTION_SHOP_ITEM_02,                                      RCTYPE_SHOP,             SCENE_WITCH_SHOP,               FLAG_NONE,                   0x00,                                                                RI_GREEN_POTION_REFILL),
     RC(RC_HAGS_POTION_SHOP_ITEM_03,                                      RCTYPE_SHOP,             SCENE_WITCH_SHOP,               FLAG_NONE,                   0x00,                                                                RI_RED_POTION_REFILL),
     RC(RC_HAGS_POTION_SHOP_KOTAKE,                                       RCTYPE_NPC,              SCENE_WITCH_SHOP,               FLAG_WEEK_EVENT_REG,         WEEKEVENTREG_RECEIVED_KOTAKE_BOTTLE,                                 RI_BOTTLE_RED_POTION),
-    RC(RC_IKANA_CANYON_GHOST_HUT_PIECE_OF_HEART,                         RCTYPE_MINIGAME,         SCENE_TOUGITES,                 FLAG_WEEK_EVENT_REG,         WEEKEVENTREG_54_40,                                                  RI_HEART_PIECE),
+    RC(RC_IKANA_CANYON_GHOST_HUT_PIECE_OF_HEART,                         RCTYPE_MINIGAME,         SCENE_TOUGITES,                 FLAG_WEEK_EVENT_REG,         WEEKEVENTREG_RECEIVED_SPIRIT_HOUSE_HEART_PIECE,                      RI_HEART_PIECE),
     RC(RC_IKANA_CANYON_GROTTO_CHEST,                                     RCTYPE_CHEST,            SCENE_KAKUSIANA,                FLAG_CYCL_SCENE_CHEST,       0x14,                                                                RI_BOMBCHU_5),
     RC(RC_IKANA_CANYON_OWL_STATUE,                                       RCTYPE_OWL,              SCENE_IKANA,                    FLAG_NONE,                   0x00,                                                                RI_OWL_IKANA_CANYON),
     RC(RC_IKANA_CANYON_SCRUB_HUGE_RUPEE,                                 RCTYPE_NPC,              SCENE_IKANA,                    FLAG_WEEK_EVENT_REG,         WEEKEVENTREG_62_20,                                                  RI_RUPEE_HUGE),
@@ -144,12 +146,12 @@ std::map<RandoCheckId, RandoStaticCheck> Checks = {
     RC(RC_KAFEIS_HIDEOUT_KEATON_MASK,                                    RCTYPE_NPC,              SCENE_AYASHIISHOP,              FLAG_NONE,                   0x00,                                                                RI_MASK_KEATON),
     RC(RC_KAFEIS_HIDEOUT_LETTER_TO_MAMA,                                 RCTYPE_NPC,              SCENE_AYASHIISHOP,              FLAG_NONE,                   0x00,                                                                RI_LETTER_TO_MAMA),
     RC(RC_KAFEIS_HIDEOUT_PENDANT_OF_MEMORIES,                            RCTYPE_NPC,              SCENE_AYASHIISHOP,              FLAG_WEEK_EVENT_REG,         WEEKEVENTREG_RECEIVED_PENDANT_OF_MEMORIES,                           RI_PENDANT_OF_MEMORIES),
-    RC(RC_KEATON_QUIZ,                                                   RCTYPE_NPC,              SCENE_BACKTOWN,                 FLAG_WEEK_EVENT_REG,         WEEKEVENTREG_79_80,                                                  RI_HEART_PIECE),
+    RC(RC_KEATON_QUIZ,                                                   RCTYPE_NPC,              SCENE_BACKTOWN,                 FLAG_WEEK_EVENT_REG,         WEEKEVENTREG_RECEIVED_KEATON_HEART_PIECE,                            RI_HEART_PIECE),
     RC(RC_LONE_PEAK_SHRINE_BOULDER_CHEST,                                RCTYPE_CHEST,            SCENE_KAKUSIANA,                FLAG_CYCL_SCENE_CHEST,       0x06,                                                                RI_RUPEE_RED),
     RC(RC_LONE_PEAK_SHRINE_INVISIBLE_CHEST,                              RCTYPE_CHEST,            SCENE_KAKUSIANA,                FLAG_CYCL_SCENE_CHEST,       0x03,                                                                RI_RUPEE_PURPLE),
     RC(RC_LONE_PEAK_SHRINE_LENS_CHEST,                                   RCTYPE_CHEST,            SCENE_KAKUSIANA,                FLAG_CYCL_SCENE_CHEST,       0x01,                                                                RI_LENS),
-    RC(RC_MAYORS_OFFICE_KAFEIS_MASK,                                     RCTYPE_NPC,              SCENE_SONCHONOIE,               FLAG_WEEK_EVENT_REG,         WEEKEVENTREG_BOMBERS_NOTEBOOK_EVENT_RECEIVED_KAFEIS_MASK,            RI_MASK_KAFEIS_MASK),
-    RC(RC_MAYORS_OFFICE_PIECE_OF_HEART,                                  RCTYPE_NPC,              SCENE_SONCHONOIE,               FLAG_WEEK_EVENT_REG,         WEEKEVENTREG_BOMBERS_NOTEBOOK_EVENT_RECEIVED_MAYOR_HP,               RI_HEART_PIECE),
+    RC(RC_MAYORS_OFFICE_KAFEIS_MASK,                                     RCTYPE_NPC,              SCENE_SONCHONOIE,               FLAG_NONE,                   0x00,                                                                RI_MASK_KAFEIS_MASK),
+    RC(RC_MAYORS_OFFICE_PIECE_OF_HEART,                                  RCTYPE_NPC,              SCENE_SONCHONOIE,               FLAG_WEEK_EVENT_REG,         WEEKEVENTREG_RESOLVED_MAYOR_MEETING,                                 RI_HEART_PIECE),
     RC(RC_MILK_BAR_CIRCUS_LEADER_MASK,                                   RCTYPE_NPC,              SCENE_MILK_BAR,                 FLAG_NONE,                   0x00,                                                                RI_MASK_CIRCUS_LEADER),
     RC(RC_MILK_BAR_MADAME_AROMA,                                         RCTYPE_NPC,              SCENE_MILK_BAR,                 FLAG_WEEK_EVENT_REG,         WEEKEVENTREG_57_04,                                                  RI_BOTTLE_CHATEAU_ROMANI),
     RC(RC_MILK_BAR_PURCHASE_CHATEAU,                                     RCTYPE_SHOP,             SCENE_MILK_BAR,                 FLAG_NONE,                   0x00,                                                                RI_CHATEAU_ROMANI_REFILL),
@@ -165,7 +167,7 @@ std::map<RandoCheckId, RandoStaticCheck> Checks = {
     RC(RC_MOON_TRIAL_LINK_PIECE_OF_HEART,                                RCTYPE_HEART,            SCENE_LAST_LINK,                FLAG_CYCL_SCENE_COLLECTIBLE, 0x01,                                                                RI_HEART_PIECE),
     RC(RC_MOON_TRIAL_ZORA_PIECE_OF_HEART,                                RCTYPE_HEART,            SCENE_LAST_ZORA,                FLAG_CYCL_SCENE_COLLECTIBLE, 0x01,                                                                RI_HEART_PIECE),
     RC(RC_MOUNTAIN_VILLAGE_DON_GERO_MASK,                                RCTYPE_NPC,              SCENE_10YUKIYAMANOMURA,         FLAG_WEEK_EVENT_REG,         WEEKEVENTREG_61_01,                                                  RI_MASK_DON_GERO),
-    RC(RC_MOUNTAIN_VILLAGE_FROG_CHOIR,                                   RCTYPE_NPC,              SCENE_10YUKIYAMANOMURA,         FLAG_WEEK_EVENT_REG,         WEEKEVENTREG_35_80,                                                  RI_HEART_PIECE),
+    RC(RC_MOUNTAIN_VILLAGE_FROG_CHOIR,                                   RCTYPE_NPC,              SCENE_10YUKIYAMANOMURA,         FLAG_WEEK_EVENT_REG,         WEEKEVENTREG_RECEIVED_FROG_CHOIR_HEART_PIECE,                        RI_HEART_PIECE),
     RC(RC_MOUNTAIN_VILLAGE_OWL_STATUE,                                   RCTYPE_OWL,              SCENE_10YUKIYAMANOMURA,         FLAG_NONE,                   0x00,                                                                RI_OWL_MOUNTAIN_VILLAGE),
     RC(RC_MOUNTAIN_VILLAGE_SMITHY_GILDED_SWORD,                          RCTYPE_NPC,              SCENE_KAJIYA,                   FLAG_NONE,                   0x00,                                                                RI_PROGRESSIVE_SWORD),
     RC(RC_MOUNTAIN_VILLAGE_SMITHY_RAZOR_SWORD,                           RCTYPE_NPC,              SCENE_KAJIYA,                   FLAG_NONE,                   0x00,                                                                RI_PROGRESSIVE_SWORD),
@@ -209,7 +211,7 @@ std::map<RandoCheckId, RandoStaticCheck> Checks = {
     RC(RC_PATH_TO_SNOWHEAD_PIECE_OF_HEART,                               RCTYPE_HEART,            SCENE_14YUKIDAMANOMITI,         FLAG_CYCL_SCENE_COLLECTIBLE, 0x08,                                                                RI_HEART_PIECE),
     RC(RC_PINNACLE_ROCK_CHEST_01,                                        RCTYPE_CHEST,            SCENE_SINKAI,                   FLAG_CYCL_SCENE_CHEST,       0x01,                                                                RI_RUPEE_RED),
     RC(RC_PINNACLE_ROCK_CHEST_02,                                        RCTYPE_CHEST,            SCENE_SINKAI,                   FLAG_CYCL_SCENE_CHEST,       0x02,                                                                RI_RUPEE_RED),
-    RC(RC_PINNACLE_ROCK_REUNITE_SEAHORSE,                                RCTYPE_NPC,              SCENE_SINKAI,                   FLAG_WEEK_EVENT_REG,         WEEKEVENTREG_32_01,                                                  RI_HEART_PIECE),
+    RC(RC_PINNACLE_ROCK_REUNITE_SEAHORSE,                                RCTYPE_NPC,              SCENE_SINKAI,                   FLAG_WEEK_EVENT_REG,         WEEKEVENTREG_RECEIVED_SEAHORSE_HEART_PIECE,                          RI_HEART_PIECE),
     RC(RC_PIRATE_FORTRESS_ENTRANCE_CHEST_01,                             RCTYPE_CHEST,            SCENE_TORIDE,                   FLAG_CYCL_SCENE_CHEST,       0x00,                                                                RI_RUPEE_RED),
     RC(RC_PIRATE_FORTRESS_ENTRANCE_CHEST_02,                             RCTYPE_CHEST,            SCENE_TORIDE,                   FLAG_CYCL_SCENE_CHEST,       0x01,                                                                RI_RUPEE_RED),
     RC(RC_PIRATE_FORTRESS_ENTRANCE_CHEST_03,                             RCTYPE_CHEST,            SCENE_TORIDE,                   FLAG_CYCL_SCENE_CHEST,       0x02,                                                                RI_RUPEE_RED),
@@ -229,7 +231,7 @@ std::map<RandoCheckId, RandoStaticCheck> Checks = {
     RC(RC_ROAD_TO_SOUTHERN_SWAMP_PIECE_OF_HEART,                         RCTYPE_HEART,            SCENE_24KEMONOMITI,             FLAG_CYCL_SCENE_COLLECTIBLE, 0x01,                                                                RI_HEART_PIECE),
     RC(RC_ROAD_TO_SOUTHERN_SWAMP_TINGLE_MAP_01,                          RCTYPE_TINGLE_SHOP,      SCENE_24KEMONOMITI,             FLAG_NONE,                   0x00,                                                                RI_TINGLE_MAP_WOODFALL),
     RC(RC_ROAD_TO_SOUTHERN_SWAMP_TINGLE_MAP_02,                          RCTYPE_TINGLE_SHOP,      SCENE_24KEMONOMITI,             FLAG_NONE,                   0x00,                                                                RI_TINGLE_MAP_SNOWHEAD),
-    RC(RC_ROMANI_RANCH_ALIENS,                                           RCTYPE_NPC,              SCENE_F01,                      FLAG_WEEK_EVENT_REG,         WEEKEVENTREG_22_02,                                                  RI_BOTTLE_MILK),
+    RC(RC_ROMANI_RANCH_ALIENS,                                           RCTYPE_NPC,              SCENE_F01,                      FLAG_WEEK_EVENT_REG,         WEEKEVENTREG_RECEIVED_ALIENS_BOTTLE,                                 RI_BOTTLE_MILK),
     RC(RC_ROMANI_RANCH_BARN_COW_LEFT,                                    RCTYPE_COW,              SCENE_OMOYA,                    FLAG_NONE,                   0x12,                                                                RI_MILK_REFILL),
     RC(RC_ROMANI_RANCH_BARN_COW_MIDDLE,                                  RCTYPE_COW,              SCENE_OMOYA,                    FLAG_NONE,                   0x10,                                                                RI_MILK_REFILL),
     RC(RC_ROMANI_RANCH_BARN_COW_RIGHT,                                   RCTYPE_COW,              SCENE_OMOYA,                    FLAG_NONE,                   0x11,                                                                RI_MILK_REFILL),
@@ -348,14 +350,14 @@ std::map<RandoCheckId, RandoStaticCheck> Checks = {
     RC(RC_SWAMP_SKULLTULA_TREE_ROOM_TREE_02,                             RCTYPE_SKULL_TOKEN,      SCENE_KINSTA1,                  FLAG_CYCL_SCENE_CHEST,       0x18,                                                                RI_GS_TOKEN_SWAMP),
     RC(RC_SWAMP_SKULLTULA_TREE_ROOM_TREE_03,                             RCTYPE_SKULL_TOKEN,      SCENE_KINSTA1,                  FLAG_CYCL_SCENE_CHEST,       0x1d,                                                                RI_GS_TOKEN_SWAMP),
     RC(RC_SWAMP_SPIDER_HOUSE_MASK_OF_TRUTH,                              RCTYPE_NPC,              SCENE_KINSTA1,                  FLAG_WEEK_EVENT_REG,         WEEKEVENTREG_RECEIVED_MASK_OF_TRUTH,                                 RI_MASK_TRUTH),
-    RC(RC_SWORDSMAN_SCHOOL_PIECE_OF_HEART,                               RCTYPE_MINIGAME,         SCENE_DOUJOU,                   FLAG_WEEK_EVENT_REG,         WEEKEVENTREG_63_20,                                                  RI_HEART_PIECE),
+    RC(RC_SWORDSMAN_SCHOOL_PIECE_OF_HEART,                               RCTYPE_MINIGAME,         SCENE_DOUJOU,                   FLAG_WEEK_EVENT_REG,         WEEKEVENTREG_RECEIVED_SWORDSMANS_SCHOOL_HEART_PIECE,                 RI_HEART_PIECE),
     RC(RC_TERMINA_FIELD_BIO_BABA_GROTTO,                                 RCTYPE_HEART,            SCENE_KAKUSIANA,                FLAG_CYCL_SCENE_COLLECTIBLE, 0x02,                                                                RI_HEART_PIECE),
     RC(RC_TERMINA_FIELD_COW_BACK,                                        RCTYPE_COW,              SCENE_KAKUSIANA,                FLAG_NONE,                   0x14,                                                                RI_MILK_REFILL),
     RC(RC_TERMINA_FIELD_COW_FRONT,                                       RCTYPE_COW,              SCENE_KAKUSIANA,                FLAG_NONE,                   0x13,                                                                RI_MILK_REFILL),
     RC(RC_TERMINA_FIELD_DODONGO_GROTTO_CHEST,                            RCTYPE_CHEST,            SCENE_KAKUSIANA,                FLAG_CYCL_SCENE_CHEST,       0x00,                                                                RI_HEART_PIECE),
-    RC(RC_TERMINA_FIELD_GOSSIP_STONE_GROTTO,                             RCTYPE_HEART,            SCENE_KAKUSIANA,                FLAG_WEEK_EVENT_REG,         WEEKEVENTREG_90_10,                                                  RI_HEART_PIECE),
-    RC(RC_TERMINA_FIELD_GROTTO_SCRUB,                                    RCTYPE_NPC,              SCENE_KAKUSIANA,                FLAG_WEEK_EVENT_REG,         WEEKEVENTREG_53_02,                                                  RI_HEART_PIECE),
-    RC(RC_TERMINA_FIELD_KAMARO_MASK,                                     RCTYPE_NPC,              SCENE_00KEIKOKU,                FLAG_WEEK_EVENT_REG,         WEEKEVENTREG_BOMBERS_NOTEBOOK_EVENT_RECEIVED_KAMAROS_MASK,           RI_MASK_KAMARO),
+    RC(RC_TERMINA_FIELD_GOSSIP_STONE_GROTTO,                             RCTYPE_HEART,            SCENE_KAKUSIANA,                FLAG_WEEK_EVENT_REG,         WEEKEVENTREG_RECEIVED_GOSSIP_STONE_GROTTO_HEART_PIECE,               RI_HEART_PIECE),
+    RC(RC_TERMINA_FIELD_GROTTO_SCRUB,                                    RCTYPE_NPC,              SCENE_KAKUSIANA,                FLAG_WEEK_EVENT_REG,         WEEKEVENTREG_RECEIVED_BUSINESS_SCRUB_HEART_PIECE,                    RI_HEART_PIECE),
+    RC(RC_TERMINA_FIELD_KAMARO_MASK,                                     RCTYPE_NPC,              SCENE_00KEIKOKU,                FLAG_WEEK_EVENT_REG,         WEEKEVENTREG_82_04,                                                  RI_MASK_KAMARO),
     RC(RC_TERMINA_FIELD_PEAHAT_GROTTO_CHEST,                             RCTYPE_CHEST,            SCENE_KAKUSIANA,                FLAG_CYCL_SCENE_CHEST,       0x04,                                                                RI_HEART_PIECE),
     RC(RC_TERMINA_FIELD_PILLAR_GROTTO_CHEST,                             RCTYPE_CHEST,            SCENE_KAKUSIANA,                FLAG_CYCL_SCENE_CHEST,       0x1a,                                                                RI_BOMBCHU),
     RC(RC_TERMINA_FIELD_TALL_GRASS_CHEST,                                RCTYPE_CHEST,            SCENE_00KEIKOKU,                FLAG_CYCL_SCENE_CHEST,       0x01,                                                                RI_RUPEE_RED),
@@ -413,7 +415,7 @@ std::map<RandoCheckId, RandoStaticCheck> Checks = {
     RC(RC_ZORA_CAPE_OWL_STATUE,                                          RCTYPE_OWL,              SCENE_31MISAKI,                 FLAG_NONE,                   0x00,                                                                RI_OWL_ZORA_CAPE),
     RC(RC_ZORA_CAPE_UNDERWATER_CHEST,                                    RCTYPE_CHEST,            SCENE_31MISAKI,                 FLAG_CYCL_SCENE_CHEST,       0x00,                                                                RI_RUPEE_PURPLE),
     RC(RC_ZORA_CAPE_WATERFALL_PIECE_OF_HEART,                            RCTYPE_HEART,            SCENE_31MISAKI,                 FLAG_CYCL_SCENE_COLLECTIBLE, 0x07,                                                                RI_HEART_PIECE),
-    RC(RC_ZORA_HALL_EVANS_PIECE_OF_HEART,                                RCTYPE_HEART,            SCENE_BANDROOM,                 FLAG_WEEK_EVENT_REG,         WEEKEVENTREG_39_20,                                                  RI_HEART_PIECE),
+    RC(RC_ZORA_HALL_EVANS_PIECE_OF_HEART,                                RCTYPE_HEART,            SCENE_BANDROOM,                 FLAG_WEEK_EVENT_REG,         WEEKEVENTREG_RECEIVED_EVAN_HEART_PIECE,                              RI_HEART_PIECE),
     RC(RC_ZORA_HALL_SCENE_LIGHTS,                                        RCTYPE_NPC,              SCENE_33ZORACITY,               FLAG_NONE,                   0x00,                                                                RI_RUPEE_BLUE),
     RC(RC_ZORA_HALL_SCRUB_DEED,                                          RCTYPE_NPC,              SCENE_BANDROOM,                 FLAG_WEEK_EVENT_REG,         WEEKEVENTREG_62_04,                                                  RI_DEED_OCEAN),
     RC(RC_ZORA_HALL_SCRUB_PIECE_OF_HEART,                                RCTYPE_HEART,            SCENE_BANDROOM,                 FLAG_CYCL_SCENE_COLLECTIBLE, 0x1E,                                                                RI_HEART_PIECE),
@@ -1247,7 +1249,7 @@ std::map<RandoCheckId, RandoStaticCheck> Checks = {
     RC(RC_WOODFALL_TEMPLE_WATER_ROOM_POT_03,                             RCTYPE_POT,              SCENE_MITURIN,                  FLAG_NONE,                   0x0,                                                                 RI_RECOVERY_HEART),
     RC(RC_WOODFALL_TEMPLE_WATER_ROOM_POT_04,                             RCTYPE_POT,              SCENE_MITURIN,                  FLAG_NONE,                   0x0,                                                                 RI_ARROWS_10),
     RC(RC_WATERFALL_RAPIDS_BEAVER_RACE_01,                               RCTYPE_NPC,              SCENE_35TAKI,                   FLAG_WEEK_EVENT_REG,         WEEKEVENTREG_93_01,                                                  RI_BOTTLE_EMPTY),
-    RC(RC_WATERFALL_RAPIDS_BEAVER_RACE_02,                               RCTYPE_NPC,              SCENE_35TAKI,                   FLAG_WEEK_EVENT_REG,         WEEKEVENTREG_25_01,                                                  RI_HEART_PIECE),
+    RC(RC_WATERFALL_RAPIDS_BEAVER_RACE_02,                               RCTYPE_NPC,              SCENE_35TAKI,                   FLAG_WEEK_EVENT_REG,         WEEKEVENTREG_RECEIVED_BEAVER_BROS_HEART_PIECE,                       RI_HEART_PIECE),
     RC(RC_ZORA_CAPE_NEAR_BEAVERS_POT_01,                                 RCTYPE_POT,              SCENE_31MISAKI,                 FLAG_CYCL_SCENE_COLLECTIBLE, 0x20,                                                                RI_RECOVERY_HEART),
     RC(RC_ZORA_CAPE_NEAR_BEAVERS_POT_02,                                 RCTYPE_POT,              SCENE_31MISAKI,                 FLAG_CYCL_SCENE_COLLECTIBLE, 0x21,                                                                RI_MAGIC_JAR_SMALL),
     RC(RC_ZORA_CAPE_NEAR_OWL_STATUE_POT_01,                              RCTYPE_POT,              SCENE_31MISAKI,                 FLAG_CYCL_SCENE_COLLECTIBLE, 0x22,                                                                RI_MAGIC_JAR_BIG),
@@ -1371,6 +1373,11 @@ std::map<RandoCheckId, RandoStaticCheck> Checks = {
     RC(RC_TWIN_ISLANDS_SMALL_SNOWBALL_05,                                RCTYPE_SNOWBALL,         SCENE_17SETUGEN,                FLAG_NONE,                   0x0,                                                                 RI_JUNK),
     RC(RC_TWIN_ISLANDS_SMALL_SNOWBALL_06,                                RCTYPE_SNOWBALL,         SCENE_17SETUGEN,                FLAG_NONE,                   0x0,                                                                 RI_JUNK),
 
+    // Frogs //
+    RC(RC_CLOCK_TOWN_LAUNDRY_FROG,                                       RCTYPE_FROG,             SCENE_ALLEY,                    FLAG_NONE,                   0x00,                                                                RI_FROG_WHITE),
+    RC(RC_GREAT_BAY_TEMPLE_GEKKO_FROG,                                   RCTYPE_FROG,             SCENE_SEA,                      FLAG_NONE,                   0x00,                                                                RI_FROG_PINK),
+    RC(RC_SOUTHERN_SWAMP_FROG,                                           RCTYPE_FROG,             SCENE_20SICHITAI,               FLAG_NONE,                   0x00,                                                                RI_FROG_BLUE),
+    RC(RC_WOODFALL_TEMPLE_GEKKO_FROG,                                    RCTYPE_FROG,             SCENE_MITURIN,                  FLAG_NONE,                   0x00,                                                                RI_FROG_CYAN),
 
     // Grass //
     RC(RC_CLOCK_TOWN_LAUNDRY_POOL_GRASS_01,             RCTYPE_GRASS, SCENE_ALLEY,              FLAG_NONE, 0x0, RI_JUNK),
@@ -2188,6 +2195,8 @@ std::map<RandoCheckId, RandoStaticCheck> Checks = {
     RC(RC_WOODS_OF_MYSTERY_GRASS_19,                    RCTYPE_GRASS, SCENE_26SARUNOMORI,       FLAG_NONE, 0x0, RI_JUNK),
     RC(RC_WOODS_OF_MYSTERY_GRASS_20,                    RCTYPE_GRASS, SCENE_26SARUNOMORI,       FLAG_NONE, 0x0, RI_JUNK),
     RC(RC_WOODS_OF_MYSTERY_GRASS_21,                    RCTYPE_GRASS, SCENE_26SARUNOMORI,       FLAG_NONE, 0x0, RI_JUNK),
+    RC(RC_WOODS_OF_MYSTERY_GRASS_22,                    RCTYPE_GRASS, SCENE_26SARUNOMORI,       FLAG_NONE, 0x0, RI_JUNK),
+    RC(RC_WOODS_OF_MYSTERY_GRASS_23,                    RCTYPE_GRASS, SCENE_26SARUNOMORI,       FLAG_NONE, 0x0, RI_JUNK),
     RC(RC_WOODS_OF_MYSTERY_GROTTO_GRASS_01,             RCTYPE_GRASS, SCENE_KAKUSIANA,          FLAG_NONE, 0x0, RI_JUNK),
     RC(RC_WOODS_OF_MYSTERY_GROTTO_GRASS_02,             RCTYPE_GRASS, SCENE_KAKUSIANA,          FLAG_NONE, 0x0, RI_JUNK),
     RC(RC_WOODS_OF_MYSTERY_GROTTO_GRASS_03,             RCTYPE_GRASS, SCENE_KAKUSIANA,          FLAG_NONE, 0x0, RI_JUNK),
@@ -2223,6 +2232,62 @@ std::map<RandoCheckId, RandoStaticCheck> Checks = {
     RC(RC_ZORA_CAPE_GROTTO_GRASS_13,                    RCTYPE_GRASS, SCENE_KAKUSIANA,          FLAG_NONE, 0x0, RI_JUNK),
     RC(RC_ZORA_CAPE_GROTTO_GRASS_14,                    RCTYPE_GRASS, SCENE_KAKUSIANA,          FLAG_NONE, 0x0, RI_JUNK),
 
+    // Enemy Drops
+    RC(RC_ENEMY_DROP_ALIEN,         RCTYPE_ENEMY_DROP, SCENE_SPOT00, FLAG_NONE, 0x0, RI_ARROWS_30),
+    RC(RC_ENEMY_DROP_ARMOS,         RCTYPE_ENEMY_DROP, SCENE_SPOT00, FLAG_NONE, 0x0, RI_JUNK),
+    RC(RC_ENEMY_DROP_BAD_BAT,       RCTYPE_ENEMY_DROP, SCENE_SPOT00, FLAG_NONE, 0x0, RI_NONE),
+    RC(RC_ENEMY_DROP_BEAMOS,        RCTYPE_ENEMY_DROP, SCENE_SPOT00, FLAG_NONE, 0x0, RI_JUNK),
+    RC(RC_ENEMY_DROP_BIO_DEKU_BABA, RCTYPE_ENEMY_DROP, SCENE_SPOT00, FLAG_NONE, 0x0, RI_JUNK),
+    RC(RC_ENEMY_DROP_BLUE_BUBBLE,   RCTYPE_ENEMY_DROP, SCENE_SPOT00, FLAG_NONE, 0x0, RI_JUNK),
+    RC(RC_ENEMY_DROP_BOE,           RCTYPE_ENEMY_DROP, SCENE_SPOT00, FLAG_NONE, 0x0, RI_JUNK),
+    RC(RC_ENEMY_DROP_REAL_BOMBCHU,  RCTYPE_ENEMY_DROP, SCENE_SPOT00, FLAG_NONE, 0x0, RI_JUNK),
+    RC(RC_ENEMY_DROP_CAPTAIN_KEETA, RCTYPE_ENEMY_DROP, SCENE_SPOT00, FLAG_NONE, 0x0, RI_NONE),
+    RC(RC_ENEMY_DROP_CHUCHU,        RCTYPE_ENEMY_DROP, SCENE_SPOT00, FLAG_NONE, 0x0, RI_JUNK),
+    RC(RC_ENEMY_DROP_DEATH_ARMOS,   RCTYPE_ENEMY_DROP, SCENE_SPOT00, FLAG_NONE, 0x0, RI_JUNK),
+    RC(RC_ENEMY_DROP_DEEP_PYTHON,   RCTYPE_ENEMY_DROP, SCENE_SPOT00, FLAG_NONE, 0x0, RI_NONE),
+    RC(RC_ENEMY_DROP_DEKU_BABA,     RCTYPE_ENEMY_DROP, SCENE_SPOT00, FLAG_NONE, 0x0, RI_JUNK),
+    RC(RC_ENEMY_DROP_DESBREKO,      RCTYPE_ENEMY_DROP, SCENE_SPOT00, FLAG_NONE, 0x0, RI_JUNK),
+    RC(RC_ENEMY_DROP_DEXIHAND,      RCTYPE_ENEMY_DROP, SCENE_SPOT00, FLAG_NONE, 0x0, RI_NONE),
+    RC(RC_ENEMY_DROP_DINOLFOS,      RCTYPE_ENEMY_DROP, SCENE_SPOT00, FLAG_NONE, 0x0, RI_NONE),
+    RC(RC_ENEMY_DROP_DODONGO,       RCTYPE_ENEMY_DROP, SCENE_SPOT00, FLAG_NONE, 0x0, RI_JUNK),
+    RC(RC_ENEMY_DROP_DRAGONFLY,     RCTYPE_ENEMY_DROP, SCENE_SPOT00, FLAG_NONE, 0x0, RI_JUNK),
+    RC(RC_ENEMY_DROP_EENO,          RCTYPE_ENEMY_DROP, SCENE_SPOT00, FLAG_NONE, 0x0, RI_JUNK),
+    RC(RC_ENEMY_DROP_EYEGORE,       RCTYPE_ENEMY_DROP, SCENE_SPOT00, FLAG_NONE, 0x0, RI_NONE),
+    RC(RC_ENEMY_DROP_FLYING_POT,    RCTYPE_ENEMY_DROP, SCENE_SPOT00, FLAG_NONE, 0x0, RI_JUNK),
+    RC(RC_ENEMY_DROP_FLOORMASTER,   RCTYPE_ENEMY_DROP, SCENE_SPOT00, FLAG_NONE, 0x0, RI_JUNK),
+    RC(RC_ENEMY_DROP_FREEZARD,      RCTYPE_ENEMY_DROP, SCENE_SPOT00, FLAG_NONE, 0x0, RI_JUNK),
+    RC(RC_ENEMY_DROP_GARO,          RCTYPE_ENEMY_DROP, SCENE_SPOT00, FLAG_NONE, 0x0, RI_NONE),
+    RC(RC_ENEMY_DROP_GARO_MASTER,   RCTYPE_ENEMY_DROP, SCENE_SPOT00, FLAG_NONE, 0x0, RI_NONE),
+    RC(RC_ENEMY_DROP_GEKKO,         RCTYPE_ENEMY_DROP, SCENE_SPOT00, FLAG_NONE, 0x0, RI_NONE),
+    RC(RC_ENEMY_DROP_GIANT_BEE,     RCTYPE_ENEMY_DROP, SCENE_SPOT00, FLAG_NONE, 0x0, RI_NONE),
+    RC(RC_ENEMY_DROP_GUAY,          RCTYPE_ENEMY_DROP, SCENE_SPOT00, FLAG_NONE, 0x0, RI_JUNK),
+    RC(RC_ENEMY_DROP_HIPLOOP,       RCTYPE_ENEMY_DROP, SCENE_SPOT00, FLAG_NONE, 0x0, RI_JUNK),
+    RC(RC_ENEMY_DROP_IGOS_DU_IKANA, RCTYPE_ENEMY_DROP, SCENE_SPOT00, FLAG_NONE, 0x0, RI_NONE),
+    RC(RC_ENEMY_DROP_IRON_KNUCKLE,  RCTYPE_ENEMY_DROP, SCENE_SPOT00, FLAG_NONE, 0x0, RI_JUNK),
+    RC(RC_ENEMY_DROP_KEESE,         RCTYPE_ENEMY_DROP, SCENE_SPOT00, FLAG_NONE, 0x0, RI_JUNK),
+    RC(RC_ENEMY_DROP_LEEVER,        RCTYPE_ENEMY_DROP, SCENE_SPOT00, FLAG_NONE, 0x0, RI_JUNK),
+    RC(RC_ENEMY_DROP_LIKE_LIKE,     RCTYPE_ENEMY_DROP, SCENE_SPOT00, FLAG_NONE, 0x0, RI_JUNK),
+    RC(RC_ENEMY_DROP_MAD_SCRUB,     RCTYPE_ENEMY_DROP, SCENE_SPOT00, FLAG_NONE, 0x0, RI_JUNK),
+    RC(RC_ENEMY_DROP_MINI_BABA,     RCTYPE_ENEMY_DROP, SCENE_SPOT00, FLAG_NONE, 0x0, RI_DEKU_NUT),
+    RC(RC_ENEMY_DROP_NEJIRON,       RCTYPE_ENEMY_DROP, SCENE_SPOT00, FLAG_NONE, 0x0, RI_JUNK),
+    RC(RC_ENEMY_DROP_OCTOROK,       RCTYPE_ENEMY_DROP, SCENE_SPOT00, FLAG_NONE, 0x0, RI_JUNK),
+    RC(RC_ENEMY_DROP_PEAHAT,        RCTYPE_ENEMY_DROP, SCENE_SPOT00, FLAG_NONE, 0x0, RI_JUNK),
+    RC(RC_ENEMY_DROP_PIRATE,        RCTYPE_ENEMY_DROP, SCENE_SPOT00, FLAG_NONE, 0x0, RI_NONE),
+    RC(RC_ENEMY_DROP_POE_SISTER,    RCTYPE_ENEMY_DROP, SCENE_SPOT00, FLAG_NONE, 0x0, RI_JUNK),
+    RC(RC_ENEMY_DROP_RED_BUBBLE,    RCTYPE_ENEMY_DROP, SCENE_SPOT00, FLAG_NONE, 0x0, RI_JUNK),
+    RC(RC_ENEMY_DROP_REDEAD,        RCTYPE_ENEMY_DROP, SCENE_SPOT00, FLAG_NONE, 0x0, RI_JUNK),
+    RC(RC_ENEMY_DROP_SHELLBLADE,    RCTYPE_ENEMY_DROP, SCENE_SPOT00, FLAG_NONE, 0x0, RI_JUNK),
+    RC(RC_ENEMY_DROP_SKULLFISH,     RCTYPE_ENEMY_DROP, SCENE_SPOT00, FLAG_NONE, 0x0, RI_JUNK),
+    RC(RC_ENEMY_DROP_SKULLTULA,     RCTYPE_ENEMY_DROP, SCENE_SPOT00, FLAG_NONE, 0x0, RI_JUNK),
+    RC(RC_ENEMY_DROP_SKULLWALLTULA, RCTYPE_ENEMY_DROP, SCENE_SPOT00, FLAG_NONE, 0x0, RI_NONE),
+    RC(RC_ENEMY_DROP_SNAPPER,       RCTYPE_ENEMY_DROP, SCENE_SPOT00, FLAG_NONE, 0x0, RI_JUNK),
+    RC(RC_ENEMY_DROP_STALCHILD,     RCTYPE_ENEMY_DROP, SCENE_SPOT00, FLAG_NONE, 0x0, RI_JUNK),
+    RC(RC_ENEMY_DROP_TAKKURI,       RCTYPE_ENEMY_DROP, SCENE_SPOT00, FLAG_NONE, 0x0, RI_RUPEE_HUGE),
+    RC(RC_ENEMY_DROP_TEKTITE,       RCTYPE_ENEMY_DROP, SCENE_SPOT00, FLAG_NONE, 0x0, RI_JUNK),
+    RC(RC_ENEMY_DROP_WALLMASTER,    RCTYPE_ENEMY_DROP, SCENE_SPOT00, FLAG_NONE, 0x0, RI_JUNK),
+    RC(RC_ENEMY_DROP_WART,          RCTYPE_ENEMY_DROP, SCENE_SPOT00, FLAG_NONE, 0x0, RI_NONE),
+    RC(RC_ENEMY_DROP_WIZROBE,       RCTYPE_ENEMY_DROP, SCENE_SPOT00, FLAG_NONE, 0x0, RI_NONE),
+    RC(RC_ENEMY_DROP_WOLFOS,        RCTYPE_ENEMY_DROP, SCENE_SPOT00, FLAG_NONE, 0x0, RI_JUNK),
 };
 // clang-format on
 
@@ -2256,6 +2321,12 @@ RandoCheckId GetCheckIdFromName(const char* name) {
         }
     }
     return RC_UNKNOWN;
+}
+
+void PopulateCheckNames() {
+    for (auto& [randoCheckId, randoStaticCheck] : Rando::StaticData::Checks) {
+        CheckNames[randoCheckId] = convertEnumToReadableName(randoStaticCheck.name);
+    }
 }
 
 } // namespace StaticData

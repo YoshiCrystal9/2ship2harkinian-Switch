@@ -1,4 +1,4 @@
-#include "public/bridge/consolevariablebridge.h"
+#include <libultraship/bridge/consolevariablebridge.h>
 #include "2s2h/GameInteractor/GameInteractor.h"
 #include "2s2h/ShipInit.hpp"
 
@@ -25,7 +25,7 @@ void OnEnGinkoManUpdate(Actor* actor) {
     EnGinkoMan* enGinko = (EnGinkoMan*)actor;
     if (gPlayState->msgCtx.currentTextId == 0x450) {
         if (CHECK_BTN_ALL(gPlayState->state.input[0].cur.button, BTN_Z) &&
-            gPlayState->msgCtx.bankRupeesSelected != gSaveContext.save.saveInfo.playerData.rupees) {
+            gPlayState->msgCtx.rupeesSelected != gSaveContext.save.saveInfo.playerData.rupees) {
             char firstChar = (gSaveContext.save.saveInfo.playerData.rupees / 100) + '0';
             char secondChar = ((gSaveContext.save.saveInfo.playerData.rupees / 10) % 10) + '0';
             char thirdChar = (gSaveContext.save.saveInfo.playerData.rupees % 10) + '0';
@@ -52,7 +52,7 @@ void OnEnGinkoManUpdate(Actor* actor) {
 
             maxWallet = MIN(maxWallet, HS_GET_BANK_RUPEES());
 
-            if (maxWallet != 0 && gPlayState->msgCtx.bankRupeesSelected != maxWallet) {
+            if (maxWallet != 0 && gPlayState->msgCtx.rupeesSelected != maxWallet) {
                 char firstChar = (maxWallet / 100) + '0';
                 char secondChar = ((maxWallet / 10) % 10) + '0';
                 char thirdChar = (maxWallet % 10) + '0';
@@ -63,7 +63,7 @@ void OnEnGinkoManUpdate(Actor* actor) {
         }
     }
     if (gPlayState->msgCtx.currentTextId == 0x450 || gPlayState->msgCtx.currentTextId == 0x46E) {
-        if (CHECK_BTN_ALL(gPlayState->state.input[0].cur.button, BTN_R) && gPlayState->msgCtx.bankRupeesSelected != 0) {
+        if (CHECK_BTN_ALL(gPlayState->state.input[0].cur.button, BTN_R) && gPlayState->msgCtx.rupeesSelected != 0) {
             FastBankSelection_UpdateMessage(zeroRupees);
         }
     }

@@ -9,9 +9,7 @@
 #include "overlays/effects/ovl_Effect_Ss_Hahen/z_eff_ss_hahen.h"
 #include "objects/gameplay_keep/gameplay_keep.h"
 
-#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_UNFRIENDLY | ACTOR_FLAG_400)
-
-#define THIS ((EnDekubaba*)thisx)
+#define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_HOSTILE | ACTOR_FLAG_HOOKSHOT_PULLS_PLAYER)
 
 void EnDekubaba_Init(Actor* thisx, PlayState* play);
 void EnDekubaba_Destroy(Actor* thisx, PlayState* play);
@@ -43,7 +41,7 @@ void EnDekubaba_Frozen(EnDekubaba* this, PlayState* play);
 void EnDekubaba_SetupDeadStickDrop(EnDekubaba* this, PlayState* play);
 void EnDekubaba_DeadStickDrop(EnDekubaba* this, PlayState* play);
 
-ActorInit En_Dekubaba_InitVars = {
+ActorProfile En_Dekubaba_Profile = {
     /**/ ACTOR_EN_DEKUBABA,
     /**/ ACTORCAT_ENEMY,
     /**/ FLAGS,
@@ -58,77 +56,77 @@ ActorInit En_Dekubaba_InitVars = {
 static ColliderJntSphElementInit sJntSphElementsInit[7] = {
     {
         {
-            ELEMTYPE_UNK0,
+            ELEM_MATERIAL_UNK0,
             { 0xF7CFFFFF, 0x00, 0x08 },
             { 0xF7CFFFFF, 0x00, 0x00 },
-            TOUCH_ON | TOUCH_SFX_HARD,
-            BUMP_ON | BUMP_HOOKABLE,
+            ATELEM_ON | ATELEM_SFX_HARD,
+            ACELEM_ON | ACELEM_HOOKABLE,
             OCELEM_ON,
         },
         { 1, { { 0, 100, 1000 }, 15 }, 100 },
     },
     {
         {
-            ELEMTYPE_UNK0,
+            ELEM_MATERIAL_UNK0,
             { 0x00000000, 0x00, 0x00 },
             { 0xF7CFFFFF, 0x00, 0x00 },
-            TOUCH_NONE | TOUCH_SFX_NORMAL,
-            BUMP_NONE,
+            ATELEM_NONE | ATELEM_SFX_NORMAL,
+            ACELEM_NONE,
             OCELEM_ON,
         },
         { 51, { { 0, 0, 1500 }, 8 }, 100 },
     },
     {
         {
-            ELEMTYPE_UNK0,
+            ELEM_MATERIAL_UNK0,
             { 0x00000000, 0x00, 0x00 },
             { 0xF7CFFFFF, 0x00, 0x00 },
-            TOUCH_NONE | TOUCH_SFX_NORMAL,
-            BUMP_NONE,
+            ATELEM_NONE | ATELEM_SFX_NORMAL,
+            ACELEM_NONE,
             OCELEM_NONE,
         },
         { 52, { { 0, 0, 500 }, 8 }, 100 },
     },
     {
         {
-            ELEMTYPE_UNK0,
+            ELEM_MATERIAL_UNK0,
             { 0x00000000, 0x00, 0x00 },
             { 0xF7CFFFFF, 0x00, 0x00 },
-            TOUCH_NONE | TOUCH_SFX_NORMAL,
-            BUMP_NONE,
+            ATELEM_NONE | ATELEM_SFX_NORMAL,
+            ACELEM_NONE,
             OCELEM_NONE,
         },
         { 53, { { 0, 0, 1500 }, 8 }, 100 },
     },
     {
         {
-            ELEMTYPE_UNK0,
+            ELEM_MATERIAL_UNK0,
             { 0x00000000, 0x00, 0x00 },
             { 0xF7CFFFFF, 0x00, 0x00 },
-            TOUCH_NONE | TOUCH_SFX_NORMAL,
-            BUMP_NONE,
+            ATELEM_NONE | ATELEM_SFX_NORMAL,
+            ACELEM_NONE,
             OCELEM_NONE,
         },
         { 54, { { 0, 0, 500 }, 8 }, 100 },
     },
     {
         {
-            ELEMTYPE_UNK0,
+            ELEM_MATERIAL_UNK0,
             { 0x00000000, 0x00, 0x00 },
             { 0xF7CFFFFF, 0x00, 0x00 },
-            TOUCH_NONE | TOUCH_SFX_NORMAL,
-            BUMP_NONE,
+            ATELEM_NONE | ATELEM_SFX_NORMAL,
+            ACELEM_NONE,
             OCELEM_NONE,
         },
         { 55, { { 0, 0, 1500 }, 8 }, 100 },
     },
     {
         {
-            ELEMTYPE_UNK0,
+            ELEM_MATERIAL_UNK0,
             { 0x00000000, 0x00, 0x00 },
             { 0xF7CFFFFF, 0x00, 0x00 },
-            TOUCH_NONE | TOUCH_SFX_NORMAL,
-            BUMP_NONE,
+            ATELEM_NONE | ATELEM_SFX_NORMAL,
+            ACELEM_NONE,
             OCELEM_NONE,
         },
         { 56, { { 0, 0, 500 }, 8 }, 100 },
@@ -137,7 +135,7 @@ static ColliderJntSphElementInit sJntSphElementsInit[7] = {
 
 static ColliderJntSphInit sJntSphInit = {
     {
-        COLTYPE_HIT6,
+        COL_MATERIAL_HIT6,
         AT_ON | AT_TYPE_ENEMY,
         AC_ON | AC_TYPE_PLAYER,
         OC1_ON | OC1_TYPE_ALL,
@@ -197,11 +195,11 @@ static DamageTable sDamageTable = {
 };
 
 static InitChainEntry sInitChain[] = {
-    ICHAIN_F32(targetArrowOffset, 1500, ICHAIN_STOP),
+    ICHAIN_F32(lockOnArrowOffset, 1500, ICHAIN_STOP),
 };
 
 void EnDekubaba_Init(Actor* thisx, PlayState* play) {
-    EnDekubaba* this = THIS;
+    EnDekubaba* this = (EnDekubaba*)thisx;
     s32 i;
 
     Actor_ProcessInitChain(&this->actor, sInitChain);
@@ -222,7 +220,7 @@ void EnDekubaba_Init(Actor* thisx, PlayState* play) {
         this->actor.colChkInfo.health = 4;
         // Big Deku Baba hint does not exist in MM
         this->actor.hintId = TATL_HINT_ID_BIO_DEKU_BABA;
-        this->actor.targetMode = TARGET_MODE_2;
+        this->actor.attentionRangeType = ATTENTION_RANGE_2;
     } else {
         this->size = 1.0f;
 
@@ -230,7 +228,7 @@ void EnDekubaba_Init(Actor* thisx, PlayState* play) {
             this->collider.elements[i].dim.worldSphere.radius = this->collider.elements[i].dim.modelSphere.radius;
         }
         this->actor.hintId = TATL_HINT_ID_DEKU_BABA;
-        this->actor.targetMode = TARGET_MODE_1;
+        this->actor.attentionRangeType = ATTENTION_RANGE_1;
     }
 
     EnDekubaba_SetupWait(this);
@@ -239,7 +237,7 @@ void EnDekubaba_Init(Actor* thisx, PlayState* play) {
 }
 
 void EnDekubaba_Destroy(Actor* thisx, PlayState* play) {
-    EnDekubaba* this = THIS;
+    EnDekubaba* this = (EnDekubaba*)thisx;
 
     Collider_DestroyJntSph(play, &this->collider);
 }
@@ -248,7 +246,7 @@ void EnDekubaba_DisableHitboxes(EnDekubaba* this) {
     s32 i;
 
     for (i = 1; i < ARRAY_COUNT(this->colliderElements); i++) {
-        this->collider.elements[i].info.bumperFlags &= ~BUMP_ON;
+        this->collider.elements[i].base.acElemFlags &= ~ACELEM_ON;
     }
 }
 
@@ -268,7 +266,7 @@ void EnDekubaba_UpdateHeadPosition(EnDekubaba* this) {
 }
 
 void EnDekubaba_SetFireLightEffects(EnDekubaba* this, PlayState* play, s32 index) {
-    ColliderJntSphElement* sphElement;
+    ColliderJntSphElement* jntSphElem;
 
     if (this->actor.colChkInfo.damageEffect == DEKUBABA_DMGEFF_FIRE) {
         this->drawDmgEffType = ACTOR_DRAW_DMGEFF_FIRE;
@@ -278,9 +276,9 @@ void EnDekubaba_SetFireLightEffects(EnDekubaba* this, PlayState* play, s32 index
         this->drawDmgEffType = ACTOR_DRAW_DMGEFF_LIGHT_ORBS;
         this->drawDmgEffScale = 0.75f;
         this->drawDmgEffAlpha = 4.0f;
-        sphElement = &this->collider.elements[index];
-        Actor_Spawn(&play->actorCtx, play, ACTOR_EN_CLEAR_TAG, sphElement->info.bumper.hitPos.x,
-                    sphElement->info.bumper.hitPos.y, sphElement->info.bumper.hitPos.z, 0, 0, 0,
+        jntSphElem = &this->collider.elements[index];
+        Actor_Spawn(&play->actorCtx, play, ACTOR_EN_CLEAR_TAG, jntSphElem->base.acDmgInfo.hitPos.x,
+                    jntSphElem->base.acDmgInfo.hitPos.y, jntSphElem->base.acDmgInfo.hitPos.z, 0, 0, 0,
                     CLEAR_TAG_PARAMS(CLEAR_TAG_SMALL_LIGHT_RAYS));
     }
 }
@@ -290,26 +288,26 @@ void EnDekubaba_SetFrozenEffects(EnDekubaba* this) {
     this->drawDmgEffFrozenSteamScale = 1.125f;
     this->drawDmgEffAlpha = 1.0f;
     this->drawDmgEffType = ACTOR_DRAW_DMGEFF_FROZEN_NO_SFX;
-    this->collider.base.colType = COLTYPE_HIT3;
+    this->collider.base.colMaterial = COL_MATERIAL_HIT3;
     this->timer = 80;
-    this->actor.flags &= ~ACTOR_FLAG_400;
-    Actor_SetColorFilter(&this->actor, 0x4000, 255, 0, 80);
+    this->actor.flags &= ~ACTOR_FLAG_HOOKSHOT_PULLS_PLAYER;
+    Actor_SetColorFilter(&this->actor, COLORFILTER_COLORFLAG_RED, 255, COLORFILTER_BUFFLAG_OPA, 80);
 }
 
 void EnDekubaba_SpawnIceEffects(EnDekubaba* this, PlayState* play) {
     if (this->drawDmgEffType == ACTOR_DRAW_DMGEFF_FROZEN_NO_SFX) {
         this->drawDmgEffType = ACTOR_DRAW_DMGEFF_FIRE;
-        this->collider.base.colType = COLTYPE_HIT6;
+        this->collider.base.colMaterial = COL_MATERIAL_HIT6;
         this->drawDmgEffAlpha = 0.0f;
         Actor_SpawnIceEffects(play, &this->actor, this->bodyPartsPos, DEKUBABA_BODYPART_MAX, 4, this->size * 0.3f,
                               this->size * 0.2f);
-        this->actor.flags |= ACTOR_FLAG_400;
+        this->actor.flags |= ACTOR_FLAG_HOOKSHOT_PULLS_PLAYER;
     }
 }
 
 void EnDekubaba_SetupWait(EnDekubaba* this) {
     s32 i;
-    ColliderJntSphElement* element;
+    ColliderJntSphElement* jntSphElem;
 
     this->actor.shape.rot.x = -0x4000;
     this->stemSectionAngle[0] = this->stemSectionAngle[1] = this->stemSectionAngle[2] = this->actor.shape.rot.x;
@@ -320,15 +318,15 @@ void EnDekubaba_SetupWait(EnDekubaba* this) {
 
     Actor_SetScale(&this->actor, this->size * 0.01f * 0.5f);
 
-    this->collider.base.colType = COLTYPE_HARD;
+    this->collider.base.colMaterial = COL_MATERIAL_HARD;
     this->collider.base.acFlags |= AC_HARD;
     this->timer = 45;
 
     for (i = 1; i < ARRAY_COUNT(this->colliderElements); i++) {
-        element = &this->collider.elements[i];
-        element->dim.worldSphere.center.x = this->actor.world.pos.x;
-        element->dim.worldSphere.center.y = (s32)this->actor.world.pos.y - 7;
-        element->dim.worldSphere.center.z = this->actor.world.pos.z;
+        jntSphElem = &this->collider.elements[i];
+        jntSphElem->dim.worldSphere.center.x = this->actor.world.pos.x;
+        jntSphElem->dim.worldSphere.center.y = (s32)this->actor.world.pos.y - 7;
+        jntSphElem->dim.worldSphere.center.z = this->actor.world.pos.z;
     }
 
     this->actionFunc = EnDekubaba_Wait;
@@ -344,7 +342,7 @@ void EnDekubaba_Wait(EnDekubaba* this, PlayState* play) {
     this->actor.world.pos.y = this->actor.home.pos.y + 14.0f * this->size;
 
     if ((this->timer == 0) && (this->actor.xzDistToPlayer < (200.0f * this->size)) &&
-        (fabsf(this->actor.playerHeightRel) < 30.0f * this->size)) {
+        (fabsf(this->actor.playerHeightRel) < (30.0f * this->size))) {
         EnDekubaba_SetupGrow(this);
     }
 }
@@ -359,10 +357,10 @@ void EnDekubaba_SetupGrow(EnDekubaba* this) {
     this->timer = 15;
 
     for (i = 2; i < ARRAY_COUNT(this->colliderElements); i++) {
-        this->collider.elements[i].info.ocElemFlags |= OCELEM_ON;
+        this->collider.elements[i].base.ocElemFlags |= OCELEM_ON;
     }
 
-    this->collider.base.colType = COLTYPE_HIT6;
+    this->collider.base.colMaterial = COL_MATERIAL_HIT6;
     this->collider.base.acFlags &= ~AC_HARD;
     Actor_PlaySfx(&this->actor, NA_SE_EN_DEKU_WAKEUP);
     this->actionFunc = EnDekubaba_Grow;
@@ -447,7 +445,7 @@ void EnDekubaba_SetupRetract(EnDekubaba* this) {
     this->timer = 15;
 
     for (i = 2; i < ARRAY_COUNT(this->colliderElements); i++) {
-        this->collider.elements[i].info.ocElemFlags &= ~OCELEM_ON;
+        this->collider.elements[i].base.ocElemFlags &= ~OCELEM_ON;
     }
 
     this->actionFunc = EnDekubaba_Retract;
@@ -788,14 +786,14 @@ void EnDekubaba_SetupHit(EnDekubaba* this, s32 hitType) {
     Actor_SetScale(&this->actor, this->size * 0.01f);
 
     if (hitType == DEKUBABA_HIT_STUN_NUT) {
-        Actor_SetColorFilter(&this->actor, 0, 155, 0, 42);
+        Actor_SetColorFilter(&this->actor, COLORFILTER_COLORFLAG_BLUE, 155, COLORFILTER_BUFFLAG_OPA, 42);
     } else if (hitType == DEKUBABA_HIT_STUN_ELECTRIC) {
-        Actor_SetColorFilter(&this->actor, 0, 155, 0, 42);
+        Actor_SetColorFilter(&this->actor, COLORFILTER_COLORFLAG_BLUE, 155, COLORFILTER_BUFFLAG_OPA, 42);
         this->drawDmgEffType = ACTOR_DRAW_DMGEFF_ELECTRIC_SPARKS_LARGE;
         this->drawDmgEffScale = 0.75f;
         this->drawDmgEffAlpha = 2.0f;
     } else {
-        Actor_SetColorFilter(&this->actor, 0x4000, 255, 0, 42);
+        Actor_SetColorFilter(&this->actor, COLORFILTER_COLORFLAG_RED, 255, COLORFILTER_BUFFLAG_OPA, 42);
     }
     this->actionFunc = EnDekubaba_Hit;
 }
@@ -841,7 +839,7 @@ void EnDekubaba_SetupPrunedSomersaultDie(EnDekubaba* this) {
     this->actor.world.rot.y = this->actor.shape.rot.y + 0x8000;
     this->actor.speed = this->size * 3.0f;
     this->collider.base.acFlags &= ~AC_ON;
-    this->actor.flags |= ACTOR_FLAG_10 | ACTOR_FLAG_20;
+    this->actor.flags |= ACTOR_FLAG_UPDATE_CULLING_DISABLED | ACTOR_FLAG_DRAW_CULLING_DISABLED;
     this->actionFunc = EnDekubaba_PrunedSomersaultDie;
 }
 
@@ -868,7 +866,7 @@ void EnDekubaba_PrunedSomersaultDie(EnDekubaba* this, PlayState* play) {
             this->actor.scale.y = 0.0f;
             this->actor.scale.x = 0.0f;
             this->actor.speed = 0.0f;
-            this->actor.flags &= ~(ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_UNFRIENDLY);
+            this->actor.flags &= ~(ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_HOSTILE);
             EffectSsHahen_SpawnBurst(play, &this->actor.world.pos, this->size * 3.0f, 0, (s32)(this->size * 12.0f),
                                      (s32)(this->size * 5.0f), 15, HAHEN_OBJECT_DEFAULT, 10, NULL);
         }
@@ -936,7 +934,7 @@ void EnDekubaba_SetupStunnedVertical(EnDekubaba* this) {
     s32 i;
 
     for (i = 1; i < ARRAY_COUNT(this->colliderElements); i++) {
-        this->collider.elements[i].info.bumperFlags |= BUMP_ON;
+        this->collider.elements[i].base.acElemFlags |= ACELEM_ON;
     }
 
     if (this->timer == 1) {
@@ -982,7 +980,7 @@ void EnDekubaba_SetupSway(EnDekubaba* this) {
     this->stemSectionAngle[2] = -0x5000;
     this->stemSectionAngle[1] = -0x4800;
     EnDekubaba_DisableHitboxes(this);
-    Actor_SetColorFilter(&this->actor, 0x4000, 255, 0, 35);
+    Actor_SetColorFilter(&this->actor, COLORFILTER_COLORFLAG_RED, 255, COLORFILTER_BUFFLAG_OPA, 35);
     this->collider.base.acFlags &= ~AC_ON;
     this->actionFunc = EnDekubaba_Sway;
 }
@@ -997,7 +995,7 @@ void EnDekubaba_Sway(EnDekubaba* this, PlayState* play) {
     Math_ScaledStepToS(&this->actor.shape.rot.x, this->stemSectionAngle[0], 0x71C);
     Math_ScaledStepToS(this->stemSectionAngle, this->stemSectionAngle[1], 0x71C);
     Math_ScaledStepToS(&this->stemSectionAngle[1], this->stemSectionAngle[2], 0x71C);
-    if (Math_ScaledStepToS(&this->stemSectionAngle[2], this->targetSwayAngle, 0x71C) != 0) {
+    if (Math_ScaledStepToS(&this->stemSectionAngle[2], this->targetSwayAngle, 0x71C)) {
         this->targetSwayAngle = -0x4000 - (s32)((this->targetSwayAngle + 0x4000) * 0.8f);
     }
 
@@ -1043,8 +1041,8 @@ void EnDekubaba_SetupDeadStickDrop(EnDekubaba* this, PlayState* play) {
     this->actor.gravity = 0.0f;
     this->actor.velocity.y = 0.0f;
     this->actor.shape.shadowScale = 3.0f;
-    func_800BC154(play, &play->actorCtx, &this->actor, ACTORCAT_MISC);
-    this->actor.flags &= ~ACTOR_FLAG_20;
+    Actor_ChangeCategory(play, &play->actorCtx, &this->actor, ACTORCAT_MISC);
+    this->actor.flags &= ~ACTOR_FLAG_DRAW_CULLING_DISABLED;
     this->timer = 200;
     this->drawDmgEffAlpha = 0.0f;
     this->actionFunc = EnDekubaba_DeadStickDrop;
@@ -1068,24 +1066,24 @@ void EnDekubaba_DeadStickDrop(EnDekubaba* this, PlayState* play) {
 void EnDekubaba_UpdateDamage(EnDekubaba* this, PlayState* play) {
     s32 newHealth;
     s32 i;
-    ColliderJntSphElement* sphElement;
+    ColliderJntSphElement* jntSphElem;
 
     if (this->collider.base.acFlags & AC_HIT) {
         this->collider.base.acFlags &= ~AC_HIT;
         Actor_SetDropFlagJntSph(&this->actor, &this->collider);
 
-        if ((this->collider.base.colType != COLTYPE_HARD) &&
+        if ((this->collider.base.colMaterial != COL_MATERIAL_HARD) &&
             (this->actor.colChkInfo.damageEffect != DEKUBABA_DMGEFF_HOOKSHOT)) {
-            sphElement = &this->collider.elements[0];
-            for (i = 0; i < ARRAY_COUNT(this->colliderElements); i++, sphElement++) {
-                if (sphElement->info.bumperFlags & BUMP_HIT) {
+            jntSphElem = &this->collider.elements[0];
+            for (i = 0; i < ARRAY_COUNT(this->colliderElements); i++, jntSphElem++) {
+                if (jntSphElem->base.acElemFlags & ACELEM_HIT) {
                     break;
                 }
             }
 
             if ((i != ARRAY_COUNT(this->colliderElements)) &&
                 ((this->drawDmgEffType != ACTOR_DRAW_DMGEFF_FROZEN_NO_SFX) ||
-                 (!(sphElement->info.acHitInfo->toucher.dmgFlags & 0xDB0B3)))) {
+                 !(jntSphElem->base.acHitElem->atDmgInfo.dmgFlags & 0xDB0B3))) {
                 EnDekubaba_SpawnIceEffects(this, play);
                 newHealth = this->actor.colChkInfo.health - this->actor.colChkInfo.damage;
 
@@ -1140,8 +1138,9 @@ void EnDekubaba_UpdateDamage(EnDekubaba* this, PlayState* play) {
             return;
         }
     } else if ((play->actorCtx.unk2 != 0) && (this->actor.xyzDistToPlayerSq < SQ(200.0f)) &&
-               (this->collider.base.colType != COLTYPE_HARD) && (this->actionFunc != EnDekubaba_StunnedVertical) &&
-               (this->actionFunc != EnDekubaba_Hit) && (this->actor.colChkInfo.health != 0)) {
+               (this->collider.base.colMaterial != COL_MATERIAL_HARD) &&
+               (this->actionFunc != EnDekubaba_StunnedVertical) && (this->actionFunc != EnDekubaba_Hit) &&
+               (this->actor.colChkInfo.health != 0)) {
         this->actor.colChkInfo.health--;
         this->actor.dropFlag = 0;
         EnDekubaba_SetupHit(this, DEKUBABA_HIT_STUN_OTHER);
@@ -1175,7 +1174,7 @@ void EnDekubaba_UpdateDamage(EnDekubaba* this, PlayState* play) {
 
 void EnDekubaba_Update(Actor* thisx, PlayState* play) {
     s32 pad;
-    EnDekubaba* this = THIS;
+    EnDekubaba* this = (EnDekubaba*)thisx;
 
     if (this->collider.base.atFlags & AT_HIT) {
         this->collider.base.atFlags &= ~AT_HIT;
@@ -1198,7 +1197,7 @@ void EnDekubaba_Update(Actor* thisx, PlayState* play) {
 
     if (this->actionFunc == EnDekubaba_Lunge) {
         CollisionCheck_SetAT(play, &play->colChkCtx, &this->collider.base);
-        this->actor.flags |= ACTOR_FLAG_1000000;
+        this->actor.flags |= ACTOR_FLAG_SFX_FOR_PLAYER_BODY_HIT;
     }
 
     if (this->collider.base.acFlags & AC_ON) {
@@ -1234,7 +1233,7 @@ void EnDekubaba_DrawStemRetracted(EnDekubaba* this, PlayState* play) {
                      MTXMODE_NEW);
     Matrix_RotateZYX(this->stemSectionAngle[0], this->actor.shape.rot.y, 0, MTXMODE_APPLY);
     Matrix_Scale(horizontalScale, horizontalScale, horizontalScale, MTXMODE_APPLY);
-    gSPMatrix(POLY_OPA_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    MATRIX_FINALIZE_AND_LOAD(POLY_OPA_DISP++, play->state.gfxCtx);
     gSPDisplayList(POLY_OPA_DISP++, gDekuBabaStemTopDL);
 
     for (i = DEKUBABA_BODYPART_1; i < DEKUBABA_BODYPART_MAX; i++) {
@@ -1275,7 +1274,7 @@ void EnDekubaba_DrawStemExtended(EnDekubaba* this, PlayState* play) {
 
         Matrix_Put(&mf);
         Matrix_RotateZYX(this->stemSectionAngle[i], this->actor.shape.rot.y, 0, MTXMODE_APPLY);
-        gSPMatrix(POLY_OPA_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+        MATRIX_FINALIZE_AND_LOAD(POLY_OPA_DISP++, play->state.gfxCtx);
         gSPDisplayList(POLY_OPA_DISP++, sStemDLists[i]);
 
         Collider_UpdateSpheres(51 + 2 * i, &this->collider);
@@ -1303,7 +1302,7 @@ void EnDekubaba_DrawStemBasePruned(EnDekubaba* this, PlayState* play) {
     OPEN_DISPS(play->state.gfxCtx);
 
     Matrix_RotateZYX(this->stemSectionAngle[2], this->actor.shape.rot.y, 0, MTXMODE_APPLY);
-    gSPMatrix(POLY_OPA_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    MATRIX_FINALIZE_AND_LOAD(POLY_OPA_DISP++, play->state.gfxCtx);
     gSPDisplayList(POLY_OPA_DISP++, gDekuBabaStemBaseDL);
 
     Collider_UpdateSpheres(55, &this->collider);
@@ -1328,14 +1327,14 @@ void EnDekubaba_DrawShadow(EnDekubaba* this, PlayState* play) {
     Matrix_Mult(&mf, MTXMODE_NEW);
     horizontalScale = this->size * 0.15f;
     Matrix_Scale(horizontalScale, 1.0f, horizontalScale, MTXMODE_APPLY);
-    gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    MATRIX_FINALIZE_AND_LOAD(POLY_XLU_DISP++, play->state.gfxCtx);
     gSPDisplayList(POLY_XLU_DISP++, gCircleShadowDL);
 
     CLOSE_DISPS(play->state.gfxCtx);
 }
 
 void EnDekubaba_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* rot, Actor* thisx) {
-    EnDekubaba* this = THIS;
+    EnDekubaba* this = (EnDekubaba*)thisx;
 
     if (limbIndex == DEKUBABA_LIMB_ROOT) {
         Collider_UpdateSpheres(limbIndex, &this->collider);
@@ -1343,7 +1342,7 @@ void EnDekubaba_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s*
 }
 
 void EnDekubaba_Draw(Actor* thisx, PlayState* play) {
-    EnDekubaba* this = THIS;
+    EnDekubaba* this = (EnDekubaba*)thisx;
     f32 scale;
 
     OPEN_DISPS(play->state.gfxCtx);
@@ -1364,7 +1363,7 @@ void EnDekubaba_Draw(Actor* thisx, PlayState* play) {
         Matrix_Translate(this->actor.home.pos.x, this->actor.home.pos.y, this->actor.home.pos.z, MTXMODE_NEW);
         Matrix_RotateYS(this->actor.home.rot.y, MTXMODE_APPLY);
         Matrix_Scale(scale, scale, scale, MTXMODE_APPLY);
-        gSPMatrix(POLY_OPA_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+        MATRIX_FINALIZE_AND_LOAD(POLY_OPA_DISP++, play->state.gfxCtx);
         gSPDisplayList(POLY_OPA_DISP++, gDekuBabaBaseLeavesDL);
 
         if (this->actionFunc == EnDekubaba_PrunedSomersaultDie) {
@@ -1377,7 +1376,7 @@ void EnDekubaba_Draw(Actor* thisx, PlayState* play) {
         // Display solid until 40 frames left, then blink until killed.
     } else if ((this->timer > 40) || ((this->timer % 2) != 0)) {
         Matrix_Translate(0.0f, 0.0f, 200.0f, MTXMODE_APPLY);
-        gSPMatrix(POLY_OPA_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+        MATRIX_FINALIZE_AND_LOAD(POLY_OPA_DISP++, play->state.gfxCtx);
         gSPDisplayList(POLY_OPA_DISP++, gDekuBabaStickDropDL);
     }
 

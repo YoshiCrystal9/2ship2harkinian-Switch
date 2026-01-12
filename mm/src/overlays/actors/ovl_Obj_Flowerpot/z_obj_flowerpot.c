@@ -3,13 +3,11 @@
  * Overlay: ovl_Obj_Flowerpot
  * Description: Breakable Pot With Grass
  */
-
+#include "prevent_bss_reordering.h"
 #include "z_obj_flowerpot.h"
 #include "objects/object_flowerpot/object_flowerpot.h"
 
 #define FLAGS 0x00000000
-
-#define THIS ((ObjFlowerpot*)thisx)
 
 void ObjFlowerpot_Init(Actor* thisx, PlayState* play);
 void ObjFlowerpot_Destroy(Actor* thisx, PlayState* play2);
@@ -31,7 +29,7 @@ s16 D_80A1DA3C;
 s16 D_80A1DA3E;
 s16 D_80A1DA40;
 
-ActorInit Obj_Flowerpot_InitVars = {
+ActorProfile Obj_Flowerpot_Profile = {
     /**/ ACTOR_OBJ_FLOWERPOT,
     /**/ ACTORCAT_PROP,
     /**/ FLAGS,
@@ -46,22 +44,22 @@ ActorInit Obj_Flowerpot_InitVars = {
 static ColliderJntSphElementInit sJntSphElementsInit[2] = {
     {
         {
-            ELEMTYPE_UNK0,
+            ELEM_MATERIAL_UNK0,
             { 0x00400000, 0x00, 0x02 },
             { 0x05CBFFBE, 0x00, 0x00 },
-            TOUCH_ON | TOUCH_SFX_NORMAL,
-            BUMP_ON,
+            ATELEM_ON | ATELEM_SFX_NORMAL,
+            ACELEM_ON,
             OCELEM_ON,
         },
         { 0, { { 0, 100, 0 }, 12 }, 100 },
     },
     {
         {
-            ELEMTYPE_UNK0,
+            ELEM_MATERIAL_UNK0,
             { 0x00000000, 0x00, 0x00 },
             { 0x0580C71C, 0x00, 0x00 },
-            TOUCH_NONE | TOUCH_SFX_NORMAL,
-            BUMP_ON,
+            ATELEM_NONE | ATELEM_SFX_NORMAL,
+            ACELEM_ON,
             OCELEM_NONE,
         },
         { 1, { { 0, 300, 0 }, 12 }, 100 },
@@ -70,7 +68,7 @@ static ColliderJntSphElementInit sJntSphElementsInit[2] = {
 
 static ColliderJntSphInit sJntSphInit = {
     {
-        COLTYPE_NONE,
+        COL_MATERIAL_NONE,
         AT_ON | AT_TYPE_PLAYER,
         AC_ON | AC_TYPE_PLAYER,
         OC1_ON | OC1_TYPE_ALL,
@@ -92,9 +90,9 @@ u8 D_80A1D404 = true;
 Vec3f D_80A1D408 = { 0.0f, 20.0f, 0.0f };
 
 static InitChainEntry sInitChain[] = {
-    ICHAIN_F32_DIV1000(gravity, -2000, ICHAIN_CONTINUE), ICHAIN_F32_DIV1000(terminalVelocity, -20000, ICHAIN_CONTINUE),
-    ICHAIN_VEC3F_DIV1000(scale, 100, ICHAIN_CONTINUE),   ICHAIN_F32(uncullZoneForward, 1600, ICHAIN_CONTINUE),
-    ICHAIN_F32(uncullZoneScale, 100, ICHAIN_CONTINUE),   ICHAIN_F32(uncullZoneDownward, 100, ICHAIN_STOP),
+    ICHAIN_F32_DIV1000(gravity, -2000, ICHAIN_CONTINUE),  ICHAIN_F32_DIV1000(terminalVelocity, -20000, ICHAIN_CONTINUE),
+    ICHAIN_VEC3F_DIV1000(scale, 100, ICHAIN_CONTINUE),    ICHAIN_F32(cullingVolumeDistance, 1600, ICHAIN_CONTINUE),
+    ICHAIN_F32(cullingVolumeScale, 100, ICHAIN_CONTINUE), ICHAIN_F32(cullingVolumeDownward, 100, ICHAIN_STOP),
 };
 
 void func_80A1B3D0(void) {
@@ -303,8 +301,8 @@ void func_80A1BD80(ObjFlowerpot* this, PlayState* play) {
     spBC.y = this->actor.world.pos.y + this->actor.depthInWater;
 
     for (phi_s1 = 0, i = 0; i < 4; i++, phi_s1 += 0x4000) {
-        spBC.x = (Math_SinS((s32)(Rand_ZeroOne() * 7200.0f) + phi_s1) * 15.0f) + this->actor.world.pos.x;
-        spBC.z = (Math_CosS((s32)(Rand_ZeroOne() * 7200.0f) + phi_s1) * 15.0f) + this->actor.world.pos.z;
+        spBC.x = this->actor.world.pos.x + (Math_SinS((s32)(Rand_ZeroOne() * 7200.0f) + phi_s1) * 15.0f);
+        spBC.z = this->actor.world.pos.z + (Math_CosS((s32)(Rand_ZeroOne() * 7200.0f) + phi_s1) * 15.0f);
         EffectSsGSplash_Spawn(play, &spBC, NULL, NULL, 0, 200);
     }
 
@@ -395,7 +393,7 @@ void func_80A1C62C(ObjFlowerpot* this, PlayState* play) {
 
 void ObjFlowerpot_Init(Actor* thisx, PlayState* play) {
     s32 pad;
-    ObjFlowerpot* this = THIS;
+    ObjFlowerpot* this = (ObjFlowerpot*)thisx;
 
     Actor_ProcessInitChain(&this->actor, sInitChain);
 
@@ -431,7 +429,7 @@ void ObjFlowerpot_Init(Actor* thisx, PlayState* play) {
 
 void ObjFlowerpot_Destroy(Actor* thisx, PlayState* play2) {
     PlayState* play = play2;
-    ObjFlowerpot* this = THIS;
+    ObjFlowerpot* this = (ObjFlowerpot*)thisx;
 
     Collider_DestroyJntSph(play, &this->collider);
 }
@@ -448,7 +446,7 @@ void func_80A1C838(ObjFlowerpot* this, PlayState* play) {
         func_80A1CBF8(this);
         this->actor.room = -1;
         this->actor.colChkInfo.mass = 180;
-        this->actor.flags |= ACTOR_FLAG_10;
+        this->actor.flags |= ACTOR_FLAG_UPDATE_CULLING_DISABLED;
         if (func_800A817C(ENOBJFLOWERPOT_GET_3F(&this->actor))) {
             func_80A1B914(this, play);
         }
@@ -466,8 +464,8 @@ void func_80A1C838(ObjFlowerpot* this, PlayState* play) {
         func_80A1BD80(this, play);
         func_80A1B994(this, play);
         Actor_Kill(&this->actor);
-    } else if ((this->collider.elements[0].info.bumperFlags & BUMP_HIT) &&
-               (this->collider.elements[0].info.acHitInfo->toucher.dmgFlags & 0x058BFFBC)) {
+    } else if ((this->collider.elements[0].base.acElemFlags & ACELEM_HIT) &&
+               (this->collider.elements[0].base.acHitElem->atDmgInfo.dmgFlags & 0x058BFFBC)) {
         if (!(this->unk_1EA & 2)) {
             func_80A1B914(this, play);
             func_80A1C0FC(this, play);
@@ -478,10 +476,10 @@ void func_80A1C838(ObjFlowerpot* this, PlayState* play) {
         func_80A1B994(this, play);
         Actor_Kill(&this->actor);
     } else {
-        if (this->collider.elements[1].info.bumperFlags & BUMP_HIT) {
+        if (this->collider.elements[1].base.acElemFlags & ACELEM_HIT) {
             if (!(this->unk_1EA & 2)) {
                 this->unk_1EA |= 2;
-                this->collider.elements[1].info.bumperFlags &= ~BUMP_ON;
+                this->collider.elements[1].base.acElemFlags &= ~ACELEM_ON;
                 func_80A1C0FC(this, play);
                 func_80A1B914(this, play);
                 func_80A1B9CC(this, play);
@@ -494,7 +492,7 @@ void func_80A1C838(ObjFlowerpot* this, PlayState* play) {
             if (this->actor.bgCheckFlags & BGCHECKFLAG_GROUND) {
                 if (this->actor.colChkInfo.mass == MASS_IMMOVABLE) {
                     if (DynaPoly_GetActor(&play->colCtx, this->actor.floorBgId) == NULL) {
-                        this->actor.flags &= ~ACTOR_FLAG_10;
+                        this->actor.flags &= ~ACTOR_FLAG_UPDATE_CULLING_DISABLED;
                         this->unk_1EA &= ~0x1;
                     }
                 } else if (Math3D_Vec3fDistSq(&this->actor.world.pos, &this->actor.prevPos) < 0.01f) {
@@ -549,13 +547,13 @@ void func_80A1CC0C(ObjFlowerpot* this, PlayState* play) {
         func_80A1C5E8(this, play);
     } else {
         Vec3f sp30;
-        s32 sp2C;
+        s32 bgId;
 
         sp30.x = this->actor.world.pos.x;
         sp30.y = this->actor.world.pos.y + 20.0f;
         sp30.z = this->actor.world.pos.z;
         this->actor.floorHeight =
-            BgCheck_EntityRaycastFloor5(&play->colCtx, &this->actor.floorPoly, &sp2C, &this->actor, &sp30);
+            BgCheck_EntityRaycastFloor5(&play->colCtx, &this->actor.floorPoly, &bgId, &this->actor, &sp30);
     }
 }
 
@@ -590,10 +588,10 @@ void func_80A1CD10(ObjFlowerpot* this) {
 
 void func_80A1CEF4(ObjFlowerpot* this, PlayState* play) {
     Actor* thisx = &this->actor;
-    s32 sp28 = this->collider.elements[0].info.toucherFlags & TOUCH_HIT;
+    s32 sp28 = this->collider.elements[0].base.atElemFlags & ATELEM_HIT;
 
     if (sp28) {
-        this->collider.elements[0].info.toucherFlags &= ~TOUCH_ON;
+        this->collider.elements[0].base.atElemFlags &= ~ATELEM_ON;
     }
 
     if (this->unk_1E8 > 0) {
@@ -633,7 +631,7 @@ void func_80A1CEF4(ObjFlowerpot* this, PlayState* play) {
     Actor_MoveWithGravity(thisx);
 
     if (!(this->unk_1EA & 2)) {
-        D_80A1D3F8 += (s16)(thisx->shape.rot.x * -0.06f);
+        D_80A1D3F8 += TRUNCF_BINANG(thisx->shape.rot.x * -0.06f);
     } else {
         Math_StepToS(&D_80A1D3F8, 0, 80);
         Math_StepToS(&D_80A1D3FC, 0, 20);
@@ -649,13 +647,13 @@ void func_80A1CEF4(ObjFlowerpot* this, PlayState* play) {
 
 void ObjFlowerpot_Update(Actor* thisx, PlayState* play2) {
     PlayState* play = play2;
-    ObjFlowerpot* this = THIS;
+    ObjFlowerpot* this = (ObjFlowerpot*)thisx;
 
     this->actionFunc(this, play);
 
     func_80A1C554(this);
 
-    if ((D_80A1D830 != play->gameplayFrames) && (play->roomCtx.curRoom.behaviorType1 == ROOM_BEHAVIOR_TYPE1_0)) {
+    if ((D_80A1D830 != play->gameplayFrames) && (play->roomCtx.curRoom.type == ROOM_TYPE_NORMAL)) {
         func_80A1B3D0();
         D_80A1D830 = play->gameplayFrames;
     }
@@ -663,13 +661,13 @@ void ObjFlowerpot_Update(Actor* thisx, PlayState* play2) {
 
 void ObjFlowerpot_Draw(Actor* thisx, PlayState* play) {
     s32 pad;
-    ObjFlowerpot* this = THIS;
+    ObjFlowerpot* this = (ObjFlowerpot*)thisx;
 
     OPEN_DISPS(play->state.gfxCtx);
 
     Gfx_SetupDL25_Opa(play->state.gfxCtx);
 
-    gSPMatrix(POLY_OPA_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    MATRIX_FINALIZE_AND_LOAD(POLY_OPA_DISP++, play->state.gfxCtx);
     gSPDisplayList(POLY_OPA_DISP++, object_flowerpot_DL_0012E0);
 
     if ((this->actionFunc != func_80A1C838) || (this->unk_1EA & 1)) {
@@ -680,12 +678,11 @@ void ObjFlowerpot_Draw(Actor* thisx, PlayState* play) {
     }
 
     if (!(this->unk_1EA & 2)) {
-        if ((play->roomCtx.curRoom.behaviorType1 == ROOM_BEHAVIOR_TYPE1_0) && (this->actionFunc == func_80A1C838)) {
+        if ((play->roomCtx.curRoom.type == ROOM_TYPE_NORMAL) && (this->actionFunc == func_80A1C838)) {
             if ((this->actor.projectedPos.z > -150.0f) && (this->actor.projectedPos.z < 400.0f)) {
                 func_80A1B840(&D_80A1D838[this->unk_1EB]);
 
-                gSPMatrix(POLY_OPA_DISP++, Matrix_NewMtx(play->state.gfxCtx),
-                          G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+                MATRIX_FINALIZE_AND_LOAD(POLY_OPA_DISP++, play->state.gfxCtx);
             }
         }
 

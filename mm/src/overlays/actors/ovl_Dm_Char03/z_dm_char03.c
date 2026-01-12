@@ -7,9 +7,7 @@
 #include "z_dm_char03.h"
 #include "objects/object_osn/object_osn.h"
 
-#define FLAGS (ACTOR_FLAG_10 | ACTOR_FLAG_20)
-
-#define THIS ((DmChar03*)thisx)
+#define FLAGS (ACTOR_FLAG_UPDATE_CULLING_DISABLED | ACTOR_FLAG_DRAW_CULLING_DISABLED)
 
 void DmChar03_Init(Actor* thisx, PlayState* play);
 void DmChar03_Destroy(Actor* thisx, PlayState* play);
@@ -20,7 +18,7 @@ void func_80AAB644(DmChar03* this, PlayState* play);
 void DmChar03_DoNothing(DmChar03* this, PlayState* play);
 void func_80AABA84(PlayState* play, DmChar03* this);
 
-ActorInit Dm_Char03_InitVars = {
+ActorProfile Dm_Char03_Profile = {
     /**/ ACTOR_DM_CHAR03,
     /**/ ACTORCAT_ITEMACTION,
     /**/ FLAGS,
@@ -37,7 +35,7 @@ typedef enum {
     /* 1 */ DMCHAR03_ANIM_MAX
 } DmChar03Animation;
 
-AnimationInfo sAnimationInfo[DMCHAR03_ANIM_MAX] = {
+static AnimationInfo sAnimationInfo[DMCHAR03_ANIM_MAX] = {
     { &gDekuMaskFallOverAnim, 1.0f, 0.0f, -1.0f, ANIMMODE_ONCE, 0.0f }, // DMCHAR03_ANIM_FALL_OVER
 };
 
@@ -56,10 +54,10 @@ void DmChar03_ChangeAnim(SkelAnime* skelAnime, AnimationInfo* animInfo, u16 anim
 }
 
 void DmChar03_Init(Actor* thisx, PlayState* play) {
-    DmChar03* this = THIS;
+    DmChar03* this = (DmChar03*)thisx;
 
     this->animIndex = DMCHAR03_ANIM_FALL_OVER;
-    this->actor.targetArrowOffset = 3000.0f;
+    this->actor.lockOnArrowOffset = 3000.0f;
     this->unk_18E = false;
     ActorShape_Init(&this->actor.shape, 0.0f, ActorShadow_DrawCircle, 24.0f);
     SkelAnime_InitFlex(play, &this->skelAnime, &gDekuMaskSkel, NULL, NULL, NULL, 0);
@@ -147,7 +145,7 @@ void func_80AAB838(DmChar03* this, PlayState* play) {
 }
 
 void DmChar03_Update(Actor* thisx, PlayState* play) {
-    DmChar03* this = THIS;
+    DmChar03* this = (DmChar03*)thisx;
 
     if (Cutscene_IsCueInChannel(play, CS_CMD_ACTOR_CUE_136) &&
         (play->csCtx.actorCues[Cutscene_GetCueChannel(play, CS_CMD_ACTOR_CUE_136)]->id == 2)) {
@@ -169,7 +167,7 @@ void DmChar03_TransformLimbDraw(PlayState* play, s32 limbIndex, Actor* thisx) {
 }
 
 void DmChar03_Draw(Actor* thisx, PlayState* play) {
-    DmChar03* this = THIS;
+    DmChar03* this = (DmChar03*)thisx;
 
     if (!this->unk_18E) {
         if (Cutscene_IsCueInChannel(play, CS_CMD_ACTOR_CUE_136) &&

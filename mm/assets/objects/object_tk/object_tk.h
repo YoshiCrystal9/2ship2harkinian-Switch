@@ -54,6 +54,12 @@ static const ALIGN_ASSET(2) char object_tk_Tex_005B90[] = dobject_tk_Tex_005B90;
 #define dobject_tk_Tex_005C90 "__OTR__objects/object_tk/object_tk_Tex_005C90"
 static const ALIGN_ASSET(2) char object_tk_Tex_005C90[] = dobject_tk_Tex_005C90;
 
+#define dobject_tk_Tex_005D90 "__OTR__objects/object_tk/object_tk_Tex_005D90"
+static const ALIGN_ASSET(2) char object_tk_Tex_005D90[] = dobject_tk_Tex_005D90;
+
+#define dobject_tk_Tex_005E90 "__OTR__objects/object_tk/object_tk_Tex_005E90"
+static const ALIGN_ASSET(2) char object_tk_Tex_005E90[] = dobject_tk_Tex_005E90;
+
 #define dobject_tk_Tex_005F10 "__OTR__objects/object_tk/object_tk_Tex_005F10"
 static const ALIGN_ASSET(2) char object_tk_Tex_005F10[] = dobject_tk_Tex_005F10;
 
@@ -102,6 +108,9 @@ static const ALIGN_ASSET(2) char object_tk_DL_00A068[] = dobject_tk_DL_00A068;
 #define dobject_tk_DL_00A220 "__OTR__objects/object_tk/object_tk_DL_00A220"
 static const ALIGN_ASSET(2) char object_tk_DL_00A220[] = dobject_tk_DL_00A220;
 
+#define dobject_tk_TLUT_00A300 "__OTR__objects/object_tk/object_tk_TLUT_00A300"
+static const ALIGN_ASSET(2) char object_tk_TLUT_00A300[] = dobject_tk_TLUT_00A300;
+
 #define dobject_tk_Tex_00A350 "__OTR__objects/object_tk/object_tk_Tex_00A350"
 static const ALIGN_ASSET(2) char object_tk_Tex_00A350[] = dobject_tk_Tex_00A350;
 
@@ -128,9 +137,6 @@ static const ALIGN_ASSET(2) char object_tk_DL_00B530[] = dobject_tk_DL_00B530;
 
 #define dobject_tk_Skel_00B9E8 "__OTR__objects/object_tk/object_tk_Skel_00B9E8"
 static const ALIGN_ASSET(2) char object_tk_Skel_00B9E8[] = dobject_tk_Skel_00B9E8;
-
-#define dobject_tkTLUT_00A300 "__OTR__objects/object_tk/object_tkTLUT_00A300"
-static const ALIGN_ASSET(2) char object_tkTLUT_00A300[] = dobject_tkTLUT_00A300;
 
 typedef enum ObjectTkLimb {
     /* 0x00 */ OBJECT_TK_LIMB_NONE,

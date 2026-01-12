@@ -204,14 +204,14 @@ static const ALIGN_ASSET(2) char gBigslimeShockwaveDL[] = dgBigslimeShockwaveDL;
 #define dgBigslimeShockwave1Tex "__OTR__objects/object_bigslime/gBigslimeShockwave1Tex"
 static const ALIGN_ASSET(2) char gBigslimeShockwave1Tex[] = dgBigslimeShockwave1Tex;
 
-#define dobject_bigslime_zeroes_Blob_010028 "__OTR__objects/object_bigslime/object_bigslime_zeroes_Blob_010028"
-static const ALIGN_ASSET(2) char object_bigslime_zeroes_Blob_010028[] = dobject_bigslime_zeroes_Blob_010028;
+#define dgBigslimeEmpty1Blob "__OTR__objects/object_bigslime/gBigslimeEmpty1Blob"
+static const ALIGN_ASSET(2) char gBigslimeEmpty1Blob[] = dgBigslimeEmpty1Blob;
 
 #define dgBigslimeShockwave2Tex "__OTR__objects/object_bigslime/gBigslimeShockwave2Tex"
 static const ALIGN_ASSET(2) char gBigslimeShockwave2Tex[] = dgBigslimeShockwave2Tex;
 
-#define dobject_bigslime_zeroes_Blob_0104A8 "__OTR__objects/object_bigslime/object_bigslime_zeroes_Blob_0104A8"
-static const ALIGN_ASSET(2) char object_bigslime_zeroes_Blob_0104A8[] = dobject_bigslime_zeroes_Blob_0104A8;
+#define dgBigslimeEmpty2Blob "__OTR__objects/object_bigslime/gBigslimeEmpty2Blob"
+static const ALIGN_ASSET(2) char gBigslimeEmpty2Blob[] = dgBigslimeEmpty2Blob;
 
 #define dgBigslimeNormalMaterialDL "__OTR__objects/object_bigslime/gBigslimeNormalMaterialDL"
 static const ALIGN_ASSET(2) char gBigslimeNormalMaterialDL[] = dgBigslimeNormalMaterialDL;

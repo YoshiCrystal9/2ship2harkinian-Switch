@@ -13,12 +13,10 @@
 
 #include "2s2h/ShipUtils.h"
 #include "2s2h/Enhancements/FrameInterpolation/FrameInterpolation.h"
-#include "public/bridge/consolevariablebridge.h"
+#include <libultraship/bridge/consolevariablebridge.h>
 #include "GameInteractor/GameInteractor.h"
 
-#define FLAGS (ACTOR_FLAG_10 | ACTOR_FLAG_20)
-
-#define THIS ((ObjGrass*)thisx)
+#define FLAGS (ACTOR_FLAG_UPDATE_CULLING_DISABLED | ACTOR_FLAG_DRAW_CULLING_DISABLED)
 
 void ObjGrass_Init(Actor* thisx, PlayState* play);
 void ObjGrass_Destroy(Actor* thisx, PlayState* play);
@@ -32,7 +30,7 @@ f32 sNearestGrassElementsDistSq[OBJ_GRASS_NEAREST_ELEM_MAX];
 
 #include "overlays/ovl_Obj_Grass/ovl_Obj_Grass.h"
 
-ActorInit Obj_Grass_InitVars = {
+ActorProfile Obj_Grass_Profile = {
     /**/ ACTOR_OBJ_GRASS,
     /**/ ACTORCAT_PROP,
     /**/ FLAGS,
@@ -46,7 +44,7 @@ ActorInit Obj_Grass_InitVars = {
 
 static ColliderCylinderInit sCylinderInit = {
     {
-        COLTYPE_NONE,
+        COL_MATERIAL_NONE,
         AT_NONE,
         AC_ON | AC_TYPE_PLAYER,
         OC1_ON | OC1_TYPE_PLAYER | OC1_TYPE_2,
@@ -54,11 +52,11 @@ static ColliderCylinderInit sCylinderInit = {
         COLSHAPE_CYLINDER,
     },
     {
-        ELEMTYPE_UNK0,
+        ELEM_MATERIAL_UNK0,
         { 0x00000000, 0x00, 0x00 },
         { 0x0580C71C, 0x00, 0x00 },
-        TOUCH_NONE | TOUCH_SFX_NORMAL,
-        BUMP_ON,
+        ATELEM_NONE | ATELEM_SFX_NORMAL,
+        ACELEM_ON,
         OCELEM_ON,
     },
     { 6, 44, 0, { 0, 0, 0 } },
@@ -157,7 +155,7 @@ void ObjGrass_SpawnFragments(Vec3f* basePos, PlayState* play) {
 }
 
 void ObjGrass_Init(Actor* thisx, PlayState* play) {
-    ObjGrass* this = THIS;
+    ObjGrass* this = (ObjGrass*)thisx;
     s32 i;
 
     Actor_SetScale(&this->actor, 0.4f);
@@ -176,7 +174,7 @@ void ObjGrass_Init(Actor* thisx, PlayState* play) {
 }
 
 void ObjGrass_Destroy(Actor* thisx, PlayState* play) {
-    ObjGrass* this = THIS;
+    ObjGrass* this = (ObjGrass*)thisx;
     s32 i;
 
     for (i = 0; i < ARRAY_COUNT(this->grassElemColliders); i++) {
@@ -403,7 +401,7 @@ void ObjGrass_CalcAnimationMatrices(ObjGrass* this) {
 }
 
 void ObjGrass_Update(Actor* thisx, PlayState* play) {
-    ObjGrass* this = THIS;
+    ObjGrass* this = (ObjGrass*)thisx;
 
     ObjGrass_ProcessColliders(this, play);
     ObjGrass_UpdateGrass(this, play);
@@ -463,7 +461,7 @@ void ObjGrass_InitDraw(ObjGrass* this, PlayState* play) {
 }
 
 void ObjGrass_DrawOpa(Actor* thisx, PlayState* play2) {
-    ObjGrass* this = THIS;
+    ObjGrass* this = (ObjGrass*)thisx;
     PlayState* play = play2;
     Lights* lights;
     ObjGrassGroup* grassGroup;
@@ -492,7 +490,7 @@ void ObjGrass_DrawOpa(Actor* thisx, PlayState* play2) {
 
                 if ((grassElem->flags & OBJ_GRASS_ELEM_DRAW) && (grassElem->alpha == 255)) {
                     FrameInterpolation_RecordOpenChild(grassElem, 0);
-                    if (GameInteractor_Should(VB_OBJGRASS_DRAW_BE_OVERRIDDEN, true, this, grassElem, j)) {
+                    if (GameInteractor_Should(VB_OBJGRASS_OPA_DRAW_BE_OVERRIDDEN, true, this, grassElem, j)) {
                         rot.y = grassElem->rotY;
                         Matrix_SetTranslateRotateYXZ(grassElem->pos.x, grassElem->pos.y, grassElem->pos.z, &rot);
                         Matrix_Scale(this->actor.scale.x, this->actor.scale.y, this->actor.scale.z, MTXMODE_APPLY);
@@ -500,8 +498,7 @@ void ObjGrass_DrawOpa(Actor* thisx, PlayState* play2) {
                             ObjGrass_OverrideMatrixCurrent(&this->distortionMtx[j]);
                         }
 
-                        gSPMatrix(POLY_OPA_DISP++, Matrix_NewMtx(play->state.gfxCtx),
-                                  G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+                        MATRIX_FINALIZE_AND_LOAD(POLY_OPA_DISP++, play->state.gfxCtx);
                         gSPDisplayList(POLY_OPA_DISP++, gObjGrass_D_809AAAE0);
                     }
                     FrameInterpolation_RecordCloseChild();
@@ -514,7 +511,7 @@ void ObjGrass_DrawOpa(Actor* thisx, PlayState* play2) {
 }
 
 void ObjGrass_DrawXlu(Actor* thisx, PlayState* play) {
-    ObjGrass* this = THIS;
+    ObjGrass* this = (ObjGrass*)thisx;
     ObjGrassGroup* grassGroup;
     ObjGrassElement* grassElem;
     s32 i;
@@ -536,14 +533,15 @@ void ObjGrass_DrawXlu(Actor* thisx, PlayState* play) {
 
                 if ((grassElem->flags & OBJ_GRASS_ELEM_DRAW) && (grassElem->alpha > 0) && (grassElem->alpha < 255)) {
                     FrameInterpolation_RecordOpenChild(grassElem, 0);
-                    rot.y = grassElem->rotY;
-                    Matrix_SetTranslateRotateYXZ(grassElem->pos.x, grassElem->pos.y, grassElem->pos.z, &rot);
-                    Matrix_Scale(this->actor.scale.x, this->actor.scale.y, this->actor.scale.z, MTXMODE_APPLY);
+                    if (GameInteractor_Should(VB_OBJGRASS_XLU_DRAW_BE_OVERRIDDEN, true, this, grassElem)) {
+                        rot.y = grassElem->rotY;
+                        Matrix_SetTranslateRotateYXZ(grassElem->pos.x, grassElem->pos.y, grassElem->pos.z, &rot);
+                        Matrix_Scale(this->actor.scale.x, this->actor.scale.y, this->actor.scale.z, MTXMODE_APPLY);
 
-                    gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(play->state.gfxCtx),
-                              G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
-                    gDPSetPrimColor(POLY_XLU_DISP++, 0, 0, 255, 255, 255, grassElem->alpha);
-                    gSPDisplayList(POLY_XLU_DISP++, gObjGrass_D_809AAAE0);
+                        MATRIX_FINALIZE_AND_LOAD(POLY_XLU_DISP++, play->state.gfxCtx);
+                        gDPSetPrimColor(POLY_XLU_DISP++, 0, 0, 255, 255, 255, grassElem->alpha);
+                        gSPDisplayList(POLY_XLU_DISP++, gObjGrass_D_809AAAE0);
+                    }
                     FrameInterpolation_RecordCloseChild();
                 }
             }
@@ -554,7 +552,7 @@ void ObjGrass_DrawXlu(Actor* thisx, PlayState* play) {
 }
 
 void ObjGrass_Draw(Actor* thisx, PlayState* play) {
-    ObjGrass* this = THIS;
+    ObjGrass* this = (ObjGrass*)thisx;
 
     ObjGrass_InitDraw(this, play);
     ObjGrass_DrawOpa(thisx, play);

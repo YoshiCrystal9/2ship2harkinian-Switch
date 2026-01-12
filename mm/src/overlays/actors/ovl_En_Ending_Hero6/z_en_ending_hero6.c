@@ -6,9 +6,7 @@
 
 #include "z_en_ending_hero6.h"
 
-#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_FRIENDLY)
-
-#define THIS ((EnEndingHero6*)thisx)
+#define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY)
 
 void EnEndingHero6_Init(Actor* thisx, PlayState* play);
 void EnEndingHero6_Destroy(Actor* thisx, PlayState* play);
@@ -18,7 +16,7 @@ void EnEndingHero6_Draw(Actor* thisx, PlayState* play);
 void EnEndingHero6_SetupIdle(EnEndingHero6* this);
 void EnEndingHero6_Idle(EnEndingHero6* this, PlayState* play);
 
-ActorInit En_Ending_Hero6_InitVars = {
+ActorProfile En_Ending_Hero6_Profile = {
     /**/ ACTOR_EN_ENDING_HERO6,
     /**/ ACTORCAT_NPC,
     /**/ FLAGS,
@@ -56,7 +54,7 @@ static FlexSkeletonHeader* sSkeletons[ENDING_HERO6_TYPE_MAX] = {
 };
 
 static AnimationHeader* sAnimations[ENDING_HERO6_TYPE_MAX] = {
-    &object_dt_Anim_000BE0,      // ENDING_HERO6_TYPE_DT
+    &gDotourUprightAnim,         // ENDING_HERO6_TYPE_DT
     &object_bai_Anim_0011C0,     // ENDING_HERO6_TYPE_BAI
     &object_toryo_Anim_000E50,   // ENDING_HERO6_TYPE_TORYO
     &gSoldierCheerWithSpearAnim, // ENDING_HERO6_TYPE_SOLDIER
@@ -80,11 +78,11 @@ static s32 sLimbCounts[ENDING_HERO6_TYPE_MAX] = {
 };
 
 void EnEndingHero6_Init(Actor* thisx, PlayState* play) {
-    EnEndingHero6* this = THIS;
+    EnEndingHero6* this = (EnEndingHero6*)thisx;
 
     this->actor.colChkInfo.mass = MASS_IMMOVABLE;
     Actor_SetScale(&this->actor, 0.01f);
-    this->actor.targetMode = TARGET_MODE_6;
+    this->actor.attentionRangeType = ATTENTION_RANGE_6;
     this->actor.gravity = -3.0f;
     SkelAnime_InitFlex(play, &this->skelAnime, sSkeletons[this->type], sAnimations[this->type], this->jointTable,
                        this->morphTable, sLimbCounts[this->type]);
@@ -113,7 +111,7 @@ void EnEndingHero6_Idle(EnEndingHero6* this, PlayState* play) {
 }
 
 void EnEndingHero6_Update(Actor* thisx, PlayState* play) {
-    EnEndingHero6* this = THIS;
+    EnEndingHero6* this = (EnEndingHero6*)thisx;
 
     if (this->timer != 0) {
         this->timer--;
@@ -125,7 +123,7 @@ void EnEndingHero6_Update(Actor* thisx, PlayState* play) {
         this->eyeState++;
         if (this->eyeState >= 3) {
             this->eyeState = 0;
-            this->blinkTimer = (s16)Rand_ZeroFloat(60.0f) + 20;
+            this->blinkTimer = TRUNCF_BINANG(Rand_ZeroFloat(60.0f)) + 20;
         }
     }
 
@@ -144,7 +142,7 @@ void EnEndingHero6_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec
         object_daiku_DL_006D70, // ENDING_HERO6_TYPE_DAIKU_PURPLE
         object_daiku_DL_00A390, // ENDING_HERO6_TYPE_DAIKU_ORANGE
     };
-    EnEndingHero6* this = THIS;
+    EnEndingHero6* this = (EnEndingHero6*)thisx;
     s32 daikuIndex;
 
     OPEN_DISPS(play->state.gfxCtx);
@@ -162,7 +160,7 @@ void EnEndingHero6_Draw(Actor* thisx, PlayState* play) {
                                          gDotourEyeLookDownTex, gDotourEyeSquintTex };
     static TexturePtr sEyebrowTextures[] = { gDotourEyebrowHighTex, gDotourEyebrowMidTex, gDotourEyebrowLowTex };
     s32 pad;
-    EnEndingHero6* this = THIS;
+    EnEndingHero6* this = (EnEndingHero6*)thisx;
     s32 index = 0;
 
     if (this->isIdle == true) {

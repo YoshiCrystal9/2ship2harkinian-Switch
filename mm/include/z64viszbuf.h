@@ -11,8 +11,8 @@ typedef struct VisZbuf {
     /* 0xC */ Color_RGBA8_u32 envColor;
 } VisZbuf; // size = 0x10
 
-void VisZbuf_Init(VisZbuf* this);
-void VisZbuf_Destroy(VisZbuf* this);
-void VisZbuf_Draw(VisZbuf* this, Gfx** gfxP, void* zbuffer);
+void VisZbuf_Init(VisZbuf* thisx);
+void VisZbuf_Destroy(VisZbuf* thisx);
+void VisZbuf_Draw(VisZbuf* thisx, Gfx** gfxP, void* zbuffer);
 
 #endif

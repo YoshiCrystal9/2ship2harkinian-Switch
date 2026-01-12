@@ -5,11 +5,8 @@
  */
 
 #include "z_en_okarina_effect.h"
-#include "overlays/kaleido_scope/ovl_kaleido_scope/z_kaleido_scope.h"
 
-#define FLAGS (ACTOR_FLAG_10 | ACTOR_FLAG_2000000)
-
-#define THIS ((EnOkarinaEffect*)thisx)
+#define FLAGS (ACTOR_FLAG_UPDATE_CULLING_DISABLED | ACTOR_FLAG_UPDATE_DURING_OCARINA)
 
 void EnOkarinaEffect_Init(Actor* thisx, PlayState* play);
 void EnOkarinaEffect_Destroy(Actor* thisx, PlayState* play);
@@ -19,7 +16,7 @@ void func_8096B104(EnOkarinaEffect* this, PlayState* play);
 void func_8096B174(EnOkarinaEffect* this, PlayState* play);
 void func_8096B1FC(EnOkarinaEffect* this, PlayState* play);
 
-ActorInit En_Okarina_Effect_InitVars = {
+ActorProfile En_Okarina_Effect_Profile = {
     /**/ ACTOR_EN_OKARINA_EFFECT,
     /**/ ACTORCAT_ITEMACTION,
     /**/ FLAGS,
@@ -39,7 +36,7 @@ void EnOkarinaEffect_Destroy(Actor* thisx, PlayState* play) {
 }
 
 void EnOkarinaEffect_Init(Actor* thisx, PlayState* play) {
-    EnOkarinaEffect* this = THIS;
+    EnOkarinaEffect* this = (EnOkarinaEffect*)thisx;
 
     if (play->envCtx.precipitation[PRECIP_RAIN_CUR] != 0) {
         Actor_Kill(&this->actor);
@@ -58,8 +55,9 @@ void func_8096B104(EnOkarinaEffect* this, PlayState* play) {
 
 void func_8096B174(EnOkarinaEffect* this, PlayState* play) {
     DECR(this->timer);
+
     if ((play->pauseCtx.state == PAUSE_STATE_OFF) && (play->gameOverCtx.state == GAMEOVER_INACTIVE) &&
-        (play->msgCtx.msgLength == 0) && !FrameAdvance_IsEnabled(&play->state) && (this->timer == 0)) {
+        (play->msgCtx.msgLength == 0) && !FrameAdvance_IsEnabled(play) && (this->timer == 0)) {
         EnOkarinaEffect_SetupAction(this, func_8096B1FC);
     }
 }
@@ -78,7 +76,7 @@ void func_8096B1FC(EnOkarinaEffect* this, PlayState* play) {
 }
 
 void EnOkarinaEffect_Update(Actor* thisx, PlayState* play) {
-    EnOkarinaEffect* this = THIS;
+    EnOkarinaEffect* this = (EnOkarinaEffect*)thisx;
 
     this->actionFunc(this, play);
 }

@@ -1,4 +1,4 @@
-#include "public/bridge/consolevariablebridge.h"
+#include <libultraship/bridge/consolevariablebridge.h>
 #include "2s2h/GameInteractor/GameInteractor.h"
 #include "2s2h/ShipInit.hpp"
 
@@ -30,7 +30,7 @@ void RegisterSkipClockTowerOpen() {
             gSaveContext.respawnFlag = 2;
             gSaveContext.save.entrance = gSaveContext.respawn[RESPAWN_MODE_RETURN].entrance;
             if (gSaveContext.respawn[RESPAWN_MODE_RETURN].playerParams ==
-                PLAYER_PARAMS(0xFF, PLAYER_INITMODE_TELESCOPE)) {
+                PLAYER_PARAMS(0xFF, PLAYER_START_MODE_TELESCOPE)) {
                 gSaveContext.nextTransitionType = TRANS_TYPE_CIRCLE;
             } else {
                 gSaveContext.nextTransitionType = TRANS_TYPE_FADE_BLACK;

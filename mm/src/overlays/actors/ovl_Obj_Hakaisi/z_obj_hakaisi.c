@@ -7,9 +7,7 @@
 #include "z_obj_hakaisi.h"
 #include "objects/object_hakaisi/object_hakaisi.h"
 
-#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_20)
-
-#define THIS ((ObjHakaisi*)thisx)
+#define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_DRAW_CULLING_DISABLED)
 
 void ObjHakaisi_Init(Actor* thisx, PlayState* play);
 void ObjHakaisi_Destroy(Actor* thisx, PlayState* play);
@@ -37,7 +35,7 @@ void func_80B15330(ObjHakaisi* this, PlayState* play);
 void func_80B1544C(Actor* thisx, PlayState* play);
 void func_80B154A0(Actor* thisx, PlayState* play);
 
-ActorInit Obj_Hakaisi_InitVars = {
+ActorProfile Obj_Hakaisi_Profile = {
     /**/ ACTOR_OBJ_HAKAISI,
     /**/ ACTORCAT_PROP,
     /**/ FLAGS,
@@ -53,19 +51,9 @@ Vec3f D_80B155B0 = { 0.0f, 25.0f, 30.0f };
 
 Vec3f D_80B155BC[] = { { 0.0f, 65.0f, 8.0f }, { 0.0f, 35.0f, 8.0f }, { 0.0f, 15.0f, 8.0f } };
 
-Vec3f D_80B155E0 = { 0.0f, 0.0f, 0.0f };
-
-Vec3f D_80B155EC = { 0.0f, 0.0f, 0.0f };
-
-Color_RGBA8 D_80B155F8 = { 170, 130, 90, 255 };
-
-Color_RGBA8 D_80B155FC = { 100, 60, 20, 0 };
-
-Vec3f D_80B15600 = { 1.0f, 0.0f, 0.0f };
-
 void ObjHakaisi_Init(Actor* thisx, PlayState* play) {
     s32 pad;
-    ObjHakaisi* this = THIS;
+    ObjHakaisi* this = (ObjHakaisi*)thisx;
     CollisionHeader* sp7C = NULL;
     MtxF sp3C;
     s32 i;
@@ -98,7 +86,7 @@ void ObjHakaisi_Init(Actor* thisx, PlayState* play) {
     }
 
     Actor_SetScale(&this->dyna.actor, 1.0f);
-    this->dyna.actor.targetMode = TARGET_MODE_0;
+    this->dyna.actor.attentionRangeType = ATTENTION_RANGE_0;
     this->dyna.actor.colChkInfo.health = 30;
     if (OBJHAKAISI_GET_FF(&this->dyna.actor) == 3) {
         this->dyna.actor.draw = NULL;
@@ -150,7 +138,7 @@ void ObjHakaisi_Init(Actor* thisx, PlayState* play) {
 }
 
 void ObjHakaisi_Destroy(Actor* thisx, PlayState* play) {
-    ObjHakaisi* this = THIS;
+    ObjHakaisi* this = (ObjHakaisi*)thisx;
 
     if (OBJHAKAISI_GET_FF(&this->dyna.actor) != 3) {
         DynaPoly_DeleteBgActor(play, &play->colCtx.dyna, this->dyna.bgId);
@@ -164,7 +152,7 @@ void func_80B1444C(ObjHakaisi* this) {
 void func_80B14460(ObjHakaisi* this, PlayState* play) {
     s16 sp26 = BINANG_SUB(this->dyna.actor.shape.rot.y, this->dyna.actor.yawTowardsPlayer);
 
-    if (Actor_ProcessTalkRequest(&this->dyna.actor, &play->state)) {
+    if (Actor_TalkOfferAccepted(&this->dyna.actor, &play->state)) {
         func_80B14510(this);
     } else if (this->dyna.actor.textId != 0) {
         if (ABS_ALT(sp26) < 0x2000) {
@@ -207,8 +195,8 @@ void func_80B1456C(ObjHakaisi* this, PlayState* play) {
 
 void func_80B145F4(ObjHakaisi* this) {
     this->unk_19A = 0;
-    this->dyna.actor.flags |= ACTOR_FLAG_CANT_LOCK_ON;
-    this->dyna.actor.flags &= ~ACTOR_FLAG_TARGETABLE;
+    this->dyna.actor.flags |= ACTOR_FLAG_LOCK_ON_DISABLED;
+    this->dyna.actor.flags &= ~ACTOR_FLAG_ATTENTION_ENABLED;
     Actor_PlaySfx(&this->dyna.actor, NA_SE_EV_WALL_BROKEN);
     this->actionFunc = func_80B14648;
 }
@@ -233,7 +221,7 @@ void func_80B14648(ObjHakaisi* this, PlayState* play) {
         if ((this->unk_19E > 20) && (this->dyna.actor.colChkInfo.health <= 20)) {
             func_80B14A24(this, play, this->unk_160[this->unk_194]);
             func_80B14A24(this, play, this->unk_160[this->unk_194]);
-            func_80B14F4C(this, play, 0);
+            func_80B14F4C(this, play, false);
             func_80B14B6C(this, play, this->unk_160[this->unk_194], 40);
             this->unk_194 = 1;
         } else if ((this->unk_19E > 10) && (this->dyna.actor.colChkInfo.health <= 10)) {
@@ -297,11 +285,13 @@ void func_80B14B6C(ObjHakaisi* this, PlayState* play, Vec3f vec, s16 arg3) {
 }
 
 void func_80B14CF8(PlayState* play, Vec3f vec, s16 arg2, s16 arg3, s32 arg4) {
+    static Color_RGBA8 sPrimColor = { 170, 130, 90, 255 };
+    static Color_RGBA8 sEnvColor = { 100, 60, 20, 0 };
     s32 i;
     s16 temp_s0;
-    Vec3f spAC;
-    Vec3f spA0 = D_80B155E0;
-    Vec3f sp94 = D_80B155EC;
+    Vec3f pos;
+    Vec3f velocity = { 0.0f, 0.0f, 0.0f };
+    Vec3f accel = { 0.0f, 0.0f, 0.0f };
     f32 temp_f20;
     f32 temp_f22;
 
@@ -310,24 +300,24 @@ void func_80B14CF8(PlayState* play, Vec3f vec, s16 arg2, s16 arg3, s32 arg4) {
         temp_f22 = Rand_ZeroOne() * 1.5f;
         temp_s0 = Rand_Next();
 
-        spAC.x = (Math_SinS(temp_s0) * temp_f20) + vec.x;
-        spAC.y = (Rand_Centered() * 4.0f) + vec.y;
-        spAC.z = (Math_CosS(temp_s0) * temp_f20) + vec.z;
+        pos.x = (Math_SinS(temp_s0) * temp_f20) + vec.x;
+        pos.y = (Rand_Centered() * 4.0f) + vec.y;
+        pos.z = (Math_CosS(temp_s0) * temp_f20) + vec.z;
 
-        spA0.x += temp_f22 * Math_SinS(temp_s0);
-        spA0.y += Rand_Centered() + 0.5f;
-        spA0.z += temp_f22 * Math_CosS(temp_s0);
+        velocity.x += temp_f22 * Math_SinS(temp_s0);
+        velocity.y += Rand_Centered() + 0.5f;
+        velocity.z += temp_f22 * Math_CosS(temp_s0);
 
-        sp94.x = -0.1f * spA0.x;
-        sp94.y = -0.1f * spA0.y;
-        sp94.z = -0.1f * spA0.z;
+        accel.x = -0.1f * velocity.x;
+        accel.y = -0.1f * velocity.y;
+        accel.z = -0.1f * velocity.z;
 
-        func_800B0EB0(play, &spAC, &spA0, &sp94, &D_80B155F8, &D_80B155FC, arg2, arg3, 10);
+        func_800B0EB0(play, &pos, &velocity, &accel, &sPrimColor, &sEnvColor, arg2, arg3, 10);
     }
 }
 
 void func_80B14F4C(ObjHakaisi* this, PlayState* play, s32 arg2) {
-    if (arg2 == 0) {
+    if (!arg2) {
         Actor_Spawn(&play->actorCtx, play, ACTOR_OBJ_HAKAISI, this->dyna.actor.world.pos.x,
                     this->dyna.actor.world.pos.y + 55.0f, this->dyna.actor.world.pos.z - 10.0f,
                     this->dyna.actor.shape.rot.x, this->dyna.actor.shape.rot.y, this->dyna.actor.shape.rot.z, 4);
@@ -339,30 +329,30 @@ void func_80B14F4C(ObjHakaisi* this, PlayState* play, s32 arg2) {
 }
 
 void ObjHakaisi_Update(Actor* thisx, PlayState* play) {
-    ObjHakaisi* this = THIS;
+    ObjHakaisi* this = (ObjHakaisi*)thisx;
 
     this->actionFunc(this, play);
 }
 
 void ObjHakaisi_Draw(Actor* thisx, PlayState* play) {
-    ObjHakaisi* this = THIS;
+    ObjHakaisi* this = (ObjHakaisi*)thisx;
 
     OPEN_DISPS(play->state.gfxCtx);
 
     Gfx_SetupDL25_Opa(play->state.gfxCtx);
 
     if (this->unk_194 == 0) {
-        gSPMatrix(POLY_OPA_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+        MATRIX_FINALIZE_AND_LOAD(POLY_OPA_DISP++, play->state.gfxCtx);
         gSPDisplayList(POLY_OPA_DISP++, object_hakaisi_DL_002650);
     } else if (this->unk_194 == 1) {
         Matrix_Scale(0.1f, 0.1f, 0.1f, MTXMODE_APPLY);
 
-        gSPMatrix(POLY_OPA_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+        MATRIX_FINALIZE_AND_LOAD(POLY_OPA_DISP++, play->state.gfxCtx);
         gSPDisplayList(POLY_OPA_DISP++, object_hakaisi_DL_0029C0);
     } else {
         Matrix_Scale(0.1f, 0.1f, 0.1f, MTXMODE_APPLY);
 
-        gSPMatrix(POLY_OPA_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+        MATRIX_FINALIZE_AND_LOAD(POLY_OPA_DISP++, play->state.gfxCtx);
         gSPDisplayList(POLY_OPA_DISP++, object_hakaisi_DL_002CC0);
     }
 
@@ -375,7 +365,7 @@ void func_80B151E0(ObjHakaisi* this, PlayState* play) {
     this->dyna.actor.destroy = func_80B15254;
     Actor_SetScale(&this->dyna.actor, 0.1f);
     this->dyna.actor.shape.yOffset = 100.0f;
-    this->dyna.actor.flags &= ~ACTOR_FLAG_TARGETABLE;
+    this->dyna.actor.flags &= ~ACTOR_FLAG_ATTENTION_ENABLED;
     func_80B15264(this);
 }
 
@@ -383,6 +373,7 @@ void func_80B15254(Actor* thisx, PlayState* play) {
 }
 
 void func_80B15264(ObjHakaisi* this) {
+    static Vec3f D_80B15600 = { 1.0f, 0.0f, 0.0f };
     s32 pad;
     s16 sp32 = Rand_Next();
 
@@ -419,7 +410,7 @@ void func_80B15330(ObjHakaisi* this, PlayState* play) {
 }
 
 void func_80B1544C(Actor* thisx, PlayState* play) {
-    ObjHakaisi* this = THIS;
+    ObjHakaisi* this = (ObjHakaisi*)thisx;
 
     this->actionFunc(this, play);
 
@@ -432,10 +423,10 @@ void func_80B154A0(Actor* thisx, PlayState* play) {
     Gfx_SetupDL25_Opa(play->state.gfxCtx);
 
     if (OBJHAKAISI_GET_FF(thisx) == 4) {
-        gSPMatrix(POLY_OPA_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+        MATRIX_FINALIZE_AND_LOAD(POLY_OPA_DISP++, play->state.gfxCtx);
         gSPDisplayList(POLY_OPA_DISP++, object_hakaisi_DL_001F10);
     } else {
-        gSPMatrix(POLY_OPA_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+        MATRIX_FINALIZE_AND_LOAD(POLY_OPA_DISP++, play->state.gfxCtx);
         gSPDisplayList(POLY_OPA_DISP++, object_hakaisi_DL_0021B0);
     }
 

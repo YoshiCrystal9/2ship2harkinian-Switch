@@ -2,8 +2,8 @@
 #include "2s2h/resource/type/Skeleton.h"
 #include <spdlog/spdlog.h>
 #include <tinyxml2.h>
-#include "Context.h"
-#include "ResourceManager.h"
+#include <ship/Context.h>
+#include <ship/resource/ResourceManager.h>
 
 namespace SOH {
 std::shared_ptr<Ship::IResource>

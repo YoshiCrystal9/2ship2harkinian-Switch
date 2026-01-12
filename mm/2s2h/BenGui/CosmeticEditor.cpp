@@ -117,9 +117,9 @@ Gfx backToWhite[] = {
 };
 
 // First, it pulls all colors from the palette. Then it finds the average color across the range, and calculates the
-// difference between the average color and the target color. It then colors the range a bright shade of off-white,
+// difference between the average color and the target color. It then colors the range according to newBase,
 // and shades it lighter or darker based on the difference between the average color and the target color.
-void ShadePaletteWhite(const char* path, uint32_t begin, uint32_t end, SHADE_MODE mode) {
+void ShadePaletteNewBase(const char* path, uint32_t begin, uint32_t end, Color_RGBA8 newBase, SHADE_MODE mode) {
     auto res = Ship::Context::GetInstance()->GetResourceManager()->LoadResource(path);
     auto data = (uint8_t*)res->GetRawPointer();
 
@@ -166,11 +166,90 @@ void ShadePaletteWhite(const char* path, uint32_t begin, uint32_t end, SHADE_MOD
             diff = MAX(MAX(diffR, diffG), diffB);
         }
 
-        r = MIN(MAX(31 - diff, 0), 31);
-        g = MIN(MAX(31 - diff, 0), 31);
-        b = MIN(MAX(31 - diff, 0), 31);
+        diff = MIN(MAX(31 - diff, 0), 31);
+
+        r = (diff * newBase.r) / 255;
+        g = (diff * newBase.g) / 255;
+        b = (diff * newBase.b) / 255;
 
         PatchPalette(path, i, r, g, b);
+    }
+}
+
+static const Color_RGBA8 whiteBase = { 255, 255, 255, 255 };
+
+void ShadePaletteWhite(const char* path, uint32_t begin, uint32_t end, SHADE_MODE mode) {
+    ShadePaletteNewBase(path, begin, end, whiteBase, mode);
+}
+
+void ShadePaletteRevert(const char* path, uint32_t begin, uint32_t end) {
+    ShadePaletteNewBase(path, begin, end, whiteBase, MODE_REVERT);
+}
+
+/*
+ * Given the existing base and target color, map the current color to a new blend between the new base and target. The
+ * resulting color's channels are in (0-31) format.
+ */
+Color_RGBA8 mapNewBaseColorToGradient(Color_RGBA8 currentColor, Color_RGBA8 oldBase, Color_RGBA8 newBase,
+                                      Color_RGBA8 targetEnd) {
+    double gradientRed = targetEnd.r - oldBase.r;
+    double gradientGreen = targetEnd.g - oldBase.g;
+    double gradientBlue = targetEnd.b - oldBase.b;
+
+    double deltaRed = currentColor.r - oldBase.r;
+    double deltaGreen = currentColor.g - oldBase.g;
+    double deltaBlue = currentColor.b - oldBase.b;
+
+    double gradient = gradientRed * gradientRed + gradientGreen * gradientGreen + gradientBlue * gradientBlue;
+    double projection = gradientRed * deltaRed + gradientGreen * deltaGreen + gradientBlue * deltaBlue;
+
+    // This condition exists in the event that oldBase and targetEnd are equal, leading to a division by zero.
+    // Normally shouldn't happen, but just in case.
+    double position = 0.0;
+    if (gradient != 0.0) {
+        position = projection / gradient;
+    }
+
+    return { uint8_t(newBase.r + position * (targetEnd.r - newBase.r)),
+             uint8_t(newBase.g + position * (targetEnd.g - newBase.g)),
+             uint8_t(newBase.b + position * (targetEnd.b - newBase.b)), 31 };
+}
+
+/*
+ * Recolors textures that gradually transition from one color to another. Given oldBase (e.g. green parts of Zora) and
+ * targetEnd (e.g. bluish skin of Zora), recolor so that the resulting texture instead fades from newBase (e.g. custom
+ * tunic color) to targetEnd.
+ */
+void ShadePaletteGradient(const char* path, uint32_t begin, uint32_t end, Color_RGBA8 oldBase, Color_RGBA8 newBase,
+                          Color_RGBA8 targetEnd) {
+    ShadePaletteRevert(path, begin, end);
+
+    // Convert 0-255 range to 0-31 range
+    newBase.r >>= 3;
+    newBase.g >>= 3;
+    newBase.b >>= 3;
+    newBase.a >>= 3;
+    targetEnd.r >>= 3;
+    targetEnd.g >>= 3;
+    targetEnd.b >>= 3;
+    targetEnd.a >>= 3;
+    oldBase.r >>= 3;
+    oldBase.g >>= 3;
+    oldBase.b >>= 3;
+    oldBase.a >>= 3;
+
+    auto res = Ship::Context::GetInstance()->GetResourceManager()->LoadResource(path);
+    auto data = (uint8_t*)res->GetRawPointer();
+    for (int i = begin; i <= end; i++) {
+        uint16_t col16 = (data[i * 2] << 8) | data[i * 2 + 1];
+        uint8_t a = col16 & 1;
+        uint8_t r = col16 >> 11;
+        uint8_t g = (col16 >> 6) & 0x1f;
+        uint8_t b = (col16 >> 1) & 0x1f;
+
+        Color_RGBA8 currentColor = { r, g, b, a };
+        Color_RGBA8 newColor = mapNewBaseColorToGradient(currentColor, oldBase, newBase, targetEnd);
+        PatchPalette(path, i, newColor.r, newColor.g, newColor.b);
     }
 }
 
@@ -457,7 +536,7 @@ static RegisterShipInitFunc humanHairPatch(
             ResourceMgr_UnpatchGfxByName("objects/object_link_child/gLinkHumanHeadDL", "setPrim1");
             ResourceMgr_UnpatchGfxByName("objects/object_link_child/gLinkHumanHeadDL", "setPrim2");
 
-            ShadePaletteWhite("objects/object_link_child/object_link_child_Tex_005400", 0, 127, MODE_REVERT);
+            ShadePaletteRevert("objects/object_link_child/object_link_child_Tex_005400", 0, 127);
         }
         gfx_texture_cache_clear();
     },
@@ -497,7 +576,7 @@ static RegisterShipInitFunc dekuTunicPatch(
             ResourceMgr_UnpatchGfxByName("objects/object_link_nuts/gLinkDekuHeadDL", "setPrim2");
             ResourceMgr_UnpatchGfxByName("objects/object_link_nuts/gLinkDekuHatDL", "setPrim");
 
-            ShadePaletteWhite("objects/object_link_nuts/object_link_nuts_TLUT_003EB0", 243, 254, MODE_REVERT);
+            ShadePaletteRevert("objects/object_link_nuts/object_link_nuts_TLUT_003EB0", 243, 254);
         }
         gfx_texture_cache_clear();
     },
@@ -525,15 +604,18 @@ static RegisterShipInitFunc dekuHairPatch(
                                        gsSPDisplayList(dekuHair));
             ResourceMgr_PatchGfxByName("objects/object_link_nuts/gLinkDekuHeadDL", "setPrim4", 42,
                                        gsSPDisplayList(backToWhite));
+            ResourceMgr_PatchGfxByName("objects/object_link_nuts/object_link_nuts_DL_009C48", "setPrim", 22,
+                                       gsSPDisplayList(dekuHair));
 
             ShadePaletteWhite("objects/object_link_nuts/object_link_nuts_TLUT_003EB0", 109, 122, MODE_MAX);
             ShadePaletteWhite("objects/object_link_nuts/object_link_nuts_TLUT_003EB0", 124, 242, MODE_MAX);
         } else {
             ResourceMgr_UnpatchGfxByName("objects/object_link_nuts/gLinkDekuHeadDL", "setPrim3");
             ResourceMgr_UnpatchGfxByName("objects/object_link_nuts/gLinkDekuHeadDL", "setPrim4");
+            ResourceMgr_UnpatchGfxByName("objects/object_link_nuts/object_link_nuts_DL_009C48", "setPrim");
 
-            ShadePaletteWhite("objects/object_link_nuts/object_link_nuts_TLUT_003EB0", 109, 122, MODE_REVERT);
-            ShadePaletteWhite("objects/object_link_nuts/object_link_nuts_TLUT_003EB0", 124, 242, MODE_REVERT);
+            ShadePaletteRevert("objects/object_link_nuts/object_link_nuts_TLUT_003EB0", 109, 122);
+            ShadePaletteRevert("objects/object_link_nuts/object_link_nuts_TLUT_003EB0", 124, 242);
         }
         gfx_texture_cache_clear();
     },
@@ -574,8 +656,8 @@ static RegisterShipInitFunc kafeiHairPatch(
             ResourceMgr_UnpatchGfxByName("objects/object_test3/gKafeiHeadDL", "setPrim3");
             ResourceMgr_UnpatchGfxByName("objects/object_test3/gKafeiHeadDL", "setPrim4");
 
-            ShadePaletteWhite("objects/object_test3/gKafeiBody2TLUT", 1, 3, MODE_REVERT);
-            ShadePaletteWhite("objects/object_test3/gKafeiBody2TLUT", 8, 255, MODE_REVERT);
+            ShadePaletteRevert("objects/object_test3/gKafeiBody2TLUT", 1, 3);
+            ShadePaletteRevert("objects/object_test3/gKafeiBody2TLUT", 8, 255);
         }
         gfx_texture_cache_clear();
     },
@@ -605,11 +687,20 @@ static RegisterShipInitFunc goronTunicPatch(
                                        gsSPDisplayList(goronTunic));
 
             ShadePaletteWhite("objects/object_link_goron/object_link_goron_Tex_002780", 0, 127, MODE_MAX);
+            /*
+             * gLinkGoronCurledDL contains information for applying the hat texture when Link is Goron rolling, but it
+             * does not seem to obey color for anything but the necklace beads. Instead, directly set the color of the
+             * texture.
+             */
+            Color_RGBA8 changedColor = CVarGetColor(cosmeticEditorElements[COSMETIC_ELEMENT_GORON_TUNIC].colorCvar, {});
+            ShadePaletteNewBase("objects/object_link_goron/object_link_goron_Tex_00CEB8", 0, 127, changedColor,
+                                MODE_MAX);
         } else {
             ResourceMgr_UnpatchGfxByName("objects/object_link_goron/gLinkGoronWaistDL", "setPrim");
             ResourceMgr_UnpatchGfxByName("objects/object_link_goron/gLinkGoronHatDL", "setPrim");
 
-            ShadePaletteWhite("objects/object_link_goron/object_link_goron_Tex_002780", 0, 127, MODE_REVERT);
+            ShadePaletteRevert("objects/object_link_goron/object_link_goron_Tex_002780", 0, 127);
+            ShadePaletteRevert("objects/object_link_goron/object_link_goron_Tex_00CEB8", 0, 127);
         }
         gfx_texture_cache_clear();
     },
@@ -623,60 +714,56 @@ static RegisterShipInitFunc goronTunicColor(
     { cosmeticEditorElements[COSMETIC_ELEMENT_GORON_TUNIC].colorCvar });
 
 // COSMETIC_ELEMENT_ZORA_TUNIC
-Gfx zoraTunic[] = {
-    gsDPSetPrimColor(0, 0, 0, 0, 0, 0),
-    gsDPPipeSync(),
-    gsSPEndDisplayList(),
-};
+static const Color_RGBA8 zoraSkinColor = { 197, 247, 247, 255 };
+static const Color_RGBA8 zoraTunicBaseColor = { 0, 74, 16, 255 };
 
 static RegisterShipInitFunc zoraTunicPatch(
     []() {
         if (CVarGetInteger(cosmeticEditorElements[COSMETIC_ELEMENT_ZORA_TUNIC].colorChangedCvar, 0)) {
-            ResourceMgr_PatchGfxByName("objects/object_link_zora/gLinkZoraHatDL", "setPrim", 28,
-                                       gsSPDisplayList(zoraTunic));
-            ResourceMgr_PatchGfxByName("objects/object_link_zora/gLinkZoraWaistDL", "setPrim", 46,
-                                       gsSPDisplayList(zoraTunic));
-            ResourceMgr_PatchGfxByName("objects/object_link_zora/gLinkZoraRightThighDL", "setPrim1", 31,
-                                       gsSPDisplayList(zoraTunic));
-            ResourceMgr_PatchGfxByName("objects/object_link_zora/gLinkZoraRightThighDL", "setPrim2", 85,
-                                       gsSPDisplayList(zoraTunic));
-            ResourceMgr_PatchGfxByName("objects/object_link_zora/gLinkZoraRightThighDL", "setPrim3", 97,
-                                       gsSPDisplayList(backToWhite));
-            ResourceMgr_PatchGfxByName("objects/object_link_zora/gLinkZoraLeftThighDL", "setPrim1", 31,
-                                       gsSPDisplayList(zoraTunic));
-            ResourceMgr_PatchGfxByName("objects/object_link_zora/gLinkZoraLeftThighDL", "setPrim2", 85,
-                                       gsSPDisplayList(zoraTunic));
-            ResourceMgr_PatchGfxByName("objects/object_link_zora/gLinkZoraLeftThighDL", "setPrim3", 97,
-                                       gsSPDisplayList(backToWhite));
-            ResourceMgr_PatchGfxByName("objects/object_link_zora/object_link_zora_DL_00CC38", "setPrim", 43,
-                                       gsSPDisplayList(zoraTunic)); // left arm
-            ResourceMgr_PatchGfxByName("objects/object_link_zora/object_link_zora_DL_00CDA0", "setPrim", 43,
-                                       gsSPDisplayList(zoraTunic)); // right arm
+            /*
+             * Zora works differently from the other color changes. Other forms apply a grayscale to the green tunic
+             * textures and then alter the Gfx commands to set the color. That works because those textures are one
+             * basic color. Zora, however, gradually transitions from green to the bluish Zora skin. A further
+             * complication is that relevant colors in the TLUTs are not contiguous, so the brightness calculation will
+             * not work as intended. Instead of using the palette approach, here we directly apply the custom color to
+             * the textures and TLUTs.
+             */
+            Color_RGBA8 changedColor = CVarGetColor(cosmeticEditorElements[COSMETIC_ELEMENT_ZORA_TUNIC].colorCvar, {});
+            // Arms
+            ShadePaletteGradient("objects/object_link_zora/object_link_zora_TLUT_00C578", 151, 177, zoraTunicBaseColor,
+                                 changedColor, zoraSkinColor);
+            ShadePaletteGradient("objects/object_link_zora/object_link_zora_TLUT_00C578", 179, 180, zoraTunicBaseColor,
+                                 changedColor, zoraSkinColor);
+            ShadePaletteGradient("objects/object_link_zora/object_link_zora_TLUT_00C578", 183, 183, zoraTunicBaseColor,
+                                 changedColor, zoraSkinColor);
 
-            ShadePaletteWhite("objects/object_link_zora/object_link_zora_TLUT_00C578", 151, 177, MODE_MIN);
-            ShadePaletteWhite("objects/object_link_zora/object_link_zora_TLUT_005000", 151, 177, MODE_MIN);
+            // Hat/head and pants
+            ShadePaletteGradient("objects/object_link_zora/object_link_zora_TLUT_005000", 151, 177, zoraTunicBaseColor,
+                                 changedColor, zoraSkinColor);
+            ShadePaletteGradient("objects/object_link_zora/object_link_zora_TLUT_005000", 179, 180, zoraTunicBaseColor,
+                                 changedColor, zoraSkinColor);
+            ShadePaletteGradient("objects/object_link_zora/object_link_zora_TLUT_005000", 183, 183, zoraTunicBaseColor,
+                                 changedColor, zoraSkinColor);
+
+            // Shield
+            ShadePaletteGradient("objects/object_link_zora/object_link_zora_Tex_010228", 80, 511, zoraTunicBaseColor,
+                                 changedColor, zoraSkinColor);
+
+            // Boomerangs
+            ShadePaletteGradient("objects/gameplay_keep/gameplay_keep_Tex_0700B0", 80, 511, zoraTunicBaseColor,
+                                 changedColor, zoraSkinColor);
         } else {
-            ResourceMgr_UnpatchGfxByName("objects/object_link_zora/gLinkZoraHatDL", "setPrim");
-            ResourceMgr_UnpatchGfxByName("objects/object_link_zora/gLinkZoraWaistDL", "setPrim");
-            ResourceMgr_UnpatchGfxByName("objects/object_link_zora/gLinkZoraRightThighDL", "setPrim1");
-            ResourceMgr_UnpatchGfxByName("objects/object_link_zora/gLinkZoraRightThighDL", "setPrim2");
-            ResourceMgr_UnpatchGfxByName("objects/object_link_zora/gLinkZoraRightThighDL", "setPrim3");
-            ResourceMgr_UnpatchGfxByName("objects/object_link_zora/gLinkZoraLeftThighDL", "setPrim1");
-            ResourceMgr_UnpatchGfxByName("objects/object_link_zora/gLinkZoraLeftThighDL", "setPrim2");
-            ResourceMgr_UnpatchGfxByName("objects/object_link_zora/gLinkZoraLeftThighDL", "setPrim3");
-            ResourceMgr_UnpatchGfxByName("objects/object_link_zora/object_link_zora_DL_00CC38", "setPrim");
-            ResourceMgr_UnpatchGfxByName("objects/object_link_zora/object_link_zora_DL_00CDA0", "setPrim");
+            ShadePaletteRevert("objects/object_link_zora/object_link_zora_TLUT_00C578", 151, 177);
+            ShadePaletteRevert("objects/object_link_zora/object_link_zora_TLUT_00C578", 179, 180);
+            ShadePaletteRevert("objects/object_link_zora/object_link_zora_TLUT_00C578", 183, 183);
 
-            ShadePaletteWhite("objects/object_link_zora/object_link_zora_TLUT_00C578", 151, 177, MODE_REVERT);
-            ShadePaletteWhite("objects/object_link_zora/object_link_zora_TLUT_005000", 151, 177, MODE_REVERT);
+            ShadePaletteRevert("objects/object_link_zora/object_link_zora_TLUT_005000", 151, 177);
+            ShadePaletteRevert("objects/object_link_zora/object_link_zora_TLUT_005000", 179, 180);
+            ShadePaletteRevert("objects/object_link_zora/object_link_zora_TLUT_005000", 183, 183);
+
+            ShadePaletteRevert("objects/object_link_zora/object_link_zora_Tex_010228", 80, 511);
+            ShadePaletteRevert("objects/gameplay_keep/gameplay_keep_Tex_0700B0", 80, 511);
         }
         gfx_texture_cache_clear();
     },
     { cosmeticEditorElements[COSMETIC_ELEMENT_ZORA_TUNIC].colorChangedCvar });
-
-static RegisterShipInitFunc zoraTunicColor(
-    []() {
-        Color_RGBA8 changedColor = CVarGetColor(cosmeticEditorElements[COSMETIC_ELEMENT_ZORA_TUNIC].colorCvar, {});
-        zoraTunic[0] = gsDPSetPrimColor(0, 0, changedColor.r, changedColor.g, changedColor.b, 255);
-    },
-    { cosmeticEditorElements[COSMETIC_ELEMENT_ZORA_TUNIC].colorCvar });

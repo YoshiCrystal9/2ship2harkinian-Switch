@@ -8,9 +8,7 @@
 #include "objects/object_hanareyama_obj/object_hanareyama_obj.h"
 #include "objects/gameplay_keep/gameplay_keep.h"
 
-#define FLAGS (ACTOR_FLAG_10 | ACTOR_FLAG_20 | ACTOR_FLAG_REACT_TO_LENS)
-
-#define THIS ((EnDnb*)thisx)
+#define FLAGS (ACTOR_FLAG_UPDATE_CULLING_DISABLED | ACTOR_FLAG_DRAW_CULLING_DISABLED | ACTOR_FLAG_REACT_TO_LENS)
 
 void EnDnb_Init(Actor* thisx, PlayState* play);
 void EnDnb_Destroy(Actor* thisx, PlayState* play);
@@ -21,7 +19,7 @@ s32 func_80A507C0(EnDnbUnkStruct* arg0, Vec3f arg1, Vec3f arg2, u8 arg3, f32 arg
 s32 func_80A5086C(EnDnbUnkStruct* arg0);
 s32 func_80A50950(EnDnbUnkStruct* arg0, PlayState* play2);
 
-ActorInit En_Dnb_InitVars = {
+ActorProfile En_Dnb_Profile = {
     /**/ ACTOR_EN_DNB,
     /**/ ACTORCAT_BG,
     /**/ FLAGS,
@@ -100,7 +98,7 @@ s32 func_80A500F8(EnDnb* this) {
 }
 
 void EnDnb_Init(Actor* thisx, PlayState* play) {
-    EnDnb* this = THIS;
+    EnDnb* this = (EnDnb*)thisx;
     s32 i;
     s16* alloc;
 
@@ -116,13 +114,13 @@ void EnDnb_Init(Actor* thisx, PlayState* play) {
 }
 
 void EnDnb_Destroy(Actor* thisx, PlayState* play) {
-    EnDnb* this = THIS;
+    EnDnb* this = (EnDnb*)thisx;
 
     DynaPoly_DeleteBgActor(play, &play->colCtx.dyna, this->dyna.bgId);
 }
 
 void EnDnb_Update(Actor* thisx, PlayState* play) {
-    EnDnb* this = THIS;
+    EnDnb* this = (EnDnb*)thisx;
     s32 i;
 
     if (this->unk_0D30 == 0) {
@@ -165,7 +163,7 @@ void func_80A50510(EnDnb* this, PlayState* play) {
         Matrix_RotateYS(this->effects[i].unk_18.y, MTXMODE_APPLY);
         Matrix_RotateZS(this->effects[i].unk_18.z, MTXMODE_APPLY);
 
-        gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+        MATRIX_FINALIZE_AND_LOAD(POLY_XLU_DISP++, play->state.gfxCtx);
         gSPDisplayList(POLY_XLU_DISP++, gfx[i]);
 
         Matrix_Pop();
@@ -189,7 +187,7 @@ void func_80A5063C(EnDnb* this, PlayState* play) {
         Matrix_RotateYS(this->effects[i].unk_18.y, MTXMODE_APPLY);
         Matrix_RotateZS(this->effects[i].unk_18.z, MTXMODE_APPLY);
 
-        gSPMatrix(POLY_OPA_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+        MATRIX_FINALIZE_AND_LOAD(POLY_OPA_DISP++, play->state.gfxCtx);
         gSPDisplayList(POLY_OPA_DISP++, gfx[i]);
 
         Matrix_Pop();
@@ -199,7 +197,7 @@ void func_80A5063C(EnDnb* this, PlayState* play) {
 }
 
 void EnDnb_Draw(Actor* thisx, PlayState* play) {
-    EnDnb* this = THIS;
+    EnDnb* this = (EnDnb*)thisx;
 
     if (play->actorCtx.lensMaskSize != 0) {
         func_80A50510(this, play);
@@ -286,7 +284,7 @@ s32 func_80A50950(EnDnbUnkStruct* arg0, PlayState* play2) {
         Matrix_Scale(arg0->unk_04, arg0->unk_04, 1.0f, MTXMODE_APPLY);
         Matrix_ReplaceRotation(&play->billboardMtxF);
 
-        gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+        MATRIX_FINALIZE_AND_LOAD(POLY_XLU_DISP++, play->state.gfxCtx);
         idx = (arg0->unk_01 / (f32)arg0->unk_02) * 8.0f;
         gSPSegment(POLY_XLU_DISP++, 0x08, Lib_SegmentedToVirtual(sDustTextures[idx]));
         gSPDisplayList(POLY_XLU_DISP++, object_hanareyama_obj_DL_000020);

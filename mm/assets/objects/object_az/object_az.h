@@ -228,6 +228,9 @@ static const ALIGN_ASSET(2) char gBeaverYoungerBrotherBeltGreenTex[] = dgBeaverY
 #define dgBeaverYoungerBrotherBeltBlueTex "__OTR__objects/object_az/gBeaverYoungerBrotherBeltBlueTex"
 static const ALIGN_ASSET(2) char gBeaverYoungerBrotherBeltBlueTex[] = dgBeaverYoungerBrotherBeltBlueTex;
 
+#define dgBeaverYoungerBrotherEmptyTexAnim "__OTR__objects/object_az/gBeaverYoungerBrotherEmptyTexAnim"
+static const ALIGN_ASSET(2) char gBeaverYoungerBrotherEmptyTexAnim[] = dgBeaverYoungerBrotherEmptyTexAnim;
+
 #define dgBeaverYoungerBrotherSkel "__OTR__objects/object_az/gBeaverYoungerBrotherSkel"
 static const ALIGN_ASSET(2) char gBeaverYoungerBrotherSkel[] = dgBeaverYoungerBrotherSkel;
 

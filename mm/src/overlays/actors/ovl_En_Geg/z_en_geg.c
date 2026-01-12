@@ -12,9 +12,7 @@
 #include "objects/gameplay_keep/gameplay_keep.h"
 #include "GameInteractor/GameInteractor.h"
 
-#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_10)
-
-#define THIS ((EnGeg*)thisx)
+#define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_UPDATE_CULLING_DISABLED)
 
 void EnGeg_Init(Actor* thisx, PlayState* play);
 void EnGeg_Destroy(Actor* thisx, PlayState* play);
@@ -37,7 +35,7 @@ void func_80BB32AC(EnGeg* this, PlayState* play);
 void func_80BB3318(EnGeg* this, PlayState* play);
 void func_80BB347C(EnGeg* this, PlayState* play);
 
-ActorInit En_Geg_InitVars = {
+ActorProfile En_Geg_Profile = {
     /**/ ACTOR_EN_GEG,
     /**/ ACTORCAT_NPC,
     /**/ FLAGS,
@@ -51,7 +49,7 @@ ActorInit En_Geg_InitVars = {
 
 static ColliderSphereInit sSphereInit = {
     {
-        COLTYPE_NONE,
+        COL_MATERIAL_NONE,
         AT_ON | AT_TYPE_ENEMY,
         AC_ON | AC_TYPE_PLAYER,
         OC1_ON | OC1_TYPE_ALL,
@@ -59,11 +57,11 @@ static ColliderSphereInit sSphereInit = {
         COLSHAPE_SPHERE,
     },
     {
-        ELEMTYPE_UNK0,
+        ELEM_MATERIAL_UNK0,
         { 0x20000000, 0x00, 0x04 },
         { 0xF7CFFFFF, 0x00, 0x00 },
-        TOUCH_ON | TOUCH_SFX_NORMAL,
-        BUMP_ON,
+        ATELEM_ON | ATELEM_SFX_NORMAL,
+        ACELEM_ON,
         OCELEM_ON,
     },
     { 0, { { 0, 0, 0 }, 0 }, 100 },
@@ -71,7 +69,7 @@ static ColliderSphereInit sSphereInit = {
 
 static ColliderCylinderInit sCylinderInit = {
     {
-        COLTYPE_HIT1,
+        COL_MATERIAL_HIT1,
         AT_NONE,
         AC_ON | AC_TYPE_PLAYER,
         OC1_ON | OC1_TYPE_ALL,
@@ -79,11 +77,11 @@ static ColliderCylinderInit sCylinderInit = {
         COLSHAPE_CYLINDER,
     },
     {
-        ELEMTYPE_UNK1,
+        ELEM_MATERIAL_UNK1,
         { 0x00000000, 0x00, 0x00 },
         { 0xF7CFFFFF, 0x00, 0x00 },
-        TOUCH_ON | TOUCH_SFX_NORMAL,
-        BUMP_ON,
+        ATELEM_ON | ATELEM_SFX_NORMAL,
+        ACELEM_ON,
         OCELEM_ON,
     },
     { 0, 0, 0, { 0, 0, 0 } },
@@ -241,7 +239,7 @@ void func_80BB178C(EnGeg* this, PlayState* play) {
     if (this->unk_230 & 1) {
         this->colliderSphere.dim.worldSphere.center.x = sp34.x;
         this->colliderSphere.dim.worldSphere.center.y = sp34.y;
-        this->colliderSphere.dim.worldSphere.center.y += (s16)this->actor.shape.yOffset;
+        this->colliderSphere.dim.worldSphere.center.y += TRUNCF_BINANG(this->actor.shape.yOffset);
         this->colliderSphere.dim.worldSphere.center.z = sp34.z;
         this->colliderSphere.dim.modelSphere.radius = 20;
         this->colliderSphere.dim.worldSphere.radius =
@@ -282,7 +280,7 @@ s32 func_80BB18FC(EnGeg* this, Actor* actor) {
     return false;
 }
 
-Vec3f* func_80BB19C0(Vec3f* arg0, EnGeg* this, PlayState* play) {
+Vec3f func_80BB19C0(EnGeg* this, PlayState* play) {
     Player* player = GET_PLAYER(play);
     Vec3f sp40;
     Vec3f sp34;
@@ -303,13 +301,10 @@ Vec3f* func_80BB19C0(Vec3f* arg0, EnGeg* this, PlayState* play) {
     sp34.z = (Math_CosS(sp30) * 50.0f) + player->actor.world.pos.z;
 
     if (Math_Vec3f_DistXZ(&this->actor.world.pos, &sp34) < sp2C) {
-        // clang-format off
-        *arg0 = sp40; return arg0;
-        // clang-format on
+        return sp40;
     } else {
-        *arg0 = sp34;
+        return sp34;
     }
-    return arg0;
 }
 
 u8 func_80BB1B14(EnGeg* this, PlayState* play) {
@@ -464,7 +459,7 @@ void func_80BB217C(EnGeg* this, PlayState* play) {
         this->actor.gravity = -1.0f;
         func_80BB1C1C(this);
         this->actionFunc = func_80BB221C;
-        this->actor.targetMode = TARGET_MODE_3;
+        this->actor.attentionRangeType = ATTENTION_RANGE_3;
     }
 }
 
@@ -473,7 +468,7 @@ void func_80BB221C(EnGeg* this, PlayState* play) {
 
     if (sp27 != 0) {
         this->unk_230 &= ~8;
-        if (Actor_ProcessTalkRequest(&this->actor, &play->state) && (this->unk_230 & 4)) {
+        if (Actor_TalkOfferAccepted(&this->actor, &play->state) && (this->unk_230 & 4)) {
             if (sp27 == 1) {
                 this->unk_496 = 0xD66;
                 this->nextCsId = this->csIdList[3];
@@ -489,16 +484,16 @@ void func_80BB221C(EnGeg* this, PlayState* play) {
             }
             Message_StartTextbox(play, this->unk_496, &this->actor);
             this->actionFunc = func_80BB2520;
-            this->actor.flags &= ~ACTOR_FLAG_10000;
+            this->actor.flags &= ~ACTOR_FLAG_TALK_OFFER_AUTO_ACCEPTED;
         } else if (this->actor.xzDistToPlayer < 300.0f) {
             this->unk_230 |= 4;
-            this->actor.flags |= ACTOR_FLAG_10000;
+            this->actor.flags |= ACTOR_FLAG_TALK_OFFER_AUTO_ACCEPTED;
             Actor_OfferTalk(&this->actor, play, 300.0f);
         }
     } else {
         this->unk_230 &= ~4;
         if (CHECK_WEEKEVENTREG(WEEKEVENTREG_35_40)) {
-            if (Actor_ProcessTalkRequest(&this->actor, &play->state) && (this->unk_230 & 8)) {
+            if (Actor_TalkOfferAccepted(&this->actor, &play->state) && (this->unk_230 & 8)) {
                 this->unk_496 = 0xD62;
                 Message_StartTextbox(play, this->unk_496, &this->actor);
                 this->unk_230 &= ~8;
@@ -507,16 +502,16 @@ void func_80BB221C(EnGeg* this, PlayState* play) {
                 Actor_OfferTalk(&this->actor, play, 300.0f);
                 this->unk_230 |= 8;
             }
-        } else if (Actor_ProcessTalkRequest(&this->actor, &play->state) && (this->unk_230 & 8)) {
+        } else if (Actor_TalkOfferAccepted(&this->actor, &play->state) && (this->unk_230 & 8)) {
             SET_WEEKEVENTREG(WEEKEVENTREG_35_40);
             this->unk_496 = 0xD5E;
             this->nextCsId = this->csIdList[0];
             Message_StartTextbox(play, this->unk_496, &this->actor);
             this->actionFunc = func_80BB2520;
             this->unk_230 &= ~8;
-            this->actor.flags &= ~ACTOR_FLAG_10000;
+            this->actor.flags &= ~ACTOR_FLAG_TALK_OFFER_AUTO_ACCEPTED;
         } else if (this->actor.xzDistToPlayer < 300.0f) {
-            this->actor.flags |= ACTOR_FLAG_10000;
+            this->actor.flags |= ACTOR_FLAG_TALK_OFFER_AUTO_ACCEPTED;
             Actor_OfferTalk(&this->actor, play, 300.0f);
             this->unk_230 |= 8;
         }
@@ -590,7 +585,7 @@ void func_80BB2520(EnGeg* this, PlayState* play) {
 }
 
 void func_80BB26EC(EnGeg* this, PlayState* play) {
-    if ((Message_GetState(&play->msgCtx) == TEXT_STATE_5) && Message_ShouldAdvance(play)) {
+    if ((Message_GetState(&play->msgCtx) == TEXT_STATE_EVENT) && Message_ShouldAdvance(play)) {
         switch (this->unk_496) {
             case 0xD5E:
                 this->nextCsId = this->csIdList[1];
@@ -615,7 +610,7 @@ void func_80BB26EC(EnGeg* this, PlayState* play) {
 }
 
 void func_80BB27D4(EnGeg* this, PlayState* play) {
-    if ((Message_GetState(&play->msgCtx) == TEXT_STATE_5) && Message_ShouldAdvance(play)) {
+    if ((Message_GetState(&play->msgCtx) == TEXT_STATE_EVENT) && Message_ShouldAdvance(play)) {
         switch (this->unk_496) {
             case 0xD63:
                 play->msgCtx.msgMode = MSGMODE_TEXT_CLOSING;
@@ -668,7 +663,7 @@ void func_80BB2944(EnGeg* this, PlayState* play) {
             this->animIndex = ENGEG_ANIM_6;
             EnGeg_ChangeAnim(this, play);
         }
-    } else if ((talkState == TEXT_STATE_5) && Message_ShouldAdvance(play)) {
+    } else if ((talkState == TEXT_STATE_EVENT) && Message_ShouldAdvance(play)) {
         if (this->unk_496 == 0xD67) {
             play->msgCtx.msgMode = MSGMODE_TEXT_CLOSING;
             play->msgCtx.stateTimer = 4;
@@ -682,7 +677,7 @@ void func_80BB2944(EnGeg* this, PlayState* play) {
 }
 
 void func_80BB2A54(EnGeg* this, PlayState* play) {
-    if ((Message_GetState(&play->msgCtx) == TEXT_STATE_5) && Message_ShouldAdvance(play)) {
+    if ((Message_GetState(&play->msgCtx) == TEXT_STATE_EVENT) && Message_ShouldAdvance(play)) {
         if (this->unk_496 == 0xD65) {
             CutsceneManager_Stop(this->csId);
             this->unk_230 &= ~0x10;
@@ -775,7 +770,7 @@ void func_80BB2E00(EnGeg* this, PlayState* play) {
             this->unk_230 |= 1;
             this->actor.shape.yOffset = 14.0f;
             if (this->unk_496 == 0xD69) {
-                func_80BB19C0(&this->unk_4E4, this, play);
+                this->unk_4E4 = func_80BB19C0(this, play);
                 this->actionFunc = func_80BB2F7C;
             } else {
                 this->actionFunc = func_80BB3318;
@@ -787,7 +782,7 @@ void func_80BB2E00(EnGeg* this, PlayState* play) {
 }
 
 void func_80BB2F7C(EnGeg* this, PlayState* play) {
-    Math_SmoothStepToS(&this->actor.world.rot.y, Math_Vec3f_Yaw(&this->actor.world.pos, &this->unk_4E4), 4, 1000, 1);
+    Math_SmoothStepToS(&this->actor.world.rot.y, Math_Vec3f_Yaw(&this->actor.world.pos, &this->unk_4E4), 4, 0x3E8, 1);
     this->actor.shape.rot.y = this->actor.world.rot.y;
 
     if ((this->actor.xzDistToPlayer < 150.0f) && (fabsf(this->actor.playerHeightRel) < 10.0f) &&
@@ -816,7 +811,7 @@ void func_80BB2F7C(EnGeg* this, PlayState* play) {
 void func_80BB30B4(EnGeg* this, PlayState* play) {
     Player* player = GET_PLAYER(play);
 
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+    if (Actor_TalkOfferAccepted(&this->actor, &play->state)) {
         if (player->transformation == PLAYER_FORM_GORON) {
             this->unk_496 = 0xD6A;
         } else if (Player_GetMask(play) == PLAYER_MASK_DON_GERO) {
@@ -826,9 +821,9 @@ void func_80BB30B4(EnGeg* this, PlayState* play) {
         }
         Message_StartTextbox(play, this->unk_496, &this->actor);
         this->actionFunc = func_80BB27D4;
-        this->actor.flags &= ~ACTOR_FLAG_10000;
+        this->actor.flags &= ~ACTOR_FLAG_TALK_OFFER_AUTO_ACCEPTED;
     } else if (this->actor.xzDistToPlayer < 150.0f) {
-        this->actor.flags |= ACTOR_FLAG_10000;
+        this->actor.flags |= ACTOR_FLAG_TALK_OFFER_AUTO_ACCEPTED;
         Actor_OfferTalk(&this->actor, play, 150.0f);
     }
 }
@@ -861,7 +856,7 @@ void func_80BB31B8(EnGeg* this, PlayState* play) {
 }
 
 void func_80BB32AC(EnGeg* this, PlayState* play) {
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+    if (Actor_TalkOfferAccepted(&this->actor, &play->state)) {
         Message_StartTextbox(play, this->unk_496, &this->actor);
         this->actionFunc = func_80BB27D4;
     } else {
@@ -880,7 +875,7 @@ void func_80BB3318(EnGeg* this, PlayState* play) {
     if (this->unk_4D8 < 2) {
         sp46 = Math_Vec3f_Yaw(&this->actor.world.pos, &D_80BB4044[this->unk_4D8]);
         sp40 = Math_Vec3f_DistXZ(&this->actor.world.pos, &D_80BB4044[this->unk_4D8]);
-        Math_SmoothStepToS(&this->actor.world.rot.y, sp46, 4, 1000, 1);
+        Math_SmoothStepToS(&this->actor.world.rot.y, sp46, 4, 0x3E8, 1);
         if (sp40 < 20.0f) {
             this->unk_4D8++;
         }
@@ -909,7 +904,7 @@ void func_80BB347C(EnGeg* this, PlayState* play) {
 
 void EnGeg_Init(Actor* thisx, PlayState* play) {
     s32 pad;
-    EnGeg* this = THIS;
+    EnGeg* this = (EnGeg*)thisx;
     s32 pad2;
     s32 sp34[] = { 0x3E, 0xF64 };
 
@@ -935,7 +930,7 @@ void EnGeg_Init(Actor* thisx, PlayState* play) {
         }
     }
 
-    Effect_Add(play, &this->unk_4DC, 4, 0, 0, &sp34);
+    Effect_Add(play, &this->unk_4DC, EFFECT_TIRE_MARK, 0, 0, &sp34);
     thisx->draw = NULL;
     this->unk_4E0 = 100;
     this->actor.draw = EnGeg_Draw;
@@ -943,7 +938,7 @@ void EnGeg_Init(Actor* thisx, PlayState* play) {
 }
 
 void EnGeg_Destroy(Actor* thisx, PlayState* play) {
-    EnGeg* this = THIS;
+    EnGeg* this = (EnGeg*)thisx;
 
     Collider_DestroyCylinder(play, &this->colliderCylinder);
     Collider_DestroySphere(play, &this->colliderSphere);
@@ -951,7 +946,7 @@ void EnGeg_Destroy(Actor* thisx, PlayState* play) {
 }
 
 void EnGeg_Update(Actor* thisx, PlayState* play) {
-    EnGeg* this = THIS;
+    EnGeg* this = (EnGeg*)thisx;
 
     this->actionFunc(this, play);
     EnGeg_UpdateSkelAnime(this, play);
@@ -997,11 +992,11 @@ s32 EnGeg_OverrideLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3f* p
 
 void EnGeg_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* rot, Actor* thisx) {
     static Vec3f D_80BB407C = { -1500.0f, 1500.0f, 0.0f };
-    EnGeg* this = THIS;
+    EnGeg* this = (EnGeg*)thisx;
     Vec3f sp38 = { 1.0f, 5.0f, -0.5f };
     Vec3f sp2C = { -1.0f, 5.0f, -0.5f };
 
-    if (limbIndex == 17) {
+    if (limbIndex == GORON_LIMB_HEAD) {
         if (!(this->unk_230 & 0x40)) {
             Gfx_SetupDL25_Opa(play->state.gfxCtx);
 
@@ -1030,12 +1025,12 @@ void EnGeg_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* rot,
 }
 
 void EnGeg_TransformLimbDraw(PlayState* play, s32 limbIndex, Actor* thisx) {
-    EnGeg* this = THIS;
+    EnGeg* this = (EnGeg*)thisx;
     s32 phi_v0;
     s32 phi_v1;
 
     switch (limbIndex) {
-        case 17:
+        case GORON_LIMB_HEAD:
             if (this->unk_230 & 2) {
                 phi_v1 = true;
             } else {
@@ -1060,7 +1055,7 @@ void EnGeg_TransformLimbDraw(PlayState* play, s32 limbIndex, Actor* thisx) {
             Matrix_Push();
             break;
 
-        case 10:
+        case GORON_LIMB_BODY:
             if (this->unk_230 & 2) {
                 phi_v1 = true;
             } else {
@@ -1082,6 +1077,9 @@ void EnGeg_TransformLimbDraw(PlayState* play, s32 limbIndex, Actor* thisx) {
             Matrix_RotateXS(this->unk_490.x, MTXMODE_APPLY);
             Matrix_RotateZS(this->unk_490.z, MTXMODE_APPLY);
             Matrix_Push();
+            break;
+
+        default:
             break;
     }
 }
@@ -1124,14 +1122,14 @@ void func_80BB3CB4(EnGeg* this, PlayState* play) {
     Matrix_Scale(this->actor.scale.x, this->actor.scale.y, this->actor.scale.z, MTXMODE_APPLY);
     Matrix_RotateXS(sp24, MTXMODE_APPLY);
 
-    gSPMatrix(POLY_OPA_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    MATRIX_FINALIZE_AND_LOAD(POLY_OPA_DISP++, play->state.gfxCtx);
     gSPDisplayList(POLY_OPA_DISP++, gGoronRolledUpDL);
 
     CLOSE_DISPS(play->state.gfxCtx);
 }
 
 void EnGeg_Draw(Actor* thisx, PlayState* play) {
-    EnGeg* this = THIS;
+    EnGeg* this = (EnGeg*)thisx;
 
     if (this->unk_230 & 1) {
         func_80BB3CB4(this, play);

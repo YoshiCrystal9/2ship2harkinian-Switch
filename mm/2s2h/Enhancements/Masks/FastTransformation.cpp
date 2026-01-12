@@ -1,4 +1,4 @@
-#include "public/bridge/consolevariablebridge.h"
+#include <libultraship/bridge/consolevariablebridge.h>
 #include "2s2h/GameInteractor/GameInteractor.h"
 #include "2s2h/ShipInit.hpp"
 
@@ -23,11 +23,11 @@ void RegisterFastTransformation() {
         // This was mostly copied directly from func_8012301C within z_player_lib.c
         s16 objectId = gPlayerFormObjectIds[GET_PLAYER_FORM];
 
-        gActorOverlayTable[ACTOR_PLAYER].initInfo->objectId = objectId;
+        gActorOverlayTable[ACTOR_PLAYER].profile->objectId = objectId;
         func_8012F73C(&gPlayState->objectCtx, player->actor.objectSlot, objectId);
         player->actor.objectSlot = Object_GetSlot(&gPlayState->objectCtx, GAMEPLAY_KEEP);
 
-        s32 objectSlot = Object_GetSlot(&gPlayState->objectCtx, gActorOverlayTable[ACTOR_PLAYER].initInfo->objectId);
+        s32 objectSlot = Object_GetSlot(&gPlayState->objectCtx, gActorOverlayTable[ACTOR_PLAYER].profile->objectId);
         player->actor.objectSlot = objectSlot;
         player->actor.shape.rot.z = GET_PLAYER_FORM + 1;
         player->actor.init = PlayerCall_Init;

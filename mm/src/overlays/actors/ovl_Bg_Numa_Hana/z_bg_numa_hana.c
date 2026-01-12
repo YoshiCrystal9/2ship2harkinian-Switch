@@ -8,9 +8,7 @@
 #include "objects/object_numa_obj/object_numa_obj.h"
 #include "objects/object_syokudai/object_syokudai.h"
 
-#define FLAGS (ACTOR_FLAG_10 | ACTOR_FLAG_400)
-
-#define THIS ((BgNumaHana*)thisx)
+#define FLAGS (ACTOR_FLAG_UPDATE_CULLING_DISABLED | ACTOR_FLAG_HOOKSHOT_PULLS_PLAYER)
 
 void BgNumaHana_Init(Actor* thisx, PlayState* play);
 void BgNumaHana_Destroy(Actor* thisx, PlayState* play);
@@ -30,7 +28,7 @@ void BgNumaHana_RaiseFlower(BgNumaHana* this, PlayState* play);
 void BgNumaHana_SetupOpenedIdle(BgNumaHana* this);
 void BgNumaHana_OpenedIdle(BgNumaHana* this, PlayState* play);
 
-ActorInit Bg_Numa_Hana_InitVars = {
+ActorProfile Bg_Numa_Hana_Profile = {
     /**/ ACTOR_BG_NUMA_HANA,
     /**/ ACTORCAT_BG,
     /**/ FLAGS,
@@ -44,7 +42,7 @@ ActorInit Bg_Numa_Hana_InitVars = {
 
 static ColliderCylinderInit sCylinderInit = {
     {
-        COLTYPE_METAL,
+        COL_MATERIAL_METAL,
         AT_NONE,
         AC_ON | AC_HARD | AC_TYPE_PLAYER,
         OC1_ON | OC1_TYPE_ALL,
@@ -52,11 +50,11 @@ static ColliderCylinderInit sCylinderInit = {
         COLSHAPE_CYLINDER,
     },
     {
-        ELEMTYPE_UNK2,
+        ELEM_MATERIAL_UNK2,
         { 0x00000000, 0x00, 0x00 },
         { 0x01CBFBB6, 0x00, 0x00 },
-        TOUCH_NONE | TOUCH_SFX_NORMAL,
-        BUMP_ON | BUMP_HOOKABLE,
+        ATELEM_NONE | ATELEM_SFX_NORMAL,
+        ACELEM_ON | ACELEM_HOOKABLE,
         OCELEM_ON,
     },
     { 18, 16, 0, { 0, 0, 0 } },
@@ -70,9 +68,9 @@ static s16 sInitialAnglePerPetal[] = { 0x0000, 0x2AAA, 0x5555, 0x8000, 0xAAAA, 0
 
 static InitChainEntry sInitChain[] = {
     ICHAIN_VEC3F_DIV1000(scale, 100, ICHAIN_CONTINUE),
-    ICHAIN_F32(uncullZoneForward, 4000, ICHAIN_CONTINUE),
-    ICHAIN_F32(uncullZoneScale, 800, ICHAIN_CONTINUE),
-    ICHAIN_F32(uncullZoneDownward, 600, ICHAIN_STOP),
+    ICHAIN_F32(cullingVolumeDistance, 4000, ICHAIN_CONTINUE),
+    ICHAIN_F32(cullingVolumeScale, 800, ICHAIN_CONTINUE),
+    ICHAIN_F32(cullingVolumeDownward, 600, ICHAIN_STOP),
 };
 
 /**
@@ -133,14 +131,14 @@ void BgNumaHana_UpdatePetalPosRots(BgNumaHana* this) {
 void BgNumaHana_UpdateSettleRotation(s16* settleRotZ, s16* settleAngle, f32* settleScale, f32 scaleStep) {
     *settleAngle += 0x32C8;
     Math_StepToF(settleScale, 0.0f, scaleStep);
-    *settleRotZ += (s16)(Math_SinS(*settleAngle) * *settleScale);
+    *settleRotZ += TRUNCF_BINANG(Math_SinS(*settleAngle) * *settleScale);
 }
 
 void BgNumaHana_Init(Actor* thisx, PlayState* play) {
     s32 pad;
     DynaPolyActor* child;
     s32 type;
-    BgNumaHana* this = THIS;
+    BgNumaHana* this = (BgNumaHana*)thisx;
 
     type = BG_NUMA_HANA_GET_TYPE(&this->dyna.actor);
     Actor_ProcessInitChain(&this->dyna.actor, sInitChain);
@@ -190,7 +188,7 @@ void BgNumaHana_Init(Actor* thisx, PlayState* play) {
 }
 
 void BgNumaHana_Destroy(Actor* thisx, PlayState* play) {
-    BgNumaHana* this = THIS;
+    BgNumaHana* this = (BgNumaHana*)thisx;
 
     DynaPoly_DeleteBgActor(play, &play->colCtx.dyna, this->dyna.bgId);
     if (BG_NUMA_HANA_GET_TYPE(&this->dyna.actor) == BG_NUMA_HANA_TYPE_NORMAL) {
@@ -351,7 +349,7 @@ void BgNumaHana_OpenedIdle(BgNumaHana* this, PlayState* play) {
 
 void BgNumaHana_Update(Actor* thisx, PlayState* play) {
     s32 pad;
-    BgNumaHana* this = THIS;
+    BgNumaHana* this = (BgNumaHana*)thisx;
     s32 type = BG_NUMA_HANA_GET_TYPE(&this->dyna.actor);
     Vec3f firePos;
 
@@ -375,7 +373,7 @@ void BgNumaHana_Update(Actor* thisx, PlayState* play) {
 
 void BgNumaHana_Draw(Actor* thisx, PlayState* play2) {
     PlayState* play = play2;
-    BgNumaHana* this = THIS;
+    BgNumaHana* this = (BgNumaHana*)thisx;
     WoodenFlowerPetalPosRot* innerPetalPosRot;
     WoodenFlowerPetalPosRot* outerPetalPosRot;
     s32 objectSlot;
@@ -384,7 +382,7 @@ void BgNumaHana_Draw(Actor* thisx, PlayState* play2) {
     OPEN_DISPS(play->state.gfxCtx);
 
     Gfx_SetupDL25_Opa(play->state.gfxCtx);
-    gSPMatrix(POLY_OPA_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    MATRIX_FINALIZE_AND_LOAD(POLY_OPA_DISP++, play->state.gfxCtx);
     gSPDisplayList(POLY_OPA_DISP++, gWoodenFlowerStalkDL);
 
     for (i = 0; i < ARRAY_COUNT(this->innerPetalPosRot); i++) {
@@ -394,13 +392,13 @@ void BgNumaHana_Draw(Actor* thisx, PlayState* play2) {
         Matrix_SetTranslateRotateYXZ(innerPetalPosRot->pos.x, innerPetalPosRot->pos.y, innerPetalPosRot->pos.z,
                                      &innerPetalPosRot->rot);
         Matrix_Scale(0.1f, 0.1f, 0.1f, MTXMODE_APPLY);
-        gSPMatrix(POLY_OPA_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+        MATRIX_FINALIZE_AND_LOAD(POLY_OPA_DISP++, play->state.gfxCtx);
         gSPDisplayList(POLY_OPA_DISP++, gWoodenFlowerInnerPetalDL);
 
         Matrix_SetTranslateRotateYXZ(outerPetalPosRot->pos.x, outerPetalPosRot->pos.y, outerPetalPosRot->pos.z,
                                      &outerPetalPosRot->rot);
         Matrix_Scale(0.1f, 0.1f, 0.1f, MTXMODE_APPLY);
-        gSPMatrix(POLY_OPA_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+        MATRIX_FINALIZE_AND_LOAD(POLY_OPA_DISP++, play->state.gfxCtx);
         gSPDisplayList(POLY_OPA_DISP++, gWoodenFlowerOuterPetalDL);
     }
 
@@ -409,7 +407,7 @@ void BgNumaHana_Draw(Actor* thisx, PlayState* play2) {
         Matrix_SetTranslateRotateYXZ(this->dyna.actor.world.pos.x, this->dyna.actor.world.pos.y - 64.5f,
                                      this->dyna.actor.world.pos.z, &this->dyna.actor.shape.rot);
         Matrix_Scale(1.5f, 1.5f, 1.5f, MTXMODE_APPLY);
-        gSPMatrix(POLY_OPA_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+        MATRIX_FINALIZE_AND_LOAD(POLY_OPA_DISP++, play->state.gfxCtx);
         gSPSegment(POLY_OPA_DISP++, 0x06, play->objectCtx.slots[objectSlot].segment);
         gSPDisplayList(POLY_OPA_DISP++, gObjectSyokudaiTypeNoSwitchDL);
     }

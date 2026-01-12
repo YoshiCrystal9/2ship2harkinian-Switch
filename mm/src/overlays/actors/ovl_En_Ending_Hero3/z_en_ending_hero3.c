@@ -6,9 +6,7 @@
 
 #include "z_en_ending_hero3.h"
 
-#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_FRIENDLY)
-
-#define THIS ((EnEndingHero3*)thisx)
+#define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY)
 
 void EnEndingHero3_Init(Actor* thisx, PlayState* play);
 void EnEndingHero3_Destroy(Actor* thisx, PlayState* play);
@@ -18,7 +16,7 @@ void EnEndingHero3_Draw(Actor* thisx, PlayState* play);
 void EnEndingHero3_SetupIdle(EnEndingHero3* this);
 void EnEndingHero3_Idle(EnEndingHero3* this, PlayState* play);
 
-ActorInit En_Ending_Hero3_InitVars = {
+ActorProfile En_Ending_Hero3_Profile = {
     /**/ ACTOR_EN_ENDING_HERO3,
     /**/ ACTORCAT_NPC,
     /**/ FLAGS,
@@ -31,11 +29,11 @@ ActorInit En_Ending_Hero3_InitVars = {
 };
 
 void EnEndingHero3_Init(Actor* thisx, PlayState* play) {
-    EnEndingHero3* this = THIS;
+    EnEndingHero3* this = (EnEndingHero3*)thisx;
 
     this->actor.colChkInfo.mass = MASS_IMMOVABLE;
     Actor_SetScale(&this->actor, 0.01f);
-    this->actor.targetMode = TARGET_MODE_6;
+    this->actor.attentionRangeType = ATTENTION_RANGE_6;
     this->actor.gravity = -3.0f;
     SkelAnime_InitFlex(play, &this->skelAnime, &object_toryo_Skel_007150, &object_toryo_Anim_000E50, this->jointTable,
                        this->morphTable, OBJECT_TORYO_LIMB_MAX);
@@ -56,7 +54,7 @@ void EnEndingHero3_Idle(EnEndingHero3* this, PlayState* play) {
 }
 
 void EnEndingHero3_Update(Actor* thisx, PlayState* play) {
-    EnEndingHero3* this = THIS;
+    EnEndingHero3* this = (EnEndingHero3*)thisx;
 
     this->actionFunc(this, play);
     Actor_MoveWithGravity(&this->actor);
@@ -66,7 +64,7 @@ void EnEndingHero3_Update(Actor* thisx, PlayState* play) {
 }
 
 void EnEndingHero3_Draw(Actor* thisx, PlayState* play) {
-    EnEndingHero3* this = THIS;
+    EnEndingHero3* this = (EnEndingHero3*)thisx;
 
     Gfx_SetupDL25_Opa(play->state.gfxCtx);
     Gfx_SetupDL25_Xlu(play->state.gfxCtx);

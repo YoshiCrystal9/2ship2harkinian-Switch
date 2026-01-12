@@ -9,7 +9,7 @@
 #include "overlays/actors/ovl_En_Elf/z_en_elf.h"
 #include <string.h>
 #include "2s2h/GameInteractor/GameInteractor.h"
-#include "luslog.h"
+#include <libultraship/log/luslog.h>
 
 s16 sCutsceneQuakeIndex;
 struct CutsceneCamera sCutsceneCameraInfo;
@@ -18,6 +18,28 @@ u8 D_801F4DDC;
 static s16 sBssPad;
 u8 gDisablePlayerCsActionStartPos;
 s16 gDungeonBossWarpSceneId;
+
+// clang-format off
+// Partial structs taken from "prevent_bss_reordering.h"
+struct Dummy200 { int x; };
+struct Dummy201 { int x; };
+struct Dummy202 { int x; };
+struct Dummy203 { int x; };
+struct Dummy204 { int x; };
+struct Dummy205 { int x; };
+struct Dummy206 { int x; };
+struct Dummy207 { int x; };
+struct Dummy208 { int x; };
+struct Dummy209 { int x; };
+struct Dummy210 { int x; };
+struct Dummy211 { int x; };
+struct Dummy212 { int x; };
+struct Dummy213 { int x; };
+struct Dummy214 { int x; };
+struct Dummy215 { int x; };
+struct Dummy216 { int x; };
+struct Dummy217 { int x; };
+// clang-format on
 
 void CutsceneHandler_DoNothing(PlayState* play, CutsceneContext* csCtx);
 void CutsceneHandler_StartManual(PlayState* play, CutsceneContext* csCtx);
@@ -175,8 +197,8 @@ void CutsceneCmd_Misc(PlayState* play, CutsceneContext* csCtx, CsCmdMisc* cmd) {
         case CS_MISC_CLOUDY_SKY:
             if (isFirstFrame) {
                 play->envCtx.changeSkyboxState = CHANGE_SKYBOX_REQUESTED;
-                play->envCtx.skyboxConfig = 1;
-                play->envCtx.changeSkyboxNextConfig = 0;
+                play->envCtx.skyboxConfig = SKYBOX_CONFIG_1;
+                play->envCtx.changeSkyboxNextConfig = SKYBOX_CONFIG_0;
                 play->envCtx.changeSkyboxTimer = 60;
                 play->envCtx.changeLightEnabled = true;
                 play->envCtx.lightConfig = 0;
@@ -272,9 +294,9 @@ void CutsceneCmd_Misc(PlayState* play, CutsceneContext* csCtx, CsCmdMisc* cmd) {
 
         case CS_MISC_FREEZE_TIME:
             if (!gSaveContext.save.isNight) {
-                gSaveContext.save.time = ((void)0, gSaveContext.save.time) - (u16)R_TIME_SPEED;
+                gSaveContext.save.time = CURRENT_TIME - (u16)R_TIME_SPEED;
             } else {
-                gSaveContext.save.time = ((void)0, gSaveContext.save.time) - (u16)(2 * R_TIME_SPEED);
+                gSaveContext.save.time = CURRENT_TIME - (u16)(2 * R_TIME_SPEED);
             }
             break;
 
@@ -330,7 +352,7 @@ void CutsceneCmd_Misc(PlayState* play, CutsceneContext* csCtx, CsCmdMisc* cmd) {
 
         case CS_MISC_MOON_CRASH_SKYBOX:
             if (isFirstFrame) {
-                play->envCtx.skyboxConfig = 0xD;
+                play->envCtx.skyboxConfig = SKYBOX_CONFIG_13;
             }
             break;
 
@@ -363,9 +385,8 @@ void CutsceneCmd_Misc(PlayState* play, CutsceneContext* csCtx, CsCmdMisc* cmd) {
                 D_801BB15C = csCtx->curFrame;
 
                 if (R_TIME_SPEED != 0) {
-                    gSaveContext.save.time = ((void)0, gSaveContext.save.time) + (u16)R_TIME_SPEED;
-                    gSaveContext.save.time =
-                        ((void)0, gSaveContext.save.time) + (u16)((void)0, gSaveContext.save.timeSpeedOffset);
+                    gSaveContext.save.time = CURRENT_TIME + (u16)R_TIME_SPEED;
+                    gSaveContext.save.time = CURRENT_TIME + (u16)((void)0, gSaveContext.save.timeSpeedOffset);
                 }
             }
             break;
@@ -439,7 +460,7 @@ void CutsceneCmd_FadeOutSequence(PlayState* play, CutsceneContext* csCtx, CsCmdF
 
 void CutsceneCmd_StartAmbience(PlayState* play, CutsceneContext* csCtx, CsCmdStartAmbience* cmd) {
     if (csCtx->curFrame == cmd->startFrame) {
-        Audio_PlayAmbience(play->sequenceCtx.ambienceId);
+        Audio_PlayAmbience(play->sceneSequences.ambienceId);
     }
 }
 
@@ -1054,8 +1075,8 @@ void CutsceneCmd_Text(PlayState* play, CutsceneContext* csCtx, CsCmdText* cmd) {
         // a textbox that is expected to be closed by the user is still open.
         endFrame = csCtx->curFrame;
         talkState = Message_GetState(&play->msgCtx);
-        if ((talkState != TEXT_STATE_CLOSING) && (talkState != TEXT_STATE_NONE) && (talkState != TEXT_STATE_7) &&
-            (talkState != TEXT_STATE_8)) {
+        if ((talkState != TEXT_STATE_CLOSING) && (talkState != TEXT_STATE_NONE) &&
+            (talkState != TEXT_STATE_SONG_DEMO_DONE) && (talkState != TEXT_STATE_8)) {
             csCtx->curFrame--;
 
             if ((talkState == TEXT_STATE_CHOICE) && Message_ShouldAdvance(play)) {
@@ -1098,7 +1119,7 @@ void CutsceneCmd_Text(PlayState* play, CutsceneContext* csCtx, CsCmdText* cmd) {
                 }
             }
 
-            if ((talkState == TEXT_STATE_5) && Message_ShouldAdvance(play)) {
+            if ((talkState == TEXT_STATE_EVENT) && Message_ShouldAdvance(play)) {
                 Message_DisplayOcarinaStaff(play, cmd->textId);
             }
         }
@@ -1254,7 +1275,7 @@ void Cutscene_ProcessScript(PlayState* play, CutsceneContext* csCtx, u8* script)
 
                 for (j = 0; j < cmdEntries; j++) {
                     CutsceneCmd_StopSequence(play, csCtx, (CsCmdStopSeq*)script);
-                    script += sizeof(CsCmdStartSeq);
+                    script += sizeof(CsCmdStopSeq);
                 }
                 break;
 
@@ -1657,7 +1678,7 @@ void Cutscene_ActorTranslateAndYawSmooth(Actor* actor, PlayState* play, s32 cueC
 
     VEC3F_LERPIMPDST(&actor->world.pos, &startPos, &endPos, lerp);
 
-    Math_SmoothStepToS(&actor->world.rot.y, Math_Vec3f_Yaw(&startPos, &endPos), 10, 1000, 1);
+    Math_SmoothStepToS(&actor->world.rot.y, Math_Vec3f_Yaw(&startPos, &endPos), 10, 0x3E8, 1);
     actor->shape.rot.y = actor->world.rot.y;
 }
 
@@ -1682,7 +1703,7 @@ void Cutscene_ActorTranslateXZAndYawSmooth(Actor* actor, PlayState* play, s32 cu
     actor->world.pos.x = startPos.x + (endPos.x - startPos.x) * lerp;
     actor->world.pos.z = startPos.z + (endPos.z - startPos.z) * lerp;
 
-    Math_SmoothStepToS(&actor->world.rot.y, Math_Vec3f_Yaw(&startPos, &endPos), 10, 1000, 1);
+    Math_SmoothStepToS(&actor->world.rot.y, Math_Vec3f_Yaw(&startPos, &endPos), 10, 0x3E8, 1);
     actor->shape.rot.y = actor->world.rot.y;
 }
 

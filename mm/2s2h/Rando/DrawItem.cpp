@@ -2,6 +2,7 @@
 #include "2s2h/Enhancements/FrameInterpolation/FrameInterpolation.h"
 #include "2s2h/ShipInit.hpp"
 #include "2s2h/Rando/DrawFuncs.h"
+#include "2s2h_assets.h"
 
 extern "C" {
 #include "variables.h"
@@ -14,6 +15,8 @@ extern "C" {
 #include "objects/object_gi_liquid/object_gi_liquid.h"
 #include "objects/object_sek/object_sek.h"
 #include "objects/object_st/object_st.h"
+
+#include "assets/overlays/ovl_Arrow_Ice/ovl_Arrow_Ice.h"
 
 Gfx* ResourceMgr_LoadGfxByName(const char* path);
 }
@@ -81,7 +84,7 @@ void DrawSong(RandoItemId randoItemId) {
 
     Gfx_SetupDL25_Xlu(gPlayState->state.gfxCtx);
 
-    gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(gPlayState->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    MATRIX_FINALIZE_AND_LOAD(POLY_XLU_DISP++, gPlayState->state.gfxCtx);
 
     switch (randoItemId) {
         case RI_SONG_SUN:
@@ -134,7 +137,7 @@ void DrawDoubleDefense() {
 
     Gfx_SetupDL25_Xlu(gPlayState->state.gfxCtx);
 
-    gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(gPlayState->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    MATRIX_FINALIZE_AND_LOAD(POLY_XLU_DISP++, gPlayState->state.gfxCtx);
     gDPSetGrayscaleColor(POLY_XLU_DISP++, 255, 255, 255, 255);
     gSPGrayscale(POLY_XLU_DISP++, true);
     gSPDisplayList(POLY_XLU_DISP++, (Gfx*)&gGiHeartBorderDL);
@@ -154,7 +157,7 @@ void DrawMilkRefill() {
                (uintptr_t)Gfx_TwoTexScroll(gPlayState->state.gfxCtx, G_TX_RENDERTILE, -gPlayState->state.frames,
                                            gPlayState->state.frames, 32, 32, 1, -gPlayState->state.frames,
                                            gPlayState->state.frames, 32, 32));
-    gSPMatrix(POLY_OPA_DISP++, Matrix_NewMtx(gPlayState->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    MATRIX_FINALIZE_AND_LOAD(POLY_OPA_DISP++, gPlayState->state.gfxCtx);
     // Container Color
     gDPSetPrimColor(POLY_OPA_DISP++, 0, 0, 255, 255, 255, 255);
     gDPSetEnvColor(POLY_OPA_DISP++, 200, 200, 200, 255);
@@ -166,7 +169,7 @@ void DrawMilkRefill() {
 
     Gfx_SetupDL25_Xlu(gPlayState->state.gfxCtx);
 
-    gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(gPlayState->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    MATRIX_FINALIZE_AND_LOAD(POLY_XLU_DISP++, gPlayState->state.gfxCtx);
     // Pattern Color
     // Milk
     gDPSetPrimColor(POLY_XLU_DISP++, 0, 0, 13, 33, 255, 255);
@@ -216,7 +219,7 @@ void DrawSmallKey(RandoItemId randoItemId) {
             break;
     }
 
-    gSPMatrix(POLY_OPA_DISP++, Matrix_NewMtx(gPlayState->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    MATRIX_FINALIZE_AND_LOAD(POLY_OPA_DISP++, gPlayState->state.gfxCtx);
     gSPDisplayList(POLY_OPA_DISP++, gGiSmallKeyCopyDL);
 
     CLOSE_DISPS(gPlayState->state.gfxCtx);
@@ -249,12 +252,12 @@ void DrawBossKey(RandoItemId randoItemId) {
             break;
     }
 
-    gSPMatrix(POLY_OPA_DISP++, Matrix_NewMtx(gPlayState->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    MATRIX_FINALIZE_AND_LOAD(POLY_OPA_DISP++, gPlayState->state.gfxCtx);
     gSPDisplayList(POLY_OPA_DISP++, gGiBossKeyCopyDL);
 
     Gfx_SetupDL25_Xlu(gPlayState->state.gfxCtx);
 
-    gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(gPlayState->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    MATRIX_FINALIZE_AND_LOAD(POLY_XLU_DISP++, gPlayState->state.gfxCtx);
     gSPDisplayList(POLY_XLU_DISP++, (Gfx*)gGiBossKeyGemDL);
 
     CLOSE_DISPS(gPlayState->state.gfxCtx);
@@ -273,7 +276,7 @@ void DrawSkulltulaToken(RandoItemId randoItemId, Actor* actor) {
 
     Gfx_SetupDL25_Opa(gPlayState->state.gfxCtx);
 
-    gSPMatrix(POLY_OPA_DISP++, Matrix_NewMtx(gPlayState->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    MATRIX_FINALIZE_AND_LOAD(POLY_OPA_DISP++, gPlayState->state.gfxCtx);
     gSPDisplayList(POLY_OPA_DISP++, (Gfx*)gSkulltulaTokenDL);
 
     Gfx_SetupDL25_Xlu(gPlayState->state.gfxCtx);
@@ -290,10 +293,186 @@ void DrawSkulltulaToken(RandoItemId randoItemId, Actor* actor) {
                (uintptr_t)Gfx_TwoTexScroll(gPlayState->state.gfxCtx, G_TX_RENDERTILE, gPlayState->state.frames * 0,
                                            -(gPlayState->state.frames * 5), 32, 32, 1, gPlayState->state.frames * 0,
                                            gPlayState->state.frames * 0, 32, 64));
-    gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(gPlayState->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    MATRIX_FINALIZE_AND_LOAD(POLY_XLU_DISP++, gPlayState->state.gfxCtx);
     gSPDisplayList(POLY_XLU_DISP++, (Gfx*)gSkulltulaTokenFlameCopyDL);
 
     CLOSE_DISPS(gPlayState->state.gfxCtx);
+}
+
+void DrawTrapModel() {
+    OPEN_DISPS(gPlayState->state.gfxCtx);
+
+    Gfx_SetupDL25_Xlu(gPlayState->state.gfxCtx);
+    Matrix_Scale(0.03f, 0.03f, 0.03f, MTXMODE_APPLY);
+
+    MATRIX_FINALIZE_AND_LOAD(POLY_XLU_DISP++, gPlayState->state.gfxCtx);
+    gSPDisplayList(POLY_XLU_DISP++, (Gfx*)gTrapDL);
+
+    CLOSE_DISPS(gPlayState->state.gfxCtx);
+}
+
+void DrawRandomTrapModel(RandoItemId randoItemId, Actor* actor) {
+    uint32_t seed = gSaveContext.save.shipSaveInfo.rando.finalSeed / 100000;
+    int actorData = (int)gPlayState->sceneId + seed;
+
+    if (actor != NULL) {
+        actorData += abs(actor->home.pos.x + actor->home.pos.y + actor->params);
+    }
+
+    int drawRandoItemId = actorData % ((int)RI_MAX - 3);
+
+    if (drawRandoItemId == RI_UNKNOWN || drawRandoItemId >= RI_TRAP) {
+        drawRandoItemId++;
+    }
+
+    // Handle Progressive Items
+    switch (drawRandoItemId) {
+        case RI_BOMB_BAG_20:
+        case RI_BOMB_BAG_30:
+        case RI_BOMB_BAG_40:
+            drawRandoItemId = RI_PROGRESSIVE_BOMB_BAG;
+            break;
+        case RI_BOW:
+        case RI_QUIVER_40:
+        case RI_QUIVER_50:
+            drawRandoItemId = RI_PROGRESSIVE_BOW;
+            break;
+        case RI_SINGLE_MAGIC:
+        case RI_DOUBLE_MAGIC:
+            drawRandoItemId = RI_PROGRESSIVE_MAGIC;
+            break;
+        case RI_SWORD_GILDED:
+        case RI_SWORD_KOKIRI:
+        case RI_SWORD_RAZOR:
+            drawRandoItemId = RI_PROGRESSIVE_SWORD;
+            break;
+        case RI_WALLET_ADULT:
+        case RI_WALLET_GIANT:
+            drawRandoItemId = RI_PROGRESSIVE_WALLET;
+            break;
+        default:
+            break;
+    }
+
+    Rando::DrawItem((RandoItemId)drawRandoItemId, actor);
+}
+
+void DrawTriforcePiece(RandoItemId randoItemId) {
+    Gfx* triforcePieceModels[3] = {
+        (Gfx*)gTriforcePiece0DL,
+        (Gfx*)gTriforcePiece1DL,
+        (Gfx*)gTriforcePiece2DL,
+    };
+
+    u16 currentTriforcePieces = gSaveContext.save.shipSaveInfo.rando.foundTriforcePieces;
+
+    OPEN_DISPS(gPlayState->state.gfxCtx);
+
+    Gfx_SetupDL25_Xlu(gPlayState->state.gfxCtx);
+
+    Matrix_Scale(0.03f, 0.03f, 0.03f, MTXMODE_APPLY);
+
+    MATRIX_FINALIZE_AND_LOAD(POLY_XLU_DISP++, gPlayState->state.gfxCtx);
+    if (currentTriforcePieces >= RANDO_SAVE_OPTIONS[RO_TRIFORCE_PIECES_REQUIRED]) {
+        gSPDisplayList(POLY_XLU_DISP++, (Gfx*)gTriforcePieceCompletedDL);
+    } else {
+        if (randoItemId == RI_TRIFORCE_PIECE_PREVIOUS) {
+            gSPDisplayList(POLY_XLU_DISP++, (Gfx*)triforcePieceModels[(currentTriforcePieces - 1) % 3]);
+        } else {
+            gSPDisplayList(POLY_XLU_DISP++, (Gfx*)triforcePieceModels[currentTriforcePieces % 3]);
+        }
+    }
+
+    CLOSE_DISPS(gPlayState->state.gfxCtx);
+}
+
+void DrawAbilityItem(RandoItemId randoItemId, Actor* actor) {
+    Gfx* abilityItemModel[1] = {
+        (Gfx*)gGiFlippersDL,
+    };
+
+    OPEN_DISPS(gPlayState->state.gfxCtx);
+
+    Gfx_SetupDL25_Xlu(gPlayState->state.gfxCtx);
+
+    MATRIX_FINALIZE_AND_LOAD(POLY_XLU_DISP++, gPlayState->state.gfxCtx);
+    gSPDisplayList(POLY_XLU_DISP++, (Gfx*)abilityItemModel[randoItemId - RI_ABILITY_SWIM]);
+
+    CLOSE_DISPS(gPlayState->state.gfxCtx);
+}
+
+void DrawOcarinaButtonItem(RandoItemId randoItemId, Actor* actor) {
+    Gfx* ocarinaButtonModel[5] = {
+        (Gfx*)gOcarinaAButtonDL,     (Gfx*)gOcarinaCDownButtonDL, (Gfx*)gOcarinaCRightButtonDL,
+        (Gfx*)gOcarinaCLeftButtonDL, (Gfx*)gOcarinaCUpButtonDL,
+    };
+
+    OPEN_DISPS(gPlayState->state.gfxCtx);
+    Gfx_SetupDL25_Opa(gPlayState->state.gfxCtx);
+
+    MATRIX_FINALIZE_AND_LOAD(POLY_OPA_DISP++, gPlayState->state.gfxCtx);
+    gSPDisplayList(POLY_OPA_DISP++, (Gfx*)ocarinaButtonModel[randoItemId - RI_OCARINA_BUTTON_A]);
+
+    CLOSE_DISPS(gPlayState->state.gfxCtx);
+}
+
+// clang-format off
+std::unordered_map<RandoItemId, std::function<void()>> soulDrawMap = {
+    { RI_SOUL_ENEMY_ALIEN,          DrawAlien },
+    { RI_SOUL_ENEMY_ARMOS,          DrawArmos },
+    { RI_SOUL_ENEMY_BAD_BAT,        DrawBat },
+    { RI_SOUL_ENEMY_BEAMOS,         DrawBeamos },
+    { RI_SOUL_ENEMY_BUBBLE,         DrawBubble },
+    { RI_SOUL_ENEMY_BOE,            DrawBoe },
+    { RI_SOUL_ENEMY_CHUCHU,         DrawChuchu },
+    { RI_SOUL_ENEMY_CAPTAIN_KEETA,  DrawCaptainKeeta },
+    { RI_SOUL_ENEMY_DEATH_ARMOS,    DrawDeathArmos },
+    { RI_SOUL_ENEMY_DEEP_PYTHON,    DrawDeepPython },
+    { RI_SOUL_ENEMY_DEKU_BABA,      DrawDekuBaba },
+    { RI_SOUL_ENEMY_DEXIHAND,       DrawDexihand },
+    { RI_SOUL_ENEMY_DINOLFOS,       DrawDinolfos },
+    { RI_SOUL_ENEMY_DODONGO,        DrawDodongo },
+    { RI_SOUL_ENEMY_DRAGONFLY,      DrawDragonfly },
+    { RI_SOUL_ENEMY_EENO,           DrawEeno },
+    { RI_SOUL_ENEMY_EYEGORE,        DrawEyegore },
+    { RI_SOUL_ENEMY_FREEZARD,       DrawFreezard },
+    { RI_SOUL_ENEMY_GARO,           DrawGaro },
+    { RI_SOUL_ENEMY_GEKKO,          DrawGekko },
+    { RI_SOUL_ENEMY_GIANT_BEE,      DrawGiantBee },
+    { RI_SOUL_ENEMY_GOMESS,         DrawGomess },
+    { RI_SOUL_ENEMY_GUAY,           DrawGuay },
+    { RI_SOUL_ENEMY_HIPLOOP,        DrawHiploop },
+    { RI_SOUL_ENEMY_IGOS_DU_IKANA,  DrawIgosDuIkana },
+    { RI_SOUL_ENEMY_IRON_KNUCKLE,   DrawIronKnuckle },
+    { RI_SOUL_ENEMY_KEESE,          DrawKeese },
+    { RI_SOUL_ENEMY_LEEVER,         DrawLeever },
+    { RI_SOUL_ENEMY_LIKE_LIKE,      DrawLikeLike },
+    { RI_SOUL_ENEMY_MAD_SCRUB,      DrawMadScrub },
+    { RI_SOUL_ENEMY_NEJIRON,        DrawNejiron },
+    { RI_SOUL_ENEMY_OCTOROK,        DrawOctorok },
+    { RI_SOUL_ENEMY_PEAHAT,         DrawPeahat },
+    { RI_SOUL_ENEMY_PIRATE,         DrawPirate },
+    { RI_SOUL_ENEMY_POE,            DrawPoe },
+    { RI_SOUL_ENEMY_REDEAD,         DrawRedead },
+    { RI_SOUL_ENEMY_SHELLBLADE,     DrawShellBlade },
+    { RI_SOUL_ENEMY_SKULLFISH,      DrawSkullfish },
+    { RI_SOUL_ENEMY_SKULLTULA,      DrawSkulltula },
+    { RI_SOUL_ENEMY_SNAPPER,        DrawSnapper },
+    { RI_SOUL_ENEMY_STALCHILD,      DrawStalchild },
+    { RI_SOUL_ENEMY_TAKKURI,        DrawTakkuri },
+    { RI_SOUL_ENEMY_TEKTITE,        DrawTektite },
+    { RI_SOUL_ENEMY_WALLMASTER,     DrawWallmaster },
+    { RI_SOUL_ENEMY_WART,           DrawWart },
+    { RI_SOUL_ENEMY_WIZROBE,        DrawWizrobe },
+    { RI_SOUL_ENEMY_WOLFOS,         DrawWolfos },
+};
+// clang-format on
+
+void DrawSoul(RandoItemId randoItemId) {
+    auto it = soulDrawMap.find(randoItemId);
+    if (it != soulDrawMap.end()) {
+        it->second();
+    }
 }
 
 void DrawSparkles(RandoItemId randoItemId, Actor* actor) {
@@ -392,6 +571,15 @@ void Rando::DrawItem(RandoItemId randoItemId, Actor* actor) {
         case RI_OWL_ZORA_CAPE:
             DrawOwlStatue();
             break;
+        case RI_TIME_DAY_1:
+        case RI_TIME_NIGHT_1:
+        case RI_TIME_DAY_2:
+        case RI_TIME_NIGHT_2:
+        case RI_TIME_DAY_3:
+        case RI_TIME_NIGHT_3:
+        case RI_TIME_PROGRESSIVE:
+            DrawClock(randoItemId, actor);
+            break;
         case RI_PROGRESSIVE_LULLABY:
         case RI_PROGRESSIVE_MAGIC:
         case RI_PROGRESSIVE_BOW:
@@ -400,20 +588,95 @@ void Rando::DrawItem(RandoItemId randoItemId, Actor* actor) {
         case RI_PROGRESSIVE_WALLET:
             Rando::DrawItem(Rando::ConvertItem(randoItemId), actor);
             break;
-        case RI_SOUL_GOHT:
+        case RI_SOUL_ENEMY_ALIEN:
+        case RI_SOUL_ENEMY_ARMOS:
+        case RI_SOUL_ENEMY_BAD_BAT:
+        case RI_SOUL_ENEMY_BEAMOS:
+        case RI_SOUL_ENEMY_BOE:
+        case RI_SOUL_ENEMY_BUBBLE:
+        case RI_SOUL_ENEMY_CAPTAIN_KEETA:
+        case RI_SOUL_ENEMY_CHUCHU:
+        case RI_SOUL_ENEMY_DEATH_ARMOS:
+        case RI_SOUL_ENEMY_DEEP_PYTHON:
+        case RI_SOUL_ENEMY_DEKU_BABA:
+        case RI_SOUL_ENEMY_DEXIHAND:
+        case RI_SOUL_ENEMY_DINOLFOS:
+        case RI_SOUL_ENEMY_DODONGO:
+        case RI_SOUL_ENEMY_DRAGONFLY:
+        case RI_SOUL_ENEMY_EENO:
+        case RI_SOUL_ENEMY_EYEGORE:
+        case RI_SOUL_ENEMY_FREEZARD:
+        case RI_SOUL_ENEMY_GARO:
+        case RI_SOUL_ENEMY_GEKKO:
+        case RI_SOUL_ENEMY_GIANT_BEE:
+        case RI_SOUL_ENEMY_GOMESS:
+        case RI_SOUL_ENEMY_GUAY:
+        case RI_SOUL_ENEMY_HIPLOOP:
+        case RI_SOUL_ENEMY_IGOS_DU_IKANA:
+        case RI_SOUL_ENEMY_IRON_KNUCKLE:
+        case RI_SOUL_ENEMY_KEESE:
+        case RI_SOUL_ENEMY_LEEVER:
+        case RI_SOUL_ENEMY_LIKE_LIKE:
+        case RI_SOUL_ENEMY_MAD_SCRUB:
+        case RI_SOUL_ENEMY_NEJIRON:
+        case RI_SOUL_ENEMY_OCTOROK:
+        case RI_SOUL_ENEMY_PEAHAT:
+        case RI_SOUL_ENEMY_PIRATE:
+        case RI_SOUL_ENEMY_POE:
+        case RI_SOUL_ENEMY_REDEAD:
+        case RI_SOUL_ENEMY_SHELLBLADE:
+        case RI_SOUL_ENEMY_SKULLFISH:
+        case RI_SOUL_ENEMY_SKULLTULA:
+        case RI_SOUL_ENEMY_SNAPPER:
+        case RI_SOUL_ENEMY_STALCHILD:
+        case RI_SOUL_ENEMY_TAKKURI:
+        case RI_SOUL_ENEMY_TEKTITE:
+        case RI_SOUL_ENEMY_WALLMASTER:
+        case RI_SOUL_ENEMY_WART:
+        case RI_SOUL_ENEMY_WIZROBE:
+        case RI_SOUL_ENEMY_WOLFOS:
+            DrawSoul(randoItemId);
+            break;
+        case RI_SOUL_BOSS_GOHT:
             DrawGoht();
             break;
-        case RI_SOUL_GYORG:
+        case RI_SOUL_BOSS_GYORG:
             DrawGyorg();
             break;
-        case RI_SOUL_MAJORA:
+        case RI_SOUL_BOSS_MAJORA:
             DrawMajora();
             break;
-        case RI_SOUL_ODOLWA:
+        case RI_SOUL_BOSS_ODOLWA:
             DrawOdolwa();
             break;
-        case RI_SOUL_TWINMOLD:
+        case RI_SOUL_BOSS_TWINMOLD:
             DrawTwinmold();
+            break;
+        case RI_FROG_BLUE:
+        case RI_FROG_CYAN:
+        case RI_FROG_PINK:
+        case RI_FROG_WHITE:
+            DrawMinifrog(randoItemId, actor);
+            break;
+        case RI_ABILITY_SWIM:
+            DrawAbilityItem(randoItemId, actor);
+            break;
+        case RI_TRIFORCE_PIECE_PREVIOUS:
+        case RI_TRIFORCE_PIECE:
+            DrawTriforcePiece(randoItemId);
+            break;
+        case RI_TRAP:
+            DrawRandomTrapModel(randoItemId, actor);
+            break;
+        case RI_MAX_TRAP:
+            DrawTrapModel();
+            break;
+        case RI_OCARINA_BUTTON_A:
+        case RI_OCARINA_BUTTON_C_DOWN:
+        case RI_OCARINA_BUTTON_C_LEFT:
+        case RI_OCARINA_BUTTON_C_RIGHT:
+        case RI_OCARINA_BUTTON_C_UP:
+            DrawOcarinaButtonItem(randoItemId, actor);
             break;
         case RI_NONE:
         case RI_UNKNOWN:
@@ -425,9 +688,11 @@ void Rando::DrawItem(RandoItemId randoItemId, Actor* actor) {
 
     switch (randoItemId) {
         case RI_NONE:
+        case RI_ABILITY_SWIM:
         case RI_PROGRESSIVE_MAGIC:
         case RI_SINGLE_MAGIC:
         case RI_DOUBLE_MAGIC:
+        case RI_TIME_PROGRESSIVE:
             DrawSparkles(randoItemId, actor);
             break;
         default:

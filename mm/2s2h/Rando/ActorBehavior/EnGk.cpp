@@ -1,11 +1,11 @@
 #include "ActorBehavior.h"
-#include "public/bridge/consolevariablebridge.h"
+#include <libultraship/bridge/consolevariablebridge.h>
 
 extern "C" {
 #include "variables.h"
 #include "overlays/actors/ovl_En_Gk/z_en_gk.h"
 
-void Player_TalkWithPlayer(PlayState* play, Actor* actor);
+void Player_StartTalking(PlayState* play, Actor* actor);
 }
 
 void Rando::ActorBehavior::InitEnGKBehavior() {
@@ -16,7 +16,7 @@ void Rando::ActorBehavior::InitEnGKBehavior() {
 
         switch (actor->id) {
             case ACTOR_EN_GK:
-                if (RANDO_SAVE_CHECKS[RC_GORON_RACETRACK_GOLD_DUST].obtained) {
+                if (RANDO_SAVE_CHECKS[RC_GORON_RACETRACK_GOLD_DUST].cycleObtained) {
                     return;
                 }
 
@@ -25,7 +25,7 @@ void Rando::ActorBehavior::InitEnGKBehavior() {
                 player->talkActor = actor;
                 player->talkActorDistance = actor->xzDistToPlayer;
                 player->exchangeItemAction = PLAYER_IA_MINUS1;
-                Player_TalkWithPlayer(gPlayState, actor);
+                Player_StartTalking(gPlayState, actor);
                 break;
         }
     });
@@ -46,7 +46,7 @@ void Rando::ActorBehavior::InitEnGKBehavior() {
         *should = false;
 
         SET_WEEKEVENTREG(WEEKEVENTREG_24_80); // Ensure Goron Elder check is available
-        if (!RANDO_SAVE_CHECKS[RC_GORON_SHRINE_FULL_LULLABY].obtained) {
+        if (!RANDO_SAVE_CHECKS[RC_GORON_SHRINE_FULL_LULLABY].cycleObtained) {
             RANDO_SAVE_CHECKS[RC_GORON_SHRINE_FULL_LULLABY].eligible = true;
         }
     });

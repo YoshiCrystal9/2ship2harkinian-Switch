@@ -4,7 +4,7 @@
 
 #include <string>
 #include <cstdint>
-#include <GuiWindow.h>
+#include <ship/window/gui/GuiWindow.h>
 namespace Notification {
 
 struct Options {
@@ -17,6 +17,7 @@ struct Options {
     std::string suffix = "";
     ImVec4 suffixColor = ImVec4(1.0f, 0.5f, 0.5f, 1.0f);
     float remainingTime = 0.0f; // Seconds
+    bool mute = false;
 };
 
 class Window : public Ship::GuiWindow {

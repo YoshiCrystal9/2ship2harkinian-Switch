@@ -5,31 +5,30 @@
 #include <fstream>
 #include <chrono>
 
-#include <ResourceManager.h>
-#include "graphic/Fast3D/Fast3dWindow.h"
-#include <File.h>
-#include <DisplayList.h>
-#include <Window.h>
+#include <ship/resource/ResourceManager.h>
+#include <fast/Fast3dWindow.h>
+#include <ship/resource/File.h>
+#include <ship/window/Window.h>
 
 #include "z64animation.h"
 #include "z64bgcheck.h"
 #include <libultraship/libultra/gbi.h>
-#include <Fonts.h>
+#include <ship/window/gui/Fonts.h>
 #ifdef _WIN32
 #include <Windows.h>
 #else
 #include <time.h>
 #endif
-#include <AudioPlayer.h>
+#include <ship/audio/AudioPlayer.h>
 #include "variables.h"
 #include "z64.h"
 #include "macros.h"
-#include <utils/StringHelper.h>
+#include <ship/utils/StringHelper.h>
 #include <nlohmann/json.hpp>
 #include "build.h"
 
-#include <Fast3D/interpreter.h>
-#include <Fast3D/backends/gfx_rendering_api.h>
+#include <fast/interpreter.h>
+#include <fast/backends/gfx_rendering_api.h>
 
 #ifdef __APPLE__
 #include <SDL_scancode.h>
@@ -54,11 +53,14 @@ CrowdControl* CrowdControl::Instance;
 #endif
 
 #include <libultraship/libultraship.h>
+#include <libultraship/controller/controldeck/ControlDeck.h>
+#include <fast/resource/ResourceType.h>
 #include <BenGui/BenGui.hpp>
 
 #include "2s2h/GameInteractor/GameInteractor.h"
 #include "2s2h/Enhancements/Enhancements.h"
 #include "2s2h/Enhancements/GfxPatcher/AuthenticGfxPatches.h"
+#include "2s2h/Enhancements/GfxPatcher/PlayerCustomFlipbooks.h"
 #include "2s2h/DeveloperTools/DebugConsole.h"
 #include "2s2h/Rando/Rando.h"
 #include "2s2h/Rando/Spoiler/Spoiler.h"
@@ -71,11 +73,11 @@ CrowdControl* CrowdControl::Instance;
 #include "2s2h/PresetManager/PresetManager.h"
 
 // Resource Types/Factories
-#include "resource/type/Blob.h"
-#include "resource/type/DisplayList.h"
-#include "resource/type/Matrix.h"
-#include "resource/type/Texture.h"
-#include "resource/type/Vertex.h"
+#include <ship/resource/type/Blob.h>
+#include <fast/resource/type/DisplayList.h>
+#include <fast/resource/type/Matrix.h>
+#include <fast/resource/type/Texture.h>
+#include <fast/resource/type/Vertex.h>
 #include "2s2h/resource/type/2shResourceType.h"
 #include "2s2h/resource/type/Animation.h"
 #include "2s2h/resource/type/Array.h"
@@ -89,11 +91,11 @@ CrowdControl* CrowdControl::Instance;
 #include "2s2h/resource/type/Scene.h"
 #include "2s2h/resource/type/Skeleton.h"
 #include "2s2h/resource/type/SkeletonLimb.h"
-#include "resource/factory/BlobFactory.h"
-#include "resource/factory/DisplayListFactory.h"
-#include "resource/factory/MatrixFactory.h"
-#include "resource/factory/TextureFactory.h"
-#include "resource/factory/VertexFactory.h"
+#include <ship/resource/factory/BlobFactory.h>
+#include <fast/resource/factory/DisplayListFactory.h>
+#include <fast/resource/factory/MatrixFactory.h>
+#include <fast/resource/factory/TextureFactory.h>
+#include <fast/resource/factory/VertexFactory.h>
 #include "2s2h/resource/importer/AnimationFactory.h"
 #include "2s2h/resource/importer/ArrayFactory.h"
 #include "2s2h/resource/importer/AudioSampleFactory.h"
@@ -110,9 +112,9 @@ CrowdControl* CrowdControl::Instance;
 #include "2s2h/resource/importer/BackgroundFactory.h"
 #include "2s2h/resource/importer/TextureAnimationFactory.h"
 #include "2s2h/resource/importer/KeyFrameFactory.h"
-#include "window/gui/resource/Font.h"
-#include "window/FileDropMgr.h"
-#include "window/gui/resource/FontFactory.h"
+#include <ship/window/gui/resource/Font.h>
+#include <ship/window/FileDropMgr.h>
+#include <ship/window/gui/resource/FontFactory.h>
 #include "2s2h/Enhancements/Audio/AudioCollection.h"
 #include "BenGui/BenInputEditorWindow.h"
 
@@ -179,17 +181,27 @@ OTRGlobals::OTRGlobals() {
 
     context = Ship::Context::CreateUninitializedInstance("2 Ship 2 Harkinian", appShortName, "2ship2harkinian.json");
     context->InitFileDropMgr();
-    context->InitLogging();
     context->InitGfxDebugger();
     context->InitConfiguration();
     context->InitConsoleVariables();
+#if (_DEBUG)
+    auto defaultLogLevel = spdlog::level::trace;
+#else
+    auto defaultLogLevel = spdlog::level::info;
+#endif
+    auto logLevel = (spdlog::level::level_enum)CVarGetInteger("gDeveloperTools.LogLevel", defaultLogLevel);
+    context->InitLogging(logLevel, logLevel);
+    Ship::Context::GetInstance()->GetLogger()->set_pattern("[%H:%M:%S.%e] [%s:%#] [%l] %v");
 
     // tell LUS to reserve 3 SoH specific threads (Game, Audio, Save)
     context->InitResourceManager(archiveFiles, {}, 3);
     prevAltAssets = CVarGetInteger("gEnhancements.Mods.AlternateAssets", 0);
     context->GetResourceManager()->SetAltAssetsEnabled(prevAltAssets);
 
-    auto controlDeck = std::make_shared<LUS::ControlDeck>(std::vector<CONTROLLERBUTTONS_T>({}));
+    auto controlDeck = std::make_shared<LUS::ControlDeck>(std::vector<CONTROLLERBUTTONS_T>({
+        BTN_CUSTOM_MODIFIER1,
+        BTN_CUSTOM_MODIFIER2,
+    }));
     context->InitControlDeck(controlDeck);
 
     context->InitCrashHandler();
@@ -200,13 +212,7 @@ OTRGlobals::OTRGlobals() {
         std::make_shared<Fast::Fast3dWindow>(std::vector<std::shared_ptr<Ship::GuiWindow>>({ benInputEditorWindow }));
     context->InitWindow(benFast3dWindow);
 
-#ifndef __SWITCH__
     // Override LUS defaults
-    Ship::Context::GetInstance()->GetLogger()->set_level(
-        (spdlog::level::level_enum)CVarGetInteger("gDeveloperTools.LogLevel", 1));
-    Ship::Context::GetInstance()->GetLogger()->set_pattern("[%H:%M:%S.%e] [%s:%#] [%l] %v");
-#endif
-
     auto overlay = context->GetInstance()->GetWindow()->GetGui()->GetGameOverlay();
     overlay->LoadFont("Press Start 2P", 12.0f, "fonts/PressStart2P-Regular.ttf");
     overlay->LoadFont("Fipps", 32.0f, "fonts/Fipps-Regular.otf");
@@ -285,7 +291,7 @@ OTRGlobals::OTRGlobals() {
                                     "KeyFrameAnim", static_cast<uint32_t>(SOH::ResourceType::TSH_CKeyFrameAnim), 0);
     loader->RegisterResourceFactory(std::make_shared<SOH::ResourceFactoryBinaryKeyFrameSkel>(), RESOURCE_FORMAT_BINARY,
                                     "KeyFrameSkel", static_cast<uint32_t>(SOH::ResourceType::TSH_CKeyFrameSkel), 0);
-    SPDLOG_INFO("Resource manager loaded");
+
     // gSaveStateMgr = std::make_shared<SaveStateMgr>();
     // gRandomizer = std::make_shared<Randomizer>();
 
@@ -293,7 +299,6 @@ OTRGlobals::OTRGlobals() {
     for (uint32_t version : versions) {
         if (!validHashes.contains(version)) {
 #if defined(__SWITCH__)
-//            Ship::Switch::ThrowMissingOTR();
             SPDLOG_ERROR("Invalid O2R File!");
 #elif defined(__WIIU__)
             Ship::WiiU::ThrowInvalidOTR();
@@ -349,13 +354,16 @@ ImFont* OTRGlobals::CreateFontWithSize(float size, std::string fontPath) {
         font = mImGuiIo->Fonts->AddFontDefault(&fontCfg);
     } else {
         auto initData = std::make_shared<Ship::ResourceInitData>();
+        ImFontConfig config;
+        config.FontDataOwnedByAtlas = false;
+
         initData->Format = RESOURCE_FORMAT_BINARY;
         initData->Type = static_cast<uint32_t>(RESOURCE_TYPE_FONT);
         initData->ResourceVersion = 0;
         initData->Path = fontPath;
         std::shared_ptr<Ship::Font> fontData = std::static_pointer_cast<Ship::Font>(
             Ship::Context::GetInstance()->GetResourceManager()->LoadResource(fontPath, false, initData));
-        font = mImGuiIo->Fonts->AddFontFromMemoryTTF(fontData->Data, fontData->DataSize, size);
+        font = mImGuiIo->Fonts->AddFontFromMemoryTTF(fontData->Data, fontData->DataSize, size, &config);
     }
     // FontAwesome fonts need to have their sizes reduced by 2.0f/3.0f in order to align correctly
     float iconFontSize = size * 2.0f / 3.0f;
@@ -478,33 +486,6 @@ extern "C" void OTRExtScanner() {
     }
 }
 
-void Ben_ProcessDroppedFiles(const std::string& filePath) {
-    SPDLOG_INFO("Processing dropped file: {}", filePath);
-
-    bool handled = false;
-
-    if (!handled) {
-        handled = SaveManager_HandleFileDropped(filePath);
-    }
-
-    if (!handled) {
-        handled = BinarySaveConverter_HandleFileDropped(filePath);
-    }
-
-    if (!handled) {
-        handled = Rando::Spoiler::HandleFileDropped(filePath);
-    }
-
-    if (!handled) {
-        handled = PresetManager_HandleFileDropped(filePath);
-    }
-
-    if (!handled) {
-        auto gui = Ship::Context::GetInstance()->GetWindow()->GetGui();
-        gui->GetGameOverlay()->TextDrawNotification(30.0f, true, "Unsupported file dropped, ignoring");
-    }
-}
-
 typedef struct {
     uint16_t major;
     uint16_t minor;
@@ -520,7 +501,12 @@ ArchiveVersion ReadPortVersionFromArchive(std::string archivePath, bool isO2rTyp
     if (isO2rType) {
         archive = make_shared<Ship::O2rArchive>(archivePath);
     } else {
+#ifdef INCLUDE_MPQ_SUPPORT
         archive = make_shared<Ship::OtrArchive>(archivePath);
+#else
+        SPDLOG_ERROR("An OTR File, {}, was found but support for them is not included. File will be ignored.",
+                     archivePath.c_str());
+#endif
     }
     if (archive->Open()) {
         auto t = archive->LoadFile("portVersion");
@@ -533,7 +519,6 @@ ArchiveVersion ReadPortVersionFromArchive(std::string archivePath, bool isO2rTyp
             version.minor = reader->ReadUInt16();
             version.patch = reader->ReadUInt16();
         }
-        archive->Close();
     }
 
     return version;
@@ -737,16 +722,16 @@ extern "C" void InitOTR() {
     GameInteractor::Instance->RegisterOwnHooks();
     CustomItem::RegisterHooks();
     CustomMessage::RegisterHooks();
+    Rando::StaticData::PopulateCheckNames();
 
     OTRMessage_Init();
     OTRAudio_Init();
     OTRExtScanner();
+    PlayerCustomFlipbooks_Patch();
 
     // Just came up with arbitrary numbers that seemed to work, this is
     // usually set once(?) in currently stubbed out areas of code.
     gIrqMgrRetraceTime = Ship_Random(700000, 850000);
-
-    GameInteractor::Instance->RegisterGameHook<GameInteractor::OnFileDropped>(Ben_ProcessDroppedFiles);
 
     time_t now = time(NULL);
     tm* tm_now = localtime(&now);
@@ -770,6 +755,8 @@ extern "C" void InitOTR() {
 #endif
 
     std::shared_ptr<Ship::Config> conf = OTRGlobals::Instance->context->GetConfig();
+    Ship::Context::GetInstance()->GetFileDropMgr()->RegisterDropHandler(BinarySaveConverter_HandleFileDropped);
+    Ship::Context::GetInstance()->GetFileDropMgr()->RegisterDropHandler(SaveManager_HandleFileDropped);
 }
 
 extern "C" void SaveManager_ThreadPoolWait() {
@@ -921,14 +908,6 @@ extern "C" void Graph_StartFrame() {
         }
     }
 #endif
-    auto dropMgr = Ship::Context::GetInstance()->GetFileDropMgr();
-    if (dropMgr->FileDropped()) {
-        std::string filePath = dropMgr->GetDroppedFile();
-        if (!filePath.empty()) {
-            GameInteractor::Instance->ExecuteHooks<GameInteractor::OnFileDropped>(filePath);
-        }
-        dropMgr->ClearDroppedFile();
-    }
 }
 
 void RunCommands(Gfx* Commands, const std::vector<std::unordered_map<Mtx*, MtxF>>& mtx_replacements) {
@@ -1300,6 +1279,36 @@ extern "C" void ResourceMgr_UnpatchGfxByName(const char* path, const char* patch
         *gfx = originalGfx[path][patchName].instruction;
 
         originalGfx[path].erase(patchName);
+    }
+}
+
+extern "C" size_t ResourceMgr_GetPatchCountForDL(const char* path) {
+    if (originalGfx.contains(path)) {
+        return originalGfx[path].size();
+    }
+    return 0;
+}
+
+extern "C" void ResourceMgr_ResetAllPatchesForDL(const char* path) {
+    if (!originalGfx.contains(path)) {
+        return;
+    }
+
+    auto res = std::static_pointer_cast<Fast::DisplayList>(
+        Ship::Context::GetInstance()->GetResourceManager()->LoadResource(path));
+
+    // Iterate through all patches and restore original instructions
+    auto& patches = originalGfx[path];
+    for (auto it = patches.begin(); it != patches.end();) {
+        Gfx* gfx = (Gfx*)&res->Instructions[it->second.index];
+        *gfx = it->second.instruction;
+        // erase() returns the next iterator, allowing safe iteration during removal
+        it = patches.erase(it);
+    }
+
+    // Clean up empty map entry
+    if (patches.empty()) {
+        originalGfx.erase(path);
     }
 }
 
@@ -1944,11 +1953,9 @@ extern "C" int Controller_ShouldRumble(size_t slot) {
     return 1;
 }
 
-#if not defined (__SWITCH__) && not defined(__WIIU__)
 extern "C" void Messagebox_ShowErrorBox(char* title, char* body) {
     Extractor::ShowErrorBox(title, body);
 }
-#endif
 
 // Helper to redirect the user to the boot screen in place of known console crash scenarios, and emits a notification
 extern "C" bool Ship_HandleConsoleCrashAsReset() {

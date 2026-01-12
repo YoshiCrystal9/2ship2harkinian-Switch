@@ -7,16 +7,14 @@
 #include "z_bg_fu_mizu.h"
 #include "objects/object_fu_kaiten/object_fu_kaiten.h"
 
-#define FLAGS (ACTOR_FLAG_10 | ACTOR_FLAG_20)
-
-#define THIS ((BgFuMizu*)thisx)
+#define FLAGS (ACTOR_FLAG_UPDATE_CULLING_DISABLED | ACTOR_FLAG_DRAW_CULLING_DISABLED)
 
 void BgFuMizu_Init(Actor* thisx, PlayState* play);
 void BgFuMizu_Destroy(Actor* thisx, PlayState* play);
 void BgFuMizu_Update(Actor* thisx, PlayState* play);
 void BgFuMizu_Draw(Actor* thisx, PlayState* play);
 
-ActorInit Bg_Fu_Mizu_InitVars = {
+ActorProfile Bg_Fu_Mizu_Profile = {
     /**/ ACTOR_BG_FU_MIZU,
     /**/ ACTORCAT_BG,
     /**/ FLAGS,
@@ -29,7 +27,7 @@ ActorInit Bg_Fu_Mizu_InitVars = {
 };
 
 void BgFuMizu_Init(Actor* thisx, PlayState* play) {
-    BgFuMizu* this = THIS;
+    BgFuMizu* this = (BgFuMizu*)thisx;
     s32 pad;
     CollisionHeader* colHeader = NULL;
 
@@ -42,7 +40,7 @@ void BgFuMizu_Init(Actor* thisx, PlayState* play) {
 }
 
 void BgFuMizu_Destroy(Actor* thisx, PlayState* play) {
-    BgFuMizu* this = THIS;
+    BgFuMizu* this = (BgFuMizu*)thisx;
 
     DynaPoly_DeleteBgActor(play, &play->colCtx.dyna, this->dyna.bgId);
 }
@@ -62,7 +60,7 @@ s32 func_80ADABA4(BgFuMizu* this, PlayState* play) {
 
 void BgFuMizu_Update(Actor* thisx, PlayState* play) {
     f32 heightTarget;
-    BgFuMizu* this = THIS;
+    BgFuMizu* this = (BgFuMizu*)thisx;
 
     if (this->unk_160 == 0) {
         if (func_80ADABA4(this, play)) {
@@ -88,7 +86,7 @@ void BgFuMizu_Draw(Actor* thisx, PlayState* play) {
     OPEN_DISPS(play->state.gfxCtx);
 
     Gfx_SetupDL25_Opa(play->state.gfxCtx);
-    gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    MATRIX_FINALIZE_AND_LOAD(POLY_XLU_DISP++, play->state.gfxCtx);
     gSPDisplayList(POLY_XLU_DISP++, object_fu_kaiten_DL_002FC0);
 
     CLOSE_DISPS(play->state.gfxCtx);

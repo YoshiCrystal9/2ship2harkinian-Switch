@@ -9,9 +9,7 @@
 #include "overlays/actors/ovl_En_Clear_Tag/z_en_clear_tag.h"
 #include "objects/object_rr/object_rr.h"
 
-#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_UNFRIENDLY | ACTOR_FLAG_400)
-
-#define THIS ((EnRr*)thisx)
+#define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_HOSTILE | ACTOR_FLAG_HOOKSHOT_PULLS_PLAYER)
 
 void EnRr_Init(Actor* thisx, PlayState* play);
 void EnRr_Destroy(Actor* thisx, PlayState* play);
@@ -29,7 +27,7 @@ void func_808FB710(EnRr* this, PlayState* play);
 void func_808FAD1C(EnRr* this, PlayState* play);
 void func_808FB398(EnRr* this, PlayState* play);
 
-ActorInit En_Rr_InitVars = {
+ActorProfile En_Rr_Profile = {
     /**/ ACTOR_EN_RR,
     /**/ ACTORCAT_ENEMY,
     /**/ FLAGS,
@@ -43,7 +41,7 @@ ActorInit En_Rr_InitVars = {
 
 static ColliderCylinderInit sCylinderInit1 = {
     {
-        COLTYPE_HIT0,
+        COL_MATERIAL_HIT0,
         AT_ON | AT_TYPE_ENEMY,
         AC_ON | AC_TYPE_PLAYER,
         OC1_ON | OC1_TYPE_ALL,
@@ -51,11 +49,11 @@ static ColliderCylinderInit sCylinderInit1 = {
         COLSHAPE_CYLINDER,
     },
     {
-        ELEMTYPE_UNK1,
+        ELEM_MATERIAL_UNK1,
         { 0x20000000, 0x00, 0x00 },
         { 0xF7CFFFFF, 0x00, 0x00 },
-        TOUCH_ON | TOUCH_SFX_NONE,
-        BUMP_ON | BUMP_HOOKABLE,
+        ATELEM_ON | ATELEM_SFX_NONE,
+        ACELEM_ON | ACELEM_HOOKABLE,
         OCELEM_ON,
     },
     { 45, 60, 0, { 0, 0, 0 } },
@@ -63,7 +61,7 @@ static ColliderCylinderInit sCylinderInit1 = {
 
 static ColliderCylinderInit sCylinderInit2 = {
     {
-        COLTYPE_HIT0,
+        COL_MATERIAL_HIT0,
         AT_ON | AT_TYPE_ENEMY,
         AC_ON | AC_TYPE_PLAYER,
         OC1_NONE,
@@ -71,11 +69,11 @@ static ColliderCylinderInit sCylinderInit2 = {
         COLSHAPE_CYLINDER,
     },
     {
-        ELEMTYPE_UNK1,
+        ELEM_MATERIAL_UNK1,
         { 0x20000000, 0x00, 0x00 },
         { 0xF7CFFFFF, 0x00, 0x00 },
-        TOUCH_ON | TOUCH_SFX_NONE,
-        BUMP_ON | BUMP_HOOKABLE,
+        ATELEM_ON | ATELEM_SFX_NONE,
+        ACELEM_ON | ACELEM_HOOKABLE,
         OCELEM_NONE,
     },
     { 30, 45, -30, { 0, 0, 0 } },
@@ -120,15 +118,15 @@ static CollisionCheckInfoInit sColChkInfoInit = { 3, 45, 60, 250 };
 
 static InitChainEntry sInitChain[] = {
     ICHAIN_S8(hintId, TATL_HINT_ID_LIKE_LIKE, ICHAIN_CONTINUE),
-    ICHAIN_U8(targetMode, TARGET_MODE_2, ICHAIN_CONTINUE),
+    ICHAIN_U8(attentionRangeType, ATTENTION_RANGE_2, ICHAIN_CONTINUE),
     ICHAIN_F32_DIV1000(gravity, -400, ICHAIN_CONTINUE),
-    ICHAIN_F32(uncullZoneForward, 2000, ICHAIN_CONTINUE),
-    ICHAIN_F32(targetArrowOffset, 30, ICHAIN_STOP),
+    ICHAIN_F32(cullingVolumeDistance, 2000, ICHAIN_CONTINUE),
+    ICHAIN_F32(lockOnArrowOffset, 30, ICHAIN_STOP),
 };
 
 void EnRr_Init(Actor* thisx, PlayState* play) {
     s32 pad;
-    EnRr* this = THIS;
+    EnRr* this = (EnRr*)thisx;
 
     Actor_ProcessInitChain(&this->actor, sInitChain);
     Collider_InitAndSetCylinder(play, &this->collider1, &this->actor, &sCylinderInit1);
@@ -141,11 +139,11 @@ void EnRr_Init(Actor* thisx, PlayState* play) {
         this->actor.scale.y = 0.022499999f;
         this->actor.scale.x = 0.028499998f;
         this->actor.scale.z = 0.028499998f;
-        this->collider1.dim.radius = this->collider1.dim.radius * 1.5f;
-        this->collider1.dim.height = this->collider1.dim.height * 1.5f;
-        this->collider2.dim.radius = this->collider2.dim.radius * 1.5f;
-        this->collider2.dim.height = this->collider2.dim.height * 1.5f;
-        this->collider2.dim.yShift = this->collider2.dim.yShift * 1.5f;
+        this->collider1.dim.radius *= 1.5f;
+        this->collider1.dim.height *= 1.5f;
+        this->collider2.dim.radius *= 1.5f;
+        this->collider2.dim.height *= 1.5f;
+        this->collider2.dim.yShift *= 1.5f;
     }
 
     Collider_UpdateCylinder(&this->actor, &this->collider2);
@@ -164,7 +162,7 @@ void EnRr_Init(Actor* thisx, PlayState* play) {
 }
 
 void EnRr_Destroy(Actor* thisx, PlayState* play) {
-    EnRr* this = THIS;
+    EnRr* this = (EnRr*)thisx;
 
     Collider_DestroyCylinder(play, &this->collider1);
     Collider_DestroyCylinder(play, &this->collider2);
@@ -179,8 +177,8 @@ void func_808FA01C(EnRr* this, PlayState* play, ColliderCylinder* collider) {
         this->drawDmgEffScale = 0.85f;
         this->drawDmgEffAlpha = 4.0f;
         this->drawDmgEffType = ACTOR_DRAW_DMGEFF_LIGHT_ORBS;
-        Actor_Spawn(&play->actorCtx, play, ACTOR_EN_CLEAR_TAG, collider->info.bumper.hitPos.x,
-                    collider->info.bumper.hitPos.y, collider->info.bumper.hitPos.z, 0, 0, 0,
+        Actor_Spawn(&play->actorCtx, play, ACTOR_EN_CLEAR_TAG, collider->elem.acDmgInfo.hitPos.x,
+                    collider->elem.acDmgInfo.hitPos.y, collider->elem.acDmgInfo.hitPos.z, 0, 0, 0,
                     CLEAR_TAG_PARAMS(CLEAR_TAG_LARGE_LIGHT_RAYS));
     } else if (this->actor.colChkInfo.damageEffect == 5) {
         this->drawDmgEffScale = 0.85f;
@@ -191,13 +189,13 @@ void func_808FA01C(EnRr* this, PlayState* play, ColliderCylinder* collider) {
 
 void func_808FA11C(EnRr* this) {
     this->drawDmgEffType = ACTOR_DRAW_DMGEFF_FROZEN_NO_SFX;
-    this->collider1.base.colType = COLTYPE_HIT3;
-    this->collider1.info.elemType = ELEMTYPE_UNK0;
+    this->collider1.base.colMaterial = COL_MATERIAL_HIT3;
+    this->collider1.elem.elemMaterial = ELEM_MATERIAL_UNK0;
     this->unk_1EE = 80;
     this->drawDmgEffScale = 0.85f;
     this->drawDmgEffFrozenSteamScale = 1275.0f * 0.001f;
     this->drawDmgEffAlpha = 1.0f;
-    this->actor.flags &= ~ACTOR_FLAG_400;
+    this->actor.flags &= ~ACTOR_FLAG_HOOKSHOT_PULLS_PLAYER;
     Actor_SetColorFilter(&this->actor, COLORFILTER_COLORFLAG_RED, 255, COLORFILTER_BUFFLAG_OPA, 80);
 }
 
@@ -205,12 +203,12 @@ void func_808FA19C(EnRr* this, PlayState* play) {
     this->unk_1EE = 0;
     if (this->drawDmgEffType == ACTOR_DRAW_DMGEFF_FROZEN_NO_SFX) {
         this->drawDmgEffType = ACTOR_DRAW_DMGEFF_FIRE;
-        this->collider1.base.colType = COLTYPE_HIT0;
-        this->collider1.info.elemType = ELEMTYPE_UNK1;
+        this->collider1.base.colMaterial = COL_MATERIAL_HIT0;
+        this->collider1.elem.elemMaterial = ELEM_MATERIAL_UNK1;
         this->drawDmgEffAlpha = 0.0f;
         Actor_SpawnIceEffects(play, &this->actor, this->bodyPartsPos, LIKE_LIKE_BODYPART_MAX, 2,
                               this->actor.scale.y * 23.333334f, this->actor.scale.y * 20.000002f);
-        this->actor.flags |= ACTOR_FLAG_400;
+        this->actor.flags |= ACTOR_FLAG_HOOKSHOT_PULLS_PLAYER;
     }
 }
 
@@ -269,7 +267,7 @@ void func_808FA3F8(EnRr* this, Player* player) {
     this->unk_1EA = 100;
     this->unk_1FC = 20;
     this->collider1.base.ocFlags1 &= ~OC1_TYPE_PLAYER;
-    this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
+    this->actor.flags &= ~ACTOR_FLAG_ATTENTION_ENABLED;
     this->unk_1F0 = 8;
     this->unk_1E1 = 0;
     this->actor.speed = 0.0f;
@@ -300,7 +298,7 @@ void func_808FA4F4(EnRr* this, PlayState* play) {
     if (player->stateFlags2 & PLAYER_STATE2_80) {
         player->actor.parent = NULL;
         player->av2.actionVar2 = 100;
-        this->actor.flags |= ACTOR_FLAG_TARGETABLE;
+        this->actor.flags |= ACTOR_FLAG_ATTENTION_ENABLED;
         this->unk_1F0 = 110;
         this->unk_1F6 = 2500;
         this->unk_210 = 0.0f;
@@ -417,7 +415,7 @@ void func_808FA910(EnRr* this) {
 
     this->actionFunc = func_808FB42C;
     Actor_PlaySfx(&this->actor, NA_SE_EN_LIKE_DEAD);
-    this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
+    this->actor.flags &= ~ACTOR_FLAG_ATTENTION_ENABLED;
 }
 
 void func_808FA9CC(EnRr* this) {
@@ -459,7 +457,7 @@ s32 func_808FAA94(EnRr* this, PlayState* play) {
         this->collider2.base.acFlags &= ~AC_HIT;
 
         if ((this->drawDmgEffType == ACTOR_DRAW_DMGEFF_FROZEN_NO_SFX) &&
-            (sp2C->info.acHitInfo->toucher.dmgFlags & 0xDB0B3)) {
+            (sp2C->elem.acHitElem->atDmgInfo.dmgFlags & 0xDB0B3)) {
             return false;
         }
 
@@ -467,7 +465,7 @@ s32 func_808FAA94(EnRr* this, PlayState* play) {
             return false;
         }
 
-        Actor_SetDropFlag(&this->actor, &sp2C->info);
+        Actor_SetDropFlag(&this->actor, &sp2C->elem);
         func_808FA4F4(this, play);
         func_808FA19C(this, play);
 
@@ -570,7 +568,7 @@ void func_808FAE50(EnRr* this, PlayState* play) {
 void func_808FAF94(EnRr* this, PlayState* play) {
     Player* player = GET_PLAYER(play);
 
-    Math_SmoothStepToS(&this->actor.shape.rot.y, this->actor.yawTowardsPlayer, 10, 500, 0);
+    Math_SmoothStepToS(&this->actor.shape.rot.y, this->actor.yawTowardsPlayer, 10, 0x1F4, 0);
     this->actor.world.rot.y = this->actor.shape.rot.y;
     if ((this->unk_1E6 == 0) && !(player->stateFlags2 & PLAYER_STATE2_80) &&
         (Player_GetMask(play) != PLAYER_MASK_STONE) &&
@@ -582,7 +580,7 @@ void func_808FAF94(EnRr* this, PlayState* play) {
 }
 
 void func_808FB088(EnRr* this, PlayState* play) {
-    Math_SmoothStepToS(&this->actor.shape.rot.y, this->actor.yawTowardsPlayer, 10, 500, 0);
+    Math_SmoothStepToS(&this->actor.shape.rot.y, this->actor.yawTowardsPlayer, 10, 0x1F4, 0);
     this->actor.world.rot.y = this->actor.shape.rot.y;
     if (Player_GetMask(play) == PLAYER_MASK_STONE) {
         func_808FA344(this);
@@ -624,6 +622,9 @@ void func_808FB088(EnRr* this, PlayState* play) {
             if (this->unk_1E6 == 0) {
                 func_808FA344(this);
             }
+            break;
+
+        default:
             break;
     }
 }
@@ -741,7 +742,7 @@ void func_808FB680(EnRr* this, PlayState* play) {
     if (this->unk_1E6 == 0) {
         this->actionFunc = func_808FAF94;
     } else {
-        Math_SmoothStepToS(&this->actor.shape.rot.y, BINANG_ROT180(this->actor.yawTowardsPlayer), 10, 1000, 0);
+        Math_SmoothStepToS(&this->actor.shape.rot.y, BINANG_ROT180(this->actor.yawTowardsPlayer), 10, 0x3E8, 0);
         this->actor.world.rot.y = this->actor.shape.rot.y;
         if (this->actor.speed == 0.0f) {
             func_808FA238(this, 2.0f);
@@ -774,7 +775,7 @@ void func_808FB794(EnRr* this, PlayState* play) {
 }
 
 void EnRr_Update(Actor* thisx, PlayState* play) {
-    EnRr* this = THIS;
+    EnRr* this = (EnRr*)thisx;
     EnRrStruct* ptr;
     s32 i;
 
@@ -802,6 +803,8 @@ void EnRr_Update(Actor* thisx, PlayState* play) {
     this->actionFunc(this, play);
 
     if (this->actor.params == LIKE_LIKE_PARAM_2) {
+        //! @bug: Actor will constantly play an SFX every frame when player is close enough.
+        //! In `func_808FAF94` the check is if the actor has zero speed.
         this->actor.speed = 0.0f;
     } else {
         Math_StepToF(&this->actor.speed, 0.0f, 0.1f);
@@ -854,8 +857,8 @@ void EnRr_Update(Actor* thisx, PlayState* play) {
 
         for (i = 0; i < ARRAY_COUNT(this->unk_324); i++) {
             ptr = &this->unk_324[i];
-            Math_SmoothStepToS(&ptr->unk_1A.x, ptr->unk_14, 5, this->unk_210 * 1000.0f, 0);
-            Math_SmoothStepToS(&ptr->unk_1A.z, ptr->unk_18, 5, this->unk_210 * 1000.0f, 0);
+            Math_SmoothStepToS(&ptr->unk_1A.x, ptr->unk_14, 5, this->unk_210 * 0x3E8, 0);
+            Math_SmoothStepToS(&ptr->unk_1A.z, ptr->unk_18, 5, this->unk_210 * 0x3E8, 0);
             Math_StepToF(&ptr->unk_08, ptr->unk_0C, this->unk_210 * 0.2f);
             Math_StepToF(&ptr->unk_00, ptr->unk_04, this->unk_210 * 300.0f);
         }
@@ -876,7 +879,7 @@ void EnRr_Update(Actor* thisx, PlayState* play) {
 
 void EnRr_Draw(Actor* thisx, PlayState* play2) {
     PlayState* play = play2;
-    EnRr* this = THIS;
+    EnRr* this = (EnRr*)thisx;
     Mtx* mtx = GRAPH_ALLOC(play->state.gfxCtx, 4 * sizeof(Mtx));
     Vec3f* bodyPartPos;
     s32 i;
@@ -899,7 +902,7 @@ void EnRr_Draw(Actor* thisx, PlayState* play2) {
 
     bodyPartPos = &this->bodyPartsPos[0];
 
-    gSPMatrix(POLY_OPA_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    MATRIX_FINALIZE_AND_LOAD(POLY_OPA_DISP++, play->state.gfxCtx);
 
     // LIKE_LIKE_BODYPART_0 - LIKE_LIKE_BODYPART_3
     Matrix_MultVecZ(1842.1053f, bodyPartPos++);
@@ -938,9 +941,9 @@ void EnRr_Draw(Actor* thisx, PlayState* play2) {
     }
 
     Matrix_MultZero(&this->unk_228);
-    this->collider2.dim.pos.x = ((this->unk_228.x - spA4.x) * 0.85f) + spA4.x;
-    this->collider2.dim.pos.y = ((this->unk_228.y - spA4.y) * 0.85f) + spA4.y;
-    this->collider2.dim.pos.z = ((this->unk_228.z - spA4.z) * 0.85f) + spA4.z;
+    this->collider2.dim.pos.x = LERPIMP(spA4.x, this->unk_228.x, 0.85f);
+    this->collider2.dim.pos.y = LERPIMP(spA4.y, this->unk_228.y, 0.85f);
+    this->collider2.dim.pos.z = LERPIMP(spA4.z, this->unk_228.z, 0.85f);
 
     gSPDisplayList(POLY_OPA_DISP++, gLikeLikeDL);
 

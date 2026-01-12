@@ -161,12 +161,13 @@ typedef struct {
     /* 0x4 */ u32 data2;
 } SCmdEndMarker; // size = 0x8
 
+// 2S2H [Custom Audio]. Was originally u8 seqId. Made 16 bit to allow for more than 255 sequences.
 typedef struct {
     /* 0x0 */ u8  code;
     /* 0x1 */ u8  specId;
     /* 0x2 */ UNK_TYPE1 unk_02[4];
     /* 0x6 */ u8  ambienceId;
-    /* 0x7 */ u8  seqId;
+    /* 0x7 */ u16  seqId;
 } SCmdSoundSettings; // size = 0x8
 
 typedef struct {
@@ -316,51 +317,45 @@ typedef union {
     RoomShapeCullable cullable;
 } RoomShape; // "Ground Shape"
 
-// TODO: update ZAPD
-#define SCENE_CMD_MESH SCENE_CMD_ROOM_SHAPE
+typedef enum RoomType {
+    /* 0 */ ROOM_TYPE_NORMAL,
+    /* 1 */ ROOM_TYPE_DUNGEON,
+    /* 2 */ ROOM_TYPE_INDOORS, // Reduces player run speed and blocks player from attacking or jumping.
+    /* 3 */ ROOM_TYPE_3,
+    /* 4 */ ROOM_TYPE_4, // Prevents switching to CAM_SET_HORSE when mounting a horse.
+    /* 5 */ ROOM_TYPE_BOSS // Disables Environment_AdjustLights
+} RoomType;
 
-// TODO: Check which ones don't exist
-typedef enum {
-    /* 0 */ ROOM_BEHAVIOR_TYPE1_0,
-    /* 1 */ ROOM_BEHAVIOR_TYPE1_1,
-    /* 2 */ ROOM_BEHAVIOR_TYPE1_2,
-    /* 3 */ ROOM_BEHAVIOR_TYPE1_3, // unused
-    /* 4 */ ROOM_BEHAVIOR_TYPE1_4,
-    /* 5 */ ROOM_BEHAVIOR_TYPE1_5
-} RoomBehaviorType1;
-
-typedef enum {
-    /* 0 */ ROOM_BEHAVIOR_TYPE2_0,
-    /* 1 */ ROOM_BEHAVIOR_TYPE2_1,
-    /* 2 */ ROOM_BEHAVIOR_TYPE2_2,
-    /* 3 */ ROOM_BEHAVIOR_TYPE2_HOT,
-    /* 4 */ ROOM_BEHAVIOR_TYPE2_4,
-    /* 5 */ ROOM_BEHAVIOR_TYPE2_5,
-    /* 6 */ ROOM_BEHAVIOR_TYPE2_6
-} RoomBehaviorType2;
+typedef enum RoomEnvironmentType {
+    /* 0 */ ROOM_ENV_DEFAULT,
+    /* 1 */ ROOM_ENV_COLD,
+    /* 2 */ ROOM_ENV_WARM, // Unused.
+    /* 3 */ ROOM_ENV_HOT, // Unused.
+    /* 4 */ ROOM_ENV_UNK_STRETCH_1,
+    /* 5 */ ROOM_ENV_UNK_STRETCH_2, // Unused.
+    /* 6 */ ROOM_ENV_UNK_STRETCH_3
+} RoomEnvironmentType;
 
 typedef struct {
-    /* 0x00 */ s8 num;
+    /* 0x00 */ s8 num; // -1 is invalid room
     /* 0x01 */ u8 unk1;
-    /* 0x02 */ u8 behaviorType2;
-    /* 0x03 */ u8 behaviorType1;
+    /* 0x02 */ u8 environmentType;
+    /* 0x03 */ u8 type;
     /* 0x04 */ s8 echo;
     /* 0x05 */ u8 lensMode;
     /* 0x06 */ u8 enablePosLights;
-    /* 0x07 */ UNK_TYPE1 pad7[0x1];
     /* 0x08 */ RoomShape* roomShape;
     /* 0x0C */ void* segment;
     /* 0x10 */ UNK_TYPE1 pad10[0x4];
 } Room; // size = 0x14
 
-typedef struct {
+typedef struct RoomContext {
     /* 0x00 */ Room curRoom;
     /* 0x14 */ Room prevRoom;
-    /* 0x28 */ void* roomMemPages[2]; // In a scene with transitions, roomMemory is split between two pages that toggle each transition. This is one continuous range, as the second page allocates from the end
-    /* 0x30 */ u8 activeMemPage; // 0 - First page in memory, 1 - Second page
-    /* 0x31 */ s8 status;
-    /* 0x32 */ UNK_TYPE1 pad32[0x2];
-    /* 0x34 */ void* activeRoomVram;
+    /* 0x28 */ void* bufPtrs[2]; // Start and end pointers for the room buffer. Can be split into two pages, where page 0 is allocated from the start pointer and page 1 is allocated from the end pointer.
+    /* 0x30 */ u8 activeBufPage; // 0 - First page in memory, 1 - Second page
+    /* 0x31 */ s8 status; // 0 - Free for new room request, 1 - DmaRequest for a new room is in progress
+    /* 0x34 */ void* roomRequestAddr; // Pointer to where the requested room segment will be stored
     /* 0x38 */ DmaRequest dmaRequest;
     /* 0x58 */ OSMesgQueue loadQueue;
     /* 0x70 */ OSMesg loadMsg[1];
@@ -369,6 +364,11 @@ typedef struct {
     /* 0x79 */ s8 unk79;
     /* 0x7A */ UNK_TYPE2 unk7A[3];
 } RoomContext; // size = 0x80
+
+typedef struct RoomList {
+    /* 0x0 */ u8 count;
+    /* 0x4 */ RomFile* romFiles; // Array of rom addresses for each room in a scene
+} RoomList; // size = 0x8
 
 typedef void(*RoomDrawHandler)(struct PlayState* play, Room* room, u32 flags);
 
@@ -388,7 +388,7 @@ typedef struct {
     /* 0x4 */ TransitionActorEntry* list;
 } TransitionActorList; // size = 0x8
 
-typedef struct {
+typedef struct ActorEntry {
     /* 0x0 */ s16 id;
     /* 0x2 */ Vec3s pos;
     /* 0x8 */ Vec3s rot;
@@ -577,7 +577,7 @@ typedef union {
 } SceneCmd; // size = 0x8
 
 // Sets cursor point options on the world map
-typedef enum {
+typedef enum RegionId {
     /*  -1 */ REGION_NONE = -1,
     /* 0x0 */ REGION_GREAT_BAY,
     /* 0x1 */ REGION_ZORA_HALL,
@@ -594,23 +594,24 @@ typedef enum {
 } RegionId;
 
 // Sets warp points for owl statues
-typedef enum {
-    /* 0x0 */ OWL_WARP_GREAT_BAY_COAST,
-    /* 0x1 */ OWL_WARP_ZORA_CAPE,
-    /* 0x2 */ OWL_WARP_SNOWHEAD,
-    /* 0x3 */ OWL_WARP_MOUNTAIN_VILLAGE,
-    /* 0x4 */ OWL_WARP_CLOCK_TOWN,
-    /* 0x5 */ OWL_WARP_MILK_ROAD,
-    /* 0x6 */ OWL_WARP_WOODFALL,
-    /* 0x7 */ OWL_WARP_SOUTHERN_SWAMP,
-    /* 0x8 */ OWL_WARP_IKANA_CANYON,
-    /* 0x9 */ OWL_WARP_STONE_TOWER,
-    /* 0xA */ OWL_WARP_ENTRANCE, // Special index for warping to the entrance of a scene
-    /* 0xB */ OWL_WARP_MAX
+typedef enum OwlWarpId {
+    /*  0x0 */ OWL_WARP_GREAT_BAY_COAST,
+    /*  0x1 */ OWL_WARP_ZORA_CAPE,
+    /*  0x2 */ OWL_WARP_SNOWHEAD,
+    /*  0x3 */ OWL_WARP_MOUNTAIN_VILLAGE,
+    /*  0x4 */ OWL_WARP_CLOCK_TOWN,
+    /*  0x5 */ OWL_WARP_MILK_ROAD,
+    /*  0x6 */ OWL_WARP_WOODFALL,
+    /*  0x7 */ OWL_WARP_SOUTHERN_SWAMP,
+    /*  0x8 */ OWL_WARP_IKANA_CANYON,
+    /*  0x9 */ OWL_WARP_STONE_TOWER,
+    /*  0xA */ OWL_WARP_ENTRANCE, // Special index for warping to the entrance of a scene
+    /*  0xB */ OWL_WARP_MAX,
+    /* 0xFF */ OWL_WARP_NONE = 0xFF
 } OwlWarpId;
 
 // Sets cloud visibility on the world map
-typedef enum {
+typedef enum TingleMapId {
     /* 0 */ TINGLE_MAP_CLOCK_TOWN,
     /* 1 */ TINGLE_MAP_WOODFALL,
     /* 2 */ TINGLE_MAP_SNOWHEAD,
@@ -749,7 +750,7 @@ typedef enum {
 /*
 * 0xFE00:  Index into sSceneEntranceTable (Scene)
 * 0x01F0:  Index into the scenes specific entrance table (Spawn)
-* 0x000F:  Index into the specific entrance table (Layer), stored seperately in sceneLayer
+* 0x000F:  Index into the specific entrance table (Layer), stored separately in sceneLayer
 */
 #define ENTRANCE(scene, spawn) ((((ENTR_SCENE_##scene) & 0x7F) << 9) | (((spawn) & 0x1F) << 4))
 
@@ -844,13 +845,10 @@ typedef enum {
 #define SCENE_CMD_SPECIAL_FILES(naviQuestHintFileId, keepObjectId) \
     { SCENE_CMD_ID_SPECIAL_FILES, naviQuestHintFileId, CMD_W(keepObjectId) }
 
-#define SCENE_CMD_ROOM_BEHAVIOR(curRoomUnk3, curRoomUnk2, curRoomUnk5, msgCtxunk12044, enablePosLights,  \
-                                kankyoContextUnkE2)                                                         \
-    {                                                                                                       \
-        SCENE_CMD_ID_ROOM_BEHAVIOR, curRoomUnk3,                                                           \
-            curRoomUnk2 | _SHIFTL(curRoomUnk5, 8, 1) | _SHIFTL(msgCtxunk12044, 10, 1) | \
-                _SHIFTL(enablePosLights, 11, 1) | _SHIFTL(kankyoContextUnkE2, 12, 1)                        \
-    }
+#define SCENE_CMD_ROOM_BEHAVIOR(type, environment, lensMode, msgCtxunk12044, enablePosLights, stormState)        \
+    { SCENE_CMD_ID_ROOM_BEHAVIOR, type,                                                                          \
+      environment | _SHIFTL(lensMode, 8, 1) | _SHIFTL(msgCtxunk12044, 10, 1) | _SHIFTL(enablePosLights, 11, 1) | \
+          _SHIFTL(stormState, 12, 1) }
 
 #define SCENE_CMD_UNK_09() \
     { SCENE_CMD_ID_UNK_09, 0, CMD_W(0) }
@@ -915,9 +913,6 @@ typedef enum {
 #define SCENE_CMD_MAP_DATA_CHESTS(chestCount, chestInfo) \
     { SCENE_CMD_ID_MAP_DATA_CHESTS, chestCount, CMD_PTR(chestInfo) }
 
- // TODO: ZAPD Capatability
-#define SCENE_CMD_MISC_SETTINGS SCENE_CMD_SET_REGION_VISITED
-#define SCENE_CMD_CUTSCENE_LIST SCENE_CMD_CUTSCENE_SCRIPT_LIST
 #define SCENE_CMD_MINIMAP_INFO SCENE_CMD_MAP_DATA
 #define SCENE_CMD_MINIMAP_COMPASS_ICON_INFO SCENE_CMD_MAP_DATA_CHESTS
 

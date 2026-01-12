@@ -189,6 +189,9 @@ static const ALIGN_ASSET(2) char gDmZl4OcarinaDL[] = dgDmZl4OcarinaDL;
 #define dgZl4Skel "__OTR__objects/object_zl4/gZl4Skel"
 static const ALIGN_ASSET(2) char gZl4Skel[] = dgZl4Skel;
 
+#define dgDmZl4TurningAroundAnim "__OTR__objects/object_zl4/gDmZl4TurningAroundAnim"
+static const ALIGN_ASSET(2) char gDmZl4TurningAroundAnim[] = dgDmZl4TurningAroundAnim;
+
 #define dgDmZl4HoldingFluteInFrontAnim "__OTR__objects/object_zl4/gDmZl4HoldingFluteInFrontAnim"
 static const ALIGN_ASSET(2) char gDmZl4HoldingFluteInFrontAnim[] = dgDmZl4HoldingFluteInFrontAnim;
 
@@ -200,9 +203,6 @@ static const ALIGN_ASSET(2) char gDmZl4LowerFluteAfterPlayAnim[] = dgDmZl4LowerF
 
 #define dgDmZl4PlayingFluteAnim "__OTR__objects/object_zl4/gDmZl4PlayingFluteAnim"
 static const ALIGN_ASSET(2) char gDmZl4PlayingFluteAnim[] = dgDmZl4PlayingFluteAnim;
-
-#define dgDmZl4TurningAroundAnim "__OTR__objects/object_zl4/gDmZl4TurningAroundAnim"
-static const ALIGN_ASSET(2) char gDmZl4TurningAroundAnim[] = dgDmZl4TurningAroundAnim;
 
 #define dgDmZl4FacingAwayIdleAnim "__OTR__objects/object_zl4/gDmZl4FacingAwayIdleAnim"
 static const ALIGN_ASSET(2) char gDmZl4FacingAwayIdleAnim[] = dgDmZl4FacingAwayIdleAnim;
@@ -342,8 +342,8 @@ static const ALIGN_ASSET(2) char gDmZl4FluteWrapperDL[] = dgDmZl4FluteWrapperDL;
 #define dgDmZl4FluteHoleTex "__OTR__objects/object_zl4/gDmZl4FluteHoleTex"
 static const ALIGN_ASSET(2) char gDmZl4FluteHoleTex[] = dgDmZl4FluteHoleTex;
 
-#define dgDmZlEmptyTexAnim "__OTR__objects/object_zl4/gDmZlEmptyTexAnim"
-static const ALIGN_ASSET(2) char gDmZlEmptyTexAnim[] = dgDmZlEmptyTexAnim;
+#define dgDmZl4EmptyTexAnim "__OTR__objects/object_zl4/gDmZl4EmptyTexAnim"
+static const ALIGN_ASSET(2) char gDmZl4EmptyTexAnim[] = dgDmZl4EmptyTexAnim;
 
 typedef enum Zl4Limb {
     /* 0x00 */ ZL4_LIMB_NONE,

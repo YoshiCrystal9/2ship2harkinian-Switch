@@ -8,10 +8,9 @@
 #include "overlays/actors/ovl_En_Bom/z_en_bom.h"
 #include "overlays/actors/ovl_En_Bombf/z_en_bombf.h"
 #include "overlays/actors/ovl_En_Clear_Tag/z_en_clear_tag.h"
+#include "overlays/effects/ovl_Effect_Ss_Hitmark/z_eff_ss_hitmark.h"
 
-#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_UNFRIENDLY | ACTOR_FLAG_400)
-
-#define THIS ((EnDodongo*)thisx)
+#define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_HOSTILE | ACTOR_FLAG_HOOKSHOT_PULLS_PLAYER)
 
 void EnDodongo_Init(Actor* thisx, PlayState* play);
 void EnDodongo_Destroy(Actor* thisx, PlayState* play);
@@ -35,7 +34,7 @@ void func_808786C8(EnDodongo* this, PlayState* play);
 void func_80878724(EnDodongo* this);
 void func_808787B0(EnDodongo* this, PlayState* play);
 
-ActorInit En_Dodongo_InitVars = {
+ActorProfile En_Dodongo_Profile = {
     /**/ ACTOR_EN_DODONGO,
     /**/ ACTORCAT_ENEMY,
     /**/ FLAGS,
@@ -50,110 +49,110 @@ ActorInit En_Dodongo_InitVars = {
 static ColliderJntSphElementInit sJntSphElementsInit1[10] = {
     {
         {
-            ELEMTYPE_UNK0,
+            ELEM_MATERIAL_UNK0,
             { 0x00000000, 0x00, 0x00 },
             { 0x800CB019, 0x00, 0x00 },
-            TOUCH_NONE | TOUCH_SFX_NORMAL,
-            BUMP_ON | BUMP_HOOKABLE,
+            ATELEM_NONE | ATELEM_SFX_NORMAL,
+            ACELEM_ON | ACELEM_HOOKABLE,
             OCELEM_ON,
         },
         { 7, { { 500, 0, 0 }, 27 }, 100 },
     },
     {
         {
-            ELEMTYPE_UNK0,
+            ELEM_MATERIAL_UNK0,
             { 0x00000000, 0x00, 0x00 },
             { 0x800CB019, 0x00, 0x00 },
-            TOUCH_NONE | TOUCH_SFX_NORMAL,
-            BUMP_ON | BUMP_HOOKABLE,
+            ATELEM_NONE | ATELEM_SFX_NORMAL,
+            ACELEM_ON | ACELEM_HOOKABLE,
             OCELEM_ON,
         },
         { 21, { { -200, 0, 0 }, 20 }, 100 },
     },
     {
         {
-            ELEMTYPE_UNK0,
+            ELEM_MATERIAL_UNK0,
             { 0x00000000, 0x00, 0x00 },
             { 0x800CB019, 0x00, 0x00 },
-            TOUCH_NONE | TOUCH_SFX_NORMAL,
-            BUMP_ON | BUMP_HOOKABLE,
+            ATELEM_NONE | ATELEM_SFX_NORMAL,
+            ACELEM_ON | ACELEM_HOOKABLE,
             OCELEM_ON,
         },
         { 28, { { -200, 0, 0 }, 20 }, 100 },
     },
     {
         {
-            ELEMTYPE_UNK0,
+            ELEM_MATERIAL_UNK0,
             { 0x00000000, 0x00, 0x00 },
             { 0x800CB019, 0x00, 0x00 },
-            TOUCH_NONE | TOUCH_SFX_NORMAL,
-            BUMP_ON | BUMP_HOOKABLE,
+            ATELEM_NONE | ATELEM_SFX_NORMAL,
+            ACELEM_ON | ACELEM_HOOKABLE,
             OCELEM_ON,
         },
         { 22, { { 400, -400, 0 }, 20 }, 100 },
     },
     {
         {
-            ELEMTYPE_UNK0,
+            ELEM_MATERIAL_UNK0,
             { 0x00000000, 0x00, 0x00 },
             { 0x800CB019, 0x00, 0x00 },
-            TOUCH_NONE | TOUCH_SFX_NORMAL,
-            BUMP_ON | BUMP_HOOKABLE,
+            ATELEM_NONE | ATELEM_SFX_NORMAL,
+            ACELEM_ON | ACELEM_HOOKABLE,
             OCELEM_ON,
         },
         { 29, { { 400, -400, 0 }, 20 }, 100 },
     },
     {
         {
-            ELEMTYPE_UNK0,
+            ELEM_MATERIAL_UNK0,
             { 0x00000000, 0x00, 0x00 },
             { 0xF7CFFFFF, 0x00, 0x00 },
-            TOUCH_NONE | TOUCH_SFX_NORMAL,
-            BUMP_ON | BUMP_HOOKABLE,
+            ATELEM_NONE | ATELEM_SFX_NORMAL,
+            ACELEM_ON | ACELEM_HOOKABLE,
             OCELEM_ON,
         },
         { 16, { { 1000, 0, 0 }, 28 }, 100 },
     },
     {
         {
-            ELEMTYPE_UNK0,
+            ELEM_MATERIAL_UNK0,
             { 0xF7CFFFFF, 0x00, 0x08 },
             { 0xF7CFFFFF, 0x00, 0x00 },
-            TOUCH_ON | TOUCH_SFX_NORMAL,
-            BUMP_ON | BUMP_HOOKABLE,
+            ATELEM_ON | ATELEM_SFX_NORMAL,
+            ACELEM_ON | ACELEM_HOOKABLE,
             OCELEM_ON,
         },
         { 14, { { -300, 300, 0 }, 17 }, 100 },
     },
     {
         {
-            ELEMTYPE_UNK0,
+            ELEM_MATERIAL_UNK0,
             { 0xF7CFFFFF, 0x00, 0x08 },
             { 0xF7CFFFFF, 0x00, 0x00 },
-            TOUCH_ON | TOUCH_SFX_NORMAL,
-            BUMP_ON | BUMP_HOOKABLE,
+            ATELEM_ON | ATELEM_SFX_NORMAL,
+            ACELEM_ON | ACELEM_HOOKABLE,
             OCELEM_ON,
         },
         { 14, { { 800, 100, 0 }, 15 }, 100 },
     },
     {
         {
-            ELEMTYPE_UNK0,
+            ELEM_MATERIAL_UNK0,
             { 0xF7CFFFFF, 0x00, 0x08 },
             { 0xF7CFFFFF, 0x00, 0x00 },
-            TOUCH_ON | TOUCH_SFX_NORMAL,
-            BUMP_ON | BUMP_HOOKABLE,
+            ATELEM_ON | ATELEM_SFX_NORMAL,
+            ACELEM_ON | ACELEM_HOOKABLE,
             OCELEM_ON,
         },
         { 13, { { 600, 0, 0 }, 12 }, 100 },
     },
     {
         {
-            ELEMTYPE_UNK0,
+            ELEM_MATERIAL_UNK0,
             { 0xF7CFFFFF, 0x00, 0x08 },
             { 0xF7CFFFFF, 0x00, 0x00 },
-            TOUCH_ON | TOUCH_SFX_NORMAL,
-            BUMP_NONE,
+            ATELEM_ON | ATELEM_SFX_NORMAL,
+            ACELEM_NONE,
             OCELEM_NONE,
         },
         { 13, { { 1500, 0, 0 }, 12 }, 100 },
@@ -162,7 +161,7 @@ static ColliderJntSphElementInit sJntSphElementsInit1[10] = {
 
 static ColliderJntSphInit sJntSphInit1 = {
     {
-        COLTYPE_HIT0,
+        COL_MATERIAL_HIT0,
         AT_NONE | AT_TYPE_ENEMY,
         AC_ON | AC_TYPE_PLAYER,
         OC1_ON | OC1_TYPE_ALL,
@@ -175,7 +174,7 @@ static ColliderJntSphInit sJntSphInit1 = {
 
 static ColliderJntSphInit sJntSphInit2 = {
     {
-        COLTYPE_NONE,
+        COL_MATERIAL_NONE,
         AT_NONE,
         AC_ON | AC_HARD | AC_TYPE_PLAYER,
         OC1_NONE,
@@ -189,33 +188,33 @@ static ColliderJntSphInit sJntSphInit2 = {
 static ColliderJntSphElementInit sJntSphElementsInit2[3] = {
     {
         {
-            ELEMTYPE_UNK0,
+            ELEM_MATERIAL_UNK0,
             { 0x20000000, 0x01, 0x10 },
             { 0x00000000, 0x00, 0x00 },
-            TOUCH_ON | TOUCH_SFX_NORMAL,
-            BUMP_NONE,
+            ATELEM_ON | ATELEM_SFX_NORMAL,
+            ACELEM_NONE,
             OCELEM_NONE,
         },
         { 2, { { 0, -10, 10 }, 25 }, 100 },
     },
     {
         {
-            ELEMTYPE_UNK0,
+            ELEM_MATERIAL_UNK0,
             { 0x20000000, 0x01, 0x10 },
             { 0x00000000, 0x00, 0x00 },
-            TOUCH_ON | TOUCH_SFX_NORMAL,
-            BUMP_NONE,
+            ATELEM_ON | ATELEM_SFX_NORMAL,
+            ACELEM_NONE,
             OCELEM_NONE,
         },
         { 2, { { 0, -5, 50 }, 37 }, 100 },
     },
     {
         {
-            ELEMTYPE_UNK0,
+            ELEM_MATERIAL_UNK0,
             { 0x20000000, 0x01, 0x10 },
             { 0x00000000, 0x00, 0x00 },
-            TOUCH_ON | TOUCH_SFX_NORMAL,
-            BUMP_NONE,
+            ATELEM_ON | ATELEM_SFX_NORMAL,
+            ACELEM_NONE,
             OCELEM_NONE,
         },
         { 2, { { 0, 0, 90 }, 50 }, 100 },
@@ -224,7 +223,7 @@ static ColliderJntSphElementInit sJntSphElementsInit2[3] = {
 
 static ColliderJntSphInit sJntSphInit3 = {
     {
-        COLTYPE_NONE,
+        COL_MATERIAL_NONE,
         AT_ON | AT_TYPE_ENEMY,
         AC_NONE,
         OC1_NONE,
@@ -275,15 +274,26 @@ static CollisionCheckInfoInit sColChkInfoInit = { 3, 100, 100, 80 };
 static InitChainEntry sInitChain[] = {
     ICHAIN_S8(hintId, TATL_HINT_ID_DODONGO, ICHAIN_CONTINUE),
     ICHAIN_F32_DIV1000(gravity, -1000, ICHAIN_CONTINUE),
-    ICHAIN_F32(targetArrowOffset, 1400, ICHAIN_STOP),
+    ICHAIN_F32(lockOnArrowOffset, 1400, ICHAIN_STOP),
 };
 
 void EnDodongo_Init(Actor* thisx, PlayState* play) {
     static EffectBlureInit2 D_80879308 = {
-        2, 8, 0, { 255, 255, 255, 255 }, { 255, 255, 255, 64 }, { 255, 255, 255, 0 }, { 255, 255, 255, 0 }, 8,
-        0, 0, 0, { 0, 0, 0, 0 },         { 0, 0, 0, 0 },
+        2,
+        EFFECT_BLURE_ELEMENT_FLAG_8,
+        0,
+        { 255, 255, 255, 255 },
+        { 255, 255, 255, 64 },
+        { 255, 255, 255, 0 },
+        { 255, 255, 255, 0 },
+        8,
+        0,
+        EFF_BLURE_DRAW_MODE_SIMPLE,
+        0,
+        { 0, 0, 0, 0 },
+        { 0, 0, 0, 0 },
     };
-    EnDodongo* this = THIS;
+    EnDodongo* this = (EnDodongo*)thisx;
     s32 i;
 
     Actor_ProcessInitChain(&this->actor, sInitChain);
@@ -303,8 +313,8 @@ void EnDodongo_Init(Actor* thisx, PlayState* play) {
     Collider_InitAndSetJntSph(play, &this->collider3, &this->actor, &sJntSphInit3, this->collider3Elements);
 
     for (i = 0; i < ARRAY_COUNT(this->collider2Elements); i++) {
-        this->collider2.elements[i].info.elemType = ELEMTYPE_UNK2;
-        this->collider2.elements[i].info.bumper.dmgFlags = 0x77C34FE6;
+        this->collider2.elements[i].base.elemMaterial = ELEM_MATERIAL_UNK2;
+        this->collider2.elements[i].base.acDmgInfo.dmgFlags = 0x77C34FE6;
     }
 
     Effect_Add(play, &this->unk_338, EFFECT_BLURE2, 0, 0, &D_80879308);
@@ -318,7 +328,7 @@ void EnDodongo_Init(Actor* thisx, PlayState* play) {
 
         for (i = 0; i < ARRAY_COUNT(this->collider1Elements); i++) {
             this->collider1.elements[i].dim.modelSphere.radius *= 2;
-            this->collider1.elements[i].info.toucher.damage *= 2;
+            this->collider1.elements[i].base.atDmgInfo.damage *= 2;
         }
 
         for (i = 0; i < ARRAY_COUNT(this->collider2Elements); i++) {
@@ -334,7 +344,7 @@ void EnDodongo_Init(Actor* thisx, PlayState* play) {
 }
 
 void EnDodongo_Destroy(Actor* thisx, PlayState* play) {
-    EnDodongo* this = THIS;
+    EnDodongo* this = (EnDodongo*)thisx;
 
     Effect_Destroy(play, this->unk_338);
     Collider_DestroyJntSph(play, &this->collider2);
@@ -406,21 +416,21 @@ void func_80876BD0(EnDodongo* this, PlayState* play, s32 arg2) {
         this->drawDmgEffType = ACTOR_DRAW_DMGEFF_LIGHT_ORBS;
         this->drawDmgEffScale = 0.75f;
         this->drawDmgEffAlpha = 4.0f;
-        Actor_Spawn(&play->actorCtx, play, ACTOR_EN_CLEAR_TAG, this->collider1.elements[arg2].info.bumper.hitPos.x,
-                    this->collider1.elements[arg2].info.bumper.hitPos.y,
-                    this->collider1.elements[arg2].info.bumper.hitPos.z, 0, 0, 0,
+        Actor_Spawn(&play->actorCtx, play, ACTOR_EN_CLEAR_TAG, this->collider1.elements[arg2].base.acDmgInfo.hitPos.x,
+                    this->collider1.elements[arg2].base.acDmgInfo.hitPos.y,
+                    this->collider1.elements[arg2].base.acDmgInfo.hitPos.z, 0, 0, 0,
                     CLEAR_TAG_PARAMS(CLEAR_TAG_LARGE_LIGHT_RAYS));
     }
 }
 
 void func_80876CAC(EnDodongo* this) {
     this->drawDmgEffType = ACTOR_DRAW_DMGEFF_FROZEN_NO_SFX;
-    this->collider1.base.colType = COLTYPE_HIT3;
+    this->collider1.base.colMaterial = COL_MATERIAL_HIT3;
     this->drawDmgEffScale = 0.75f;
     this->drawDmgEffFrozenSteamScale = 1.125f;
     this->drawDmgEffAlpha = 1.0f;
     this->timer = 80;
-    this->actor.flags &= ~ACTOR_FLAG_400;
+    this->actor.flags &= ~ACTOR_FLAG_HOOKSHOT_PULLS_PLAYER;
     Actor_SetColorFilter(&this->actor, COLORFILTER_COLORFLAG_RED, 255, COLORFILTER_BUFFLAG_OPA, 80);
 }
 
@@ -429,11 +439,11 @@ void func_80876D28(EnDodongo* this, PlayState* play) {
         this->timer = 0;
         this->actor.colorFilterTimer = 0;
         this->drawDmgEffType = ACTOR_DRAW_DMGEFF_FIRE;
-        this->collider1.base.colType = COLTYPE_HIT0;
+        this->collider1.base.colMaterial = COL_MATERIAL_HIT0;
         this->drawDmgEffAlpha = 0.0f;
         Actor_SpawnIceEffects(play, &this->actor, this->bodyPartsPos, DODONGO_BODYPART_MAX, 2, this->unk_334 * 0.3f,
                               this->unk_334 * 0.2f);
-        this->actor.flags |= ACTOR_FLAG_400;
+        this->actor.flags |= ACTOR_FLAG_HOOKSHOT_PULLS_PLAYER;
     }
 }
 
@@ -499,7 +509,7 @@ void func_80876DC4(EnDodongo* this, PlayState* play) {
     sp68.x = this->bodyPartsPos[DODONGO_BODYPART_0].x + (temp_f20 * 6.0f * this->unk_334);
     sp68.z = this->bodyPartsPos[DODONGO_BODYPART_0].z - (temp_f22 * 6.0f * this->unk_334);
     sp80.x *= -1.0f;
-    sp80.z = sp80.z * -1.0f;
+    sp80.z *= -1.0f;
     sp74.x = (Rand_ZeroFloat(0.1f) + 0.15f) * -temp_f20 * this->unk_334;
     sp74.z = (Rand_ZeroFloat(0.1f) + 0.15f) * temp_f22 * this->unk_334;
     func_800B0EB0(play, &sp68, &sp80, &sp74, &this->unk_32C, &this->unk_330, sp64, sp62, 0x14);
@@ -636,7 +646,7 @@ void func_8087784C(EnDodongo* this, PlayState* play) {
     static Vec3f D_80879348 = { 0.0f, 0.9f, 0.0f };
     static Vec3f D_80879354 = { 0.0f, 0.0f, 0.0f };
     s16 frame;
-    ColliderJntSphElement* element;
+    ColliderJntSphElement* jntSphElem;
     s32 i;
     s32 end;
     f32 temp_f2;
@@ -654,18 +664,18 @@ void func_8087784C(EnDodongo* this, PlayState* play) {
             end = 3;
         }
 
-        element = &this->collider3.elements[0];
+        jntSphElem = &this->collider3.elements[0];
         temp_f2 = Math_SinS(this->actor.shape.rot.y) * this->unk_334;
         temp_f12 = Math_CosS(this->actor.shape.rot.y) * this->unk_334;
 
-        for (i = 0; i < end; i++, element++) {
-            element->dim.worldSphere.center.x =
-                this->bodyPartsPos[DODONGO_BODYPART_0].x + (element->dim.modelSphere.center.z * temp_f2);
-            element->dim.worldSphere.center.y =
-                this->bodyPartsPos[DODONGO_BODYPART_0].y + (element->dim.modelSphere.center.y * this->unk_334);
-            element->dim.worldSphere.center.z =
-                this->bodyPartsPos[DODONGO_BODYPART_0].z + (element->dim.modelSphere.center.z * temp_f12);
-            element->dim.worldSphere.radius = element->dim.modelSphere.radius;
+        for (i = 0; i < end; i++, jntSphElem++) {
+            jntSphElem->dim.worldSphere.center.x =
+                this->bodyPartsPos[DODONGO_BODYPART_0].x + (jntSphElem->dim.modelSphere.center.z * temp_f2);
+            jntSphElem->dim.worldSphere.center.y =
+                this->bodyPartsPos[DODONGO_BODYPART_0].y + (jntSphElem->dim.modelSphere.center.y * this->unk_334);
+            jntSphElem->dim.worldSphere.center.z =
+                this->bodyPartsPos[DODONGO_BODYPART_0].z + (jntSphElem->dim.modelSphere.center.z * temp_f12);
+            jntSphElem->dim.worldSphere.radius = jntSphElem->dim.modelSphere.radius;
         }
 
         D_80879354.y = this->unk_334 * -4.5f;
@@ -697,7 +707,7 @@ void func_80877D90(EnDodongo* this, PlayState* play) {
 
 void func_80877DE0(EnDodongo* this) {
     Animation_Change(&this->skelAnime, &object_dodongo_Anim_0028F0, -1.0f, 35.0f, 0.0f, ANIMMODE_ONCE, -4.0f);
-    this->actor.flags |= ACTOR_FLAG_10;
+    this->actor.flags |= ACTOR_FLAG_UPDATE_CULLING_DISABLED;
     this->timer = 25;
     this->actionFunc = func_80877E60;
     this->actor.speed = 0.0f;
@@ -737,7 +747,7 @@ void func_80877E60(EnDodongo* this, PlayState* play) {
             Actor_Kill(this->actor.child);
             this->actor.child = NULL;
         }
-        this->actor.flags &= ~ACTOR_FLAG_10;
+        this->actor.flags &= ~ACTOR_FLAG_UPDATE_CULLING_DISABLED;
     } else if (this->skelAnime.playSpeed > -0.5f) {
         this->timer--;
         if (this->timer == 10) {
@@ -848,7 +858,7 @@ void func_80878424(EnDodongo* this, PlayState* play) {
     sp20.z = this->collider1Elements[2].dim.worldSphere.center.z;
     func_80876930(this, play, &sp20);
     CollisionCheck_SetAT(play, &play->colChkCtx, &this->collider1.base);
-    this->actor.flags |= ACTOR_FLAG_1000000;
+    this->actor.flags |= ACTOR_FLAG_SFX_FOR_PLAYER_BODY_HIT;
 }
 
 void func_80878594(EnDodongo* this) {
@@ -865,7 +875,7 @@ void func_808785B0(EnDodongo* this, PlayState* play) {
         func_80876D28(this, play);
         if (this->actor.colChkInfo.health == 0) {
             func_80878724(this);
-        } else if (this->actor.xzDistToPlayer > 100.0f * this->unk_334) {
+        } else if (this->actor.xzDistToPlayer > (100.0f * this->unk_334)) {
             func_80877494(this);
         } else {
             func_80876B08(this, play);
@@ -898,7 +908,7 @@ void func_80878724(EnDodongo* this) {
     this->timer = 0;
     this->unk_304 = 0;
     Actor_PlaySfx(&this->actor, NA_SE_EN_DODO_J_DEAD);
-    this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
+    this->actor.flags &= ~ACTOR_FLAG_ATTENTION_ENABLED;
     this->actor.speed = 0.0f;
     Actor_SetColorFilter(&this->actor, COLORFILTER_COLORFLAG_RED, 255, COLORFILTER_BUFFLAG_OPA, 8);
     this->actionFunc = func_808787B0;
@@ -951,21 +961,21 @@ void EnDodongo_UpdateDamage(EnDodongo* this, PlayState* play) {
         this->collider1.base.acFlags &= ~AC_HIT;
 
         for (i = 0; i < ARRAY_COUNT(this->collider2Elements); i++) {
-            if (this->collider2.elements[i].info.bumperFlags & BUMP_HIT) {
+            if (this->collider2.elements[i].base.acElemFlags & ACELEM_HIT) {
                 break;
             }
         }
 
         if ((i != ARRAY_COUNT(this->collider2Elements)) &&
             ((this->drawDmgEffType != ACTOR_DRAW_DMGEFF_FROZEN_NO_SFX) ||
-             !(this->collider2.elements[i].info.acHitInfo->toucher.dmgFlags & 0xDB0B3))) {
+             !(this->collider2.elements[i].base.acHitElem->atDmgInfo.dmgFlags & 0xDB0B3))) {
             func_80876D28(this, play);
-            Math_Vec3s_ToVec3f(&sp3C, &this->collider2.elements[i].info.bumper.hitPos);
+            Math_Vec3s_ToVec3f(&sp3C, &this->collider2.elements[i].base.acDmgInfo.hitPos);
             if (this->actor.colChkInfo.damageEffect == 0xF) {
                 CollisionCheck_BlueBlood(play, NULL, &sp3C);
-                EffectSsHitmark_SpawnFixedScale(play, 0, &sp3C);
-            } else if (this->actor.colChkInfo.damageEffect != 14) {
-                EffectSsHitmark_SpawnFixedScale(play, 3, &sp3C);
+                EffectSsHitmark_SpawnFixedScale(play, EFFECT_HITMARK_WHITE, &sp3C);
+            } else if (this->actor.colChkInfo.damageEffect != 0xE) {
+                EffectSsHitmark_SpawnFixedScale(play, EFFECT_HITMARK_METAL, &sp3C);
                 CollisionCheck_SpawnShieldParticlesMetalSound(play, &sp3C, &this->actor.projectedPos);
             }
         }
@@ -975,14 +985,14 @@ void EnDodongo_UpdateDamage(EnDodongo* this, PlayState* play) {
         Actor_SetDropFlagJntSph(&this->actor, &this->collider1);
 
         for (i = 0; i < ARRAY_COUNT(this->collider1Elements); i++) {
-            if (this->collider1.elements[i].info.bumperFlags & BUMP_HIT) {
+            if (this->collider1.elements[i].base.acElemFlags & ACELEM_HIT) {
                 break;
             }
         }
 
         if ((i != ARRAY_COUNT(this->collider1Elements)) &&
             ((this->drawDmgEffType != ACTOR_DRAW_DMGEFF_FROZEN_NO_SFX) ||
-             !(this->collider1.elements[i].info.acHitInfo->toucher.dmgFlags & 0xDB0B3))) {
+             !(this->collider1.elements[i].base.acHitElem->atDmgInfo.dmgFlags & 0xDB0B3))) {
             func_80876D28(this, play);
             if (this->actor.colChkInfo.damageEffect != 0xF) {
                 if (!Actor_ApplyDamage(&this->actor)) {
@@ -1024,7 +1034,7 @@ void EnDodongo_UpdateDamage(EnDodongo* this, PlayState* play) {
 
 void EnDodongo_Update(Actor* thisx, PlayState* play2) {
     PlayState* play = play2;
-    EnDodongo* this = THIS;
+    EnDodongo* this = (EnDodongo*)thisx;
 
     EnDodongo_UpdateDamage(this, play);
     this->actionFunc(this, play);
@@ -1063,7 +1073,7 @@ void EnDodongo_Update(Actor* thisx, PlayState* play2) {
 }
 
 s32 EnDodongo_OverrideLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3f* pos, Vec3s* rot, Actor* thisx) {
-    EnDodongo* this = THIS;
+    EnDodongo* this = (EnDodongo*)thisx;
 
     if (limbIndex == OBJECT_DODONGO_LIMB_01) {
         pos->z += 1000.0f;
@@ -1112,7 +1122,7 @@ static s8 sLimbToBodyParts[OBJECT_DODONGO_LIMB_MAX] = {
 };
 
 void EnDodongo_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* rot, Actor* thisx) {
-    EnDodongo* this = THIS;
+    EnDodongo* this = (EnDodongo*)thisx;
 
     Collider_UpdateSpheres(limbIndex, &this->collider1);
     Collider_UpdateSpheres(limbIndex, &this->collider2);
@@ -1138,7 +1148,7 @@ void EnDodongo_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* 
 }
 
 void EnDodongo_Draw(Actor* thisx, PlayState* play) {
-    EnDodongo* this = THIS;
+    EnDodongo* this = (EnDodongo*)thisx;
 
     Gfx_SetupDL25_Opa(play->state.gfxCtx);
     SkelAnime_DrawOpa(play, this->skelAnime.skeleton, this->skelAnime.jointTable, EnDodongo_OverrideLimbDraw,

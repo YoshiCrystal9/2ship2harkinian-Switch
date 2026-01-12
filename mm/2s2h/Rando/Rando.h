@@ -22,6 +22,14 @@ RandoItemId ConvertItem(RandoItemId randoItemId, RandoCheckId randoCheckId = RC_
 RandoCheckId FindItemPlacement(RandoItemId randoItemId);
 void RegisterMenu();
 
+void GrantStartingItems();
+std::vector<RandoItemId> GetStartingItemsFromSpoiler(nlohmann::json& spoiler);
+void SetStartingItemsInSpoiler(nlohmann::json& spoiler, std::vector<RandoItemId>& startingItems);
+std::vector<RandoItemId> GetStartingItemsFromSave(RandoSaveInfo& randoSaveInfo);
+void SetStartingItemsInSave(RandoSaveInfo& randoSaveInfo, std::vector<RandoItemId>& startingItems);
+std::vector<RandoItemId> GetStartingItemsFromConfig();
+void SetStartingItemsInConfig(std::vector<RandoItemId>& startingItems);
+
 } // namespace Rando
 
 #endif

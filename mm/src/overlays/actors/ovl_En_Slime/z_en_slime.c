@@ -10,9 +10,9 @@
 #include "2s2h/Enhancements/FrameInterpolation/FrameInterpolation.h"
 #include "2s2h/GameInteractor/GameInteractor.h"
 
-#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_UNFRIENDLY | ACTOR_FLAG_10 | ACTOR_FLAG_200)
-
-#define THIS ((EnSlime*)thisx)
+#define FLAGS                                                                                 \
+    (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_HOSTILE | ACTOR_FLAG_UPDATE_CULLING_DISABLED | \
+     ACTOR_FLAG_HOOKSHOT_PULLS_ACTOR)
 
 #define ICE_BLOCK_TIMER_MAX 254
 #define ICE_BLOCK_UNUSED (ICE_BLOCK_TIMER_MAX + 1)
@@ -69,7 +69,7 @@ void EnSlime_WaitForRevive(EnSlime* this, PlayState* play);
 void EnSlime_SetupRevive(EnSlime* this);
 void EnSlime_Revive(EnSlime* this, PlayState* play);
 
-ActorInit En_Slime_InitVars = {
+ActorProfile En_Slime_Profile = {
     /**/ ACTOR_EN_SLIME,
     /**/ ACTORCAT_ENEMY,
     /**/ FLAGS,
@@ -83,7 +83,7 @@ ActorInit En_Slime_InitVars = {
 
 static ColliderCylinderInit sCylinderInit = {
     {
-        COLTYPE_NONE,
+        COL_MATERIAL_NONE,
         AT_ON | AT_TYPE_ENEMY,
         AC_ON | AC_TYPE_PLAYER,
         OC1_ON | OC1_TYPE_ALL,
@@ -91,11 +91,11 @@ static ColliderCylinderInit sCylinderInit = {
         COLSHAPE_CYLINDER,
     },
     {
-        ELEMTYPE_UNK0,
+        ELEM_MATERIAL_UNK0,
         { 0xF7CFFFFF, 0x00, 0x04 },
         { 0xF7CFFFFF, 0x00, 0x00 },
-        TOUCH_ON | TOUCH_SFX_HARD,
-        BUMP_ON | BUMP_HOOKABLE,
+        ATELEM_ON | ATELEM_SFX_HARD,
+        ACELEM_ON | ACELEM_HOOKABLE,
         OCELEM_ON,
     },
     { 22, 35, 0, { 0, 0, 0 } },
@@ -147,7 +147,7 @@ static TexturePtr sEyeTextures[] = {
 
 static InitChainEntry sInitChain[] = {
     ICHAIN_F32(gravity, -2, ICHAIN_CONTINUE),
-    ICHAIN_F32(targetArrowOffset, 6000, ICHAIN_STOP),
+    ICHAIN_F32(lockOnArrowOffset, 6000, ICHAIN_STOP),
 };
 
 static s32 sTexturesDesegmented = false;
@@ -156,32 +156,10 @@ static Color_RGBA8 sBubblePrimColor = { 255, 255, 255, 255 };
 static Color_RGBA8 sBubbleEnvColor = { 150, 150, 150, 0 };
 static Vec3f sBubbleAccel = { 0.0f, -0.8f, 0.0f };
 
-static Color_RGBA8 sPrimColors[] = {
-    { 255, 255, 255, 255 }, // EN_SLIME_TYPE_BLUE
-    { 255, 255, 0, 255 },   // EN_SLIME_TYPE_GREEN
-    { 255, 255, 200, 255 }, // EN_SLIME_TYPE_YELLOW
-    { 225, 200, 255, 255 }, // EN_SLIME_TYPE_RED
-};
-
-static Color_RGBA8 sEnvColors[] = {
-    { 140, 255, 195, 255 }, // EN_SLIME_TYPE_BLUE
-    { 50, 255, 0, 255 },    // EN_SLIME_TYPE_GREEN
-    { 255, 180, 0, 255 },   // EN_SLIME_TYPE_YELLOW
-    { 255, 50, 155, 255 },  // EN_SLIME_TYPE_RED
-};
-
-static Vec3f sBodyPartPosOffsets[EN_SLIME_BODYPART_MAX] = {
-    { 2000.0f, 2000.0f, 0.0f },     // EN_SLIME_BODYPART_0
-    { -1500.0f, 2500.0f, -500.0f }, // EN_SLIME_BODYPART_1
-    { -500.0f, 1000.0f, 2500.0f },  // EN_SLIME_BODYPART_2
-    { 0.0f, 4000.0f, 0.0f },        // EN_SLIME_BODYPART_3
-    { 0.0f, 2000.0f, -2000.0f },    // EN_SLIME_BODYPART_4
-};
-
 AnimatedMaterial* sSlimeTexAnim;
 
 void EnSlime_Init(Actor* thisx, PlayState* play) {
-    EnSlime* this = THIS;
+    EnSlime* this = (EnSlime*)thisx;
     s32 reviveTimeSeconds;
     s32 i;
 
@@ -240,7 +218,7 @@ void EnSlime_Init(Actor* thisx, PlayState* play) {
 }
 
 void EnSlime_Destroy(Actor* thisx, PlayState* play) {
-    EnSlime* this = THIS;
+    EnSlime* this = (EnSlime*)thisx;
 
     Collider_DestroyCylinder(play, &this->collider);
 }
@@ -252,11 +230,11 @@ void EnSlime_Destroy(Actor* thisx, PlayState* play) {
 void EnSlime_Freeze(EnSlime* this) {
     this->drawDmgEffType = ACTOR_DRAW_DMGEFF_FROZEN_NO_SFX;
     this->drawDmgEffScale = 0.4f;
-    this->collider.base.colType = COLTYPE_HIT3;
+    this->collider.base.colMaterial = COL_MATERIAL_HIT3;
     this->drawDmgEffFrozenSteamScale = 0.6f;
     this->drawDmgEffAlpha = 1.0f;
     this->timer = 80;
-    this->actor.flags &= ~ACTOR_FLAG_400;
+    this->actor.flags &= ~ACTOR_FLAG_HOOKSHOT_PULLS_PLAYER;
     Actor_SetColorFilter(&this->actor, COLORFILTER_COLORFLAG_RED, 255, COLORFILTER_BUFFLAG_XLU, 80);
 }
 
@@ -267,10 +245,10 @@ void EnSlime_Freeze(EnSlime* this) {
 void EnSlime_Thaw(EnSlime* this, PlayState* play) {
     if (this->drawDmgEffType == ACTOR_DRAW_DMGEFF_FROZEN_NO_SFX) {
         this->drawDmgEffType = 0; // So it's not triggered again until Freeze has been called again.
-        this->collider.base.colType = COLTYPE_NONE;
+        this->collider.base.colMaterial = COL_MATERIAL_NONE;
         this->drawDmgEffAlpha = 0.0f;
         Actor_SpawnIceEffects(play, &this->actor, this->bodyPartsPos, EN_SLIME_BODYPART_MAX, 2, 0.2f, 0.2f);
-        this->actor.flags |= ACTOR_FLAG_200;
+        this->actor.flags |= ACTOR_FLAG_HOOKSHOT_PULLS_ACTOR;
     }
 }
 
@@ -306,7 +284,7 @@ void EnSlime_SetupInitializeIdle(EnSlime* this) {
  */
 void EnSlime_InitializeIdle(EnSlime* this, PlayState* play) {
     if (this->actor.bgCheckFlags & BGCHECKFLAG_GROUND) {
-        this->actor.flags &= ~ACTOR_FLAG_10;
+        this->actor.flags &= ~ACTOR_FLAG_UPDATE_CULLING_DISABLED;
         EnSlime_SetupIdle(this);
     }
 }
@@ -820,7 +798,7 @@ f32 EnSlime_SnapIceBlockPosition(f32 currentPosition, f32 homePosition) {
  */
 void EnSlime_SetupSpawnIceBlock(EnSlime* this) {
     this->collider.base.acFlags &= ~AC_ON;
-    this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
+    this->actor.flags &= ~ACTOR_FLAG_ATTENTION_ENABLED;
     this->drawDmgEffAlpha = 0.0f;
     this->actor.speed = 0.0f;
     this->actor.velocity.y = 0.0f;
@@ -857,7 +835,7 @@ void EnSlime_SpawnIceBlock(EnSlime* this, PlayState* play) {
             this->actor.colorFilterTimer = 0;
             this->collider.base.acFlags |= AC_ON;
             this->iceBlockTimer = ICE_BLOCK_UNUSED;
-            this->actor.flags |= ACTOR_FLAG_TARGETABLE;
+            this->actor.flags |= ACTOR_FLAG_ATTENTION_ENABLED;
             this->actor.gravity = -2.0f;
             EnSlime_SetupIdle(this);
         }
@@ -865,7 +843,7 @@ void EnSlime_SpawnIceBlock(EnSlime* this, PlayState* play) {
 }
 
 void EnSlime_SetupIceBlock(EnSlime* this) {
-    this->actor.flags |= ACTOR_FLAG_10;
+    this->actor.flags |= ACTOR_FLAG_UPDATE_CULLING_DISABLED;
     this->actionFunc = EnSlime_IceBlock;
 }
 
@@ -883,11 +861,7 @@ void EnSlime_IceBlock(EnSlime* this, PlayState* play) {
         }
     } else {
         this->actor.colorFilterTimer = 10;
-        if ((this->iceBlockTimer - 5) < 0) {
-            this->iceBlockTimer = 0;
-        } else {
-            this->iceBlockTimer -= 5;
-        }
+        this->iceBlockTimer = CLAMP_MIN(this->iceBlockTimer - 5, 0);
     }
 }
 
@@ -945,8 +919,8 @@ void EnSlime_IceBlockThaw(EnSlime* this, PlayState* play) {
 
     if (this->iceBlockTimer == ICE_BLOCK_UNUSED) {
         this->collider.base.acFlags |= AC_ON;
-        this->actor.flags |= ACTOR_FLAG_TARGETABLE;
-        this->actor.flags &= ~ACTOR_FLAG_10;
+        this->actor.flags |= ACTOR_FLAG_ATTENTION_ENABLED;
+        this->actor.flags &= ~ACTOR_FLAG_UPDATE_CULLING_DISABLED;
         EnSlime_SetupIdle(this);
     }
 }
@@ -957,7 +931,7 @@ void EnSlime_IceBlockThaw(EnSlime* this, PlayState* play) {
  */
 void EnSlime_SetupWaitForRevive(EnSlime* this) {
     this->actor.draw = NULL;
-    this->actor.flags |= ACTOR_FLAG_10;
+    this->actor.flags |= ACTOR_FLAG_UPDATE_CULLING_DISABLED;
     this->drawDmgEffAlpha = 0.0f;
     this->actor.gravity = 0.0f;
     this->actor.velocity.y = 0.0f;
@@ -1006,8 +980,8 @@ void EnSlime_Revive(EnSlime* this, PlayState* play) {
 
     this->timer++;
     if (this->timer == 28) {
-        this->actor.flags &= ~ACTOR_FLAG_10;
-        this->actor.flags |= ACTOR_FLAG_TARGETABLE;
+        this->actor.flags &= ~ACTOR_FLAG_UPDATE_CULLING_DISABLED;
+        this->actor.flags |= ACTOR_FLAG_ATTENTION_ENABLED;
         this->collider.base.acFlags |= AC_ON;
         this->actor.shape.rot.y = this->actor.home.rot.y;
         EnSlime_SetupMoveInDirection(this);
@@ -1057,7 +1031,7 @@ void EnSlime_UpdateDamage(EnSlime* this, PlayState* play) {
         this->collider.base.acFlags &= ~AC_HIT;
 
         if ((this->drawDmgEffType != ACTOR_DRAW_DMGEFF_FROZEN_NO_SFX) ||
-            !(this->collider.info.acHitInfo->toucher.dmgFlags & 0xDB0B3)) {
+            !(this->collider.elem.acHitElem->atDmgInfo.dmgFlags & 0xDB0B3)) {
 
             EnSlime_Thaw(this, play);
             if ((this->actor.params == EN_SLIME_TYPE_BLUE) &&
@@ -1067,9 +1041,9 @@ void EnSlime_UpdateDamage(EnSlime* this, PlayState* play) {
             }
 
             if (Actor_ApplyDamage(&this->actor) == 0) {
-                Actor_SetDropFlag(&this->actor, &this->collider.info);
+                Actor_SetDropFlag(&this->actor, &this->collider.elem);
                 Enemy_StartFinishingBlow(play, &this->actor);
-                this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
+                this->actor.flags &= ~ACTOR_FLAG_ATTENTION_ENABLED;
             }
 
             if (this->actor.colChkInfo.damageEffect == EN_SLIME_DMGEFF_BLUNT) {
@@ -1096,9 +1070,9 @@ void EnSlime_UpdateDamage(EnSlime* this, PlayState* play) {
                         this->drawDmgEffAlpha = 4.0f;
                         this->drawDmgEffScale = 0.4f;
                         this->drawDmgEffType = ACTOR_DRAW_DMGEFF_LIGHT_ORBS;
-                        Actor_Spawn(&play->actorCtx, play, ACTOR_EN_CLEAR_TAG, this->collider.info.bumper.hitPos.x,
-                                    this->collider.info.bumper.hitPos.y, this->collider.info.bumper.hitPos.z, 0, 0, 0,
-                                    CLEAR_TAG_PARAMS(CLEAR_TAG_LARGE_LIGHT_RAYS));
+                        Actor_Spawn(&play->actorCtx, play, ACTOR_EN_CLEAR_TAG, this->collider.elem.acDmgInfo.hitPos.x,
+                                    this->collider.elem.acDmgInfo.hitPos.y, this->collider.elem.acDmgInfo.hitPos.z, 0,
+                                    0, 0, CLEAR_TAG_PARAMS(CLEAR_TAG_LARGE_LIGHT_RAYS));
                     } else if (this->actor.colChkInfo.damageEffect == EN_SLIME_DMGEFF_ELECTRIC) {
                         this->drawDmgEffType = ACTOR_DRAW_DMGEFF_ELECTRIC_SPARKS_LARGE;
                         this->drawDmgEffAlpha = 4.0f;
@@ -1112,7 +1086,7 @@ void EnSlime_UpdateDamage(EnSlime* this, PlayState* play) {
 }
 
 void EnSlime_Update(Actor* thisx, PlayState* play) {
-    EnSlime* this = THIS;
+    EnSlime* this = (EnSlime*)thisx;
     s32 pad;
     Player* player = GET_PLAYER(play);
 
@@ -1123,7 +1097,7 @@ void EnSlime_Update(Actor* thisx, PlayState* play) {
     thisx->shape.shadowAlpha = this->iceBlockTimer;
     if (this->iceBlockTimer == ICE_BLOCK_UNUSED) {
         if (thisx->scale.y > 0.0001f) {
-            thisx->targetArrowOffset = 60.0f / thisx->scale.y;
+            thisx->lockOnArrowOffset = 60.0f / thisx->scale.y;
         }
 
         if (this->collider.base.ocFlags1 & OC1_ON) {
@@ -1168,9 +1142,31 @@ void EnSlime_Update(Actor* thisx, PlayState* play) {
     }
 }
 
+static Color_RGBA8 sPrimColors[EN_SLIME_TYPE_MAX] = {
+    { 255, 255, 255, 255 }, // EN_SLIME_TYPE_BLUE
+    { 255, 255, 0, 255 },   // EN_SLIME_TYPE_GREEN
+    { 255, 255, 200, 255 }, // EN_SLIME_TYPE_YELLOW
+    { 225, 200, 255, 255 }, // EN_SLIME_TYPE_RED
+};
+
+static Color_RGBA8 sEnvColors[EN_SLIME_TYPE_MAX] = {
+    { 140, 255, 195, 255 }, // EN_SLIME_TYPE_BLUE
+    { 50, 255, 0, 255 },    // EN_SLIME_TYPE_GREEN
+    { 255, 180, 0, 255 },   // EN_SLIME_TYPE_YELLOW
+    { 255, 50, 155, 255 },  // EN_SLIME_TYPE_RED
+};
+
+static Vec3f sBodyPartPosOffsets[EN_SLIME_BODYPART_MAX] = {
+    { 2000.0f, 2000.0f, 0.0f },     // EN_SLIME_BODYPART_0
+    { -1500.0f, 2500.0f, -500.0f }, // EN_SLIME_BODYPART_1
+    { -500.0f, 1000.0f, 2500.0f },  // EN_SLIME_BODYPART_2
+    { 0.0f, 4000.0f, 0.0f },        // EN_SLIME_BODYPART_3
+    { 0.0f, 2000.0f, -2000.0f },    // EN_SLIME_BODYPART_4
+};
+
 void EnSlime_Draw(Actor* thisx, PlayState* play) {
     s32 i;
-    EnSlime* this = THIS;
+    EnSlime* this = (EnSlime*)thisx;
     Vec3f wobbleScale;
     Color_RGBA8* primColor;
     Color_RGBA8* envColor;
@@ -1205,22 +1201,22 @@ void EnSlime_Draw(Actor* thisx, PlayState* play) {
         Matrix_RotateXFApply(-this->wobbleRot.x);
     }
 
-    gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    MATRIX_FINALIZE_AND_LOAD(POLY_XLU_DISP++, play->state.gfxCtx);
     gSPDisplayList(POLY_XLU_DISP++, gChuchuBodyDL);
 
     if (this->iceBlockTimer == ICE_BLOCK_UNUSED) {
         // Ice block is not active
         Scene_SetRenderModeXlu(play, 0, 1);
 
-        gSPSegment(POLY_OPA_DISP++, 9, (uintptr_t)sEyeTextures[this->eyeTexIndex]);
+        gSPSegment(POLY_OPA_DISP++, 0x09, sEyeTextures[this->eyeTexIndex]);
         gDPSetEnvColor(POLY_OPA_DISP++, 0, 30, 70, 255);
-        gSPMatrix(POLY_OPA_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+        MATRIX_FINALIZE_AND_LOAD(POLY_OPA_DISP++, play->state.gfxCtx);
         gSPDisplayList(POLY_OPA_DISP++, gChuchuEyesDL);
 
     } else {
         Scene_SetRenderModeXlu(play, 1, 2);
-        gSPSegment(POLY_XLU_DISP++, 9, (uintptr_t)sEyeTextures[this->eyeTexIndex]);
-        gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+        gSPSegment(POLY_XLU_DISP++, 0x09, sEyeTextures[this->eyeTexIndex]);
+        MATRIX_FINALIZE_AND_LOAD(POLY_XLU_DISP++, play->state.gfxCtx);
         gSPDisplayList(POLY_XLU_DISP++, gChuchuEyesDL);
     }
 
@@ -1236,7 +1232,7 @@ void EnSlime_Draw(Actor* thisx, PlayState* play) {
         Matrix_RotateYS(this->reviveRotY, MTXMODE_APPLY);
         Matrix_Scale(this->reviveScale.x, this->reviveScale.y, this->reviveScale.z, MTXMODE_APPLY);
 
-        gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+        MATRIX_FINALIZE_AND_LOAD(POLY_XLU_DISP++, play->state.gfxCtx);
         gSPDisplayList(POLY_XLU_DISP++, gChuchuPuddleDL);
 
         FrameInterpolation_RecordCloseChild();
@@ -1249,12 +1245,14 @@ void EnSlime_Draw(Actor* thisx, PlayState* play) {
         Matrix_Translate(this->actor.world.pos.x, this->actor.world.pos.y + (2000.0f * this->actor.scale.y),
                          this->actor.world.pos.z, MTXMODE_NEW);
 
-        if (GameInteractor_Should(VB_DRAW_SLIME_BODY_ITEM, true, this)) {
-            Matrix_Scale(0.03f, 0.03f, 0.03f, MTXMODE_APPLY);
+        if (GameInteractor_Should(VB_DRAW_SLIME_RANDO_ITEM, true, this)) {
+            if (GameInteractor_Should(VB_DRAW_SLIME_BODY_ITEM, true, this)) {
+                Matrix_Scale(0.03f, 0.03f, 0.03f, MTXMODE_APPLY);
 
-            gSPSegment(POLY_OPA_DISP++, 8, (uintptr_t)this->itemDropTex);
-            gSPMatrix(POLY_OPA_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
-            gSPDisplayList(POLY_OPA_DISP++, gItemDropDL);
+                gSPSegment(POLY_OPA_DISP++, 8, (uintptr_t)this->itemDropTex);
+                MATRIX_FINALIZE_AND_LOAD(POLY_OPA_DISP++, play->state.gfxCtx);
+                gSPDisplayList(POLY_OPA_DISP++, gItemDropDL);
+            }
         }
     }
 

@@ -6,11 +6,9 @@
 
 #include "z_en_wood02.h"
 #include "objects/object_wood02/object_wood02.h"
-#include "public/bridge/consolevariablebridge.h"
+#include <libultraship/bridge/consolevariablebridge.h>
 
 #define FLAGS 0x00000000
-
-#define THIS ((EnWood02*)thisx)
 
 void EnWood02_Init(Actor* thisx, PlayState* play);
 void EnWood02_Destroy(Actor* thisx, PlayState* play);
@@ -39,7 +37,7 @@ typedef enum {
 f32 sWood02SpawnCos;
 f32 sWood02SpawnSin;
 
-ActorInit En_Wood02_InitVars = {
+ActorProfile En_Wood02_Profile = {
     /**/ ACTOR_EN_WOOD02,
     /**/ ACTORCAT_PROP,
     /**/ FLAGS,
@@ -53,7 +51,7 @@ ActorInit En_Wood02_InitVars = {
 
 static ColliderCylinderInit sCylinderInit = {
     {
-        COLTYPE_TREE,
+        COL_MATERIAL_TREE,
         AT_NONE,
         AC_ON | AC_HARD | AC_TYPE_PLAYER,
         OC1_ON | OC1_TYPE_ALL,
@@ -61,11 +59,11 @@ static ColliderCylinderInit sCylinderInit = {
         COLSHAPE_CYLINDER,
     },
     {
-        ELEMTYPE_UNK5,
+        ELEM_MATERIAL_UNK5,
         { 0x00000000, 0x00, 0x00 },
         { 0x0100020A, 0x00, 0x00 },
-        TOUCH_NONE | TOUCH_SFX_NORMAL,
-        BUMP_ON,
+        ATELEM_NONE | ATELEM_SFX_NORMAL,
+        ACELEM_ON,
         OCELEM_ON,
     },
     { 18, 60, 0, { 0, 0, 0 } },
@@ -76,7 +74,7 @@ f32 sWood02SpawnDistance[] = { 707.0f, 525.0f, 510.0f, 500.0f, 566.0f, 141.0f };
 s16 sWood02SpawnAngle[] = { 0x1FFF, 0x4C9E, 0x77F5, 0xA5C9, -0x293D, 0xA000 };
 
 static InitChainEntry sInitChain[] = {
-    ICHAIN_F32(targetArrowOffset, 5600, ICHAIN_STOP),
+    ICHAIN_F32(lockOnArrowOffset, 5600, ICHAIN_STOP),
 };
 
 Gfx* D_808C4D54[] = {
@@ -119,11 +117,11 @@ s32 EnWood02_SpawnZoneCheck(EnWood02* this, PlayState* play, Vec3f* arg2) {
         phi_f12 = fabsf(1.0f / this->actor.projectedW);
     }
 
-    if (((-this->actor.uncullZoneScale < this->actor.projectedPos.z) &&
-         (this->actor.projectedPos.z < (this->actor.uncullZoneForward + this->actor.uncullZoneScale)) &&
-         (((fabsf(this->actor.projectedPos.x) - this->actor.uncullZoneScale) * phi_f12) < 1.0f)) &&
-        (((this->actor.projectedPos.y + this->actor.uncullZoneDownward) * phi_f12) > -1.0f) &&
-        (((this->actor.projectedPos.y - this->actor.uncullZoneScale) * phi_f12) < 1.0f)) {
+    if (((-this->actor.cullingVolumeScale < this->actor.projectedPos.z) &&
+         (this->actor.projectedPos.z < (this->actor.cullingVolumeDistance + this->actor.cullingVolumeScale)) &&
+         (((fabsf(this->actor.projectedPos.x) - this->actor.cullingVolumeScale) * phi_f12) < 1.0f)) &&
+        (((this->actor.projectedPos.y + this->actor.cullingVolumeDownward) * phi_f12) > -1.0f) &&
+        (((this->actor.projectedPos.y - this->actor.cullingVolumeScale) * phi_f12) < 1.0f)) {
         return true;
     }
     return false;
@@ -179,7 +177,7 @@ void EnWood02_SpawnOffspring(EnWood02* this, PlayState* play) {
 void EnWood02_Init(Actor* thisx, PlayState* play) {
     s16 spawnType = 0;
     f32 actorScale = 1.0f;
-    EnWood02* this = THIS;
+    EnWood02* this = (EnWood02*)thisx;
     s32 pad;
     CollisionPoly* outPoly;
     s32 bgId;
@@ -223,19 +221,19 @@ void EnWood02_Init(Actor* thisx, PlayState* play) {
         case WOOD_BUSH_GREEN_LARGE_SPAWNER:
         case WOOD_BUSH_BLACK_LARGE_SPAWNER:
             spawnType = 1;
-
+            // fallthrough
         case WOOD_BUSH_GREEN_LARGE_SPAWNED:
         case WOOD_BUSH_BLACK_LARGE_SPAWNED:
             spawnType++;
-
+            // fallthrough
         case WOOD_TREE_CONICAL_LARGE:
         case WOOD_BUSH_GREEN_LARGE:
         case WOOD_BUSH_BLACK_LARGE:
         case WOOD_TREE_SPECIAL:
             actorScale = 1.5f;
-            this->actor.uncullZoneForward = 4000.0f;
-            this->actor.uncullZoneScale = 2000.0f;
-            this->actor.uncullZoneDownward = 2400.0f;
+            this->actor.cullingVolumeDistance = 4000.0f;
+            this->actor.cullingVolumeScale = 2000.0f;
+            this->actor.cullingVolumeDownward = 2400.0f;
             break;
 
         case WOOD_TREE_CONICAL_SPAWNER:
@@ -244,29 +242,29 @@ void EnWood02_Init(Actor* thisx, PlayState* play) {
         case WOOD_BUSH_GREEN_SMALL_SPAWNER:
         case WOOD_BUSH_BLACK_SMALL_SPAWNER:
             spawnType = 1;
-
+            // fallthrough
         case WOOD_TREE_CONICAL_SPAWNED:
         case WOOD_TREE_OVAL_YELLOW_SPAWNED:
         case WOOD_TREE_OVAL_GREEN_SPAWNED:
         case WOOD_BUSH_GREEN_SMALL_SPAWNED:
         case WOOD_BUSH_BLACK_SMALL_SPAWNED:
             spawnType++;
-
+            // fallthrough
         case WOOD_TREE_CONICAL_MEDIUM:
         case WOOD_TREE_OVAL_GREEN:
         case WOOD_TREE_KAKARIKO_ADULT:
         case WOOD_BUSH_GREEN_SMALL:
         case WOOD_BUSH_BLACK_SMALL:
-            this->actor.uncullZoneForward = 4000.0f;
-            this->actor.uncullZoneScale = 800.0f;
-            this->actor.uncullZoneDownward = 1800.0f;
+            this->actor.cullingVolumeDistance = 4000.0f;
+            this->actor.cullingVolumeScale = 800.0f;
+            this->actor.cullingVolumeDownward = 1800.0f;
             break;
 
         case WOOD_TREE_CONICAL_SMALL:
             actorScale = 0.6f;
-            this->actor.uncullZoneForward = 4000.0f;
-            this->actor.uncullZoneScale = 400.0f;
-            this->actor.uncullZoneDownward = 1000.0f;
+            this->actor.cullingVolumeDistance = 4000.0f;
+            this->actor.cullingVolumeScale = 400.0f;
+            this->actor.cullingVolumeDownward = 1000.0f;
             break;
 
         case WOOD_LEAF_GREEN:
@@ -276,6 +274,9 @@ void EnWood02_Init(Actor* thisx, PlayState* play) {
             this->actor.velocity.x = Rand_CenteredFloat(6.0f);
             this->actor.velocity.z = Rand_CenteredFloat(6.0f);
             this->actor.velocity.y = (Rand_ZeroOne() * 1.25f) + -3.1f;
+            break;
+
+        default:
             break;
     }
 
@@ -311,7 +312,7 @@ void EnWood02_Init(Actor* thisx, PlayState* play) {
             this->actor.world.pos.x += sWood02SpawnSin * sWood02SpawnDistance[5];
             this->actor.world.pos.z += sWood02SpawnCos * sWood02SpawnDistance[5];
         } else {
-            this->actor.flags |= ACTOR_FLAG_10;
+            this->actor.flags |= ACTOR_FLAG_UPDATE_CULLING_DISABLED;
             this->unk_151 = 2;
         }
 
@@ -333,7 +334,7 @@ void EnWood02_Init(Actor* thisx, PlayState* play) {
 }
 
 void EnWood02_Destroy(Actor* thisx, PlayState* play) {
-    EnWood02* this = THIS;
+    EnWood02* this = (EnWood02*)thisx;
 
     if ((this->actor.params < WOOD_BUSH_GREEN_SMALL) || (this->actor.params == WOOD_TREE_SPECIAL)) {
         Collider_DestroyCylinder(play, &this->collider);
@@ -369,12 +370,12 @@ void func_808C4458(EnWood02* this, PlayState* play, Vec3f* arg2, u16 arg3) {
 
 void EnWood02_Update(Actor* thisx, PlayState* play2) {
     PlayState* play = play2;
-    EnWood02* this = THIS;
+    EnWood02* this = (EnWood02*)thisx;
     f32 wobbleAmplitude;
 
     // Despawn extra trees in a group if out of range
     if ((this->spawnType == WOOD_SPAWN_SPAWNED) && (thisx->parent != NULL)) {
-        if (!(thisx->flags & ACTOR_FLAG_40) && (this->unk_151 != 2)) {
+        if (!(thisx->flags & ACTOR_FLAG_INSIDE_CULLING_VOLUME) && (this->unk_151 != 2)) {
             s32 index = this->unk_14A[0];
             s32 phi_v0 = 0;
 
@@ -443,10 +444,10 @@ void EnWood02_Update(Actor* thisx, PlayState* play2) {
     } else if ((thisx->params < WOOD_LEAF_GREEN) || (thisx->params == WOOD_TREE_SPECIAL)) { // not leaves
         Player* player = GET_PLAYER(play);
 
-        if ((this->unk_146 >= -1) && (((player->rideActor == NULL) && (sqrtf(thisx->xyzDistToPlayerSq) < 20.0f) &&
-                                       (player->linearVelocity != 0.0f)) ||
-                                      ((player->rideActor != NULL) && (sqrtf(thisx->xyzDistToPlayerSq) < 60.0f) &&
-                                       (player->rideActor->speed != 0.0f)))) {
+        if ((this->unk_146 >= -1) &&
+            (((player->rideActor == NULL) && (sqrtf(thisx->xyzDistToPlayerSq) < 20.0f) && (player->speedXZ != 0.0f)) ||
+             ((player->rideActor != NULL) && (sqrtf(thisx->xyzDistToPlayerSq) < 60.0f) &&
+              (player->rideActor->speed != 0.0f)))) {
             func_808C4458(this, play, &thisx->world.pos, 1);
             this->unk_146 = -0x15;
             Actor_PlaySfx(thisx, NA_SE_EV_TREE_SWING);
@@ -473,7 +474,7 @@ void EnWood02_Update(Actor* thisx, PlayState* play2) {
 }
 
 void EnWood02_Draw(Actor* thisx, PlayState* play) {
-    EnWood02* this = THIS;
+    EnWood02* this = (EnWood02*)thisx;
     GraphicsContext* gfxCtx = play->state.gfxCtx;
     u8 red;
     u8 green;
@@ -507,12 +508,12 @@ void EnWood02_Draw(Actor* thisx, PlayState* play) {
         Gfx_DrawDListOpa(play, D_808C4D54[this->drawType & 0xF]);
 
         gDPSetEnvColor(POLY_XLU_DISP++, red, green, blue, 0);
-        gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+        MATRIX_FINALIZE_AND_LOAD(POLY_XLU_DISP++, gfxCtx);
         gSPDisplayList(POLY_XLU_DISP++, D_808C4D70[this->drawType & 0xF]);
     } else {
         Gfx_SetupDL25_Xlu(gfxCtx);
 
-        gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+        MATRIX_FINALIZE_AND_LOAD(POLY_XLU_DISP++, gfxCtx);
         gSPDisplayList(POLY_XLU_DISP++, D_808C4D54[this->drawType & 0xF]);
     }
 

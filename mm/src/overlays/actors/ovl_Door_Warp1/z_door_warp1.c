@@ -11,8 +11,6 @@
 
 #define FLAGS 0x00000000
 
-#define THIS ((DoorWarp1*)thisx)
-
 void DoorWarp1_Init(Actor* thisx, PlayState* play);
 void DoorWarp1_Destroy(Actor* thisx, PlayState* play);
 void DoorWarp1_Update(Actor* thisx, PlayState* play);
@@ -52,7 +50,7 @@ void func_808BB8D4(DoorWarp1* this, PlayState* play, s32 arg2);
 s16 D_808BC000;
 f32 D_808BC004;
 
-ActorInit Door_Warp1_InitVars = {
+ActorProfile Door_Warp1_Profile = {
     /**/ ACTOR_DOOR_WARP1,
     /**/ ACTORCAT_ITEMACTION,
     /**/ FLAGS,
@@ -67,9 +65,9 @@ ActorInit Door_Warp1_InitVars = {
 
 static InitChainEntry sInitChain[] = {
     ICHAIN_VEC3F_DIV1000(scale, 1000, ICHAIN_CONTINUE),
-    ICHAIN_F32(uncullZoneForward, 4000, ICHAIN_CONTINUE),
-    ICHAIN_F32(uncullZoneScale, 800, ICHAIN_CONTINUE),
-    ICHAIN_F32(uncullZoneDownward, 4000, ICHAIN_STOP),
+    ICHAIN_F32(cullingVolumeDistance, 4000, ICHAIN_CONTINUE),
+    ICHAIN_F32(cullingVolumeScale, 800, ICHAIN_CONTINUE),
+    ICHAIN_F32(cullingVolumeDownward, 4000, ICHAIN_STOP),
 };
 
 void DoorWarp1_SetupAction(DoorWarp1* this, DoorWarp1ActionFunc actionFunc) {
@@ -117,7 +115,7 @@ s32 func_808B866C(DoorWarp1* this, PlayState* play) {
 }
 
 void DoorWarp1_Init(Actor* thisx, PlayState* play) {
-    DoorWarp1* this = THIS;
+    DoorWarp1* this = (DoorWarp1*)thisx;
 
     this->unk_1CC = 0;
     this->unk_202 = 0;
@@ -177,7 +175,7 @@ void DoorWarp1_Init(Actor* thisx, PlayState* play) {
 
 void DoorWarp1_Destroy(Actor* thisx, PlayState* play) {
     s32 pad;
-    DoorWarp1* this = THIS;
+    DoorWarp1* this = (DoorWarp1*)thisx;
     s16 i;
 
     LightContext_RemoveLight(play, &play->lightCtx, this->unk_1DC);
@@ -496,7 +494,7 @@ void func_808B98A8(DoorWarp1* this, PlayState* play) {
                 Scene_SetExitFade(play);
                 play->transitionTrigger = TRANS_TRIGGER_START;
             } else {
-                func_80169FDC(&play->state);
+                func_80169FDC(play);
             }
         }
     }
@@ -779,7 +777,7 @@ void func_808BA10C(DoorWarp1* this, PlayState* play) {
         Scene_SetExitFade(play);
         play->transitionTrigger = TRANS_TRIGGER_START;
     } else {
-        func_80169FDC(&play->state);
+        func_80169FDC(play);
     }
 }
 
@@ -915,7 +913,7 @@ void func_808BABF4(DoorWarp1* this, PlayState* play) {
 }
 
 void DoorWarp1_Update(Actor* thisx, PlayState* play) {
-    DoorWarp1* this = THIS;
+    DoorWarp1* this = (DoorWarp1*)thisx;
 
     if (this->unk_203 == 0) {
         this->unk_204 = 1.0f;
@@ -990,17 +988,18 @@ void func_808BAE9C(DoorWarp1* this, PlayState* play) {
     }
     Matrix_Scale(phi_f12, phi_f12, phi_f12, MTXMODE_APPLY);
 
-    gSPSegment(POLY_XLU_DISP++, 0x0A, Matrix_NewMtx(play->state.gfxCtx));
+    gSPSegment(POLY_XLU_DISP++, 0x0A, Matrix_Finalize(play->state.gfxCtx));
     Matrix_Push();
     gSPSegment(POLY_XLU_DISP++, 0x08,
-               Gfx_TwoTexScroll(play->state.gfxCtx, 0, sp94 & 0xFF, -((s16)(2.0f * this->unk_1AC) & 0x1FF), 0x100,
-                                0x100, 1, sp94 & 0xFF, -((s16)(2.0f * this->unk_1AC) & 0x1FF), 0x100, 0x100));
+               Gfx_TwoTexScroll(play->state.gfxCtx, 0, sp94 & 0xFF, -(TRUNCF_BINANG(2.0f * this->unk_1AC) & 0x1FF),
+                                0x100, 0x100, 1, sp94 & 0xFF, -(TRUNCF_BINANG(2.0f * this->unk_1AC) & 0x1FF), 0x100,
+                                0x100));
 
     Matrix_Translate(0.0f, this->unk_1A4 * 230.0f, 0.0f, MTXMODE_APPLY);
     Matrix_Scale(((this->unk_1C6 * sp90) / 100.0f) + 1.0f, 1.0f, ((this->unk_1C6 * sp90) / 100.0f) + 1.0f,
                  MTXMODE_APPLY);
 
-    gSPSegment(POLY_XLU_DISP++, 0x09, Matrix_NewMtx(play->state.gfxCtx));
+    gSPSegment(POLY_XLU_DISP++, 0x09, Matrix_Finalize(play->state.gfxCtx));
     gSPDisplayList(POLY_XLU_DISP++, gWarpPortalDL);
 
     Matrix_Pop();
@@ -1011,14 +1010,14 @@ void func_808BAE9C(DoorWarp1* this, PlayState* play) {
 
         sp94 *= 2;
         gSPSegment(POLY_XLU_DISP++, 0x08,
-                   Gfx_TwoTexScroll(play->state.gfxCtx, 0, sp94 & 0xFF, -((s16)this->unk_1AC & 0x1FF), 0x100, 0x100, 1,
-                                    sp94 & 0xFF, -((s16)this->unk_1AC & 0x1FF), 0x100, 0x100));
+                   Gfx_TwoTexScroll(play->state.gfxCtx, 0, sp94 & 0xFF, -(TRUNCF_BINANG(this->unk_1AC) & 0x1FF), 0x100,
+                                    0x100, 1, sp94 & 0xFF, -(TRUNCF_BINANG(this->unk_1AC) & 0x1FF), 0x100, 0x100));
 
         Matrix_Translate(0.0f, this->unk_1A8 * 60.0f, 0.0f, MTXMODE_APPLY);
         Matrix_Scale(((this->unk_1C8 * sp8C) / 100.0f) + 1.0f, 1.0f, ((this->unk_1C8 * sp8C) / 100.0f) + 1.0f,
                      MTXMODE_APPLY);
 
-        gSPSegment(POLY_XLU_DISP++, 0x09, Matrix_NewMtx(play->state.gfxCtx));
+        gSPSegment(POLY_XLU_DISP++, 0x09, Matrix_Finalize(play->state.gfxCtx));
         gSPDisplayList(POLY_XLU_DISP++, gWarpPortalDL);
     }
 
@@ -1071,7 +1070,7 @@ void func_808BB4F4(DoorWarp1* this, PlayState* play2) {
 
     gDPSetEnvColor(POLY_XLU_DISP++, sp64[sp60].r, sp64[sp60].g, sp64[sp60].b, 255);
     gDPSetPrimColor(POLY_XLU_DISP++, 0, 0x80, 255, 255, 255, 255);
-    gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    MATRIX_FINALIZE_AND_LOAD(POLY_XLU_DISP++, play->state.gfxCtx);
     gSPDisplayList(POLY_XLU_DISP++, gWarpBossWarpLightShaftsDL);
 
     CLOSE_DISPS(play->state.gfxCtx);
@@ -1088,14 +1087,14 @@ void func_808BB4F4(DoorWarp1* this, PlayState* play2) {
 
     gDPSetEnvColor(POLY_XLU_DISP++, sp64[sp60].r, sp64[sp60].g, sp64[sp60].b, 255);
     gDPSetPrimColor(POLY_XLU_DISP++, 0, 0x80, 255, 255, 255, this->unk_203);
-    gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    MATRIX_FINALIZE_AND_LOAD(POLY_XLU_DISP++, play->state.gfxCtx);
     gSPDisplayList(POLY_XLU_DISP++, gWarpBossWarpGlowDL);
 
     CLOSE_DISPS(play->state.gfxCtx);
 }
 
 void DoorWarp1_Draw(Actor* thisx, PlayState* play) {
-    DoorWarp1* this = THIS;
+    DoorWarp1* this = (DoorWarp1*)thisx;
 
     switch (DOORWARP1_GET_FF(&this->dyna.actor)) {
         case ENDOORWARP1_FF_0:

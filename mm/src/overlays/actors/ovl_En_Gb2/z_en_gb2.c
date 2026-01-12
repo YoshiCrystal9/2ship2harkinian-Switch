@@ -6,9 +6,9 @@
 
 #include "z_en_gb2.h"
 
-#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_10 | ACTOR_FLAG_20)
-
-#define THIS ((EnGb2*)thisx)
+#define FLAGS                                                                                  \
+    (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_UPDATE_CULLING_DISABLED | \
+     ACTOR_FLAG_DRAW_CULLING_DISABLED)
 
 void EnGb2_Init(Actor* thisx, PlayState* play);
 void EnGb2_Destroy(Actor* thisx, PlayState* play);
@@ -35,7 +35,7 @@ void func_80B111AC(EnGb2* this, PlayState* play);
 void func_80B11268(EnGb2* this, PlayState* play);
 void func_80B11344(EnGb2* this, PlayState* play);
 
-ActorInit En_Gb2_InitVars = {
+ActorProfile En_Gb2_Profile = {
     /**/ ACTOR_EN_GB2,
     /**/ ACTORCAT_NPC,
     /**/ FLAGS,
@@ -69,18 +69,18 @@ static f32 D_80B11A00[][4] = {
 
 static ColliderCylinderInitType1 sCylinderInit = {
     {
-        COLTYPE_NONE,
+        COL_MATERIAL_NONE,
         AT_NONE,
         AC_NONE,
         OC1_ON | OC1_TYPE_ALL,
         COLSHAPE_CYLINDER,
     },
     {
-        ELEMTYPE_UNK0,
+        ELEM_MATERIAL_UNK0,
         { 0x00000000, 0x00, 0x00 },
         { 0x00000000, 0x00, 0x00 },
-        TOUCH_NONE | TOUCH_SFX_NORMAL,
-        BUMP_NONE,
+        ATELEM_NONE | ATELEM_SFX_NORMAL,
+        ACELEM_NONE,
         OCELEM_ON,
     },
     { 40, 75, 0, { 0, 0, 0 } },
@@ -95,24 +95,22 @@ void func_80B0F5E0(EnGb2* this, PlayState* play) {
 }
 
 s32 func_80B0F660(EnGb2* this, PlayState* play) {
-    Actor* temp_v0;
-    Actor* phi_s0 = NULL;
+    Actor* actorIter = NULL;
 
     while (true) {
-        temp_v0 = SubS_FindActor(play, phi_s0, ACTORCAT_NPC, ACTOR_EN_GB2);
-        if (temp_v0 == NULL) {
+        actorIter = SubS_FindActor(play, actorIter, ACTORCAT_NPC, ACTOR_EN_GB2);
+        if (actorIter == NULL) {
             break;
         }
 
-        if ((EnGb2*)temp_v0 != this) {
+        if ((EnGb2*)actorIter != this) {
             return true;
         }
 
-        temp_v0 = temp_v0->next;
-        if (temp_v0 == NULL) {
+        if (actorIter->next == NULL) {
             break;
         }
-        phi_s0 = temp_v0;
+        actorIter = actorIter->next;
     };
 
     return false;
@@ -386,7 +384,7 @@ void func_80B0FEBC(EnGb2* this, PlayState* play) {
         this->unk_288 = 10;
     }
 
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+    if (Actor_TalkOfferAccepted(&this->actor, &play->state)) {
         Message_StartTextbox(play, this->unk_26E, &this->actor);
         this->actionFunc = func_80B0FFA8;
     } else if ((this->actor.xzDistToPlayer < 300.0f) || this->actor.isLockedOn) {
@@ -397,7 +395,7 @@ void func_80B0FEBC(EnGb2* this, PlayState* play) {
 void func_80B0FFA8(EnGb2* this, PlayState* play) {
     u8 talkState = Message_GetState(&play->msgCtx);
 
-    if (talkState == TEXT_STATE_5) {
+    if (talkState == TEXT_STATE_EVENT) {
         if (Message_ShouldAdvance(play)) {
             if (this->unk_26C & 2) {
                 play->msgCtx.msgMode = MSGMODE_TEXT_CLOSING;
@@ -552,12 +550,12 @@ void func_80B10344(EnGb2* this, PlayState* play) {
 }
 
 void func_80B10584(EnGb2* this, PlayState* play) {
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+    if (Actor_TalkOfferAccepted(&this->actor, &play->state)) {
         Message_StartTextbox(play, this->unk_26E, &this->actor);
-        this->actor.flags &= ~ACTOR_FLAG_10000;
+        this->actor.flags &= ~ACTOR_FLAG_TALK_OFFER_AUTO_ACCEPTED;
         this->actionFunc = func_80B10634;
     } else if (this->actor.xzDistToPlayer < 300.0f) {
-        this->actor.flags |= ACTOR_FLAG_10000;
+        this->actor.flags |= ACTOR_FLAG_TALK_OFFER_AUTO_ACCEPTED;
         Actor_OfferTalk(&this->actor, play, 300.0f);
     }
 }
@@ -565,7 +563,7 @@ void func_80B10584(EnGb2* this, PlayState* play) {
 void func_80B10634(EnGb2* this, PlayState* play) {
     u8 talkState = Message_GetState(&play->msgCtx);
 
-    if (talkState == TEXT_STATE_5) {
+    if (talkState == TEXT_STATE_EVENT) {
         if (Message_ShouldAdvance(play)) {
             if (this->unk_26C & 2) {
                 play->msgCtx.msgMode = MSGMODE_TEXT_CLOSING;
@@ -635,7 +633,7 @@ void func_80B10868(EnGb2* this, PlayState* play) {
 void func_80B10924(EnGb2* this, PlayState* play) {
     s32 getItemId;
 
-    if (CHECK_WEEKEVENTREG(WEEKEVENTREG_54_40)) {
+    if (CHECK_WEEKEVENTREG(WEEKEVENTREG_RECEIVED_SPIRIT_HOUSE_HEART_PIECE)) {
         getItemId = GI_RUPEE_PURPLE;
     } else {
         getItemId = GI_HEART_PIECE;
@@ -644,7 +642,7 @@ void func_80B10924(EnGb2* this, PlayState* play) {
     if (Actor_HasParent(&this->actor, play)) {
         this->actor.parent = NULL;
         if (getItemId == GI_HEART_PIECE) {
-            SET_WEEKEVENTREG(WEEKEVENTREG_54_40);
+            SET_WEEKEVENTREG(WEEKEVENTREG_RECEIVED_SPIRIT_HOUSE_HEART_PIECE);
         } else {
             Rupees_ChangeBy(50);
         }
@@ -655,7 +653,7 @@ void func_80B10924(EnGb2* this, PlayState* play) {
 }
 
 void func_80B109DC(EnGb2* this, PlayState* play) {
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+    if (Actor_TalkOfferAccepted(&this->actor, &play->state)) {
         Message_StartTextbox(play, this->unk_26E, &this->actor);
         this->actionFunc = func_80B10634;
     } else {
@@ -688,7 +686,7 @@ void func_80B10A48(EnGb2* this, PlayState* play) {
 
                 this->actor.draw = NULL;
                 this->unk_26C |= 0x100;
-                this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
+                this->actor.flags &= ~ACTOR_FLAG_ATTENTION_ENABLED;
                 this->actionFunc = func_80B111AC;
                 break;
 
@@ -699,9 +697,7 @@ void func_80B10A48(EnGb2* this, PlayState* play) {
 }
 
 void func_80B10B5C(EnGb2* this, PlayState* play) {
-    s32 mask = Player_GetMask(play);
-
-    if (this->unk_28C != mask) {
+    if (Player_GetMask(play) != this->unk_28C) {
         this->unk_28C = Player_GetMask(play);
         this->unk_26C &= ~0x80;
         this->unk_26C &= ~0x20;
@@ -710,7 +706,7 @@ void func_80B10B5C(EnGb2* this, PlayState* play) {
 
     if (func_80B0FA48(this, play)) {
         this->unk_26C &= ~0x20;
-        if (Actor_ProcessTalkRequest(&this->actor, &play->state) && (this->unk_26C & 0x40)) {
+        if (Actor_TalkOfferAccepted(&this->actor, &play->state) && (this->unk_26C & 0x40)) {
             if ((this->unk_26E == 0x14EE) || (this->unk_26E == 0x14F4)) {
                 this->unk_26C |= 2;
             }
@@ -724,8 +720,8 @@ void func_80B10B5C(EnGb2* this, PlayState* play) {
         }
     } else {
         this->unk_26C &= ~0x40;
-        if (Actor_ProcessTalkRequest(&this->actor, &play->state) && (this->unk_26C & 0x20)) {
-            this->actor.flags &= ~ACTOR_FLAG_10000;
+        if (Actor_TalkOfferAccepted(&this->actor, &play->state) && (this->unk_26C & 0x20)) {
+            this->actor.flags &= ~ACTOR_FLAG_TALK_OFFER_AUTO_ACCEPTED;
             Message_StartTextbox(play, this->unk_26E, &this->actor);
             if (this->unk_26E == 0x14EB) {
                 SET_WEEKEVENTREG(WEEKEVENTREG_80_40);
@@ -738,7 +734,7 @@ void func_80B10B5C(EnGb2* this, PlayState* play) {
             this->actionFunc = func_80B10DAC;
         } else if (this->actor.xzDistToPlayer < 300.0f) {
             if (!(this->unk_26C & 0x80)) {
-                this->actor.flags |= ACTOR_FLAG_10000;
+                this->actor.flags |= ACTOR_FLAG_TALK_OFFER_AUTO_ACCEPTED;
                 this->unk_26C |= 0x20;
                 Actor_OfferTalk(&this->actor, play, 300.0f);
             }
@@ -768,7 +764,7 @@ void func_80B10DAC(EnGb2* this, PlayState* play) {
 }
 
 void func_80B10E98(EnGb2* this, PlayState* play) {
-    if ((Message_GetState(&play->msgCtx) == TEXT_STATE_5) && Message_ShouldAdvance(play)) {
+    if ((Message_GetState(&play->msgCtx) == TEXT_STATE_EVENT) && Message_ShouldAdvance(play)) {
         if (this->unk_26C & 2) {
             this->unk_26C &= ~2;
             play->msgCtx.msgMode = MSGMODE_TEXT_CLOSING;
@@ -801,18 +797,18 @@ void func_80B10E98(EnGb2* this, PlayState* play) {
 }
 
 void func_80B11048(EnGb2* this, PlayState* play) {
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
-        this->actor.flags &= ~ACTOR_FLAG_10000;
+    if (Actor_TalkOfferAccepted(&this->actor, &play->state)) {
+        this->actor.flags &= ~ACTOR_FLAG_TALK_OFFER_AUTO_ACCEPTED;
         Message_StartTextbox(play, this->unk_26E, &this->actor);
         this->actionFunc = func_80B10DAC;
     } else if (this->actor.xzDistToPlayer < 300.0f) {
-        this->actor.flags |= ACTOR_FLAG_10000;
+        this->actor.flags |= ACTOR_FLAG_TALK_OFFER_AUTO_ACCEPTED;
         Actor_OfferTalk(&this->actor, play, 200.0f);
     }
 }
 
 void func_80B110F8(EnGb2* this, PlayState* play) {
-    if ((Message_GetState(&play->msgCtx) == TEXT_STATE_5) && Message_ShouldAdvance(play)) {
+    if ((Message_GetState(&play->msgCtx) == TEXT_STATE_EVENT) && Message_ShouldAdvance(play)) {
         if (this->unk_26C & 2) {
             play->msgCtx.msgMode = MSGMODE_TEXT_CLOSING;
             play->msgCtx.stateTimer = 4;
@@ -865,7 +861,7 @@ void func_80B11268(EnGb2* this, PlayState* play) {
         if (Flags_GetClear(play, 2) && Flags_GetClear(play, 3) && Flags_GetClear(play, 4) && Flags_GetClear(play, 5)) {
             this->unk_28A = 0xFF;
             this->unk_26C &= ~0x100;
-            this->actor.flags |= ACTOR_FLAG_TARGETABLE;
+            this->actor.flags |= ACTOR_FLAG_ATTENTION_ENABLED;
             this->actor.draw = EnGb2_Draw;
             this->unk_26E = 0x14F9;
             this->actionFunc = func_80B11048;
@@ -882,13 +878,13 @@ void func_80B11344(EnGb2* this, PlayState* play) {
 }
 
 static InitChainEntry sInitChain[] = {
-    ICHAIN_U8(targetMode, TARGET_MODE_4, ICHAIN_CONTINUE),
-    ICHAIN_F32(targetArrowOffset, 2200, ICHAIN_STOP),
+    ICHAIN_U8(attentionRangeType, ATTENTION_RANGE_4, ICHAIN_CONTINUE),
+    ICHAIN_F32(lockOnArrowOffset, 2200, ICHAIN_STOP),
 };
 
 void EnGb2_Init(Actor* thisx, PlayState* play) {
     s32 pad;
-    EnGb2* this = THIS;
+    EnGb2* this = (EnGb2*)thisx;
 
     if (func_80B0F660(this, play)) {
         Actor_Kill(&this->actor);
@@ -919,8 +915,8 @@ void EnGb2_Init(Actor* thisx, PlayState* play) {
             }
 
             this->unk_28A = 255;
-            this->actor.flags |= ACTOR_FLAG_10;
-            this->actor.flags |= ACTOR_FLAG_2000000;
+            this->actor.flags |= ACTOR_FLAG_UPDATE_CULLING_DISABLED;
+            this->actor.flags |= ACTOR_FLAG_UPDATE_DURING_OCARINA;
 
             if (CHECK_EVENTINF(EVENTINF_46)) {
                 func_80B0F728(this, play);
@@ -964,7 +960,7 @@ void EnGb2_Init(Actor* thisx, PlayState* play) {
             if (CHECK_WEEKEVENTREG(WEEKEVENTREG_76_80)) {
                 this->actor.draw = NULL;
                 this->unk_26C |= 0x100;
-                this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
+                this->actor.flags &= ~ACTOR_FLAG_ATTENTION_ENABLED;
                 this->actionFunc = func_80B111AC;
             } else {
                 this->unk_28A = 255;
@@ -980,13 +976,13 @@ void EnGb2_Init(Actor* thisx, PlayState* play) {
 }
 
 void EnGb2_Destroy(Actor* thisx, PlayState* play) {
-    EnGb2* this = THIS;
+    EnGb2* this = (EnGb2*)thisx;
 
     Collider_DestroyCylinder(play, &this->collider);
 }
 
 void EnGb2_Update(Actor* thisx, PlayState* play) {
-    EnGb2* this = THIS;
+    EnGb2* this = (EnGb2*)thisx;
 
     SkelAnime_Update(&this->skelAnime);
 
@@ -995,15 +991,15 @@ void EnGb2_Update(Actor* thisx, PlayState* play) {
     if (!(this->unk_26C & 0x100)) {
         func_80B0F5E0(this, play);
     }
-    Actor_TrackPlayer(play, &this->actor, &this->unk_270, &this->unk_276, this->actor.focus.pos);
+    Actor_TrackPlayer(play, &this->actor, &this->headRot, &this->torsoRot, this->actor.focus.pos);
 }
 
 s32 EnGb2_OverrideLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3f* pos, Vec3s* rot, Actor* thisx,
                            Gfx** gfx) {
-    EnGb2* this = THIS;
+    EnGb2* this = (EnGb2*)thisx;
 
     if (limbIndex == OBJECT_PS_LIMB_07) {
-        Matrix_RotateYS(this->unk_270.y, MTXMODE_APPLY);
+        Matrix_RotateYS(this->headRot.y, MTXMODE_APPLY);
     }
 
     if (limbIndex == OBJECT_PS_LIMB_01) {
@@ -1014,7 +1010,7 @@ s32 EnGb2_OverrideLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3f* p
 }
 
 void EnGb2_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* rot, Actor* thisx, Gfx** gfx) {
-    EnGb2* this = THIS;
+    EnGb2* this = (EnGb2*)thisx;
     Vec3f sp18 = { 2400.0f, 0.0f, 0.0f };
 
     if (limbIndex == OBJECT_PS_LIMB_07) {
@@ -1023,7 +1019,7 @@ void EnGb2_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* rot,
 }
 
 void EnGb2_Draw(Actor* thisx, PlayState* play) {
-    EnGb2* this = THIS;
+    EnGb2* this = (EnGb2*)thisx;
 
     OPEN_DISPS(play->state.gfxCtx);
 

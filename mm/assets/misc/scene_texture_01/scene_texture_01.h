@@ -51,6 +51,9 @@ static const ALIGN_ASSET(2) char scene_texture_01_Tex_002900[] = dscene_texture_
 #define dscene_texture_01_Tex_002D00 "__OTR__misc/scene_texture_01/scene_texture_01_Tex_002D00"
 static const ALIGN_ASSET(2) char scene_texture_01_Tex_002D00[] = dscene_texture_01_Tex_002D00;
 
+#define dscene_texture_01_Tex_002D40 "__OTR__misc/scene_texture_01/scene_texture_01_Tex_002D40"
+static const ALIGN_ASSET(2) char scene_texture_01_Tex_002D40[] = dscene_texture_01_Tex_002D40;
+
 #define dscene_texture_01_Tex_002E40 "__OTR__misc/scene_texture_01/scene_texture_01_Tex_002E40"
 static const ALIGN_ASSET(2) char scene_texture_01_Tex_002E40[] = dscene_texture_01_Tex_002E40;
 

@@ -25,8 +25,14 @@
  * - higher detail draws both.
  */
 
-#include "global.h"
 #include "z64curve.h"
+
+#include "z64actor.h"
+#include "z64animation.h"
+#include "z64curve.h"
+#include "z64malloc.h"
+#include "z64.h"
+#include "functions.h"
 
 #include "2s2h/BenPort.h"
 
@@ -82,7 +88,7 @@ void SkelCurve_SetAnim(SkelCurve* skelCurve, CurveAnimationHeader* animation, f3
     skelCurve->animation = animation;
 }
 
-typedef enum {
+typedef enum SkelCurveVecType {
     /* 0 */ SKELCURVE_VEC_TYPE_SCALE,
     /* 1 */ SKELCURVE_VEC_TYPE_ROTATION,
     /* 2 */ SKELCURVE_VEC_TYPE_POSIITON,
@@ -202,8 +208,7 @@ void SkelCurve_DrawLimb(PlayState* play, s32 limbIndex, SkelCurve* skelCurve, Ov
 
             dList = limb->dList[0];
             if (dList != NULL) {
-                gSPMatrix(POLY_OPA_DISP++, Matrix_NewMtx(play->state.gfxCtx),
-                          G_MTX_LOAD | G_MTX_NOPUSH | G_MTX_MODELVIEW);
+                MATRIX_FINALIZE_AND_LOAD(POLY_OPA_DISP++, play->state.gfxCtx);
                 gSPDisplayList(POLY_OPA_DISP++, dList);
             }
         } else if (lod == 1) {
@@ -211,14 +216,12 @@ void SkelCurve_DrawLimb(PlayState* play, s32 limbIndex, SkelCurve* skelCurve, Ov
 
             dList = limb->dList[0];
             if (dList != NULL) {
-                gSPMatrix(POLY_OPA_DISP++, Matrix_NewMtx(play->state.gfxCtx),
-                          G_MTX_LOAD | G_MTX_NOPUSH | G_MTX_MODELVIEW);
+                MATRIX_FINALIZE_AND_LOAD(POLY_OPA_DISP++, play->state.gfxCtx);
                 gSPDisplayList(POLY_OPA_DISP++, dList);
             }
             dList = limb->dList[1];
             if (dList != NULL) {
-                gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(play->state.gfxCtx),
-                          G_MTX_LOAD | G_MTX_NOPUSH | G_MTX_MODELVIEW);
+                MATRIX_FINALIZE_AND_LOAD(POLY_XLU_DISP++, play->state.gfxCtx);
                 gSPDisplayList(POLY_XLU_DISP++, dList);
             }
         }

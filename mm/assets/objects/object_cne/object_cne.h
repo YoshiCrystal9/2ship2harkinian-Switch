@@ -3,105 +3,105 @@
 
 #include "align_asset_macro.h"
 
-#define dgCneSkel "__OTR__objects/object_cne/gCneSkel"
-static const ALIGN_ASSET(2) char gCneSkel[] = dgCneSkel;
+#define dgHylianYoungWomanSkel "__OTR__objects/object_cne/gHylianYoungWomanSkel"
+static const ALIGN_ASSET(2) char gHylianYoungWomanSkel[] = dgHylianYoungWomanSkel;
 
-#define dgCneTLUT "__OTR__objects/object_cne/gCneTLUT"
-static const ALIGN_ASSET(2) char gCneTLUT[] = dgCneTLUT;
+#define dgHylianYoungWomanTLUT "__OTR__objects/object_cne/gHylianYoungWomanTLUT"
+static const ALIGN_ASSET(2) char gHylianYoungWomanTLUT[] = dgHylianYoungWomanTLUT;
 
-#define dgCneSkinTex "__OTR__objects/object_cne/gCneSkinTex"
-static const ALIGN_ASSET(2) char gCneSkinTex[] = dgCneSkinTex;
+#define dgHylianYoungWomanSkinTex "__OTR__objects/object_cne/gHylianYoungWomanSkinTex"
+static const ALIGN_ASSET(2) char gHylianYoungWomanSkinTex[] = dgHylianYoungWomanSkinTex;
 
-#define dgCneBrownHairTex "__OTR__objects/object_cne/gCneBrownHairTex"
-static const ALIGN_ASSET(2) char gCneBrownHairTex[] = dgCneBrownHairTex;
+#define dgHylianYoungWomanBrownHairTex "__OTR__objects/object_cne/gHylianYoungWomanBrownHairTex"
+static const ALIGN_ASSET(2) char gHylianYoungWomanBrownHairTex[] = dgHylianYoungWomanBrownHairTex;
 
-#define dgCneHandTex "__OTR__objects/object_cne/gCneHandTex"
-static const ALIGN_ASSET(2) char gCneHandTex[] = dgCneHandTex;
+#define dgHylianYoungWomanHandTex "__OTR__objects/object_cne/gHylianYoungWomanHandTex"
+static const ALIGN_ASSET(2) char gHylianYoungWomanHandTex[] = dgHylianYoungWomanHandTex;
 
-#define dgCneBrownHairSkinTex "__OTR__objects/object_cne/gCneBrownHairSkinTex"
-static const ALIGN_ASSET(2) char gCneBrownHairSkinTex[] = dgCneBrownHairSkinTex;
+#define dgHylianYoungWomanBrownHairSkinTex "__OTR__objects/object_cne/gHylianYoungWomanBrownHairSkinTex"
+static const ALIGN_ASSET(2) char gHylianYoungWomanBrownHairSkinTex[] = dgHylianYoungWomanBrownHairSkinTex;
 
-#define dgCneBrownHairFaceTex "__OTR__objects/object_cne/gCneBrownHairFaceTex"
-static const ALIGN_ASSET(2) char gCneBrownHairFaceTex[] = dgCneBrownHairFaceTex;
+#define dgHylianYoungWomanBrownHairFaceTex "__OTR__objects/object_cne/gHylianYoungWomanBrownHairFaceTex"
+static const ALIGN_ASSET(2) char gHylianYoungWomanBrownHairFaceTex[] = dgHylianYoungWomanBrownHairFaceTex;
 
-#define dgCneDressTex "__OTR__objects/object_cne/gCneDressTex"
-static const ALIGN_ASSET(2) char gCneDressTex[] = dgCneDressTex;
+#define dgHylianYoungWomanDressTex "__OTR__objects/object_cne/gHylianYoungWomanDressTex"
+static const ALIGN_ASSET(2) char gHylianYoungWomanDressTex[] = dgHylianYoungWomanDressTex;
 
-#define dgCneDressNeckTex "__OTR__objects/object_cne/gCneDressNeckTex"
-static const ALIGN_ASSET(2) char gCneDressNeckTex[] = dgCneDressNeckTex;
+#define dgHylianYoungWomanDressNeckTex "__OTR__objects/object_cne/gHylianYoungWomanDressNeckTex"
+static const ALIGN_ASSET(2) char gHylianYoungWomanDressNeckTex[] = dgHylianYoungWomanDressNeckTex;
 
-#define dgCneHeadBrownHairDL "__OTR__objects/object_cne/gCneHeadBrownHairDL"
-static const ALIGN_ASSET(2) char gCneHeadBrownHairDL[] = dgCneHeadBrownHairDL;
+#define dgHylianYoungWomanHeadBrownHairDL "__OTR__objects/object_cne/gHylianYoungWomanHeadBrownHairDL"
+static const ALIGN_ASSET(2) char gHylianYoungWomanHeadBrownHairDL[] = dgHylianYoungWomanHeadBrownHairDL;
 
-#define dgCneRightHandDL "__OTR__objects/object_cne/gCneRightHandDL"
-static const ALIGN_ASSET(2) char gCneRightHandDL[] = dgCneRightHandDL;
+#define dgHylianYoungWomanRightHandDL "__OTR__objects/object_cne/gHylianYoungWomanRightHandDL"
+static const ALIGN_ASSET(2) char gHylianYoungWomanRightHandDL[] = dgHylianYoungWomanRightHandDL;
 
-#define dgCneRightForearmDL "__OTR__objects/object_cne/gCneRightForearmDL"
-static const ALIGN_ASSET(2) char gCneRightForearmDL[] = dgCneRightForearmDL;
+#define dgHylianYoungWomanRightForearmDL "__OTR__objects/object_cne/gHylianYoungWomanRightForearmDL"
+static const ALIGN_ASSET(2) char gHylianYoungWomanRightForearmDL[] = dgHylianYoungWomanRightForearmDL;
 
-#define dgCneRightUpperArmDL "__OTR__objects/object_cne/gCneRightUpperArmDL"
-static const ALIGN_ASSET(2) char gCneRightUpperArmDL[] = dgCneRightUpperArmDL;
+#define dgHylianYoungWomanRightUpperArmDL "__OTR__objects/object_cne/gHylianYoungWomanRightUpperArmDL"
+static const ALIGN_ASSET(2) char gHylianYoungWomanRightUpperArmDL[] = dgHylianYoungWomanRightUpperArmDL;
 
-#define dgCneLeftHandDL "__OTR__objects/object_cne/gCneLeftHandDL"
-static const ALIGN_ASSET(2) char gCneLeftHandDL[] = dgCneLeftHandDL;
+#define dgHylianYoungWomanLeftHandDL "__OTR__objects/object_cne/gHylianYoungWomanLeftHandDL"
+static const ALIGN_ASSET(2) char gHylianYoungWomanLeftHandDL[] = dgHylianYoungWomanLeftHandDL;
 
-#define dgCneLeftForearmDL "__OTR__objects/object_cne/gCneLeftForearmDL"
-static const ALIGN_ASSET(2) char gCneLeftForearmDL[] = dgCneLeftForearmDL;
+#define dgHylianYoungWomanLeftForearmDL "__OTR__objects/object_cne/gHylianYoungWomanLeftForearmDL"
+static const ALIGN_ASSET(2) char gHylianYoungWomanLeftForearmDL[] = dgHylianYoungWomanLeftForearmDL;
 
-#define dgCneLeftUpperArmDL "__OTR__objects/object_cne/gCneLeftUpperArmDL"
-static const ALIGN_ASSET(2) char gCneLeftUpperArmDL[] = dgCneLeftUpperArmDL;
+#define dgHylianYoungWomanLeftUpperArmDL "__OTR__objects/object_cne/gHylianYoungWomanLeftUpperArmDL"
+static const ALIGN_ASSET(2) char gHylianYoungWomanLeftUpperArmDL[] = dgHylianYoungWomanLeftUpperArmDL;
 
-#define dgCneTorsoDL "__OTR__objects/object_cne/gCneTorsoDL"
-static const ALIGN_ASSET(2) char gCneTorsoDL[] = dgCneTorsoDL;
+#define dgHylianYoungWomanTorsoDL "__OTR__objects/object_cne/gHylianYoungWomanTorsoDL"
+static const ALIGN_ASSET(2) char gHylianYoungWomanTorsoDL[] = dgHylianYoungWomanTorsoDL;
 
-#define dgCneRightFootDL "__OTR__objects/object_cne/gCneRightFootDL"
-static const ALIGN_ASSET(2) char gCneRightFootDL[] = dgCneRightFootDL;
+#define dgHylianYoungWomanRightFootDL "__OTR__objects/object_cne/gHylianYoungWomanRightFootDL"
+static const ALIGN_ASSET(2) char gHylianYoungWomanRightFootDL[] = dgHylianYoungWomanRightFootDL;
 
-#define dgCneRightShinDL "__OTR__objects/object_cne/gCneRightShinDL"
-static const ALIGN_ASSET(2) char gCneRightShinDL[] = dgCneRightShinDL;
+#define dgHylianYoungWomanRightShinDL "__OTR__objects/object_cne/gHylianYoungWomanRightShinDL"
+static const ALIGN_ASSET(2) char gHylianYoungWomanRightShinDL[] = dgHylianYoungWomanRightShinDL;
 
-#define dgCneRightThighDL "__OTR__objects/object_cne/gCneRightThighDL"
-static const ALIGN_ASSET(2) char gCneRightThighDL[] = dgCneRightThighDL;
+#define dgHylianYoungWomanRightThighDL "__OTR__objects/object_cne/gHylianYoungWomanRightThighDL"
+static const ALIGN_ASSET(2) char gHylianYoungWomanRightThighDL[] = dgHylianYoungWomanRightThighDL;
 
-#define dgCneLeftFootDL "__OTR__objects/object_cne/gCneLeftFootDL"
-static const ALIGN_ASSET(2) char gCneLeftFootDL[] = dgCneLeftFootDL;
+#define dgHylianYoungWomanLeftFootDL "__OTR__objects/object_cne/gHylianYoungWomanLeftFootDL"
+static const ALIGN_ASSET(2) char gHylianYoungWomanLeftFootDL[] = dgHylianYoungWomanLeftFootDL;
 
-#define dgCneLeftShinDL "__OTR__objects/object_cne/gCneLeftShinDL"
-static const ALIGN_ASSET(2) char gCneLeftShinDL[] = dgCneLeftShinDL;
+#define dgHylianYoungWomanLeftShinDL "__OTR__objects/object_cne/gHylianYoungWomanLeftShinDL"
+static const ALIGN_ASSET(2) char gHylianYoungWomanLeftShinDL[] = dgHylianYoungWomanLeftShinDL;
 
-#define dgCneLeftThighDL "__OTR__objects/object_cne/gCneLeftThighDL"
-static const ALIGN_ASSET(2) char gCneLeftThighDL[] = dgCneLeftThighDL;
+#define dgHylianYoungWomanLeftThighDL "__OTR__objects/object_cne/gHylianYoungWomanLeftThighDL"
+static const ALIGN_ASSET(2) char gHylianYoungWomanLeftThighDL[] = dgHylianYoungWomanLeftThighDL;
 
-#define dgCnePelvisDL "__OTR__objects/object_cne/gCnePelvisDL"
-static const ALIGN_ASSET(2) char gCnePelvisDL[] = dgCnePelvisDL;
+#define dgHylianYoungWomanPelvisDL "__OTR__objects/object_cne/gHylianYoungWomanPelvisDL"
+static const ALIGN_ASSET(2) char gHylianYoungWomanPelvisDL[] = dgHylianYoungWomanPelvisDL;
 
-#define dgCneOrangeHairFaceTex "__OTR__objects/object_cne/gCneOrangeHairFaceTex"
-static const ALIGN_ASSET(2) char gCneOrangeHairFaceTex[] = dgCneOrangeHairFaceTex;
+#define dgHylianYoungWomanOrangeHairFaceTex "__OTR__objects/object_cne/gHylianYoungWomanOrangeHairFaceTex"
+static const ALIGN_ASSET(2) char gHylianYoungWomanOrangeHairFaceTex[] = dgHylianYoungWomanOrangeHairFaceTex;
 
-#define dgCneOrangeHairSkinTex "__OTR__objects/object_cne/gCneOrangeHairSkinTex"
-static const ALIGN_ASSET(2) char gCneOrangeHairSkinTex[] = dgCneOrangeHairSkinTex;
+#define dgHylianYoungWomanOrangeHairSkinTex "__OTR__objects/object_cne/gHylianYoungWomanOrangeHairSkinTex"
+static const ALIGN_ASSET(2) char gHylianYoungWomanOrangeHairSkinTex[] = dgHylianYoungWomanOrangeHairSkinTex;
 
-#define dgCneHeadOrangeHairDL "__OTR__objects/object_cne/gCneHeadOrangeHairDL"
-static const ALIGN_ASSET(2) char gCneHeadOrangeHairDL[] = dgCneHeadOrangeHairDL;
+#define dgHylianYoungWomanHeadOrangeHairDL "__OTR__objects/object_cne/gHylianYoungWomanHeadOrangeHairDL"
+static const ALIGN_ASSET(2) char gHylianYoungWomanHeadOrangeHairDL[] = dgHylianYoungWomanHeadOrangeHairDL;
 
-typedef enum CneLimb {
-    /* 0x00 */ CNE_LIMB_NONE,
-    /* 0x01 */ CNE_LIMB_PELVIS,
-    /* 0x02 */ CNE_LIMB_LEFT_THIGH,
-    /* 0x03 */ CNE_LIMB_LEFT_SHIN,
-    /* 0x04 */ CNE_LIMB_LEFT_FOOT,
-    /* 0x05 */ CNE_LIMB_RIGHT_THIGH,
-    /* 0x06 */ CNE_LIMB_RIGHT_SHIN,
-    /* 0x07 */ CNE_LIMB_RIGHT_FOOT,
-    /* 0x08 */ CNE_LIMB_TORSO,
-    /* 0x09 */ CNE_LIMB_LEFT_UPPER_ARM,
-    /* 0x0A */ CNE_LIMB_LEFT_FOREARM,
-    /* 0x0B */ CNE_LIMB_LEFT_HAND,
-    /* 0x0C */ CNE_LIMB_RIGHT_UPPER_ARM,
-    /* 0x0D */ CNE_LIMB_RIGHT_FOREARM,
-    /* 0x0E */ CNE_LIMB_RIGHT_HAND,
-    /* 0x0F */ CNE_LIMB_HEAD,
-    /* 0x10 */ CNE_LIMB_MAX
-} CneLimb;
+typedef enum HylianYoungWomanLimb {
+    /* 0x00 */ HYLIAN_YOUNG_WOMAN_LIMB_NONE,
+    /* 0x01 */ HYLIAN_YOUNG_WOMAN_LIMB_PELVIS,
+    /* 0x02 */ HYLIAN_YOUNG_WOMAN_LIMB_LEFT_THIGH,
+    /* 0x03 */ HYLIAN_YOUNG_WOMAN_LIMB_LEFT_SHIN,
+    /* 0x04 */ HYLIAN_YOUNG_WOMAN_LIMB_LEFT_FOOT,
+    /* 0x05 */ HYLIAN_YOUNG_WOMAN_LIMB_RIGHT_THIGH,
+    /* 0x06 */ HYLIAN_YOUNG_WOMAN_LIMB_RIGHT_SHIN,
+    /* 0x07 */ HYLIAN_YOUNG_WOMAN_LIMB_RIGHT_FOOT,
+    /* 0x08 */ HYLIAN_YOUNG_WOMAN_LIMB_TORSO,
+    /* 0x09 */ HYLIAN_YOUNG_WOMAN_LIMB_LEFT_UPPER_ARM,
+    /* 0x0A */ HYLIAN_YOUNG_WOMAN_LIMB_LEFT_FOREARM,
+    /* 0x0B */ HYLIAN_YOUNG_WOMAN_LIMB_LEFT_HAND,
+    /* 0x0C */ HYLIAN_YOUNG_WOMAN_LIMB_RIGHT_UPPER_ARM,
+    /* 0x0D */ HYLIAN_YOUNG_WOMAN_LIMB_RIGHT_FOREARM,
+    /* 0x0E */ HYLIAN_YOUNG_WOMAN_LIMB_RIGHT_HAND,
+    /* 0x0F */ HYLIAN_YOUNG_WOMAN_LIMB_HEAD,
+    /* 0x10 */ HYLIAN_YOUNG_WOMAN_LIMB_MAX
+} HylianYoungWomanLimb;
 
 #endif // OBJECTS_OBJECT_CNE_H

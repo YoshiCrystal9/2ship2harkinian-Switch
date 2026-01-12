@@ -1,4 +1,4 @@
-#include "public/bridge/consolevariablebridge.h"
+#include <libultraship/bridge/consolevariablebridge.h>
 #include "2s2h/GameInteractor/GameInteractor.h"
 #include "2s2h/ShipInit.hpp"
 
@@ -60,6 +60,8 @@ void RegisterSkipIntroSequence() {
             SET_WEEKEVENTREG(WEEKEVENTREG_ENTERED_WEST_CLOCK_TOWN);
             SET_WEEKEVENTREG(WEEKEVENTREG_ENTERED_NORTH_CLOCK_TOWN);
         }
+        // Persist this modified state so moon crashes without saving keep it
+        Sram_SaveSpecialEnterClockTown(gPlayState);
     });
 }
 

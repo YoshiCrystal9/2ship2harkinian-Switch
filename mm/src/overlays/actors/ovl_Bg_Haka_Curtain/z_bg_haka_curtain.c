@@ -7,9 +7,7 @@
 #include "z_bg_haka_curtain.h"
 #include "objects/object_haka_obj/object_haka_obj.h"
 
-#define FLAGS (ACTOR_FLAG_10)
-
-#define THIS ((BgHakaCurtain*)thisx)
+#define FLAGS (ACTOR_FLAG_UPDATE_CULLING_DISABLED)
 
 void BgHakaCurtain_Init(Actor* thisx, PlayState* play);
 void BgHakaCurtain_Destroy(Actor* thisx, PlayState* play);
@@ -26,7 +24,7 @@ void func_80B6DD9C(BgHakaCurtain* this, PlayState* play);
 void func_80B6DEA8(BgHakaCurtain* this, PlayState* play);
 void func_80B6DE80(BgHakaCurtain* this);
 
-ActorInit Bg_Haka_Curtain_InitVars = {
+ActorProfile Bg_Haka_Curtain_Profile = {
     /**/ ACTOR_BG_HAKA_CURTAIN,
     /**/ ACTORCAT_BG,
     /**/ FLAGS,
@@ -39,14 +37,14 @@ ActorInit Bg_Haka_Curtain_InitVars = {
 };
 
 static InitChainEntry sInitChain[] = {
-    ICHAIN_F32(uncullZoneForward, 4000, ICHAIN_CONTINUE),
-    ICHAIN_F32(uncullZoneScale, 700, ICHAIN_CONTINUE),
-    ICHAIN_F32(uncullZoneDownward, 600, ICHAIN_CONTINUE),
+    ICHAIN_F32(cullingVolumeDistance, 4000, ICHAIN_CONTINUE),
+    ICHAIN_F32(cullingVolumeScale, 700, ICHAIN_CONTINUE),
+    ICHAIN_F32(cullingVolumeDownward, 600, ICHAIN_CONTINUE),
     ICHAIN_VEC3F_DIV1000(scale, 100, ICHAIN_STOP),
 };
 
 void BgHakaCurtain_Init(Actor* thisx, PlayState* play) {
-    BgHakaCurtain* this = THIS;
+    BgHakaCurtain* this = (BgHakaCurtain*)thisx;
 
     Actor_ProcessInitChain(&this->dyna.actor, sInitChain);
     DynaPolyActor_Init(&this->dyna, DYNA_TRANSFORM_POS);
@@ -59,7 +57,7 @@ void BgHakaCurtain_Init(Actor* thisx, PlayState* play) {
 }
 
 void BgHakaCurtain_Destroy(Actor* thisx, PlayState* play) {
-    BgHakaCurtain* this = THIS;
+    BgHakaCurtain* this = (BgHakaCurtain*)thisx;
 
     DynaPoly_DeleteBgActor(play, &play->colCtx.dyna, this->dyna.bgId);
 }
@@ -122,7 +120,7 @@ void func_80B6DEA8(BgHakaCurtain* this, PlayState* play) {
 }
 
 void BgHakaCurtain_Update(Actor* thisx, PlayState* play) {
-    BgHakaCurtain* this = THIS;
+    BgHakaCurtain* this = (BgHakaCurtain*)thisx;
     CsCmdActorCue* cue;
 
     if (Cutscene_IsCueInChannel(play, CS_CMD_ACTOR_CUE_469)) {

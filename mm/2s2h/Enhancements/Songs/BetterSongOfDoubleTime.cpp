@@ -1,8 +1,10 @@
-#include "public/bridge/consolevariablebridge.h"
+#include <libultraship/bridge/consolevariablebridge.h>
 #include "2s2h/BenGui/HudEditor.h"
 #include "2s2h/Enhancements/FrameInterpolation/FrameInterpolation.h"
 #include "2s2h/GameInteractor/GameInteractor.h"
 #include "2s2h/ShipInit.hpp"
+#include "2s2h/Rando/MiscBehavior/ClockShuffle.h"
+#include "2s2h/CustomMessage/CustomMessage.h"
 
 extern "C" {
 #include "variables.h"
@@ -113,7 +115,21 @@ void OnPlayerUpdate(Actor* actor) {
     }
 
     // Pressing A should confirm the song
-    if (CHECK_BTN_ALL(input->press.button, BTN_A)) {
+    if (CHECK_BTN_ALL(input->press.button, BTN_A) && gPlayState->msgCtx.msgMode == MSGMODE_NONE) {
+        // Check if the selected time is owned in ClockShuffle mode
+        if (!Rando::ClockShuffle::IsTimeOwnedForClockShuffle(sSelectedDay, sSelectedTime)) {
+            // Play error sound
+            Audio_PlaySfx(NA_SE_SY_OCARINA_ERROR);
+
+            // Get time description for the error message
+            std::string timeDescription =
+                Rando::ClockShuffle::GetTimeDescriptionForMessage(sSelectedDay, sSelectedTime);
+
+            // Show message FIRST
+            CustomMessage::StartTextbox(timeDescription + " is beyond your reach!");
+            return;
+        }
+
         Audio_PlaySfx_MessageDecide();
         gPlayState->msgCtx.ocarinaMode = OCARINA_MODE_APPLY_DOUBLE_SOT;
         sActivelyChangingTime = false;
@@ -129,14 +145,14 @@ void OnPlayerUpdate(Actor* actor) {
                 gPlayState->transitionTrigger = TRANS_TRIGGER_START;
                 gPlayState->transitionType = TRANS_TYPE_FADE_BLACK_FAST;
 
-                Play_SetRespawnData(&gPlayState->state, RESPAWN_MODE_RETURN, gSaveContext.save.entrance,
-                                    gPlayState->roomCtx.curRoom.num, PLAYER_PARAMS(0xFF, PLAYER_INITMODE_B),
+                Play_SetRespawnData(gPlayState, RESPAWN_MODE_RETURN, gSaveContext.save.entrance,
+                                    gPlayState->roomCtx.curRoom.num, PLAYER_PARAMS(0xFF, PLAYER_START_MODE_B),
                                     &player->actor.world.pos, player->actor.world.rot.y);
                 gSaveContext.nextTransitionType = TRANS_TYPE_FADE_BLACK;
                 gSaveContext.respawnFlag = 2;
 
                 // Stop BGM so that new day sequences can play
-                gSaveContext.seqId = (u8)NA_BGM_DISABLED;
+                gSaveContext.seqId = NA_BGM_DISABLED;
 
                 GameInteractor::Instance->UnregisterGameHookForID<GameInteractor::OnActorKill>(onEnTest6KillHookId);
                 onEnTest6KillHookId = 0;
@@ -226,7 +242,8 @@ void OnPlayerUpdate(Actor* actor) {
         sSelectedTime = newTime;
     } else if (adjustMode == ADJUST_DIRECTION_REVERSE) { // Reverse time
         u16 newTime = sSelectedTime - interval;
-        if (sSelectedDay == sOriginalDay && CLOCK_TIME_NORMALIZED(newTime) < CLOCK_TIME_NORMALIZED(sOriginalTime)) {
+        if (sSelectedDay == sOriginalDay && (CLOCK_TIME_NORMALIZED(newTime) < CLOCK_TIME_NORMALIZED(sOriginalTime) ||
+                                             interval > CLOCK_TIME_NORMALIZED(sSelectedTime))) {
             newTime = sOriginalTime;
         }
         // Day decrementing
@@ -373,9 +390,9 @@ void RegisterBetterSongOfDoubleTime() {
 
         gPlayState->msgCtx.ocarinaMode = OCARINA_MODE_PROCESS_DOUBLE_TIME;
         sActivelyChangingTime = true;
-        sOriginalTime = gSaveContext.save.time;
+        sOriginalTime = CURRENT_TIME;
         sOriginalDay = gSaveContext.save.day;
-        sSelectedTime = gSaveContext.save.time;
+        sSelectedTime = CURRENT_TIME;
         sSelectedDay = gSaveContext.save.day;
 
         onPlayerUpdateHookId = GameInteractor::Instance->RegisterGameHookForID<GameInteractor::OnActorUpdate>(

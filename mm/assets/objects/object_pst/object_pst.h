@@ -3,8 +3,8 @@
 
 #include "align_asset_macro.h"
 
-#define dgPostboxOpenSlotAnim "__OTR__objects/object_pst/gPostboxOpenSlotAnim"
-static const ALIGN_ASSET(2) char gPostboxOpenSlotAnim[] = dgPostboxOpenSlotAnim;
+#define dgPostboxIdleAnim "__OTR__objects/object_pst/gPostboxIdleAnim"
+static const ALIGN_ASSET(2) char gPostboxIdleAnim[] = dgPostboxIdleAnim;
 
 #define dgPostboxFrameDL "__OTR__objects/object_pst/gPostboxFrameDL"
 static const ALIGN_ASSET(2) char gPostboxFrameDL[] = dgPostboxFrameDL;

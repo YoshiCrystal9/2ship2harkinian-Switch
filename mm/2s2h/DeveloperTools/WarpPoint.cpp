@@ -1,8 +1,9 @@
 #include "2s2h/BenGui/UIWidgets.hpp"
-#include "window/gui/IconsFontAwesome4.h"
+#include <ship/window/gui/IconsFontAwesome4.h>
 #include "2s2h/GameInteractor/GameInteractor.h"
 #include "2s2h/DeveloperTools/DeveloperTools.h"
 #include "2s2h/ShipInit.hpp"
+#include "2s2h/BenGui/BenGui.hpp"
 
 extern "C" {
 #include "z64.h"
@@ -39,7 +40,7 @@ void Warp() {
         // to leave it as a hidden cvar. This is incompatible with the SkipToFileSelect enhancement. To enable it open
         // the Console and type: `set gDeveloperTools.WarpPoint.BootToWarpPoint 1`
         gSaveContext.gameMode = GAMEMODE_NORMAL;
-        Sram_InitDebugSave();
+        Sram_InitNewSave();
         gSaveContext.sceneLayer = 0;
         gSaveContext.save.time = CLOCK_TIME(8, 0);
         gSaveContext.save.day = 1;
@@ -82,7 +83,7 @@ void Warp() {
     gSaveContext.respawn[RESPAWN_MODE_DOWN].roomIndex = CVarGetInteger(WARP_POINT_CVAR "Room", 0);
     gSaveContext.respawn[RESPAWN_MODE_DOWN].pos = pos;
     gSaveContext.respawn[RESPAWN_MODE_DOWN].yaw = CVarGetFloat(WARP_POINT_CVAR "Rotation", 0.0f);
-    gSaveContext.respawn[RESPAWN_MODE_DOWN].playerParams = PLAYER_PARAMS(0xFF, PLAYER_INITMODE_D);
+    gSaveContext.respawn[RESPAWN_MODE_DOWN].playerParams = PLAYER_PARAMS(0xFF, PLAYER_START_MODE_D);
     gSaveContext.nextTransitionType = TRANS_TYPE_FADE_BLACK_FAST;
     gSaveContext.respawnFlag = -8;
 }
@@ -107,6 +108,16 @@ void RegisterWarpPoint() {
 }
 
 void RenderWarpPointSection() {
+    bool skipToFileSelect = (bool)CVarGetInteger("gEnhancements.Cutscenes.SkipToFileSelect", 0);
+    UIWidgets::CVarCheckbox(
+        "Boot to Warp Point on Launch", WARP_POINT_CVAR "BootToWarpPoint",
+        UIWidgets::CheckboxOptions({ { .disabled = skipToFileSelect,
+                                       .disabledTooltip = "Incompatible with Skip to File Select enhancement" } })
+            .Color(THEME_COLOR)
+            .Tooltip(
+                "If enabled, the game will boot directly to the saved warp point with the debug save when launching "
+                "the game. Make temporary changes to the debug save (in code) to speed up your debugging experience\n\n"
+                "Incompatible with Skip to File Select enhancement."));
     if (UIWidgets::Button("Set Warp Point", { { .disabled = gPlayState == NULL,
                                                 .disabledTooltip = "Cannot set warp points when not in-game" } })) {
         Player* player = GET_PLAYER(gPlayState);

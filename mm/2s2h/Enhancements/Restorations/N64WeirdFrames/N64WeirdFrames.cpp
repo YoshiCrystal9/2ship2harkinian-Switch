@@ -1,4 +1,4 @@
-#include "public/bridge/consolevariablebridge.h"
+#include <libultraship/bridge/consolevariablebridge.h>
 #include "2s2h/GameInteractor/GameInteractor.h"
 #include "2s2h/ShipInit.hpp"
 
@@ -43,7 +43,7 @@ static std::vector<WeirdAnimation> weirdAnimations{
 
 void RegisterN64WeirdFrames() {
     COND_VB_SHOULD(VB_LOAD_PLAYER_ANIMATION_FRAME, CVAR, {
-        const auto entry = va_arg(args, AnimationEntry*);
+        const auto entry = va_arg(args, AnimTask*);
         if (entry == nullptr) {
             return;
         }

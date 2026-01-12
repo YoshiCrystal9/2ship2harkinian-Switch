@@ -17,7 +17,8 @@ typedef enum EnSlimeType {
     /* 0 */ EN_SLIME_TYPE_BLUE,
     /* 1 */ EN_SLIME_TYPE_GREEN,
     /* 2 */ EN_SLIME_TYPE_YELLOW,
-    /* 3 */ EN_SLIME_TYPE_RED
+    /* 3 */ EN_SLIME_TYPE_RED,
+    /* 4 */ EN_SLIME_TYPE_MAX
 } EnSlimeType;
 
 typedef enum EnSlimeBodyPart {
@@ -39,7 +40,7 @@ typedef struct EnSlime {
     /* 0x14E */ s16 idleRotY;
     /* 0x150 */ s16 reviveRotY;
     /* 0x152 */ s16 reviveTime;
-    /* 0x154 */ union { 
+    /* 0x154 */ union {
                     Vec3f iceBlockSnapPos;
                     Vec3f wobbleRot;
                 };

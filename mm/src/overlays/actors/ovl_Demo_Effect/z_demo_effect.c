@@ -10,9 +10,7 @@
 
 #include "2s2h/BenPort.h"
 
-#define FLAGS (ACTOR_FLAG_10 | ACTOR_FLAG_20)
-
-#define THIS ((DemoEffect*)thisx)
+#define FLAGS (ACTOR_FLAG_UPDATE_CULLING_DISABLED | ACTOR_FLAG_DRAW_CULLING_DISABLED)
 
 void DemoEffect_Init(Actor* thisx, PlayState* play);
 void DemoEffect_Destroy(Actor* thisx, PlayState* play);
@@ -26,7 +24,7 @@ void DemoEffect_ExpandLight(DemoEffect* this, PlayState* play);
 void DemoEffect_DrawTimewarp(Actor* thisx, PlayState* play);
 void DemoEffect_DrawLight(Actor* thisx, PlayState* play2);
 
-ActorInit Demo_Effect_InitVars = {
+ActorProfile Demo_Effect_Profile = {
     /**/ ACTOR_DEMO_EFFECT,
     /**/ ACTORCAT_BG,
     /**/ FLAGS,
@@ -44,7 +42,7 @@ void DemoEffect_Init(Actor* thisx, PlayState* play) {
         GAMEPLAY_KEEP, GAMEPLAY_KEEP, GAMEPLAY_KEEP, GAMEPLAY_KEEP,
     };
     s32 pad;
-    DemoEffect* this = THIS;
+    DemoEffect* this = (DemoEffect*)thisx;
     s32 type = DEMO_EFFECT_GET_TYPE(&this->actor);
     s32 objectSlot;
     s32 pad2;
@@ -73,7 +71,7 @@ void DemoEffect_Init(Actor* thisx, PlayState* play) {
     switch (type) {
         case DEMO_EFFECT_TIMEWARP_TIMEBLOCK_LARGE:
         case DEMO_EFFECT_TIMEWARP_TIMEBLOCK_SMALL:
-            this->actor.flags |= ACTOR_FLAG_2000000;
+            this->actor.flags |= ACTOR_FLAG_UPDATE_DURING_OCARINA;
         // FALLTHROUGH
         case DEMO_EFFECT_TIMEWARP_LIGHTBLOCK_LARGE:
         case DEMO_EFFECT_TIMEWARP_LIGHTBLOCK_VERY_LARGE:
@@ -109,7 +107,7 @@ void DemoEffect_Init(Actor* thisx, PlayState* play) {
 }
 
 void DemoEffect_Destroy(Actor* thisx, PlayState* play) {
-    DemoEffect* this = THIS;
+    DemoEffect* this = (DemoEffect*)thisx;
 
     switch (DEMO_EFFECT_GET_TYPE(&this->actor)) {
         case DEMO_EFFECT_TIMEWARP_TIMEBLOCK_LARGE:
@@ -218,7 +216,7 @@ void DemoEffect_FinishTimewarp(DemoEffect* this, PlayState* play) {
         this->actor.scale.x = scale;
         this->actor.scale.z = scale;
         DemoEffect_SetPerVertexAlpha(alphaScale);
-        Actor_PlaySfx_FlaggedCentered3(&this->actor, NA_SE_EV_TIMETRIP_LIGHT - SFX_FLAG);
+        Actor_PlaySfx_FlaggedCentered2(&this->actor, NA_SE_EV_TIMETRIP_LIGHT - SFX_FLAG);
     } else {
         DemoEffect_SetPerVertexAlpha(1.0f);
         Actor_Kill(&this->actor);
@@ -229,7 +227,7 @@ void DemoEffect_FinishTimewarp(DemoEffect* this, PlayState* play) {
  * Runs until animation plays to frame 59 and pauses it on frame 59.
  */
 void DemoEffect_StartTimewarp(DemoEffect* this, PlayState* play) {
-    Actor_PlaySfx_FlaggedCentered3(&this->actor, NA_SE_EV_TIMETRIP_LIGHT - SFX_FLAG);
+    Actor_PlaySfx_FlaggedCentered2(&this->actor, NA_SE_EV_TIMETRIP_LIGHT - SFX_FLAG);
 
     if (SkelCurve_Update(play, &this->skelCurve)) {
         SkelCurve_SetAnim(&this->skelCurve, &gTimewarpAnim, 1.0f, 60.0f, 59.0f, 0.0f);
@@ -264,14 +262,14 @@ void DemoEffect_ExpandLight(DemoEffect* this, PlayState* play) {
 }
 
 void DemoEffect_Update(Actor* thisx, PlayState* play) {
-    DemoEffect* this = THIS;
+    DemoEffect* this = (DemoEffect*)thisx;
 
     this->actionFunc(this, play);
 }
 
 s32 DemoEffect_OverrideLimbDrawTimewarp(PlayState* play, SkelCurve* skelCurve, s32 limbIndex, Actor* thisx) {
     s32 pad;
-    DemoEffect* this = THIS;
+    DemoEffect* this = (DemoEffect*)thisx;
     u32 frames = play->gameplayFrames;
 
     OPEN_DISPS(play->state.gfxCtx);
@@ -286,8 +284,8 @@ s32 DemoEffect_OverrideLimbDrawTimewarp(PlayState* play, SkelCurve* skelCurve, s
 
     CLOSE_DISPS(play->state.gfxCtx);
 
-    if (limbIndex == 0) {
-        s16* transform = skelCurve->jointTable[0];
+    if (limbIndex == TIMEWARP_LIMB_NONE) {
+        s16* transform = skelCurve->jointTable[LIMB_ROOT_POS];
 
         transform[2] = transform[0] = 1024;
         transform[1] = 1024;
@@ -298,7 +296,7 @@ s32 DemoEffect_OverrideLimbDrawTimewarp(PlayState* play, SkelCurve* skelCurve, s
 
 void DemoEffect_DrawTimewarp(Actor* thisx, PlayState* play) {
     GraphicsContext* gfxCtx = play->state.gfxCtx;
-    DemoEffect* this = THIS;
+    DemoEffect* this = (DemoEffect*)thisx;
 
     OPEN_DISPS(gfxCtx);
 
@@ -312,7 +310,7 @@ void DemoEffect_DrawTimewarp(Actor* thisx, PlayState* play) {
 
 void DemoEffect_DrawLight(Actor* thisx, PlayState* play2) {
     PlayState* play = play2;
-    DemoEffect* this = THIS;
+    DemoEffect* this = (DemoEffect*)thisx;
     s16 zRot = (this->timer * 0x400) & 0xFFFF;
 
     OPEN_DISPS(play->state.gfxCtx);
@@ -326,13 +324,13 @@ void DemoEffect_DrawLight(Actor* thisx, PlayState* play2) {
     Matrix_Push();
     Matrix_RotateZS(zRot, MTXMODE_APPLY);
 
-    gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    MATRIX_FINALIZE_AND_LOAD(POLY_XLU_DISP++, play->state.gfxCtx);
     gSPDisplayList(POLY_XLU_DISP++, gEffFlash2DL);
 
     Matrix_Pop();
     Matrix_RotateZS(-zRot, MTXMODE_APPLY);
 
-    gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    MATRIX_FINALIZE_AND_LOAD(POLY_XLU_DISP++, play->state.gfxCtx);
     gSPDisplayList(POLY_XLU_DISP++, gEffFlash2DL);
 
     CLOSE_DISPS(play->state.gfxCtx);

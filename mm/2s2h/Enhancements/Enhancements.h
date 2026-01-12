@@ -27,6 +27,12 @@ enum CremiaRewardsOptions {
     CREMIA_REWARD_ALWAYS_RUPEE,
 };
 
+enum AmmoBuybackOptions {
+    AMMO_BUYBACK_VANILLA,
+    AMMO_BUYBACK_FULL_PRICE,
+    AMMO_BUYBACK_HALF_PRICE,
+};
+
 enum GibdoTradeSequenceOptions {
     GIBDO_TRADE_SEQUENCE_VANILLA,
     GIBDO_TRADE_SEQUENCE_MM3D,
@@ -44,6 +50,18 @@ enum HiddenGrottosVisibilityOptions {
     HIDDEN_GROTTOS_VISIBLITY_WEAR_MASK_OF_TRUTH,
     HIDDEN_GROTTOS_VISIBLITY_HAVE_MASK_OF_TRUTH,
     HIDDEN_GROTTOS_VISIBLITY_ALWAYS,
+};
+
+enum TimerDisplayOptions {
+    TIMER_DISPLAY_NONE,
+    TIMER_DISPLAY_RTA,
+    TIMER_DISPLAY_IGT,
+};
+
+enum GoronRaceDifficultyOptions {
+    GORON_RACE_DIFFICULTY_VANILLA,
+    GORON_RACE_DIFFICULTY_BALANCED,
+    GORON_RACE_DIFFICULTY_SKIP,
 };
 
 // Old Entry Point

@@ -1,4 +1,4 @@
-#include "public/bridge/consolevariablebridge.h"
+#include <libultraship/bridge/consolevariablebridge.h>
 #include "2s2h/GameInteractor/GameInteractor.h"
 #include "2s2h/Enhancements/FrameInterpolation/FrameInterpolation.h"
 #include "2s2h/ShipInit.hpp"
@@ -157,7 +157,7 @@ void RegisterPersistentMasks() {
         // But don't speed up if the player is non-human and controller input is being overriden for cutscenes/minigames
         // or if player is Kafei
         if (player && STATE_CVAR && player->actor.id == ACTOR_PLAYER &&
-            (GET_PLAYER_FORM == PLAYER_FORM_HUMAN || gPlayState->actorCtx.unk268 == 0)) {
+            (GET_PLAYER_FORM == PLAYER_FORM_HUMAN || gPlayState->actorCtx.isOverrideInputOn == 0)) {
             *should = true;
         }
     });

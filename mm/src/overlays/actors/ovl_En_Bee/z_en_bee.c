@@ -6,9 +6,7 @@
 
 #include "z_en_bee.h"
 
-#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_UNFRIENDLY)
-
-#define THIS ((EnBee*)thisx)
+#define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_HOSTILE)
 
 void EnBee_Init(Actor* thisx, PlayState* play);
 void EnBee_Destroy(Actor* thisx, PlayState* play);
@@ -22,7 +20,7 @@ void EnBee_Attack(EnBee* this, PlayState* play);
 
 s32 sNumLoadedBees = 0;
 
-ActorInit En_Bee_InitVars = {
+ActorProfile En_Bee_Profile = {
     /**/ ACTOR_EN_BEE,
     /**/ ACTORCAT_ENEMY,
     /**/ FLAGS,
@@ -71,7 +69,7 @@ static DamageTable sDamageTable = {
 
 static ColliderCylinderInit sCylinderInit = {
     {
-        COLTYPE_NONE,
+        COL_MATERIAL_NONE,
         AT_ON | AT_TYPE_ENEMY,
         AC_ON | AC_HARD | AC_TYPE_PLAYER,
         OC1_ON,
@@ -79,18 +77,18 @@ static ColliderCylinderInit sCylinderInit = {
         COLSHAPE_CYLINDER,
     },
     {
-        ELEMTYPE_UNK0,
+        ELEM_MATERIAL_UNK0,
         { 0xF7CFFFFF, 0x08, 0x02 },
         { 0xF7CFFFFF, 0x00, 0x00 },
-        TOUCH_ON | TOUCH_SFX_NORMAL,
-        BUMP_ON,
+        ATELEM_ON | ATELEM_SFX_NORMAL,
+        ACELEM_ON,
         OCELEM_ON,
     },
     { 6, 13, -4, { 0, 0, 0 } },
 };
 
 void EnBee_Init(Actor* thisx, PlayState* play) {
-    EnBee* this = THIS;
+    EnBee* this = (EnBee*)thisx;
 
     this->actor.colChkInfo.mass = 10;
     ActorShape_Init(&this->actor.shape, 0.0f, ActorShadow_DrawCircle, 19.0f);
@@ -98,14 +96,14 @@ void EnBee_Init(Actor* thisx, PlayState* play) {
                    OBJECT_BEE_LIMB_MAX);
     this->actor.colChkInfo.health = 1;
     this->actor.colChkInfo.damageTable = &sDamageTable;
-    this->actor.targetMode = TARGET_MODE_6;
+    this->actor.attentionRangeType = ATTENTION_RANGE_6;
     Collider_InitAndSetCylinder(play, &this->collider, &this->actor, &sCylinderInit);
     this->instanceId = sNumLoadedBees;
     sNumLoadedBees++;
     this->actor.shape.shadowScale = 12.0f;
 
     if (CutsceneManager_GetCurrentCsId() != CS_ID_NONE) {
-        func_800BC154(play, &play->actorCtx, &this->actor, ACTORCAT_ITEMACTION);
+        Actor_ChangeCategory(play, &play->actorCtx, &this->actor, ACTORCAT_ITEMACTION);
     }
 
     this->actor.hintId = TATL_HINT_ID_GIANT_BEE;
@@ -113,7 +111,7 @@ void EnBee_Init(Actor* thisx, PlayState* play) {
 }
 
 void EnBee_Destroy(Actor* thisx, PlayState* play) {
-    EnBee* this = THIS;
+    EnBee* this = (EnBee*)thisx;
 
     Collider_DestroyCylinder(play, &this->collider);
 }
@@ -151,7 +149,7 @@ void EnBee_FlyIdle(EnBee* this, PlayState* play) {
     s32 pad[2];
 
     if ((this->actor.category != ACTORCAT_ENEMY) && (CutsceneManager_GetCurrentCsId() == CS_ID_NONE)) {
-        func_800BC154(play, &play->actorCtx, &this->actor, ACTORCAT_ENEMY);
+        Actor_ChangeCategory(play, &play->actorCtx, &this->actor, ACTORCAT_ENEMY);
     }
 
     Math_Vec3f_Copy(&nextPos, &this->targetPos[this->posIndex]);
@@ -249,7 +247,7 @@ void EnBee_UpdateDamage(EnBee* this, PlayState* play) {
 
 void EnBee_Update(Actor* thisx, PlayState* play) {
     s32 pad;
-    EnBee* this = THIS;
+    EnBee* this = (EnBee*)thisx;
 
     SkelAnime_Update(&this->skelAnime);
 
@@ -282,7 +280,7 @@ void EnBee_Update(Actor* thisx, PlayState* play) {
 }
 
 void EnBee_Draw(Actor* thisx, PlayState* play) {
-    EnBee* this = THIS;
+    EnBee* this = (EnBee*)thisx;
 
     Gfx_SetupDL25_Opa(play->state.gfxCtx);
     Gfx_SetupDL25_Xlu(play->state.gfxCtx);

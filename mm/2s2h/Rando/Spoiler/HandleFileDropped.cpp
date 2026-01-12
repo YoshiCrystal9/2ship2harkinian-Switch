@@ -4,14 +4,14 @@
 #include <filesystem>
 #include <spdlog/spdlog.h>
 #include "BenPort.h"
-#include "public/bridge/consolevariablebridge.h"
-#include "Window.h"
+#include <libultraship/bridge/consolevariablebridge.h>
+#include <ship/window/Window.h>
 
 extern "C" {
 #include "sfx.h"
 }
 
-bool Rando::Spoiler::HandleFileDropped(const std::string& filePath) {
+bool Rando::Spoiler::HandleFileDropped(char* filePath) {
     try {
         std::ifstream fileStream(filePath);
 

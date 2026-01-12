@@ -13,6 +13,7 @@ static RegisterShipInitFunc initFunc([]() {
             CHECK(RC_SNOWHEAD_TEMPLE_BLOCK_ROOM_LEDGE_CHEST, HAS_ITEM(ITEM_HOOKSHOT)),
             CHECK(RC_SNOWHEAD_TEMPLE_BLOCK_ROOM_POT_01, true),
             CHECK(RC_SNOWHEAD_TEMPLE_BLOCK_ROOM_POT_02, true),
+            CHECK(RC_ENEMY_DROP_FLYING_POT, CanKillEnemy(ACTOR_EN_TUBO_TRAP)),
         },
         .connections = {
             CONNECTION(RR_SNOWHEAD_TEMPLE_CENTRAL_ROOM_FIRST_FLOOR,  true),
@@ -51,12 +52,13 @@ static RegisterShipInitFunc initFunc([]() {
     };
     Regions[RR_SNOWHEAD_TEMPLE_BRIDGE_ROOM_AFTER] = RandoRegion{ .sceneId = SCENE_HAKUGIN,
         .checks = {
-            CHECK(RC_SNOWHEAD_TEMPLE_BRIDGE_ROOM_CHEST, ((CAN_BE_ZORA && CAN_USE_SWORD) || (CAN_BE_GORON && CAN_USE_SWORD) || CAN_USE_MAGIC_ARROW(FIRE) || HAS_ITEM(ITEM_HOOKSHOT))),
-            CHECK(RC_SNOWHEAD_TEMPLE_BRIDGE_ROOM_LARGE_CRATE, CAN_BE_GORON || CAN_BE_ZORA),
-            CHECK(RC_SNOWHEAD_TEMPLE_BRIDGE_ROOM_AFTER_POT_01, CAN_BE_ZORA || CAN_BE_GORON),
-            CHECK(RC_SNOWHEAD_TEMPLE_BRIDGE_ROOM_AFTER_POT_02, CAN_BE_ZORA || CAN_BE_GORON),
+            CHECK(RC_SNOWHEAD_TEMPLE_BRIDGE_ROOM_CHEST, (CAN_BE_ZORA || CAN_USE_MAGIC_ARROW(FIRE) || HAS_ITEM(ITEM_HOOKSHOT))),
+            CHECK(RC_SNOWHEAD_TEMPLE_BRIDGE_ROOM_LARGE_CRATE, true),
+            CHECK(RC_SNOWHEAD_TEMPLE_BRIDGE_ROOM_AFTER_POT_01, true),
+            CHECK(RC_SNOWHEAD_TEMPLE_BRIDGE_ROOM_AFTER_POT_02, true),
             CHECK(RC_SNOWHEAD_TEMPLE_SF_BRIDGE_PILLAR, CAN_USE_PROJECTILE && HAS_ITEM(ITEM_MASK_GREAT_FAIRY)), // Accessible from both sides
             CHECK(RC_SNOWHEAD_TEMPLE_SF_BRIDGE_UNDER_PLATFORM, CAN_USE_PROJECTILE && HAS_ITEM(ITEM_MASK_GREAT_FAIRY)), // Accessible from both sides
+            CHECK(RC_ENEMY_DROP_FREEZARD, CanKillEnemy(ACTOR_EN_FZ)),
         },
         .connections = {
             CONNECTION(RR_SNOWHEAD_TEMPLE_BRIDGE_ROOM_BEFORE, true),
@@ -96,6 +98,7 @@ static RegisterShipInitFunc initFunc([]() {
             CHECK(RC_SNOWHEAD_TEMPLE_CENTRAL_ROOM_BOTTOM_CHEST, CAN_BE_GORON),
             CHECK(RC_SNOWHEAD_TEMPLE_CENTRAL_ROOM_BOTTOM_POT_01, true),
             CHECK(RC_SNOWHEAD_TEMPLE_CENTRAL_ROOM_BOTTOM_POT_02, true),
+            CHECK(RC_ENEMY_DROP_RED_BUBBLE, CanKillEnemy(ACTOR_EN_BBFALL))
         },
         .connections = {
             CONNECTION(RR_SNOWHEAD_TEMPLE_CENTRAL_ROOM_FIRST_FLOOR, true),
@@ -163,7 +166,7 @@ static RegisterShipInitFunc initFunc([]() {
             CHECK(RC_SNOWHEAD_TEMPLE_CENTRAL_ROOM_LEVEL_3_LARGE_SNOWBALL_04, CanKillEnemy(ACTOR_OBJ_SNOWBALL)),
         },
         .exits = {
-            EXIT(ENTRANCE(GOHTS_LAIR, 0),           ONE_WAY_EXIT, CHECK_DUNGEON_ITEM(DUNGEON_BOSS_KEY, DUNGEON_INDEX_SNOWHEAD_TEMPLE)),
+            EXIT(ENTRANCE(GOHTS_LAIR, 0),           ONE_WAY_EXIT, CHECK_DUNGEON_ITEM(DUNGEON_BOSS_KEY, DUNGEON_SCENE_INDEX_SNOWHEAD_TEMPLE)),
         },
         .connections = {
             CONNECTION(RR_SNOWHEAD_TEMPLE_CENTRAL_ROOM_BOTTOM, true),
@@ -182,6 +185,7 @@ static RegisterShipInitFunc initFunc([]() {
             CHECK(RC_SNOWHEAD_TEMPLE_COMPASS_ROOM_POT_04, true),
             CHECK(RC_SNOWHEAD_TEMPLE_COMPASS_ROOM_POT_05, true),
             CHECK(RC_SNOWHEAD_TEMPLE_SF_COMPASS_ROOM_CRATE, (CAN_USE_EXPLOSIVE && HAS_ITEM(ITEM_MASK_GREAT_FAIRY))), // TODO : Zora Mask can be used from the upper ledge to reach this after breaking the crate. Implement as a trick?
+            CHECK(RC_ENEMY_DROP_WOLFOS, CanKillEnemy(ACTOR_EN_WF)),
         },
         .connections = {
             CONNECTION(RR_SNOWHEAD_TEMPLE_ENTRANCE_AFTER_BLOCK,     KEY_COUNT(SNOWHEAD_TEMPLE) >= 1),
@@ -193,6 +197,7 @@ static RegisterShipInitFunc initFunc([]() {
         .checks = {
             CHECK(RC_SNOWHEAD_TEMPLE_SF_DINOLFOS_01, CanKillEnemy(ACTOR_EN_DINOFOS)),
             CHECK(RC_SNOWHEAD_TEMPLE_SF_DINOLFOS_02, CanKillEnemy(ACTOR_EN_DINOFOS)),
+            CHECK(RC_ENEMY_DROP_DINOLFOS, CanKillEnemy(ACTOR_EN_DINOFOS)),
         },
         .connections = {
             CONNECTION(RR_SNOWHEAD_TEMPLE_SNOW_ROOM, true),
@@ -206,6 +211,7 @@ static RegisterShipInitFunc initFunc([]() {
             CHECK(RC_SNOWHEAD_TEMPLE_DUAL_SWITCHES_POT_01, true),
             CHECK(RC_SNOWHEAD_TEMPLE_DUAL_SWITCHES_POT_02, true),
             CHECK(RC_SNOWHEAD_TEMPLE_SF_DUAL_SWITCHES, ((HAS_ITEM(ITEM_LENS_OF_TRUTH) && HAS_MAGIC && HAS_ITEM(ITEM_MASK_GREAT_FAIRY)) && ((HAS_ITEM(ITEM_BOW) || HAS_ITEM(ITEM_HOOKSHOT)) || CAN_BE_DEKU))),
+            CHECK(RC_ENEMY_DROP_BOE, CanKillEnemy(ACTOR_EN_MKK)),
         },
         .connections = {
             CONNECTION(RR_SNOWHEAD_TEMPLE_CENTRAL_ROOM_SECOND_FLOOR, CAN_BE_GORON || CAN_USE_MAGIC_ARROW(FIRE)),
@@ -216,6 +222,7 @@ static RegisterShipInitFunc initFunc([]() {
       .checks = {
           CHECK(RC_SNOWHEAD_TEMPLE_ENTRANCE_POT_01, CAN_BE_GORON),
           CHECK(RC_SNOWHEAD_TEMPLE_ENTRANCE_POT_02, CAN_BE_GORON),
+          CHECK(RC_ENEMY_DROP_WOLFOS, CanKillEnemy(ACTOR_EN_WF)),
       },
       .connections = {
           CONNECTION(RR_SNOWHEAD_TEMPLE_CENTRAL_ROOM_FIRST_FLOOR,   CAN_USE_MAGIC_ARROW(FIRE)),
@@ -225,6 +232,9 @@ static RegisterShipInitFunc initFunc([]() {
       },
     };
     Regions[RR_SNOWHEAD_TEMPLE_ENTRANCE_BEFORE_BLOCK] = RandoRegion{ .sceneId = SCENE_HAKUGIN,
+      .checks = {
+            CHECK(RC_ENEMY_DROP_BOE, CanKillEnemy(ACTOR_EN_MKK)),
+        },
       .exits = { //     TO                                         FROM
           EXIT(ENTRANCE(SNOWHEAD, 1),                     ENTRANCE(SNOWHEAD_TEMPLE, 0), true),
       },
@@ -254,6 +264,7 @@ static RegisterShipInitFunc initFunc([]() {
     Regions[RR_SNOWHEAD_TEMPLE_LOWER_WIZZROBE_ROOM] = RandoRegion{ .sceneId = SCENE_HAKUGIN,
         .checks = {
             CHECK(RC_SNOWHEAD_TEMPLE_FIRE_ARROW_CHEST, CanKillEnemy(ACTOR_EN_WIZ)),
+            CHECK(RC_ENEMY_DROP_WIZROBE, CanKillEnemy(ACTOR_EN_WIZ)),
         },
         .connections = {
             CONNECTION(RR_SNOWHEAD_TEMPLE_CENTRAL_ROOM_SECOND_FLOOR, CanKillEnemy(ACTOR_EN_WIZ)),
@@ -277,6 +288,7 @@ static RegisterShipInitFunc initFunc([]() {
     Regions[RR_SNOWHEAD_TEMPLE_MAP_ROOM_UPPER] = RandoRegion{ .sceneId = SCENE_HAKUGIN,
         .checks = {
             CHECK(RC_SNOWHEAD_TEMPLE_MAP_ALCOVE_CHEST, (HAS_ITEM(ITEM_LENS_OF_TRUTH) && HAS_MAGIC && HAS_ITEM(ITEM_BOW) && HAS_ITEM(ITEM_ARROW_FIRE))),
+            CHECK(RC_ENEMY_DROP_FREEZARD, CanKillEnemy(ACTOR_EN_FZ)),
         },
         .connections = {
             CONNECTION(RR_SNOWHEAD_TEMPLE_MAP_ROOM_LOWER, true),
@@ -307,6 +319,7 @@ static RegisterShipInitFunc initFunc([]() {
             CHECK(RC_SNOWHEAD_TEMPLE_PILLARS_ROOM_UPPER_POT_04, (CAN_BE_DEKU || CAN_USE_MAGIC_ARROW(FIRE))),
             CHECK(RC_SNOWHEAD_TEMPLE_PILLARS_ROOM_UPPER_POT_05, (CAN_BE_DEKU || CAN_USE_MAGIC_ARROW(FIRE))),
             CHECK(RC_SNOWHEAD_TEMPLE_PILLARS_ROOM_UPPER_POT_06, (CAN_BE_DEKU || CAN_USE_MAGIC_ARROW(FIRE))),
+            CHECK(RC_ENEMY_DROP_FREEZARD, CanKillEnemy(ACTOR_EN_FZ)),
         },
         .connections = {
             CONNECTION(RR_SNOWHEAD_TEMPLE_CENTRAL_ROOM_FIRST_FLOOR_SWITCH_ROOM, CAN_USE_MAGIC_ARROW(FIRE)),
@@ -325,6 +338,7 @@ static RegisterShipInitFunc initFunc([]() {
             CHECK(RC_SNOWHEAD_TEMPLE_SNOW_ROOM_SMALL_SNOWBALL_06, true),
             CHECK(RC_SNOWHEAD_TEMPLE_SNOW_ROOM_SMALL_SNOWBALL_07, true),
             CHECK(RC_SNOWHEAD_TEMPLE_SNOW_ROOM_SMALL_SNOWBALL_08, true),
+            CHECK(RC_ENEMY_DROP_EENO, CanKillEnemy(ACTOR_EN_SNOWMAN)),
         },
         .connections = {
             CONNECTION(RR_SNOWHEAD_TEMPLE_CENTRAL_ROOM_THIRD_FLOOR, KEY_COUNT(SNOWHEAD_TEMPLE) >= 3),
@@ -339,6 +353,7 @@ static RegisterShipInitFunc initFunc([]() {
             CHECK(RC_SNOWHEAD_TEMPLE_WIZZROBE_POT_03, true),
             CHECK(RC_SNOWHEAD_TEMPLE_WIZZROBE_POT_04, true),
             CHECK(RC_SNOWHEAD_TEMPLE_WIZZROBE_POT_05, true),
+            CHECK(RC_ENEMY_DROP_WIZROBE, CanKillEnemy(ACTOR_EN_WIZ)),
         },
         .connections = {
             CONNECTION(RR_SNOWHEAD_TEMPLE_CENTRAL_ROOM_THIRD_FLOOR, CanKillEnemy(ACTOR_EN_WIZ)),

@@ -8,9 +8,7 @@
 #include "objects/gameplay_keep/gameplay_keep.h"
 #include "2s2h/Enhancements/FrameInterpolation/FrameInterpolation.h"
 
-#define FLAGS (ACTOR_FLAG_10 | ACTOR_FLAG_20)
-
-#define THIS ((EnHanabi*)thisx)
+#define FLAGS (ACTOR_FLAG_UPDATE_CULLING_DISABLED | ACTOR_FLAG_DRAW_CULLING_DISABLED)
 
 void EnHanabi_Init(Actor* thisx, PlayState* play2);
 void EnHanabi_Destroy(Actor* thisx, PlayState* play2);
@@ -22,7 +20,7 @@ void func_80B23910(EnHanabi* this, PlayState* play);
 void func_80B23934(EnHanabi* this, PlayState* play);
 void EnHanabi_Draw(Actor* thisx, PlayState* play);
 
-ActorInit En_Hanabi_InitVars = {
+ActorProfile En_Hanabi_Profile = {
     /**/ ACTOR_EN_HANABI,
     /**/ ACTORCAT_ITEMACTION,
     /**/ FLAGS,
@@ -166,7 +164,7 @@ void func_80B22FA8(EnHanabiStruct* arg0, PlayState* play2) {
         }
         Matrix_RotateZS(play->gameplayFrames * 4864, MTXMODE_APPLY);
 
-        gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+        MATRIX_FINALIZE_AND_LOAD(POLY_XLU_DISP++, play->state.gfxCtx);
 
         if (sp53 != arg0->unk_02) {
             gDPPipeSync(POLY_XLU_DISP++);
@@ -193,7 +191,7 @@ void func_80B22FA8(EnHanabiStruct* arg0, PlayState* play2) {
 
 void EnHanabi_Init(Actor* thisx, PlayState* play2) {
     PlayState* play = play2;
-    EnHanabi* this = THIS;
+    EnHanabi* this = (EnHanabi*)thisx;
     s32 i;
 
     //! FAKE:
@@ -218,7 +216,7 @@ void EnHanabi_Init(Actor* thisx, PlayState* play2) {
 
 void EnHanabi_Destroy(Actor* thisx, PlayState* play2) {
     PlayState* play = play2;
-    EnHanabi* this = THIS;
+    EnHanabi* this = (EnHanabi*)thisx;
     s32 i;
 
     for (i = 0; i < ARRAY_COUNT(this->unk_4634); i++) {
@@ -299,7 +297,7 @@ void func_80B236C8(EnHanabi* this, PlayState* play) {
             sp28 = func_80B22C80(&sp34, this->unk_148, 1.0f);
         }
 
-        this->actor.home.rot.y += (s16)((Rand_ZeroFloat(40.0f) + 80.0f) * 256.0f);
+        this->actor.home.rot.y += TRUNCF_BINANG((Rand_ZeroFloat(40.0f) + 80.0f) * 256.0f);
         this->unk_144 = (s32)Rand_ZeroFloat(5.0f) + 20;
         Actor_PlaySfx(&this->actor, NA_SE_OC_FIREWORKS);
         func_80B235CC(this, &sp34, sp28);
@@ -330,7 +328,7 @@ void func_80B23934(EnHanabi* this, PlayState* play) {
     if ((gSaveContext.save.entrance == ENTRANCE(TERMINA_FIELD, 1)) && (gSaveContext.sceneLayer == 7)) {
         if (play->csCtx.curFrame > 1650) {
             func_80B236C8(this, play);
-            Actor_PlaySfx_FlaggedCentered3(&this->actor, NA_SE_EV_FIREWORKS_LAUNCH - SFX_FLAG);
+            Actor_PlaySfx_FlaggedCentered2(&this->actor, NA_SE_EV_FIREWORKS_LAUNCH - SFX_FLAG);
         }
     }
 
@@ -341,7 +339,7 @@ void func_80B23934(EnHanabi* this, PlayState* play) {
 }
 
 void EnHanabi_Update(Actor* thisx, PlayState* play) {
-    EnHanabi* this = THIS;
+    EnHanabi* this = (EnHanabi*)thisx;
 
     this->actionFunc(this, play);
 
@@ -349,7 +347,7 @@ void EnHanabi_Update(Actor* thisx, PlayState* play) {
 }
 
 void EnHanabi_Draw(Actor* thisx, PlayState* play) {
-    EnHanabi* this = THIS;
+    EnHanabi* this = (EnHanabi*)thisx;
 
     Matrix_Push();
     func_80B22FA8(this->unk_148, play);

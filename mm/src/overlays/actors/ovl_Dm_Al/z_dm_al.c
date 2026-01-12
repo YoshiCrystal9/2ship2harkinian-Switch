@@ -6,16 +6,14 @@
 
 #include "z_dm_al.h"
 
-#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_FRIENDLY)
-
-#define THIS ((DmAl*)thisx)
+#define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY)
 
 void DmAl_Init(Actor* thisx, PlayState* play);
 void DmAl_Destroy(Actor* thisx, PlayState* play);
 void DmAl_Update(Actor* thisx, PlayState* play);
 void DmAl_Draw(Actor* thisx, PlayState* play);
 
-ActorInit Dm_Al_InitVars = {
+ActorProfile Dm_Al_Profile = {
     /**/ ACTOR_EN_AL,
     /**/ ACTORCAT_NPC,
     /**/ FLAGS,
@@ -77,14 +75,14 @@ void DmAl_HandleCutscene(DmAl* this, PlayState* play) {
 }
 
 void DmAl_Init(Actor* thisx, PlayState* play) {
-    DmAl* this = THIS;
+    DmAl* this = (DmAl*)thisx;
 
     ActorShape_Init(&this->actor.shape, 0.0f, NULL, 0.0f);
     SkelAnime_InitFlex(play, &this->skelAnime, &gMadameAromaSkel, NULL, this->jointTable, this->morphTable,
                        MADAME_AROMA_LIMB_MAX);
     this->animIndex = MADAME_AROMA_ANIM_NONE;
     DmAl_ChangeAnim(this, MADAME_AROMA_ANIM_0);
-    this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
+    this->actor.flags &= ~ACTOR_FLAG_ATTENTION_ENABLED;
     Actor_SetScale(&this->actor, 0.01f);
     this->actionFunc = DmAl_HandleCutscene;
 }
@@ -93,7 +91,7 @@ void DmAl_Destroy(Actor* thisx, PlayState* play) {
 }
 
 void DmAl_Update(Actor* thisx, PlayState* play) {
-    DmAl* this = THIS;
+    DmAl* this = (DmAl*)thisx;
 
     this->actionFunc(this, play);
     SkelAnime_Update(&this->skelAnime);
@@ -118,7 +116,7 @@ s32 DmAl_OverrideLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3f* ro
 }
 
 void DmAl_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* rot, Actor* thisx) {
-    DmAl* this = THIS;
+    DmAl* this = (DmAl*)thisx;
 
     switch (limbIndex) {
         case MADAME_AROMA_LIMB_SHAWL_MIDDLE:
@@ -161,7 +159,7 @@ static Gfx* sDlists[] = {
 
 void DmAl_Draw(Actor* thisx, PlayState* play) {
     u32 i;
-    DmAl* this = THIS;
+    DmAl* this = (DmAl*)thisx;
 
     OPEN_DISPS(play->state.gfxCtx);
 
@@ -171,7 +169,7 @@ void DmAl_Draw(Actor* thisx, PlayState* play) {
                                    DmAl_TransformLimbDraw, &this->actor);
     for (i = 0; i < ARRAY_COUNT(this->shawlMatrices); i++) {
         Matrix_Put(&this->shawlMatrices[i]);
-        gSPMatrix(POLY_OPA_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+        MATRIX_FINALIZE_AND_LOAD(POLY_OPA_DISP++, play->state.gfxCtx);
         gSPDisplayList(POLY_OPA_DISP++, sDlists[i]);
     }
 

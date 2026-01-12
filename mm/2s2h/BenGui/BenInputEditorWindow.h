@@ -6,9 +6,9 @@
 #include <list>
 #include <memory>
 #include "stdint.h"
-#include "GuiWindow.h"
-#include "controller/controldevice/controller/mapping/ControllerAxisDirectionMapping.h"
-#include "controller/physicaldevice/PhysicalDeviceType.h"
+#include <ship/window/gui/GuiWindow.h>
+#include <ship/controller/controldevice/controller/mapping/ControllerAxisDirectionMapping.h>
+#include <ship/controller/physicaldevice/PhysicalDeviceType.h>
 
 #include <imgui.h>
 #include <libultraship/libultra/controller.h>
@@ -66,6 +66,8 @@ class BenInputEditorWindow : public Ship::GuiWindow {
     void DrawGyroSection(uint8_t port);
     void DrawRemoveGyroMappingButton(uint8_t port, std::string id);
     void DrawAddGyroMappingButton(uint8_t port);
+
+    void DrawModifierButtonsSection(uint8_t port);
 
     // Used together for an incomplete linked hash map implementation in order to
     // map button masks to their names and original mapping on N64

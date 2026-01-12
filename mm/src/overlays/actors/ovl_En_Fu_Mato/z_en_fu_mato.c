@@ -9,9 +9,7 @@
 #include "overlays/effects/ovl_Effect_Ss_Hahen/z_eff_ss_hahen.h"
 #include "objects/object_fu_mato/object_fu_mato.h"
 
-#define FLAGS (ACTOR_FLAG_10 | ACTOR_FLAG_20)
-
-#define THIS ((EnFuMato*)thisx)
+#define FLAGS (ACTOR_FLAG_UPDATE_CULLING_DISABLED | ACTOR_FLAG_DRAW_CULLING_DISABLED)
 
 void EnFuMato_Init(Actor* thisx, PlayState* play);
 void EnFuMato_Destroy(Actor* thisx, PlayState* play);
@@ -27,7 +25,7 @@ void func_80ACECFC(EnFuMato* this, PlayState* play);
 void func_80ACEFC4(EnFuMato* this);
 void func_80ACEFD8(EnFuMato* this, PlayState* play);
 
-ActorInit En_Fu_Mato_InitVars = {
+ActorProfile En_Fu_Mato_Profile = {
     /**/ ACTOR_EN_FU_MATO,
     /**/ ACTORCAT_BG,
     /**/ FLAGS,
@@ -41,7 +39,7 @@ ActorInit En_Fu_Mato_InitVars = {
 
 static ColliderSphereInit sSphereInit = {
     {
-        COLTYPE_HIT3,
+        COL_MATERIAL_HIT3,
         AT_NONE,
         AC_ON | AC_TYPE_PLAYER,
         OC1_ON | OC1_TYPE_ALL,
@@ -49,11 +47,11 @@ static ColliderSphereInit sSphereInit = {
         COLSHAPE_SPHERE,
     },
     {
-        ELEMTYPE_UNK4,
+        ELEM_MATERIAL_UNK4,
         { 0xF7CFFFFF, 0x00, 0x00 },
         { 0xF7CFFFFF, 0x00, 0x00 },
-        TOUCH_NONE | TOUCH_SFX_NORMAL,
-        BUMP_ON,
+        ATELEM_NONE | ATELEM_SFX_NORMAL,
+        ACELEM_ON,
         OCELEM_ON,
     },
     { 0, { { 0, 0, 0 }, 200 }, 100 },
@@ -70,7 +68,7 @@ Vec2f D_80ACF654[] = {
 
 void EnFuMato_Init(Actor* thisx, PlayState* play) {
     s32 pad;
-    EnFuMato* this = THIS;
+    EnFuMato* this = (EnFuMato*)thisx;
     CollisionHeader* sp2C = NULL;
     Actor* actor = play->actorCtx.actorLists[ACTORCAT_NPC].first;
     EnFu* fu;
@@ -98,11 +96,11 @@ void EnFuMato_Init(Actor* thisx, PlayState* play) {
 
     fu = (EnFu*)this->dyna.actor.parent;
     if (fu->unk_542 == 2) {
-        this->collider.info.elemType = ELEMTYPE_UNK0;
+        this->collider.elem.elemMaterial = ELEM_MATERIAL_UNK0;
         this->collider.dim.worldSphere.radius = 30;
     } else {
         this->collider.dim.worldSphere.radius = 17;
-        this->unk_2F8 = fu->unk_538;
+        this->unk_2F8 = fu->pathPoints;
         this->unk_2F4 = fu->unk_520;
         this->unk_2F0 = ENFUMATO_GET(&this->dyna.actor);
     }
@@ -113,7 +111,7 @@ void EnFuMato_Init(Actor* thisx, PlayState* play) {
 }
 
 void EnFuMato_Destroy(Actor* thisx, PlayState* play) {
-    EnFuMato* this = THIS;
+    EnFuMato* this = (EnFuMato*)thisx;
 
     DynaPoly_DeleteBgActor(play, &play->colCtx.dyna, this->dyna.bgId);
     Collider_DestroySphere(play, &this->collider);
@@ -312,11 +310,7 @@ void func_80ACECFC(EnFuMato* this, PlayState* play) {
         ptr->unk_24.z += ptr->unk_2A.z;
 
         if ((this->unk_302 == 2) && (ptr->unk_30 == 1) && (ptr->unk_00.y < (this->dyna.actor.floorHeight + 10.0f))) {
-            if (ptr->unk_0C.y < 0.0f) {
-                ptr->unk_0C.y = -ptr->unk_0C.y;
-            } else {
-                ptr->unk_0C.y = ptr->unk_0C.y;
-            }
+            ptr->unk_0C.y = ABS_ALT(ptr->unk_0C.y);
             ptr->unk_0C.y *= 0.5f;
             ptr->unk_0C.x *= (Rand_Centered() * 1.5f) + 2.0f;
             ptr->unk_0C.z *= (Rand_Centered() * 1.5f) + 2.0f;
@@ -388,7 +382,7 @@ s32 func_80ACF04C(EnFuMato* this, PlayState* play) {
 }
 
 void EnFuMato_Update(Actor* thisx, PlayState* play) {
-    EnFuMato* this = THIS;
+    EnFuMato* this = (EnFuMato*)thisx;
 
     this->actionFunc(this, play);
 
@@ -413,7 +407,7 @@ void func_80ACF1F4(EnFuMato* this, PlayState* play) {
         Matrix_SetTranslateRotateYXZ(ptr->unk_00.x, ptr->unk_00.y, ptr->unk_00.z, &ptr->unk_24);
         Matrix_Scale(0.1f, 0.1f, 0.1f, MTXMODE_APPLY);
 
-        gSPMatrix(POLY_OPA_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+        MATRIX_FINALIZE_AND_LOAD(POLY_OPA_DISP++, play->state.gfxCtx);
         gSPDisplayList(POLY_OPA_DISP++, D_80ACF63C[temp_s4]);
 
         switch (temp_s4) {
@@ -456,7 +450,7 @@ void func_80ACF3F4(EnFuMato* this, PlayState* play) {
         Matrix_SetTranslateRotateYXZ(ptr->unk_00.x, ptr->unk_00.y, ptr->unk_00.z, &ptr->unk_24);
         Matrix_Scale(scale->x, scale->y, scale->z, MTXMODE_APPLY);
 
-        gSPMatrix(POLY_OPA_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+        MATRIX_FINALIZE_AND_LOAD(POLY_OPA_DISP++, play->state.gfxCtx);
         gSPDisplayList(POLY_OPA_DISP++, D_80ACF63C[i]);
 
         Matrix_Pop();
@@ -467,13 +461,13 @@ void func_80ACF3F4(EnFuMato* this, PlayState* play) {
 
 void EnFuMato_Draw(Actor* thisx, PlayState* play) {
     s32 pad;
-    EnFuMato* this = THIS;
+    EnFuMato* this = (EnFuMato*)thisx;
 
     OPEN_DISPS(play->state.gfxCtx);
 
     Gfx_SetupDL25_Opa(play->state.gfxCtx);
 
-    gSPMatrix(POLY_OPA_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    MATRIX_FINALIZE_AND_LOAD(POLY_OPA_DISP++, play->state.gfxCtx);
 
     if ((this->unk_302 == 0) || (this->unk_302 == 3)) {
         gSPDisplayList(POLY_OPA_DISP++, object_fu_mato_DL_002720);

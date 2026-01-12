@@ -1,5 +1,3 @@
-DEFINE_HOOK(OnFileDropped, (const std::string& path))
-
 DEFINE_HOOK(OnGameStateMainStart, ())
 DEFINE_HOOK(OnGameStateMainFinish, ())
 DEFINE_HOOK(OnGameStateDrawFinish, ())
@@ -17,6 +15,7 @@ DEFINE_HOOK(BeforeMoonCrashSaveReset, ())
 DEFINE_HOOK(OnInterfaceDrawStart, ())
 DEFINE_HOOK(AfterInterfaceClockDraw, ())
 DEFINE_HOOK(BeforeInterfaceClockDraw, ())
+DEFINE_HOOK(OnGameCompletion, ())
 
 DEFINE_HOOK(OnSceneInit, (s8 sceneId, s8 spawnNum))
 DEFINE_HOOK(OnRoomInit, (s8 sceneId, s8 roomNum))
@@ -33,6 +32,7 @@ DEFINE_HOOK(OnActorDraw, (Actor * actor))
 DEFINE_HOOK(OnActorKill, (Actor * actor))
 DEFINE_HOOK(OnActorDestroy, (Actor * actor))
 DEFINE_HOOK(OnPlayerPostLimbDraw, (Player * player, s32 limbIndex))
+DEFINE_HOOK(OnBossDefeated, (s16 actorId))
 
 DEFINE_HOOK(OnSceneFlagSet, (s16 sceneId, FlagType flagType, u32 flag))
 DEFINE_HOOK(OnSceneFlagUnset, (s16 sceneId, FlagType flagType, u32 flag))
@@ -50,4 +50,12 @@ DEFINE_HOOK(OnOpenText, (u16 * textId, bool* loadFromMessageTable))
 DEFINE_HOOK(ShouldItemGive, (u8 item, bool* should))
 DEFINE_HOOK(OnItemGive, (u8 item))
 
+DEFINE_HOOK(OnBottleContentsUpdate, (u8 item))
+
 DEFINE_HOOK(ShouldVanillaBehavior, (GIVanillaBehavior flag, bool* should, va_list originalArgs))
+
+// Audio
+DEFINE_HOOK(OnSeqPlayerInit, (s32 playerIdx, s32 seqId));
+
+// Rando
+DEFINE_HOOK(OnRandoSeedGeneration, ());

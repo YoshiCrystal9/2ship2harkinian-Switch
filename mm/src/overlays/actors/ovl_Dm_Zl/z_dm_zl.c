@@ -6,9 +6,7 @@
 
 #include "z_dm_zl.h"
 
-#define FLAGS (ACTOR_FLAG_10)
-
-#define THIS ((DmZl*)thisx)
+#define FLAGS (ACTOR_FLAG_UPDATE_CULLING_DISABLED)
 
 void DmZl_Init(Actor* thisx, PlayState* play);
 void DmZl_Destroy(Actor* thisx, PlayState* play);
@@ -17,7 +15,7 @@ void DmZl_Draw(Actor* thisx, PlayState* play);
 
 void DmZl_DoNothing(DmZl* this, PlayState* play);
 
-ActorInit Dm_Zl_InitVars = {
+ActorProfile Dm_Zl_Profile = {
     /**/ ACTOR_DM_ZL,
     /**/ ACTORCAT_ITEMACTION,
     /**/ FLAGS,
@@ -112,11 +110,11 @@ void DmZl_ChangeAnim(SkelAnime* skelAnime, AnimationInfo* animInfo, u16 animInde
 
 void DmZl_Init(Actor* thisx, PlayState* play) {
     s32 pad;
-    DmZl* this = THIS;
+    DmZl* this = (DmZl*)thisx;
 
     this->animIndex = ZELDA_ANIM_FACING_AWAY;
     this->unk_2BA = 0;
-    this->actor.targetArrowOffset = 1000.0f;
+    this->actor.lockOnArrowOffset = 1000.0f;
     ActorShape_Init(&this->actor.shape, 0.0f, ActorShadow_DrawCircle, 24.0f);
     // these three set to NULL should mean they are dynamically allocated
     SkelAnime_InitFlex(play, &this->skelAnime, &gZl4Skel, NULL, NULL, NULL, 0);
@@ -257,7 +255,7 @@ void DmZl_UpdateFace(DmZl* this) {
 }
 
 void DmZl_Update(Actor* thisx, PlayState* play) {
-    DmZl* this = THIS;
+    DmZl* this = (DmZl*)thisx;
 
     DmZl_UpdateFace(this);
     SkelAnime_Update(&this->skelAnime);
@@ -270,7 +268,7 @@ s32 DmZl_OverrideLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3f* po
 }
 
 void DmZl_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* rot, Actor* thisx) {
-    DmZl* this = THIS;
+    DmZl* this = (DmZl*)thisx;
 
     if (limbIndex == ZL4_LIMB_RIGHT_HAND) {
         if ((this->animIndex >= ZELDA_ANIM_GIVING_OCARINA_START) && (this->animIndex <= ZELDA_ANIM_PLAYING_OCARINA)) {
@@ -284,7 +282,7 @@ void DmZl_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* rot, 
 }
 
 void DmZl_Draw(Actor* thisx, PlayState* play) {
-    DmZl* this = THIS;
+    DmZl* this = (DmZl*)thisx;
 
     OPEN_DISPS(play->state.gfxCtx);
 

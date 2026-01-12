@@ -7,9 +7,7 @@
 #include "z_en_baba.h"
 #include "2s2h/GameInteractor/GameInteractor.h"
 
-#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_10)
-
-#define THIS ((EnBaba*)thisx)
+#define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_UPDATE_CULLING_DISABLED)
 
 #define BOMB_SHOP_LADY_STATE_END_CONVERSATION (1 << 0)
 #define BOMB_SHOP_LADY_STATE_VISIBLE (1 << 1)
@@ -42,7 +40,7 @@ typedef enum {
     /* 2 */ BOMB_SHOP_LADY_SCH_FOLLOW_TIME_PATH
 } BombShopLadyScheduleResult;
 
-ActorInit En_Baba_InitVars = {
+ActorProfile En_Baba_Profile = {
     /**/ ACTOR_EN_BABA,
     /**/ ACTORCAT_NPC,
     /**/ FLAGS,
@@ -65,17 +63,18 @@ typedef enum {
 } BombShopLadyAnimation;
 
 static AnimationInfo sAnimationInfo[BOMB_SHOP_LADY_ANIM_MAX] = {
-    { &gBbaIdleHoldingBagAnim, 1.0f, 0.0f, 0.0f, ANIMMODE_LOOP, 0.0f },    // BOMB_SHOP_LADY_ANIM_IDLE_HOLDING_BAG
-    { &gBbaIdleAnim, 1.0f, 0.0f, 0.0f, ANIMMODE_LOOP, 0.0f },              // BOMB_SHOP_LADY_ANIM_IDLE
-    { &gBbaWalkingHoldingBagAnim, 1.0f, 0.0f, 0.0f, ANIMMODE_LOOP, 0.0f }, // BOMB_SHOP_LADY_ANIM_WALKING_HOLDING_BAG
-    { &gBbaKnockedOverAnim, 1.0f, 0.0f, 0.0f, ANIMMODE_ONCE, 0.0f },       // BOMB_SHOP_LADY_ANIM_KNOCKED_OVER
-    { &gBbaLyingDownAnim, 1.0f, 0.0f, 0.0f, ANIMMODE_LOOP, 0.0f },         // BOMB_SHOP_LADY_ANIM_LYING_DOWN
-    { &gBbaSwayAnim, 1.0f, 0.0f, 0.0f, ANIMMODE_LOOP, 0.0f },              // BOMB_SHOP_LADY_ANIM_SWAY
+    { &gBombShopLadyIdleHoldingBagAnim, 1.0f, 0.0f, 0.0f, ANIMMODE_LOOP, 0.0f }, // BOMB_SHOP_LADY_ANIM_IDLE_HOLDING_BAG
+    { &gBombShopLadyIdleAnim, 1.0f, 0.0f, 0.0f, ANIMMODE_LOOP, 0.0f },           // BOMB_SHOP_LADY_ANIM_IDLE
+    { &gBombShopLadyWalkingHoldingBagAnim, 1.0f, 0.0f, 0.0f, ANIMMODE_LOOP,
+      0.0f },                                                                 // BOMB_SHOP_LADY_ANIM_WALKING_HOLDING_BAG
+    { &gBombShopLadyKnockedOverAnim, 1.0f, 0.0f, 0.0f, ANIMMODE_ONCE, 0.0f }, // BOMB_SHOP_LADY_ANIM_KNOCKED_OVER
+    { &gBombShopLadyLyingDownAnim, 1.0f, 0.0f, 0.0f, ANIMMODE_LOOP, 0.0f },   // BOMB_SHOP_LADY_ANIM_LYING_DOWN
+    { &gBombShopLadySwayAnim, 1.0f, 0.0f, 0.0f, ANIMMODE_LOOP, 0.0f },        // BOMB_SHOP_LADY_ANIM_SWAY
 };
 
 static ColliderCylinderInit sCylinderInit = {
     {
-        COLTYPE_NONE,
+        COL_MATERIAL_NONE,
         AT_NONE,
         AC_ON | AC_TYPE_PLAYER,
         OC1_ON | OC1_TYPE_ALL,
@@ -83,11 +82,11 @@ static ColliderCylinderInit sCylinderInit = {
         COLSHAPE_CYLINDER,
     },
     {
-        ELEMTYPE_UNK1,
+        ELEM_MATERIAL_UNK1,
         { 0x00000000, 0x00, 0x00 },
         { 0xF7CFFFFF, 0x00, 0x00 },
-        TOUCH_NONE | TOUCH_SFX_NORMAL,
-        BUMP_ON,
+        ATELEM_NONE | ATELEM_SFX_NORMAL,
+        ACELEM_ON,
         OCELEM_ON,
     },
     { 18, 64, 0, { 0, 0, 0 } },
@@ -364,7 +363,7 @@ void EnBaba_UpdateModel(EnBaba* this, PlayState* play) {
         Math_SmoothStepToS(&this->torsoRot.y, 0, 4, 0x3E8, 1);
     }
 
-    SubS_UpdateFidgetTables(play, this->fidgetTableY, this->fidgetTableZ, BBA_LIMB_MAX);
+    SubS_UpdateFidgetTables(play, this->fidgetTableY, this->fidgetTableZ, BOMB_SHOP_LADY_LIMB_MAX);
 
     if (this->stateFlags & BOMB_SHOP_LADY_STATE_VISIBLE) {
         EnBaba_UpdateCollider(this, play);
@@ -372,7 +371,7 @@ void EnBaba_UpdateModel(EnBaba* this, PlayState* play) {
 }
 
 s32 EnBaba_InitTimePath(EnBaba* this, PlayState* play, ScheduleOutput* scheduleOutput) {
-    u16 now = SCHEDULE_TIME_NOW;
+    u16 now = SCRIPT_TIME_NOW;
     u16 startTime;
     u8 pathIndex = BOMB_SHOP_LADY_GET_PATH_INDEX(&this->actor);
     u16 numWaypoints;
@@ -509,12 +508,12 @@ void EnBaba_HandleSchedule(EnBaba* this, PlayState* play) {
 }
 
 void EnBaba_FinishInit(EnBaba* this, PlayState* play) {
-    SkelAnime_InitFlex(play, &this->skelAnime, &gBbaSkel, &gBbaWalkingHoldingBagAnim, this->jointTable,
-                       this->morphTable, BBA_LIMB_MAX);
+    SkelAnime_InitFlex(play, &this->skelAnime, &gBombShopLadySkel, &gBombShopLadyWalkingHoldingBagAnim,
+                       this->jointTable, this->morphTable, BOMB_SHOP_LADY_LIMB_MAX);
 
     this->actor.draw = EnBaba_Draw;
     this->stateFlags |= BOMB_SHOP_LADY_STATE_DRAW_SHADOW;
-    this->actor.flags |= ACTOR_FLAG_TARGETABLE;
+    this->actor.flags |= ACTOR_FLAG_ATTENTION_ENABLED;
 
     if (play->sceneId == SCENE_BOMYA) {
         this->stateFlags |= BOMB_SHOP_LADY_STATE_VISIBLE;
@@ -526,7 +525,7 @@ void EnBaba_FinishInit(EnBaba* this, PlayState* play) {
             (gSaveContext.save.entrance != ENTRANCE(NORTH_CLOCK_TOWN, 7)) &&
             (BOMB_SHOP_LADY_GET_PATH_INDEX(&this->actor) != BOMB_SHOP_LADY_PATH_INDEX_NONE)) {
             if (CHECK_WEEKEVENTREG(WEEKEVENTREG_58_40) ||
-                (gSaveContext.save.time >= CLOCK_TIME(0, 20) && (gSaveContext.save.time < CLOCK_TIME(6, 0)))) {
+                ((CURRENT_TIME >= CLOCK_TIME(0, 20)) && (CURRENT_TIME < CLOCK_TIME(6, 0)))) {
                 Actor_Kill(&this->actor);
                 return;
             }
@@ -559,7 +558,7 @@ void EnBaba_FinishInit(EnBaba* this, PlayState* play) {
     } else {
         this->stateFlags |= BOMB_SHOP_LADY_STATE_VISIBLE;
         if (BOMB_SHOP_LADY_GET_TYPE(&this->actor) == BOMB_SHOP_LADY_TYPE_SWAY) {
-            this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
+            this->actor.flags &= ~ACTOR_FLAG_ATTENTION_ENABLED;
             this->animIndex = BOMB_SHOP_LADY_ANIM_SWAY;
             Actor_ChangeAnimationByInfo(&this->skelAnime, sAnimationInfo, this->animIndex);
             this->actionFunc = EnBaba_DoNothing;
@@ -578,15 +577,15 @@ void EnBaba_FinishInit(EnBaba* this, PlayState* play) {
 void EnBaba_Idle(EnBaba* this, PlayState* play) {
     if ((this->stateFlags & BOMB_SHOP_LADY_STATE_AUTOTALK) || (this->bombShopkeeper != NULL) ||
         EnBaba_FindBombShopkeeper(this, play)) {
-        if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+        if (Actor_TalkOfferAccepted(&this->actor, &play->state)) {
             EnBaba_HandleConversation(this, play);
             if (this->stateFlags & BOMB_SHOP_LADY_STATE_AUTOTALK) {
-                this->actor.flags &= ~ACTOR_FLAG_10000;
+                this->actor.flags &= ~ACTOR_FLAG_TALK_OFFER_AUTO_ACCEPTED;
             }
             this->actionFunc = EnBaba_Talk;
         } else if (this->actor.xzDistToPlayer < 100.0f) {
             if (this->stateFlags & BOMB_SHOP_LADY_STATE_AUTOTALK) {
-                this->actor.flags |= ACTOR_FLAG_10000;
+                this->actor.flags |= ACTOR_FLAG_TALK_OFFER_AUTO_ACCEPTED;
             }
             Actor_OfferTalk(&this->actor, play, 100.0f);
         }
@@ -596,7 +595,7 @@ void EnBaba_Idle(EnBaba* this, PlayState* play) {
 void EnBaba_FollowSchedule_Talk(EnBaba* this, PlayState* play) {
     u8 talkState = Message_GetState(&play->msgCtx);
 
-    if (((talkState == TEXT_STATE_5) || (talkState == TEXT_STATE_DONE)) && Message_ShouldAdvance(play)) {
+    if (((talkState == TEXT_STATE_EVENT) || (talkState == TEXT_STATE_DONE)) && Message_ShouldAdvance(play)) {
         play->msgCtx.msgMode = MSGMODE_TEXT_CLOSING;
         play->msgCtx.stateTimer = 4;
         this->actionFunc = EnBaba_FollowSchedule;
@@ -607,7 +606,7 @@ void EnBaba_FollowSchedule_Talk(EnBaba* this, PlayState* play) {
 void EnBaba_Talk(EnBaba* this, PlayState* play) {
     u8 talkState = Message_GetState(&play->msgCtx);
 
-    if (talkState == TEXT_STATE_5) {
+    if (talkState == TEXT_STATE_EVENT) {
         if (Message_ShouldAdvance(play)) {
             if (this->stateFlags & BOMB_SHOP_LADY_STATE_END_CONVERSATION) {
                 this->stateFlags &= ~BOMB_SHOP_LADY_STATE_END_CONVERSATION;
@@ -656,7 +655,7 @@ void EnBaba_GiveBlastMask(EnBaba* this, PlayState* play) {
 }
 
 void EnBaba_GaveBlastMask(EnBaba* this, PlayState* play) {
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+    if (Actor_TalkOfferAccepted(&this->actor, &play->state)) {
         EnBaba_HandleConversation(this, play);
         this->actionFunc = EnBaba_Talk;
     } else {
@@ -673,18 +672,18 @@ void EnBaba_FollowSchedule(EnBaba* this, PlayState* play) {
         ((this->scheduleResult != scheduleOutput.result) &&
          !EnBaba_ProcessScheduleOutput(this, play, &scheduleOutput))) {
         this->stateFlags &= ~BOMB_SHOP_LADY_STATE_DRAW_SHADOW;
-        this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
+        this->actor.flags &= ~ACTOR_FLAG_ATTENTION_ENABLED;
         scheduleOutput.result = BOMB_SHOP_LADY_SCH_NONE;
     } else {
         this->stateFlags |= BOMB_SHOP_LADY_STATE_DRAW_SHADOW;
-        this->actor.flags |= ACTOR_FLAG_TARGETABLE;
+        this->actor.flags |= ACTOR_FLAG_ATTENTION_ENABLED;
     }
     this->scheduleResult = scheduleOutput.result;
 
     EnBaba_HandleSchedule(this, play);
 
     if (this->stateFlags & BOMB_SHOP_LADY_STATE_VISIBLE) {
-        if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+        if (Actor_TalkOfferAccepted(&this->actor, &play->state)) {
             Message_StartTextbox(play, 0x2A39, &this->actor); // "I'm sorry"
             this->actionFunc = EnBaba_FollowSchedule_Talk;
         } else if ((this->actor.xzDistToPlayer < 100.0f) || this->actor.isLockedOn) {
@@ -735,7 +734,7 @@ void EnBaba_FaceForward(EnBaba* this, PlayState* play) {
 
 void EnBaba_Init(Actor* thisx, PlayState* play) {
     s32 pad;
-    EnBaba* this = THIS;
+    EnBaba* this = (EnBaba*)thisx;
 
     Collider_InitCylinder(play, &this->collider);
     Collider_SetCylinder(play, &this->collider, &this->actor, &sCylinderInit);
@@ -745,19 +744,19 @@ void EnBaba_Init(Actor* thisx, PlayState* play) {
 
     Actor_SetScale(&this->actor, 0.01f);
 
-    this->actor.targetMode = TARGET_MODE_0;
+    this->actor.attentionRangeType = ATTENTION_RANGE_0;
     this->actor.gravity = -4.0f;
     this->actionFunc = EnBaba_FinishInit;
 }
 
 void EnBaba_Destroy(Actor* thisx, PlayState* play) {
-    EnBaba* this = THIS;
+    EnBaba* this = (EnBaba*)thisx;
 
     Collider_DestroyCylinder(play, &this->collider);
 }
 
 void EnBaba_Update(Actor* thisx, PlayState* play) {
-    EnBaba* this = THIS;
+    EnBaba* this = (EnBaba*)thisx;
 
     this->actionFunc(this, play);
 
@@ -766,44 +765,44 @@ void EnBaba_Update(Actor* thisx, PlayState* play) {
 }
 
 s32 EnBaba_OverrideLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3f* pos, Vec3s* rot, Actor* thisx) {
-    EnBaba* this = THIS;
+    EnBaba* this = (EnBaba*)thisx;
 
-    if (limbIndex == BBA_LIMB_NECK) {
+    if (limbIndex == BOMB_SHOP_LADY_LIMB_NECK) {
         Matrix_Translate(1500.0f, 0.0f, 0.0f, MTXMODE_APPLY);
         Matrix_RotateXS(this->headRot.y, MTXMODE_APPLY);
         Matrix_RotateZS(-this->headRot.x, MTXMODE_APPLY);
         Matrix_Translate(-1500.0f, 0.0f, 0.0f, MTXMODE_APPLY);
     }
 
-    if (limbIndex == BBA_LIMB_UPPER_ROOT) {
+    if (limbIndex == BOMB_SHOP_LADY_LIMB_UPPER_ROOT) {
         Matrix_RotateXS(-this->torsoRot.y, MTXMODE_APPLY);
         Matrix_RotateZS(-this->torsoRot.x, MTXMODE_APPLY);
     }
 
-    if ((limbIndex == BBA_LIMB_NECK) && (this->inMsgState3 != 0) && ((play->state.frames % 2) == 0)) {
+    if ((limbIndex == BOMB_SHOP_LADY_LIMB_NECK) && this->msgFading && ((play->state.frames % 2) == 0)) {
         Matrix_Translate(40.0f, 0.0f, 0.0f, MTXMODE_APPLY);
     }
 
-    if ((limbIndex == BBA_LIMB_UPPER_ROOT) || (limbIndex == BBA_LIMB_LEFT_UPPER_ARM) ||
-        (limbIndex == BBA_LIMB_RIGHT_UPPER_ARM)) {
-        rot->y += (s16)(Math_SinS(this->fidgetTableY[limbIndex]) * 200.0f);
-        rot->z += (s16)(Math_CosS(this->fidgetTableZ[limbIndex]) * 200.0f);
+    if ((limbIndex == BOMB_SHOP_LADY_LIMB_UPPER_ROOT) || (limbIndex == BOMB_SHOP_LADY_LIMB_LEFT_UPPER_ARM) ||
+        (limbIndex == BOMB_SHOP_LADY_LIMB_RIGHT_UPPER_ARM)) {
+        rot->y += TRUNCF_BINANG(Math_SinS(this->fidgetTableY[limbIndex]) * 200.0f);
+        rot->z += TRUNCF_BINANG(Math_CosS(this->fidgetTableZ[limbIndex]) * 200.0f);
     }
 
     if (((this->animIndex == BOMB_SHOP_LADY_ANIM_IDLE) || (this->animIndex == BOMB_SHOP_LADY_ANIM_KNOCKED_OVER) ||
          (this->animIndex == BOMB_SHOP_LADY_ANIM_LYING_DOWN) ||
          (BOMB_SHOP_LADY_GET_TYPE(&this->actor) == BOMB_SHOP_LADY_TYPE_SWAY)) &&
-        (limbIndex == BBA_LIMB_BAG)) {
+        (limbIndex == BOMB_SHOP_LADY_LIMB_BAG)) {
         *dList = NULL;
     }
     return false;
 }
 
 void EnBaba_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* rot, Actor* thisx) {
-    EnBaba* this = THIS;
+    EnBaba* this = (EnBaba*)thisx;
     Vec3f sp18 = { 0.0f, 0.0f, 0.0f };
 
-    if (limbIndex == BBA_LIMB_HEAD) {
+    if (limbIndex == BOMB_SHOP_LADY_LIMB_HEAD) {
         this->actor.focus.pos.x = this->actor.world.pos.x;
         this->actor.focus.pos.y = this->actor.world.pos.y;
         this->actor.focus.pos.z = this->actor.world.pos.z;
@@ -816,7 +815,7 @@ void EnBaba_TransformLimbDraw(PlayState* play, s32 limbIndex, Actor* thisx) {
 
 void EnBaba_Draw(Actor* thisx, PlayState* play) {
     s32 pad;
-    EnBaba* this = THIS;
+    EnBaba* this = (EnBaba*)thisx;
     Vec3f pos;
     Vec3f scale;
 
@@ -825,7 +824,7 @@ void EnBaba_Draw(Actor* thisx, PlayState* play) {
 
         Gfx_SetupDL37_Opa(play->state.gfxCtx);
 
-        gSPSegment(POLY_OPA_DISP++, 0x08, Lib_SegmentedToVirtual(gBbaEyeTex));
+        gSPSegment(POLY_OPA_DISP++, 0x08, Lib_SegmentedToVirtual(gBombShopLadyEyeTex));
 
         SkelAnime_DrawTransformFlexOpa(play, this->skelAnime.skeleton, this->skelAnime.jointTable,
                                        this->skelAnime.dListCount, EnBaba_OverrideLimbDraw, EnBaba_PostLimbDraw,

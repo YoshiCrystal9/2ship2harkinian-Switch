@@ -6,9 +6,7 @@
 
 #include "z_en_hs.h"
 
-#define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_10)
-
-#define THIS ((EnHs*)thisx)
+#define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_UPDATE_CULLING_DISABLED)
 
 void EnHs_Init(Actor* thisx, PlayState* play);
 void EnHs_Destroy(Actor* thisx, PlayState* play);
@@ -23,7 +21,7 @@ void EnHs_SceneTransitToBunnyHoodDialogue(EnHs* this, PlayState* play);
 void func_80953354(EnHs* this, PlayState* play);
 void func_8095345C(EnHs* this, PlayState* play);
 
-ActorInit En_Hs_InitVars = {
+ActorProfile En_Hs_Profile = {
     /**/ ACTOR_EN_HS,
     /**/ ACTORCAT_NPC,
     /**/ FLAGS,
@@ -37,7 +35,7 @@ ActorInit En_Hs_InitVars = {
 
 static ColliderCylinderInit sCylinderInit = {
     {
-        COLTYPE_NONE,
+        COL_MATERIAL_NONE,
         AT_NONE,
         AC_ON | AC_TYPE_ENEMY,
         OC1_ON | OC1_TYPE_ALL,
@@ -45,11 +43,11 @@ static ColliderCylinderInit sCylinderInit = {
         COLSHAPE_CYLINDER,
     },
     {
-        ELEMTYPE_UNK0,
+        ELEM_MATERIAL_UNK0,
         { 0x00000000, 0x00, 0x00 },
         { 0xF7CFFFFF, 0x00, 0x00 },
-        TOUCH_NONE | TOUCH_SFX_NORMAL,
-        BUMP_ON,
+        ATELEM_NONE | ATELEM_SFX_NORMAL,
+        ACELEM_ON,
         OCELEM_ON,
     },
     { 40, 40, 0, { 0, 0, 0 } },
@@ -71,7 +69,7 @@ void func_80952C50(EnHs* this, PlayState* play) {
 
 void EnHs_Init(Actor* thisx, PlayState* play) {
     s32 pad;
-    EnHs* this = THIS;
+    EnHs* this = (EnHs*)thisx;
 
     ActorShape_Init(&this->actor.shape, 0.0f, ActorShadow_DrawCircle, 36.0f);
     SkelAnime_InitFlex(play, &this->skelAnime, &gHsSkel, &gHsIdleAnim, this->jointTable, this->morphTable,
@@ -83,16 +81,16 @@ void EnHs_Init(Actor* thisx, PlayState* play) {
     this->actionFunc = func_8095345C;
 
     if (play->curSpawn == 1) {
-        this->actor.flags |= ACTOR_FLAG_10000;
+        this->actor.flags |= ACTOR_FLAG_TALK_OFFER_AUTO_ACCEPTED;
     }
 
     this->stateFlags = 0;
-    this->actor.targetMode = TARGET_MODE_6;
+    this->actor.attentionRangeType = ATTENTION_RANGE_6;
     func_80952C50(this, play);
 }
 
 void EnHs_Destroy(Actor* thisx, PlayState* play) {
-    EnHs* this = THIS;
+    EnHs* this = (EnHs*)thisx;
 
     Collider_DestroyCylinder(play, &this->collider);
 }
@@ -160,7 +158,7 @@ void func_80953098(EnHs* this, PlayState* play) {
     if (Actor_HasParent(&this->actor, play)) {
         this->actor.parent = NULL;
         this->actionFunc = func_8095345C;
-        this->actor.flags |= ACTOR_FLAG_10000;
+        this->actor.flags |= ACTOR_FLAG_TALK_OFFER_AUTO_ACCEPTED;
         this->stateFlags |= 0x10;
         Actor_OfferTalkExchange(&this->actor, play, 1000.0f, 1000.0f, PLAYER_IA_MINUS1);
     } else {
@@ -174,7 +172,7 @@ void func_80953098(EnHs* this, PlayState* play) {
 }
 
 void func_80953180(EnHs* this, PlayState* play) {
-    if ((Message_GetState(&play->msgCtx) == TEXT_STATE_5) && Message_ShouldAdvance(play)) {
+    if ((Message_GetState(&play->msgCtx) == TEXT_STATE_EVENT) && Message_ShouldAdvance(play)) {
         switch (play->msgCtx.currentTextId) {
             case 0x33F4: // laughing that they are all roosters (!)
             case 0x33F6: // Grog regrets not being able to see his chicks reach adult hood
@@ -183,14 +181,14 @@ void func_80953180(EnHs* this, PlayState* play) {
                 break;
 
             case 0x33F7: // notice his chicks are grown up, happy, wants to give you bunny hood
-                this->actor.flags &= ~ACTOR_FLAG_10000;
+                this->actor.flags &= ~ACTOR_FLAG_TALK_OFFER_AUTO_ACCEPTED;
                 Message_CloseTextbox(play);
                 this->actionFunc = func_80953098;
                 func_80953098(this, play);
                 break;
 
             case 0x33F9: // laughing that they are all roosters (.)
-                this->actor.flags &= ~ACTOR_FLAG_10000;
+                this->actor.flags &= ~ACTOR_FLAG_TALK_OFFER_AUTO_ACCEPTED;
                 Message_CloseTextbox(play);
                 this->actionFunc = func_8095345C;
                 break;
@@ -253,7 +251,7 @@ void func_809533A0(EnHs* this, PlayState* play) {
 }
 
 void func_8095345C(EnHs* this, PlayState* play) {
-    if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+    if (Actor_TalkOfferAccepted(&this->actor, &play->state)) {
         this->actionFunc = func_80953180;
         func_809533A0(this, play);
         if (this->stateFlags & 8) {
@@ -263,7 +261,7 @@ void func_8095345C(EnHs* this, PlayState* play) {
     } else if (this->actor.home.rot.x >= 20) { // chicks turned adult >= 10
         this->actionFunc = func_80953354;
         this->stateTimer = 40;
-    } else if (CHECK_FLAG_ALL(this->actor.flags, ACTOR_FLAG_10000)) {
+    } else if (CHECK_FLAG_ALL(this->actor.flags, ACTOR_FLAG_TALK_OFFER_AUTO_ACCEPTED)) {
         Actor_OfferTalkExchange(&this->actor, play, 1000.0f, 1000.0f, PLAYER_IA_MINUS1);
         this->stateFlags |= 1;
     } else if ((this->actor.xzDistToPlayer < 120.0f) && Player_IsFacingActor(&this->actor, 0x2000, play)) {
@@ -276,7 +274,7 @@ void func_8095345C(EnHs* this, PlayState* play) {
 
 void EnHs_Update(Actor* thisx, PlayState* play) {
     s32 pad;
-    EnHs* this = THIS;
+    EnHs* this = (EnHs*)thisx;
 
     Collider_UpdateCylinder(&this->actor, &this->collider);
     CollisionCheck_SetOC(play, &play->colChkCtx, &this->collider.base);
@@ -294,20 +292,20 @@ void EnHs_Update(Actor* thisx, PlayState* play) {
 
     if (this->stateFlags & 4) {
         Math_SmoothStepToS(&this->headRot.x, 0, 6, 0x1838, 0x64);
-        Math_SmoothStepToS(&this->unusedRot.x, 0, 6, 0x1838, 0x64);
-        Math_SmoothStepToS(&this->unusedRot.y, 0, 6, 0x1838, 0x64);
+        Math_SmoothStepToS(&this->torsoRot.x, 0, 6, 0x1838, 0x64);
+        Math_SmoothStepToS(&this->torsoRot.y, 0, 6, 0x1838, 0x64);
     } else if (this->stateFlags & 1) {
-        Actor_TrackPlayer(play, &this->actor, &this->headRot, &this->unusedRot, this->actor.focus.pos);
+        Actor_TrackPlayer(play, &this->actor, &this->headRot, &this->torsoRot, this->actor.focus.pos);
     } else {
         Math_SmoothStepToS(&this->headRot.x, 0x3200, 6, 0x1838, 0x64);
         Math_SmoothStepToS(&this->headRot.y, 0, 6, 0x1838, 0x64);
-        Math_SmoothStepToS(&this->unusedRot.x, 0, 6, 0x1838, 0x64);
-        Math_SmoothStepToS(&this->unusedRot.y, 0, 6, 0x1838, 0x64);
+        Math_SmoothStepToS(&this->torsoRot.x, 0, 6, 0x1838, 0x64);
+        Math_SmoothStepToS(&this->torsoRot.y, 0, 6, 0x1838, 0x64);
     }
 }
 
 s32 EnHs_OverrideLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3f* pos, Vec3s* rot, Actor* thisx) {
-    EnHs* this = THIS;
+    EnHs* this = (EnHs*)thisx;
 
     switch (limbIndex) {
         case HS_LIMB_HEAD:
@@ -349,7 +347,7 @@ s32 EnHs_OverrideLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3f* po
 }
 
 void EnHs_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* rot, Actor* thisx) {
-    EnHs* this = THIS;
+    EnHs* this = (EnHs*)thisx;
 
     if (limbIndex == HS_LIMB_HEAD) {
         Matrix_MultVec3f(&D_8095393C, &this->actor.focus.pos);
@@ -357,7 +355,7 @@ void EnHs_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* rot, 
 }
 
 void EnHs_Draw(Actor* thisx, PlayState* play) {
-    EnHs* this = THIS;
+    EnHs* this = (EnHs*)thisx;
 
     Gfx_SetupDL37_Opa(play->state.gfxCtx);
     SkelAnime_DrawFlexOpa(play, this->skelAnime.skeleton, this->skelAnime.jointTable, this->skelAnime.dListCount,

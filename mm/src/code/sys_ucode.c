@@ -3,7 +3,7 @@
  * Description: Functions for obtaining locations and sizes of microcode
  */
 #include "global.h"
-#include "public/bridge/gfxbridge.h"
+#include <libultraship/bridge/gfxbridge.h>
 
 UcodeHandlers initialgspUcodeText = ucode_f3dex2;
 // u64* initialgspUcodeData = gspF3DZEX2_NoN_PosLight_fifoDataStart;

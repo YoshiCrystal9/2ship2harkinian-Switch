@@ -9,8 +9,6 @@
 
 #define FLAGS 0x00000000
 
-#define THIS ((ObjDriftice*)thisx)
-
 void ObjDriftice_Init(Actor* thisx, PlayState* play);
 void ObjDriftice_Destroy(Actor* thisx, PlayState* play);
 void ObjDriftice_Update(Actor* thisx, PlayState* play);
@@ -25,7 +23,7 @@ void func_80A67450(ObjDriftice* this, PlayState* play);
 void func_80A674A8(ObjDriftice* this);
 void func_80A674C4(ObjDriftice* this, PlayState* play);
 
-ActorInit Obj_Driftice_InitVars = {
+ActorProfile Obj_Driftice_Profile = {
     /**/ ACTOR_OBJ_DRIFTICE,
     /**/ ACTORCAT_BG,
     /**/ FLAGS,
@@ -73,11 +71,11 @@ static ObjDrifticeDataStruct D_80A676D0[] = {
 };
 
 static InitChainEntry sInitChain[] = {
-    ICHAIN_F32(uncullZoneForward, 4000, ICHAIN_STOP),
+    ICHAIN_F32(cullingVolumeDistance, 4000, ICHAIN_STOP),
 };
 
 void func_80A66570(ObjDriftice* this, s32 arg1) {
-    Math_Vec3s_ToVec3f(&this->dyna.actor.world.pos, &this->unk_16C[arg1]);
+    Math_Vec3s_ToVec3f(&this->dyna.actor.world.pos, &this->pathPoints[arg1]);
 }
 
 void func_80A665AC(s16* arg0, s16 arg1) {
@@ -265,7 +263,7 @@ void func_80A66E30(ObjDrifticeStruct* arg0, ObjDriftice* this) {
 
 void ObjDriftice_Init(Actor* thisx, PlayState* play) {
     s32 pad;
-    ObjDriftice* this = THIS;
+    ObjDriftice* this = (ObjDriftice*)thisx;
     f32* sp2C = D_80A67620[OBJDRIFTICE_GET_3(&this->dyna.actor)];
     Path* path;
     s32 phi_a1;
@@ -279,8 +277,8 @@ void ObjDriftice_Init(Actor* thisx, PlayState* play) {
     this->dyna.actor.world.rot.z = 0;
 
     Actor_SetScale(&this->dyna.actor, sp2C[0] * 0.035377357f);
-    this->dyna.actor.uncullZoneScale = sp2C[1];
-    this->dyna.actor.uncullZoneDownward = sp2C[2];
+    this->dyna.actor.cullingVolumeScale = sp2C[1];
+    this->dyna.actor.cullingVolumeDownward = sp2C[2];
     this->unk_240 = 1.0f / this->dyna.actor.scale.x;
     this->unk_23C = D_80A67644[OBJDRIFTICE_GET_E00(&this->dyna.actor)];
 
@@ -306,21 +304,21 @@ void ObjDriftice_Init(Actor* thisx, PlayState* play) {
     if (sp20 != 0) {
         func_80A671A8(this);
     } else {
-        this->dyna.actor.flags |= ACTOR_FLAG_10;
+        this->dyna.actor.flags |= ACTOR_FLAG_UPDATE_CULLING_DISABLED;
 
-        path = &play->setupPathList[OBJDRIFTICE_GET_1FC(&this->dyna.actor)];
+        path = &play->setupPathList[OBJDRIFTICE_GET_PATH_INDEX(&this->dyna.actor)];
         this->unk_164 = 0;
         this->unk_160 = path->count - 1;
         this->unk_168 = 1;
 
-        this->unk_16C = Lib_SegmentedToVirtual(path->points);
+        this->pathPoints = Lib_SegmentedToVirtual(path->points);
         func_80A66570(this, this->unk_164);
         func_80A671CC(this);
     }
 }
 
 void ObjDriftice_Destroy(Actor* thisx, PlayState* play) {
-    ObjDriftice* this = THIS;
+    ObjDriftice* this = (ObjDriftice*)thisx;
 
     DynaPoly_DeleteBgActor(play, &play->colCtx.dyna, this->dyna.bgId);
 }
@@ -345,7 +343,7 @@ void func_80A671E0(ObjDriftice* this, PlayState* play) {
     s32 sp30;
     Actor* thisx = &this->dyna.actor;
 
-    Math_Vec3s_ToVec3f(&sp40, &(&this->unk_16C[this->unk_164])[this->unk_168]);
+    Math_Vec3s_ToVec3f(&sp40, &(&this->pathPoints[this->unk_164])[this->unk_168]);
     Math_Vec3f_Diff(&sp40, &this->dyna.actor.world.pos, &thisx->velocity);
 
     sp3C = Math3D_Vec3fMagnitude(&thisx->velocity);
@@ -377,7 +375,7 @@ void func_80A671E0(ObjDriftice* this, PlayState* play) {
                 this->unk_168 = -this->unk_168;
                 func_80A674A8(this);
             } else {
-                points = &this->unk_16C[this->unk_160];
+                points = &this->pathPoints[this->unk_160];
 
                 if (this->unk_168 > 0) {
                     this->unk_164 = 0;
@@ -385,8 +383,8 @@ void func_80A671E0(ObjDriftice* this, PlayState* play) {
                     this->unk_164 = this->unk_160;
                 }
 
-                if ((this->unk_16C[0].x != points->x) || (this->unk_16C[0].y != points->y) ||
-                    (this->unk_16C[0].z != points->z)) {
+                if ((this->pathPoints[0].x != points->x) || (this->pathPoints[0].y != points->y) ||
+                    (this->pathPoints[0].z != points->z)) {
                     func_80A6743C(this);
                     DynaPoly_DisableCollision(play, &play->colCtx.dyna, this->dyna.bgId);
                     sp30 = false;
@@ -426,7 +424,7 @@ void func_80A674C4(ObjDriftice* this, PlayState* play) {
 }
 
 void ObjDriftice_Update(Actor* thisx, PlayState* play) {
-    ObjDriftice* this = THIS;
+    ObjDriftice* this = (ObjDriftice*)thisx;
 
     if (DynaPolyActor_IsPlayerOnTop(&this->dyna)) {
         if (this->unk_248 < 0) {
@@ -446,13 +444,13 @@ void ObjDriftice_Update(Actor* thisx, PlayState* play) {
 
     this->actionFunc(this, play);
 
-    if (OBJDRIFTICE_GET_ROT(&this->dyna.actor) && (this->dyna.actor.flags & ACTOR_FLAG_40)) {
+    if (OBJDRIFTICE_GET_ROT(&this->dyna.actor) && (this->dyna.actor.flags & ACTOR_FLAG_INSIDE_CULLING_VOLUME)) {
         func_80A66E30(&this->unk_170, this);
     }
 }
 
 void ObjDriftice_Draw(Actor* thisx, PlayState* play) {
-    ObjDriftice* this = THIS;
+    ObjDriftice* this = (ObjDriftice*)thisx;
 
     Gfx_DrawDListOpa(play, object_driftice_DL_0016A0);
 }

@@ -9,11 +9,11 @@ static const ALIGN_ASSET(2) char gAdultRutoCrossingArmsAnim[] = dgAdultRutoCross
 #define dgAdultRutoIdleAnim "__OTR__objects/object_ru2/gAdultRutoIdleAnim"
 static const ALIGN_ASSET(2) char gAdultRutoIdleAnim[] = dgAdultRutoIdleAnim;
 
-#define dgAdultRutoTLUT1 "__OTR__objects/object_ru2/gAdultRutoTLUT1"
-static const ALIGN_ASSET(2) char gAdultRutoTLUT1[] = dgAdultRutoTLUT1;
+#define dgAdultRuto1TLUT "__OTR__objects/object_ru2/gAdultRuto1TLUT"
+static const ALIGN_ASSET(2) char gAdultRuto1TLUT[] = dgAdultRuto1TLUT;
 
-#define dgAdultRutoTLUT2 "__OTR__objects/object_ru2/gAdultRutoTLUT2"
-static const ALIGN_ASSET(2) char gAdultRutoTLUT2[] = dgAdultRutoTLUT2;
+#define dgAdultRuto2TLUT "__OTR__objects/object_ru2/gAdultRuto2TLUT"
+static const ALIGN_ASSET(2) char gAdultRuto2TLUT[] = dgAdultRuto2TLUT;
 
 #define dgAdultRutoEyeOpenTex "__OTR__objects/object_ru2/gAdultRutoEyeOpenTex"
 static const ALIGN_ASSET(2) char gAdultRutoEyeOpenTex[] = dgAdultRutoEyeOpenTex;

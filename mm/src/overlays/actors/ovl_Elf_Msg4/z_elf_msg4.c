@@ -9,9 +9,7 @@
 #include "overlays/actors/ovl_Elf_Msg5/z_elf_msg5.h"
 #include "2s2h/GameInteractor/GameInteractor.h"
 
-#define FLAGS (ACTOR_FLAG_10)
-
-#define THIS ((ElfMsg4*)thisx)
+#define FLAGS (ACTOR_FLAG_UPDATE_CULLING_DISABLED)
 
 void ElfMsg4_Init(Actor* thisx, PlayState* play);
 void ElfMsg4_Destroy(Actor* thisx, PlayState* play);
@@ -21,9 +19,8 @@ void func_80AFD668(ElfMsg4* this, PlayState* play);
 void func_80AFD770(ElfMsg4* this, PlayState* play);
 s32 func_80AFD380(ElfMsg4* this, PlayState* play);
 s32 ElfMsg4_GetTextId(ElfMsg4* this);
-s32 func_80AFD5E0(ElfMsg4* this);
 
-ActorInit Elf_Msg4_InitVars = {
+ActorProfile Elf_Msg4_Profile = {
     /**/ ACTOR_ELF_MSG4,
     /**/ ACTORCAT_ITEMACTION,
     /**/ FLAGS,
@@ -37,7 +34,7 @@ ActorInit Elf_Msg4_InitVars = {
 
 static InitChainEntry sInitChain[] = {
     ICHAIN_VEC3F_DIV1000(scale, 1000, ICHAIN_CONTINUE),
-    ICHAIN_F32(uncullZoneForward, 1000, ICHAIN_STOP),
+    ICHAIN_F32(cullingVolumeDistance, 1000, ICHAIN_STOP),
 };
 
 s32 func_80AFD380(ElfMsg4* this, PlayState* play) {
@@ -71,7 +68,7 @@ s32 func_80AFD380(ElfMsg4* this, PlayState* play) {
 }
 
 void ElfMsg4_Init(Actor* thisx, PlayState* play) {
-    ElfMsg4* this = THIS;
+    ElfMsg4* this = (ElfMsg4*)thisx;
 
     if (!func_80AFD380(this, play)) {
         Actor_ProcessInitChain(&this->actor, sInitChain);
@@ -105,7 +102,7 @@ s32 ElfMsg4_GetTextId(ElfMsg4* this) {
     }
 }
 
-s32 func_80AFD5E0(ElfMsg4* this) {
+bool func_80AFD5E0(ElfMsg4* this) {
     return (this->actor.xzDistToPlayer < (100.0f * this->actor.scale.x)) && (this->actor.playerHeightRel >= 0.0f) &&
            (this->actor.playerHeightRel < (100.0f * this->actor.scale.y));
 }
@@ -114,7 +111,7 @@ void func_80AFD668(ElfMsg4* this, PlayState* play) {
     Player* player = GET_PLAYER(play);
     EnElf* tatl = (EnElf*)player->tatlActor;
 
-    if (GameInteractor_Should(VB_TATL_INTERUPT_MSG4, (player->tatlActor != NULL) && func_80AFD5E0(this), this)) {
+    if (GameInteractor_Should(VB_TATL_INTERRUPT_MSG4, (player->tatlActor != NULL) && func_80AFD5E0(this), this)) {
         player->tatlTextId = ElfMsg4_GetTextId(this);
         CutsceneManager_Queue(CS_ID_GLOBAL_TALK);
         tatl->elfMsg = this->elfMsg5;
@@ -152,7 +149,7 @@ void func_80AFD770(ElfMsg4* this, PlayState* play) {
 
 void ElfMsg4_Update(Actor* thisx, PlayState* play) {
     Actor* bgActor;
-    ElfMsg4* this = THIS;
+    ElfMsg4* this = (ElfMsg4*)thisx;
 
     if (!func_80AFD380(this, play)) {
         bgActor = this->elfMsg5;
@@ -161,7 +158,7 @@ void ElfMsg4_Update(Actor* thisx, PlayState* play) {
             return;
         }
 
-        if ((bgActor != NULL) && Actor_ProcessTalkRequest(bgActor, &play->state)) {
+        if ((bgActor != NULL) && Actor_TalkOfferAccepted(bgActor, &play->state)) {
             if (ELFMSG4_GET_SWITCH_FLAG(thisx) != 0x7F) {
                 Flags_SetSwitch(play, ELFMSG4_GET_SWITCH_FLAG(thisx));
             }

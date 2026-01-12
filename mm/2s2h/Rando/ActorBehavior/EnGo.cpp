@@ -7,9 +7,9 @@ extern "C" {
 #include "variables.h"
 #include "overlays/actors/ovl_En_Go/z_en_go.h"
 
-void Player_TalkWithPlayer(PlayState* play, Actor* actor);
-void func_80837B60(PlayState* play, Player* player);
-s32 func_80832558(PlayState* play, Player* player, PlayerFuncD58 arg2);
+void Player_StartTalking(PlayState* play, Actor* actor);
+void Player_SetupTalk(PlayState* play, Player* player);
+s32 Player_SetupWaitForPutAway(PlayState* play, Player* player, AfterPutAwayFunc afterPutAwayFunc);
 }
 
 static std::vector<u8> skipCmds = {};
@@ -22,8 +22,6 @@ void Rando::ActorBehavior::InitEnGoBehavior() {
     COND_VB_SHOULD(VB_EXEC_MSG_EVENT, IS_RANDO, {
         u32 cmdId = va_arg(args, u32);
         Actor* actor = va_arg(args, Actor*);
-        MsgScript* script = va_arg(args, MsgScript*);
-        Player* player = GET_PLAYER(gPlayState);
 
         if (actor->id != ACTOR_EN_GO || ENGO_GET_TYPE(actor) != ENGO_MEDIGORON) {
             return;
@@ -36,9 +34,12 @@ void Rando::ActorBehavior::InitEnGoBehavior() {
             return;
         }
 
-        if (cmdId == MSCRIPT_CMD_BRANCH_ON_ITEM) {
-            u16 itemId = MSCRIPT_GET_16(script, 1);
-            s16 skip = MSCRIPT_GET_16(script, 3);
+        MsgScript* script = va_arg(args, MsgScript*);
+        Player* player = GET_PLAYER(gPlayState);
+
+        if (cmdId == MSCRIPT_CMD_ID_CHECK_ITEM) {
+            MsgScriptCmdCheckItem* cmd = (MsgScriptCmdCheckItem*)script;
+            s16 skip = SCRIPT_PACK_16(cmd->offsetH, cmd->offsetL);
 
             s16 jumpTarget = 0x009A;
             if (!RANDO_SAVE_CHECKS[RC_GORON_VILLAGE_MEDIGORON].cycleObtained) {
@@ -53,9 +54,11 @@ void Rando::ActorBehavior::InitEnGoBehavior() {
             return;
         }
 
-        if (cmdId == MSCRIPT_CMD_14 || cmdId == MSCRIPT_CMD_15) { // MSCRIPT_BEGIN_TEXT/MSCRIPT_CONTINUE_TEXT
+        if (cmdId == MSCRIPT_CMD_ID_BEGIN_TEXT || cmdId == MSCRIPT_CMD_ID_CONTINUE_TEXT) {
 
-            u16 textId = MSCRIPT_GET_16(script, 1);
+            // Could also be MsgScriptCmdContinueText, but structs are essentially identical
+            MsgScriptCmdBeginText* cmd = (MsgScriptCmdBeginText*)script;
+            u16 textId = SCRIPT_PACK_16(cmd->textIdH, cmd->textIdL);
 
             // Only override behavior if the player has yet to discover powder kegs
             if (textId != 0x0C8C || HAS_ITEM(ITEM_POWDER_KEG)) {
@@ -66,16 +69,17 @@ void Rando::ActorBehavior::InitEnGoBehavior() {
             gPlayState->msgCtx.choiceIndex = 0;
 
             skipCmds.clear();
-            skipCmds.push_back(MSCRIPT_CMD_12); // MSCRIPT_AWAIT_TEXT
+            skipCmds.push_back(MSCRIPT_CMD_ID_AWAIT_TEXT);
 
             return;
         }
 
         // Identify text choice branch at 0x004E by skip offset values
-        if (cmdId == MSCRIPT_CMD_05) { // MSCRIPT_BRANCH_ON_TEXT_CHOICE
-            s16 skipChoice1 = MSCRIPT_GET_16(script, 1);
-            s16 skipChoice2 = MSCRIPT_GET_16(script, 3);
-            s16 skipChoice3 = MSCRIPT_GET_16(script, 5);
+        if (cmdId == MSCRIPT_CMD_ID_CHECK_TEXT_CHOICE) {
+            MsgScriptCmdCheckTextChoice* cmd = (MsgScriptCmdCheckTextChoice*)script;
+            s16 skipChoice1 = SCRIPT_PACK_16(cmd->offset0H, cmd->offset0L);
+            s16 skipChoice2 = SCRIPT_PACK_16(cmd->offset1H, cmd->offset1L);
+            s16 skipChoice3 = SCRIPT_PACK_16(cmd->offset2H, cmd->offset2L);
 
             switch (skipChoice1, skipChoice2, skipChoice3) {
                 case (0x0, 0x00AD - 0x00A8, 0x0):
@@ -97,7 +101,7 @@ void Rando::ActorBehavior::InitEnGoBehavior() {
             return;
         }
 
-        if (cmdId == MSCRIPT_CMD_06) { // MSCRIPT_OFFER_ITEM
+        if (cmdId == MSCRIPT_CMD_ID_OFFER_ITEM) {
             if (freePowderKegGrantActive) {
                 *should = false;
 

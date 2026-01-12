@@ -17,12 +17,17 @@ static RegisterShipInitFunc initFunc([]() {
         .exits = { //     TO                                         FROM
             EXIT(ENTRANCE(ROMANI_RANCH, 4),                 ENTRANCE(CUCCO_SHACK, 0), true),
         },
+        .timeStayRestrictions = {
+            STAY(TIME_NIGHT1_PM_08_00, false),
+            STAY(TIME_NIGHT2_PM_08_00, false),
+            STAY(TIME_NIGHT3_PM_08_00, false),
+        },
     };
     Regions[RR_DOGGY_RACETRACK] = RandoRegion{ .sceneId = SCENE_F01_B,
         .checks = {
             // TODO: Trick: Jumpslash to clip through (similar to Clock Town Straw).
             // Zora can just climb up, adding it to logic for now but if someone wants to make it a trick later feel free.
-            CHECK(RC_DOGGY_RACETRACK_CHEST, HAS_ITEM(ITEM_HOOKSHOT) || CAN_GROW_BEAN_PLANT || CAN_BE_ZORA),
+            CHECK(RC_DOGGY_RACETRACK_CHEST, HAS_ITEM(ITEM_HOOKSHOT) || CAN_USE_DAY2_RAIN_BEAN || CAN_BE_ZORA),
             CHECK(RC_DOGGY_RACETRACK_PIECE_OF_HEART,    HAS_ITEM(ITEM_MASK_TRUTH)),
             CHECK(RC_DOGGY_RACETRACK_POT_01, true),
             CHECK(RC_DOGGY_RACETRACK_POT_02, true),
@@ -32,13 +37,31 @@ static RegisterShipInitFunc initFunc([]() {
         .exits = { //     TO                                         FROM
             EXIT(ENTRANCE(ROMANI_RANCH, 5),                 ENTRANCE(DOGGY_RACETRACK, 0), true),
         },
+        .timeStayRestrictions = {
+            STAY(TIME_NIGHT1_PM_08_00, false),
+            STAY(TIME_NIGHT2_PM_08_00, false),
+            STAY(TIME_NIGHT3_PM_08_00, false),
+        },
+    };
+    Regions[RR_GORMAN_TRACK_FRONT] = RandoRegion{ .sceneId = SCENE_KOEPONARACE,
+        .checks = {
+            CHECK(RC_GORMAN_MILK_PURCHASE, CAN_AFFORD(RC_GORMAN_MILK_PURCHASE) && IS_DAY()),
+            CHECK(RC_GORMAN_TRACK_GARO_MASK, CAN_PLAY_SONG(EPONA) && IS_DAY()),
+        },
+        .exits = { //     TO                                         FROM
+            EXIT(ENTRANCE(MILK_ROAD, 3),                    ENTRANCE(GORMAN_TRACK, 0), true),
+        },
+        .connections = {
+            // TODO: Also apparently can be reached using a trick with Goron mask and Bombs. Add trick later here
+            CONNECTION(RR_GORMAN_TRACK, RANDO_EVENTS[RE_COWS_FROM_ALIENS] && IS_NIGHT2()),
+        },
     };
     Regions[RR_GORMAN_TRACK] = RandoRegion{ .sceneId = SCENE_KOEPONARACE,
         .checks = {
-            CHECK(RC_GORMAN_MILK_PURCHASE, CAN_AFFORD(RC_GORMAN_MILK_PURCHASE)),
-            // TODO : Also apparently can be obtained using a trick with Goron mask and Bombs. Add trick later here
-            CHECK(RC_GORMAN_TRACK_LARGE_CRATE, RANDO_EVENTS[RE_COWS_FROM_ALIENS]), // Night 2 only, after defending cows from aliens.
-            CHECK(RC_GORMAN_TRACK_GARO_MASK, CAN_PLAY_SONG(EPONA)),
+            // The grass is technically reachable while racing on Epona, but successfully picking up the drops can be
+            // dubious. We can make this a trick in the future. For now, gate the entire region behind saving the ranch
+            // from aliens.
+            CHECK(RC_GORMAN_TRACK_LARGE_CRATE, true), 
             CHECK(RC_GORMAN_TRACK_GRASS_01, true),
             CHECK(RC_GORMAN_TRACK_GRASS_02, true),
             CHECK(RC_GORMAN_TRACK_GRASS_03, true),
@@ -64,9 +87,17 @@ static RegisterShipInitFunc initFunc([]() {
             CHECK(RC_GORMAN_TRACK_GRASS_23, true),
             CHECK(RC_GORMAN_TRACK_GRASS_24, true),
         },
+        .connections = {
+            CONNECTION(RR_GORMAN_TRACK_FRONT, CAN_PLAY_SONG(EPONA) || (RANDO_EVENTS[RE_COWS_FROM_ALIENS] && IS_NIGHT2())),
+            CONNECTION(RR_GORMAN_TRACK_BACK, CAN_PLAY_SONG(EPONA) || (RANDO_EVENTS[RE_COWS_FROM_ALIENS] && IS_NIGHT2())),
+        },
+    };
+    Regions[RR_GORMAN_TRACK_BACK] = RandoRegion{ .sceneId = SCENE_KOEPONARACE,
         .exits = { //     TO                                         FROM
-            EXIT(ENTRANCE(MILK_ROAD, 2),                    ENTRANCE(GORMAN_TRACK, 3), CAN_PLAY_SONG(EPONA)),
-            EXIT(ENTRANCE(MILK_ROAD, 3),                    ENTRANCE(GORMAN_TRACK, 0), true),
+            EXIT(ENTRANCE(MILK_ROAD, 2),                    ENTRANCE(GORMAN_TRACK, 3), true),
+        },
+        .connections = {
+            CONNECTION(RR_GORMAN_TRACK, RANDO_EVENTS[RE_COWS_FROM_ALIENS] && IS_NIGHT2()),
         },
     };
     Regions[RR_MILK_ROAD] = RandoRegion{ .sceneId = SCENE_ROMANYMAE,
@@ -78,41 +109,63 @@ static RegisterShipInitFunc initFunc([]() {
         },
         .exits = { //     TO                                         FROM
             EXIT(ENTRANCE(TERMINA_FIELD, 5),                ENTRANCE(MILK_ROAD, 0), true),
-            EXIT(ENTRANCE(ROMANI_RANCH, 0),                 ENTRANCE(MILK_ROAD, 1), true),
-            EXIT(ENTRANCE(GORMAN_TRACK, 3),                 ENTRANCE(MILK_ROAD, 2), CAN_PLAY_SONG(EPONA)),
+            EXIT(ENTRANCE(ROMANI_RANCH, 0),                 ENTRANCE(MILK_ROAD, 1), AFTER(TIME_DAY3_AM_06_00) || RANDO_EVENTS[RE_DESTROY_MILK_ROAD_BOULDER]),
             EXIT(ENTRANCE(GORMAN_TRACK, 0),                 ENTRANCE(MILK_ROAD, 3), true),
+        },
+        .connections = {
+            // TODO: Trick to Goron bomb jump over the fence
+            CONNECTION(RR_MILK_ROAD_BEHIND_FENCE, (RANDO_EVENTS[RE_COWS_FROM_ALIENS] && IS_NIGHT2()) || FINAL_DAY()),
         },
         .events = {
             EVENT(RE_ACCESS_PICTOGRAPH_TINGLE, HAS_ITEM(ITEM_PICTOGRAPH_BOX)),
+            EVENT(RE_DESTROY_MILK_ROAD_BOULDER, CAN_BE_GORON && HAS_ITEM(ITEM_POWDER_KEG)),
         },
         .oneWayEntrances = {
             ENTRANCE(MILK_ROAD, 4), // From Song of Soaring
         }
     };
+    Regions[RR_MILK_ROAD_BEHIND_FENCE] = RandoRegion{ .sceneId = SCENE_ROMANYMAE,
+        .exits = { //     TO                                         FROM
+            EXIT(ENTRANCE(GORMAN_TRACK, 3),                 ENTRANCE(MILK_ROAD, 2), true),
+        },
+        .connections = {
+            // TODO: Trick to Goron bomb jump over the fence
+            CONNECTION(RR_MILK_ROAD, (RANDO_EVENTS[RE_COWS_FROM_ALIENS] && IS_NIGHT2()) || FINAL_DAY()),
+        },
+    };
     Regions[RR_RANCH_BARN] = RandoRegion{ .sceneId = SCENE_OMOYA,
         .checks = {
-            CHECK(RC_ROMANI_RANCH_BARN_COW_LEFT, CAN_PLAY_SONG(EPONA) && CAN_BE_GORON && HAS_ITEM(ITEM_POWDER_KEG)),
-            CHECK(RC_ROMANI_RANCH_BARN_COW_MIDDLE, CAN_PLAY_SONG(EPONA) && CAN_BE_GORON && HAS_ITEM(ITEM_POWDER_KEG)),
-            CHECK(RC_ROMANI_RANCH_BARN_COW_RIGHT, CAN_PLAY_SONG(EPONA) && CAN_BE_GORON && HAS_ITEM(ITEM_POWDER_KEG))
+            CHECK(RC_ROMANI_RANCH_BARN_COW_LEFT, CAN_PLAY_SONG(EPONA) && (BETWEEN(TIME_NIGHT1_PM_06_00, TIME_NIGHT1_AM_02_30) || RANDO_EVENTS[RE_COWS_FROM_ALIENS])),
+            CHECK(RC_ROMANI_RANCH_BARN_COW_MIDDLE, CAN_PLAY_SONG(EPONA) && (BETWEEN(TIME_NIGHT1_PM_06_00, TIME_NIGHT1_AM_02_30) || RANDO_EVENTS[RE_COWS_FROM_ALIENS])),
+            CHECK(RC_ROMANI_RANCH_BARN_COW_RIGHT, CAN_PLAY_SONG(EPONA) && (BETWEEN(TIME_NIGHT1_PM_06_00, TIME_NIGHT1_AM_02_30) || RANDO_EVENTS[RE_COWS_FROM_ALIENS]))
         },
         .exits = { //     TO                                         FROM
             EXIT(ENTRANCE(ROMANI_RANCH, 2),                 ENTRANCE(RANCH_HOUSE, 0), true),
+        },
+        .timeStayRestrictions = {
+            STAY(TIME_NIGHT1_AM_02_30, false),
+            STAY(TIME_NIGHT3_PM_08_00, false),
         },
     };
     Regions[RR_RANCH_HOUSE] = RandoRegion{ .sceneId = SCENE_OMOYA,
         .exits = { //     TO                                         FROM
             EXIT(ENTRANCE(ROMANI_RANCH, 3),                 ENTRANCE(RANCH_HOUSE, 1), true),
         },
+        .timeStayRestrictions = {
+            STAY(TIME_NIGHT1_PM_08_00, false),
+            STAY(TIME_NIGHT2_PM_08_00, false),
+            STAY(TIME_NIGHT3_PM_08_00, false),
+        },
     };
     Regions[RR_ROMANI_RANCH] = RandoRegion{ .sceneId = SCENE_F01,
         .checks = {
-            CHECK(RC_ROMANI_RANCH_ALIENS, HAS_ITEM(ITEM_BOW) && CAN_BE_GORON && HAS_ITEM(ITEM_POWDER_KEG)),
-            CHECK(RC_ROMANI_RANCH_EPONAS_SONG, CAN_BE_GORON && HAS_ITEM(ITEM_POWDER_KEG)),
-            CHECK(RC_ROMANI_RANCH_FIELD_COW_ENTRANCE, CAN_PLAY_SONG(EPONA) && CAN_BE_GORON && HAS_ITEM(ITEM_POWDER_KEG)),
-            CHECK(RC_ROMANI_RANCH_FIELD_COW_NEAR_HOUSE_BACK, CAN_PLAY_SONG(EPONA) && CAN_BE_GORON && HAS_ITEM(ITEM_POWDER_KEG)),
-            CHECK(RC_ROMANI_RANCH_FIELD_COW_NEAR_HOUSE_FRONT, CAN_PLAY_SONG(EPONA) && CAN_BE_GORON && HAS_ITEM(ITEM_POWDER_KEG)),
+            CHECK(RC_ROMANI_RANCH_ALIENS, CanKillEnemy(ACTOR_EN_INVADEPOH) && CAN_BE_GORON && HAS_ITEM(ITEM_POWDER_KEG)),
+            CHECK(RC_ROMANI_RANCH_EPONAS_SONG, BEFORE(TIME_NIGHT1_PM_06_00)),
+            CHECK(RC_ROMANI_RANCH_FIELD_COW_ENTRANCE, CAN_PLAY_SONG(EPONA) && (BETWEEN(TIME_NIGHT1_PM_06_00, TIME_NIGHT1_AM_02_30) || RANDO_EVENTS[RE_COWS_FROM_ALIENS])),
+            CHECK(RC_ROMANI_RANCH_FIELD_COW_NEAR_HOUSE_BACK, CAN_PLAY_SONG(EPONA) && (BETWEEN(TIME_NIGHT1_PM_06_00, TIME_NIGHT1_AM_02_30) || RANDO_EVENTS[RE_COWS_FROM_ALIENS])),
+            CHECK(RC_ROMANI_RANCH_FIELD_COW_NEAR_HOUSE_FRONT, CAN_PLAY_SONG(EPONA) && (BETWEEN(TIME_NIGHT1_PM_06_00, TIME_NIGHT1_AM_02_30) || RANDO_EVENTS[RE_COWS_FROM_ALIENS])),
             CHECK(RC_ROMANI_RANCH_FIELD_LARGE_CRATE, true),
-            CHECK(RC_CREMIA_ESCORT, HAS_ITEM(ITEM_BOW) && RANDO_EVENTS[RE_COWS_FROM_ALIENS]),
+            CHECK(RC_CREMIA_ESCORT, HAS_ITEM(ITEM_BOW) && RANDO_EVENTS[RE_COWS_FROM_ALIENS] && AT(TIME_NIGHT2_PM_06_00)),
             CHECK(RC_ROMANI_RANCH_GRASS_01, true),
             CHECK(RC_ROMANI_RANCH_GRASS_02, true),
             CHECK(RC_ROMANI_RANCH_GRASS_03, true),
@@ -170,16 +223,17 @@ static RegisterShipInitFunc initFunc([]() {
             CHECK(RC_ROMANI_RANCH_GRASS_55, true),
             CHECK(RC_ROMANI_RANCH_GRASS_56, true),
             CHECK(RC_ROMANI_RANCH_GRASS_57, true),
+            CHECK(RC_ENEMY_DROP_ALIEN, CanKillEnemy(ACTOR_EN_INVADEPOH) && IS_NIGHT1()), // Night 1 only
         },
         .exits = { //     TO                                         FROM
             EXIT(ENTRANCE(MILK_ROAD, 1),                    ENTRANCE(ROMANI_RANCH, 0), true),
-            EXIT(ENTRANCE(RANCH_HOUSE, 0),                  ENTRANCE(ROMANI_RANCH, 2), true), // Barn
-            EXIT(ENTRANCE(RANCH_HOUSE, 1),                  ENTRANCE(ROMANI_RANCH, 3), true), // House
-            EXIT(ENTRANCE(CUCCO_SHACK, 0),                  ENTRANCE(ROMANI_RANCH, 4), true),
-            EXIT(ENTRANCE(DOGGY_RACETRACK, 0),              ENTRANCE(ROMANI_RANCH, 5), true),
+            EXIT(ENTRANCE(RANCH_HOUSE, 0),                  ENTRANCE(ROMANI_RANCH, 2), BETWEEN(TIME_DAY1_AM_06_00, TIME_NIGHT1_AM_02_30) || SECOND_DAY() || BETWEEN(TIME_DAY3_AM_06_00, TIME_NIGHT3_PM_08_00)), // Barn
+            EXIT(ENTRANCE(RANCH_HOUSE, 1),                  ENTRANCE(ROMANI_RANCH, 3), BETWEEN(TIME_DAY1_AM_06_00, TIME_NIGHT1_PM_08_00) || BETWEEN(TIME_DAY2_AM_06_00, TIME_NIGHT2_PM_08_00) || BETWEEN(TIME_DAY3_AM_06_00, TIME_NIGHT3_PM_08_00)), // House
+            EXIT(ENTRANCE(CUCCO_SHACK, 0),                  ENTRANCE(ROMANI_RANCH, 4), BETWEEN(TIME_DAY1_AM_06_00, TIME_NIGHT1_PM_08_00) || BETWEEN(TIME_DAY2_AM_06_00, TIME_NIGHT2_PM_08_00) || BETWEEN(TIME_DAY3_AM_06_00, TIME_NIGHT3_PM_08_00)),
+            EXIT(ENTRANCE(DOGGY_RACETRACK, 0),              ENTRANCE(ROMANI_RANCH, 5), BETWEEN(TIME_DAY1_AM_06_00, TIME_NIGHT1_PM_08_00) || BETWEEN(TIME_DAY2_AM_06_00, TIME_NIGHT2_PM_08_00) || BETWEEN(TIME_DAY3_AM_06_00, TIME_NIGHT3_PM_08_00)),
         },
         .events = {
-            EVENT(RE_COWS_FROM_ALIENS, CAN_BE_GORON && HAS_ITEM(ITEM_POWDER_KEG) && HAS_ITEM(ITEM_BOW)),
+            EVENT(RE_COWS_FROM_ALIENS, (HAS_ITEM(ITEM_POWDER_KEG) && CAN_BE_GORON) && HAS_ITEM(ITEM_BOW) && AT(TIME_NIGHT1_AM_02_30)),
         },
     };
 }, {});

@@ -97,7 +97,7 @@ typedef struct ActorPathing {
     /* 0x68 */ ActorPathingUpdateFunc setNextPointFunc; // Return true if should compute and update again
 } ActorPathing; // size = 0x6C
 
-struct EnDoor* SubS_FindDoor(struct PlayState* play, s32 switchFlag);
+struct EnDoor* SubS_FindScheduleDoor(struct PlayState* play, s32 schType);
 
 Gfx* SubS_DrawTransformFlexLimb(struct PlayState* play, s32 limbIndex, void** skeleton, Vec3s* jointTable, OverrideLimbDraw overrideLimbDraw, PostLimbDraw postLimbDraw, TransformLimbDraw transformLimbDraw, Actor* actor, Mtx** mtx, Gfx* gfx);
 Gfx* SubS_DrawTransformFlex(struct PlayState* play, void** skeleton, Vec3s* jointTable, s32 dListCount, OverrideLimbDraw overrideLimbDraw, PostLimbDraw postLimbDraw, TransformLimbDraw transformLimbDraw, Actor* actor, Gfx* gfx);
@@ -177,7 +177,7 @@ s32 SubS_LineSegVsPlane(Vec3f* point, Vec3s* rot, Vec3f* unitVec, Vec3f* linePoi
 Actor* SubS_FindActorCustom(struct PlayState* play, Actor* actor, Actor* actorListStart, u8 actorCategory, s16 actorId, void* verifyData, VerifyFindActorFunc verifyActorFunc);
 
 s32 SubS_OfferTalkExchangeCustom(Actor* actor, struct PlayState* play, f32 xzRange, f32 yRange, s32 exchangeItemAction, void* data, VerifyTalkExchangeActorFunc verifyActorFunc);
-s32 SubS_ActorAndPlayerFaceEachOther(struct PlayState* play, Actor* actor, void* data);
+s32 SubS_ArePlayerAndActorFacing(struct PlayState* play, Actor* actor, void* data);
 s32 SubS_OfferTalkExchangeFacing(Actor* actor, struct PlayState* play, f32 xzRange, f32 yRange, s32 exchangeItemAction, s16 playerYawRange, s16 actorYawRange);
 
 s32 SubS_TrackPointStep(Vec3f* worldPos, Vec3f* focusPos, s16 shapeYRot, Vec3f* yawTarget, Vec3f* pitchTarget, s16* headZRotStep, s16* headXRotStep, s16* torsoZRotStep, s16* torsoXRotStep, u16 headZRotStepMax, u16 headXRotStepMax, u16 torsoZRotStepMax, u16 torsoXRotStepMax);

@@ -8,7 +8,7 @@
 #include "assets/objects/gameplay_keep/gameplay_keep.h"
 #include "assets/objects/gameplay_dangeon_keep/gameplay_dangeon_keep.h"
 
-#define FLAGS (ACTOR_FLAG_10)
+#define FLAGS (ACTOR_FLAG_UPDATE_CULLING_DISABLED)
 
 #define HONOTRAP_AT_ACTIVE (1 << 0)
 #define HONOTRAP_AC_ACTIVE (1 << 1)
@@ -71,9 +71,9 @@ static TexturePtr sSilverEyeTextures[HONOTRAP_EYE_MAX] = {
     gEyeSwitchSilverClosedTex,
 };
 
-static s32 sIsFirstInitEye = true;
+static s32 sTexturesNotDesegmented = true;
 
-ActorInit En_Honotrap_InitVars = {
+ActorProfile En_Honotrap_Profile = {
     /**/ ACTOR_EN_HONOTRAP,
     /**/ ACTORCAT_PROP,
     /**/ FLAGS,
@@ -88,22 +88,22 @@ ActorInit En_Honotrap_InitVars = {
 static ColliderTrisElementInit sTrisElementsInit[] = {
     {
         {
-            ELEMTYPE_UNK4,
+            ELEM_MATERIAL_UNK4,
             { 0x00000000, 0x00, 0x00 },
             { 0x00003820, 0x00, 0x00 },
-            TOUCH_NONE | TOUCH_SFX_NORMAL,
-            BUMP_ON,
+            ATELEM_NONE | ATELEM_SFX_NORMAL,
+            ACELEM_ON,
             OCELEM_NONE,
         },
         { { { 0.0f, 23.0f, 8.5f }, { -23.0f, 0.0f, 8.5f }, { 0.0f, -23.0f, 8.5f } } },
     },
     {
         {
-            ELEMTYPE_UNK4,
+            ELEM_MATERIAL_UNK4,
             { 0x00000000, 0x00, 0x00 },
             { 0x00003820, 0x00, 0x00 },
-            TOUCH_NONE | TOUCH_SFX_NORMAL,
-            BUMP_ON,
+            ATELEM_NONE | ATELEM_SFX_NORMAL,
+            ACELEM_ON,
             OCELEM_NONE,
         },
         { { { 0.0f, 23.0f, 8.5f }, { 0.0f, -23.0f, 8.5f }, { 23.0f, 0.0f, 8.5f } } },
@@ -112,7 +112,7 @@ static ColliderTrisElementInit sTrisElementsInit[] = {
 
 static ColliderTrisInit sTrisInit = {
     {
-        COLTYPE_NONE,
+        COL_MATERIAL_NONE,
         AT_NONE,
         AC_ON | AC_TYPE_PLAYER,
         OC1_NONE,
@@ -125,7 +125,7 @@ static ColliderTrisInit sTrisInit = {
 
 static ColliderCylinderInit sCylinderInit = {
     {
-        COLTYPE_NONE,
+        COL_MATERIAL_NONE,
         AT_ON | AT_TYPE_ENEMY,
         AC_ON | AC_TYPE_PLAYER,
         OC1_ON | OC1_TYPE_ALL,
@@ -133,11 +133,11 @@ static ColliderCylinderInit sCylinderInit = {
         COLSHAPE_CYLINDER,
     },
     {
-        ELEMTYPE_UNK0,
+        ELEM_MATERIAL_UNK0,
         { 0xF7CFFFFF, 0x01, 0x04 },
         { 0x00100000, 0x00, 0x00 },
-        TOUCH_ON | TOUCH_SFX_NONE,
-        BUMP_ON,
+        ATELEM_ON | ATELEM_SFX_NONE,
+        ACELEM_ON,
         OCELEM_ON,
     },
     { 10, 25, 0, { 0, 0, 0 } },
@@ -146,9 +146,9 @@ static ColliderCylinderInit sCylinderInit = {
 static CollisionCheckInfoInit sColChkInfoInit = { 0, 9, 23, 1 };
 
 static InitChainEntry sInitChain[] = {
-    ICHAIN_F32(uncullZoneForward, 4000, ICHAIN_CONTINUE),
-    ICHAIN_F32(uncullZoneScale, 100, ICHAIN_CONTINUE),
-    ICHAIN_F32(uncullZoneDownward, 100, ICHAIN_STOP),
+    ICHAIN_F32(cullingVolumeDistance, 4000, ICHAIN_CONTINUE),
+    ICHAIN_F32(cullingVolumeScale, 100, ICHAIN_CONTINUE),
+    ICHAIN_F32(cullingVolumeDownward, 100, ICHAIN_STOP),
 };
 
 void EnHonotrap_FlameCollisionCheck(EnHonotrap* this, PlayState* play) {
@@ -187,8 +187,8 @@ void EnHonotrap_InitEye(EnHonotrap* this, PlayState* play) {
 
     Actor_SetScale(&this->actor, 0.1f);
 
-    if (sIsFirstInitEye) {
-        sIsFirstInitEye = false;
+    if (sTexturesNotDesegmented) {
+        sTexturesNotDesegmented = false;
         for (k = 0; k < HONOTRAP_EYE_MAX; k++) {
             sSilverEyeTextures[k] = Lib_SegmentedToVirtual(sSilverEyeTextures[k]);
         }
@@ -276,8 +276,8 @@ void EnHonotrap_Init(Actor* thisx, PlayState* play) {
         EnHonotrap_InitFlameGroup(this, play);
         this->actor.update = EnHonotrap_UpdateFlameGroup;
         this->actor.draw = EnHonotrap_DrawFlameGroup;
-        this->actor.uncullZoneScale = 500.0f;
-        this->actor.uncullZoneDownward = 500.0f;
+        this->actor.cullingVolumeScale = 500.0f;
+        this->actor.cullingVolumeDownward = 500.0f;
     } else { // HONOTRAP_TYPE_FLAME_MOVE, HONOTRAP_TYPE_FLAME_DROP
         EnHonotrap_InitFlame(this, play);
         this->actor.update = EnHonotrap_UpdateFlame;
@@ -639,7 +639,7 @@ void EnHonotrap_FlameGroup(EnHonotrap* this, PlayState* play) {
         flameElem->pos.y = this->actor.world.pos.y;
         flameElem->pos.z = (sp84 * var_fs0) + this->actor.world.pos.z;
 
-        flameElem->unkC = Math_SinS((s16)(s32)(var_fs0 * 25486.223f)) * 1.6f;
+        flameElem->unkC = Math_SinS(TRUNCF_BINANG(var_fs0 * 25486.223f)) * 1.6f;
         if (flameElem->unkC > 1.0f) {
             flameElem->unkC = 1.0f;
         } else if (flameElem->unkC < 0.0f) {
@@ -658,7 +658,7 @@ void EnHonotrap_FlameGroup(EnHonotrap* this, PlayState* play) {
     }
     temp_fs0 = flameGroup->unk0 * 120.0f;
     temp_fs1 = flameGroup->unk4 * 120.0f;
-    Actor_OffsetOfPointInActorCoords(&this->actor, &sp68, &GET_PLAYER(play)->actor.world.pos);
+    Actor_WorldToActorCoords(&this->actor, &sp68, &GET_PLAYER(play)->actor.world.pos);
 
     if (sp68.z < temp_fs1) {
         sp68.z = temp_fs1;
@@ -666,19 +666,19 @@ void EnHonotrap_FlameGroup(EnHonotrap* this, PlayState* play) {
         sp68.z = temp_fs0;
     }
 
-    var_fs0_2 = Math_SinS((s16)(s32)(sp68.z * 212.3852f)) * 1.6f;
+    var_fs0_2 = Math_SinS(TRUNCF_BINANG(sp68.z * 212.3852f)) * 1.6f;
     if (var_fs0_2 > 1.0f) {
         var_fs0_2 = 1.0f;
     }
     sp80 *= ((1.0f - flameGroup->unk4) * 0.8f) + 0.2f;
     if (sp80 > 0.2f) {
         this->collider.cyl.dim.pos.x =
-            (s16)(s32)((Math_SinS(this->actor.shape.rot.y) * sp68.z) + this->actor.world.pos.x);
-        this->collider.cyl.dim.pos.y = (s16)(s32)(this->actor.world.pos.y - (24.0f * var_fs0_2));
+            TRUNCF_BINANG((Math_SinS(this->actor.shape.rot.y) * sp68.z) + this->actor.world.pos.x);
+        this->collider.cyl.dim.pos.y = TRUNCF_BINANG(this->actor.world.pos.y - (24.0f * var_fs0_2));
         this->collider.cyl.dim.pos.z =
-            (s16)(s32)((Math_CosS(this->actor.shape.rot.y) * sp68.z) + this->actor.world.pos.z);
-        this->collider.cyl.dim.radius = (s16)(s32)(15.0f * var_fs0_2);
-        this->collider.cyl.dim.height = (s16)(s32)(37.5f * var_fs0_2);
+            TRUNCF_BINANG((Math_CosS(this->actor.shape.rot.y) * sp68.z) + this->actor.world.pos.z);
+        this->collider.cyl.dim.radius = TRUNCF_BINANG(15.0f * var_fs0_2);
+        this->collider.cyl.dim.height = TRUNCF_BINANG(37.5f * var_fs0_2);
         CollisionCheck_SetAT(play, &play->colChkCtx, &this->collider.tris.base);
         CollisionCheck_SetAC(play, &play->colChkCtx, &this->collider.tris.base);
         CollisionCheck_SetOC(play, &play->colChkCtx, &this->collider.tris.base);
@@ -748,7 +748,7 @@ void EnHonotrap_Draw(Actor* thisx, PlayState* play) {
 
     Gfx_SetupDL25_Opa(play->state.gfxCtx);
     gSPSegment(POLY_OPA_DISP++, 0x08, sSilverEyeTextures[this->eyeState]);
-    gSPMatrix(POLY_OPA_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    MATRIX_FINALIZE_AND_LOAD(POLY_OPA_DISP++, play->state.gfxCtx);
     gSPDisplayList(POLY_OPA_DISP++, &gEyeSwitchSilverDL);
 
     CLOSE_DISPS(play->state.gfxCtx);
@@ -766,7 +766,7 @@ void EnHonotrap_DrawFlame(Actor* thisx, PlayState* play) {
     gDPSetPrimColor(POLY_XLU_DISP++, 0x80, 0x80, 255, 200, 0, 255);
     gDPSetEnvColor(POLY_XLU_DISP++, 255, 0, 0, 0);
     Matrix_RotateYS(Camera_GetCamDirYaw(GET_ACTIVE_CAM(play)) + 0x8000, MTXMODE_APPLY);
-    gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    MATRIX_FINALIZE_AND_LOAD(POLY_XLU_DISP++, play->state.gfxCtx);
     gSPDisplayList(POLY_XLU_DISP++, gEffFire1DL);
 
     CLOSE_DISPS(play->state.gfxCtx);
@@ -799,7 +799,7 @@ void EnHonotrap_DrawFlameGroup(Actor* thisx, PlayState* play) {
             Matrix_Scale(((fabsf(Math_SinS((s16)(camDir.y - thisx->shape.rot.y) >> 1)) * 0.2f) + 1.7f) *
                              flameElem->unkC,
                          flameElem->unkC, 1.0f, MTXMODE_APPLY);
-            gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+            MATRIX_FINALIZE_AND_LOAD(POLY_XLU_DISP++, play->state.gfxCtx);
             gSPDisplayList(POLY_XLU_DISP++, gEffFire1DL);
         }
     }

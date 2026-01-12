@@ -1,15 +1,17 @@
-#include "public/bridge/consolevariablebridge.h"
+#include <libultraship/bridge/consolevariablebridge.h>
 #include "2s2h/GameInteractor/GameInteractor.h"
 #include "2s2h/ShipInit.hpp"
+#include "2s2h/ShipUtils.h"
 
 extern "C" {
 #include "overlays/kaleido_scope/ovl_kaleido_scope/z_kaleido_scope.h"
+#include "z64horse.h"
 
 extern f32 sPauseMenuVerticalOffset;
 extern u16 sCursorPointsToOcarinaModes[];
 extern u16 sOwlWarpPauseItems[];
-extern u16 D_80AF343C[];
 extern s16 sInDungeonScene;
+extern s32 gHorseIsMounted;
 }
 
 #define CVAR_NAME "gEnhancements.Songs.PauseOwlWarp"
@@ -18,12 +20,33 @@ extern s16 sInDungeonScene;
 extern "C" bool PauseOwlWarp_IsOwlWarpEnabled() {
     return CVAR && CHECK_QUEST_ITEM(QUEST_SONG_SOARING) &&
            gSaveContext.save.saveInfo.playerData.owlActivationFlags != 0 &&
-           gPlayState->pauseCtx.debugEditor == DEBUG_EDITOR_NONE;
+           gPlayState->pauseCtx.debugEditor == DEBUG_EDITOR_NONE &&
+           gPlayState->interfaceCtx.restrictions.songOfSoaring == 0;
 }
 
 void HandleConfirmingState(PauseContext* pauseCtx, Input* input) {
     if (Message_ShouldAdvance(gPlayState)) {
         if (gPlayState->msgCtx.choiceIndex == 0) { // Yes
+            Player* player = GET_PLAYER(gPlayState);
+
+            // Handle Epona's state before warping to prevent her from following the player
+            if (gHorseIsMounted && (player->stateFlags1 & PLAYER_STATE1_800000) && player->rideActor != NULL) {
+                // Save Epona's current position to horse data so she can be found later in the current scene
+                if (CHECK_QUEST_ITEM(QUEST_SONG_EPONA)) {
+                    gSaveContext.save.saveInfo.horseData.sceneId = gPlayState->sceneId;
+                    gSaveContext.save.saveInfo.horseData.pos.x = player->rideActor->world.pos.x;
+                    gSaveContext.save.saveInfo.horseData.pos.y = player->rideActor->world.pos.y;
+                    gSaveContext.save.saveInfo.horseData.pos.z = player->rideActor->world.pos.z;
+                    gSaveContext.save.saveInfo.horseData.yaw = player->rideActor->shape.rot.y;
+                }
+
+                // Clear horse mounting state to prevent Epona from spawning at warp destination
+                gHorseIsMounted = false;
+            }
+
+            // Clear pictograph/camera event flag to prevent UI state from persisting after warp
+            CLEAR_EVENTINF(EVENTINF_41);
+
             Interface_SetAButtonDoAction(gPlayState, DO_ACTION_NONE);
             pauseCtx->state = PAUSE_STATE_UNPAUSE_SETUP;
             sPauseMenuVerticalOffset = -6240.0f;
@@ -33,7 +56,7 @@ void HandleConfirmingState(PauseContext* pauseCtx, Input* input) {
 
             Message_CloseTextbox(gPlayState);
 
-            gPlayState->nextEntrance = D_80AF343C[pauseCtx->cursorPoint[PAUSE_WORLD_MAP]];
+            gPlayState->nextEntrance = sOwlWarpEntrancesForMods[pauseCtx->cursorPoint[PAUSE_WORLD_MAP]];
             gPlayState->transitionTrigger = TRANS_TRIGGER_START;
             gPlayState->transitionType = TRANS_TYPE_FADE_WHITE;
         } else { // No
@@ -81,7 +104,7 @@ void UpdateCursorForOwlWarpPoints(PauseContext* pauseCtx) {
                 gSaveContext.hudVisibility = HUD_VISIBILITY_IDLE;
                 Interface_SetHudVisibility(HUD_VISIBILITY_ALL);
             }
-            if (interfaceCtx->aButtonHorseDoAction != DO_ACTION_WARP) {
+            if (interfaceCtx->aButtonDoActionDelayed != DO_ACTION_WARP) {
                 Interface_SetAButtonDoAction(gPlayState, DO_ACTION_WARP);
             }
         } else {
@@ -92,7 +115,7 @@ void UpdateCursorForOwlWarpPoints(PauseContext* pauseCtx) {
                 gSaveContext.hudVisibility = HUD_VISIBILITY_IDLE;
                 Interface_SetHudVisibility(HUD_VISIBILITY_ALL);
             }
-            if (interfaceCtx->aButtonHorseDoAction != DO_ACTION_INFO) {
+            if (interfaceCtx->aButtonDoActionDelayed != DO_ACTION_INFO) {
                 Interface_SetAButtonDoAction(gPlayState, DO_ACTION_INFO);
             }
         }

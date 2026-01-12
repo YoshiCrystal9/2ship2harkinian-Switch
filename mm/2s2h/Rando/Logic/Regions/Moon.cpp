@@ -53,6 +53,10 @@ static RegisterShipInitFunc initFunc([]() {
             CHECK(RC_MOON_TRIAL_LINK_POT_07, true),
             CHECK(RC_MOON_TRIAL_LINK_POT_08, true),
             CHECK(RC_MOON_TRIAL_LINK_PIECE_OF_HEART, HAS_ITEM(ITEM_HOOKSHOT) && HAS_ITEM(ITEM_BOMBCHU) && HAS_ITEM(ITEM_BOW)),
+            CHECK(RC_ENEMY_DROP_IRON_KNUCKLE, CanKillEnemy(ACTOR_EN_IK)),
+            CHECK(RC_ENEMY_DROP_GARO_MASTER, CanKillEnemy(ACTOR_EN_JSO2)),
+            CHECK(RC_ENEMY_DROP_WIZROBE, CanKillEnemy(ACTOR_EN_WIZ)),
+            CHECK(RC_ENEMY_DROP_DINOLFOS, CanKillEnemy(ACTOR_EN_DINOFOS)),
         },
         .exits = { //     TO                                         FROM
             EXIT(ENTRANCE(THE_MOON, 0),                     ENTRANCE(MOON_LINK_TRIAL, 0), true),
@@ -108,7 +112,8 @@ static RegisterShipInitFunc initFunc([]() {
                 (RANDO_SAVE_OPTIONS[RO_ACCESS_TRIALS] == RO_ACCESS_TRIALS_FORMS) ||
                 (RANDO_SAVE_OPTIONS[RO_ACCESS_TRIALS] == RO_ACCESS_TRIALS_OPEN)
             ),
-            EXIT(ENTRANCE(MAJORAS_LAIR, 0),                          ONE_WAY_EXIT, RemainsCount() >= RANDO_SAVE_OPTIONS[RO_ACCESS_MAJORA_REMAINS_COUNT]),
+            EXIT(ENTRANCE(MAJORAS_LAIR, 0),                          ONE_WAY_EXIT, (RemainsCount() >= RANDO_SAVE_OPTIONS[RO_ACCESS_MAJORA_REMAINS_COUNT]) && (MoonMaskCount() >= RANDO_SAVE_OPTIONS[RO_ACCESS_MAJORA_MASKS_COUNT])
+            ),
         },
         .oneWayEntrances = {
             ENTRANCE(THE_MOON, 0), // From rooftop and trials

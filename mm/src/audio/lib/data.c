@@ -1,5 +1,5 @@
 #include "global.h"
-#include "endianness.h"
+#include <ship/utils/binarytools/endianness.h>
 
 s16 gLowPassFilterData[16 * 8] ALIGNED(16) = {
     /* 0x0 */ 0,     0,     0,    32767, 0,    0,     0,     0,    // Identity filter (delta function)

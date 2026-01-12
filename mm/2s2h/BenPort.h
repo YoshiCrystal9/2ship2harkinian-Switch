@@ -3,6 +3,9 @@
 
 #pragma once
 
+#define BTN_CUSTOM_MODIFIER1 0x0040
+#define BTN_CUSTOM_MODIFIER2 0x0080
+
 #define GAME_REGION_NTSC 0
 #define GAME_REGION_PAL 1
 
@@ -13,7 +16,7 @@
 #define MM_NTSC_US_GC 0xB443EB08
 
 #ifdef __cplusplus
-#include <Context.h>
+#include <ship/Context.h>
 
 #include <vector>
 
@@ -50,9 +53,11 @@ uint32_t IsGameMasterQuest();
 #endif
 
 #ifndef __cplusplus
+#include <z64audio.h>
 #include <z64bgcheck.h>
 #include <z64camera.h>
 #include <z64game.h>
+#include <z64keyframe.h>
 #include <z64scene.h>
 #include <z64skin.h>
 void InitOTR(void);
@@ -93,6 +98,8 @@ Gfx* ResourceMgr_LoadGfxByCRC(uint64_t crc);
 Gfx* ResourceMgr_LoadGfxByName(const char* path);
 void ResourceMgr_PatchGfxByName(const char* path, const char* patchName, int index, Gfx instruction);
 void ResourceMgr_UnpatchGfxByName(const char* path, const char* patchName);
+size_t ResourceMgr_GetPatchCountForDL(const char* path);
+void ResourceMgr_ResetAllPatchesForDL(const char* path);
 u8* ResourceMgr_LoadArrayByNameAsU8(const char* path, u8* buffer);
 char* ResourceMgr_LoadArrayByNameAsVec3s(const char* path);
 char* ResourceMgr_LoadArrayByName(const char* path);
@@ -155,6 +162,7 @@ int32_t GetGIID(uint32_t itemID);
 extern "C" {
 #endif
 uint64_t GetUnixTimestamp();
+void CrashHandler_PrintExt(char* buffer, size_t* pos);
 #ifdef __cplusplus
 };
 #endif

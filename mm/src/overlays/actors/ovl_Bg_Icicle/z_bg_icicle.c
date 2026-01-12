@@ -9,8 +9,6 @@
 
 #define FLAGS 0x00000000
 
-#define THIS ((BgIcicle*)thisx)
-
 void BgIcicle_Init(Actor* thisx, PlayState* play);
 void BgIcicle_Destroy(Actor* thisx, PlayState* play);
 void BgIcicle_Update(Actor* thisx, PlayState* play);
@@ -24,7 +22,7 @@ void BgIcicle_Regrow(BgIcicle* this, PlayState* play);
 
 static ColliderCylinderInit sCylinderInit = {
     {
-        COLTYPE_NONE,
+        COL_MATERIAL_NONE,
         AT_ON | AT_TYPE_ENEMY,
         AC_ON | AC_TYPE_PLAYER,
         OC1_NONE,
@@ -32,17 +30,17 @@ static ColliderCylinderInit sCylinderInit = {
         COLSHAPE_CYLINDER,
     },
     {
-        ELEMTYPE_UNK0,
+        ELEM_MATERIAL_UNK0,
         { 0xF7CFFFFF, 0x00, 0x04 },
         { 0xF7CFFFFF, 0x00, 0x00 },
-        TOUCH_ON | TOUCH_SFX_NORMAL,
-        BUMP_ON,
+        ATELEM_ON | ATELEM_SFX_NORMAL,
+        ACELEM_ON,
         OCELEM_NONE,
     },
     { 13, 120, 0, { 0, 0, 0 } },
 };
 
-ActorInit Bg_Icicle_InitVars = {
+ActorProfile Bg_Icicle_Profile = {
     /**/ ACTOR_BG_ICICLE,
     /**/ ACTORCAT_PROP,
     /**/ FLAGS,
@@ -55,7 +53,7 @@ ActorInit Bg_Icicle_InitVars = {
 };
 
 static InitChainEntry sInitChain[] = {
-    ICHAIN_F32(uncullZoneScale, 1500, ICHAIN_CONTINUE),
+    ICHAIN_F32(cullingVolumeScale, 1500, ICHAIN_CONTINUE),
     ICHAIN_F32(gravity, -3, ICHAIN_CONTINUE),
     ICHAIN_F32(terminalVelocity, -30, ICHAIN_CONTINUE),
     ICHAIN_VEC3F_DIV1000(scale, 100, ICHAIN_STOP),
@@ -63,7 +61,7 @@ static InitChainEntry sInitChain[] = {
 
 void BgIcicle_Init(Actor* thisx, PlayState* play) {
     s32 pad;
-    BgIcicle* this = THIS;
+    BgIcicle* this = (BgIcicle*)thisx;
     s32 paramsHigh;
     s32 paramsMid;
 
@@ -77,7 +75,7 @@ void BgIcicle_Init(Actor* thisx, PlayState* play) {
     paramsHigh = (thisx->params >> 8) & 0xFF;
     paramsMid = (thisx->params >> 2) & 0x3F;
     this->unk_161 = (thisx->params >> 8) & 0xFF;
-    thisx->params = thisx->params & 3;
+    thisx->params &= 3;
 
     if (thisx->params == ICICLE_STALAGMITE_RANDOM_DROP || thisx->params == ICICLE_STALAGMITE_FIXED_DROP) {
         this->unk_160 = ((thisx->params == ICICLE_STALAGMITE_RANDOM_DROP) ? paramsHigh : paramsMid);
@@ -90,16 +88,16 @@ void BgIcicle_Init(Actor* thisx, PlayState* play) {
 }
 
 void BgIcicle_Destroy(Actor* thisx, PlayState* play) {
-    BgIcicle* this = THIS;
+    BgIcicle* this = (BgIcicle*)thisx;
 
     DynaPoly_DeleteBgActor(play, &play->colCtx.dyna, this->dyna.bgId);
     Collider_DestroyCylinder(play, &this->collider);
 }
 
 void BgIcicle_Break(BgIcicle* this, PlayState* play, f32 arg2) {
-    static Vec3f accel = { 0.0f, -1.0f, 0.0f };
-    static Color_RGBA8 primColor = { 170, 255, 255, 255 };
-    static Color_RGBA8 envColor = { 0, 50, 100, 255 };
+    static Vec3f sAccel = { 0.0f, -1.0f, 0.0f };
+    static Color_RGBA8 sPrimColor = { 170, 255, 255, 255 };
+    static Color_RGBA8 sEnvColor = { 0, 50, 100, 255 };
     Vec3f velocity;
     Vec3f pos;
     s32 j;
@@ -117,7 +115,7 @@ void BgIcicle_Break(BgIcicle* this, PlayState* play, f32 arg2) {
             velocity.z = Rand_CenteredFloat(7.0f);
             velocity.y = (Rand_ZeroOne() * 4.0f) + 8.0f;
 
-            EffectSsEnIce_Spawn(play, &pos, (Rand_ZeroOne() * 0.2f) + 0.1f, &velocity, &accel, &primColor, &envColor,
+            EffectSsEnIce_Spawn(play, &pos, (Rand_ZeroOne() * 0.2f) + 0.1f, &velocity, &sAccel, &sPrimColor, &sEnvColor,
                                 30);
         }
     }
@@ -230,7 +228,7 @@ void BgIcicle_UpdateAttacked(BgIcicle* this, PlayState* play) {
 
 void BgIcicle_Update(Actor* thisx, PlayState* play) {
     s32 pad;
-    BgIcicle* this = THIS;
+    BgIcicle* this = (BgIcicle*)thisx;
 
     BgIcicle_UpdateAttacked(this, play);
     this->actionFunc(this, play);

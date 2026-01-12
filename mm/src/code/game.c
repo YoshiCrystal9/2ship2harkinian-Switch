@@ -10,10 +10,11 @@
 #include "z64viscvg.h"
 #include "z64vismono.h"
 #include "z64viszbuf.h"
-#include "overlays/kaleido_scope/ovl_kaleido_scope/z_kaleido_scope.h"
 #include "debug.h"
 
 #include "2s2h/GameInteractor/GameInteractor.h"
+
+#pragma increment_block_number "n64-us:128"
 
 s32 gFramerateDivisor = 1;
 f32 gFramerateDivisorF = 1.0f;
