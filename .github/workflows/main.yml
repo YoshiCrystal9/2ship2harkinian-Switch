@@ -255,7 +255,7 @@ jobs:
     needs: generate-2ship-otr
     runs-on: ${{ (vars.LINUX_RUNNER && fromJSON(vars.LINUX_RUNNER)) || 'ubuntu-latest' }}
     container:
-      image: devkitpro/devkita64:20241023
+      image: devkitpro/devkita64:latest
     steps:
     - uses: actions/checkout@v4
       with:
@@ -268,24 +268,6 @@ jobs:
         sudo dkp-pacman -R --noconfirm switch-tinyxml2
         wget https://github.com/Kitware/CMake/releases/download/v3.28.3/cmake-3.28.3-linux-x86_64.sh -O /tmp/cmake.sh
         sudo sh /tmp/cmake.sh --prefix=/usr/local/ --exclude-subdir
-        wget https://libzip.org/download/libzip-1.10.1.tar.gz
-        tar -xzvf libzip-1.10.1.tar.gz
-        cd libzip-1.10.1
-        mkdir build
-        cd build
-        cmake -H.. -B. -DCMAKE_TOOLCHAIN_FILE=/opt/devkitpro/cmake/Switch.cmake
-        make
-        make install
-        cd ../..
-        wget https://github.com/nlohmann/json/archive/refs/tags/v3.11.3.tar.gz
-        tar -xzvf v3.11.3.tar.gz
-        cd json-3.11.3
-        mkdir build
-        cd build
-        cmake -H.. -B. -DJSON_BuildTests=OFF -DCMAKE_TOOLCHAIN_FILE=/opt/devkitpro/cmake/Switch.cmake
-        make
-        make install
-        cd ../..
 
     - name: Fix dubious ownership error
       if: ${{ vars.LINUX_RUNNER }}
