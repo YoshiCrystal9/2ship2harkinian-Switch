@@ -17,7 +17,7 @@ If you're having any trouble after reading through this `README`, feel free ask 
 ### 1. Verify your ROM dump
 You can verify you have dumped a supported copy of the game by using the compatibility checker at https://2ship.equipment/. If you'd prefer to manually validate your ROM dump, you can cross-reference its `sha1` hash with the hashes [here](docs/supportedHashes.json).
 
-### 2. Download 2 Ship 2 Harkinian from [Releases](https://github.com/HarbourMasters/2Ship2Harkinian/releases)
+### 2. Download 2 Ship 2 Harkinian for Nintendo Switch from [Releases](https://github.com/YoshiCrystal9/2ship2harkinian-Switch/releases)
 
 ### 3. Launch the Game!
 #### Windows
