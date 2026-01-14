@@ -230,10 +230,10 @@ WidgetInfo& BenMenu::AddWidget(WidgetPath& pathInfo, std::string widgetName, Wid
     return widget;
 }
 
-// Last generated with the following command on 10/30/2025. The gap in commits is so that cherry-picks from other repos
+// Last generated with the following command on 01/10/2026. The gap in commits is so that cherry-picks from other repos
 // do not get mixed in.
 // clang-format off
-// { git shortlog -sn 2332f63..558f59b ; git shortlog -sn dfcc80e..HEAD; } | sort -k2 | uniq -f1 | sed -E 's/^[[:space:]]*[0-9]+[[:space:]]+/"/' | sed -E 's/(.+)/\1",/'
+// { git shortlog -sn 2332f63..558f59b ; git shortlog -sn dfcc80e..HEAD; } | awk '{n=$1; $1=""; sub(/^ /,""); c[$0]+=n} END{for(a in c) print c[a],a}' | sort -nr | sed -E 's/^[[:space:]]*[0-9]+[[:space:]]+/"/; s/(.+)/\1",/'
 // clang-format on
 std::vector<std::string> contributors = {
     "ProxySaw", // "Garrett Cox", manual replacement
@@ -244,51 +244,54 @@ std::vector<std::string> contributors = {
     "Caladius",
     "inspectredc",
     "sitton76",
+    "mckinlee",
     "Patrick12115",
     "briaguya",
     "Malkierian",
     "PurpleHato",
     "Joshua Sanchez",
     "aMannus",
-    "mckinlee",
+    "Jordan Longstaff",
     "zodiac-ill",
+    "Glought",
     "rachaellama",
-    "Adam Bird",
-    "Revo",
-    "Lars-Christian Selland",
-    "Liam Scholte",
-    "Nicholas Estelami",
-    "ReddestDream",
-    "Sirius902",
-    "Spodi",
     "lightmanLP",
+    "Spodi",
+    "Sirius902",
+    "Revo",
     "lilacLunatic",
-    "Alejandro Asenjo Nitti",
-    "AltoXorg",
-    "Ben Willmore",
-    "Captain Kitty Cat",
-    "Extloga",
-    "Felix Dietrich",
-    "Ghunzor",
-    "Hoeloe",
-    "Jacob Erly",
-    "Kenix3",
-    "Louis",
-    "MegaMech",
-    "Mothstery",
+    "ReddestDream",
     "OtherBlue",
-    "Qlonever",
-    "Quorsor",
-    "Ralphie Morell",
-    "Reinhardt R. Gaming",
-    "Rozelette",
-    "Travis",
-    "cplaster",
-    "justawayofthesamurai",
-    "verbes4",
-    "ammar sadaoui",
+    "Nicholas Estelami",
     "Mrlinkwii",
+    "Liam Scholte",
+    "Lars-Christian Selland",
+    "verbes4",
+    "justawayofthesamurai",
+    "cplaster",
+    "ammar sadaoui",
+    "Travis",
+    "Rozelette",
+    "Reinhardt R. Gaming",
+    "Ralphie Morell",
+    "Quorsor",
+    "Qlonever",
+    "Mothstery",
+    "MegaMech",
+    "Louis",
+    "Kenix3",
+    "Jordyn Hardyman",
+    "Jacob Erly",
+    "Hoeloe",
+    "Ghunzor",
+    "Felix Dietrich",
+    "Extloga",
+    "ErawanJohnson",
     "Corbin Park",
+    "Captain Kitty Cat",
+    "Ben Willmore",
+    "AltoXorg",
+    "Alejandro Asenjo Nitti",
 };
 
 void BenMenu::AddSettings() {
@@ -366,24 +369,33 @@ void BenMenu::AddSettings() {
 
         // Draw auto scrolling list of contributors in columns
         ImGui::SetNextWindowSize(ImVec2(0.0f, ImGui::GetMainViewport()->WorkSize.y / 3));
-        ImGui::BeginChild("contributors");
+        ImGui::BeginChild("contributors", ImVec2(0, 0), 0,
+                          ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
         static double scrollSpeed = 1.5f * (ImGui::GetFontSize() / 1000.0f); // Lines to scroll per second
-        double scrollPosition = fmod(GetUnixTimestamp() * scrollSpeed, ImGui::GetScrollMaxY() + 1.0f);
+        static int numColumns = 2; // Two columns seem to work best. Some names are too long for more on lower res
+
+        // Calculate the height of one full list iteration
+        float lineHeight = ImGui::GetTextLineHeightWithSpacing();
+        float singleListHeight =
+            (contributors.size() / numColumns + (contributors.size() % numColumns != 0 ? 1 : 0)) * lineHeight;
+
+        // Calculate scroll position that wraps seamlessly
+        double scrollPosition = fmod((GetUnixTimestamp() % 18446744000000000000) * scrollSpeed, singleListHeight);
         ImGui::SetScrollY(scrollPosition);
 
-        ImGui::Dummy(ImVec2(0.0f, ImGui::GetFontSize()));
-        static int numColumns = 2; // Two columns seem to work best. Some names are too long for more on lower res
-        for (int column = 0; column < numColumns; column++) {
-            if (column > 0)
-                ImGui::SameLine();
+        // Render the contributors list twice for infinite scroll effect
+        for (int iteration = 0; iteration < 2; iteration++) {
+            for (int column = 0; column < numColumns; column++) {
+                if (column > 0)
+                    ImGui::SameLine();
 
-            ImGui::BeginGroup();
-            for (int i = column; i < contributors.size(); i += numColumns) {
-                ImGui::Text("%s", contributors.at(i).c_str());
+                ImGui::BeginGroup();
+                for (int i = column; i < contributors.size(); i += numColumns) {
+                    ImGui::Text("%s", contributors.at(i).c_str());
+                }
+                ImGui::EndGroup();
             }
-            ImGui::EndGroup();
         }
-        ImGui::Dummy(ImVec2(0.0f, ImGui::GetFontSize()));
         ImGui::EndChild();
 
         ImGui::EndChild();
