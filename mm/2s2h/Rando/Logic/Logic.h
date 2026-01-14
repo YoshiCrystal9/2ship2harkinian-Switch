@@ -744,6 +744,9 @@ inline bool CanKillEnemy(ActorId EnemyId) {
             return HAS_ITEM(ITEM_BOW);
         case ACTOR_EN_THIEFBIRD: // Takkuri
             return (CAN_USE_PROJECTILE || CAN_BE_GORON || CAN_BE_ZORA || CAN_USE_EXPLOSIVE || CAN_USE_SWORD);
+        case ACTOR_EN_DEATH: // Gomess
+            return (CAN_USE_SWORD || HAS_ITEM(ITEM_BOW) || HAS_ITEM(ITEM_HOOKSHOT) || CAN_BE_ZORA || CAN_BE_GORON ||
+                    (CAN_BE_DEKU && HAS_MAGIC));
         default: // Incorrect actor ID inputed.
             assert(false);
             return false;
