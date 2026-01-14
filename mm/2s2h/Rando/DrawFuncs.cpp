@@ -241,10 +241,14 @@ void EnKaizoku_TransformLimbDraw(PlayState* play, s32 limbIndex, Actor* thisx) {
 extern void DrawAlien() {
     SETUP_DRAW(ALIEN_LIMB_MAX);
     static uintptr_t eyeTexture = (uintptr_t)Lib_SegmentedToVirtual((TexturePtr)gAlienEyeTex);
+    static AnimatedMaterial* sAlienEmptyTexAnim =
+        (AnimatedMaterial*)Lib_SegmentedToVirtual((TexturePtr)gAlienEmptyTexAnim);
     Gfx_SetupDL25_Opa(gPlayState->state.gfxCtx);
     Matrix_Scale(0.007f, 0.007f, 0.007f, MTXMODE_APPLY);
     SETUP_FLEX_SKEL(ALIEN_LIMB_MAX, gAlienSkel, gAlienFloatAnim);
 
+    AnimatedMat_Draw(gPlayState, sAlienEmptyTexAnim);
+    Scene_SetRenderModeXlu(gPlayState, 0, 1);
     gSPSegment(POLY_OPA_DISP++, 0x08, eyeTexture);
     gDPSetEnvColor(POLY_OPA_DISP++, 255, 255, 255, 255);
     SkelAnime_DrawFlexOpa(gPlayState, skelAnime.skeleton, skelAnime.jointTable, skelAnime.dListCount, NULL, NULL, NULL);
@@ -260,7 +264,7 @@ extern void DrawArmos() {
     Matrix_Translate(0, -3100, 0, MTXMODE_APPLY);
     SETUP_SKEL(OBJECT_AM_LIMB_MAX, object_am_Skel_005948, gArmosHopAnim);
 
-    gDPSetEnvColor(POLY_OPA_DISP++, 255, 255, 255, 255);
+    gDPSetEnvColor(POLY_OPA_DISP++, 0, 0, 0, 255);
     SkelAnime_DrawOpa(gPlayState, skelAnime.skeleton, skelAnime.jointTable, NULL, NULL, NULL);
 
     CLOSE_DISPS(gPlayState->state.gfxCtx);
@@ -366,6 +370,7 @@ extern void DrawCaptainKeeta() {
     Matrix_Translate(0, -3500.0f, 0, MTXMODE_APPLY);
     SETUP_SKEL(OBJECT_BSB_LIMB_MAX, object_bsb_Skel_00C3E0, object_bsb_Anim_004894);
 
+    Scene_SetRenderModeXlu(gPlayState, 0, 1);
     gDPSetEnvColor(POLY_OPA_DISP++, 0, 0, 0, 255);
     SkelAnime_DrawOpa(gPlayState, skelAnime.skeleton, skelAnime.jointTable, NULL, NULL, NULL);
 
@@ -425,6 +430,7 @@ extern void DrawDeepPython() {
     SETUP_FLEX_SKEL(DEEP_PYTHON_LIMB_MAX, gDeepPythonSkel, gDeepPythonUnusedSideSwayAnim);
 
     Gfx_SetupDL25_Opa(gPlayState->state.gfxCtx);
+    Gfx_SetupDL25_Xlu(gPlayState->state.gfxCtx);
     SkelAnime_DrawFlexOpa(gPlayState, skelAnime.skeleton, skelAnime.jointTable, skelAnime.dListCount, NULL, NULL, NULL);
 
     CLOSE_DISPS(gPlayState->state.gfxCtx);
@@ -446,12 +452,31 @@ extern void DrawDekuBaba() {
 extern void DrawDexihand() {
     SETUP_DRAW(DEXIHAND_LIMB_MAX);
     Gfx_SetupDL25_Opa(gPlayState->state.gfxCtx);
-    Matrix_Scale(0.02f, 0.02f, 0.02f, MTXMODE_APPLY);
+    Matrix_Scale(0.015f, 0.015f, 0.015f, MTXMODE_APPLY);
+    Matrix_Translate(0, -1000, 0, MTXMODE_APPLY);
     SETUP_FLEX_SKEL(DEXIHAND_LIMB_MAX, gDexihandSkel, gDexihandIdleAnim);
 
+    Gfx* gfx = POLY_OPA_DISP;
+    Vec3f limbPos;
+
+    gSPDisplayList(&gfx[0], gSetupDLs[25]);
+    MATRIX_FINALIZE_AND_LOAD(&gfx[1], gPlayState->state.gfxCtx);
+    gSPDisplayList(&gfx[2], (Gfx*)gDexihandBaseDL);
+    Matrix_MultVecY(300.0f, &limbPos);
+
+    gfx = &gfx[3];
+    // Draw a single arm segment
+    Matrix_Push();
+    MATRIX_FINALIZE_AND_LOAD(gfx++, gPlayState->state.gfxCtx);
+    gSPDisplayList(gfx++, (Gfx*)gDexihandArmSegmentDL);
+    Matrix_Pop();
+
+    POLY_OPA_DISP = gfx;
+    Matrix_Translate(0, 2500, 0, MTXMODE_APPLY);
     SkelAnime_DrawFlexOpa(gPlayState, skelAnime.skeleton, skelAnime.jointTable, skelAnime.dListCount, NULL, NULL, NULL);
 
     CLOSE_DISPS(gPlayState->state.gfxCtx);
+    Matrix_Translate(0, -1000, 0, MTXMODE_APPLY);
     DrawEnLight({ 155, 155, 70 }, { 6.0f, 6.0f, 6.0f });
 }
 
@@ -463,9 +488,9 @@ extern void DrawDinolfos() {
     Matrix_Translate(0, -2200.0f, 0, MTXMODE_APPLY);
     SETUP_FLEX_SKEL(DINOLFOS_LIMB_MAX, gDinolfosSkel, gDinolfosIdleAnim);
 
-    Scene_SetRenderModeXlu(gPlayState, 0, 1);
     gSPSegment(POLY_OPA_DISP++, 0x08, eyeTexture);
-    gDPSetEnvColor(POLY_OPA_DISP++, 255, 255, 255, 255);
+    gDPSetEnvColor(POLY_OPA_DISP++, 20, 40, 40, 255);
+    Scene_SetRenderModeXlu(gPlayState, 0, 1);
     SkelAnime_DrawFlexOpa(gPlayState, skelAnime.skeleton, skelAnime.jointTable, skelAnime.dListCount, NULL, NULL, NULL);
 
     CLOSE_DISPS(gPlayState->state.gfxCtx);
@@ -487,7 +512,7 @@ extern void DrawDodongo() {
 
 extern void DrawDragonfly() {
     SETUP_DRAW(DRAGONFLY_LIMB_MAX);
-    Gfx_SetupDL25_Opa(gPlayState->state.gfxCtx);
+    Gfx_SetupDL25_Xlu(gPlayState->state.gfxCtx);
     Matrix_Scale(0.01f, 0.01f, 0.01f, MTXMODE_APPLY);
     Matrix_Translate(0, -700.0f, 0, MTXMODE_APPLY);
     SETUP_SKEL(DRAGONFLY_LIMB_MAX, gDragonflySkel, gDragonflyFlyAnim);
@@ -500,13 +525,11 @@ extern void DrawDragonfly() {
 
 extern void DrawEeno() {
     SETUP_DRAW(EENO_LIMB_MAX);
-    Gfx_SetupDL25_Xlu(gPlayState->state.gfxCtx);
     Gfx_SetupDL25_Opa(gPlayState->state.gfxCtx);
     Matrix_Scale(0.01f, 0.01f, 0.01f, MTXMODE_APPLY);
     Matrix_Translate(0, -3000.0f, 0, MTXMODE_APPLY);
     SETUP_FLEX_SKEL(EENO_LIMB_MAX, gEenoSkel, gEenoIdleAnim);
 
-    Scene_SetRenderModeXlu(gPlayState, 0, 1);
     SkelAnime_DrawFlexOpa(gPlayState, skelAnime.skeleton, skelAnime.jointTable, skelAnime.dListCount, NULL, NULL, NULL);
 
     CLOSE_DISPS(gPlayState->state.gfxCtx);
@@ -522,6 +545,8 @@ extern void DrawEyegore() {
     Matrix_Translate(0, -4000.0f, 0, MTXMODE_APPLY);
     SETUP_FLEX_SKEL(EYEGORE_LIMB_MAX, gEyegoreSkel, gEyegoreUnusedWalkAnim);
 
+    gDPSetPrimColor(POLY_OPA_DISP++, 0, 0xFF, 175, 255, 255, 255);
+    gDPSetEnvColor(POLY_OPA_DISP++, 255, 115, 155, 255);
     AnimatedMat_Draw(gPlayState, sEyegoreEyeLaserTexAnim);
     SkelAnime_DrawFlexOpa(gPlayState, skelAnime.skeleton, skelAnime.jointTable, skelAnime.dListCount, NULL, NULL, NULL);
     POLY_OPA_DISP = Play_SetFog(gPlayState, POLY_OPA_DISP);
@@ -568,6 +593,7 @@ extern void DrawGaro() {
     Gfx_SetupDL25_Opa(gPlayState->state.gfxCtx);
     SETUP_FLEX_SKEL(GARO_LIMB_MAX, gGaroSkel, gGaroIdleAnim);
 
+    gSPSegment(POLY_OPA_DISP++, 0x0C, (uintptr_t)D_801AEFA0);
     SkelAnime_DrawFlexOpa(gPlayState, skelAnime.skeleton, skelAnime.jointTable, skelAnime.dListCount, NULL, NULL, NULL);
 
     CLOSE_DISPS(gPlayState->state.gfxCtx);
@@ -620,7 +646,6 @@ extern void DrawGomess() {
 
 extern void DrawGuay() {
     SETUP_DRAW(OBJECT_CROW_LIMB_MAX);
-    Gfx_SetupDL25_Xlu(gPlayState->state.gfxCtx);
     Gfx_SetupDL25_Opa(gPlayState->state.gfxCtx);
     Matrix_Scale(0.02f, 0.02f, 0.02f, MTXMODE_APPLY);
     SETUP_FLEX_SKEL(OBJECT_CROW_LIMB_MAX, gGuaySkel, gGuayFlyAnim);
@@ -693,6 +718,7 @@ extern void DrawKeese() {
     Matrix_Translate(0, -700.0f, 0, MTXMODE_APPLY);
     SETUP_SKEL(FIRE_KEESE_LIMB_MAX, gFireKeeseSkel, gFireKeeseFlyAnim);
 
+    gDPSetEnvColor(POLY_OPA_DISP++, 0, 0, 0, 0);
     SkelAnime_DrawOpa(gPlayState, skelAnime.skeleton, skelAnime.jointTable, NULL, DrawEnFirefly_PostLimbDraw, NULL);
 
     CLOSE_DISPS(gPlayState->state.gfxCtx);
@@ -816,7 +842,6 @@ extern void DrawMadScrub() {
 extern void DrawNejiron() {
     SETUP_DRAW(NEJIRON_LIMB_MAX);
     Gfx_SetupDL25_Opa(gPlayState->state.gfxCtx);
-    Gfx_SetupDL25_Xlu(gPlayState->state.gfxCtx);
     Matrix_Scale(0.015f, 0.015f, 0.015f, MTXMODE_APPLY);
     SETUP_SKEL(NEJIRON_LIMB_MAX, gNejironSkel, gNejironIdleAnim);
 
@@ -838,7 +863,6 @@ extern void DrawOctorok() {
     gSPDisplayList(&gfxPtr[0], gSetupDLs[SETUPDL_25]);
     gSPSegment(&gfxPtr[1], 0x08, (uintptr_t)D_801AEFA0);
     POLY_OPA_DISP = &gfxPtr[2];
-    gDPSetPrimColor(POLY_OPA_DISP++, 0, 0x01, 255, 255, 255, 255);
     SkelAnime_DrawOpa(gPlayState, skelAnime.skeleton, skelAnime.jointTable, NULL, NULL, NULL);
 
     CLOSE_DISPS(gPlayState->state.gfxCtx);
@@ -881,9 +905,12 @@ extern void DrawPoe() {
     Matrix_Translate(0, -5000.0f, 0, MTXMODE_APPLY);
     SETUP_SKEL(POE_LIMB_MAX, gPoeSkel, gPoeFloatAnim);
 
-    gSPSegment(POLY_OPA_DISP++, 0x08, (uintptr_t)D_801AEFA0);
-    gDPSetEnvColor(POLY_OPA_DISP++, 255, 255, 255, 255);
-    SkelAnime_DrawOpa(gPlayState, skelAnime.skeleton, skelAnime.jointTable, NULL, NULL, NULL);
+    Gfx* gfx = POLY_OPA_DISP;
+    gSPDisplayList(&gfx[0], gSetupDLs[SETUPDL_25]);
+    gDPSetEnvColor(&gfx[1], 255, 255, 255, 255);
+    gSPSegment(&gfx[2], 0x08, (uintptr_t)D_801AEFA0);
+    gfx = SkelAnime_Draw(gPlayState, skelAnime.skeleton, skelAnime.jointTable, NULL, NULL, NULL, &gfx[3]);
+    POLY_OPA_DISP = gfx;
 
     CLOSE_DISPS(gPlayState->state.gfxCtx);
     DrawEnLight({ 155, 155, 155 }, { 10.0f, 10.0f, 10.0f });
@@ -970,6 +997,8 @@ extern void DrawSkullfish() {
     Matrix_Scale(0.02f, 0.02f, 0.02f, MTXMODE_APPLY);
     SETUP_FLEX_SKEL(OBJECT_PR_2_LIMB_MAX, object_pr_Skel_004188, object_pr_Anim_004340);
 
+    gDPPipeSync(POLY_OPA_DISP++);
+    gDPSetPrimColor(POLY_OPA_DISP++, 0, 0, 255, 255, 255, 255);
     gDPSetEnvColor(POLY_OPA_DISP++, 0, 0, 0, 255);
     Scene_SetRenderModeXlu(gPlayState, 0, 1);
     SkelAnime_DrawFlexOpa(gPlayState, skelAnime.skeleton, skelAnime.jointTable, skelAnime.dListCount, NULL, NULL, NULL);
@@ -1078,6 +1107,7 @@ extern void DrawWart() {
     SETUP_FLEX_SKEL(WART_LIMB_MAX, gWartSkel, gWartIdleAnim);
 
     SkelAnime_DrawFlexOpa(gPlayState, skelAnime.skeleton, skelAnime.jointTable, skelAnime.dListCount, NULL, NULL, NULL);
+    POLY_OPA_DISP = Play_SetFog(gPlayState, POLY_OPA_DISP);
 
     CLOSE_DISPS(gPlayState->state.gfxCtx);
     DrawEnLight({ 155, 155, 155 }, { 10.0f, 10.0f, 10.0f });
