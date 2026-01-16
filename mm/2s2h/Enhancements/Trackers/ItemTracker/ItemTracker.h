@@ -3,44 +3,15 @@
 #include "ship/window/gui/GuiWindow.h"
 
 #define ITEM_TEXTURE_SIZE 46.0f
-#define ITEM_SONG_PADDING 8.0f
 
 typedef enum {
-    TRACKER_MAIN,
-    TRACKER_RANDO,
-} TrackerWindowTypes;
-
-typedef enum {
-    ITEM_BOTTLE_1 = 0x100,
-    ITEM_BOTTLE_2,
-    ITEM_BOTTLE_3,
-    ITEM_BOTTLE_4,
-    ITEM_BOTTLE_5,
-    ITEM_BOTTLE_6,
-    ITEM_SKULL_TOKEN_SWAMP,
-    ITEM_SKULL_TOKEN_OCEAN,
-    ITEM_CLOCK_TOWN_STRAY_FAIRY,
-    ITEM_WOODFALL_STRAY_FAIRY,
-    ITEM_SNOWHEAD_STRAY_FAIRY,
-    ITEM_GREAT_BAY_STRAY_FAIRY,
-    ITEM_STONE_TOWER_STRAY_FAIRY,
-    ITEM_WOODFALL_DUNGEON_MAP,
-    ITEM_WOODFALL_DUNGEON_COMPASS,
-    ITEM_WOODFALL_KEY_SMALL,
-    ITEM_WOODFALL_KEY_BOSS,
-    ITEM_SNOWHEAD_DUNGEON_MAP,
-    ITEM_SNOWHEAD_DUNGEON_COMPASS,
-    ITEM_SNOWHEAD_KEY_SMALL,
-    ITEM_SNOWHEAD_KEY_BOSS,
-    ITEM_GREAT_BAY_DUNGEON_MAP,
-    ITEM_GREAT_BAY_DUNGEON_COMPASS,
-    ITEM_GREAT_BAY_KEY_SMALL,
-    ITEM_GREAT_BAY_KEY_BOSS,
-    ITEM_STONE_TOWER_DUNGEON_MAP,
-    ITEM_STONE_TOWER_DUNGEON_COMPASS,
-    ITEM_STONE_TOWER_KEY_SMALL,
-    ITEM_STONE_TOWER_KEY_BOSS,
-} TrackerTokenSlots;
+    TRACKER_ITEM_RANDO,
+    TRACKER_ITEM_SLOT,
+    TRACKER_ITEM_SWORD,
+    TRACKER_ITEM_SHIELD,
+    TRACKER_ITEM_WALLET,
+    TRACKER_ITEM_MAGIC,
+} TrackerItemType;
 
 typedef struct {
     ImTextureID textureId;
@@ -49,24 +20,20 @@ typedef struct {
 } TrackerImageObject;
 
 typedef struct {
-    std::string windowName;
-    int32_t columnLength;
-    float windowScale;
-    float windowOpacity;
-    std::vector<int16_t> itemList;
-} TrackerItemListObject;
+    std::string name;
+    u8 columns;
+    float scale;
+    std::vector<std::pair<TrackerItemType, u32>> items;
+} TrackerGroup;
 
-TrackerImageObject GetTextureObject(int16_t itemId, bool isRandoItem = false);
-extern std::string GetItemTrackerItemName(int16_t itemId, bool isRandoItem = false);
-extern bool shouldWindowSplit;
+extern std::vector<TrackerGroup> itemTrackerGroups;
+extern bool DrawItemTrackerSlot(TrackerItemType itemType, u32 itemId, float scale, bool clickable);
+extern std::string GetItemTrackerItemName(TrackerItemType itemType, u32 itemId);
 
 class ItemTrackerWindow : public Ship::GuiWindow {
   public:
     using GuiWindow::GuiWindow;
     void Draw() override;
-
-    std::vector<TrackerItemListObject> namedItemWindows;
-    std::vector<TrackerItemListObject> randoItemWindows;
 
   protected:
     void InitElement() override;

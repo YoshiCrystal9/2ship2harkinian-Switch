@@ -3,6 +3,7 @@
 #include "2s2h/BenGui/UIWidgets.hpp"
 #include "ShipUtils.h"
 #include "ship/config/Config.h"
+#include "2s2h/ShipInit.hpp"
 
 namespace BenGui {
 extern std::shared_ptr<ItemTrackerWindow> mItemTrackerWindow;
@@ -15,358 +16,206 @@ void ItemTrackerSettingsWindow::UpdateElement() {
 
 static const char* windowTypes[2] = { "Floating", "Window" };
 
-bool shouldWindowSplit = false;
-int16_t popupSlot = SLOT_OCARINA;
-int16_t indexToRemove = ITEM_OCARINA_OF_TIME;
-static std::string trackerInputName;
-bool shouldTrackerPopUpOpen = false;
-bool shouldRemove = false;
+std::vector<TrackerGroup> itemTrackerGroupsAvailable;
+void SaveItemTrackerLayout();
 
-std::vector<std::string> listOrder = {
-    "Inventory", "Bottles", "Masks", "Songs", "Quest", "Tokens", "Stray Fairies", "Dungeon",
-};
-
-std::vector<std::string> randoListOrder = {
-    "Frogs", "Ocarina Buttons", "Boss Souls", "Enemy Souls", "Owl Statues", "Time", "Tingle Maps", "Misc",
-};
-
-std::map<std::string, std::tuple<int16_t, int16_t, int16_t>> defaultItemLists = {
-    { "Inventory", { ITEM_OCARINA_OF_TIME, ITEM_LETTER_TO_KAFEI, 6 } },
-    { "Bottles", { ITEM_BOTTLE_1, ITEM_BOTTLE_6, 6 } },
-    { "Masks", { ITEM_MASK_POSTMAN, ITEM_MASK_FIERCE_DEITY, 6 } },
-    { "Songs", { ITEM_SONG_TIME, ITEM_SONG_OATH, 5 } },
-    { "Quest", { ITEM_REMAINS_ODOLWA, ITEM_BOMBERS_NOTEBOOK, 4 } },
-    { "Tokens", { ITEM_SKULL_TOKEN_SWAMP, ITEM_SKULL_TOKEN_OCEAN, 2 } },
-    { "Stray Fairies", { ITEM_CLOCK_TOWN_STRAY_FAIRY, ITEM_STONE_TOWER_STRAY_FAIRY, 5 } },
-    { "Dungeon", { ITEM_WOODFALL_DUNGEON_MAP, ITEM_STONE_TOWER_KEY_BOSS, 4 } },
-};
-
-std::map<std::string, std::tuple<int16_t, int16_t, int16_t>> randoItemLists = {
-    { "Frogs", { RI_FROG_BLUE, RI_FROG_WHITE, 4 } },
-    { "Ocarina Buttons", { RI_OCARINA_BUTTON_A, RI_OCARINA_BUTTON_C_UP, 5 } },
-    { "Boss Souls", { RI_SOUL_BOSS_GOHT, RI_SOUL_BOSS_TWINMOLD, 5 } },
-    { "Enemy Souls", { RI_SOUL_ENEMY_ALIEN, RI_SOUL_ENEMY_WOLFOS, 6 } },
-    { "Owl Statues", { RI_OWL_CLOCK_TOWN_SOUTH, RI_OWL_ZORA_CAPE, 5 } },
-    { "Tingle Maps", { RI_TINGLE_MAP_CLOCK_TOWN, RI_TINGLE_MAP_WOODFALL, 6 } },
-    { "Time", { RI_TIME_DAY_1, RI_TIME_NIGHT_3, 6 } },
-    { "Misc", { RI_TRIFORCE_PIECE, RI_TRIFORCE_PIECE, 1 } },
-};
-
-std::vector<std::string> dungeonPrefix = {
-    "Woodfall",
-    "Snowhead",
-    "Great Bay",
-    "Stone Tower",
-};
-
-std::pair<uint32_t, uint32_t> GetItemMapRange(uint32_t start, uint32_t end) {
-    std::pair<uint32_t, uint32_t> indexRange;
-
-    for (size_t i = 0; i < itemIdToItemNameMap.size(); i++) {
-        if (itemIdToItemNameMap[i].first == start) {
-            indexRange.first = static_cast<int>(i);
-        }
-        if (itemIdToItemNameMap[i].first == end) {
-            indexRange.second = static_cast<int>(i);
-        }
+std::vector<std::pair<TrackerItemType, u32>> GetItemsFromRange(TrackerItemType itemType, u32 start, u32 end) {
+    std::vector<std::pair<TrackerItemType, u32>> items;
+    for (u32 itemId = start; itemId <= end; itemId++) {
+        items.push_back({ itemType, itemId });
     }
-
-    return indexRange;
+    return items;
 }
 
-std::string GetItemTrackerItemName(int16_t itemId, bool isRandoItem) {
-    std::string itemName = "";
-    uint16_t fallBackCheck = 0;
-    if (isRandoItem) {
-        itemName = Rando::StaticData::Items[(RandoItemId)itemId].name;
-    } else {
-        if (itemId >= ITEM_BOTTLE_1 && itemId <= ITEM_BOTTLE_6) {
-            itemName = "Bottle";
-        } else if (itemId == ITEM_SKULL_TOKEN_SWAMP) {
-            itemName = "Swamp Token";
-        } else if (itemId == ITEM_SKULL_TOKEN_OCEAN) {
-            itemName = "Ocean Token";
-        } else if (itemId == ITEM_CLOCK_TOWN_STRAY_FAIRY) {
-            itemName = "Clock Town Stray Fairy";
-        } else if (itemId >= ITEM_WOODFALL_STRAY_FAIRY && itemId <= ITEM_STONE_TOWER_STRAY_FAIRY) {
-            itemName = dungeonPrefix[itemId - ITEM_WOODFALL_STRAY_FAIRY] + " Stray Fairy";
-        } else if (itemId >= ITEM_WOODFALL_DUNGEON_MAP && itemId <= ITEM_STONE_TOWER_KEY_BOSS) {
-            switch (itemId) {
-                case ITEM_WOODFALL_DUNGEON_MAP:
-                case ITEM_SNOWHEAD_DUNGEON_MAP:
-                case ITEM_GREAT_BAY_DUNGEON_MAP:
-                case ITEM_STONE_TOWER_DUNGEON_MAP:
-                    // Note the Map and Compass are swapped in vanilla code, this is correcting that.
-                    itemName = dungeonPrefix[(itemId - ITEM_WOODFALL_DUNGEON_MAP) / 4] + " Compass";
-                    break;
-                case ITEM_WOODFALL_DUNGEON_COMPASS:
-                case ITEM_SNOWHEAD_DUNGEON_COMPASS:
-                case ITEM_GREAT_BAY_DUNGEON_COMPASS:
-                case ITEM_STONE_TOWER_DUNGEON_COMPASS:
-                    itemName = dungeonPrefix[(itemId - ITEM_WOODFALL_DUNGEON_COMPASS) / 4] + " Map";
-                    break;
-                case ITEM_WOODFALL_KEY_SMALL:
-                case ITEM_SNOWHEAD_KEY_SMALL:
-                case ITEM_GREAT_BAY_KEY_SMALL:
-                case ITEM_STONE_TOWER_KEY_SMALL:
-                    itemName = dungeonPrefix[(itemId - ITEM_WOODFALL_KEY_SMALL) / 4] + " Small Key";
-                    break;
-                case ITEM_WOODFALL_KEY_BOSS:
-                case ITEM_SNOWHEAD_KEY_BOSS:
-                case ITEM_GREAT_BAY_KEY_BOSS:
-                case ITEM_STONE_TOWER_KEY_BOSS:
-                    itemName = dungeonPrefix[(itemId - ITEM_WOODFALL_KEY_BOSS) / 4] + " Boss Key";
-                    break;
-                default:
-                    break;
+std::string GetItemTrackerItemName(TrackerItemType itemType, u32 itemId) {
+    switch (itemType) {
+        case TRACKER_ITEM_RANDO: {
+            return Rando::StaticData::Items[(RandoItemId)itemId].name;
+        } break;
+        case TRACKER_ITEM_SLOT: {
+            auto vanillaItemId = gSaveContext.save.saveInfo.inventory.items[itemId];
+            if (vanillaItemId == ITEM_NONE) {
+                vanillaItemId = safeItemsForInventorySlot[itemId][0];
             }
-        } else if (itemId == ITEM_MAGIC_JAR_SMALL || itemId == ITEM_MAGIC_JAR_BIG) {
-            itemName = gSaveContext.save.saveInfo.playerData.magicLevel > 1 ? "Double Magic" : "Single Magic";
-        } else if (itemId == ITEM_HEART_CONTAINER) {
-            itemName = "Double Defense";
-        } else if (itemId >= ITEM_MOONS_TEAR && itemId <= ITEM_PENDANT_OF_MEMORIES) {
-            itemName = Ship_GetItemNameById(gSaveContext.save.saveInfo.inventory.items[gItemSlots[itemId]]);
-        } else if (itemId == ITEM_SWORD_KOKIRI) {
-            fallBackCheck = ITEM_SWORD_KOKIRI + (GET_CUR_EQUIP_VALUE(EQUIP_TYPE_SWORD) - EQUIP_VALUE_SWORD_KOKIRI);
-            itemName = Ship_GetItemNameById(fallBackCheck <= ITEM_SWORD_KOKIRI ? ITEM_SWORD_KOKIRI : fallBackCheck);
-        } else if (itemId == ITEM_SHIELD_HERO) {
-            fallBackCheck = ITEM_SHIELD_HERO + (GET_CUR_EQUIP_VALUE(EQUIP_TYPE_SHIELD) - EQUIP_VALUE_SHIELD_HERO);
-            itemName = Ship_GetItemNameById(fallBackCheck <= ITEM_SHIELD_HERO ? ITEM_SHIELD_HERO : fallBackCheck);
-        } else if (itemId == ITEM_WALLET_ADULT) {
-            fallBackCheck = ITEM_WALLET_ADULT + CUR_UPG_VALUE(UPG_WALLET) - 1;
-            itemName = Ship_GetItemNameById(fallBackCheck <= ITEM_WALLET_ADULT ? ITEM_WALLET_ADULT : fallBackCheck);
-        }
-    }
-
-    if (itemName == "") {
-        itemName = Ship_GetItemNameById(itemId);
-    }
-
-    return itemName;
-}
-
-TrackerItemListObject CreateTrackerObject() {
-    std::vector<int16_t> itemTrackerList;
-    TrackerItemListObject trackerObject = {
-        .windowName = trackerInputName.c_str(),
-        .columnLength = 6,
-        .windowScale = 1.0f,
-        .windowOpacity = 0.5f,
-        .itemList = itemTrackerList,
-    };
-    return trackerObject;
-}
-
-void ItemTrackerPopUpContext(int16_t itemId, bool isRandoItem) {
-    bool shouldClose = false;
-    uint32_t availableSlots = 0;
-    uint32_t windowIndex = 0;
-    std::vector<TrackerItemListObject>* window =
-        isRandoItem ? &BenGui::mItemTrackerWindow->randoItemWindows : &BenGui::mItemTrackerWindow->namedItemWindows;
-    if (shouldTrackerPopUpOpen && ImGui::BeginPopup("ItemWindowSubMenu")) {
-        for (auto& object : *window) {
-            ImGui::PushID(windowIndex);
-            auto findInObject = std::find(object.itemList.begin(), object.itemList.end(), itemId);
-            if (findInObject == object.itemList.end()) {
-                std::string windowStr = "Add to ";
-                windowStr += object.windowName;
-                if (UIWidgets::Button(windowStr.c_str(), { .size = ImVec2(0, 0), .color = WIDGET_COLOR })) {
-                    object.itemList.push_back(itemId);
-                    shouldClose = true;
-                }
-                availableSlots++;
+            RandoItemId randoItemId = Rando::StaticData::GetItemIdFromVanillaItemId(vanillaItemId);
+            return Rando::StaticData::Items[randoItemId].name;
+        } break;
+        case TRACKER_ITEM_SWORD: {
+            if (GET_CUR_EQUIP_VALUE(EQUIP_TYPE_SWORD) == EQUIP_VALUE_SWORD_KOKIRI) {
+                return Rando::StaticData::Items[RI_SWORD_KOKIRI].name;
             }
-            ImGui::PopID();
-            windowIndex++;
-        }
-        if (availableSlots == 0) {
-            ImGui::Text("No Slot Available");
-        }
-        if (shouldClose) {
-            ImGui::CloseCurrentPopup();
-            shouldTrackerPopUpOpen = false;
-        }
-
-        ImGui::EndPopup();
-    }
-}
-
-void ItemTrackerDragAndDrop(std::vector<int16_t>& itemWindow, size_t i, TrackerImageObject itemObject) {
-    if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_None)) {
-        ImGui::SetDragDropPayload("TRACKER_DRAG", &i, sizeof(size_t));
-        ImGui::ImageButton(std::to_string(itemWindow[i]).c_str(), itemObject.textureId, itemObject.textureDimensions,
-                           ImVec2(0, 0), ImVec2(1, 1), ImVec4(0, 0, 0, 0), itemObject.textureColor);
-        ImGui::EndDragDropSource();
-    }
-
-    if (ImGui::BeginDragDropTarget()) {
-        if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("TRACKER_DRAG")) {
-            size_t srcIndex = *(const size_t*)payload->Data;
-            if (srcIndex != i && srcIndex < itemWindow.size()) {
-                auto item = itemWindow[srcIndex];
-                itemWindow.erase(itemWindow.begin() + srcIndex);
-
-                if (srcIndex < i) {
-                    i--;
-                }
-
-                itemWindow.insert(itemWindow.begin() + i, item);
+            if (GET_CUR_EQUIP_VALUE(EQUIP_TYPE_SWORD) == EQUIP_VALUE_SWORD_RAZOR) {
+                return Rando::StaticData::Items[RI_SWORD_RAZOR].name;
             }
-        }
-        ImGui::EndDragDropTarget();
-    }
-}
-
-void DrawItemTrackerSlot(std::vector<int16_t>& itemList, int16_t itemId, bool shouldAdd, bool isRandoItem) {
-    TrackerImageObject imageObject = GetTextureObject(itemId, isRandoItem);
-    imageObject.textureColor.w = 1.0f;
-    if (ImGui::ImageButton(std::to_string(itemId).c_str(), imageObject.textureId, imageObject.textureDimensions,
-                           ImVec2(0, 0), ImVec2(1, 1), ImVec4(0, 0, 0, 0), imageObject.textureColor)) {
-        if (shouldAdd) {
-            shouldTrackerPopUpOpen = true;
-            popupSlot = itemId;
-            ImGui::OpenPopup("ItemWindowSubMenu");
-        } else {
-            shouldRemove = false;
-            for (int i = 0; i < itemList.size(); i++) {
-                if (itemList[i] == itemId) {
-                    indexToRemove = i;
-                    shouldRemove = true;
-                    break;
-                }
+            if (GET_CUR_EQUIP_VALUE(EQUIP_TYPE_SWORD) == EQUIP_VALUE_SWORD_GILDED) {
+                return Rando::StaticData::Items[RI_SWORD_GILDED].name;
             }
-        }
+            return "Sword (None)";
+        } break;
+        case TRACKER_ITEM_SHIELD: {
+            if (GET_CUR_EQUIP_VALUE(EQUIP_TYPE_SHIELD) == EQUIP_VALUE_SHIELD_HERO) {
+                return Rando::StaticData::Items[RI_SHIELD_HERO].name;
+            }
+            if (GET_CUR_EQUIP_VALUE(EQUIP_TYPE_SHIELD) == EQUIP_VALUE_SHIELD_MIRROR) {
+                return Rando::StaticData::Items[RI_SHIELD_MIRROR].name;
+            }
+            return "Shield (None)";
+        } break;
+        case TRACKER_ITEM_WALLET: {
+            if (CUR_UPG_VALUE(UPG_WALLET) >= 2) {
+                return Rando::StaticData::Items[RI_WALLET_GIANT].name;
+            }
+            if (CUR_UPG_VALUE(UPG_WALLET) >= 1) {
+                return Rando::StaticData::Items[RI_WALLET_ADULT].name;
+            }
+            return "Wallet (None)";
+        } break;
+        case TRACKER_ITEM_MAGIC: {
+            if (gSaveContext.save.saveInfo.playerData.isDoubleMagicAcquired) {
+                return Rando::StaticData::Items[RI_DOUBLE_MAGIC].name;
+            }
+            if (gSaveContext.save.saveInfo.playerData.isMagicAcquired) {
+                return Rando::StaticData::Items[RI_SINGLE_MAGIC].name;
+            }
+            return "Magic (None)";
+        } break;
+        default:
+            break;
     }
-    UIWidgets::Tooltip(GetItemTrackerItemName(itemId, isRandoItem).c_str());
+
+    return "";
 }
 
-void DrawItemList(std::string listName, int columns) {
-    bool isRandoItem = false;
-    if (ImGui::BeginChild(listName.c_str(), ImVec2(0, 0),
+struct DragDropPayload {
+    TrackerItemType itemType;
+    u32 itemId;
+    int sourceGroupIndex;
+    int sourceItemIndex;
+    bool fromAddMode;
+};
+
+void DrawItemTrackerGroupPreview(TrackerGroup& group, bool addMode, int groupIndex) {
+    static std::pair<TrackerItemType, u32> selectedItem = { TRACKER_ITEM_RANDO, 0 };
+
+    if (ImGui::BeginChild(group.name.c_str(), ImVec2(0, 0),
                           ImGuiChildFlags_AlwaysAutoResize | ImGuiChildFlags_AutoResizeX |
                               ImGuiChildFlags_AutoResizeY)) {
-        if (ImGui::BeginTable(listName.c_str(), columns)) {
-            ImVec2 framePadding = ImVec2(listName == "Songs" ? ITEM_SONG_PADDING : 0, 0);
-            ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, framePadding);
-            ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(5, 5));
-            std::vector<int16_t> emptyList;
+        if (ImGui::BeginTable(group.name.c_str(), group.columns)) {
+            ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
+            ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
 
-            if (listName == "Frogs" || listName == "Ocarina Buttons" || listName == "Boss Souls" ||
-                listName == "Enemy Souls" || listName == "Owl Statues" || listName == "Tingle Maps" ||
-                listName == "Time" || listName == "Misc") {
-                for (int j = std::get<0>(randoItemLists.at(listName)); j <= std::get<1>(randoItemLists.at(listName));
-                     j++) {
-                    ImGui::TableNextColumn();
-                    isRandoItem = true;
-                    DrawItemTrackerSlot(emptyList, j, true, true);
-                }
-            } else if (listName == "Bottles" || listName == "Tokens" || listName == "Stray Fairies" ||
-                       listName == "Dungeon") {
-                for (int j = std::get<0>(defaultItemLists.at(listName));
-                     j <= std::get<1>(defaultItemLists.at(listName)); j++) {
-                    ImGui::TableNextColumn();
-                    isRandoItem = false;
-                    DrawItemTrackerSlot(emptyList, j, true, false);
-                }
-            } else {
-                std::pair<uint32_t, uint32_t> range = GetItemMapRange(std::get<0>(defaultItemLists.at(listName)),
-                                                                      std::get<1>(defaultItemLists.at(listName)));
-                for (int i = range.first; i <= range.second; i++) {
-
-                    if (itemIdToItemNameMap[i].first == ITEM_WALLET_ADULT) {
-                        ImGui::TableNextColumn();
-                        DrawItemTrackerSlot(emptyList, ITEM_MAGIC_JAR_SMALL, true, false);
-                        ImGui::TableNextColumn();
-                        DrawItemTrackerSlot(emptyList, ITEM_HEART_CONTAINER, true, false);
+            // Use index-based loop to avoid iterator invalidation
+            for (size_t itemIndex = 0; itemIndex < group.items.size(); itemIndex++) {
+                auto& [itemType, itemId] = group.items[itemIndex];
+                ImGui::TableNextColumn();
+                ImGui::PushID((int)itemIndex);
+                if (DrawItemTrackerSlot(itemType, itemId, 1.0f, true)) {
+                    if (addMode) {
+                        selectedItem = { itemType, itemId };
+                        ImGui::OpenPopup("AddToGroup");
+                    } else {
+                        group.items.erase(
+                            std::remove(group.items.begin(), group.items.end(), std::make_pair(itemType, itemId)),
+                            group.items.end());
+                        SaveItemTrackerLayout();
                     }
-                    ImGui::TableNextColumn();
-                    DrawItemTrackerSlot(emptyList, itemIdToItemNameMap[i].first, true, isRandoItem);
                 }
+
+                // Drag and drop functionality
+                if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_None)) {
+                    DragDropPayload payload;
+                    payload.itemType = itemType;
+                    payload.itemId = itemId;
+                    payload.sourceGroupIndex = groupIndex;
+                    payload.sourceItemIndex = (int)itemIndex;
+                    payload.fromAddMode = addMode;
+                    ImGui::SetDragDropPayload("TRACKER_ITEM", &payload, sizeof(DragDropPayload));
+
+                    // Display preview while dragging
+                    DrawItemTrackerSlot(itemType, itemId, 0.5f, true);
+                    ImGui::EndDragDropSource();
+                }
+
+                // Only allow dropping on removeMode slots
+                if (!addMode && ImGui::BeginDragDropTarget()) {
+                    if (const ImGuiPayload* imguiPayload = ImGui::AcceptDragDropPayload("TRACKER_ITEM")) {
+                        DragDropPayload* payload = (DragDropPayload*)imguiPayload->Data;
+
+                        if (payload->fromAddMode) {
+                            // Dragging from addMode to removeMode: insert at this position
+                            group.items.insert(group.items.begin() + itemIndex,
+                                               std::make_pair(payload->itemType, payload->itemId));
+                            SaveItemTrackerLayout();
+                        } else {
+                            // Dragging from removeMode to removeMode: move item
+                            if (payload->sourceGroupIndex == groupIndex) {
+                                // Moving within same group
+                                if (payload->sourceItemIndex != (int)itemIndex) {
+                                    auto item = group.items[payload->sourceItemIndex];
+                                    group.items.erase(group.items.begin() + payload->sourceItemIndex);
+
+                                    // Adjust target index if we removed an item before it
+                                    int targetIndex = (int)itemIndex;
+                                    if (payload->sourceItemIndex < (int)itemIndex) {
+                                        targetIndex--;
+                                    }
+                                    group.items.insert(group.items.begin() + targetIndex, item);
+                                    SaveItemTrackerLayout();
+                                }
+                            } else {
+                                // Moving between different groups
+                                auto item = std::make_pair(payload->itemType, payload->itemId);
+                                itemTrackerGroups[payload->sourceGroupIndex].items.erase(
+                                    itemTrackerGroups[payload->sourceGroupIndex].items.begin() +
+                                    payload->sourceItemIndex);
+                                group.items.insert(group.items.begin() + itemIndex, item);
+                                SaveItemTrackerLayout();
+                            }
+                        }
+                    }
+                    ImGui::EndDragDropTarget();
+                }
+
+                // Check for popup in the same ID scope
+                if (addMode && ImGui::BeginPopup("AddToGroup")) {
+                    UIWidgets::PushStyleMenuItem(WIDGET_COLOR);
+                    ImGui::SeparatorText("Select group to add item to");
+                    for (size_t i = 0; i < itemTrackerGroups.size(); i++) {
+                        if (ImGui::Selectable(itemTrackerGroups[i].name.c_str(), false)) {
+                            itemTrackerGroups[i].items.push_back(selectedItem);
+                            SaveItemTrackerLayout();
+                            ImGui::CloseCurrentPopup();
+                        }
+                    }
+                    UIWidgets::PopStyleMenuItem();
+                    ImGui::EndPopup();
+                }
+
+                ImGui::PopID();
             }
             ImGui::PopStyleVar(2);
-            ItemTrackerPopUpContext(popupSlot, isRandoItem);
             ImGui::EndTable();
         }
     }
     ImGui::EndChild();
 }
 
-void DrawPreviewPane() {
-    bool isRandoItem = false;
-    uint32_t imguiId = 0;
-    uint32_t listIndex = 0;
-    uint32_t windowListIndex = TRACKER_MAIN;
-    if (ImGui::BeginChild("List Previews")) {
-        std::vector<std::vector<TrackerItemListObject>*> windowList = {
-            &BenGui::mItemTrackerWindow->namedItemWindows,
-            &BenGui::mItemTrackerWindow->randoItemWindows,
-        };
-
-        for (auto* window : windowList) {
-            ImGui::SeparatorText(windowListIndex == TRACKER_MAIN ? "Vanilla Tracker Windows" : "Rando Tracker Windows");
-            listIndex = 0;
-            for (auto& object : *window) {
-                ImGui::PushID(imguiId);
-                ImGui::SeparatorText(object.windowName.c_str());
-                ImGui::SameLine(ImGui::GetContentRegionMax().x - (ImGui::CalcTextSize("Clear Main").x * 1.5f));
-                if (UIWidgets::Button("Clear", { .size = ImVec2(0, 0), .color = UIWidgets::Colors::Red })) {
-                    object.itemList.clear();
-                }
-                ImGui::SameLine();
-                if (UIWidgets::Button("x", { .size = ImVec2(0, 0), .color = UIWidgets::Colors::Red })) {
-                    auto& currentWindow = *windowList[windowListIndex];
-                    currentWindow.erase(currentWindow.begin() + listIndex);
-                }
-                ImGui::PopID();
-                if (object.itemList.size() == 0) {
-                    listIndex++;
-                    imguiId++;
-                    continue;
-                }
-                if (ImGui::BeginTable(std::to_string(listIndex).c_str(), object.columnLength)) {
-                    ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
-                    ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(5, 5));
-                    for (int i = 0; i < object.itemList.size(); i++) {
-                        ImGui::TableNextColumn();
-                        if (windowListIndex == TRACKER_RANDO) {
-                            DrawItemTrackerSlot(object.itemList, object.itemList[i], false, true);
-                            isRandoItem = true;
-                        } else {
-                            DrawItemTrackerSlot(object.itemList, (int16_t)object.itemList[i], false, false);
-                        }
-                        ItemTrackerDragAndDrop(object.itemList, i, GetTextureObject(object.itemList[i], isRandoItem));
-                    }
-                    if (shouldRemove) {
-                        object.itemList.erase(object.itemList.begin() + indexToRemove);
-                        shouldRemove = false;
-                        indexToRemove = ITEM_OCARINA_OF_TIME;
-                    }
-                    ImGui::PopStyleVar(2);
-                    ImGui::EndTable();
-                }
-                listIndex++;
-                imguiId++;
-            }
-            windowListIndex++;
-        }
-    }
-    ImGui::EndChild();
-}
-
-void DrawTrackerWindowOptions(int32_t windowIndex, TrackerItemListObject& windowObject) {
+bool DrawTrackerWindowOptions(int32_t windowIndex, TrackerGroup& group) {
     ImGui::PushID(windowIndex);
-    int32_t columns = windowObject.columnLength;
-    float scale = windowObject.windowScale;
-    float opacity = windowObject.windowOpacity;
+    int32_t columns = group.columns;
+    float scale = group.scale;
     std::string trackerInputRename;
     if (windowIndex >= 0) {
-        if (UIWidgets::InputString("##windowname", &trackerInputRename,
+        if (UIWidgets::InputString("##name", &trackerInputRename,
                                    UIWidgets::InputOptions()
                                        .LabelPosition(UIWidgets::LabelPosition::None)
                                        .Color(WIDGET_COLOR)
-                                       .PlaceholderText(windowObject.windowName)
-                                       .DefaultValue(windowObject.windowName))) {
-            windowObject.windowName = trackerInputRename;
+                                       .PlaceholderText(group.name)
+                                       .DefaultValue(group.name))) {
+            if (!trackerInputRename.empty() && trackerInputRename != group.name) {
+                group.name = trackerInputRename;
+                SaveItemTrackerLayout();
+            }
         }
     }
     if (UIWidgets::SliderInt("Columns", &columns,
@@ -376,239 +225,377 @@ void DrawTrackerWindowOptions(int32_t windowIndex, TrackerItemListObject& window
                                  .DefaultValue(6)
                                  .LabelPosition(UIWidgets::LabelPosition::None)
                                  .Format("Columns: %i")
-                                 .Color(WIDGET_COLOR)
-                                 .Size(ImVec2(ImGui::GetContentRegionAvail().x / 2, 0)))) {
-        windowObject.columnLength = columns;
+                                 .Color(WIDGET_COLOR))) {
+        group.columns = columns;
+        SaveItemTrackerLayout();
     }
-    ImGui::SameLine();
-    if (UIWidgets::SliderFloat("Scale", &scale,
-                               UIWidgets::FloatSliderOptions()
-                                   .Min(0.5f)
-                                   .Max(5.0f)
-                                   .DefaultValue(1.0f)
-                                   .LabelPosition(UIWidgets::LabelPosition::None)
-                                   .Format("Scale: %.1f")
-                                   .Step(0.5f)
-                                   .Color(WIDGET_COLOR)
-                                   .Size(ImVec2(ImGui::GetContentRegionAvail().x, 0)))) {
-        windowObject.windowScale = scale;
+    if (CVarGetInteger("gSettings.ItemTracker.WindowGroup", 0)) {
+        if (UIWidgets::SliderFloat("Scale", &scale,
+                                   UIWidgets::FloatSliderOptions()
+                                       .Min(0.2f)
+                                       .Max(3.0f)
+                                       .DefaultValue(1.0f)
+                                       .LabelPosition(UIWidgets::LabelPosition::None)
+                                       .Format("Scale: %.1f")
+                                       .Step(0.5f)
+                                       .Color(WIDGET_COLOR))) {
+            group.scale = scale;
+            SaveItemTrackerLayout();
+        }
     }
-    if (UIWidgets::SliderFloat("Opacity", &opacity,
-                               UIWidgets::FloatSliderOptions()
-                                   .Min(0)
-                                   .Max(1.0f)
-                                   .DefaultValue(0.5f)
-                                   .LabelPosition(UIWidgets::LabelPosition::None)
-                                   .Format("Opacity: %.1f")
-                                   .Step(0.1f)
-                                   .Color(WIDGET_COLOR)
-                                   .Size(ImVec2(ImGui::GetContentRegionAvail().x, 0)))) {
-        windowObject.windowOpacity = opacity;
+    if (UIWidgets::Button("Remove Group", { .color = UIWidgets::Colors::Red })) {
+        itemTrackerGroups.erase(itemTrackerGroups.begin() + windowIndex);
+        SaveItemTrackerLayout();
+        ImGui::PopID();
+        return true;
     }
     ImGui::PopID();
-    UIWidgets::Separator();
+    return false;
 }
 
-void ApplyRandoItemGroup(std::string listName) {
-    std::tuple<int16_t, int16_t, int16_t> list = randoItemLists.at(listName);
-    TrackerItemListObject itemObject = {
-        .windowName = listName,
-        .columnLength = std::get<2>(list),
-        .windowScale = 1.0f,
-        .windowOpacity = 0.5f,
-    };
-    for (int i = std::get<0>(list); i <= std::get<1>(list); i++) {
-        itemObject.itemList.push_back(i);
-    }
+void LoadAvailableWindows() {
+    itemTrackerGroupsAvailable.clear();
 
-    BenGui::mItemTrackerWindow->randoItemWindows.push_back(itemObject);
-}
+    itemTrackerGroupsAvailable.push_back(TrackerGroup{
+        .name = "Inventory",
+        .columns = 6,
+        .scale = 1.0f,
+        .items = GetItemsFromRange(TRACKER_ITEM_SLOT, SLOT_OCARINA, SLOT_BOTTLE_6),
+    });
 
-void ApplyDefaultItemGroup(std::string listName) {
-    std::tuple<int16_t, int16_t, int16_t> list = defaultItemLists.at(listName);
-    TrackerItemListObject itemObject = {
-        .windowName = listName,
-        .columnLength = std::get<2>(list),
-        .windowScale = 1.0f,
-        .windowOpacity = 0.5f,
-    };
+    itemTrackerGroupsAvailable.push_back(TrackerGroup{
+        .name = "Masks",
+        .columns = 6,
+        .scale = 1.0f,
+        .items = GetItemsFromRange(TRACKER_ITEM_SLOT, SLOT_MASK_POSTMAN, SLOT_MASK_FIERCE_DEITY),
+    });
 
-    if (listName == "Bottles" || listName == "Tokens" || listName == "Stray Fairies" || listName == "Dungeon") {
-        int16_t baseValue = std::get<0>(list);
-        int16_t maxValue = std::get<1>(list);
-        for (int j = baseValue; j <= maxValue; j++) {
-            itemObject.itemList.push_back(j);
-        }
-    } else {
-        std::pair<uint32_t, uint32_t> range = GetItemMapRange(std::get<0>(list), std::get<1>(list));
-        for (int i = range.first; i <= range.second; i++) {
-            if (itemIdToItemNameMap[i].first == ITEM_WALLET_ADULT) {
-                itemObject.itemList.push_back(ITEM_MAGIC_JAR_SMALL);
-                itemObject.itemList.push_back(ITEM_HEART_CONTAINER);
-            }
-            itemObject.itemList.push_back(itemIdToItemNameMap[i].first);
-        }
-    }
-    BenGui::mItemTrackerWindow->namedItemWindows.push_back(itemObject);
+    itemTrackerGroupsAvailable.push_back(TrackerGroup{
+        .name = "Songs",
+        .columns = 5,
+        .scale = 1.0f,
+        .items = {
+            { TRACKER_ITEM_RANDO, RI_SONG_TIME },
+            { TRACKER_ITEM_RANDO, RI_SONG_HEALING },
+            { TRACKER_ITEM_RANDO, RI_SONG_EPONA },
+            { TRACKER_ITEM_RANDO, RI_SONG_SOARING },
+            { TRACKER_ITEM_RANDO, RI_SONG_STORMS },
+            { TRACKER_ITEM_RANDO, RI_SONG_SONATA },
+            { TRACKER_ITEM_RANDO, RI_SONG_LULLABY },
+            { TRACKER_ITEM_RANDO, RI_SONG_NOVA },
+            { TRACKER_ITEM_RANDO, RI_SONG_ELEGY },
+            { TRACKER_ITEM_RANDO, RI_SONG_OATH },
+        },
+    });
+
+    itemTrackerGroupsAvailable.push_back(TrackerGroup{
+        .name = "Quest",
+        .columns = 5,
+        .scale = 1.0f,
+        .items = {
+            { TRACKER_ITEM_RANDO, RI_REMAINS_ODOLWA },
+            { TRACKER_ITEM_RANDO, RI_REMAINS_GOHT },
+            { TRACKER_ITEM_RANDO, RI_REMAINS_GYORG },
+            { TRACKER_ITEM_RANDO, RI_REMAINS_TWINMOLD },
+            { TRACKER_ITEM_RANDO, RI_BOMBERS_NOTEBOOK },
+            { TRACKER_ITEM_SWORD, RI_PROGRESSIVE_SWORD },
+            { TRACKER_ITEM_SHIELD, RI_SHIELD_HERO },
+            { TRACKER_ITEM_MAGIC, RI_PROGRESSIVE_MAGIC },
+            { TRACKER_ITEM_RANDO, RI_DOUBLE_DEFENSE },
+            { TRACKER_ITEM_WALLET, RI_PROGRESSIVE_WALLET },
+        },
+    });
+
+    itemTrackerGroupsAvailable.push_back(TrackerGroup{
+        .name = "Tokens",
+        .columns = 2,
+        .scale = 1.0f,
+        .items = {
+            { TRACKER_ITEM_RANDO, RI_GS_TOKEN_SWAMP },
+            { TRACKER_ITEM_RANDO, RI_GS_TOKEN_OCEAN },
+        },
+    });
+
+    itemTrackerGroupsAvailable.push_back(TrackerGroup{
+        .name = "Stray Fairies",
+        .columns = 5,
+        .scale = 1.0f,
+        .items = {
+            { TRACKER_ITEM_RANDO, RI_CLOCK_TOWN_STRAY_FAIRY },
+            { TRACKER_ITEM_RANDO, RI_WOODFALL_STRAY_FAIRY },
+            { TRACKER_ITEM_RANDO, RI_SNOWHEAD_STRAY_FAIRY },
+            { TRACKER_ITEM_RANDO, RI_GREAT_BAY_STRAY_FAIRY },
+            { TRACKER_ITEM_RANDO, RI_STONE_TOWER_STRAY_FAIRY },
+        },
+    });
+
+    itemTrackerGroupsAvailable.push_back(TrackerGroup{
+        .name = "Dungeon",
+        .columns = 4,
+        .scale = 1.0f,
+        .items = {
+            { TRACKER_ITEM_RANDO, RI_WOODFALL_BOSS_KEY },
+            { TRACKER_ITEM_RANDO, RI_SNOWHEAD_BOSS_KEY },
+            { TRACKER_ITEM_RANDO, RI_GREAT_BAY_BOSS_KEY },
+            { TRACKER_ITEM_RANDO, RI_STONE_TOWER_BOSS_KEY },
+            { TRACKER_ITEM_RANDO, RI_WOODFALL_SMALL_KEY },
+            { TRACKER_ITEM_RANDO, RI_SNOWHEAD_SMALL_KEY },
+            { TRACKER_ITEM_RANDO, RI_GREAT_BAY_SMALL_KEY },
+            { TRACKER_ITEM_RANDO, RI_STONE_TOWER_SMALL_KEY },
+        },
+    });
+
+    itemTrackerGroupsAvailable.push_back(TrackerGroup{
+        .name = "Frogs",
+        .columns = 4,
+        .scale = 1.0f,
+        .items = GetItemsFromRange(TRACKER_ITEM_RANDO, RI_FROG_BLUE, RI_FROG_WHITE),
+    });
+
+    itemTrackerGroupsAvailable.push_back(TrackerGroup{
+        .name = "Ocarina Buttons",
+        .columns = 5,
+        .scale = 1.0f,
+        .items = GetItemsFromRange(TRACKER_ITEM_RANDO, RI_OCARINA_BUTTON_A, RI_OCARINA_BUTTON_C_UP),
+    });
+
+    itemTrackerGroupsAvailable.push_back(TrackerGroup{ .name = "Boss Souls",
+                                                       .columns = 5,
+                                                       .scale = 1.0f,
+                                                       .items = {
+                                                           { TRACKER_ITEM_RANDO, RI_SOUL_BOSS_ODOLWA },
+                                                           { TRACKER_ITEM_RANDO, RI_SOUL_BOSS_GOHT },
+                                                           { TRACKER_ITEM_RANDO, RI_SOUL_BOSS_GYORG },
+                                                           { TRACKER_ITEM_RANDO, RI_SOUL_BOSS_TWINMOLD },
+                                                           { TRACKER_ITEM_RANDO, RI_SOUL_BOSS_MAJORA },
+                                                       } });
+
+    itemTrackerGroupsAvailable.push_back(TrackerGroup{
+        .name = "Enemy Souls",
+        .columns = 6,
+        .scale = 1.0f,
+        .items = GetItemsFromRange(TRACKER_ITEM_RANDO, RI_SOUL_ENEMY_ALIEN, RI_SOUL_ENEMY_WOLFOS),
+    });
+
+    itemTrackerGroupsAvailable.push_back(TrackerGroup{ .name = "Owl Statues",
+                                                       .columns = 5,
+                                                       .scale = 1.0f,
+                                                       .items = {
+                                                           { TRACKER_ITEM_RANDO, RI_OWL_CLOCK_TOWN_SOUTH },
+                                                           { TRACKER_ITEM_RANDO, RI_OWL_MILK_ROAD },
+                                                           { TRACKER_ITEM_RANDO, RI_OWL_SOUTHERN_SWAMP },
+                                                           { TRACKER_ITEM_RANDO, RI_OWL_WOODFALL },
+                                                           { TRACKER_ITEM_RANDO, RI_OWL_MOUNTAIN_VILLAGE },
+                                                           { TRACKER_ITEM_RANDO, RI_OWL_SNOWHEAD },
+                                                           { TRACKER_ITEM_RANDO, RI_OWL_GREAT_BAY_COAST },
+                                                           { TRACKER_ITEM_RANDO, RI_OWL_ZORA_CAPE },
+                                                           { TRACKER_ITEM_RANDO, RI_OWL_IKANA_CANYON },
+                                                           { TRACKER_ITEM_RANDO, RI_OWL_STONE_TOWER },
+                                                       } });
+
+    itemTrackerGroupsAvailable.push_back(TrackerGroup{
+        .name = "Time",
+        .columns = 6,
+        .scale = 1.0f,
+        .items = GetItemsFromRange(TRACKER_ITEM_RANDO, RI_TIME_DAY_1, RI_TIME_NIGHT_3),
+    });
+
+    itemTrackerGroupsAvailable.push_back(TrackerGroup{
+        .name = "Misc",
+        .columns = 6,
+        .scale = 1.0f,
+        .items = {
+            { TRACKER_ITEM_RANDO, RI_TRIFORCE_PIECE },
+            { TRACKER_ITEM_RANDO, RI_ABILITY_SWIM },
+        },
+    });
 }
 
 void ApplyDefaultItemPreset() {
-    BenGui::mItemTrackerWindow->namedItemWindows.clear();
+    itemTrackerGroups.clear();
 
-    for (int key = 0; key < defaultItemLists.size(); key++) {
-        if (listOrder[key] == "Rando") {
-            continue;
+    std::set<std::string> defaultGroups = {
+        "Inventory", "Masks", "Songs", "Quest", "Tokens", "Stray Fairies", "Dungeon",
+    };
+
+    for (auto& group : itemTrackerGroupsAvailable) {
+        if (defaultGroups.count(group.name)) {
+            itemTrackerGroups.push_back(group);
         }
-        ApplyDefaultItemGroup(listOrder[key]);
     }
 }
 
 void SaveItemTrackerLayout() {
-    std::vector<std::vector<TrackerItemListObject>*> trackerWindows = {
-        &BenGui::mItemTrackerWindow->namedItemWindows,
-        &BenGui::mItemTrackerWindow->randoItemWindows,
-    };
-
-    auto itemTrackerConfig = nlohmann::json::object();
-
-    uint16_t windowType = 0;
-
-    for (auto* window : trackerWindows) {
-        if (window->empty()) {
-            windowType++;
-            continue;
-        }
-
-        std::string windowName = windowType == TRACKER_MAIN ? "Main" : "Rando";
-        nlohmann::json trackerSaveObject = nlohmann::json::object();
-
-        for (auto& object : *window) {
-            trackerSaveObject[object.windowName] = nlohmann::json::object();
-            trackerSaveObject[object.windowName]["Name"] = object.windowName;
-            trackerSaveObject[object.windowName]["Columns"] = object.columnLength;
-            trackerSaveObject[object.windowName]["Scale"] = object.windowScale;
-            trackerSaveObject[object.windowName]["Opacity"] = object.windowOpacity;
-            trackerSaveObject[object.windowName]["ItemList"] = nlohmann::json::array();
-
-            for (auto& item : object.itemList) {
-                trackerSaveObject[object.windowName]["ItemList"].push_back(item);
-            }
-        }
-        itemTrackerConfig[windowName] = trackerSaveObject;
-        windowType++;
+    auto itemTrackerLayout = nlohmann::json::array();
+    for (auto& group : itemTrackerGroups) {
+        auto groupJson = nlohmann::json::object({
+            { "name", group.name },
+            { "columns", group.columns },
+            { "scale", group.scale },
+            { "items", group.items },
+        });
+        itemTrackerLayout.push_back(groupJson);
     }
-
-    Ship::Context::GetInstance()->GetConfig()->SetBlock("ItemTrackerLayout", itemTrackerConfig);
+    Ship::Context::GetInstance()->GetConfig()->SetBlock("CVars.ItemTrackerLayout", itemTrackerLayout);
     Ship::Context::GetInstance()->GetConfig()->Save();
 }
 
-void LoadItemTrackerLayout() {
+void LoadItemTrackerConfig() {
     auto allConfig = Ship::Context::GetInstance()->GetConfig()->GetNestedJson();
-    if (allConfig.find("ItemTrackerLayout") == allConfig.end()) {
-        return;
-    }
 
-    auto& itemTrackerConfig = allConfig["ItemTrackerLayout"];
+    // Verify that the config has CVars.ItemTrackerLayout and its an array
+    if (allConfig.find("CVars") != allConfig.end() && allConfig["CVars"].is_object() &&
+        allConfig["CVars"].find("ItemTrackerLayout") != allConfig["CVars"].end() &&
+        allConfig["CVars"]["ItemTrackerLayout"].is_array()) {
 
-    for (auto& [windowKey, windowData] : itemTrackerConfig.items()) {
-        std::vector<TrackerItemListObject>* window = windowKey == "Main"
-                                                         ? &BenGui::mItemTrackerWindow->namedItemWindows
-                                                         : &BenGui::mItemTrackerWindow->randoItemWindows;
-        for (auto& [dataKey, dataInfo] : windowData.items()) {
-            TrackerItemListObject windowObj = { .windowName = dataInfo["Name"].get<std::string>(),
-                                                .columnLength = dataInfo["Columns"],
-                                                .windowScale = dataInfo["Scale"],
-                                                .windowOpacity = dataInfo["Opacity"],
-                                                .itemList = dataInfo["ItemList"] };
-            window->push_back(windowObj);
+        itemTrackerGroups.clear();
+        auto& itemTrackerLayout = allConfig["CVars"]["ItemTrackerLayout"];
+        for (auto& group : itemTrackerLayout) {
+            std::vector<std::pair<TrackerItemType, u32>> items;
+
+            // Manually parse items array
+            if (group.contains("items") && group["items"].is_array()) {
+                for (auto& item : group["items"]) {
+                    if (item.is_array() && item.size() >= 2) {
+                        items.push_back({ static_cast<TrackerItemType>(item[0].get<int>()), item[1].get<u32>() });
+                    }
+                }
+            }
+
+            itemTrackerGroups.push_back(TrackerGroup{
+                .name = group.value("name", std::string("")),
+                .columns = group.value("columns", (u8)6),
+                .scale = group.value("scale", 1.0f),
+                .items = items,
+            });
         }
-    }
-}
-
-void DrawTrackerSaveLoadOptions() {
-    if (UIWidgets::Button("Save Layout", { .color = WIDGET_COLOR })) {
-        SaveItemTrackerLayout();
-    }
-    if (UIWidgets::Button("Load Layout", { .color = WIDGET_COLOR })) {
-        BenGui::mItemTrackerWindow->namedItemWindows.clear();
-        BenGui::mItemTrackerWindow->randoItemWindows.clear();
-        LoadItemTrackerLayout();
     }
 }
 
 void DrawTrackerOptions() {
-    int32_t windowIndex = 0;
-    ImGui::SeparatorText("Presets");
-    if (UIWidgets::Button("Default Preset", { .color = WIDGET_COLOR })) {
-        ApplyDefaultItemPreset();
-    }
-    UIWidgets::Tooltip("Places all Vanilla items in the tracker.");
-
-    ImGui::SeparatorText("Custom Windows");
-    if (ImGui::BeginTable("OptionsList", 2)) {
+    if (ImGui::BeginTable("OptionsTable", 2)) {
         ImGui::TableNextColumn();
+        if (CVarGetInteger("gWindows.ItemTracker", 0)) {
+            UIWidgets::WindowButton("Disable Item Tracker", "gWindows.ItemTracker", BenGui::mItemTrackerWindow,
+                                    { .size = UIWidgets::Sizes::Inline, .color = WIDGET_COLOR });
+        } else {
+            UIWidgets::WindowButton("Enable Item Tracker", "gWindows.ItemTracker", BenGui::mItemTrackerWindow,
+                                    { .size = UIWidgets::Sizes::Inline, .color = WIDGET_COLOR });
+        }
+
         UIWidgets::CVarCombobox("Window Type", "gSettings.ItemTracker.WindowType", windowTypes,
                                 { .alignment = UIWidgets::ComponentAlignment::Right,
                                   .labelPosition = UIWidgets::LabelPosition::Near,
                                   .color = WIDGET_COLOR });
-        ImGui::TableNextColumn();
         UIWidgets::CVarCheckbox("Split Window Groups", "gSettings.ItemTracker.WindowGroup");
-        UIWidgets::CVarCheckbox("Show Item Counts", "gSettings.ItemTracker.ItemCounts");
-        ImGui::EndTable();
-    }
-    UIWidgets::InputString("Window Name", &trackerInputName,
-                           {
-                               .labelPosition = UIWidgets::LabelPosition::None,
-                               .color = WIDGET_COLOR,
-                               .placeholder = "Enter new window name",
-                           });
-    if (ImGui::BeginTable("WindowCreation", 2)) {
+        UIWidgets::CVarCheckbox("Show Item Counts", "gSettings.ItemTracker.ItemCounts",
+                                UIWidgets::CheckboxOptions().DefaultValue(true));
         ImGui::TableNextColumn();
-        if (UIWidgets::Button("Create Vanilla Window", { .color = WIDGET_COLOR })) {
-            BenGui::mItemTrackerWindow->namedItemWindows.push_back(CreateTrackerObject());
+
+        if (UIWidgets::Button("Restore Default Groups", { .color = UIWidgets::Colors::Gray })) {
+            ApplyDefaultItemPreset();
+            SaveItemTrackerLayout();
+        }
+
+        if (!CVarGetInteger("gSettings.ItemTracker.WindowGroup", 0)) {
+            UIWidgets::CVarSliderFloat("Scale", "gSettings.ItemTracker.Scale",
+                                       UIWidgets::FloatSliderOptions()
+                                           .Min(0.2f)
+                                           .Max(3.0f)
+                                           .DefaultValue(1.0f)
+                                           .LabelPosition(UIWidgets::LabelPosition::None)
+                                           .Format("Scale: %.1f")
+                                           .Step(0.5f)
+                                           .Color(WIDGET_COLOR));
+        }
+
+        UIWidgets::CVarSliderFloat("Opacity", "gSettings.ItemTracker.Opacity",
+                                   UIWidgets::FloatSliderOptions()
+                                       .Min(0.0f)
+                                       .Max(1.0f)
+                                       .DefaultValue(0.5f)
+                                       .Format("Opacity: %.1f")
+                                       .LabelPosition(UIWidgets::LabelPosition::None)
+                                       .Step(0.1f)
+                                       .Color(WIDGET_COLOR));
+        static std::string trackerInputName;
+        UIWidgets::InputString("##Group Name", &trackerInputName,
+                               UIWidgets::InputOptions()
+                                   .LabelPosition(UIWidgets::LabelPosition::None)
+                                   .Color(WIDGET_COLOR)
+                                   .PlaceholderText("Enter new group name")
+                                   .Size({ ImGui::GetContentRegionAvail().x - 45.0f, 0 }));
+        ImGui::SameLine();
+        if (UIWidgets::Button(ICON_FA_PLUS, { .color = UIWidgets::Colors::Green })) {
+            itemTrackerGroups.push_back(TrackerGroup{
+                .name = trackerInputName.c_str(),
+                .columns = 6,
+                .scale = 1.0f,
+            });
+            SaveItemTrackerLayout();
             trackerInputName.clear();
         }
-        ImGui::TableNextColumn();
-        if (UIWidgets::Button("Create Rando Window", { .color = WIDGET_COLOR })) {
-            BenGui::mItemTrackerWindow->randoItemWindows.push_back(CreateTrackerObject());
-            trackerInputName.clear();
-        }
+
         ImGui::EndTable();
-    }
-    ImGui::SeparatorText("Window Options");
-    for (auto& window : BenGui::mItemTrackerWindow->namedItemWindows) {
-        DrawTrackerWindowOptions(windowIndex, window);
-        windowIndex++;
-    }
-    for (auto& window : BenGui::mItemTrackerWindow->randoItemWindows) {
-        DrawTrackerWindowOptions(windowIndex, window);
-        windowIndex++;
     }
 }
 
-void DrawTrackerCustomizationOptions() {
-    if (ImGui::BeginChild("Item Lists")) {
-        for (int key = 0; key < defaultItemLists.size(); key++) {
-            ImGui::PushID(key);
-            std::tuple<int16_t, int16_t, int16_t> list = defaultItemLists.at(listOrder[key]);
-            ImGui::SeparatorText(listOrder[key].c_str());
-            ImGui::SameLine(ImGui::GetContentRegionMax().x - (ImGui::CalcTextSize("Set All").x * 1.5f));
-            if (UIWidgets::Button("Set All", { .size = ImVec2(0, 0), .color = UIWidgets::Colors::Green })) {
-                ApplyDefaultItemGroup(listOrder[key]);
+void DrawTrackerAvailableGroups() {
+    if (ImGui::BeginChild("Available Groups")) {
+        int groupIndex = 0;
+        for (auto& group : itemTrackerGroupsAvailable) {
+            ImGui::PushID(groupIndex);
+            ImGui::SeparatorText(group.name.c_str());
+            ImGui::SameLine(ImGui::GetContentRegionMax().x - (ImGui::CalcTextSize("aaa").x * 1.5f));
+            if (UIWidgets::Button(ICON_FA_PLUS, { .size = ImVec2(0, 0), .color = UIWidgets::Colors::Green })) {
+                itemTrackerGroups.push_back(group);
+                SaveItemTrackerLayout();
             }
-            DrawItemList(listOrder[key], std::get<2>(list));
+            DrawItemTrackerGroupPreview(group, true, groupIndex);
             ImGui::PopID();
+            groupIndex++;
         }
-        for (int rkey = 0; rkey < randoItemLists.size(); rkey++) {
-            ImGui::PushID(rkey + RI_MAX);
-            std::tuple<int16_t, int16_t, int16_t> list = randoItemLists.at(randoListOrder[rkey]);
-            ImGui::SeparatorText(randoListOrder[rkey].c_str());
-            ImGui::SameLine(ImGui::GetContentRegionMax().x - (ImGui::CalcTextSize("Set All").x * 1.5f));
-            if (UIWidgets::Button("Set All", { .size = ImVec2(0, 0), .color = UIWidgets::Colors::Green })) {
-                ApplyRandoItemGroup(randoListOrder[rkey]);
+    }
+    ImGui::EndChild();
+}
+
+void DrawTrackerActiveGroups() {
+    if (ImGui::BeginChild("Active Groups")) {
+        int groupIndex = 0;
+        for (auto& group : itemTrackerGroups) {
+            ImGui::PushID(groupIndex);
+            ImGui::SeparatorText(group.name.c_str());
+
+            ImGui::SameLine(ImGui::GetContentRegionMax().x - (ImGui::CalcTextSize("aaaaaaaaa").x * 1.5f));
+            if (UIWidgets::Button(ICON_FA_CHEVRON_UP, { .size = ImVec2(0, 0), .color = WIDGET_COLOR })) {
+                if (groupIndex > 0) {
+                    std::swap(itemTrackerGroups[groupIndex], itemTrackerGroups[groupIndex - 1]);
+                    SaveItemTrackerLayout();
+                }
             }
-            DrawItemList(randoListOrder[rkey], std::get<2>(list));
+            ImGui::SameLine();
+            if (UIWidgets::Button(ICON_FA_CHEVRON_DOWN, { .size = ImVec2(0, 0), .color = WIDGET_COLOR })) {
+                if (groupIndex < static_cast<int>(itemTrackerGroups.size()) - 1) {
+                    std::swap(itemTrackerGroups[groupIndex], itemTrackerGroups[groupIndex + 1]);
+                    SaveItemTrackerLayout();
+                }
+            }
+            ImGui::SameLine();
+            if (UIWidgets::Button(ICON_FA_ELLIPSIS_H, { .size = ImVec2(0, 0), .color = UIWidgets::Colors::Gray })) {
+                ImGui::OpenPopup("GroupOptions");
+            }
+            ImGui::SetNextWindowSize(ImVec2(400, 0), ImGuiCond_Always);
+            ImGui::SetNextWindowPos(ImVec2(ImGui::GetItemRectMin().x - 400, ImGui::GetItemRectMin().y),
+                                    ImGuiCond_Always);
+            if (ImGui::BeginPopup("GroupOptions")) {
+                if (DrawTrackerWindowOptions(groupIndex, group)) {
+                    ImGui::CloseCurrentPopup();
+                }
+                ImGui::EndPopup();
+            }
+            DrawItemTrackerGroupPreview(group, false, groupIndex);
             ImGui::PopID();
+            groupIndex++;
         }
     }
     ImGui::EndChild();
@@ -617,42 +604,15 @@ void DrawTrackerCustomizationOptions() {
 void ItemTrackerSettingsWindow::DrawElement() {
     ImGui::SetNextWindowSize(ImVec2(733, 472), ImGuiCond_FirstUseEver);
     if (ImGui::BeginChild("Item Tracker Settings")) {
-        ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(1.0f, 1.0f, 1.0f, 0.0f));
-        ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(1.0f, 1.0f, 1.0f, 0.2f));
-        ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(1.0f, 1.0f, 1.0f, 0.1f));
+        DrawTrackerOptions();
 
-        if (CVarGetInteger("gWindows.ItemTracker", 0)) {
-            UIWidgets::WindowButton("Hide Item Tracker", "gWindows.ItemTracker", BenGui::mItemTrackerWindow,
-                                    { .size = UIWidgets::Sizes::Inline, .color = WIDGET_COLOR });
-        } else {
-            UIWidgets::WindowButton("Show Item Tracker", "gWindows.ItemTracker", BenGui::mItemTrackerWindow,
-                                    { .size = UIWidgets::Sizes::Inline, .color = WIDGET_COLOR });
-        }
-        UIWidgets::Separator();
         UIWidgets::PushStyleTabs(WIDGET_COLOR);
         if (ImGui::BeginTable("TrackerTabs", 2)) {
             ImGui::TableNextColumn();
             if (ImGui::BeginChild("TrackerChild")) {
                 if (ImGui::BeginTabBar("TrackerTabs")) {
-                    if (ImGui::BeginTabItem("Customization")) {
-                        if (ImGui::BeginChild("CustomizationChild")) {
-                            DrawTrackerCustomizationOptions();
-                        }
-                        ImGui::EndChild();
-                        ImGui::EndTabItem();
-                    }
-                    if (ImGui::BeginTabItem("Options")) {
-                        if (ImGui::BeginChild("OptionsChild")) {
-                            DrawTrackerOptions();
-                        }
-                        ImGui::EndChild();
-                        ImGui::EndTabItem();
-                    }
-                    if (ImGui::BeginTabItem("Save/Load")) {
-                        if (ImGui::BeginChild("SaveChild")) {
-                            DrawTrackerSaveLoadOptions();
-                        }
-                        ImGui::EndChild();
+                    if (ImGui::BeginTabItem("Available Groups")) {
+                        DrawTrackerAvailableGroups();
                         ImGui::EndTabItem();
                     }
                     ImGui::EndTabBar();
@@ -663,8 +623,8 @@ void ItemTrackerSettingsWindow::DrawElement() {
             ImGui::TableNextColumn();
             if (ImGui::BeginChild("WindowChild")) {
                 if (ImGui::BeginTabBar("WindowTab")) {
-                    if (ImGui::BeginTabItem("Window Layouts")) {
-                        DrawPreviewPane();
+                    if (ImGui::BeginTabItem("Active Groups")) {
+                        DrawTrackerActiveGroups();
                         ImGui::EndTabItem();
                     }
                     ImGui::EndTabBar();
@@ -674,11 +634,12 @@ void ItemTrackerSettingsWindow::DrawElement() {
             ImGui::EndTable();
         }
         UIWidgets::PopStyleTabs();
-
-        ImGui::PopStyleColor(3);
     }
     ImGui::EndChild();
 }
 
 void ItemTrackerSettingsWindow::InitElement() {
+    LoadAvailableWindows();
+    ApplyDefaultItemPreset();
+    LoadItemTrackerConfig();
 }

@@ -308,6 +308,15 @@ RandoItemId GetItemIdFromName(const char* name) {
     return RI_UNKNOWN;
 }
 
+RandoItemId GetItemIdFromVanillaItemId(u32 itemId) {
+    for (auto& [randoItemId, randoStaticItem] : Items) {
+        if (randoStaticItem.itemId == itemId) {
+            return randoItemId;
+        }
+    }
+    return RI_UNKNOWN;
+}
+
 // This exists because of nintendo being nintendo
 u8 GetIconForZMessage(RandoItemId randoItemId) {
     switch (randoItemId) {
@@ -392,10 +401,14 @@ const char* GetIconTexturePath(RandoItemId randoItemId) {
         case RI_PROGRESSIVE_MAGIC:
             return (const char*)gItemIcons[ITEM_MAGIC_JAR_SMALL];
         case RI_SOUL_BOSS_GOHT:
+            return (const char*)gItemIcons[ITEM_REMAINS_GOHT];
         case RI_SOUL_BOSS_GYORG:
-        case RI_SOUL_BOSS_MAJORA:
+            return (const char*)gItemIcons[ITEM_REMAINS_GYORG];
         case RI_SOUL_BOSS_ODOLWA:
+            return (const char*)gItemIcons[ITEM_REMAINS_ODOLWA];
         case RI_SOUL_BOSS_TWINMOLD:
+            return (const char*)gItemIcons[ITEM_REMAINS_TWINMOLD];
+        case RI_SOUL_BOSS_MAJORA:
         case RI_SOUL_ENEMY_ALIEN:
         case RI_SOUL_ENEMY_ARMOS:
         case RI_SOUL_ENEMY_BAD_BAT:
@@ -489,6 +502,8 @@ const char* GetIconTexturePath(RandoItemId randoItemId) {
             return (const char*)gThreeDayClockMoonHourTex;
         case RI_TIME_PROGRESSIVE:
             return (const char*)gThreeDayClockSunHourTex;
+        case RI_ABILITY_SWIM:
+            return (const char*)gItemIcons[ITEM_MASK_ZORA];
         default:
             break;
     }

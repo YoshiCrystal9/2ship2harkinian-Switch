@@ -307,11 +307,6 @@ bool Rando::IsItemObtainable(RandoItemId randoItemId, RandoCheckId randoCheckId)
         case RI_STONE_TOWER_STRAY_FAIRY:
         case RI_GS_TOKEN_SWAMP:
         case RI_GS_TOKEN_OCEAN:
-        case RI_FROG_BLUE:
-        case RI_FROG_CYAN:
-        case RI_FROG_PINK:
-        case RI_FROG_WHITE:
-        case RI_ABILITY_SWIM:
         case RI_TRIFORCE_PIECE:
             if (hasObtainedCheck) {
                 return false;
@@ -448,6 +443,8 @@ bool Rando::IsItemObtainable(RandoItemId randoItemId, RandoCheckId randoCheckId)
         // These items are technically fine to receive again because they don't do anything, but we'll convert them to
         // ensure it's clear to the player something didn't go wrong.
         // Quest Items
+        case RI_BOMBERS_NOTEBOOK:
+            return !CHECK_QUEST_ITEM(QUEST_BOMBERS_NOTEBOOK);
         case RI_REMAINS_ODOLWA:
             return !CHECK_QUEST_ITEM(QUEST_REMAINS_ODOLWA);
         case RI_REMAINS_GOHT:
@@ -547,6 +544,16 @@ bool Rando::IsItemObtainable(RandoItemId randoItemId, RandoCheckId randoCheckId)
         case RI_SOUL_ENEMY_WIZROBE:
         case RI_SOUL_ENEMY_WOLFOS:
             return !Flags_GetRandoInf(SOUL_RI_TO_RANDO_INF(randoItemId));
+        case RI_ABILITY_SWIM:
+            return !Flags_GetRandoInf(RANDO_INF_OBTAINED_SWIM);
+        case RI_FROG_BLUE:
+            return !CHECK_WEEKEVENTREG(WEEKEVENTREG_33_01);
+        case RI_FROG_CYAN:
+            return !CHECK_WEEKEVENTREG(WEEKEVENTREG_32_40);
+        case RI_FROG_PINK:
+            return !CHECK_WEEKEVENTREG(WEEKEVENTREG_32_80);
+        case RI_FROG_WHITE:
+            return !CHECK_WEEKEVENTREG(WEEKEVENTREG_33_02);
         case RI_TIME_DAY_1:
         case RI_TIME_NIGHT_1:
         case RI_TIME_DAY_2:
