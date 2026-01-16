@@ -14,6 +14,7 @@ void EnOt_Init(Actor* thisx, PlayState* play);
 void EnOt_Destroy(Actor* thisx, PlayState* play);
 void EnOt_Update(Actor* thisx, PlayState* play);
 void EnOt_Draw(Actor* thisx, PlayState* play);
+void EnOt_Reset(void);
 
 void func_80B5BDA8(EnOt* this, PlayState* play);
 void func_80B5BE04(EnOt* this, PlayState* play);
@@ -70,6 +71,7 @@ ActorProfile En_Ot_Profile = {
     /**/ EnOt_Destroy,
     /**/ EnOt_Update,
     /**/ EnOt_Draw,
+    /**/ EnOt_Reset,
 };
 
 static ColliderCylinderInit sCylinderInit = {
@@ -1199,4 +1201,10 @@ void func_80B5E1D8(PlayState* play, EnOtUnkStruct* arg1, s32 arg2) {
     }
 
     CLOSE_DISPS(play->state.gfxCtx);
+}
+
+void EnOt_Reset(void) {
+    D_80B5E880 = NULL;
+    D_80B5E884 = NULL;
+    D_80B5E888 = NULL;
 }
