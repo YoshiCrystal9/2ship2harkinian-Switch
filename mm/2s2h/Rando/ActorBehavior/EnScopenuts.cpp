@@ -33,7 +33,8 @@ void Rando::ActorBehavior::InitEnScopenutsBehavior() {
         RandoItemId randoItemId = RANDO_SAVE_CHECKS[RC_TERMINA_FIELD_GROTTO_SCRUB].randoItemId;
         entry.msg = "Please! I'll sell you %y{{itemName}}%w if you just keep this place a secret...\xE0";
 
-        CustomMessage::Replace(&entry.msg, "{{itemName}}", Rando::StaticData::GetItemName(randoItemId));
+        CustomMessage::Replace(&entry.msg, "{{itemName}}",
+                               Rando::StaticData::GetItemName(randoItemId, true, RC_TERMINA_FIELD_GROTTO_SCRUB));
         CustomMessage::LoadCustomMessageIntoFont(entry);
         *loadFromMessageTable = false;
     });

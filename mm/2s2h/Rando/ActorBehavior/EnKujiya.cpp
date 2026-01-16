@@ -22,7 +22,8 @@ void Rando::ActorBehavior::InitEnKujiyaBehavior() {
         entry.msg = "Step right up! For a measly %p10 Rupees%w, your dreams could come true!\x11\x13\x12";
         entry.msg += "Guess all three numbers to win %p{{itemName}}%w!\x19";
         RandoItemId randoItemId = RANDO_SAVE_CHECKS[RC_CLOCK_TOWN_WEST_LOTTERY].randoItemId;
-        CustomMessage::Replace(&entry.msg, "{{itemName}}", Rando::StaticData::GetItemName(randoItemId));
+        CustomMessage::Replace(&entry.msg, "{{itemName}}",
+                               Rando::StaticData::GetItemName(randoItemId, true, RC_CLOCK_TOWN_WEST_LOTTERY));
 
         CustomMessage::LoadCustomMessageIntoFont(entry);
         *loadFromMessageTable = false;
@@ -32,7 +33,8 @@ void Rando::ActorBehavior::InitEnKujiyaBehavior() {
         auto entry = CustomMessage::LoadVanillaMessageTableEntry(*textId);
         entry.msg = "Congratulations! You win the jackpot: %p{{itemName}}%w!\x19";
         RandoItemId randoItemId = RANDO_SAVE_CHECKS[RC_CLOCK_TOWN_WEST_LOTTERY].randoItemId;
-        CustomMessage::Replace(&entry.msg, "{{itemName}}", Rando::StaticData::GetItemName(randoItemId));
+        CustomMessage::Replace(&entry.msg, "{{itemName}}",
+                               Rando::StaticData::GetItemName(randoItemId, true, RC_CLOCK_TOWN_WEST_LOTTERY));
 
         CustomMessage::LoadCustomMessageIntoFont(entry);
         *loadFromMessageTable = false;

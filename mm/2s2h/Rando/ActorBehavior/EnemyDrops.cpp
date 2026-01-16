@@ -98,7 +98,8 @@ void SpawnDropItem(Vec3f position, RandoCheckId randoCheckId) {
             auto& randoSaveCheck = RANDO_SAVE_CHECKS[CUSTOM_ITEM_PARAM];
             RandoItemId randoItemId = Rando::ConvertItem(randoSaveCheck.randoItemId);
             Matrix_Scale(30.0f, 30.0f, 30.0f, MTXMODE_APPLY);
-            Rando::DrawItem(Rando::ConvertItem(randoSaveCheck.randoItemId, (RandoCheckId)CUSTOM_ITEM_PARAM), actor);
+            Rando::DrawItem(Rando::ConvertItem(randoSaveCheck.randoItemId, (RandoCheckId)CUSTOM_ITEM_PARAM),
+                            (RandoCheckId)CUSTOM_ITEM_PARAM, actor);
         });
 }
 
@@ -220,7 +221,7 @@ void Rando::ActorBehavior::InitEnemyDropBehavior() {
             EnSlime* slime = va_arg(args, EnSlime*);
             Matrix_RotateYS(slime->actor.shape.rot.y, MTXMODE_APPLY);
             Matrix_Scale(0.25f, 0.25f, 0.25f, MTXMODE_APPLY);
-            Rando::DrawItem(randoItemId);
+            Rando::DrawItem(randoItemId, RC_ENEMY_DROP_CHUCHU, (Actor*)&slime->actor);
 
             *should = false;
         }

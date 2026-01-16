@@ -19,29 +19,19 @@ std::map<u8, RandoCheckId> fairyCheckMap = {
 
 void ApplyClockTownGreatFairyHint(u16* textId, bool* loadFromMessageTable) {
     CustomMessage::Entry entry = {
-        .msg = "%wPlease, find the Stray Fairy who's lost! We will reward you with %g{{article1}}{{item1}}%w and maybe "
-               "even %g{{article2}}{{item2}}%w if you are worthy."
+        .msg = "%wPlease, find the Stray Fairy who's lost! We will reward you with %g{{item1}}%w and maybe "
+               "even %g{{item2}}%w if you are worthy."
     };
 
-    auto& randoStaticItem1 = Rando::StaticData::Items[RANDO_SAVE_CHECKS[RC_CLOCK_TOWN_GREAT_FAIRY].randoItemId];
+    auto randoItem1Name = Rando::StaticData::GetItemName(RANDO_SAVE_CHECKS[RC_CLOCK_TOWN_GREAT_FAIRY].randoItemId, true,
+                                                         RC_CLOCK_TOWN_GREAT_FAIRY);
 
-    if (!Ship_IsCStringEmpty(randoStaticItem1.article)) {
-        CustomMessage::Replace(&entry.msg, "{{article1}}", std::string(randoStaticItem1.article) + " ");
-    } else {
-        CustomMessage::Replace(&entry.msg, "{{article1}}", "");
-    }
+    CustomMessage::Replace(&entry.msg, "{{item1}}", randoItem1Name);
 
-    CustomMessage::Replace(&entry.msg, "{{item1}}", randoStaticItem1.name);
+    auto randoItem2Name = Rando::StaticData::GetItemName(RANDO_SAVE_CHECKS[RC_CLOCK_TOWN_GREAT_FAIRY_ALT].randoItemId,
+                                                         true, RC_CLOCK_TOWN_GREAT_FAIRY_ALT);
 
-    auto& randoStaticItem2 = Rando::StaticData::Items[RANDO_SAVE_CHECKS[RC_CLOCK_TOWN_GREAT_FAIRY_ALT].randoItemId];
-
-    if (!Ship_IsCStringEmpty(randoStaticItem2.article)) {
-        CustomMessage::Replace(&entry.msg, "{{article2}}", std::string(randoStaticItem2.article) + " ");
-    } else {
-        CustomMessage::Replace(&entry.msg, "{{article2}}", "");
-    }
-
-    CustomMessage::Replace(&entry.msg, "{{item2}}", randoStaticItem2.name);
+    CustomMessage::Replace(&entry.msg, "{{item2}}", randoItem2Name);
 
     CustomMessage::LoadCustomMessageIntoFont(entry);
     *loadFromMessageTable = false;
@@ -49,18 +39,11 @@ void ApplyClockTownGreatFairyHint(u16* textId, bool* loadFromMessageTable) {
 
 void ApplyGreatFairyHint(u16* textId, bool* loadFromMessageTable, RandoCheckId randoCheckId) {
     CustomMessage::Entry entry = {
-        .msg = "%wPlease, find the Stray Fairies who match our color! We will reward you with %g{{article}}{{item}}%w."
+        .msg = "%wPlease, find the Stray Fairies who match our color! We will reward you with %g{{itemName}}%w."
     };
-
-    auto& randoStaticItem = Rando::StaticData::Items[RANDO_SAVE_CHECKS[randoCheckId].randoItemId];
-
-    if (!Ship_IsCStringEmpty(randoStaticItem.article)) {
-        CustomMessage::Replace(&entry.msg, "{{article}}", std::string(randoStaticItem.article) + " ");
-    } else {
-        CustomMessage::Replace(&entry.msg, "{{article}}", "");
-    }
-
-    CustomMessage::Replace(&entry.msg, "{{item}}", randoStaticItem.name);
+    CustomMessage::Replace(
+        &entry.msg, "{{itemName}}",
+        Rando::StaticData::GetItemName(RANDO_SAVE_CHECKS[randoCheckId].randoItemId, true, randoCheckId));
 
     CustomMessage::LoadCustomMessageIntoFont(entry);
     *loadFromMessageTable = false;

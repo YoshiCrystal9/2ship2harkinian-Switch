@@ -311,52 +311,6 @@ void DrawTrapModel() {
     CLOSE_DISPS(gPlayState->state.gfxCtx);
 }
 
-void DrawRandomTrapModel(RandoItemId randoItemId, Actor* actor) {
-    uint32_t seed = gSaveContext.save.shipSaveInfo.rando.finalSeed / 100000;
-    int actorData = (int)gPlayState->sceneId + seed;
-
-    if (actor != NULL) {
-        actorData += abs(actor->home.pos.x + actor->home.pos.y + actor->params);
-    }
-
-    int drawRandoItemId = actorData % ((int)RI_MAX - 3);
-
-    if (drawRandoItemId == RI_UNKNOWN || drawRandoItemId >= RI_TRAP) {
-        drawRandoItemId++;
-    }
-
-    // Handle Progressive Items
-    switch (drawRandoItemId) {
-        case RI_BOMB_BAG_20:
-        case RI_BOMB_BAG_30:
-        case RI_BOMB_BAG_40:
-            drawRandoItemId = RI_PROGRESSIVE_BOMB_BAG;
-            break;
-        case RI_BOW:
-        case RI_QUIVER_40:
-        case RI_QUIVER_50:
-            drawRandoItemId = RI_PROGRESSIVE_BOW;
-            break;
-        case RI_SINGLE_MAGIC:
-        case RI_DOUBLE_MAGIC:
-            drawRandoItemId = RI_PROGRESSIVE_MAGIC;
-            break;
-        case RI_SWORD_GILDED:
-        case RI_SWORD_KOKIRI:
-        case RI_SWORD_RAZOR:
-            drawRandoItemId = RI_PROGRESSIVE_SWORD;
-            break;
-        case RI_WALLET_ADULT:
-        case RI_WALLET_GIANT:
-            drawRandoItemId = RI_PROGRESSIVE_WALLET;
-            break;
-        default:
-            break;
-    }
-
-    Rando::DrawItem((RandoItemId)drawRandoItemId, actor);
-}
-
 void DrawTriforcePiece(RandoItemId randoItemId) {
     Gfx* triforcePieceModels[3] = {
         (Gfx*)gTriforcePiece0DL,
@@ -505,7 +459,7 @@ void DrawSparkles(RandoItemId randoItemId, Actor* actor) {
     EffectSsKirakira_SpawnDispersed(gPlayState, &newPos, &sVelocity, &sAccel, &sPrimColor, &sEnvColor, 2000, 16);
 }
 
-void Rando::DrawItem(RandoItemId randoItemId, Actor* actor) {
+void Rando::DrawItem(RandoItemId randoItemId, RandoCheckId randoCheckId, Actor* actor) {
     // Apply hilites with actor world pos before drawing
     if (actor != NULL) {
         func_800B8118(actor, gPlayState, 0);
@@ -514,7 +468,7 @@ void Rando::DrawItem(RandoItemId randoItemId, Actor* actor) {
 
     switch (randoItemId) {
         case RI_JUNK:
-            Rando::DrawItem(Rando::CurrentJunkItem(), actor);
+            Rando::DrawItem(Rando::CurrentJunkItem(randoCheckId), randoCheckId, actor);
             break;
         case RI_GREAT_BAY_SMALL_KEY:
         case RI_SNOWHEAD_SMALL_KEY:
@@ -586,7 +540,7 @@ void Rando::DrawItem(RandoItemId randoItemId, Actor* actor) {
         case RI_PROGRESSIVE_BOMB_BAG:
         case RI_PROGRESSIVE_SWORD:
         case RI_PROGRESSIVE_WALLET:
-            Rando::DrawItem(Rando::ConvertItem(randoItemId), actor);
+            Rando::DrawItem(Rando::ConvertItem(randoItemId, randoCheckId), randoCheckId, actor);
             break;
         case RI_SOUL_ENEMY_ALIEN:
         case RI_SOUL_ENEMY_ARMOS:
@@ -666,7 +620,7 @@ void Rando::DrawItem(RandoItemId randoItemId, Actor* actor) {
             DrawTriforcePiece(randoItemId);
             break;
         case RI_TRAP:
-            DrawRandomTrapModel(randoItemId, actor);
+            Rando::DrawItem(Rando::CurrentTrapItem(randoCheckId), randoCheckId, actor);
             break;
         case RI_MAX_TRAP:
             DrawTrapModel();

@@ -18,11 +18,11 @@ void EnIn_OnOpenPurchaseText(u16* textId, bool* loadFromMessageTable) {
 
     auto entry = CustomMessage::LoadVanillaMessageTableEntry(*textId);
 
-    entry.msg = "%p{{price}} Rupees%w will do ya for one %y{{item}}%w!\x11"
+    entry.msg = "%p{{price}} Rupees%w will do ya for %y{{item}}%w!\x11"
                 "\xC2%gYes\x11"
                 "No";
 
-    std::string itemName = Rando::StaticData::Items[riMilkPurchase].name;
+    std::string itemName = Rando::StaticData::GetItemName(riMilkPurchase, true, RC_GORMAN_MILK_PURCHASE);
     std::string itemPrice = std::to_string(milkPurchaseCheck.price);
 
     CustomMessage::ReplaceColorChars(&entry.msg);

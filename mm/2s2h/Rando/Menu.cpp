@@ -36,6 +36,11 @@ std::unordered_map<int32_t, const char*> accessTrialsOptions = {
     { RO_ACCESS_TRIALS_OPEN, "Open" },
 };
 
+std::unordered_map<int32_t, const char*> junkItemsOptions = {
+    { 0, "Default (Cycle)" },
+    { 1, "Static" },
+};
+
 // clang-format off
 std::vector<int32_t> incompatibleWithVanilla = {
     RO_SHUFFLE_BOSS_SOULS,
@@ -303,9 +308,19 @@ static void DrawGeneralTab() {
     }
 
     ImGui::SeparatorText("Enhancements");
-    UIWidgets::CVarCheckbox("Container Style Matches Contents", "gRando.CSMC");
-    UIWidgets::Tooltip("This will make the contents of a container match the container itself. This currently only "
-                       "applies to chests and pots.");
+    UIWidgets::CVarCheckbox(
+        "Container Style Matches Contents", "gRando.CSMC",
+        UIWidgets::CheckboxOptions().Tooltip("This will make the contents of a container match the container itself. "
+                                             "Eg chests, pots, crates, grass, etc."));
+    UIWidgets::CVarCombobox(
+        "Junk Items", "gRando.JunkItems", &junkItemsOptions,
+        UIWidgets::ComboboxOptions()
+            .ComponentAlignment(UIWidgets::ComponentAlignment::Right)
+            .LabelPosition(UIWidgets::LabelPosition::Near)
+            .Tooltip(
+                "Note: For both Options, junk items will be randomly rolled from a pool of obtainable "
+                "items.\n\nDefault (Cycle): Junk items will cycle every few seconds, allowing you to choose which item "
+                "to pick up\n\nStatic: Junk items will be static, only changing when obtainability status changes."));
     UIWidgets::WindowButton("Check Tracker", "gWindows.CheckTracker", BenGui::mRandoCheckTrackerWindow,
                             { .size = ImVec2((ImGui::GetContentRegionAvail().x - 48.0f), 40.0f) });
     ImGui::SameLine();
@@ -587,6 +602,16 @@ static void DrawItemsTab() {
     CVarCheckbox(
         "Time Traps", "gRando.Traps.Time",
         CheckboxOptions({ { .tooltip = "Advances Time 90 Minutes (Game Time).",
+                            .disabled = (bool)!CVarGetInteger(Rando::StaticData::Options[RO_SHUFFLE_TRAPS].cvar, 0),
+                            .disabledTooltip = "Shuffle Traps is disabled." } }));
+    CVarCheckbox(
+        "Fire Traps", "gRando.Traps.Fire",
+        CheckboxOptions({ { .tooltip = "Deals Fire to Link.",
+                            .disabled = (bool)!CVarGetInteger(Rando::StaticData::Options[RO_SHUFFLE_TRAPS].cvar, 0),
+                            .disabledTooltip = "Shuffle Traps is disabled." } }));
+    CVarCheckbox(
+        "Knockback Traps", "gRando.Traps.Knockback",
+        CheckboxOptions({ { .tooltip = "Knocks Link back.",
                             .disabled = (bool)!CVarGetInteger(Rando::StaticData::Options[RO_SHUFFLE_TRAPS].cvar, 0),
                             .disabledTooltip = "Shuffle Traps is disabled." } }));
     ImGui::EndChild();

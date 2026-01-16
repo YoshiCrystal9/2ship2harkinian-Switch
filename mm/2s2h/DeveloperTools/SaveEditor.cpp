@@ -1030,7 +1030,7 @@ void DrawItemsAndMasksTab() {
                             }
 
                             Matrix_Scale(30.0f, 30.0f, 30.0f, MTXMODE_APPLY);
-                            Rando::DrawItem(randoItemId);
+                            Rando::DrawItem(randoItemId, RC_UNKNOWN, actor);
                         } });
             }
         }

@@ -30,7 +30,8 @@ void EnElforg_DrawCustom(Actor* thisx, PlayState* play) {
         return;
     }
 
-    Rando::DrawItem(Rando::ConvertItem(randoSaveCheck.randoItemId, (RandoCheckId)CUSTOM_PARAM));
+    Rando::DrawItem(Rando::ConvertItem(randoSaveCheck.randoItemId, (RandoCheckId)CUSTOM_PARAM),
+                    (RandoCheckId)CUSTOM_PARAM, thisx);
 }
 
 void EnElforg_Setup(EnElforg* enElforg) {

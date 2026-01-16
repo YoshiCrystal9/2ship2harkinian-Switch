@@ -69,6 +69,8 @@ void Rando::ActorBehavior::InitDmStkBehavior() {
                  [](Actor* actor, bool* should) { actor->update = DmChar02_UpdateCustom; });
 
     COND_VB_SHOULD(VB_DRAW_OCARINA_IN_STK_HAND, IS_RANDO, {
+        Actor* dmStk = va_arg(args, Actor*);
+
         if (*should) {
             *should = false;
 
@@ -84,7 +86,8 @@ void Rando::ActorBehavior::InitDmStkBehavior() {
             Matrix_TranslateRotateZYX(&pos, &rot);
 
             auto randoSaveCheck = RANDO_SAVE_CHECKS[RC_CLOCK_TOWER_ROOF_OCARINA];
-            Rando::DrawItem(Rando::ConvertItem(randoSaveCheck.randoItemId, RC_CLOCK_TOWER_ROOF_OCARINA));
+            Rando::DrawItem(Rando::ConvertItem(randoSaveCheck.randoItemId, RC_CLOCK_TOWER_ROOF_OCARINA),
+                            RC_CLOCK_TOWER_ROOF_OCARINA, dmStk);
         }
     });
 
@@ -95,6 +98,8 @@ void Rando::ActorBehavior::InitDmStkBehavior() {
     });
 
     COND_VB_SHOULD(VB_POST_CHAR02_LIMB, IS_RANDO, {
+        Actor* dmChar02 = va_arg(args, Actor*);
+
         Matrix_Scale(15.0f, 15.0f, 15.0f, MTXMODE_APPLY);
         Vec3s rot;
         rot.x = -11554;
@@ -105,7 +110,8 @@ void Rando::ActorBehavior::InitDmStkBehavior() {
         Matrix_TranslateRotateZYX(&pos, &rot);
 
         auto randoSaveCheck = RANDO_SAVE_CHECKS[RC_CLOCK_TOWER_ROOF_OCARINA];
-        Rando::DrawItem(Rando::ConvertItem(randoSaveCheck.randoItemId, RC_CLOCK_TOWER_ROOF_OCARINA));
+        Rando::DrawItem(Rando::ConvertItem(randoSaveCheck.randoItemId, RC_CLOCK_TOWER_ROOF_OCARINA),
+                        RC_CLOCK_TOWER_ROOF_OCARINA, dmChar02);
     });
 
     COND_VB_SHOULD(VB_STK_HAVE_OCARINA, IS_RANDO, {

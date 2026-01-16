@@ -31,9 +31,11 @@ void Rando::ActorBehavior::InitEnJgameTsnBehavior() {
         entry.msg =
             "Want to try my %rjumping game%w for %p20 Rupees%w? Win, and I'll give you %r{{itemName}}%w!\x19\xA8";
         // The same-cycle repeat reward is a purple Rupee
-        CustomMessage::Replace(
-            &entry.msg, "{{itemName}}",
-            randoSaveCheck.cycleObtained ? "50 Rupees" : Rando::StaticData::GetItemName(randoSaveCheck.randoItemId));
+        CustomMessage::Replace(&entry.msg, "{{itemName}}",
+                               randoSaveCheck.cycleObtained
+                                   ? "50 Rupees"
+                                   : Rando::StaticData::GetItemName(randoSaveCheck.randoItemId, true,
+                                                                    RC_GREAT_BAY_COAST_FISHERMAN_MINIGAME));
 
         CustomMessage::LoadCustomMessageIntoFont(entry);
         *loadFromMessageTable = false;

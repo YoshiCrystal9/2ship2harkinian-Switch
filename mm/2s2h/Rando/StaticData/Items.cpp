@@ -520,7 +520,7 @@ bool ShouldShowGetItemCutscene(RandoItemId itemId) {
     }
 }
 
-std::string GetItemName(RandoItemId randoItemId, bool includeArticle) {
+std::string GetItemName(RandoItemId randoItemId, bool includeArticle, RandoCheckId randoCheckId) {
     std::string result;
 
     if (includeArticle && !Ship_IsCStringEmpty(Rando::StaticData::Items[randoItemId].article)) {
@@ -530,8 +530,28 @@ std::string GetItemName(RandoItemId randoItemId, bool includeArticle) {
 
     result += Rando::StaticData::Items[randoItemId].name;
 
-    if (randoItemId == RI_JUNK) {
-        result += std::string(" (") + Rando::StaticData::Items[Rando::CurrentJunkItem()].name + ")";
+    if (randoItemId == RI_JUNK && (randoCheckId == RC_UNKNOWN ||
+                                   (Rando::StaticData::Checks[randoCheckId].randoCheckType != RCTYPE_SHOP &&
+                                    Rando::StaticData::Checks[randoCheckId].randoCheckType != RCTYPE_TINGLE_SHOP))) {
+        result += std::string(" (") + Rando::StaticData::Items[Rando::CurrentJunkItem(randoCheckId)].name + ")";
+    }
+
+    if (randoItemId == RI_TRAP && randoCheckId != RC_UNKNOWN) {
+        // Get the name of the trapped item
+        RandoItemId trappedItemId = Rando::CurrentTrapItem(randoCheckId);
+        std::string fakeItemName = GetItemName(trappedItemId, false);
+        // Pick a random letter in the item name, and double it to fool the player
+        auto letterIndex = Ship_Random(0, fakeItemName.length() - 1);
+        char letterToDouble = fakeItemName[letterIndex];
+        fakeItemName.insert(letterIndex, 1, letterToDouble);
+        result.clear();
+
+        if (includeArticle && !Ship_IsCStringEmpty(Rando::StaticData::Items[randoItemId].article)) {
+            result += Rando::StaticData::Items[randoItemId].article;
+            result += " ";
+        }
+
+        result += fakeItemName;
     }
 
     return result;

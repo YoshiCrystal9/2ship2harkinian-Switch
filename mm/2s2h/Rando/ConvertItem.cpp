@@ -2,6 +2,7 @@
 #include "Rando/ActorBehavior/Souls.h"
 #include "Rando/MiscBehavior/ClockShuffle.h"
 #include "2s2h/ShipUtils.h"
+#include "2s2h/ShipInit.hpp"
 #include <cassert>
 
 // Copied from z_player.c, we could instead move this to a header file, idk
@@ -51,9 +52,8 @@ extern GetItemEntry sGetItemTable[GI_MAX - 1];
 // obtain it. If not, we convert it to a junk item.
 //
 // Junk Items:
-// - The list of junk items is defined below. We attempt to roll a random junk item one time, based on the RC provided,
-// and if we fail, we return a blue rupee. This will still result in the "lots of blue rupees" problem, but it's better
-// than _always_ converting to a blue rupee.
+// - The list of junk items is defined below. Every 1.5 seconds we roll a random junk item, based on the RC provided and
+// the current obtainability status of all junk items. The user can also opt out of the timed cycling.
 
 static std::vector<RandoItemId> junkItems = {
     // Rupees
@@ -78,23 +78,94 @@ static std::vector<RandoItemId> junkItems = {
     RI_NONE,
 };
 
-// Pick a random junk item every second
-RandoItemId Rando::CurrentJunkItem() {
-    static RandoItemId lastJunkItem = RI_UNKNOWN;
-    static u32 lastChosenAt = 0;
-    if (gPlayState != NULL && ABS(gPlayState->gameplayFrames - lastChosenAt) > 20) {
-        lastChosenAt = gPlayState->gameplayFrames;
-        lastJunkItem = RI_UNKNOWN;
-    }
+static std::vector<RandoItemId> obtainableJunkItems;
+static std::vector<RandoItemId> obtainableTrapItems;
 
-    while (lastJunkItem == RI_UNKNOWN) {
-        RandoItemId randJunkItem = junkItems[rand() % junkItems.size()];
-        if (Rando::IsItemObtainable(randJunkItem)) {
-            lastJunkItem = randJunkItem;
+void RefreshObtainableJunkItems() {
+    obtainableJunkItems.clear();
+
+    for (RandoItemId junkItem : junkItems) {
+        if (Rando::IsItemObtainable(junkItem)) {
+            switch (junkItem) {
+                case RI_ARROWS_10:
+                    if (AMMO(ITEM_BOW) < CUR_CAPACITY(UPG_QUIVER)) {
+                        obtainableJunkItems.push_back(junkItem);
+                    }
+                    break;
+                case RI_BOMBCHU_5:
+                    if (AMMO(ITEM_BOMBCHU) < CUR_CAPACITY(UPG_BOMB_BAG)) {
+                        obtainableJunkItems.push_back(junkItem);
+                    }
+                    break;
+                case RI_BOMBS_5:
+                    if (AMMO(ITEM_BOMB) < CUR_CAPACITY(UPG_BOMB_BAG)) {
+                        obtainableJunkItems.push_back(junkItem);
+                    }
+                    break;
+                case RI_DEKU_NUTS_5:
+                    if (AMMO(ITEM_DEKU_NUT) < CUR_CAPACITY(UPG_DEKU_NUTS)) {
+                        obtainableJunkItems.push_back(junkItem);
+                    }
+                    break;
+                case RI_DEKU_STICKS_5:
+                    if (AMMO(ITEM_DEKU_STICK) < CUR_CAPACITY(UPG_DEKU_STICKS)) {
+                        obtainableJunkItems.push_back(junkItem);
+                    }
+                    break;
+                case RI_MAGIC_JAR_SMALL:
+                    if (gSaveContext.save.saveInfo.playerData.magic < gSaveContext.magicCapacity) {
+                        obtainableJunkItems.push_back(junkItem);
+                    }
+                    break;
+                default:
+                    obtainableJunkItems.push_back(junkItem);
+                    break;
+            }
         }
     }
+}
 
-    return lastJunkItem;
+void RefreshObtainableTrapItems() {
+    obtainableTrapItems.clear();
+
+    for (auto& [randoCheckId, _] : Rando::StaticData::Checks) {
+        RandoSaveCheck saveCheck = RANDO_SAVE_CHECKS[randoCheckId];
+        if (saveCheck.shuffled && !saveCheck.obtained &&
+            (Rando::StaticData::Items[saveCheck.randoItemId].randoItemType == RITYPE_MAJOR ||
+             Rando::StaticData::Items[saveCheck.randoItemId].randoItemType == RITYPE_MASK)) {
+            obtainableTrapItems.push_back(saveCheck.randoItemId);
+        }
+    }
+}
+
+static RegisterShipInitFunc refreshInitFunc(
+    []() {
+        COND_HOOK(OnSceneInit, IS_RANDO, [](s8 sceneId, s8 spawnNum) {
+            RefreshObtainableJunkItems();
+            RefreshObtainableTrapItems();
+        });
+    },
+    { "IS_RANDO" });
+
+RandoItemId Rando::CurrentJunkItem(RandoCheckId randoCheckId) {
+    if (CVarGetInteger("gRando.JunkItems", 0) == 0) {
+        Ship_Random_Seed(gSaveContext.save.shipSaveInfo.rando.finalSeed + randoCheckId +
+                         (gPlayState->gameplayFrames / 30));
+        return obtainableJunkItems[Ship_Random(0, obtainableJunkItems.size() - 1)];
+    } else {
+        Ship_Random_Seed(gSaveContext.save.shipSaveInfo.rando.finalSeed + randoCheckId);
+        return obtainableJunkItems[Ship_Random(0, obtainableJunkItems.size() - 1)];
+    }
+}
+
+RandoItemId Rando::CurrentTrapItem(RandoCheckId randoCheckId) {
+    if (obtainableTrapItems.size() == 0) {
+        return RI_RUPEE_SILVER;
+    }
+
+    Ship_Random_Seed(gSaveContext.save.shipSaveInfo.rando.finalSeed + randoCheckId);
+
+    return obtainableTrapItems[Ship_Random(0, obtainableTrapItems.size() - 1)];
 }
 
 bool Rando::IsItemObtainable(RandoItemId randoItemId, RandoCheckId randoCheckId) {

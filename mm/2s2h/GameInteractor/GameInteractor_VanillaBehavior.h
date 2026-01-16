@@ -496,6 +496,7 @@ typedef enum {
     // ```
     // #### `args`
     // - `GetItemDrawId`
+    // - `DmChar05*`
     VB_DRAW_ITEM_FROM_DMCHAR05,
 
     // #### `result`

@@ -528,10 +528,17 @@ void ProcessEvents(Actor* actor) {
         }
         GameInteractor::Instance->currentEvent = GIEventNone{};
     } else if (auto e = std::get_if<GIEventTrap>(&nextEvent)) {
-        if (e->action) {
-            e->action();
+        if (player->stateFlags1 & PLAYER_STATE1_800000) {
+            // Player is riding a horse, requeue the event
+            auto lostEvent = GameInteractor::Instance->currentEvent;
+            GameInteractor::Instance->currentEvent = GIEventNone{};
+            GameInteractor::Instance->events.push_back(lostEvent);
+        } else {
+            if (e->action) {
+                e->action();
+            }
+            GameInteractor::Instance->currentEvent = GIEventNone{};
         }
-        GameInteractor::Instance->currentEvent = GIEventNone{};
     }
 
     GameInteractor::Instance->events.erase(GameInteractor::Instance->events.begin());

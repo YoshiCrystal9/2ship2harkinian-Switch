@@ -734,7 +734,7 @@ void func_80AADD9C(PlayState* play, DmChar05* this) {
         Matrix_Translate(this->unk_190.x, this->unk_190.y, this->unk_190.z, MTXMODE_NEW);
         Matrix_RotateZYX(0, play->gameplayFrames * 1000, 0, MTXMODE_APPLY);
         Matrix_Scale(0.2f, 0.2f, 0.2f, MTXMODE_APPLY);
-        if (GameInteractor_Should(VB_DRAW_ITEM_FROM_DMCHAR05, true, GID_MASK_GORON)) {
+        if (GameInteractor_Should(VB_DRAW_ITEM_FROM_DMCHAR05, true, GID_MASK_GORON, this)) {
             GetItem_Draw(play, GID_MASK_GORON);
         }
     }
@@ -749,7 +749,7 @@ void func_80AADE78(PlayState* play, DmChar05* this) {
         Matrix_Translate(this->unk_190.x, this->unk_190.y, this->unk_190.z, MTXMODE_NEW);
         Matrix_RotateZYX(0, play->gameplayFrames * 1000, 0, MTXMODE_APPLY);
         Matrix_Scale(0.2f, 0.2f, 0.2f, MTXMODE_APPLY);
-        if (GameInteractor_Should(VB_DRAW_ITEM_FROM_DMCHAR05, true, GID_MASK_ZORA)) {
+        if (GameInteractor_Should(VB_DRAW_ITEM_FROM_DMCHAR05, true, GID_MASK_ZORA, this)) {
             GetItem_Draw(play, GID_MASK_ZORA);
         }
     }
@@ -764,7 +764,7 @@ void func_80AADF54(PlayState* play, DmChar05* this) {
         Matrix_Translate(this->unk_190.x, this->unk_190.y, this->unk_190.z, MTXMODE_NEW);
         Matrix_RotateZYX(0, play->gameplayFrames * 1000, 0, MTXMODE_APPLY);
         Matrix_Scale(0.2f, 0.2f, 0.2f, MTXMODE_APPLY);
-        if (GameInteractor_Should(VB_DRAW_ITEM_FROM_DMCHAR05, true, GID_MASK_GIBDO)) {
+        if (GameInteractor_Should(VB_DRAW_ITEM_FROM_DMCHAR05, true, GID_MASK_GIBDO, this)) {
             GetItem_Draw(play, GID_MASK_GIBDO);
         }
     }
@@ -780,7 +780,7 @@ void func_80AAE030(PlayState* play, DmChar05* this) {
             Matrix_Translate(this->unk_190.x, this->unk_190.y, this->unk_190.z, MTXMODE_NEW);
             Matrix_RotateZYX(0, play->gameplayFrames * 1000, 0, MTXMODE_APPLY);
             Matrix_Scale(0.2f, 0.2f, 0.2f, MTXMODE_APPLY);
-            if (GameInteractor_Should(VB_DRAW_ITEM_FROM_DMCHAR05, true, GID_MASK_COUPLE)) {
+            if (GameInteractor_Should(VB_DRAW_ITEM_FROM_DMCHAR05, true, GID_MASK_COUPLE, this)) {
                 GetItem_Draw(play, GID_MASK_COUPLE);
             }
         }
