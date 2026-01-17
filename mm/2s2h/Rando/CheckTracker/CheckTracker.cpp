@@ -58,7 +58,7 @@ float trackerScale = 1.0f;
 float searchBoxPadding = 15.0f;
 ImVec4 trackerBG = ImVec4{ 0, 0, 0, 0.5f };
 
-std::map<SceneId, std::vector<RandoCheckId>> sceneChecks;
+std::map<SceneId, std::set<RandoCheckId>> sceneChecks;
 std::vector<SceneId> sortedSceneIds;
 std::unordered_map<RandoCheckId, std::string> accessLogicFuncs;
 
@@ -125,8 +125,58 @@ void initializeSceneChecks() {
             continue;
         }
 
+        // Skip Grotto Checks, they will be handled below
+        if (randoStaticCheck.sceneId == SCENE_KAKUSIANA) {
+            continue;
+        }
+
+        // Skip Enemy Drops, they will be handled below
+        if (randoStaticCheck.randoCheckType == RCTYPE_ENEMY_DROP) {
+            continue;
+        }
+
         SceneId sceneId = (SceneId)Play_GetOriginalSceneId(randoStaticCheck.sceneId);
-        sceneChecks[sceneId].push_back(randoStaticCheck.randoCheckId);
+        sceneChecks[sceneId].insert(randoStaticCheck.randoCheckId);
+    }
+
+    for (auto& [regionId, staticRegion] : Rando::Logic::Regions) {
+        // Handle grottos separately, their checks are assigned to the connected region
+        if (staticRegion.sceneId == SCENE_KAKUSIANA) {
+            RandoRegionId connectedRegionId = RR_MAX;
+            if (regionId == RR_LONE_PEAK_SHRINE) {
+                connectedRegionId = RR_LONE_PEAK_SHRINE;
+            } else {
+                for (auto& [entrance, _] : staticRegion.exits) {
+                    connectedRegionId = Rando::Logic::GetRegionIdFromEntrance(entrance);
+                }
+                for (auto& [regionId, _] : staticRegion.connections) {
+                    connectedRegionId = regionId;
+                }
+                if (connectedRegionId == RR_MAX) {
+                    continue;
+                }
+            }
+            SceneId connectedSceneId = Rando::Logic::Regions[connectedRegionId].sceneId;
+            for (auto& [randoCheckId, _] : staticRegion.checks) {
+                RandoSaveCheck& randoSaveCheck = RANDO_SAVE_CHECKS[randoCheckId];
+                if (!randoSaveCheck.shuffled) {
+                    continue;
+                }
+                sceneChecks[connectedSceneId].insert(randoCheckId);
+            }
+        } else {
+            // Handle enemy drop seperately, they can be in multiple regions
+            for (auto& [randoCheckId, _] : staticRegion.checks) {
+                auto& randoStaticCheck = Rando::StaticData::Checks[randoCheckId];
+                RandoSaveCheck& randoSaveCheck = RANDO_SAVE_CHECKS[randoCheckId];
+                if (!randoSaveCheck.shuffled || randoStaticCheck.randoCheckType != RCTYPE_ENEMY_DROP) {
+                    continue;
+                }
+
+                SceneId sceneId = (SceneId)Play_GetOriginalSceneId(staticRegion.sceneId);
+                sceneChecks[sceneId].insert(randoCheckId);
+            }
+        }
     }
 
     sortedSceneIds.clear();
@@ -268,9 +318,6 @@ void CheckTrackerDrawNonLogicalList() {
         ImGui::Separator();
         ImGui::PushStyleColor(ImGuiCol_Header, ImVec4(0, 0, 0, 0));
         std::string headerText = Ship_GetSceneName(sceneId);
-        if (sceneId == SCENE_SPOT00) {
-            headerText = "Various Regions";
-        }
         headerText += " (" + std::to_string(obtainedCheckSum) + "/" + std::to_string(unfilteredChecks.size()) + ")";
 
         ImGui::PushStyleColor(ImGuiCol_Text, obtainedCheckSum == unfilteredChecks.size()
