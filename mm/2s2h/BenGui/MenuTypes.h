@@ -50,6 +50,7 @@ typedef enum {
     WIDGET_CVAR_COMBOBOX,
     WIDGET_CVAR_SLIDER_INT,
     WIDGET_CVAR_SLIDER_FLOAT,
+    WIDGET_CVAR_BTN_SELECTOR,
     WIDGET_BUTTON,
     WIDGET_COLOR_24, // color picker without alpha
     WIDGET_COLOR_32, // color picker with alpha

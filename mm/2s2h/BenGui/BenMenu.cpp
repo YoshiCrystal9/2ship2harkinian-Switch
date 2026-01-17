@@ -114,6 +114,13 @@ static const std::vector<const char*> timeStopOptions = {
     "Temples + Mini Dungeons", // TIME_STOP_TEMPLES_DUNGEONS
 };
 
+static const std::vector<const char*> speedModifierModeOptions = {
+    "Off",
+    "On",
+    "Hold Buttons",
+    "Toggle Buttons",
+};
+
 static const std::vector<const char*> notificationPosition = {
     "Top Left", "Top Right", "Bottom Left", "Bottom Right", "Hidden",
 };
@@ -880,7 +887,7 @@ void BenMenu::AddEnhancements() {
                      .Max(3.0f));
 
     path = { "Enhancements", "Cheats", SECTION_COLUMN_1 };
-    AddSidebarEntry("Enhancements", "Cheats", 3);
+    AddSidebarEntry("Enhancements", "Cheats", 2);
     AddWidget(path, "Infinite Health", WIDGET_CVAR_CHECKBOX)
         .CVar("gCheats.InfiniteHealth")
         .Options(CheckboxOptions().Tooltip("Always have full Hearts."));
@@ -933,6 +940,19 @@ void BenMenu::AddEnhancements() {
                          "- Temples + Mini Dungeons: In addition to the above temples, stops time in both Spider "
                          "Houses, Pirate's Fortress, Beneath the Well, Ancient Castle of Ikana, and Secret Shrine.")
                 .ComboVec(&timeStopOptions));
+
+    path.column = SECTION_COLUMN_2;
+    AddWidget(path, "Speed Modifier", WIDGET_SEPARATOR_TEXT);
+    AddWidget(path, "Speed Modifier Mode", WIDGET_CVAR_COMBOBOX)
+        .CVar("gCheats.SpeedModifier.Mode")
+        .Options(ComboboxOptions().ComboVec(&speedModifierModeOptions).LabelPosition(LabelPosition::None));
+    AddWidget(path, "Multiplier:", WIDGET_CVAR_SLIDER_FLOAT)
+        .CVar("gCheats.SpeedModifier.Value")
+        .PreFunc([](WidgetInfo& info) { info.isHidden = !CVarGetInteger("gCheats.SpeedModifier.Mode", 0); })
+        .Options(FloatSliderOptions().Format("%.1fx").Min(0.0f).Max(6.0f).DefaultValue(1.0f));
+    AddWidget(path, "Button Combination:", WIDGET_CVAR_BTN_SELECTOR)
+        .CVar("gCheats.SpeedModifier.Btn")
+        .PreFunc([](WidgetInfo& info) { info.isHidden = CVarGetInteger("gCheats.SpeedModifier.Mode", 0) < 2; });
 
     //// Gameplay Enhancements
     path = { "Enhancements", "Gameplay", SECTION_COLUMN_1 };

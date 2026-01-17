@@ -1159,6 +1159,8 @@ void DrawFlagArray16(const std::string& name, uint16_t& flags, Colors color = Co
 void DrawFlagTableArray16(const FlagTable& flagTable, uint16_t& flags);
 void DrawFlagTableArray8(const FlagTable& flagTable, uint16_t row, uint8_t& flags);
 void DrawFlagTableArray8Mask(const FlagTable& flagTable, uint16_t row, uint8_t& flags);
+bool BtnSelector(const char* label, int32_t* value);
+bool CVarBtnSelector(const char* label, const char* cvarName);
 } // namespace UIWidgets
 ImVec4 GetRandomValue();
 

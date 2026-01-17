@@ -441,6 +441,13 @@ void Menu::MenuDrawItem(WidgetInfo& widget, uint32_t width, UIWidgets::Colors me
                     }
                 }
             } break;
+            case WIDGET_CVAR_BTN_SELECTOR: {
+                if (UIWidgets::CVarBtnSelector(widget.name.c_str(), widget.cVar)) {
+                    if (widget.callback != nullptr) {
+                        widget.callback(widget);
+                    }
+                }
+            } break;
             case WIDGET_BUTTON: {
                 auto options = std::static_pointer_cast<UIWidgets::ButtonOptions>(widget.options);
                 options->color = menuThemeIndex;

@@ -6,6 +6,7 @@
 #include <unordered_map>
 #include "2s2h/ShipUtils.h"
 #include <spdlog/fmt/fmt.h>
+#include "2s2h/BenPort.h"
 
 namespace UIWidgets {
 
@@ -1314,6 +1315,95 @@ void DrawFlagTableArray8Mask(const FlagTable& flagTable, uint16_t row, uint8_t& 
     }
     ImGui::PopID();
 }
+
+std::map<std::string, int32_t> buttonMap = {
+    { "A", BTN_A },
+    { "B", BTN_B },
+    { "Z", BTN_Z },
+    { "START", BTN_START },
+    { "D-Up", BTN_DUP },
+    { "D-Down", BTN_DDOWN },
+    { "D-Left", BTN_DLEFT },
+    { "D-Right", BTN_DRIGHT },
+    { "L", BTN_L },
+    { "R", BTN_R },
+    { "C-Up", BTN_CUP },
+    { "C-Down", BTN_CDOWN },
+    { "C-Left", BTN_CLEFT },
+    { "C-Right", BTN_CRIGHT },
+    { "Modifier 1", BTN_CUSTOM_MODIFIER1 },
+    { "Modifier 2", BTN_CUSTOM_MODIFIER2 },
+};
+bool BtnSelector(const char* label, int32_t* value) {
+    bool dirty = false;
+    ImGui::PushID(label);
+    ImGui::BeginGroup();
+    ImGui::AlignTextToFramePadding();
+    ImGui::Text("%s", label);
+    ImGui::BeginDisabled(false);
+    PushStyleCombobox(UIWidgets::Colors::DarkGray);
+    ImGui::BeginGroup();
+    int32_t currentValue = *value;
+    int index = 0;
+    for (const auto& [buttonName, buttonMask] : buttonMap) {
+        if (currentValue & buttonMask) {
+            ImGui::PushID(buttonName.c_str());
+            if (index++ > 0) {
+                ImGui::Text("+");
+                ImGui::SameLine();
+            }
+            if (UIWidgets::Button(buttonName.c_str(), UIWidgets::ButtonOptions()
+                                                          .Tooltip("Remove this button from the combination")
+                                                          .Color(UIWidgets::Colors::Gray)
+                                                          .Size(UIWidgets::Sizes::Inline))) {
+                currentValue &= ~buttonMask;
+                dirty = true;
+            }
+            ImGui::PopID();
+            ImGui::SameLine();
+        }
+    }
+    if (UIWidgets::Button("+", UIWidgets::ButtonOptions({ { .tooltip = "Add a button to the combination" } })
+                                   .Size(UIWidgets::Sizes::Inline))) {
+        ImGui::OpenPopup("Add Button");
+    }
+    if (ImGui::BeginPopup("Add Button")) {
+        UIWidgets::PushStyleMenuItem();
+        for (const auto& [buttonName, buttonMask] : buttonMap) {
+            if (!(currentValue & buttonMask)) {
+                if (ImGui::MenuItem(buttonName.c_str())) {
+                    currentValue |= buttonMask;
+                    dirty = true;
+                }
+            }
+        }
+        UIWidgets::PopStyleMenuItem();
+        ImGui::EndPopup();
+    }
+    ImGui::EndGroup();
+    PopStyleCombobox();
+    ImGui::EndDisabled();
+    ImGui::EndGroup();
+    ImGui::PopID();
+
+    if (dirty) {
+        *value = currentValue;
+    }
+    return dirty;
+}
+
+bool CVarBtnSelector(const char* label, const char* cvarName) {
+    bool dirty = false;
+    int32_t value = CVarGetInteger(cvarName, 0);
+    if (BtnSelector(label, &value)) {
+        CVarSetInteger(cvarName, value);
+        Ship::Context::GetInstance()->GetWindow()->GetGui()->SaveConsoleVariablesNextFrame();
+        ShipInit::Init(cvarName);
+        dirty = true;
+    }
+    return dirty;
+}
+
 } // namespace UIWidgets
 
 ImVec4 GetRandomValue() {
