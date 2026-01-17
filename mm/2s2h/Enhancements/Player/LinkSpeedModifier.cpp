@@ -15,7 +15,7 @@ extern Input* sPlayerControlInput;
 #define CVAR_SPEED_MODIFIER_MODE CVarGetInteger(CVAR_SPEED_MODIFIER_MODE_NAME, 0)
 #define CVAR_SPEED_MODIFIER_TOGGLE CVarGetInteger(CVAR_SPEED_MODIFIER_TOGGLE_NAME, 0)
 #define CVAR_SPEED_MODIFIER_VALUE CVarGetFloat(CVAR_SPEED_MODIFIER_VALUE_NAME, 1.0f)
-#define CVAR_SPEED_MODIFIER_BTN CVarGetInteger(CVAR_SPEED_MODIFIER_BTN_NAME, 0)
+#define CVAR_SPEED_MODIFIER_BTN CVarGetInteger(CVAR_SPEED_MODIFIER_BTN_NAME, BTN_CUSTOM_MODIFIER1)
 
 bool btnHeldOrToggled = false;
 
@@ -60,7 +60,8 @@ void RegisterLinkSpeedModifier() {
                 btnHeldOrToggled = false;
             }
         } else {
-            if (CHECK_BTN_ALL(input->press.button, CVAR_SPEED_MODIFIER_BTN)) {
+            if (CHECK_BTN_ALL(input->cur.button, CVAR_SPEED_MODIFIER_BTN) &&
+                CHECK_BTN_ANY(input->press.button, CVAR_SPEED_MODIFIER_BTN)) {
                 btnHeldOrToggled = !btnHeldOrToggled;
             }
         }

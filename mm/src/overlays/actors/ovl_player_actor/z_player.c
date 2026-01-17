@@ -13031,11 +13031,9 @@ s32 Player_UpdateNoclip(Player* this, PlayState* play) {
         return true;
     }
 
-    if ((CHECK_BTN_ALL(sPlayerControlInput->cur.button, BTN_L | BTN_R | BTN_A) &&
-         CHECK_BTN_ALL(sPlayerControlInput->press.button, BTN_B)) ||
-        (CHECK_BTN_ALL(sPlayerControlInput->cur.button, BTN_L) &&
-         CHECK_BTN_ALL(sPlayerControlInput->press.button, BTN_DRIGHT))) {
-
+    s32 mask = CVarGetInteger("gDeveloperTools.NoClipBtn", BTN_L | BTN_DRIGHT);
+    if (CHECK_BTN_ALL(sPlayerControlInput->cur.button, mask) &&
+        CHECK_BTN_ANY(sPlayerControlInput->press.button, mask)) {
         sNoclipEnabled ^= 1;
 
         if (sNoclipEnabled) {

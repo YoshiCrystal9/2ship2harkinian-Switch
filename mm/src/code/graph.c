@@ -358,19 +358,6 @@ void Graph_Update(GraphicsContext* gfxCtx, GameState* gameState) {
 
     Graph_UpdateGame(gameState);
     Graph_ExecuteAndDraw(gfxCtx, gameState);
-
-    // 2S2H [Debug] Decomp didn't contain the original code that would allow for this, so this is stolen from ship
-    if (CVarGetInteger("gDeveloperTools.DebugEnabled", 0)) {
-        if (CHECK_BTN_ALL(gameState->input[0].press.button, BTN_Z) &&
-            CHECK_BTN_ALL(gameState->input[0].cur.button, BTN_L | BTN_R)) {
-            STOP_GAMESTATE(gameState);
-            gSaveContext.gameMode = GAMEMODE_NORMAL;
-            gSaveContext.nextDayTime = NEXT_TIME_NONE;
-            gSaveContext.nextTransitionType = TRANS_NEXT_TYPE_DEFAULT;
-            gSaveContext.prevHudVisibility = HUD_VISIBILITY_ALL;
-            SET_NEXT_GAMESTATE(gameState, MapSelect_Init, sizeof(MapSelectState));
-        }
-    }
 }
 
 static struct RunFrameContext {
