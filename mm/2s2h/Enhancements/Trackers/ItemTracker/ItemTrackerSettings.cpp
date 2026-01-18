@@ -477,10 +477,10 @@ void DrawTrackerOptions() {
         ImGui::TableNextColumn();
         if (CVarGetInteger("gWindows.ItemTracker", 0)) {
             UIWidgets::WindowButton("Disable Item Tracker", "gWindows.ItemTracker", BenGui::mItemTrackerWindow,
-                                    { .size = UIWidgets::Sizes::Inline, .color = WIDGET_COLOR });
+                                    { .size = UIWidgets::Sizes::Inline, .color = UIWidgets::Colors::Red });
         } else {
             UIWidgets::WindowButton("Enable Item Tracker", "gWindows.ItemTracker", BenGui::mItemTrackerWindow,
-                                    { .size = UIWidgets::Sizes::Inline, .color = WIDGET_COLOR });
+                                    { .size = UIWidgets::Sizes::Inline, .color = UIWidgets::Colors::Green });
         }
 
         UIWidgets::CVarCombobox("Window Type", "gSettings.ItemTracker.WindowType", windowTypes,

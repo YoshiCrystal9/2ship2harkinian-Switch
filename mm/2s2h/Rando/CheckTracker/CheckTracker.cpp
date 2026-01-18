@@ -15,10 +15,17 @@
 #include "assets/archives/schedule_dma_static/schedule_dma_static_yar.h"
 #include "assets/interface/icon_item_field_static/icon_item_field_static.h"
 #include "assets/objects/gameplay_keep/gameplay_keep.h"
+#include "assets/overlays/ovl_En_Syateki_Okuta/ovl_En_Syateki_Okuta.h"
 
 extern "C" {
 s16 Play_GetOriginalSceneId(s16 sceneId);
 }
+
+namespace BenGui {
+extern std::shared_ptr<Rando::CheckTracker::CheckTrackerWindow> mRandoCheckTrackerWindow;
+}
+
+#define WIDGET_COLOR UIWidgets::Colors(CVarGetInteger("gSettings.Menu.Theme", 5))
 
 #define DEFINE_SCENE(_name, enumValue, _textId, _drawConfig, _restrictionFlags, _persistentCycleFlags, \
                      _entranceSceneId, betterMapSelectIndex, _humanName)                               \
@@ -32,22 +39,44 @@ static std::unordered_map<s32, s32> betterSceneIndex = {
 #undef DEFINE_SCENE
 #undef DEFINE_SCENE_UNSET
 
+typedef enum {
+    CHECK_MODE_NORMAL,
+    CHECK_MODE_COLORED,
+    CHECK_MODE_HIDDEN,
+} CheckDisplayMode;
+
+static std::unordered_map<int32_t, const char*> sCheckModes = {
+    { CHECK_MODE_NORMAL, "Normal" },
+    { CHECK_MODE_COLORED, "Colored" },
+    { CHECK_MODE_HIDDEN, "Hidden" },
+};
+
 #define CVAR_NAME_SHOW_CHECK_TRACKER "gWindows.CheckTracker"
-#define CVAR_NAME_SHOW_LOGIC "gRando.CheckTracker.OnlyShowChecksInLogic"
-#define CVAR_NAME_HIDE_COLLECTED "gRando.CheckTracker.HideCollectedChecks"
-#define CVAR_NAME_HIDE_SKIPPED "gRando.CheckTracker.HideSkippedChecks"
+#define CVAR_NAME_OUT_OF_LOGIC_MODE "gRando.CheckTracker.OutOfLogicMode"
+#define CVAR_NAME_OUT_OF_LOGIC_COLOR "gRando.CheckTracker.OutOfLogicColor"
+#define CVAR_NAME_COLLECTED_MODE "gRando.CheckTracker.CollectedMode"
+#define CVAR_NAME_COLLECTED_COLOR "gRando.CheckTracker.CollectedColor"
+#define CVAR_NAME_SKIPPED_MODE "gRando.CheckTracker.SkippedMode"
+#define CVAR_NAME_SKIPPED_COLOR "gRando.CheckTracker.SkippedColor"
 #define CVAR_NAME_SCROLL_TO_SCENE "gRando.CheckTracker.ScrollToCurrentScene"
 #define CVAR_NAME_TRACKER_OPACITY "gRando.CheckTracker.Opacity"
 #define CVAR_NAME_TRACKER_SCALE "gRando.CheckTracker.Scale"
 #define CVAR_NAME_SHOW_CURRENT_SCENE "gRando.CheckTracker.ShowCurrentScene"
+#define CVAR_NAME_SHOW_CHECK_TYPE_FILTER "gRando.CheckTracker.ShowCheckTypeFilter"
+#define CVAR_NAME_SHOW_SEARCH "gRando.CheckTracker.ShowSearch"
 #define CVAR_SHOW_CHECK_TRACKER CVarGetInteger(CVAR_NAME_SHOW_CHECK_TRACKER, 0)
-#define CVAR_SHOW_LOGIC CVarGetInteger(CVAR_NAME_SHOW_LOGIC, 0)
-#define CVAR_HIDE_COLLECTED CVarGetInteger(CVAR_NAME_HIDE_COLLECTED, 0)
-#define CVAR_HIDE_SKIPPED CVarGetInteger(CVAR_NAME_HIDE_SKIPPED, 0)
-#define CVAR_SCROLL_TO_SCENE CVarGetInteger(CVAR_NAME_SCROLL_TO_SCENE, 0)
+#define CVAR_OUT_OF_LOGIC_MODE CVarGetInteger(CVAR_NAME_OUT_OF_LOGIC_MODE, CHECK_MODE_COLORED)
+#define CVAR_OUT_OF_LOGIC_COLOR CVarGetColor(CVAR_NAME_OUT_OF_LOGIC_COLOR ".Value", { 255, 255, 255, 100 })
+#define CVAR_COLLECTED_MODE CVarGetInteger(CVAR_NAME_COLLECTED_MODE, CHECK_MODE_HIDDEN)
+#define CVAR_COLLECTED_COLOR CVarGetColor(CVAR_NAME_COLLECTED_COLOR ".Value", { 100, 255, 100, 255 })
+#define CVAR_SKIPPED_MODE CVarGetInteger(CVAR_NAME_SKIPPED_MODE, CHECK_MODE_HIDDEN)
+#define CVAR_SKIPPED_COLOR CVarGetColor(CVAR_NAME_SKIPPED_COLOR ".Value", { 255, 100, 255, 255 })
+#define CVAR_SCROLL_TO_SCENE CVarGetInteger(CVAR_NAME_SCROLL_TO_SCENE, 1)
 #define CVAR_TRACKER_OPACITY CVarGetFloat(CVAR_NAME_TRACKER_OPACITY, 0.5f)
 #define CVAR_TRACKER_SCALE CVarGetFloat(CVAR_NAME_TRACKER_SCALE, 1.0f)
 #define CVAR_SHOW_CURRENT_SCENE CVarGetInteger(CVAR_NAME_SHOW_CURRENT_SCENE, 0)
+#define CVAR_SHOW_CHECK_TYPE_FILTER CVarGetInteger(CVAR_NAME_SHOW_CHECK_TYPE_FILTER, 0)
+#define CVAR_SHOW_SEARCH CVarGetInteger(CVAR_NAME_SHOW_SEARCH, 1)
 
 static bool sExpandedHeadersToggle = true;
 static bool sExpandedHeadersState = true;
@@ -61,6 +90,8 @@ ImVec4 trackerBG = ImVec4{ 0, 0, 0, 0.5f };
 std::map<SceneId, std::set<RandoCheckId>> sceneChecks;
 std::vector<SceneId> sortedSceneIds;
 std::unordered_map<RandoCheckId, std::string> accessLogicFuncs;
+std::set<RandoCheckType> checkTypeFiltersAvailable;
+std::set<RandoCheckType> checkTypeFilter;
 
 std::vector<const char*> checkTypeIconList = {
     /*RCTYPE_UNKNOWN*/ gItemIconBombersNotebookTex,
@@ -88,7 +119,7 @@ std::vector<const char*> checkTypeIconList = {
 
 static constexpr ImVec4 tintColor = {};
 
-std::string totalChecksFound() {
+std::string GetTotalCheckCount() {
     std::string totalChecks;
     uint32_t collected = 0;
     uint32_t totalShuffled = 0;
@@ -119,11 +150,16 @@ void DrawCheckTypeIcon(RandoCheckId randoCheckId) {
 
 void initializeSceneChecks() {
     sceneChecks.clear();
+    checkTypeFiltersAvailable.clear();
+    checkTypeFiltersAvailable.insert(RCTYPE_UNKNOWN); // Always include the unknown type
+
     for (auto& [_, randoStaticCheck] : Rando::StaticData::Checks) {
         RandoSaveCheck& randoSaveCheck = RANDO_SAVE_CHECKS[randoStaticCheck.randoCheckId];
         if (!randoSaveCheck.shuffled) {
             continue;
         }
+
+        checkTypeFiltersAvailable.insert(randoStaticCheck.randoCheckType);
 
         // Skip Grotto Checks, they will be handled below
         if (randoStaticCheck.sceneId == SCENE_KAKUSIANA) {
@@ -187,19 +223,22 @@ void initializeSceneChecks() {
               [](SceneId a, SceneId b) { return betterSceneIndex[a] < betterSceneIndex[b]; });
 }
 
-bool checkTrackerShouldShowRow(bool obtained, bool skipped) {
-    bool showCheck = true;
-    if ((CVAR_HIDE_COLLECTED && obtained) || (CVAR_HIDE_SKIPPED && skipped)) {
-        showCheck = false;
+bool CheckTrackerIsFiltered(RandoCheckId randoCheckId) {
+    bool filterCheck = false;
+    if (checkTypeFilter.empty()) {
+        return false;
     }
-    return showCheck;
+    if (!checkTypeFilter.contains(Rando::StaticData::Checks[randoCheckId].randoCheckType)) {
+        filterCheck = true;
+    }
+    return filterCheck;
 }
 
 std::unordered_map<RandoCheckId, bool> checksInLogic;
 static u32 lastFrame = 0;
 
 void RefreshChecksInLogic() {
-    if (gGameState == NULL || gGameState->frames - lastFrame < 20 || !CVAR_SHOW_LOGIC) {
+    if (gGameState == NULL || gGameState->frames - lastFrame < 20 || CVAR_OUT_OF_LOGIC_MODE == CHECK_MODE_NORMAL) {
         return;
     }
 
@@ -279,16 +318,16 @@ void CheckTrackerDrawNonLogicalList() {
         for (auto& checkId : unfilteredChecks) {
             if (RANDO_SAVE_CHECKS[checkId].obtained) {
                 obtainedCheckSum++;
-                if (CVAR_HIDE_COLLECTED) {
+                if (CVAR_COLLECTED_MODE == CHECK_MODE_HIDDEN) {
                     continue;
                 }
-            }
-
-            if (RANDO_SAVE_CHECKS[checkId].skipped) {
+            } else if (RANDO_SAVE_CHECKS[checkId].skipped) {
                 obtainedCheckSum++;
-                if (CVAR_HIDE_SKIPPED) {
+                if (CVAR_SKIPPED_MODE == CHECK_MODE_HIDDEN) {
                     continue;
                 }
+            } else if (CVAR_OUT_OF_LOGIC_MODE == CHECK_MODE_HIDDEN && !checksInLogic.contains(checkId)) {
+                continue;
             }
 
             if (!sCheckTrackerFilter.PassFilter(Rando::StaticData::CheckNames[checkId].c_str())) {
@@ -297,6 +336,10 @@ void CheckTrackerDrawNonLogicalList() {
 
             if (CVAR_SHOW_CURRENT_SCENE && Play_GetOriginalSceneId(Rando::StaticData::Checks[checkId].sceneId) !=
                                                Play_GetOriginalSceneId(gPlayState->sceneId)) {
+                continue;
+            }
+
+            if (CheckTrackerIsFiltered(checkId)) {
                 continue;
             }
 
@@ -338,57 +381,61 @@ void CheckTrackerDrawNonLogicalList() {
                     RandoSaveCheck& randoSaveCheck = RANDO_SAVE_CHECKS[randoCheckId];
                     ImVec4 textColor = UIWidgets::ColorValues.at(UIWidgets::Colors::White);
                     if (randoSaveCheck.obtained) {
-                        textColor = UIWidgets::ColorValues.at(UIWidgets::Colors::Green);
+                        if (CVAR_COLLECTED_MODE == CHECK_MODE_COLORED) {
+                            textColor = VecFromRGBA8(CVAR_COLLECTED_COLOR);
+                        }
                     } else if (randoSaveCheck.skipped) {
-                        textColor = UIWidgets::ColorValues.at(UIWidgets::Colors::Indigo);
-                    } else if (CVAR_SHOW_LOGIC && !checksInLogic.contains(randoCheckId)) {
-                        textColor = UIWidgets::ColorValues.at(UIWidgets::Colors::Gray);
+                        if (CVAR_SKIPPED_MODE == CHECK_MODE_COLORED) {
+                            textColor = VecFromRGBA8(CVAR_SKIPPED_COLOR);
+                        }
+                    } else if (!checksInLogic.contains(randoCheckId)) {
+                        if (CVAR_OUT_OF_LOGIC_MODE == CHECK_MODE_COLORED) {
+                            textColor = VecFromRGBA8(CVAR_OUT_OF_LOGIC_COLOR);
+                        }
                     }
 
-                    if (checkTrackerShouldShowRow(randoSaveCheck.obtained, randoSaveCheck.skipped)) {
-                        ImGui::PushStyleColor(ImGuiCol_Text, textColor);
-                        ImGui::BeginGroup();
-                        float cursorPosY = ImGui::GetCursorPosY();
-                        if (Rando::StaticData::Checks[randoCheckId].randoCheckType == RCTYPE_OWL) {
-                            ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 3.5f);
-                        }
-                        DrawCheckTypeIcon(randoCheckId);
-                        ImGui::TableNextColumn();
+                    ImGui::PushStyleColor(ImGuiCol_Text, textColor);
+                    ImGui::BeginGroup();
+                    float cursorPosY = ImGui::GetCursorPosY();
+                    if (Rando::StaticData::Checks[randoCheckId].randoCheckType == RCTYPE_OWL) {
+                        ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 3.5f);
+                    }
+                    DrawCheckTypeIcon(randoCheckId);
+                    ImGui::TableNextColumn();
 
-                        ImGui::SetCursorPosY(cursorPosY);
-                        ImGui::Text("%s", Rando::StaticData::CheckNames[randoCheckId].c_str());
-                        if (randoSaveCheck.obtained) {
-                            ImGui::SameLine(0, 25.0f);
-                            ImGui::Text("(%s)", Rando::StaticData::Items[randoSaveCheck.randoItemId].name);
-                        } else if (randoSaveCheck.skipped) {
-                            ImGui::SameLine(0, 25.0f);
-                            ImGui::Text("(Skipped)");
-                        }
+                    ImGui::SetCursorPosY(cursorPosY);
+                    ImGui::Text("%s", Rando::StaticData::CheckNames[randoCheckId].c_str());
+                    if (randoSaveCheck.obtained) {
                         ImGui::SameLine();
-                        ImGui::Dummy(ImVec2(ImGui::GetContentRegionAvail().x, 0));
-                        ImGui::EndGroup();
-                        ImGui::PopStyleColor();
-                        std::string accessLogicString = accessLogicFuncs.find(randoCheckId) != accessLogicFuncs.end()
-                                                            ? accessLogicFuncs[randoCheckId]
-                                                            : "";
-                        /*
-                         * Enemy drop checks are multiple in number and may have unique conditions per location. This
-                         * can result in arbitrary particular instances' conditions being displayed for the general
-                         * check. Since the basic requirement of defeating the enemy is self-explanatory and the
-                         * minimum, we'll omit the logic tooltip for them in particular.
-                         */
-                        if (accessLogicString != "" &&
-                            !(randoCheckId >= RC_ENEMY_DROP_ALIEN && randoCheckId <= RC_ENEMY_DROP_WOLFOS)) {
-                            UIWidgets::Tooltip(accessLogicString.c_str());
-                        }
-                        ImGui::TableSetBgColor(ImGuiTableBgTarget_RowBg0, ImGui::IsItemHovered()
-                                                                              ? IM_COL32(255, 255, 0, 128)
-                                                                              : IM_COL32(255, 255, 255, 0));
-                        if (ImGui::IsItemClicked()) {
-                            randoSaveCheck.skipped = !randoSaveCheck.skipped;
-                        }
-                        ImGui::TableNextColumn();
+                        ImGui::Text("(%s)", Rando::StaticData::Items[randoSaveCheck.randoItemId].name);
+                    } else if (randoSaveCheck.skipped) {
+                        ImGui::SameLine();
+                        ImGui::Text("(Skipped)");
                     }
+                    ImGui::SameLine();
+                    ImGui::Dummy(ImVec2(ImGui::GetContentRegionAvail().x, 0));
+                    ImGui::EndGroup();
+                    ImGui::PopStyleColor();
+                    std::string accessLogicString = accessLogicFuncs.find(randoCheckId) != accessLogicFuncs.end()
+                                                        ? accessLogicFuncs[randoCheckId]
+                                                        : "";
+                    /*
+                     * Enemy drop checks are multiple in number and may have unique conditions per location. This
+                     * can result in arbitrary particular instances' conditions being displayed for the general
+                     * check. Since the basic requirement of defeating the enemy is self-explanatory and the
+                     * minimum, we'll omit the logic tooltip for them in particular.
+                     */
+                    if (accessLogicString != "" &&
+                        !(randoCheckId >= RC_ENEMY_DROP_ALIEN && randoCheckId <= RC_ENEMY_DROP_WOLFOS)) {
+                        UIWidgets::Tooltip(accessLogicString.c_str());
+                    }
+                    ImGui::TableSetBgColor(ImGuiTableBgTarget_RowBg0, ImGui::IsItemHovered()
+                                                                          ? IM_COL32(255, 255, 0, 128)
+                                                                          : IM_COL32(255, 255, 255, 0));
+                    if (ImGui::IsItemClicked()) {
+                        randoSaveCheck.skipped = !randoSaveCheck.skipped;
+                    }
+                    ImGui::TableNextColumn();
                 }
                 ImGui::EndTable();
             }
@@ -431,24 +478,72 @@ void CheckTrackerWindow::Draw() {
         return;
     }
 
-    bool sameLine = !(ImGui::GetContentRegionAvail().x <= 300.0f * trackerScale);
+    if (CVAR_SHOW_SEARCH) {
+        bool sameLine = !(ImGui::GetContentRegionAvail().x <= 300.0f * trackerScale);
+        auto totalCheckCount = GetTotalCheckCount();
 
-    UIWidgets::PushStyleCombobox();
-    sCheckTrackerFilter.Draw("##filter", (ImGui::GetContentRegionAvail().x -
-                                          (sameLine ? (ImGui::CalcTextSize("Total: ").x +
-                                                       ImGui::CalcTextSize(totalChecksFound().c_str()).x + 15.0f)
-                                                    : 0)));
-    UIWidgets::PopStyleCombobox();
-    if (!sCheckTrackerFilter.IsActive()) {
-        ImGui::SameLine(18.0f);
-        ImGui::Text("Search");
+        UIWidgets::PushStyleCombobox();
+        sCheckTrackerFilter.Draw("##filter", (ImGui::GetContentRegionAvail().x -
+                                              (sameLine ? (ImGui::CalcTextSize("Total: ").x +
+                                                           ImGui::CalcTextSize(totalCheckCount.c_str()).x + 15.0f)
+                                                        : 0)));
+        UIWidgets::PopStyleCombobox();
+        if (!sCheckTrackerFilter.IsActive()) {
+            ImGui::SameLine(18.0f);
+            ImGui::Text("Search");
+        }
+
+        if (sameLine) {
+            ImGui::SameLine(ImGui::GetContentRegionAvail().x -
+                            (ImGui::CalcTextSize("Total: ").x + ImGui::CalcTextSize(totalCheckCount.c_str()).x));
+        }
+        ImGui::Text("Total: %s", totalCheckCount.c_str());
     }
 
-    if (sameLine) {
-        ImGui::SameLine(ImGui::GetContentRegionAvail().x -
-                        (ImGui::CalcTextSize("Total: ").x + ImGui::CalcTextSize(totalChecksFound().c_str()).x));
+    if (CVAR_SHOW_CHECK_TYPE_FILTER) {
+        auto columns = ImGui::GetContentRegionAvail().x / (24.0f * trackerScale + 15.0f);
+
+        if (ImGui::BeginTable("Type Filter", columns)) {
+            for (auto randoCheckType : checkTypeFiltersAvailable) {
+                ImGui::TableNextColumn();
+                ImVec4 buttonCol = checkTypeFilter.contains(randoCheckType)
+                                       ? UIWidgets::ColorValues.at(UIWidgets::Colors::Gray)
+                                       : UIWidgets::ColorValues.at(UIWidgets::Colors::NoColor);
+                ImGui::PushStyleColor(ImGuiCol_Button, buttonCol);
+                ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(1.0f, 1.0f, 1.0f, 0.2f));
+                ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(1.0f, 1.0f, 1.0f, 0.1f));
+                TexturePtr textureId = Ship::Context::GetInstance()->GetWindow()->GetGui()->GetTextureByName(
+                    randoCheckType == RCTYPE_UNKNOWN ? (const char*)gShootingGalleryOctorokCrossTex
+                                                     : checkTypeIconList[randoCheckType]);
+                if (randoCheckType == RCTYPE_OWL) {
+                    ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 4.0f);
+                } else if (randoCheckType == RCTYPE_SONG) {
+                    ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 4.0f);
+                }
+                if (ImGui::ImageButton(
+                        std::to_string(randoCheckType).c_str(), textureId,
+                        ImVec2((randoCheckType == RCTYPE_SONG ? 18.0f : 24.0f) * trackerScale,
+                               (randoCheckType == RCTYPE_OWL ? 12.0f * trackerScale : 24.0f * trackerScale) *
+                                   trackerScale),
+                        ImVec2(0, 0), ImVec2(1, 1), ImVec4(0, 0, 0, 0),
+                        randoCheckType == RCTYPE_UNKNOWN        ? ImVec4(1, 0, 0, 1)
+                        : randoCheckType == RCTYPE_FREESTANDING ? ImVec4(0.78f, 1, 0.39f, 1)
+                                                                : ImVec4(1, 1, 1, 1))) {
+                    if (randoCheckType == RCTYPE_UNKNOWN) {
+                        checkTypeFilter.clear();
+                    } else {
+                        if (checkTypeFilter.contains(randoCheckType)) {
+                            checkTypeFilter.erase(randoCheckType);
+                        } else {
+                            checkTypeFilter.insert(randoCheckType);
+                        }
+                    }
+                }
+                ImGui::PopStyleColor(3);
+            }
+            ImGui::EndTable();
+        }
     }
-    ImGui::Text("Total: %s", totalChecksFound().c_str());
 
     ImGui::BeginChild("Checks");
     CheckTrackerDrawNonLogicalList();
@@ -462,42 +557,82 @@ void CheckTrackerWindow::Draw() {
 }
 
 void SettingsWindow::DrawElement() {
-    ImGui::SeparatorText("Check Tracker Settings");
+    if (CVarGetInteger("gWindows.CheckTracker", 0)) {
+        UIWidgets::WindowButton("Disable Check Tracker", "gWindows.CheckTracker", BenGui::mRandoCheckTrackerWindow,
+                                { .size = UIWidgets::Sizes::Inline, .color = UIWidgets::Colors::Red });
+    } else {
+        UIWidgets::WindowButton("Enable Check Tracker", "gWindows.CheckTracker", BenGui::mRandoCheckTrackerWindow,
+                                { .size = UIWidgets::Sizes::Inline, .color = UIWidgets::Colors::Green });
+    }
     if (ImGui::BeginTable("Settings Table", 2)) {
+        ImGui::TableSetupColumn("col1", ImGuiTableColumnFlags_WidthStretch);
+        ImGui::TableSetupColumn("col2", ImGuiTableColumnFlags_WidthStretch);
         ImGui::TableNextColumn();
-        UIWidgets::CVarCheckbox("Dim Out of Logic Checks", CVAR_NAME_SHOW_LOGIC);
-        UIWidgets::CVarCheckbox("Hide Collected Checks", CVAR_NAME_HIDE_COLLECTED);
-        UIWidgets::CVarCheckbox("Hide Skipped Checks", CVAR_NAME_HIDE_SKIPPED);
-        UIWidgets::CVarCheckbox("Auto Scroll To Current Scene", CVAR_NAME_SCROLL_TO_SCENE);
+        ImGui::SeparatorText("Check Settings");
+        // UIWidgets::CVarCheckbox("Dim Out of Logic Checks", CVAR_NAME_OUT_OF_LOGIC_MODE);
+        UIWidgets::CVarCombobox("Out of Logic Checks", CVAR_NAME_OUT_OF_LOGIC_MODE, &sCheckModes,
+                                UIWidgets::ComboboxOptions()
+                                    .DefaultIndex(1)
+                                    .ComponentAlignment(UIWidgets::ComponentAlignment::Right)
+                                    .LabelPosition(UIWidgets::LabelPosition::Far));
+        if (CVAR_OUT_OF_LOGIC_MODE == 1) {
+            ImGui::SameLine(ImGui::GetContentRegionAvail().x - 127.0f);
+            UIWidgets::CVarColorPicker("##OutOfLogicColor", CVAR_NAME_OUT_OF_LOGIC_COLOR, { 255, 255, 255, 100 }, true);
+        }
+        UIWidgets::CVarCombobox("Collected Checks", CVAR_NAME_COLLECTED_MODE, &sCheckModes,
+                                UIWidgets::ComboboxOptions()
+                                    .DefaultIndex(2)
+                                    .ComponentAlignment(UIWidgets::ComponentAlignment::Right)
+                                    .LabelPosition(UIWidgets::LabelPosition::Far));
+        if (CVAR_COLLECTED_MODE == 1) {
+            ImGui::SameLine(ImGui::GetContentRegionAvail().x - 127.0f);
+            UIWidgets::CVarColorPicker("##CollectedColor", CVAR_NAME_COLLECTED_COLOR, { 100, 255, 100, 255 }, true);
+        }
+        UIWidgets::CVarCombobox("Skipped Checks", CVAR_NAME_SKIPPED_MODE, &sCheckModes,
+                                UIWidgets::ComboboxOptions()
+                                    .DefaultIndex(2)
+                                    .ComponentAlignment(UIWidgets::ComponentAlignment::Right)
+                                    .LabelPosition(UIWidgets::LabelPosition::Far));
+        if (CVAR_SKIPPED_MODE == 1) {
+            ImGui::SameLine(ImGui::GetContentRegionAvail().x - 127.0f);
+            UIWidgets::CVarColorPicker("##SkippedColor", CVAR_NAME_SKIPPED_COLOR, { 255, 100, 255, 255 }, true);
+        }
         UIWidgets::CVarCheckbox("Only Show Current Scene", CVAR_NAME_SHOW_CURRENT_SCENE);
+        UIWidgets::CVarCheckbox("Auto Scroll To Current Scene", CVAR_NAME_SCROLL_TO_SCENE,
+                                UIWidgets::CheckboxOptions().DefaultValue(true));
+        if (UIWidgets::Button("Expand/Collapse All Scenes")) {
+            sExpandedHeadersToggle = !sExpandedHeadersToggle;
+        }
 
         ImGui::TableNextColumn();
+        ImGui::SeparatorText("Window Settings");
+        UIWidgets::CVarCheckbox("Show Search", CVAR_NAME_SHOW_SEARCH, UIWidgets::CheckboxOptions().DefaultValue(true));
+        UIWidgets::CVarCheckbox("Show Check Type Filters", CVAR_NAME_SHOW_CHECK_TYPE_FILTER);
 
         if (UIWidgets::CVarSliderFloat("Opacity", CVAR_NAME_TRACKER_OPACITY,
                                        {
-                                           .format = "%.1f",
+                                           .format = "Opacity: %.1f",
                                            .step = 0.10f,
                                            .min = 0.0f,
                                            .max = 1.0f,
                                            .defaultValue = 0.5f,
+                                           .labelPosition = UIWidgets::LabelPosition::None,
                                        })) {
             trackerBG.w = CVAR_TRACKER_OPACITY;
         }
         if (UIWidgets::CVarSliderFloat("Scale", CVAR_NAME_TRACKER_SCALE,
                                        {
-                                           .format = "%.1f",
+                                           .format = "Scale: %.1f",
                                            .step = 0.10f,
                                            .min = 0.7f,
                                            .max = 2.5f,
                                            .defaultValue = 1.0f,
+                                           .labelPosition = UIWidgets::LabelPosition::None,
                                        })) {
             trackerScale = CVAR_TRACKER_SCALE;
         }
 
         ImGui::EndTable();
-    }
-    if (UIWidgets::Button("Expand/Collapse All")) {
-        sExpandedHeadersToggle = !sExpandedHeadersToggle;
     }
 }
 

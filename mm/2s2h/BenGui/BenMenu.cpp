@@ -1781,13 +1781,6 @@ void BenMenu::AddEnhancements() {
                      .Tooltip("Enables the Cosmetic Editor window, allowing you to modify various colors in the game.")
                      .Size(Sizes::Inline));
 
-    // Item Tracker Settings
-    path = { "Enhancements", "Item Tracker", SECTION_COLUMN_1 };
-    AddSidebarEntry("Enhancements", "Item Tracker", 1);
-    AddWidget(path, "Popout Settings", WIDGET_WINDOW_BUTTON)
-        .CVar("gWindows.ItemTrackerSettings")
-        .WindowName("Item Tracker Settings");
-
     // Timesplit Settings
     path = { "Enhancements", "Time Splits", SECTION_COLUMN_1 };
     AddSidebarEntry("Enhancements", "Time Splits", 1);

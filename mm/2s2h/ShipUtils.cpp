@@ -15,6 +15,7 @@
 #include "assets/interface/icon_item_dungeon_static/icon_item_dungeon_static.h"
 #include "assets/interface/icon_item_field_static/icon_item_field_static.h"
 #include "assets/objects/gameplay_keep/gameplay_keep.h"
+#include "assets/overlays/ovl_En_Syateki_Okuta/ovl_En_Syateki_Okuta.h"
 
 extern "C" {
 #include "z64.h"
@@ -89,7 +90,7 @@ extern u16 sOwlWarpEntrancesForMods[OWL_WARP_MAX - 1] = {
 };
 
 // These textures are not in existing lists that we iterate over.
-std::array<const char*, 31> miscellaneousTextures = {
+std::array<const char*, 32> miscellaneousTextures = {
     gArcheryScoreIconTex,
     gBarrelTrackerIcon,
     gChestTrackerIcon,
@@ -121,6 +122,7 @@ std::array<const char*, 31> miscellaneousTextures = {
     gOcarinaCLeftTex,
     gOcarinaCRightTex,
     gOcarinaCUpTex,
+    gShootingGalleryOctorokCrossTex,
 };
 
 std::array<const char*, 11> digitList = { gCounterDigit0Tex, gCounterDigit1Tex, gCounterDigit2Tex, gCounterDigit3Tex,
