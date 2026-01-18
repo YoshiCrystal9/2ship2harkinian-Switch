@@ -2,6 +2,7 @@
 #include "2s2h/GameInteractor/GameInteractor.h"
 #include "2s2h/ShipInit.hpp"
 #include "2s2h/ShipUtils.h"
+#include "2s2h/Rando/Logic/Logic.h"
 
 extern "C" {
 #include "overlays/kaleido_scope/ovl_kaleido_scope/z_kaleido_scope.h"
@@ -18,10 +19,11 @@ extern s32 gHorseIsMounted;
 #define CVAR CVarGetInteger(CVAR_NAME, 0)
 
 extern "C" bool PauseOwlWarp_IsOwlWarpEnabled() {
-    return CVAR && CHECK_QUEST_ITEM(QUEST_SONG_SOARING) &&
+    return CVAR && CHECK_QUEST_ITEM(QUEST_SONG_SOARING) && INV_CONTENT(ITEM_OCARINA_OF_TIME) == ITEM_OCARINA_OF_TIME &&
            gSaveContext.save.saveInfo.playerData.owlActivationFlags != 0 &&
            gPlayState->pauseCtx.debugEditor == DEBUG_EDITOR_NONE &&
-           gPlayState->interfaceCtx.restrictions.songOfSoaring == 0;
+           gPlayState->interfaceCtx.restrictions.songOfSoaring == 0 &&
+           (!IS_RANDO || Rando::Logic::canPlaySong(OCARINA_SONG_SOARING));
 }
 
 void HandleConfirmingState(PauseContext* pauseCtx, Input* input) {
