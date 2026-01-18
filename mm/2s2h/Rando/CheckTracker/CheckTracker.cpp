@@ -115,6 +115,7 @@ std::vector<const char*> checkTypeIconList = {
     /*RCTYPE_SONG*/ gItemIconSongNoteTex,
     /*RCTYPE_STRAY_FAIRY*/ gStrayFairyGreatBayIconTex,
     /*RCTYPE_TINGLE_SHOP*/ gItemIconAdultsWalletTex,
+    /*RCTYPE_TREE*/ gItemIconDekuStickTex,
 };
 
 static constexpr ImVec4 tintColor = {};

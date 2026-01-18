@@ -10875,7 +10875,7 @@ s32 func_80840A30(PlayState* play, Player* this, f32* arg2, f32 arg3) {
                     return true;
                 }
 
-                if (cylinderOc != NULL) {
+                if (GameInteractor_Should(VB_APPLY_BONK_TO_ACTOR, cylinderOc != NULL, cylinderOc)) {
                     cylinderOc->home.rot.y = 1;
                 } else if (this->actor.wallBgId != BGCHECK_SCENE) { // i.e. was an actor
                     DynaPolyActor* wallPolyActor = DynaPoly_GetActor(&play->colCtx, this->actor.wallBgId);

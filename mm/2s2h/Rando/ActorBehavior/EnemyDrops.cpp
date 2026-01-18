@@ -151,7 +151,7 @@ bool SpawnNormalEnemyDrop(Vec3f position, u32 params) {
 void Rando::ActorBehavior::InitEnemyDropBehavior() {
     bool shouldRegister = IS_RANDO && RANDO_SAVE_OPTIONS[RO_SHUFFLE_ENEMY_DROPS];
 
-    COND_VB_SHOULD(VB_ENEMY_DROP_COLLECTIBLE, shouldRegister, {
+    COND_VB_SHOULD(VB_DROP_COLLECTIBLE, shouldRegister, {
         Vec3f position = va_arg(args, Vec3f);
         u32 params = va_arg(args, u32);
         if (SpawnNormalEnemyDrop(position, params)) {

@@ -498,6 +498,10 @@ static RegisterShipInitFunc initFunc([]() {
             CHECK(RC_TERMINA_FIELD_GRASS_214, true),
             CHECK(RC_TERMINA_FIELD_GRASS_215, true),
             CHECK(RC_TERMINA_FIELD_GRASS_216, true),
+            CHECK(RC_TERMINA_FIELD_MAN_IN_THE_TREE_RUPEE_01, true),
+            CHECK(RC_TERMINA_FIELD_MAN_IN_THE_TREE_RUPEE_02, true),
+            CHECK(RC_TERMINA_FIELD_TREE_01, true),
+            CHECK(RC_TERMINA_FIELD_TREE_02, true),
             CHECK(RC_ENEMY_DROP_BLUE_BUBBLE, CanKillEnemy(ACTOR_EN_BB) && IS_NIGHT()), // Night only
             CHECK(RC_ENEMY_DROP_DEKU_BABA, CanKillEnemy(ACTOR_EN_DEKUBABA)),
             CHECK(RC_ENEMY_DROP_CHUCHU, CanKillEnemy(ACTOR_EN_SLIME) && IS_DAY()), // Day only

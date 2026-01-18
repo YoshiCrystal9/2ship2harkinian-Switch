@@ -52,7 +52,8 @@ static RegisterShipInitFunc initFunc([]() {
     };
     Regions[RR_BENEATH_THE_WELL_COW_ROOM] = RandoRegion{ .name = "Cow Room", .sceneId = SCENE_REDEAD,
         .checks = {
-            CHECK(RC_BENEATH_THE_WELL_COW, CAN_PLAY_SONG(EPONA))
+            CHECK(RC_BENEATH_THE_WELL_COW, CAN_PLAY_SONG(EPONA)),
+            CHECK(RC_BENEATH_THE_WELL_TREE, true),
         },
         .connections = {
             CONNECTION(RR_BENEATH_THE_WELL_RIGHT_FIRE_KEESE, true),
