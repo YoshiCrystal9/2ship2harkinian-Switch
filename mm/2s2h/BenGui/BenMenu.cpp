@@ -1632,6 +1632,10 @@ void BenMenu::AddEnhancements() {
                      .Min(1)
                      .Max(50)
                      .DefaultValue(50));
+    AddWidget(path, "Randomize Shooting Gallery Octoroks", WIDGET_CVAR_CHECKBOX)
+        .CVar("gEnhancements.Minigames.RandomizeShootingGalleryOctoroks")
+        .Options(CheckboxOptions().Tooltip("Randomizes the positions of Octoroks in the Town Shooting Gallery minigame "
+                                           "each time they appear."));
     AddWidget(path, "Swamp Archery Perfect Score", WIDGET_CVAR_SLIDER_INT)
         .CVar("gEnhancements.Minigames.SwampArcheryScore")
         .Options(IntSliderOptions()
