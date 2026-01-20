@@ -148,16 +148,23 @@ std::vector<RandoItemId> GetStartingItemsFromConfig() {
     // Verify that the config has CVars.gRando.StartingItems and its an array
     if (allConfig.find("CVars") != allConfig.end() && allConfig["CVars"].is_object() &&
         allConfig["CVars"].find("gRando") != allConfig["CVars"].end() && allConfig["CVars"]["gRando"].is_object() &&
-        allConfig["CVars"]["gRando"].find("StartingItems") != allConfig["CVars"]["gRando"].end() &&
-        allConfig["CVars"]["gRando"]["StartingItems"].is_array()) {
-        startingItems.clear();
+        allConfig["CVars"]["gRando"].find("StartingItems") != allConfig["CVars"]["gRando"].end()) {
 
-        auto startingItemsStrings = allConfig["CVars"]["gRando"]["StartingItems"].get<std::vector<std::string>>();
-        for (auto& itemName : startingItemsStrings) {
-            auto randoItemId = Rando::StaticData::GetItemIdFromName(itemName.c_str());
-            if (randoItemId > RI_UNKNOWN && randoItemId < RI_MAX) {
-                startingItems.push_back(randoItemId);
+        if (allConfig["CVars"]["gRando"]["StartingItems"].is_array()) {
+            startingItems.clear();
+
+            auto startingItemsStrings = allConfig["CVars"]["gRando"]["StartingItems"].get<std::vector<std::string>>();
+            for (auto& itemName : startingItemsStrings) {
+                auto randoItemId = Rando::StaticData::GetItemIdFromName(itemName.c_str());
+                if (randoItemId > RI_UNKNOWN && randoItemId < RI_MAX) {
+                    startingItems.push_back(randoItemId);
+                }
             }
+        } else if (allConfig["CVars"]["gRando"]["StartingItems"].is_string()) {
+            CVarClear("gRando.StartingItems");
+            Ship::Context::GetInstance()->GetWindow()->GetGui()->SaveConsoleVariablesNextFrame();
+        } else if (allConfig["CVars"]["gRando"]["StartingItems"].is_null()) {
+            startingItems.clear();
         }
     }
 
