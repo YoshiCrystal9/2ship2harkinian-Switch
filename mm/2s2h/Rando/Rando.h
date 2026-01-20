@@ -23,6 +23,7 @@ RandoItemId ConvertItem(RandoItemId randoItemId, RandoCheckId randoCheckId = RC_
 RandoCheckId FindItemPlacement(RandoItemId randoItemId);
 void RegisterMenu();
 
+std::vector<RandoItemId> GetComputedStartingItems(RandoSaveInfo& randoSaveInfo);
 void GrantStartingItems();
 std::vector<RandoItemId> GetStartingItemsFromSpoiler(nlohmann::json& spoiler);
 void SetStartingItemsInSpoiler(nlohmann::json& spoiler, std::vector<RandoItemId>& startingItems);

@@ -12,10 +12,10 @@
 
 namespace Rando {
 
-void GrantStartingItems() {
-    std::vector<RandoItemId> startingItems = Rando::GetStartingItemsFromSave(gSaveContext.save.shipSaveInfo.rando);
+std::vector<RandoItemId> GetComputedStartingItems(RandoSaveInfo& randoSaveInfo) {
+    std::vector<RandoItemId> startingItems;
 
-    if (RANDO_SAVE_OPTIONS[RO_STARTING_MAPS_AND_COMPASSES]) {
+    if (randoSaveInfo.randoSaveOptions[RO_STARTING_MAPS_AND_COMPASSES]) {
         std::vector<RandoItemId> MapsAndCompasses = {
             RI_GREAT_BAY_COMPASS,       RI_GREAT_BAY_MAP,       RI_SNOWHEAD_COMPASS,       RI_SNOWHEAD_MAP,
             RI_STONE_TOWER_COMPASS,     RI_STONE_TOWER_MAP,     RI_TINGLE_MAP_CLOCK_TOWN,  RI_TINGLE_MAP_GREAT_BAY,
@@ -28,24 +28,24 @@ void GrantStartingItems() {
         }
     }
 
-    if (RANDO_SAVE_OPTIONS[RO_SHUFFLE_SWIM] != RO_GENERIC_YES) {
+    if (randoSaveInfo.randoSaveOptions[RO_SHUFFLE_SWIM] != RO_GENERIC_YES) {
         startingItems.push_back(RI_ABILITY_SWIM);
     }
 
-    if (RANDO_SAVE_OPTIONS[RO_SHUFFLE_ENEMY_SOULS] != RO_GENERIC_YES) {
+    if (randoSaveInfo.randoSaveOptions[RO_SHUFFLE_ENEMY_SOULS] != RO_GENERIC_YES) {
         for (int i = RI_SOUL_ENEMY_ALIEN; i <= RI_SOUL_ENEMY_WOLFOS; i++) {
             startingItems.push_back((RandoItemId)i);
         }
     }
 
-    if (RANDO_SAVE_OPTIONS[RO_SHUFFLE_OCARINA_BUTTONS] != RO_GENERIC_YES) {
+    if (randoSaveInfo.randoSaveOptions[RO_SHUFFLE_OCARINA_BUTTONS] != RO_GENERIC_YES) {
         for (int i = RI_OCARINA_BUTTON_A; i <= RI_OCARINA_BUTTON_C_UP; i++) {
             startingItems.push_back((RandoItemId)i);
         }
     }
 
     // When shuffling time, if the player did not choose any starting time items, we need to give them at least one.
-    if (RANDO_SAVE_OPTIONS[RO_CLOCK_SHUFFLE] == RO_GENERIC_YES) {
+    if (randoSaveInfo.randoSaveOptions[RO_CLOCK_SHUFFLE] == RO_GENERIC_YES) {
         bool hasTimeItem = false;
         for (RandoItemId randoItemId : startingItems) {
             if (randoItemId >= RI_TIME_DAY_1 && randoItemId <= RI_TIME_PROGRESSIVE) {
@@ -54,14 +54,23 @@ void GrantStartingItems() {
             }
         }
         if (!hasTimeItem) {
-            if (RANDO_SAVE_OPTIONS[RO_CLOCK_SHUFFLE_PROGRESSIVE] == RO_CLOCK_SHUFFLE_RANDOM) {
-                Ship_Random_Seed(gSaveContext.save.shipSaveInfo.rando.finalSeed);
+            if (randoSaveInfo.randoSaveOptions[RO_CLOCK_SHUFFLE_PROGRESSIVE] == RO_CLOCK_SHUFFLE_RANDOM) {
+                Ship_Random_Seed(randoSaveInfo.finalSeed);
                 startingItems.push_back((RandoItemId)(RI_TIME_DAY_1 + Ship_Random(0, 5)));
             } else {
                 startingItems.push_back(RI_TIME_PROGRESSIVE);
             }
         }
     }
+
+    return startingItems;
+}
+
+void GrantStartingItems() {
+    std::vector<RandoItemId> startingItems = Rando::GetStartingItemsFromSave(gSaveContext.save.shipSaveInfo.rando);
+    std::vector<RandoItemId> computedStartingItems =
+        Rando::GetComputedStartingItems(gSaveContext.save.shipSaveInfo.rando);
+    startingItems.insert(startingItems.end(), computedStartingItems.begin(), computedStartingItems.end());
 
     for (RandoItemId startingItem : startingItems) {
         Rando::GiveItem(Rando::ConvertItem(startingItem));

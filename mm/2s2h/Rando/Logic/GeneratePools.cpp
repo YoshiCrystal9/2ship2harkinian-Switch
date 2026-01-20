@@ -14,19 +14,8 @@ namespace Logic {
 
 void GeneratePools(RandoSaveInfo& saveInfo, std::vector<RandoCheckId>& checkPool, std::vector<RandoItemId>& itemPool) {
     std::vector<RandoItemId> startingItems = Rando::GetStartingItemsFromSave(saveInfo);
-
-    if (saveInfo.randoSaveOptions[RO_STARTING_MAPS_AND_COMPASSES]) {
-        std::vector<RandoItemId> MapsAndCompasses = {
-            RI_GREAT_BAY_COMPASS,       RI_GREAT_BAY_MAP,       RI_SNOWHEAD_COMPASS,       RI_SNOWHEAD_MAP,
-            RI_STONE_TOWER_COMPASS,     RI_STONE_TOWER_MAP,     RI_TINGLE_MAP_CLOCK_TOWN,  RI_TINGLE_MAP_GREAT_BAY,
-            RI_TINGLE_MAP_ROMANI_RANCH, RI_TINGLE_MAP_SNOWHEAD, RI_TINGLE_MAP_STONE_TOWER, RI_TINGLE_MAP_WOODFALL,
-            RI_WOODFALL_COMPASS,        RI_WOODFALL_MAP,
-        };
-
-        for (RandoItemId itemId : MapsAndCompasses) {
-            startingItems.push_back(itemId);
-        }
-    }
+    std::vector<RandoItemId> computedStartingItems = Rando::GetComputedStartingItems(saveInfo);
+    startingItems.insert(startingItems.end(), computedStartingItems.begin(), computedStartingItems.end());
 
     std::vector<RandoCheckId> excludedChecks;
     std::string excludedChecksList = CVarGetString("gRando.ExcludedChecks", "");
