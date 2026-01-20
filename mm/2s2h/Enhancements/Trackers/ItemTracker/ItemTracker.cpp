@@ -28,6 +28,7 @@ extern std::shared_ptr<ItemTrackerWindow> mItemTrackerWindow;
 std::vector<TrackerGroup> itemTrackerGroups;
 
 TrackerImageObject GetImageObject(TrackerItemType itemType, u32 itemId) {
+    bool isSaveLoaded = gPlayState != NULL && gSaveContext.gameMode == GAMEMODE_NORMAL;
     bool itemObtained = false;
     TrackerImageObject trackerImageObject = {
         .textureColor = ImVec4(1.0f, 1.0f, 1.0f, 1.0f),
@@ -88,7 +89,7 @@ TrackerImageObject GetImageObject(TrackerItemType itemType, u32 itemId) {
         } break;
         case TRACKER_ITEM_SLOT: {
             itemObtained = gSaveContext.save.saveInfo.inventory.items[itemId] != ITEM_NONE;
-            auto vanillaItemId = gSaveContext.save.saveInfo.inventory.items[itemId];
+            auto vanillaItemId = isSaveLoaded ? gSaveContext.save.saveInfo.inventory.items[itemId] : ITEM_NONE;
             if (vanillaItemId == ITEM_NONE) {
                 vanillaItemId = safeItemsForInventorySlot[itemId][0];
             }
@@ -146,6 +147,10 @@ TrackerImageObject GetImageObject(TrackerItemType itemType, u32 itemId) {
         } break;
         default:
             break;
+    }
+
+    if (!isSaveLoaded) {
+        itemObtained = false;
     }
 
     trackerImageObject.textureColor.w = itemObtained ? 1.0f : 0.4f;
@@ -380,10 +385,6 @@ void DrawItemTrackerGroup(TrackerGroup& trackerGroup) {
 
 void ItemTrackerWindow::Draw() {
     if (!IsVisible()) {
-        return;
-    }
-
-    if (!gPlayState) {
         return;
     }
 
