@@ -288,6 +288,7 @@ void LoadAvailableWindows() {
             { TRACKER_ITEM_RANDO, RI_SONG_DOUBLE_TIME },
             { TRACKER_ITEM_RANDO, RI_SONG_INVERTED_TIME },
             { TRACKER_ITEM_RANDO, RI_SONG_SUN },
+            { TRACKER_ITEM_RANDO, RI_SONG_SARIA },
         },
     });
 

@@ -1259,6 +1259,22 @@ typedef enum {
 
     // #### `result`
     // ```c
+    // false
+    // ```
+    // #### `args`
+    // - None
+    VB_MSG_CAPTURE_MSGMODE_TEXT_DONE,
+
+    // #### `result`
+    // ```c
+    // false
+    // ```
+    // #### `args`
+    // - None
+    VB_MSG_CAPTURE_MSGMODE_TEXT_CLOSING_OCARINA_ACTION,
+
+    // #### `result`
+    // ```c
     // true
     // ```
     // #### `args`

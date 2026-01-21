@@ -173,6 +173,7 @@ std::map<RandoItemId, RandoStaticItem> Items = {
     RI(RI_SONG_LULLABY,               "the",  "Goron Lullaby",              RITYPE_MAJOR,           ITEM_SONG_LULLABY,               GI_NONE,                     GID_NONE),
     RI(RI_SONG_NOVA,                  "the",  "New Wave Bossa Nova",        RITYPE_MAJOR,           ITEM_SONG_NOVA,                  GI_NONE,                     GID_NONE),
     RI(RI_SONG_OATH,                  "the",  "Oath to Order",              RITYPE_MAJOR,           ITEM_SONG_OATH,                  GI_NONE,                     GID_NONE),
+    RI(RI_SONG_SARIA,                 "",     "Saria's Song",               RITYPE_MAJOR,           ITEM_SONG_SARIA,                 GI_NONE,                     GID_NONE),
     RI(RI_SONG_SOARING,               "the",  "Song of Soaring",            RITYPE_MAJOR,           ITEM_SONG_SOARING,               GI_NONE,                     GID_NONE),
     RI(RI_SONG_SONATA,                "the",  "Sonata of Awakening",        RITYPE_MAJOR,           ITEM_SONG_SONATA,                GI_NONE,                     GID_NONE),
     RI(RI_SONG_STORMS,                "the",  "Song of Storms",             RITYPE_MAJOR,           ITEM_SONG_STORMS,                GI_NONE,                     GID_NONE),
@@ -282,7 +283,7 @@ std::map<StartingItemCategory, std::vector<RandoItemId>> StartingItemsMap = {
           RI_PROGRESSIVE_WALLET,
           RI_SONG_TIME,         RI_SONG_HEALING,        RI_SONG_EPONA,          RI_SONG_SOARING,    RI_SONG_STORMS,
           RI_SONG_SONATA,       RI_PROGRESSIVE_LULLABY, RI_SONG_NOVA,           RI_SONG_ELEGY,      RI_SONG_OATH,
-          RI_SONG_DOUBLE_TIME,  RI_SONG_INVERTED_TIME,  RI_SONG_SUN
+          RI_SONG_DOUBLE_TIME,  RI_SONG_INVERTED_TIME,  RI_SONG_SUN,            RI_SONG_SARIA,
         } },
     { STARTING_ITEMS_TRADE,
         { RI_MOONS_TEAR, RI_DEED_LAND, RI_DEED_SWAMP, RI_DEED_MOUNTAIN, RI_DEED_OCEAN, RI_ROOM_KEY, RI_LETTER_TO_MAMA,
@@ -510,6 +511,8 @@ const char* GetIconTexturePath(RandoItemId randoItemId) {
         case RI_SONG_DOUBLE_TIME:
         case RI_SONG_INVERTED_TIME:
             return (const char*)gItemIcons[ITEM_SONG_TIME];
+        case RI_SONG_SARIA:
+            return (const char*)gItemIcons[ITEM_SONG_SARIA];
         default:
             break;
     }
