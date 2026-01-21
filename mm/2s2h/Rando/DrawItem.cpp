@@ -157,9 +157,9 @@ void DrawMilkRefill() {
     Gfx_SetupDL25_Opa(gPlayState->state.gfxCtx);
 
     gSPSegment(POLY_OPA_DISP++, 0x08,
-               (uintptr_t)Gfx_TwoTexScroll(gPlayState->state.gfxCtx, G_TX_RENDERTILE, -gPlayState->state.frames,
-                                           gPlayState->state.frames, 32, 32, 1, -gPlayState->state.frames,
-                                           gPlayState->state.frames, 32, 32));
+               (uintptr_t)Gfx_TwoTexScrollEx(gPlayState->state.gfxCtx, G_TX_RENDERTILE, -gPlayState->state.frames,
+                                             gPlayState->state.frames, 32, 32, 1, -gPlayState->state.frames,
+                                             gPlayState->state.frames, 32, 32, -1, 1, -1, 1));
     MATRIX_FINALIZE_AND_LOAD(POLY_OPA_DISP++, gPlayState->state.gfxCtx);
     // Container Color
     gDPSetPrimColor(POLY_OPA_DISP++, 0, 0, 255, 255, 255, 255);
@@ -293,9 +293,9 @@ void DrawSkulltulaToken(RandoItemId randoItemId, Actor* actor) {
     }
 
     gSPSegment(POLY_XLU_DISP++, 0x08,
-               (uintptr_t)Gfx_TwoTexScroll(gPlayState->state.gfxCtx, G_TX_RENDERTILE, gPlayState->state.frames * 0,
-                                           -(gPlayState->state.frames * 5), 32, 32, 1, gPlayState->state.frames * 0,
-                                           gPlayState->state.frames * 0, 32, 64));
+               (uintptr_t)Gfx_TwoTexScrollEx(gPlayState->state.gfxCtx, G_TX_RENDERTILE, gPlayState->state.frames * 0,
+                                             -(gPlayState->state.frames * 5), 32, 32, 1, gPlayState->state.frames * 0,
+                                             gPlayState->state.frames * 0, 32, 64, 0, -5, 0, 0));
     MATRIX_FINALIZE_AND_LOAD(POLY_XLU_DISP++, gPlayState->state.gfxCtx);
     gSPDisplayList(POLY_XLU_DISP++, (Gfx*)gSkulltulaTokenFlameCopyDL);
 

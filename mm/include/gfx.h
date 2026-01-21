@@ -92,8 +92,11 @@ Gfx* Gfx_BranchTexScroll(Gfx** gfxP, u32 x, u32 y, s32 width, s32 height);
 void func_8012CB04(Gfx** gfxP, u32 x, u32 y);
 Gfx* func_8012CB28(GraphicsContext* gfxCtx, u32 x, u32 y);
 Gfx* Gfx_TexScroll(GraphicsContext* gfxCtx, u32 x, u32 y, s32 width, s32 height);
+Gfx* Gfx_TexScrollEx(GraphicsContext* gfxCtx, u32 x, u32 y, s32 width, s32 height, s32 xStep, s32 yStep);
 Gfx* Gfx_TwoTexScroll(GraphicsContext* gfxCtx, s32 tile1, u32 x1, u32 y1, s32 width1, s32 height1, s32 tile2, u32 x2,
                       u32 y2, s32 width2, s32 height2);
+Gfx* Gfx_TwoTexScrollEx(GraphicsContext* gfxCtx, s32 tile1, u32 x1, u32 y1, s32 width1, s32 height1, s32 tile2, u32 x2,
+	u32 y2, s32 width2, s32 height2, s32 xStep1, s32 yStep1, s32 xStep2, s32 yStep2);
 Gfx* Gfx_TwoTexScrollEnvColor(GraphicsContext* gfxCtx, s32 tile1, u32 x1, u32 y1, s32 width1, s32 height1, s32 tile2,
                               u32 x2, u32 y2, s32 width2, s32 height2, s32 r, s32 g, s32 b, s32 a);
 Gfx* Gfx_EnvColor(GraphicsContext* gfxCtx, s32 r, s32 g, s32 b, s32 a);
@@ -106,6 +109,7 @@ void gSPSegmentLoadRes(void* value, int segNum, uintptr_t target);
 // void gDPSetTextureImage(Gfx* pkt, u32 format, u32 size, u32 width, uintptr_t i);
 // void gDPSetTextureImageFB(Gfx* pkt, u32 format, u32 size, u32 width, int fb);
 void gSPDisplayList(Gfx* pkt, Gfx* dl);
+void gDPSetTileSizeInterp(Gfx* pkt, int t, float uls, float ult, float lrs, float lrt);
 void gSPDisplayListOffset(Gfx* pkt, Gfx* dl, int offset);
 void gSPVertex(Gfx* pkt, uintptr_t v, int n, int v0);
 void gSPInvalidateTexCache(Gfx* pkt, uintptr_t texAddr);

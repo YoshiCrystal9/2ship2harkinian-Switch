@@ -144,7 +144,8 @@ void FireObj_Draw(PlayState* play, FireObj* fire) {
 
         Gfx_SetupDL25_Xlu(play->state.gfxCtx);
         gSPSegment(POLY_XLU_DISP++, 0x08,
-                   Gfx_TwoTexScroll(play->state.gfxCtx, 0, 0, 0, 32, 64, 1, 0, (fire->timer * -20) % 512U, 32, 128));
+                   Gfx_TwoTexScrollEx(play->state.gfxCtx, 0, 0, 0, 32, 64, 1, 0, (fire->timer * -20) % 512U, 32, 128, 0,
+                                      0, 0, -20));
 
         gDPSetPrimColor(POLY_XLU_DISP++, 0, fireColors->lod, fireColors->primColor.r, fireColors->primColor.g,
                         fireColors->primColor.b, fireColors->primColor.a);

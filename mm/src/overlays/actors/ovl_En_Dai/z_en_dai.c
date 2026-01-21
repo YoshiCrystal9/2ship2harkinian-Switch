@@ -84,8 +84,9 @@ void func_80B3E168(EnDaiEffect* effect, PlayState* play2) {
             gDPSetPrimColor(POLY_XLU_DISP++, 0, 0, 195, 225, 235, (u8)alpha);
 
             gSPSegment(POLY_XLU_DISP++, 0x08,
-                       Gfx_TwoTexScroll(play->state.gfxCtx, 0, (effect->unk_02 + (i * 3)) * 3,
-                                        (effect->unk_02 + (i * 3)) * 15, 0x20, 0x40, 1, 0, 0, 0x20, 0x20));
+                       Gfx_TwoTexScrollEx(play->state.gfxCtx, 0, (effect->unk_02 + (i * 3)) * 3,
+                                          (effect->unk_02 + (i * 3)) * 15, 0x20, 0x40, 1, 0, 0, 0x20, 0x20, 3, 15, 0,
+                                          0));
 
             Matrix_Translate(effect->unk_10.x, effect->unk_10.y, effect->unk_10.z, MTXMODE_NEW);
             Matrix_ReplaceRotation(&play->billboardMtxF);

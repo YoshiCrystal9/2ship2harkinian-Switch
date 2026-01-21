@@ -169,16 +169,16 @@ void EnLight_Draw(Actor* thisx, PlayState* play) {
     Gfx_SetupDL25_Xlu(play->state.gfxCtx);
 
     if (this->actor.params >= 0) {
-        gSPSegment(
-            POLY_XLU_DISP++, 0x08,
-            Gfx_TwoTexScroll(play->state.gfxCtx, 0, 0, 0, 0x20, 0x40, 1, 0, (this->unk_144 * -20) & 0x1FF, 0x20, 0x80));
+        gSPSegment(POLY_XLU_DISP++, 0x08,
+                   Gfx_TwoTexScrollEx(play->state.gfxCtx, 0, 0, 0, 0x20, 0x40, 1, 0, (this->unk_144 * -20) & 0x1FF,
+                                      0x20, 0x80, 0, 0, 0, -20));
         sp68 = gEffFire1DL;
         gDPSetPrimColor(POLY_XLU_DISP++, 0x80, 0x80, sp6C->unk_00.r, sp6C->unk_00.g, sp6C->unk_00.b, sp6C->unk_00.a);
         gDPSetEnvColor(POLY_XLU_DISP++, sp6C->unk_04.r, sp6C->unk_04.g, sp6C->unk_04.b, 0);
     } else {
         gSPSegment(POLY_XLU_DISP++, 0x08,
-                   Gfx_TwoTexScroll(play->state.gfxCtx, 0, 0, 0, 0x10, 0x20, 1, (this->unk_144 * 2) & 0x3F,
-                                    (this->unk_144 * -6) & 0x7F, 0x10, 0x20));
+                   Gfx_TwoTexScrollEx(play->state.gfxCtx, 0, 0, 0, 0x10, 0x20, 1, (this->unk_144 * 2) & 0x3F,
+                                      (this->unk_144 * -6) & 0x7F, 0x10, 0x20, 0, 0, 2, -6));
         sp68 = gameplay_keep_DL_01ACF0;
         gDPSetPrimColor(POLY_XLU_DISP++, 0xC0, 0xC0, 255, 200, 0, 0);
         gDPSetEnvColor(POLY_XLU_DISP++, 255, 0, 0, 0);

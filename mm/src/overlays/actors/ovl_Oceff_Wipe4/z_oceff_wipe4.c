@@ -118,8 +118,8 @@ void OceffWipe4_Draw(Actor* thisx, PlayState* play) {
     Gfx* scarecrowSongModelDL = ResourceMgr_LoadTexOrDListByName(sScarecrowSongModelDL);
 
     gSPDisplayList(POLY_XLU_DISP++, scarecrowSongModelDL);
-    gSPDisplayList(POLY_XLU_DISP++, Gfx_TwoTexScroll(play->state.gfxCtx, G_TX_RENDERTILE, scroll * 2, scroll * -2, 32,
-                                                     64, 1, scroll * -1, scroll, 32, 32));
+    gSPDisplayList(POLY_XLU_DISP++, Gfx_TwoTexScrollEx(play->state.gfxCtx, G_TX_RENDERTILE, scroll * 2, scroll * -2, 32,
+                                                       64, 1, scroll * -1, scroll, 32, 32, 2, -2, -1, 1));
     // Index adjust 11 -> 14 (for gsSPVertex) to account for our extraction size changes
     gSPDisplayList(POLY_XLU_DISP++, &scarecrowSongModelDL[14]);
     // #endregion

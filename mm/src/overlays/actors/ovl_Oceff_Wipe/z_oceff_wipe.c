@@ -131,8 +131,8 @@ void OceffWipe_Draw(Actor* thisx, PlayState* play) {
     }
 
     gSPDisplayList(POLY_XLU_DISP++, sSongOfTimeFrustumMaterialDL);
-    gSPDisplayList(POLY_XLU_DISP++, Gfx_TwoTexScroll(play->state.gfxCtx, G_TX_RENDERTILE, 0 - scroll, scroll * -2, 32,
-                                                     32, 1, 0 - scroll, scroll * -2, 32, 32));
+    gSPDisplayList(POLY_XLU_DISP++, Gfx_TwoTexScrollEx(play->state.gfxCtx, G_TX_RENDERTILE, 0 - scroll, scroll * -2, 32,
+                                                       32, 1, 0 - scroll, scroll * -2, 32, 32, -1, -2, -1, -2));
     gSPDisplayList(POLY_XLU_DISP++, sSongOfTimeFrustumModelDL);
 
     CLOSE_DISPS(play->state.gfxCtx);

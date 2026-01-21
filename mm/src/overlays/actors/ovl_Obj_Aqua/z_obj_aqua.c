@@ -279,7 +279,8 @@ void ObjAqua_Draw(Actor* thisx, PlayState* play) {
         framesTemp >>= 1;
     }
     gSPSegment(POLY_XLU_DISP++, 0x08,
-               Gfx_TwoTexScroll(play->state.gfxCtx, 0, 0, 0, 0x20, 0x40, 1, 0, framesTemp, 0x20, 0x80));
+               Gfx_TwoTexScrollEx(play->state.gfxCtx, 0, 0, 0, 0x20, 0x40, 1, 0, framesTemp, 0x20, 0x80, 0, 0, 0,
+                                  actionFuncTemp ? -5 : -0xA));
     gDPSetPrimColor(POLY_XLU_DISP++, 0x80, 0x80, 170, 255, 255, this->alpha);
     gDPSetEnvColor(POLY_XLU_DISP++, 0, 150, 255, 0);
     if (actionFuncTemp) {

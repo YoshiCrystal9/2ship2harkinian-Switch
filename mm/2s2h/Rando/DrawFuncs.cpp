@@ -122,8 +122,8 @@ extern void DrawEnLight(Color_RGB8 flameColor, Vec3f flameSize) {
     Matrix_ReplaceRotation(&gPlayState->billboardMtxF);
 
     gSPSegment(POLY_XLU_DISP++, 0x08,
-               (uintptr_t)Gfx_TwoTexScroll(gPlayState->state.gfxCtx, 0, 0, 0, 0x10, 0x20, 1, (unk_144 * 2) & 0x3F,
-                                           (unk_144 * -6) & 0x7F, 0x10, 0x20));
+               (uintptr_t)Gfx_TwoTexScrollEx(gPlayState->state.gfxCtx, 0, 0, 0, 0x10, 0x20, 1, (unk_144 * 2) & 0x3F,
+                                             (unk_144 * -6) & 0x7F, 0x10, 0x20, 0, 0, 2, -6));
     sp68 = (Gfx*)gameplay_keep_DL_01ACF0;
     gDPSetPrimColor(POLY_XLU_DISP++, 0xC0, 0xC0, flameColor.r, flameColor.g, flameColor.b, 0);
     gDPSetEnvColor(POLY_XLU_DISP++, flameColor.r, flameColor.g, flameColor.b, 0);

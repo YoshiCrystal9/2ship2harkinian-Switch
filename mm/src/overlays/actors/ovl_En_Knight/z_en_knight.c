@@ -4393,8 +4393,8 @@ void EnKnight_DrawEffects(EnKnight* this, PlayState* play) {
         gDPSetPrimColor(POLY_XLU_DISP++, 0, 0, 155, 155, 255, eff->alpha);
 
         gSPSegment(POLY_XLU_DISP++, 0x08,
-                   Gfx_TwoTexScroll(play->state.gfxCtx, G_TX_RENDERTILE, (eff->scrollTimer + i * 3) * 3,
-                                    (eff->scrollTimer + i * 3) * 15, 32, 64, 1, 0, 0, 32, 32));
+                   Gfx_TwoTexScrollEx(play->state.gfxCtx, G_TX_RENDERTILE, (eff->scrollTimer + i * 3) * 3,
+                                      (eff->scrollTimer + i * 3) * 15, 32, 64, 1, 0, 0, 32, 32, 3, 15, 0, 0));
 
         Matrix_Translate(eff->pos.x, eff->pos.y, eff->pos.z, MTXMODE_NEW);
         Matrix_ReplaceRotation(&play->billboardMtxF);

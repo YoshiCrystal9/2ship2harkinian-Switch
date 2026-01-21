@@ -3276,8 +3276,8 @@ void BossHakugin_DrawMalfunctionEffects(BossHakugin* this, PlayState* play) {
                 FrameInterpolation_RecordOpenChild(malfunctionEffect, j);
                 gDPSetPrimColor(POLY_XLU_DISP++, 0, 0, 0, 0, 0, malfunctionEffect->alpha);
                 gSPSegment(POLY_XLU_DISP++, 0x08,
-                           Gfx_TwoTexScroll(play->state.gfxCtx, G_TX_RENDERTILE, malfunctionEffect->timer * 3,
-                                            malfunctionEffect->timer * 15, 32, 64, 1, 0, 0, 32, 32));
+                           Gfx_TwoTexScrollEx(play->state.gfxCtx, G_TX_RENDERTILE, malfunctionEffect->timer * 3,
+                                              malfunctionEffect->timer * 15, 32, 64, 1, 0, 0, 32, 32, 3, 15, 0, 0));
                 Matrix_Translate(malfunctionEffect->pos.x, malfunctionEffect->pos.y, malfunctionEffect->pos.z,
                                  MTXMODE_NEW);
                 Matrix_RotateYS(camYaw, MTXMODE_APPLY);
@@ -3456,8 +3456,8 @@ void BossHakugin_DrawIce(BossHakugin* this, PlayState* play) {
 
     MATRIX_FINALIZE_AND_LOAD(POLY_XLU_DISP++, play->state.gfxCtx);
     gSPSegment(POLY_XLU_DISP++, 0x08,
-               Gfx_TwoTexScroll(play->state.gfxCtx, G_TX_RENDERTILE, 0, play->gameplayFrames & 0xFF, 32, 16, 1, 0,
-                                (play->gameplayFrames * 2) & 0xFF, 64, 32));
+               Gfx_TwoTexScrollEx(play->state.gfxCtx, G_TX_RENDERTILE, 0, play->gameplayFrames & 0xFF, 32, 16, 1, 0,
+                                  (play->gameplayFrames * 2) & 0xFF, 64, 32, 0, 1, 0, 2));
     gDPSetEnvColor(POLY_XLU_DISP++, 0, 50, 100, this->iceAlpha);
     gSPDisplayList(POLY_XLU_DISP++, gEffIceFragment3DL);
 

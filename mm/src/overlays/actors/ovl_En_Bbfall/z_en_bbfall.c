@@ -751,8 +751,9 @@ void EnBbfall_Draw(Actor* thisx, PlayState* play2) {
 
         for (i = 0; i < ARRAY_COUNT(this->flamePos); i++, pos++) {
             gSPSegment(POLY_XLU_DISP++, 0x08,
-                       Gfx_TwoTexScroll(play->state.gfxCtx, 0, 0, 0, 32, 64, 1, 0,
-                                        ((play->gameplayFrames + (i * 10)) * (-20 + i * 2)) & 0x1FF, 32, 128));
+                       Gfx_TwoTexScrollEx(play->state.gfxCtx, 0, 0, 0, 32, 64, 1, 0,
+                                          ((play->gameplayFrames + (i * 10)) * (-20 + i * 2)) & 0x1FF, 32, 128, 0, 0, 0,
+                                          -20 + i * 2));
             gDPSetPrimColor(POLY_XLU_DISP++, 0x80, 0x80, 255, 255, 0, opacity);
             currentMatrixState->mf[3][0] = pos->x;
             currentMatrixState->mf[3][1] = pos->y;

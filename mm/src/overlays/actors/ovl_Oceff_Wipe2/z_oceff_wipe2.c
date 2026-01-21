@@ -109,8 +109,8 @@ void OceffWipe2_Draw(Actor* thisx, PlayState* play) {
     gDPSetPrimColor(POLY_XLU_DISP++, 0, 0, 255, 255, 170, 255);
     gDPSetEnvColor(POLY_XLU_DISP++, 255, 100, 0, 128);
     gSPDisplayList(POLY_XLU_DISP++, sEponaSongFrustumMaterialDL);
-    gSPDisplayList(POLY_XLU_DISP++, Gfx_TwoTexScroll(play->state.gfxCtx, G_TX_RENDERTILE, scroll * 6, scroll * -6, 64,
-                                                     64, 1, scroll * -6, 0, 64, 64));
+    gSPDisplayList(POLY_XLU_DISP++, Gfx_TwoTexScrollEx(play->state.gfxCtx, G_TX_RENDERTILE, scroll * 6, scroll * -6, 64,
+                                                       64, 1, scroll * -6, 0, 64, 64, 6, -6, -6, 0));
     gSPDisplayList(POLY_XLU_DISP++, sEponaSongFrustumModelDL);
 
     CLOSE_DISPS(play->state.gfxCtx);

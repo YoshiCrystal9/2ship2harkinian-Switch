@@ -6627,7 +6627,7 @@ void Boss07_Mask_DrawBeam(Boss07* this, PlayState* play) {
 
     if (this->actionFunc == Boss07_Mask_FireBeam) {
         gSPSegment(POLY_XLU_DISP++, 0x0C,
-                   Gfx_TexScroll(play->state.gfxCtx, 0, (this->frameCounter * -15) & 0xFF, 32, 64));
+                   Gfx_TexScrollEx(play->state.gfxCtx, 0, (this->frameCounter * -15) & 0xFF, 32, 64, 0, -15));
         gDPPipeSync(POLY_XLU_DISP++);
         gDPSetPrimColor(POLY_XLU_DISP++, 0, 0, 255, 255, 60, 200);
         gDPSetEnvColor(POLY_XLU_DISP++, 255, 0, 0, 128);
@@ -7859,8 +7859,8 @@ void Boss07_BattleHandler_DrawEffects(PlayState* play) {
             gDPPipeSync(POLY_XLU_DISP++);
             gDPSetEnvColor(POLY_XLU_DISP++, 255, 215, 255, 128);
             gSPSegment(POLY_XLU_DISP++, 0x08,
-                       Gfx_TwoTexScroll(play->state.gfxCtx, G_TX_RENDERTILE, (3 * effect->texScroll) & 0x7F,
-                                        (15 * -effect->texScroll) & 0xFF, 32, 64, 1, 0, 0, 32, 32));
+                       Gfx_TwoTexScrollEx(play->state.gfxCtx, G_TX_RENDERTILE, (3 * effect->texScroll) & 0x7F,
+                                          (15 * -effect->texScroll) & 0xFF, 32, 64, 1, 0, 0, 32, 32, 3, -15, 0, 0));
             Matrix_Translate(effect->pos.x, effect->pos.y, effect->pos.z, MTXMODE_NEW);
             Matrix_ReplaceRotation(&play->billboardMtxF);
             Matrix_Scale(effect->scale, effect->scale, 1.0f, MTXMODE_APPLY);

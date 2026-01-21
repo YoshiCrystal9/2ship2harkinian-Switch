@@ -279,8 +279,8 @@ s32 DemoEffect_OverrideLimbDrawTimewarp(PlayState* play, SkelCurve* skelCurve, s
     gDPSetPrimColor(POLY_XLU_DISP++, 0, 0x80, 170, 255, 255, 255);
     gDPSetEnvColor(POLY_XLU_DISP++, this->envXluColor[0], this->envXluColor[1], this->envXluColor[2], 255);
     gSPSegment(POLY_XLU_DISP++, 0x08,
-               Gfx_TwoTexScroll(play->state.gfxCtx, 0, (frames * 6) % 1024, 255 - ((frames * 16) % 256), 0x100, 0x40, 1,
-                                (frames * 4) % 512, 127 - ((frames * 12) % 128), 0x80, 0x20));
+               Gfx_TwoTexScrollEx(play->state.gfxCtx, 0, (frames * 6) % 1024, 255 - ((frames * 16) % 256), 0x100, 0x40,
+                                  1, (frames * 4) % 512, 127 - ((frames * 12) % 128), 0x80, 0x20, 6, -16, 4, -12));
 
     CLOSE_DISPS(play->state.gfxCtx);
 

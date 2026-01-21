@@ -226,9 +226,9 @@ void ArrowIce_Draw(Actor* thisx, PlayState* play) {
         Matrix_Translate(0.0f, -700.0f, 0.0f, MTXMODE_APPLY);
         MATRIX_FINALIZE_AND_LOAD(POLY_XLU_DISP++, play->state.gfxCtx);
         gSPDisplayList(POLY_XLU_DISP++, gIceArrowMaterialDL);
-        gSPDisplayList(POLY_XLU_DISP++,
-                       Gfx_TwoTexScroll(play->state.gfxCtx, 0, 511 - (stateFrames * 5) % 512, 0, 128, 32, 1,
-                                        511 - (stateFrames * 10) % 512, 511 - (stateFrames * 10) % 512, 4, 16));
+        gSPDisplayList(POLY_XLU_DISP++, Gfx_TwoTexScrollEx(play->state.gfxCtx, 0, 511 - (stateFrames * 5) % 512, 0, 128,
+                                                           32, 1, 511 - (stateFrames * 10) % 512,
+                                                           511 - (stateFrames * 10) % 512, 4, 16, -5, 0, -10, -10));
         gSPDisplayList(POLY_XLU_DISP++, gIceArrowModelDL);
 
         CLOSE_DISPS(play->state.gfxCtx);

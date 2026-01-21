@@ -256,8 +256,9 @@ void func_80A85788(EnTruUnkStruct* arg0, PlayState* play) {
         gDPPipeSync(POLY_XLU_DISP++);
         gDPSetEnvColor(POLY_XLU_DISP++, 255, 255, 255, 128);
         gDPSetPrimColor(POLY_XLU_DISP++, 0, 0, 255, 255, 255, (u8)alpha);
-        gSPSegment(POLY_XLU_DISP++, 0x08,
-                   Gfx_TwoTexScroll(play->state.gfxCtx, 0, 0, -arg0->unk_02 * 5, 32, 64, 1, 0, 0, 32, 32));
+        gSPSegment(
+            POLY_XLU_DISP++, 0x08,
+            Gfx_TwoTexScrollEx(play->state.gfxCtx, 0, 0, -arg0->unk_02 * 5, 32, 64, 1, 0, 0, 32, 32, 0, -5, 0, 0));
 
         Matrix_Translate(arg0->unk_04.x, arg0->unk_04.y, arg0->unk_04.z, MTXMODE_NEW);
         Matrix_ReplaceRotation(&play->billboardMtxF);
