@@ -339,7 +339,8 @@ static RegisterShipInitFunc initFunc([]() {
     };
     Regions[RR_MILK_BAR] = RandoRegion{ .sceneId = SCENE_MILK_BAR,
         .checks = {
-            CHECK(RC_MILK_BAR_CIRCUS_LEADER_MASK, HAS_ITEM(ITEM_OCARINA_OF_TIME) && (BETWEEN(TIME_NIGHT1_PM_10_00, TIME_NIGHT1_AM_05_00) ||
+            CHECK(RC_MILK_BAR_CIRCUS_LEADER_MASK, HAS_ITEM(ITEM_OCARINA_OF_TIME) && HAS_ITEM(ITEM_MASK_ROMANI) &&
+                                                                                    (BETWEEN(TIME_NIGHT1_PM_10_00, TIME_NIGHT1_AM_05_00) ||
                                                                                     BETWEEN(TIME_NIGHT2_PM_10_00, TIME_NIGHT2_AM_05_00))
                                                                                  && (canPlaySong(OCARINA_SONG_WIND_FISH_HUMAN) &&
                                                                                     (CAN_BE_DEKU && canPlaySong(OCARINA_SONG_WIND_FISH_DEKU)) &&
