@@ -7,6 +7,8 @@
 #include "z_en_nb.h"
 #include "objects/object_nb/object_nb.h"
 
+#include "GameInteractor/GameInteractor.h"
+
 #define FLAGS                                                                                  \
     (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_UPDATE_CULLING_DISABLED | \
      ACTOR_FLAG_DRAW_CULLING_DISABLED)
@@ -497,7 +499,9 @@ s32 func_80BC01DC(Actor* thisx, PlayState* play) {
         case ENNB_BEHAVIOUR_5:
             if (!CHECK_EVENTINF(EVENTINF_42)) {
                 gSaveContext.save.time = CLOCK_TIME(8, 0);
-                Sram_IncrementDay();
+                if (GameInteractor_Should(VB_GRANNY_STORY_INCREMENT_DAY, true)) {
+                    Sram_IncrementDay();
+                }
             } else {
                 Environment_SetTimeJump(120.0f);
             }

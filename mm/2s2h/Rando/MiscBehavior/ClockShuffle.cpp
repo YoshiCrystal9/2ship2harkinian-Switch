@@ -564,6 +564,41 @@ void ProcessClockShuffleMessage(u16* textId, bool* loadFromMessageTable, bool is
     *loadFromMessageTable = false;
 }
 
+// Helper function to redirect time progression to next owned half-day
+void RedirectToNextOwnedHalfDay() {
+    // Calculate next owned half-day after current
+    int currentHalfDay = GetCurrentHalfDayIndex();
+    u8 ownedHalfDaysMask = ClockItems::GetAllOwnedHalfDaysMask();
+    int nextHalfDay = ClockItems::FindNextOwnedHalfDayAfter(currentHalfDay, ownedHalfDaysMask);
+
+    if (nextHalfDay == ClockItems::TERMINAL_STATE) {
+        // Jump to terminal time
+        gSaveContext.save.day = 3;
+        gSaveContext.save.time = GetConfiguredTerminalTime();
+        gSaveContext.respawnFlag = -8; // No daytelop for terminal
+    } else {
+        // Get target half-day configuration
+        const HalfDayTimeConfig* config = GetHalfDayTimeConfig(nextHalfDay);
+        bool isNightHalf = (nextHalfDay % 2 == 1);
+        s32 targetDay = config->dayNumber;
+        u16 targetTime = config->startTime;
+
+        if (isNightHalf) {
+            // Advancing to night - use respawnFlag -8 (no daytelop)
+            gSaveContext.save.day = targetDay;
+            gSaveContext.save.time = targetTime;
+            gSaveContext.respawnFlag = -8;
+        } else {
+            // Advancing to dawn - use respawnFlag -4 (triggers daytelop)
+            // CRITICAL: Subtract 1 from day because daytelop will increment it
+            gSaveContext.save.day = targetDay - 1;
+            gSaveContext.save.time = targetTime;
+            gSaveContext.respawnFlag = -4;
+            SET_EVENTINF(EVENTINF_TRIGGER_DAYTELOP);
+        }
+    }
+}
+
 void OnFileLoad() {
     bool shouldRegister = IS_RANDO && RANDO_SAVE_OPTIONS[RO_CLOCK_SHUFFLE];
 
@@ -647,38 +682,13 @@ void OnFileLoad() {
     // Hook scarecrow dance time skip to redirect to next owned half-day
     COND_VB_SHOULD(VB_SCARECROW_DANCE_SET_TIME, shouldRegister, {
         *should = false; // Skip vanilla behavior
+        RedirectToNextOwnedHalfDay();
+    });
 
-        // Calculate next owned half-day after current
-        int currentHalfDay = GetCurrentHalfDayIndex();
-        u8 ownedHalfDaysMask = ClockItems::GetAllOwnedHalfDaysMask();
-        int nextHalfDay = ClockItems::FindNextOwnedHalfDayAfter(currentHalfDay, ownedHalfDaysMask);
-
-        if (nextHalfDay == ClockItems::TERMINAL_STATE) {
-            // Jump to terminal time
-            gSaveContext.save.day = 3;
-            gSaveContext.save.time = GetConfiguredTerminalTime();
-            gSaveContext.respawnFlag = -8; // No daytelop for terminal
-        } else {
-            // Get target half-day configuration
-            const HalfDayTimeConfig* config = GetHalfDayTimeConfig(nextHalfDay);
-            bool isNightHalf = (nextHalfDay % 2 == 1);
-            s32 targetDay = config->dayNumber;
-            u16 targetTime = config->startTime;
-
-            if (isNightHalf) {
-                // Advancing to night - use respawnFlag -8 (no daytelop)
-                gSaveContext.save.day = targetDay;
-                gSaveContext.save.time = targetTime;
-                gSaveContext.respawnFlag = -8;
-            } else {
-                // Advancing to dawn - use respawnFlag -4 (triggers daytelop)
-                // CRITICAL: Subtract 1 from day because daytelop will increment it
-                gSaveContext.save.day = targetDay - 1;
-                gSaveContext.save.time = targetTime;
-                gSaveContext.respawnFlag = -4;
-                SET_EVENTINF(EVENTINF_TRIGGER_DAYTELOP);
-            }
-        }
+    // Hook Granny story day increment to redirect to next owned half-day
+    COND_VB_SHOULD(VB_GRANNY_STORY_INCREMENT_DAY, shouldRegister, {
+        *should = false; // Skip vanilla behavior
+        RedirectToNextOwnedHalfDay();
     });
 }
 
