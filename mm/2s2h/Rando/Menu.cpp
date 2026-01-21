@@ -998,10 +998,9 @@ static void DrawHintsTab() {
                             .disabledTooltip = "Soon you will be able to disable these. Currently hinted:\n- Bomb Shop "
                                                "4th Item\n- Lottery\n- Great Fairy Fountains\n- Mountain Smithy" } })
             .DefaultValue(true));
-    CVarCheckbox("Saria's Song", "gPlaceholderBool",
-                 CheckboxOptions({ { .disabled = true, .disabledTooltip = "Coming Soon" } }));
-    CVarCheckbox("Song of Soaring", "gPlaceholderBool",
-                 CheckboxOptions({ { .disabled = true, .disabledTooltip = "Coming Soon" } }));
+    CVarCheckbox(
+        "Song of Soaring", Rando::StaticData::Options[RO_HINTS_SONG_OF_SOARING].cvar,
+        CheckboxOptions({ { .tooltip = "Hints the location of the Song of Soaring at it's vanilla location" } }));
     CVarCheckbox(
         "Hookshot Location", Rando::StaticData::Options[RO_HINTS_HOOKSHOT].cvar,
         CheckboxOptions(
