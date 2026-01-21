@@ -573,8 +573,8 @@ extern void DrawFreezard() {
     Gfx_SetupDL25_Xlu(gPlayState->state.gfxCtx);
 
     gSPSegment(POLY_XLU_DISP++, 0x08,
-               (uintptr_t)Gfx_TwoTexScroll(gPlayState->state.gfxCtx, 0, 0, gPlayState->state.frames % 128, 0x20, 0x20,
-                                           1, 0, (gPlayState->state.frames * 2) % 128, 0x20, 0x20));
+               (uintptr_t)Gfx_TwoTexScrollEx(gPlayState->state.gfxCtx, 0, 0, gPlayState->state.frames % 128, 0x20, 0x20,
+                                             1, 0, (gPlayState->state.frames * 2) % 128, 0x20, 0x20, 0, 1, 0, 2));
     MATRIX_FINALIZE_AND_LOAD(POLY_XLU_DISP++, gPlayState->state.gfxCtx);
     gDPSetCombineLERP(POLY_XLU_DISP++, TEXEL1, PRIMITIVE, PRIM_LOD_FRAC, TEXEL0, TEXEL1, TEXEL0, PRIMITIVE, TEXEL0,
                       PRIMITIVE, ENVIRONMENT, COMBINED, ENVIRONMENT, COMBINED, 0, ENVIRONMENT, 0);
@@ -796,8 +796,9 @@ extern void DrawLikeLike() {
 
     gSPSegment(POLY_OPA_DISP++, 0x0C, (uintptr_t)mtx);
     gSPSegment(POLY_OPA_DISP++, 0x08,
-               (uintptr_t)Gfx_TwoTexScroll(gPlayState->state.gfxCtx, 0, 0, 0, 0x20, 0x10, 1, (textureScroll * 0) & 0x3F,
-                                           (textureScroll * -6) & 0x7F, 0x20, 0x10));
+               (uintptr_t)Gfx_TwoTexScrollEx(gPlayState->state.gfxCtx, 0, (textureScroll * 0) & 0x7F,
+                                             (textureScroll * 0) & 0x3F, 0x20, 0x10, 1, (textureScroll * 0) & 0x3F,
+                                             (textureScroll * -6) & 0x7F, 0x20, 0x10, 0, 0, 0, -6));
 
     Matrix_Push();
     Matrix_Scale((1.0f + segments[0].unk_10) * segments[0].unk_08, 1.0f,
