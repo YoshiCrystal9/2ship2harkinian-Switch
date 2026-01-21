@@ -285,6 +285,9 @@ void LoadAvailableWindows() {
             { TRACKER_ITEM_RANDO, RI_SONG_NOVA },
             { TRACKER_ITEM_RANDO, RI_SONG_ELEGY },
             { TRACKER_ITEM_RANDO, RI_SONG_OATH },
+            { TRACKER_ITEM_RANDO, RI_SONG_DOUBLE_TIME },
+            { TRACKER_ITEM_RANDO, RI_SONG_INVERTED_TIME },
+            { TRACKER_ITEM_RANDO, RI_SONG_SUN },
         },
     });
 
@@ -420,6 +423,15 @@ void ApplyDefaultItemPreset() {
 
     for (auto& group : itemTrackerGroupsAvailable) {
         if (defaultGroups.count(group.name)) {
+            if (group.name == "Songs") {
+                // Limit songs to first 10 in default preset
+                TrackerGroup limitedGroup = group;
+                limitedGroup.items =
+                    std::vector<std::pair<TrackerItemType, u32>>(group.items.begin(), group.items.begin() + 10);
+                itemTrackerGroups.push_back(limitedGroup);
+                continue;
+            }
+
             itemTrackerGroups.push_back(group);
         }
     }

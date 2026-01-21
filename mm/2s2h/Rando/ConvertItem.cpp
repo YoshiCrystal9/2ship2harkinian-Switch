@@ -453,6 +453,8 @@ bool Rando::IsItemObtainable(RandoItemId randoItemId, RandoCheckId randoCheckId)
             return !CHECK_QUEST_ITEM(QUEST_REMAINS_GYORG);
         case RI_REMAINS_TWINMOLD:
             return !CHECK_QUEST_ITEM(QUEST_REMAINS_TWINMOLD);
+        case RI_SONG_DOUBLE_TIME:
+            return !Flags_GetRandoInf(RANDO_INF_OBTAINED_SONG_DOUBLE_TIME);
         case RI_SONG_NOVA:
             return !CHECK_QUEST_ITEM(QUEST_SONG_BOSSA_NOVA);
         case RI_SONG_ELEGY:
@@ -461,6 +463,8 @@ bool Rando::IsItemObtainable(RandoItemId randoItemId, RandoCheckId randoCheckId)
             return !CHECK_QUEST_ITEM(QUEST_SONG_EPONA);
         case RI_SONG_HEALING:
             return !CHECK_QUEST_ITEM(QUEST_SONG_HEALING);
+        case RI_SONG_INVERTED_TIME:
+            return !Flags_GetRandoInf(RANDO_INF_OBTAINED_SONG_INVERTED_TIME);
         case RI_SONG_LULLABY_INTRO:
             return !CHECK_QUEST_ITEM(QUEST_SONG_LULLABY_INTRO);
         case RI_SONG_LULLABY:

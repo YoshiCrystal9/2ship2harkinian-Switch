@@ -327,6 +327,9 @@ void Rando::RemoveItem(RandoItemId randoItemId) {
         case RI_BOMBERS_NOTEBOOK:
             REMOVE_QUEST_ITEM(QUEST_BOMBERS_NOTEBOOK);
             break;
+        case RI_SONG_DOUBLE_TIME:
+            Flags_ClearRandoInf(RANDO_INF_OBTAINED_SONG_DOUBLE_TIME);
+            break;
         case RI_SONG_ELEGY:
             REMOVE_QUEST_ITEM(QUEST_SONG_ELEGY);
             break;
@@ -335,6 +338,9 @@ void Rando::RemoveItem(RandoItemId randoItemId) {
             break;
         case RI_SONG_HEALING:
             REMOVE_QUEST_ITEM(QUEST_SONG_HEALING);
+            break;
+        case RI_SONG_INVERTED_TIME:
+            Flags_ClearRandoInf(RANDO_INF_OBTAINED_SONG_INVERTED_TIME);
             break;
         case RI_SONG_LULLABY_INTRO:
             REMOVE_QUEST_ITEM(QUEST_SONG_LULLABY_INTRO);

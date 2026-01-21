@@ -44,6 +44,14 @@ std::vector<RandoItemId> GetComputedStartingItems(RandoSaveInfo& randoSaveInfo) 
         }
     }
 
+    // Doesn't necessarily mean they can play them just sets the infs's for completeness
+    if (randoSaveInfo.randoSaveOptions[RO_SHUFFLE_SONG_DOUBLE_TIME] != RO_GENERIC_YES) {
+        startingItems.push_back(RI_SONG_DOUBLE_TIME);
+    }
+    if (randoSaveInfo.randoSaveOptions[RO_SHUFFLE_SONG_INVERTED_TIME] != RO_GENERIC_YES) {
+        startingItems.push_back(RI_SONG_INVERTED_TIME);
+    }
+
     // When shuffling time, if the player did not choose any starting time items, we need to give them at least one.
     if (randoSaveInfo.randoSaveOptions[RO_CLOCK_SHUFFLE] == RO_GENERIC_YES) {
         bool hasTimeItem = false;

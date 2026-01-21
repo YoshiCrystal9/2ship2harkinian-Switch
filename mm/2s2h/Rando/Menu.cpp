@@ -232,6 +232,9 @@ static RegisterShipInitFunc refreshMetricsInit(RefreshMetrics, {
                                                                    "gRando.Options.RO_SHUFFLE_POT_DROPS",
                                                                    "gRando.Options.RO_SHUFFLE_SHOPS",
                                                                    "gRando.Options.RO_SHUFFLE_SNOWBALL_DROPS",
+                                                                   "gRando.Options.RO_SHUFFLE_SONG_DOUBLE_TIME",
+                                                                   "gRando.Options.RO_SHUFFLE_SONG_INVERTED_TIME",
+                                                                   "gRando.Options.RO_SHUFFLE_SONG_SUN",
                                                                    "gRando.Options.RO_SHUFFLE_SWIM",
                                                                    "gRando.Options.RO_SHUFFLE_TINGLE_SHOPS",
                                                                    "gRando.Options.RO_SHUFFLE_TRIFORCE_PIECES",
@@ -433,6 +436,9 @@ static void DrawItemsTab() {
                                                 "notes for the given melody.",
                                      .disabled = IncompatibleWithLogicSetting(RO_SHUFFLE_OCARINA_BUTTONS),
                                      .disabledTooltip = "Incompatible with current Logic Setting" } }));
+    CVarCheckbox("Song of Double Time", Rando::StaticData::Options[RO_SHUFFLE_SONG_DOUBLE_TIME].cvar);
+    CVarCheckbox("Inverted Song of Time", Rando::StaticData::Options[RO_SHUFFLE_SONG_INVERTED_TIME].cvar);
+    CVarCheckbox("Sun's Song", Rando::StaticData::Options[RO_SHUFFLE_SONG_SUN].cvar);
     CVarCheckbox("Deku Stick Bag", "gPlaceholderBool",
                  CheckboxOptions({ { .disabled = true, .disabledTooltip = "Coming Soon" } }));
     CVarCheckbox("Deku Nut Bag", "gPlaceholderBool",
@@ -442,14 +448,6 @@ static void DrawItemsTab() {
     CVarCheckbox("Child Wallet", "gPlaceholderBool",
                  CheckboxOptions({ { .disabled = true, .disabledTooltip = "Coming Soon" } }));
     CVarCheckbox("Infinite Upgrades", "gPlaceholderBool",
-                 CheckboxOptions({ { .disabled = true, .disabledTooltip = "Coming Soon" } }));
-    CVarCheckbox("Song of Double Time", "gPlaceholderBool",
-                 CheckboxOptions({ { .disabled = true, .disabledTooltip = "Coming Soon" } }));
-    CVarCheckbox("Inverted Song of Time", "gPlaceholderBool",
-                 CheckboxOptions({ { .disabled = true, .disabledTooltip = "Coming Soon" } }));
-    CVarCheckbox("Saria's Song", "gPlaceholderBool",
-                 CheckboxOptions({ { .disabled = true, .disabledTooltip = "Coming Soon" } }));
-    CVarCheckbox("Sun's Song", "gPlaceholderBool",
                  CheckboxOptions({ { .disabled = true, .disabledTooltip = "Coming Soon" } }));
     ImGui::EndChild();
     ImGui::SameLine();
@@ -664,7 +662,8 @@ static void DrawStartingItemsTab() {
     for (auto& startingItem : setStartingItemsList) {
         ImGui::PushID(listIndex);
         ImVec2 imageSize = ImVec2(42.0f, 42.0f);
-        if ((startingItem >= RI_SONG_ELEGY && startingItem <= RI_SONG_TIME) || startingItem == RI_PROGRESSIVE_LULLABY) {
+        if ((startingItem >= RI_SONG_DOUBLE_TIME && startingItem <= RI_SONG_TIME) ||
+            startingItem == RI_PROGRESSIVE_LULLABY) {
             imageSize.x /= 1.5f;
         }
 
@@ -729,7 +728,7 @@ static void DrawStartingItemsTab() {
                     }
 
                     ImVec2 imageSize = ImVec2(42.0f, 42.0f);
-                    if ((item >= RI_SONG_ELEGY && item <= RI_SONG_TIME) || item == RI_PROGRESSIVE_LULLABY) {
+                    if ((item >= RI_SONG_DOUBLE_TIME && item <= RI_SONG_TIME) || item == RI_PROGRESSIVE_LULLABY) {
                         imageSize.x /= 1.5f;
                     }
 
