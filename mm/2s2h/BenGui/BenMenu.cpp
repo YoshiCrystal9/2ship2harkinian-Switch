@@ -1139,6 +1139,11 @@ void BenMenu::AddEnhancements() {
         })
         .Options(IntSliderOptions().Tooltip("Sets the interval between Autosaves.").Min(1).Max(60).DefaultValue(5));
     AddWidget(path, "Time Cycle", WIDGET_SEPARATOR_TEXT);
+    AddWidget(path, "Save Game on Moon Crash", WIDGET_CVAR_CHECKBOX)
+        .CVar("gEnhancements.Cycle.SaveOnMoonCrash")
+        .Options(CheckboxOptions().Tooltip("Moon Crashes will save game data similar to the Song of Time,\n"
+                                           "instead of wiping owl save data. Automatically enabled in glitchless \n"
+                                           "rando seeds."));
     AddWidget(path, "Do not reset Bottle content", WIDGET_CVAR_CHECKBOX)
         .CVar("gEnhancements.Cycle.DoNotResetBottleContent")
         .Options(CheckboxOptions().Tooltip("Playing the Song of Time will not reset the bottles' content."));

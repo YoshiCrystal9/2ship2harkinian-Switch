@@ -337,7 +337,7 @@ static void DrawLogicConditionsTab() {
     }
     UIWidgets::Tooltip(
         "Glitchless - The items are shuffled in a way that guarantees the seed is beatable without "
-        "glitches.\n\n"
+        "glitches. With this setting, \"Save Game on Moon Crash\" is automatically enabled.\n\n"
         "No Logic - The items are shuffled completely randomly, this can result in unbeatable seeds, and "
         "will require heavy use of glitches.\n\n"
         "Nearly No Logic - The items are shuffled completely randomly, with the following exceptions:\n"
