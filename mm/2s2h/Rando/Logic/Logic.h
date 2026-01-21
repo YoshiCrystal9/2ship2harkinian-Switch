@@ -693,7 +693,8 @@ inline bool CanKillEnemy(ActorId EnemyId) {
         case ACTOR_EN_KAREBABA: // Wilted/Mini Babas
             return (CAN_USE_SWORD || CAN_BE_GORON || CAN_BE_ZORA || CAN_BE_DEKU);
         case ACTOR_EN_PEEHAT: // Peahat
-            return (CAN_USE_SWORD || CAN_BE_GORON || CAN_BE_ZORA || CAN_BE_DEKU || HAS_ITEM(ITEM_DEKU_STICK));
+            return ((CAN_USE_SWORD || CAN_BE_GORON || CAN_BE_ZORA || CAN_BE_DEKU || HAS_ITEM(ITEM_DEKU_STICK)) &&
+                    IS_DAY());
         case ACTOR_EN_RD: // Redead & Gibdos
             return (CAN_USE_SWORD || CAN_BE_DEKU || CAN_BE_GORON || CAN_BE_ZORA || HAS_ITEM(ITEM_DEKU_STICK));
         case ACTOR_EN_BSB: // Captain Keeta (May be possible without bow, but the window is tight. Requiring for now)
