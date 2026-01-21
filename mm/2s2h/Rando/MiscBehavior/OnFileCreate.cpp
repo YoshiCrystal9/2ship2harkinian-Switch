@@ -6,6 +6,7 @@
 #include <libultraship/bridge/consolevariablebridge.h>
 #include "ClockShuffle.h"
 #include <spdlog/spdlog.h>
+#include "2s2h/BenGui/Notification.h"
 
 extern "C" {
 #include "functions.h"
@@ -76,10 +77,10 @@ void Rando::MiscBehavior::OnFileCreate(s16 fileNum) {
                 Rando::Logic::GeneratePools(gSaveContext.save.shipSaveInfo.rando, checkPool, itemPool);
 
                 if (checkPool.empty()) {
-                    throw std::runtime_error("No checks in logic");
+                    throw std::runtime_error("Check pool is empty");
                 }
                 if (itemPool.empty()) {
-                    throw std::runtime_error("No items in logic");
+                    throw std::runtime_error("Item pool is empty");
                 }
 
                 // Balance pools
@@ -124,14 +125,23 @@ void Rando::MiscBehavior::OnFileCreate(s16 fileNum) {
                             continue;
                         }
 
-                        SPDLOG_ERROR("Could not match item pool size to check pool size {}/{}", itemPool.size(),
+                        SPDLOG_ERROR("Could not balance item/check pools. Too many items. {}/{}", itemPool.size(),
                                      checkPool.size());
-                        throw std::runtime_error("Could not match item pool size to check pool size");
+                        throw std::runtime_error("Could not balance item/check pools. Too many items.");
                     }
                 }
 
                 // Grant the starting stuff
                 Rando::GrantStartingItems();
+
+                // Run prelim compatibility/validation checks before attempting to place items
+
+                // Verify we have at least one time item if clock shuffle is enabled
+                if (RANDO_SAVE_OPTIONS[RO_CLOCK_SHUFFLE] != 0) {
+                    if (Rando::Logic::ClockCount() == 0) {
+                        throw std::runtime_error("Shuffle Time is enabled but no starting time was given");
+                    }
+                }
 
                 if (RANDO_SAVE_OPTIONS[RO_LOGIC] == RO_LOGIC_VANILLA) {
                     GiveItem(RI_SWORD_KOKIRI);
@@ -185,8 +195,13 @@ void Rando::MiscBehavior::OnFileCreate(s16 fileNum) {
             GameInteractor::Instance->ExecuteHooks<GameInteractor::OnRandoSeedGeneration>();
 
         } catch (const std::exception& e) {
-            SPDLOG_ERROR("Error with randomizer save creation: {}", e.what());
+            SPDLOG_ERROR("Seed Failure: {}", e.what());
             Audio_PlaySfx(NA_SE_SY_QUIZ_INCORRECT);
+            Notification::Emit({
+                .prefix = "Seed Failure:",
+                .prefixColor = ImVec4(1.0f, 0.2f, 0.2f, 1.0f),
+                .message = e.what(),
+            });
             gSaveContext.save.shipSaveInfo.saveType = SAVETYPE_VANILLA;
             char invalidName[8] = { 18, 23, 31, 10, 21, 18, 13, 62 };
             memcpy(gSaveContext.save.saveInfo.playerData.playerName, invalidName, sizeof(invalidName));

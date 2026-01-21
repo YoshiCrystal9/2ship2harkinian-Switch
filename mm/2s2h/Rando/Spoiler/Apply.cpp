@@ -15,7 +15,8 @@ void ApplyToSaveContext(nlohmann::json spoiler) {
     gSaveContext.save.shipSaveInfo.rando.finalSeed = spoiler["finalSeed"].get<uint32_t>();
 
     for (auto& [randoOptionId, randoStaticOption] : Rando::StaticData::Options) {
-        RANDO_SAVE_OPTIONS[randoOptionId] = spoiler["options"][randoStaticOption.name].get<uint32_t>();
+        RANDO_SAVE_OPTIONS[randoOptionId] =
+            spoiler["options"].value(randoStaticOption.name, (uint32_t)randoStaticOption.defaultValue);
     }
 
     if (!RANDO_SAVE_OPTIONS[RO_SHUFFLE_GOLD_SKULLTULAS]) {
@@ -41,6 +42,11 @@ void ApplyToSaveContext(nlohmann::json spoiler) {
             std::string itemName = spoiler["checks"][randoStaticCheck.name]["randoItemId"].get<std::string>();
             RandoItemId randoItemId = Rando::StaticData::GetItemIdFromName(itemName.c_str());
 
+            if (randoItemId == RI_UNKNOWN) {
+                SPDLOG_ERROR("Unknown item in spoiler for check {}: {}", randoStaticCheck.name, itemName);
+                throw std::runtime_error("Unknown item in spoiler: " + itemName);
+            }
+
             RANDO_SAVE_CHECKS[randoCheckId].randoItemId = randoItemId;
             RANDO_SAVE_CHECKS[randoCheckId].shuffled = true;
 
@@ -52,6 +58,11 @@ void ApplyToSaveContext(nlohmann::json spoiler) {
         } else {
             std::string itemName = spoiler["checks"][randoStaticCheck.name].get<std::string>();
             RandoItemId randoItemId = Rando::StaticData::GetItemIdFromName(itemName.c_str());
+
+            if (randoItemId == RI_UNKNOWN) {
+                SPDLOG_ERROR("Unknown item in spoiler for check {}: {}", randoStaticCheck.name, itemName);
+                throw std::runtime_error("Unknown item in spoiler: " + itemName);
+            }
 
             RANDO_SAVE_CHECKS[randoCheckId].randoItemId = randoItemId;
             RANDO_SAVE_CHECKS[randoCheckId].shuffled = true;

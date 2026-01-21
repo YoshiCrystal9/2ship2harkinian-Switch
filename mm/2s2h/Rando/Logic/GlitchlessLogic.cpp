@@ -61,7 +61,7 @@ void ApplyGlitchlessLogicToSaveContext(std::vector<RandoCheckId>& checkPool, std
     while (true) {
         // Break if we've been running for too long
         if (GetUnixTimestamp() - tick > 10000) {
-            handleError("Logic Generation Timeout");
+            handleError("Generation took too long, aborting");
         }
 
         bool regionsInLogicChanged = false;
@@ -168,7 +168,7 @@ void ApplyGlitchlessLogicToSaveContext(std::vector<RandoCheckId>& checkPool, std
         if (!regionsInLogicChanged && !checksInLogicChanged && !eventsInLogicChanged) {
             if (checkWithJunk == RC_UNKNOWN) {
                 if (checksWithJunk.empty()) {
-                    handleError("No checks with junk, not sure what to do");
+                    handleError("Out of checks to replace, cannot place remaining items");
                 }
 
                 if (checksWithJunk.size() == 1) {
@@ -202,7 +202,7 @@ void ApplyGlitchlessLogicToSaveContext(std::vector<RandoCheckId>& checkPool, std
             }
 
             if (!anyNonJunkItemsLeft) {
-                handleError("No non-junk items left");
+                handleError("No non-junk items left to place, progression is impossible");
             }
 
             if (nonJunkItemsThatWeHaveNotTried.empty()) {

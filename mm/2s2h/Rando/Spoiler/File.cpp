@@ -26,9 +26,7 @@ nlohmann::json LoadFromFile(const std::string& fileName) {
     nlohmann::json spoiler;
     try {
         fileStream >> spoiler;
-    } catch (nlohmann::json::exception& e) {
-        throw std::runtime_error("Failed to parse spoiler file: " + std::string(e.what()));
-    }
+    } catch (nlohmann::json::exception& e) { throw std::runtime_error("Failed to parse spoiler file"); }
 
     if (!spoiler.contains("type") || spoiler["type"] != "2S2H_RANDO_SPOILER") {
         throw std::runtime_error("Spoiler file is not a valid spoiler file");
