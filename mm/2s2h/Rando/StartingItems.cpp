@@ -54,8 +54,9 @@ std::vector<RandoItemId> GetComputedStartingItems(RandoSaveInfo& randoSaveInfo) 
 
     // When shuffling time, if the player did not choose any starting time items, we need to give them at least one.
     if (randoSaveInfo.randoSaveOptions[RO_CLOCK_SHUFFLE] == RO_GENERIC_YES) {
+        auto configuredStartedItems = Rando::GetStartingItemsFromSave(randoSaveInfo);
         bool hasTimeItem = false;
-        for (RandoItemId randoItemId : startingItems) {
+        for (RandoItemId randoItemId : configuredStartedItems) {
             if (randoItemId >= RI_TIME_DAY_1 && randoItemId <= RI_TIME_PROGRESSIVE) {
                 hasTimeItem = true;
                 break;

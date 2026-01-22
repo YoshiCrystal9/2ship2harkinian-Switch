@@ -401,7 +401,14 @@ void LoadAvailableWindows() {
         .name = "Time",
         .columns = 6,
         .scale = 1.0f,
-        .items = GetItemsFromRange(TRACKER_ITEM_RANDO, RI_TIME_DAY_1, RI_TIME_NIGHT_3),
+        .items = {
+            { TRACKER_ITEM_RANDO, RI_TIME_DAY_1 },
+            { TRACKER_ITEM_RANDO, RI_TIME_NIGHT_1 },
+            { TRACKER_ITEM_RANDO, RI_TIME_DAY_2 },
+            { TRACKER_ITEM_RANDO, RI_TIME_NIGHT_2 },
+            { TRACKER_ITEM_RANDO, RI_TIME_DAY_3 },
+            { TRACKER_ITEM_RANDO, RI_TIME_NIGHT_3 },
+        },
     });
 
     itemTrackerGroupsAvailable.push_back(TrackerGroup{

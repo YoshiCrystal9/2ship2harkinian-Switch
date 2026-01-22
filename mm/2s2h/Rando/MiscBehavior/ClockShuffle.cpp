@@ -288,7 +288,7 @@ bool SceneNeedsReloadForTimeSkip(s16 sceneId) {
         case SCENE_BOWLING: // Honey & Darling - minigame mode changes based on day/time
             return true;
         case SCENE_CLOCKTOWER: // South Clock Town - Clock Tower platform appears at midnight Night 3
-            return true;
+            return CURRENT_DAY == 3;
         default:
             return false; // Most scenes handle time changes without reload
     }
@@ -375,34 +375,22 @@ void ApplyTimeSkip(int nextHalfDay, EnTest4* enTest4) {
     }
 
     // Apply time change
-    gSaveContext.save.day = day;
+    gSaveContext.save.day = time == GAME_TIME_DAY_START ? day - 1 : day;
     gSaveContext.save.time = time;
+
+    // Unset Sun's Song state
+    if (gSaveContext.sunsSongState != SUNSSONG_INACTIVE) {
+        gSaveContext.sunsSongState = SUNSSONG_INACTIVE;
+        R_TIME_SPEED = gPlayState->envCtx.sceneTimeSpeed;
+    }
 
     // Update actor state
     enTest4->daytimeIndex = IsCurrentlyNightTime(time) ? 1 : 0;
+    enTest4->prevBellTime = CURRENT_TIME;
 
-    // Handle scene reload for time-sensitive scenes
     if (SceneNeedsReloadForTimeSkip(gPlayState->sceneId)) {
         ForceSceneReload();
-        enTest4->prevTime = time - CLOCK_TIME(0, 1);
-        return;
     }
-
-    // Terminal state handling
-    if (nextHalfDay == ClockItems::TERMINAL_STATE) {
-        enTest4->prevTime = time - CLOCK_TIME(0, 1);
-        return;
-    }
-
-    // Day transition handling
-    if (time == GAME_TIME_DAY_START) {
-        gSaveContext.save.day--;
-    } else {
-        Interface_NewDay(gPlayState, gSaveContext.save.day);
-        Environment_NewDay(&gPlayState->envCtx);
-    }
-
-    enTest4->prevTime = time - CLOCK_TIME(0, 1);
 }
 
 // Application function: Applies the time skip

@@ -196,6 +196,16 @@ void RefreshMetrics() {
     for (auto& item : startingItems) {
         setOfItemsInPool.insert(item);
     }
+    // Handle weird edge case with Random shuffle time option missing one time because it's computed given
+    if (randoSaveInfo.randoSaveOptions[RO_CLOCK_SHUFFLE] &&
+        randoSaveInfo.randoSaveOptions[RO_CLOCK_SHUFFLE_PROGRESSIVE] == RO_CLOCK_SHUFFLE_RANDOM) {
+        setOfItemsInPool.insert(RI_TIME_DAY_1);
+        setOfItemsInPool.insert(RI_TIME_NIGHT_1);
+        setOfItemsInPool.insert(RI_TIME_DAY_2);
+        setOfItemsInPool.insert(RI_TIME_NIGHT_2);
+        setOfItemsInPool.insert(RI_TIME_DAY_3);
+        setOfItemsInPool.insert(RI_TIME_NIGHT_3);
+    }
     ableToBalance = checksInPool >= (itemsInPool - junkInPool);
 }
 
