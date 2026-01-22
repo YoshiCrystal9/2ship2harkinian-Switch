@@ -41,6 +41,11 @@ std::unordered_map<int32_t, const char*> junkItemsOptions = {
     { 1, "Static" },
 };
 
+std::unordered_map<int32_t, const char*> trapItemsOptions = {
+    { 0, "Default (Dynamic)" },
+    { 1, "Static" },
+};
+
 // clang-format off
 std::vector<int32_t> incompatibleWithVanilla = {
     RO_SHUFFLE_BOSS_SOULS,
@@ -325,6 +330,14 @@ static void DrawGeneralTab() {
                 "Note: For both Options, junk items will be randomly rolled from a pool of obtainable "
                 "items.\n\nDefault (Cycle): Junk items will cycle every few seconds, allowing you to choose which item "
                 "to pick up\n\nStatic: Junk items will be static, only changing when obtainability status changes."));
+    UIWidgets::CVarCombobox(
+        "Trap Items", "gRando.TrapItems", &trapItemsOptions,
+        UIWidgets::ComboboxOptions()
+            .ComponentAlignment(UIWidgets::ComponentAlignment::Right)
+            .LabelPosition(UIWidgets::LabelPosition::Near)
+            .Tooltip("Default (Dynamic): Trap items will change dynamically as you progress, ensuring they are an item "
+                     "you have not obtained yet for maximum trickery.\n\nStatic: Trap items will be static, according "
+                     "to the randomizer seed."));
     ImGui::EndChild();
     ImGui::SameLine();
 }
