@@ -4,6 +4,7 @@
 #include "2s2h/ShipUtils.h"
 #include "2s2h/BenGui/UIWidgets.hpp"
 #include "2s2h/Rando/StaticData/StaticData.h"
+#include "2s2h/BenPort.h"
 #include <cstring>
 
 // Image Icons
@@ -51,7 +52,25 @@ static std::unordered_map<int32_t, const char*> sCheckModes = {
     { CHECK_MODE_HIDDEN, "Hidden" },
 };
 
+typedef enum {
+    CHECK_TRACKER_VISIBILITY_MODE_ALWAYS,
+    CHECK_TRACKER_VISIBILITY_MODE_ONLY_ON_PAUSE_MENU,
+    CHECK_TRACKER_VISIBILITY_MODE_BUTTON_TOGGLE,
+    CHECK_TRACKER_VISIBILITY_MODE_BUTTON_HOLD,
+} CheckTrackerVisibilityMode;
+
+static std::unordered_map<int32_t, const char*> sCheckVisibilityModes = {
+    { CHECK_TRACKER_VISIBILITY_MODE_ALWAYS, "Always" },
+    { CHECK_TRACKER_VISIBILITY_MODE_ONLY_ON_PAUSE_MENU, "Only on Pause Menu" },
+    { CHECK_TRACKER_VISIBILITY_MODE_BUTTON_TOGGLE, "Button Toggle" },
+    { CHECK_TRACKER_VISIBILITY_MODE_BUTTON_HOLD, "Button Hold" },
+};
+
+static bool sCheckTrackerBtnState = false;
+
 #define CVAR_NAME_SHOW_CHECK_TRACKER "gWindows.CheckTracker"
+#define CVAR_NAME_VISIBILITY_MODE "gRando.CheckTracker.VisibilityMode"
+#define CVAR_NAME_VISIBILITY_BTN "gRando.CheckTracker.VisibilityBtn"
 #define CVAR_NAME_OUT_OF_LOGIC_MODE "gRando.CheckTracker.OutOfLogicMode"
 #define CVAR_NAME_OUT_OF_LOGIC_COLOR "gRando.CheckTracker.OutOfLogicColor"
 #define CVAR_NAME_COLLECTED_MODE "gRando.CheckTracker.CollectedMode"
@@ -65,6 +84,8 @@ static std::unordered_map<int32_t, const char*> sCheckModes = {
 #define CVAR_NAME_SHOW_CHECK_TYPE_FILTER "gRando.CheckTracker.ShowCheckTypeFilter"
 #define CVAR_NAME_SHOW_SEARCH "gRando.CheckTracker.ShowSearch"
 #define CVAR_SHOW_CHECK_TRACKER CVarGetInteger(CVAR_NAME_SHOW_CHECK_TRACKER, 0)
+#define CVAR_VISIBILITY_MODE CVarGetInteger(CVAR_NAME_VISIBILITY_MODE, CHECK_TRACKER_VISIBILITY_MODE_ALWAYS)
+#define CVAR_VISIBILITY_BTN CVarGetInteger(CVAR_NAME_VISIBILITY_BTN, BTN_CUSTOM_MODIFIER1)
 #define CVAR_OUT_OF_LOGIC_MODE CVarGetInteger(CVAR_NAME_OUT_OF_LOGIC_MODE, CHECK_MODE_COLORED)
 #define CVAR_OUT_OF_LOGIC_COLOR CVarGetColor(CVAR_NAME_OUT_OF_LOGIC_COLOR ".Value", { 255, 255, 255, 100 })
 #define CVAR_COLLECTED_MODE CVarGetInteger(CVAR_NAME_COLLECTED_MODE, CHECK_MODE_HIDDEN)
@@ -351,15 +372,15 @@ void CheckTrackerDrawNonLogicalList() {
             continue;
         }
 
-        if (!CVAR_SHOW_CURRENT_SCENE && CVAR_SCROLL_TO_SCENE && sScrollToTargetScene != -1 &&
-            sScrollToTargetScene == sceneId) {
+        ImGui::PushID(sceneId);
+        ImGui::Separator();
+
+        // Auto-scroll to current scene - called after Separator to ensure stable positioning
+        if (!CVAR_SHOW_CURRENT_SCENE && sScrollToTargetScene != -1 && sScrollToTargetScene == sceneId) {
             ImGui::SetScrollHereY(0.0f);
             sScrollToTargetScene = -1;
             sScrollToTargetEntrance = -1;
         }
-
-        ImGui::PushID(sceneId);
-        ImGui::Separator();
         ImGui::PushStyleColor(ImGuiCol_Header, ImVec4(0, 0, 0, 0));
         std::string headerText = Ship_GetSceneName(sceneId);
         headerText += " (" + std::to_string(obtainedCheckSum) + "/" + std::to_string(unfilteredChecks.size()) + ")";
@@ -456,6 +477,17 @@ void CheckTrackerWindow::Draw() {
         return;
     }
 
+    if (CVAR_VISIBILITY_MODE == CHECK_TRACKER_VISIBILITY_MODE_ONLY_ON_PAUSE_MENU &&
+        (!gPlayState || !gPlayState->pauseCtx.state)) {
+        return;
+    }
+
+    if ((CVAR_VISIBILITY_MODE == CHECK_TRACKER_VISIBILITY_MODE_BUTTON_TOGGLE ||
+         CVAR_VISIBILITY_MODE == CHECK_TRACKER_VISIBILITY_MODE_BUTTON_HOLD) &&
+        !sCheckTrackerBtnState) {
+        return;
+    }
+
     ImGui::PushStyleColor(ImGuiCol_TitleBgActive, trackerBG);
     ImGui::PushStyleColor(ImGuiCol_TitleBg, trackerBG);
     ImGui::PushStyleColor(ImGuiCol_WindowBg, trackerBG);
@@ -483,12 +515,32 @@ void CheckTrackerWindow::Draw() {
         bool sameLine = !(ImGui::GetContentRegionAvail().x <= 300.0f * trackerScale);
         auto totalCheckCount = GetTotalCheckCount();
 
-        UIWidgets::PushStyleCombobox();
+        UIWidgets::PushStyleInput();
         sCheckTrackerFilter.Draw("##filter", (ImGui::GetContentRegionAvail().x -
                                               (sameLine ? (ImGui::CalcTextSize("Total: ").x +
-                                                           ImGui::CalcTextSize(totalCheckCount.c_str()).x + 15.0f)
-                                                        : 0)));
-        UIWidgets::PopStyleCombobox();
+                                                           ImGui::CalcTextSize(totalCheckCount.c_str()).x + 60.0f)
+                                                        : 40.0f)));
+        UIWidgets::PopStyleInput();
+
+        ImGui::SameLine();
+        if (!sCheckTrackerFilter.IsActive()) {
+            if (UIWidgets::Button(ICON_FA_ARROWS_V, UIWidgets::ButtonOptions().Size(UIWidgets::Sizes::Inline))) {
+                if (gPlayState) {
+                    sScrollToTargetScene = Play_GetOriginalSceneId(gPlayState->sceneId);
+                    sScrollToTargetEntrance = gSaveContext.save.entrance;
+                }
+            }
+            UIWidgets::Tooltip("Scroll to Current Scene");
+        } else {
+            if (UIWidgets::Button(ICON_FA_TIMES, UIWidgets::ButtonOptions().Size(UIWidgets::Sizes::Inline))) {
+                sCheckTrackerFilter.Clear();
+                if (gPlayState) {
+                    sScrollToTargetScene = Play_GetOriginalSceneId(gPlayState->sceneId);
+                    sScrollToTargetEntrance = gSaveContext.save.entrance;
+                }
+            }
+        }
+
         if (!sCheckTrackerFilter.IsActive()) {
             ImGui::SameLine(18.0f);
             ImGui::Text("Search");
@@ -521,15 +573,22 @@ void CheckTrackerWindow::Draw() {
                 } else if (randoCheckType == RCTYPE_SONG) {
                     ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 4.0f);
                 }
-                if (ImGui::ImageButton(
-                        std::to_string(randoCheckType).c_str(), textureId,
-                        ImVec2((randoCheckType == RCTYPE_SONG ? 18.0f : 24.0f) * trackerScale,
-                               (randoCheckType == RCTYPE_OWL ? 12.0f * trackerScale : 24.0f * trackerScale) *
-                                   trackerScale),
-                        ImVec2(0, 0), ImVec2(1, 1), ImVec4(0, 0, 0, 0),
-                        randoCheckType == RCTYPE_UNKNOWN        ? ImVec4(1, 0, 0, 1)
-                        : randoCheckType == RCTYPE_FREESTANDING ? ImVec4(0.78f, 1, 0.39f, 1)
-                                                                : ImVec4(1, 1, 1, 1))) {
+
+                ImVec2 size = ImVec2(24.0f * trackerScale, 24.0f * trackerScale);
+                if (randoCheckType == RCTYPE_SONG) {
+                    size.x = 18.0f * trackerScale;
+                } else if (randoCheckType == RCTYPE_OWL) {
+                    size.y = 12.0f * trackerScale;
+                }
+                ImVec4 tint = ImVec4(1, 1, 1, 1);
+                if (randoCheckType == RCTYPE_FREESTANDING) {
+                    tint = ImVec4(0.78f, 1, 0.39f, 1);
+                } else if (randoCheckType == RCTYPE_UNKNOWN) {
+                    tint = ImVec4(1, 0, 0, 1);
+                }
+
+                if (ImGui::ImageButton(std::to_string(randoCheckType).c_str(), textureId, size, ImVec2(0, 0),
+                                       ImVec2(1, 1), ImVec4(0, 0, 0, 0), tint)) {
                     if (randoCheckType == RCTYPE_UNKNOWN) {
                         checkTypeFilter.clear();
                     } else {
@@ -607,6 +666,16 @@ void SettingsWindow::DrawElement() {
 
         ImGui::TableNextColumn();
         ImGui::SeparatorText("Window Settings");
+        UIWidgets::CVarCombobox("Visibility", CVAR_NAME_VISIBILITY_MODE, &sCheckVisibilityModes,
+                                UIWidgets::ComboboxOptions()
+                                    .DefaultIndex(CHECK_TRACKER_VISIBILITY_MODE_ALWAYS)
+                                    .ComponentAlignment(UIWidgets::ComponentAlignment::Right)
+                                    .LabelPosition(UIWidgets::LabelPosition::Far));
+        if (CVAR_VISIBILITY_MODE == CHECK_TRACKER_VISIBILITY_MODE_BUTTON_TOGGLE ||
+            CVAR_VISIBILITY_MODE == CHECK_TRACKER_VISIBILITY_MODE_BUTTON_HOLD) {
+            UIWidgets::CVarBtnSelector("Button Combination:", CVAR_NAME_VISIBILITY_BTN,
+                                       UIWidgets::BtnSelectorOptions().DefaultValue(BTN_CUSTOM_MODIFIER1));
+        }
         UIWidgets::CVarCheckbox("Show Search", CVAR_NAME_SHOW_SEARCH, UIWidgets::CheckboxOptions().DefaultValue(true));
         UIWidgets::CVarCheckbox("Show Check Type Filters", CVAR_NAME_SHOW_CHECK_TYPE_FILTER);
 
@@ -653,6 +722,27 @@ void Init() {
     trackerBG = { 0, 0, 0, CVAR_TRACKER_OPACITY };
     trackerScale = CVAR_TRACKER_SCALE;
 }
+
+static RegisterShipInitFunc initFunc(
+    []() {
+        COND_HOOK(OnGameStateMainStart, CVAR_VISIBILITY_MODE >= CHECK_TRACKER_VISIBILITY_MODE_BUTTON_TOGGLE, []() {
+            Input* input = CONTROLLER1(gGameState);
+
+            if (CVAR_VISIBILITY_MODE == CHECK_TRACKER_VISIBILITY_MODE_BUTTON_HOLD) {
+                if (CHECK_BTN_ALL(input->cur.button, CVAR_VISIBILITY_BTN)) {
+                    sCheckTrackerBtnState = true;
+                } else {
+                    sCheckTrackerBtnState = false;
+                }
+            } else {
+                if (CHECK_BTN_ALL(input->cur.button, CVAR_VISIBILITY_BTN) &&
+                    CHECK_BTN_ANY(input->press.button, CVAR_VISIBILITY_BTN)) {
+                    sCheckTrackerBtnState = !sCheckTrackerBtnState;
+                }
+            }
+        });
+    },
+    { CVAR_NAME_VISIBILITY_MODE });
 
 void OnFileLoad() {
     if (!IS_RANDO) {

@@ -13,6 +13,13 @@ typedef enum {
     TRACKER_ITEM_MAGIC,
 } TrackerItemType;
 
+typedef enum {
+    ITEM_TRACKER_VISIBILITY_MODE_ALWAYS,
+    ITEM_TRACKER_VISIBILITY_MODE_ONLY_ON_PAUSE_MENU,
+    ITEM_TRACKER_VISIBILITY_MODE_BUTTON_TOGGLE,
+    ITEM_TRACKER_VISIBILITY_MODE_BUTTON_HOLD,
+} ItemTrackerVisibilityMode;
+
 typedef struct {
     ImTextureID textureId;
     ImVec4 textureColor;

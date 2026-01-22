@@ -322,7 +322,6 @@ bool Rando::IsItemObtainable(RandoItemId randoItemId, RandoCheckId randoCheckId)
         case RI_SNOWHEAD_SMALL_KEY:
         case RI_GREAT_BAY_SMALL_KEY:
         case RI_STONE_TOWER_SMALL_KEY:
-        case RI_CLOCK_TOWN_STRAY_FAIRY:
         case RI_WOODFALL_STRAY_FAIRY:
         case RI_SNOWHEAD_STRAY_FAIRY:
         case RI_GREAT_BAY_STRAY_FAIRY:
@@ -334,6 +333,8 @@ bool Rando::IsItemObtainable(RandoItemId randoItemId, RandoCheckId randoCheckId)
                 return false;
             }
             return true;
+        case RI_CLOCK_TOWN_STRAY_FAIRY:
+            return !CHECK_WEEKEVENTREG(WEEKEVENTREG_08_80);
         case RI_HEART_PIECE:
         case RI_HEART_CONTAINER:
             if (hasObtainedCheck) {
