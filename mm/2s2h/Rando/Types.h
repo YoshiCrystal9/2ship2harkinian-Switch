@@ -2486,9 +2486,9 @@ typedef enum {
     RI_NONE,
     RI_OCARINA_BUTTON_A,
     RI_OCARINA_BUTTON_C_DOWN,
-    RI_OCARINA_BUTTON_C_LEFT,
     RI_OCARINA_BUTTON_C_RIGHT,
-    RI_OCARINA_BUTTON_C_UP,
+    RI_OCARINA_BUTTON_C_LEFT,
+    RI_OCARINA_BUTTON_C_UP, // Note: C buttons must be in this non-alphabetical order to match the source enum order
     RI_OCARINA,
     RI_OWL_CLOCK_TOWN_SOUTH,
     RI_OWL_GREAT_BAY_COAST,
