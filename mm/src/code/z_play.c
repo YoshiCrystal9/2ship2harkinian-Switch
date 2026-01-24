@@ -1101,7 +1101,7 @@ void Play_UpdateMain(PlayState* this) {
                        this->state.gfxCtx);
 
     if (this->sramCtx.status != 0) {
-        if (gSaveContext.save.isOwlSave) {
+        if (GameInteractor_Should(VB_SAVE_USE_OWL_SAVE_TIMING, gSaveContext.save.isOwlSave)) {
             Sram_UpdateWriteToFlashOwlSave(&this->sramCtx);
         } else {
             Sram_UpdateWriteToFlashDefault(&this->sramCtx);

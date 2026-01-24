@@ -1722,6 +1722,22 @@ typedef enum {
 
     // #### `result`
     // ```c
+    // OSTIME_TO_TIMER(osGetTime() - sramCtx->startWriteOsTime) >= SECONDS_TO_TIMER(2))
+    // ```
+    // #### `args`
+    // - None
+    VB_SAVE_DELAY,
+
+    // #### `result`
+    // ```c
+    // gSaveContext.save.isOwlSave
+    // ```
+    // #### `args`
+    // - None
+    VB_SAVE_USE_OWL_SAVE_TIMING,
+
+    // #### `result`
+    // ```c
     // false
     // ```
     // #### `args`

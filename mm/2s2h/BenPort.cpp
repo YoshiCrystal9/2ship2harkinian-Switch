@@ -713,7 +713,6 @@ extern "C" void InitOTR() {
     LoadGuiTextures();
     BenGui::SetupGuiElements();
     ShipInit::InitAll();
-    InitEnhancements();
     Rando::Init();
     GfxPatcher_ApplyNecessaryAuthenticPatches();
     DebugConsole_Init();

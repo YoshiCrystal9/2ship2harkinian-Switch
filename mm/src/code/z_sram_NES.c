@@ -1401,7 +1401,14 @@ void Sram_OpenSave(FileSelectState* fileSelect, SramContext* sramCtx) {
         if (gSaveContext.save.shipSaveInfo.pauseSaveEntrance != -1) {
             gSaveContext.save.entrance = gSaveContext.save.shipSaveInfo.pauseSaveEntrance;
         } else {
-            gSaveContext.save.entrance = sOwlWarpEntrances[(void)0, gSaveContext.save.owlWarpId];
+            // @bug When the player saves at the extra Owl statue in west clock town
+            // their owlWarpId is set to 0xF. On hardware this results in the entrance being set to 0
+            // 2S2H [Port] We opt to fix this by hardcoding entrance to 0 when owlWarpId is out of bounds
+            if (gSaveContext.save.owlWarpId > OWL_WARP_MAX) {
+                gSaveContext.save.entrance = 0;
+            } else {
+                gSaveContext.save.entrance = sOwlWarpEntrances[(void)0, gSaveContext.save.owlWarpId];
+            }
         }
         if ((gSaveContext.save.entrance == ENTRANCE(SOUTHERN_SWAMP_POISONED, 10)) &&
             CHECK_WEEKEVENTREG(WEEKEVENTREG_CLEARED_WOODFALL_TEMPLE)) {
@@ -2079,10 +2086,8 @@ void Sram_UpdateWriteToFlashDefault(SramContext* sramCtx) {
                 sramCtx->status = 4;
             }
         }
-    } else if (OSTIME_TO_TIMER(osGetTime() - sramCtx->startWriteOsTime) >=
-               SECONDS_TO_TIMER(CVarGetInteger("gEnhancements.Saving.DisableSaveDelay", 0) ? 0 : 2)) {
-        // 2S2H [Port] Some tricks require a save delay so we can't just force it to zero
-        // Finished status is hardcoded to 2 seconds instead of when the task finishes
+    } else if (GameInteractor_Should(VB_SAVE_DELAY,
+                                     OSTIME_TO_TIMER(osGetTime() - sramCtx->startWriteOsTime) >= SECONDS_TO_TIMER(2))) {
         sramCtx->status = 0;
     }
 }
@@ -2119,10 +2124,8 @@ void Sram_UpdateWriteToFlashOwlSave(SramContext* sramCtx) {
                 sramCtx->status = 4;
             }
         }
-    } else if (OSTIME_TO_TIMER(osGetTime() - sramCtx->startWriteOsTime) >=
-               SECONDS_TO_TIMER(CVarGetInteger("gEnhancements.Saving.DisableSaveDelay", 0) ? 0 : 2)) {
-        // 2S2H [Port] Some tricks require a save delay so we can't just force it to zero
-        // Finished status is hardcoded to 2 seconds instead of when the task finishes
+    } else if (GameInteractor_Should(VB_SAVE_DELAY,
+                                     OSTIME_TO_TIMER(osGetTime() - sramCtx->startWriteOsTime) >= SECONDS_TO_TIMER(2))) {
         sramCtx->status = 0;
         memset(sramCtx->saveBuf, 0, SAVE_BUFFER_SIZE);
         gSaveContext.save.isOwlSave = false;

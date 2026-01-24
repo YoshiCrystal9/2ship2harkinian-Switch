@@ -1125,7 +1125,6 @@ void BenMenu::AddEnhancements() {
         .Options(CheckboxOptions().Tooltip("When loading a save, places Link at the last entrance he went through."));
     AddWidget(path, "Autosave", WIDGET_CVAR_CHECKBOX)
         .CVar("gEnhancements.Saving.Autosave")
-        .Callback([](WidgetInfo& info) { RegisterAutosave(); })
         .Options(CheckboxOptions().Tooltip(
             "Automatically create a persistent Owl Save on the chosen interval.\n\nWhen loading "
             "back into the game, you will be placed either at the entrance of the dungeon you "
@@ -1173,12 +1172,6 @@ void BenMenu::AddEnhancements() {
     AddWidget(path, "Oceanside wallet any day", WIDGET_CVAR_CHECKBOX)
         .CVar("gEnhancements.Cycle.OceansideWalletAnyDay")
         .Options(CheckboxOptions().Tooltip("Allows the wallet reward to be collected on any day."));
-    AddWidget(path, "Unstable", WIDGET_SEPARATOR_TEXT).Options(WidgetOptions().Color(Colors::Orange));
-    AddWidget(path, "Disable Save Delay", WIDGET_CVAR_CHECKBOX)
-        .CVar("gEnhancements.Saving.DisableSaveDelay")
-        .Options(CheckboxOptions().Tooltip(
-            "Removes the arbitrary 2 second timer for saving from the original game. This is known to "
-            "cause issues when attempting the 0th Day Glitch."));
 
     //// Graphics Enhancements
     path = { "Enhancements", "Graphics", SECTION_COLUMN_1 };

@@ -2,6 +2,7 @@
 #include "BenPort.h"
 #include "2s2h/GameInteractor/GameInteractor.h"
 #include "2s2h/ShipInit.hpp"
+#include "2s2h/CustomMessage/CustomMessage.h"
 
 extern "C" {
 #include <variables.h>
@@ -11,20 +12,14 @@ extern "C" {
 #define CVAR_REMEMBER_SAVE_LOCATION_NAME "gEnhancements.Saving.RememberSaveLocation"
 #define CVAR_REMEMBER_SAVE_LOCATION CVarGetInteger(CVAR_REMEMBER_SAVE_LOCATION_NAME, 0)
 
-static uint32_t autosaveInterval = 0;
-static uint32_t iconTimer = 0;
-static uint64_t currentTimestamp = 0;
-static uint64_t lastSaveTimestamp = GetUnixTimestamp();
 static int lastEntrance = -1;
 static int entranceToSave = -1;
 
-static HOOK_ID autosaveGameStateUpdateHookId = 0;
-static HOOK_ID autosaveGameStateDrawFinishHookId = 0;
 static HOOK_ID skipEntranceCutsceneHookId = 0;
 static HOOK_ID gameplayStartHookId = 0;
 
 // Used for saving through Autosaves and Pause Menu saves.
-extern "C" int SavingEnhancements_GetSaveEntrance() {
+extern "C" void SavingEnhancements_PersistSaveEntranceInfo() {
     if (CVAR_REMEMBER_SAVE_LOCATION) {
         // Maintain respawn information, used for grottos
         for (int i = 0; i < RESPAWN_MODE_MAX; i++) {
@@ -32,32 +27,44 @@ extern "C" int SavingEnhancements_GetSaveEntrance() {
         }
         // Daytelop on new game, with Time Shuffle, makes it possible for entranceToSave to be -1. Given that the player
         // must be at this entrance in that scenario, just use it as a fallback.
-        return entranceToSave < 0 ? ENTRANCE(SOUTH_CLOCK_TOWN, 0) : entranceToSave;
+        gSaveContext.save.shipSaveInfo.pauseSaveEntrance =
+            entranceToSave < 0 ? ENTRANCE(SOUTH_CLOCK_TOWN, 0) : entranceToSave;
     } else {
         switch (gPlayState->sceneId) {
             // Woodfall Temple + Odolwa
             case SCENE_MITURIN:
             case SCENE_MITURIN_BS:
-                return ENTRANCE(WOODFALL_TEMPLE, 0);
+                gSaveContext.save.shipSaveInfo.pauseSaveEntrance = ENTRANCE(WOODFALL_TEMPLE, 0);
+                break;
             // Snowhead Temple + Goht
             case SCENE_HAKUGIN:
             case SCENE_HAKUGIN_BS:
-                return ENTRANCE(SNOWHEAD_TEMPLE, 0);
+                gSaveContext.save.shipSaveInfo.pauseSaveEntrance = ENTRANCE(SNOWHEAD_TEMPLE, 0);
+                break;
             // Great Bay Temple + Gyorg
             case SCENE_SEA:
             case SCENE_SEA_BS:
-                return ENTRANCE(GREAT_BAY_TEMPLE, 0);
+                gSaveContext.save.shipSaveInfo.pauseSaveEntrance = ENTRANCE(GREAT_BAY_TEMPLE, 0);
+                break;
             // Stone Tower Temple
             case SCENE_INISIE_N:
-                return ENTRANCE(STONE_TOWER_TEMPLE, 0);
+                gSaveContext.save.shipSaveInfo.pauseSaveEntrance = ENTRANCE(STONE_TOWER_TEMPLE, 0);
+                break;
             // Stone Tower Temple (inverted) + Twinmold
             case SCENE_INISIE_R:
             case SCENE_INISIE_BS:
-                return ENTRANCE(STONE_TOWER_TEMPLE_INVERTED, 0);
+                gSaveContext.save.shipSaveInfo.pauseSaveEntrance = ENTRANCE(STONE_TOWER_TEMPLE_INVERTED, 0);
+                break;
             default:
-                return ENTRANCE(SOUTH_CLOCK_TOWN, 0);
+                gSaveContext.save.shipSaveInfo.pauseSaveEntrance = ENTRANCE(SOUTH_CLOCK_TOWN, 0);
+                break;
         }
     }
+}
+
+extern "C" void SavingEnhancements_ClearSaveEntranceInfo() {
+    gSaveContext.save.shipSaveInfo.pauseSaveEntrance = -1;
+    memset(&gSaveContext.save.shipSaveInfo.respawn, 0, sizeof(gSaveContext.save.shipSaveInfo.respawn));
 }
 
 extern "C" bool SavingEnhancements_CanSave() {
@@ -113,67 +120,16 @@ extern "C" void SavingEnhancements_AdvancePlaytime() {
 }
 
 void DeleteOwlSave() {
-    // Remove Owl Save on time cycle reset, needed when persisting owl saves and/or when
-    // creating owl saves without the player being send back to the file select screen.
+    // Persist this in case the user is 0th daying
+    bool currentOwlSaveState = gSaveContext.save.isOwlSave;
 
-    // Delete Owl Save
+    // Typically called when loading into an owl save
     func_80147314(&gPlayState->sramCtx, gSaveContext.fileNum);
 
     // Set it to not be an owl save so after reloading the save file it doesn't try to load at the owl's position in
     // clock town
-    gSaveContext.save.isOwlSave = false;
-}
 
-void DrawAutosaveIcon() {
-    // 5 seconds (100 frames) of showing the owl save icon to signify autosave has happened.
-    if (iconTimer != 0) {
-        float opacity = 255.0;
-        // Fade in icon
-        if (iconTimer > 80) {
-            opacity = 255.0 - (((iconTimer - 80.0) / 20.0) * 255);
-            // Fade out icon
-        } else if (iconTimer < 20) {
-            opacity = (iconTimer / 20.0) * 255.0;
-        }
-        Interface_DrawAutosaveIcon(gPlayState, uint16_t(opacity));
-        iconTimer--;
-    }
-}
-
-void HandleAutoSave() {
-    // Check if the interval has passed in minutes.
-    autosaveInterval = CVarGetInteger("gEnhancements.Saving.AutosaveInterval", 5) * 60000;
-    currentTimestamp = GetUnixTimestamp();
-    if ((currentTimestamp - lastSaveTimestamp) < autosaveInterval) {
-        return;
-    }
-
-    Player* player = GET_PLAYER(gPlayState);
-    if (player == NULL) {
-        return;
-    }
-
-    // If owl save available to create, do it and reset the interval.
-    if (SavingEnhancements_CanSave() && gPlayState->pauseCtx.state == 0) {
-
-        // Reset timestamp, set icon timer to show autosave icon for 5 seconds (100 frames)
-        lastSaveTimestamp = GetUnixTimestamp();
-        iconTimer = 100;
-
-        // Create owl save
-        gSaveContext.save.isOwlSave = true;
-        gSaveContext.save.shipSaveInfo.pauseSaveEntrance = SavingEnhancements_GetSaveEntrance();
-        SavingEnhancements_AdvancePlaytime();
-        Play_SaveCycleSceneFlags(gPlayState);
-        gSaveContext.save.saveInfo.playerData.savedSceneId = gPlayState->sceneId;
-        func_8014546C(&gPlayState->sramCtx);
-        Sram_SetFlashPagesOwlSave(&gPlayState->sramCtx,
-                                  gFlashOwlSaveStartPages[gSaveContext.fileNum * FLASH_SAVE_MAIN_MULTIPLIER],
-                                  gFlashOwlSaveNumPages[gSaveContext.fileNum * FLASH_SAVE_MAIN_MULTIPLIER]);
-        Sram_StartWriteToFlashOwlSave(&gPlayState->sramCtx);
-        gSaveContext.save.isOwlSave = false;
-        gSaveContext.save.shipSaveInfo.pauseSaveEntrance = -1;
-    }
+    gSaveContext.save.isOwlSave = currentOwlSaveState;
 }
 
 /*
@@ -183,7 +139,7 @@ void HandleAutoSave() {
  * ENTR_LOAD_OPENING, which in turn would lead to a crash if the save is within a grotto and the player dies before
  * leaving.
  */
-void loadRespawnData(s16 fileNum) {
+void LoadRespawnData(s16 fileNum) {
     for (int i = 0; i < RESPAWN_MODE_MAX; i++) {
         gSaveContext.respawn[i] = gSaveContext.save.shipSaveInfo.respawn[i];
     }
@@ -208,7 +164,7 @@ static void UnregisterEntranceCutsceneSkip() {
     }
 }
 
-void skipEntranceCutsceneOnLoad(s16 fileNum) {
+void SkipEntranceCutsceneOnLoad(s16 fileNum) {
     // Clean up any existing hooks first
     UnregisterEntranceCutsceneSkip();
     // Register hook to skip entrance cutscenes - may skip multiple if they chain
@@ -229,92 +185,126 @@ void skipEntranceCutsceneOnLoad(s16 fileNum) {
         });
 }
 
-void RegisterSavingEnhancements() {
-    REGISTER_VB_SHOULD(VB_DELETE_OWL_SAVE, {
-        if (CVarGetInteger("gEnhancements.Saving.PersistentOwlSaves", 0) ||
-            gSaveContext.save.shipSaveInfo.pauseSaveEntrance != -1) {
-            *should = false;
-        }
-    });
+static RegisterShipInitFunc registerSavingEnhancements(
+    []() {
+        // Prevent deletion of owl saves based on cvar or if this was a pause/auto save
+        COND_VB_SHOULD(VB_DELETE_OWL_SAVE, true, {
+            if (CVarGetInteger("gEnhancements.Saving.PersistentOwlSaves", 0) ||
+                gSaveContext.save.shipSaveInfo.pauseSaveEntrance != -1) {
+                *should = false;
+            }
+        });
 
-    COND_HOOK(OnSaveLoad, true, [](s16 fileNum) {
-        if (gSaveContext.save.shipSaveInfo.fileCreatedAt == 0) {
-            gSaveContext.save.shipSaveInfo.fileCreatedAt = GetUnixTimestamp();
-        }
-        gSaveContext.shipSaveContext.lastTimeLog = GetUnixTimestamp();
-        lastEntrance = entranceToSave = gSaveContext.save.shipSaveInfo.pauseSaveEntrance;
-    });
+        COND_HOOK(OnSaveLoad, true, [](s16 fileNum) {
+            if (gSaveContext.save.shipSaveInfo.fileCreatedAt == 0) {
+                gSaveContext.save.shipSaveInfo.fileCreatedAt = GetUnixTimestamp();
+            }
+            gSaveContext.shipSaveContext.lastTimeLog = GetUnixTimestamp();
+            lastEntrance = entranceToSave = gSaveContext.save.shipSaveInfo.pauseSaveEntrance;
+        });
 
-    // Owl statue prompt
-    COND_ID_HOOK(OnOpenText, 0xC01, true,
-                 [](u16* textId, bool* loadFromMessageTable) { SavingEnhancements_AdvancePlaytime(); });
+        // Owl statue prompt
+        COND_ID_HOOK(OnOpenText, 0xC01, true,
+                     [](u16* textId, bool* loadFromMessageTable) { SavingEnhancements_AdvancePlaytime(); });
 
-    // Finished the game, mark fileCompletedAt accordingly
-    COND_HOOK(OnGameCompletion, true, []() {
-        if (gSaveContext.save.shipSaveInfo.fileCompletedAt == 0) {
+        // Finished the game, mark fileCompletedAt accordingly
+        COND_HOOK(OnGameCompletion, true, []() {
+            if (gSaveContext.save.shipSaveInfo.fileCompletedAt == 0) {
+                SavingEnhancements_AdvancePlaytime();
+                gSaveContext.save.shipSaveInfo.fileCompletedAt = GetUnixTimestamp();
+            }
+        });
+
+        // When resetting the time cycle or letting the moon crash, an owl save would normally not even
+        // be present because they are deleted when loading. However, with persistent owl saves or
+        // pause/auto saves, we need to explicitly delete the owl save here, to let the player load
+        // into the new cycle or lose their progress on moon crash.
+        COND_HOOK(BeforeEndOfCycleSave, true, []() {
             SavingEnhancements_AdvancePlaytime();
-            gSaveContext.save.shipSaveInfo.fileCompletedAt = GetUnixTimestamp();
-        }
-    });
+            DeleteOwlSave();
+        });
+        COND_HOOK(BeforeMoonCrashSaveReset, true, []() { DeleteOwlSave(); });
 
-    GameInteractor::Instance->RegisterGameHook<GameInteractor::BeforeEndOfCycleSave>([]() {
-        SavingEnhancements_AdvancePlaytime();
-        DeleteOwlSave();
-    });
+        // Vanilla has an arbitrary 2 second delay when saving, we can't remove it entirely because
+        // it's used to pull off certain 0th Day glitches (specifically Any Item as Any Form and Goron Missile),
+        // because they required you to change forms before the SaveContext is restored in that window. We can
+        // determine if they are trying to pull this trick off if they are playing song of time and isOwlSave is
+        // set (which normally shouldn't be). Otherwise remove the delay.
+        COND_VB_SHOULD(VB_SAVE_DELAY, true, {
+            if (gPlayState == NULL || gPlayState->msgCtx.msgMode != MSGMODE_NEW_CYCLE_1 ||
+                !gSaveContext.save.isOwlSave) {
+                *should = true;
+            }
+        });
 
-    GameInteractor::Instance->RegisterGameHook<GameInteractor::BeforeMoonCrashSaveReset>([]() { DeleteOwlSave(); });
+        // In vanilla, isOwlSave determines if the owl save sram path is taken (which restores the SaveContext N seconds
+        // later) We only want this path to be taken for actual owl saves and when playing Song of Time with isOwlSave
+        // set (0th Daying). This might seem redundant, but isOwlSave can be set and the player can autosave/pause save.
+        COND_VB_SHOULD(VB_SAVE_USE_OWL_SAVE_TIMING, true, {
+            *should = gSaveContext.save.isOwlSave && (gPlayState->msgCtx.msgMode == MSGMODE_NEW_CYCLE_1 ||
+                                                      gPlayState->msgCtx.msgMode == MSGMODE_OWL_SAVE_1);
+        });
 
-    GameInteractor::Instance->RegisterGameHook<GameInteractor::OnSaveLoad>(loadRespawnData);
-}
+        // These hooks modify the SceneTitleCard messages for day/night on the 0th and 4th days
+        COND_ID_HOOK(OnOpenText, 0x1BB4, true, [](u16* textId, bool* loadFromMessageTable) {
+            if (CURRENT_DAY < 1 || CURRENT_DAY > 3) {
+                auto entry = CustomMessage::LoadVanillaMessageTableEntry(*textId);
 
-void RegisterAutosave() {
-    if (autosaveGameStateUpdateHookId) {
-        GameInteractor::Instance->UnregisterGameHook<GameInteractor::OnGameStateUpdate>(autosaveGameStateUpdateHookId);
-        autosaveGameStateUpdateHookId = 0;
-    }
-
-    if (autosaveGameStateDrawFinishHookId) {
-        GameInteractor::Instance->UnregisterGameHook<GameInteractor::OnGameStateDrawFinish>(
-            autosaveGameStateDrawFinishHookId);
-        autosaveGameStateDrawFinishHookId = 0;
-    }
-
-    if (CVarGetInteger("gEnhancements.Saving.Autosave", 0)) {
-        autosaveGameStateUpdateHookId =
-            GameInteractor::Instance->RegisterGameHook<GameInteractor::OnGameStateUpdate>([]() {
-                if (gPlayState == nullptr) {
-                    return;
+                // Weird edge case where dawn of the Zeroth day pulls the night entry
+                if (CURRENT_DAY == 0 && gSaveContext.save.time == CLOCK_TIME(6, 0) - 1) {
+                    CustomMessage::Replace(&entry.msg, "Night of the First", "Dawn of the Zeroth");
+                } else {
+                    switch (CURRENT_DAY) {
+                        case 0:
+                            CustomMessage::Replace(&entry.msg, "First", "Zeroth");
+                            break;
+                        case 4:
+                            CustomMessage::Replace(&entry.msg, "First", "Fourth");
+                            break;
+                    }
                 }
 
-                HandleAutoSave();
-            });
+                CustomMessage::LoadCustomMessageIntoFont(entry);
+                *loadFromMessageTable = false;
+            }
+        });
 
-        autosaveGameStateDrawFinishHookId =
-            GameInteractor::Instance->RegisterGameHook<GameInteractor::OnGameStateDrawFinish>([]() {
-                if (gPlayState == nullptr) {
-                    return;
+        COND_ID_HOOK(OnOpenText, 0x1BB2, true, [](u16* textId, bool* loadFromMessageTable) {
+            if (CURRENT_DAY < 1 || CURRENT_DAY > 3) {
+                auto entry = CustomMessage::LoadVanillaMessageTableEntry(*textId);
+
+                switch (CURRENT_DAY) {
+                    case 0:
+                        CustomMessage::Replace(&entry.msg, "First", "Zeroth");
+                        break;
+                    case 4:
+                        CustomMessage::Replace(&entry.msg, "First", "Fourth");
+                        break;
                 }
 
-                DrawAutosaveIcon();
-            });
-    }
-}
+                CustomMessage::LoadCustomMessageIntoFont(entry);
+                *loadFromMessageTable = false;
+            }
+        });
+    },
+    {});
 
-void RegisterRememberSaveLocation() {
-    COND_VB_SHOULD(VB_PLAY_TRANSITION_CS, CVAR_REMEMBER_SAVE_LOCATION, {
-        /*
-         * Update the entrance to save, unless we're leaving a grotto. Grottos exit to entrance 0 of the destination
-         * scene and adjust the position manually. In effect, there is no real entrance to target for loading purposes,
-         * so we just load into the last grotto instead under those circumstances.
-         */
-        if (lastEntrance != -1 && !(Entrance_GetSceneIdAbsolute(gSaveContext.save.entrance) != SCENE_KAKUSIANA &&
-                                    Entrance_GetSceneIdAbsolute(lastEntrance) == SCENE_KAKUSIANA)) {
-            entranceToSave = gSaveContext.save.entrance;
-        }
-        lastEntrance = gSaveContext.save.entrance;
-    });
+static RegisterShipInitFunc registerRememberSaveLocation(
+    []() {
+        COND_VB_SHOULD(VB_PLAY_TRANSITION_CS, CVAR_REMEMBER_SAVE_LOCATION, {
+            /*
+             * Update the entrance to save, unless we're leaving a grotto. Grottos exit to entrance 0 of the destination
+             * scene and adjust the position manually. In effect, there is no real entrance to target for loading
+             * purposes, so we just load into the last grotto instead under those circumstances.
+             */
+            if (lastEntrance != -1 && !(Entrance_GetSceneIdAbsolute(gSaveContext.save.entrance) != SCENE_KAKUSIANA &&
+                                        Entrance_GetSceneIdAbsolute(lastEntrance) == SCENE_KAKUSIANA)) {
+                entranceToSave = gSaveContext.save.entrance;
+            }
+            lastEntrance = gSaveContext.save.entrance;
+        });
 
-    COND_HOOK(OnSaveLoad, CVAR_REMEMBER_SAVE_LOCATION, skipEntranceCutsceneOnLoad);
-}
-
-static RegisterShipInitFunc initFunc(RegisterRememberSaveLocation, { CVAR_REMEMBER_SAVE_LOCATION_NAME });
+        COND_HOOK(OnSaveLoad, CVAR_REMEMBER_SAVE_LOCATION, SkipEntranceCutsceneOnLoad);
+        COND_HOOK(OnSaveLoad, CVAR_REMEMBER_SAVE_LOCATION, LoadRespawnData);
+    },
+    { CVAR_REMEMBER_SAVE_LOCATION_NAME });
