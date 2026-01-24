@@ -290,7 +290,7 @@ std::vector<std::string> contributors = {
     "MegaMech",
     "Louis",
     "Kenix3",
-    "Jordyn Hardyman",
+    "Jameriquiah", // "Jordyn Hardyman", manual replacement
     "Jacob Erly",
     "Hoeloe",
     "Ghunzor",
