@@ -122,9 +122,12 @@ void ApplyGlitchlessLogicToSaveContext(std::vector<RandoCheckId>& checkPool, std
                             Rando::StaticData::Items[randoItemId].randoItemType == RITYPE_HEALTH) {
                             checksWithJunk.push_back(randoCheckId);
                             checksWithJunkWeights.push_back(weight);
+                            SPDLOG_TRACE("Item Placed: {}:{}", Rando::StaticData::Checks[randoCheckId].name,
+                                         Rando::StaticData::Items[randoItemId].spoilerName);
+                        } else {
+                            SPDLOG_DEBUG("Item Placed: {}:{}", Rando::StaticData::Checks[randoCheckId].name,
+                                         Rando::StaticData::Items[randoItemId].spoilerName);
                         }
-                        SPDLOG_TRACE("Check: {}:{}", Rando::StaticData::Checks[randoCheckId].name,
-                                     Rando::StaticData::Items[randoItemId].spoilerName);
                     }
 
                     GiveItem(ConvertItem(randoItemId));
@@ -169,6 +172,8 @@ void ApplyGlitchlessLogicToSaveContext(std::vector<RandoCheckId>& checkPool, std
 
                 if (checksWithJunk.size() == 1) {
                     checkWithJunk = checksWithJunk[0];
+                    checksWithJunk.pop_back();
+                    checksWithJunkWeights.pop_back();
                 } else {
                     std::vector<double> cumulativeWeights(checksWithJunkWeights.size());
                     std::partial_sum(checksWithJunkWeights.begin(), checksWithJunkWeights.end(),
@@ -183,6 +188,9 @@ void ApplyGlitchlessLogicToSaveContext(std::vector<RandoCheckId>& checkPool, std
                     checksWithJunk.erase(checksWithJunk.begin() + index);
                     checksWithJunkWeights.erase(checksWithJunkWeights.begin() + index);
                 }
+
+                SPDLOG_DEBUG("Nothing changed, attempting to replace check: {}",
+                             Rando::StaticData::Checks[checkWithJunk].name);
             }
 
             std::vector<std::pair<RandoItemId, int>> nonJunkItemsThatWeHaveNotTried;
@@ -216,6 +224,9 @@ void ApplyGlitchlessLogicToSaveContext(std::vector<RandoCheckId>& checkPool, std
 
             RANDO_SAVE_CHECKS[checkWithJunk].randoItemId = newRandoItemId;
 
+            SPDLOG_DEBUG("Item Replaced Junk: {}:{}", Rando::StaticData::Checks[checkWithJunk].name,
+                         Rando::StaticData::Items[newRandoItemId].spoilerName);
+
             RemoveItem(oldRandoItemId);
             GiveItem(ConvertItem(newRandoItemId));
 
@@ -228,7 +239,7 @@ void ApplyGlitchlessLogicToSaveContext(std::vector<RandoCheckId>& checkPool, std
         } else {
             weight++;
             if (checkWithJunk != RC_UNKNOWN) {
-                SPDLOG_TRACE("Successfully Replaced junk item with: {}:{}",
+                SPDLOG_DEBUG("Successfully Replaced junk item with: {}:{}",
                              Rando::StaticData::Checks[checkWithJunk].name,
                              Rando::StaticData::Items[RANDO_SAVE_CHECKS[checkWithJunk].randoItemId].spoilerName);
             }

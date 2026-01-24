@@ -148,6 +148,8 @@ void SaveExcludedChecks() {
         excludedString += ",";
     }
     CVarSetString("gRando.ExcludedChecks", excludedString.c_str());
+    Ship::Context::GetInstance()->GetWindow()->GetGui()->SaveConsoleVariablesNextFrame();
+    ShipInit::Init("gRando.ExcludedChecks");
 }
 
 void LoadExcludedChecks() {
@@ -211,6 +213,7 @@ void RefreshMetrics() {
 
 static RegisterShipInitFunc refreshMetricsInit(RefreshMetrics, {
                                                                    // I Don't love this, but it works...
+                                                                   "gRando.ExcludedChecks",
                                                                    "gRando.Options.RO_ACCESS_DUNGEONS",
                                                                    "gRando.Options.RO_ACCESS_MAJORA_MASKS_COUNT",
                                                                    "gRando.Options.RO_ACCESS_MAJORA_REMAINS_COUNT",
