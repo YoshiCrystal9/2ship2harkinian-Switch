@@ -11,7 +11,7 @@ extern "C" {
 
 void ApplySwampSpiderHouseHint(u16* textId, bool* loadFromMessageTable) {
     CustomMessage::Entry entry = {
-        .msg = "Make me...normal again...I'll give you %g{{itemName}}%w...Please...help me...\xE0",
+        .msg = "Make me...normal again...I'll give you %g{{item}}%w...Please...help me...\xE0",
     };
 
     CustomMessage::Replace(
@@ -25,12 +25,12 @@ void ApplySwampSpiderHouseHint(u16* textId, bool* loadFromMessageTable) {
 
 void ApplyOceanSpiderHouseHint(u16* textId, bool* loadFromMessageTable) {
     CustomMessage::Entry entry = {
-        .msg = "Huh? How'd I get up here... Why do I have %g{{article}}{{item}}%w in my pocket...?\xE0",
+        .msg = "Huh? How'd I get up here... Why do I have %g{{item}}%w in my pocket...?\xE0",
     };
 
     CustomMessage::Replace(&entry.msg, "{{item}}",
                            Rando::StaticData::GetItemName(RANDO_SAVE_CHECKS[RC_OCEAN_SPIDER_HOUSE_WALLET].randoItemId,
-                                                          false, RC_OCEAN_SPIDER_HOUSE_WALLET));
+                                                          true, RC_OCEAN_SPIDER_HOUSE_WALLET));
 
     CustomMessage::LoadCustomMessageIntoFont(entry);
     *loadFromMessageTable = false;
