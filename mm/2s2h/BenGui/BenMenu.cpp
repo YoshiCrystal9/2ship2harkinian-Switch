@@ -17,6 +17,7 @@
 #include "ResolutionEditor.h"
 #include "2s2h/Rando/Rando.h"
 #include "build.h"
+#include "ship/port/switch/SwitchImpl.h"
 
 extern "C" {
 #include "z64.h"
@@ -43,6 +44,17 @@ static const std::unordered_map<int32_t, const char*> menuThemeOptions = {
     { UIWidgets::Colors::Brown, "Brown" },
     { UIWidgets::Colors::Gray, "Gray" },
     { UIWidgets::Colors::DarkGray, "Dark Gray" },
+};
+
+
+static const std::unordered_map<int32_t, const char*> SwitchOCProfiles = {
+    { Ship::MAXIMUM, "MAXIMUM" },
+    { Ship::HIGH, "HIGH" },
+    { Ship::BOOST, "BOOST" },
+    { Ship::STOCK, "STOCK" },
+    { Ship::POWERSAVINGM1, "POWERSAVINGM1" },
+    { Ship::POWERSAVINGM2, "POWERSAVINGM2" },
+    { Ship::POWERSAVINGM3, "POWERSAVINGM3" },
 };
 
 static const std::vector<const char*> alwaysWinDoggyraceOptions = {
@@ -485,7 +497,7 @@ void BenMenu::AddSettings() {
                 .Format("")
                 .Min(0.5f)
                 .Max(2.0f));
-#ifndef __WIIU__
+#if defined(__SWITCH__) or defined(__WIIU__)
     AddWidget(path, "Anti-aliasing (MSAA): %d", WIDGET_CVAR_SLIDER_INT)
         .CVar(CVAR_MSAA_VALUE)
         .Callback([](WidgetInfo& info) {
@@ -499,6 +511,17 @@ void BenMenu::AddSettings() {
                 .Min(1)
                 .Max(8)
                 .DefaultValue(1));
+#endif
+#ifdef __SWITCH__
+    AddWidget(path, "Switch performance mode", WIDGET_CVAR_COMBOBOX)
+        .CVar("gSwitchPerfMode")
+        .Callback([](WidgetInfo& info) {
+            Ship::Switch::ApplyOverclock();;
+        })
+        .Options(ComboboxOptions().Tooltip("Sets the Switch performance mode.")
+                     .DefaultIndex(Ship::SwitchProfiles::STOCK)
+                     .ComboMap(&SwitchOCProfiles));
+    SPDLOG_INFO("Profile:: %s", SWITCH_CPU_PROFILES[CVarGetInteger("gSwitchPerfMode", (int)Ship::SwitchProfiles::STOCK)]);
 #endif
 
     AddWidget(path, "Current FPS: %d", WIDGET_CVAR_SLIDER_INT)
