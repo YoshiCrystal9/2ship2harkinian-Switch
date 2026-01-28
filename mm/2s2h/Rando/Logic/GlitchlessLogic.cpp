@@ -85,16 +85,10 @@ void ApplyGlitchlessLogicToSaveContext(std::vector<RandoCheckId>& checkPool, std
 
             // Apply any new events
             for (auto& randoEvent : randoRegion.events) {
-                // When Clock Shuffle is active, always check events (don't skip based on eventsInLogic)
-                bool skipEventCheck = !SettingClocks() && eventsInLogic.contains(&randoEvent);
-
-                if (!skipEventCheck && randoEvent.second()) {
-                    // Only increment if not already triggered
-                    if (!eventsInLogic.contains(&randoEvent)) {
-                        RANDO_EVENTS[randoEvent.first]++;
-                        eventsInLogic.insert(&randoEvent);
-                        eventsInLogicChanged = true;
-                    }
+                if (!eventsInLogic.contains(&randoEvent) && randoEvent.second()) {
+                    RANDO_EVENTS[randoEvent.first]++;
+                    eventsInLogic.insert(&randoEvent);
+                    eventsInLogicChanged = true;
                 }
             }
 
@@ -147,10 +141,6 @@ void ApplyGlitchlessLogicToSaveContext(std::vector<RandoCheckId>& checkPool, std
                                 timeState.timeSlices = TimeLogic::ExpandTimeForward(newTimeSlices, Regions[regionId]);
                             }
                         }
-                        // Trigger region re-exploration to discover new regions accessible with expanded time
-                        // Also trigger event re-evaluation since time-gated events may now be accessible
-                        regionsInLogicChanged = true;
-                        eventsInLogicChanged = true;
                     }
 
                     checksInLogicChanged = true;
