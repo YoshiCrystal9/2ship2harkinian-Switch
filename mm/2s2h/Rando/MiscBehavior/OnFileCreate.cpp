@@ -65,7 +65,7 @@ void Rando::MiscBehavior::OnFileCreate(s16 fileNum) {
 
                 // If Skulltula tokens are not shuffled, use the vanilla requirement
                 if (!RANDO_SAVE_OPTIONS[RO_SHUFFLE_GOLD_SKULLTULAS]) {
-                    RANDO_SAVE_OPTIONS[RO_MINIMUM_SKULLTULA_TOKENS] = SPIDER_HOUSE_TOKENS_REQUIRED;
+                    RANDO_SAVE_OPTIONS[RO_SKULLTULA_TOKENS_REQUIRED] = SPIDER_HOUSE_TOKENS_REQUIRED;
                 }
 
                 // Persist StartingItems to the save

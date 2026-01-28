@@ -226,13 +226,13 @@ void ValidateRegionTimeOwnership(RandoRegionId regionId, RandoCheckId checkId, u
     ((RANDO_SAVE_CHECKS[rc].price < 100) || (RANDO_SAVE_CHECKS[rc].price <= 200 && CUR_UPG_VALUE(UPG_WALLET) >= 1) || \
      (CUR_UPG_VALUE(UPG_WALLET) >= 2))
 #define HAS_ENOUGH_STRAY_FAIRIES(dungeonIndex) \
-    (gSaveContext.save.saveInfo.inventory.strayFairies[dungeonIndex] >= RANDO_SAVE_OPTIONS[RO_MINIMUM_STRAY_FAIRIES])
+    (gSaveContext.save.saveInfo.inventory.strayFairies[dungeonIndex] >= RANDO_SAVE_OPTIONS[RO_STRAY_FAIRIES_REQUIRED])
 #define FOUND_ALL_FROGS                                                                  \
     (CHECK_WEEKEVENTREG(WEEKEVENTREG_33_01) && CHECK_WEEKEVENTREG(WEEKEVENTREG_32_40) && \
      CHECK_WEEKEVENTREG(WEEKEVENTREG_32_80) && CHECK_WEEKEVENTREG(WEEKEVENTREG_33_02))
 #define CAN_USE_ABILITY(ability) Flags_GetRandoInf(RI_ABILITY_##ability - RI_ABILITY_SWIM + RANDO_INF_OBTAINED_SWIM)
 #define HAS_ENOUGH_SKULLTULA_TOKENS(sceneId) \
-    (Inventory_GetSkullTokenCount(sceneId) >= RANDO_SAVE_OPTIONS[RO_MINIMUM_SKULLTULA_TOKENS])
+    (Inventory_GetSkullTokenCount(sceneId) >= RANDO_SAVE_OPTIONS[RO_SKULLTULA_TOKENS_REQUIRED])
 
 #define EVENT(randoEvent, condition)         \
     {                                        \

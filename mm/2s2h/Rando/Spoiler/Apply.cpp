@@ -20,7 +20,7 @@ void ApplyToSaveContext(nlohmann::json spoiler) {
     }
 
     if (!RANDO_SAVE_OPTIONS[RO_SHUFFLE_GOLD_SKULLTULAS]) {
-        RANDO_SAVE_OPTIONS[RO_MINIMUM_SKULLTULA_TOKENS] = SPIDER_HOUSE_TOKENS_REQUIRED;
+        RANDO_SAVE_OPTIONS[RO_SKULLTULA_TOKENS_REQUIRED] = SPIDER_HOUSE_TOKENS_REQUIRED;
     }
 
     auto startingItems = Rando::GetStartingItemsFromSpoiler(spoiler);

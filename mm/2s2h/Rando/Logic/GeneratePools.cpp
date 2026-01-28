@@ -230,6 +230,44 @@ void GeneratePools(RandoSaveInfo& saveInfo, std::vector<RandoCheckId>& checkPool
         }
     }
 
+    // Remove extra stray fairies/gold skulltulas from the pool
+    std::map<RandoItemId, int> removeAbleItemsInPool = {
+        { RI_STONE_TOWER_STRAY_FAIRY, 0 }, { RI_GREAT_BAY_STRAY_FAIRY, 0 }, { RI_SNOWHEAD_STRAY_FAIRY, 0 },
+        { RI_WOODFALL_STRAY_FAIRY, 0 },    { RI_GS_TOKEN_SWAMP, 0 },        { RI_GS_TOKEN_OCEAN, 0 },
+    };
+    for (RandoItemId itemId : itemPool) {
+        if (removeAbleItemsInPool.find(itemId) != removeAbleItemsInPool.end()) {
+            removeAbleItemsInPool[itemId]++;
+        }
+    }
+    for (auto& [itemId, count] : removeAbleItemsInPool) {
+        int max = 0;
+        switch (itemId) {
+            case RI_STONE_TOWER_STRAY_FAIRY:
+            case RI_GREAT_BAY_STRAY_FAIRY:
+            case RI_SNOWHEAD_STRAY_FAIRY:
+            case RI_WOODFALL_STRAY_FAIRY:
+                max = saveInfo.randoSaveOptions[RO_STRAY_FAIRIES_MAX];
+                break;
+            case RI_GS_TOKEN_SWAMP:
+            case RI_GS_TOKEN_OCEAN:
+                max = saveInfo.randoSaveOptions[RO_SKULLTULA_TOKENS_MAX];
+                break;
+            default:
+                break;
+        }
+
+        while (count > max) {
+            auto it = std::find(itemPool.begin(), itemPool.end(), itemId);
+            if (it != itemPool.end()) {
+                itemPool.erase(it);
+                count--;
+            } else {
+                break;
+            }
+        }
+    }
+
     // Remove starting items from the pool (but only one per entry in startingItems)
     for (RandoItemId startingItem : startingItems) {
         auto it = std::find(itemPool.begin(), itemPool.end(), startingItem);

@@ -79,7 +79,7 @@ void Rando::ActorBehavior::InitEnElfgrpBehavior() {
         // Exclude the Clock Town fairy, and do not do more than once at a time
         if (enElfgrp->type != ENELFGRP_TYPE_MAGIC &&
             gSaveContext.save.saveInfo.inventory.strayFairies[enElfgrp->type - 1] >=
-                RANDO_SAVE_OPTIONS[RO_MINIMUM_STRAY_FAIRIES] &&
+                RANDO_SAVE_OPTIONS[RO_STRAY_FAIRIES_REQUIRED] &&
             !RANDO_SAVE_CHECKS[fairyCheckMap.at(enElfgrp->type)].eligible) {
             enElfgrp->actionFunc = func_80A3A398;
         }

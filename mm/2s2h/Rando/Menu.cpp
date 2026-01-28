@@ -238,8 +238,6 @@ static RegisterShipInitFunc refreshMetricsInit(RefreshMetrics, {
                                                                    "gRando.Options.RO_HINTS_SPIDER_HOUSES",
                                                                    "gRando.Options.RO_TRAP_AMOUNT",
                                                                    "gRando.Options.RO_LOGIC",
-                                                                   "gRando.Options.RO_MINIMUM_SKULLTULA_TOKENS",
-                                                                   "gRando.Options.RO_MINIMUM_STRAY_FAIRIES",
                                                                    "gRando.Options.RO_PLENTIFUL_ITEMS",
                                                                    "gRando.Options.RO_SHUFFLE_BARREL_DROPS",
                                                                    "gRando.Options.RO_SHUFFLE_BOSS_REMAINS",
@@ -265,10 +263,14 @@ static RegisterShipInitFunc refreshMetricsInit(RefreshMetrics, {
                                                                    "gRando.Options.RO_SHUFFLE_SWIM",
                                                                    "gRando.Options.RO_SHUFFLE_TINGLE_SHOPS",
                                                                    "gRando.Options.RO_SHUFFLE_TRIFORCE_PIECES",
+                                                                   "gRando.Options.RO_SKULLTULA_TOKENS_MAX",
+                                                                   "gRando.Options.RO_SKULLTULA_TOKENS_REQUIRED",
                                                                    "gRando.Options.RO_STARTING_CONSUMABLES",
                                                                    "gRando.Options.RO_STARTING_HEALTH",
                                                                    "gRando.Options.RO_STARTING_MAPS_AND_COMPASSES",
                                                                    "gRando.Options.RO_STARTING_RUPEES",
+                                                                   "gRando.Options.RO_STRAY_FAIRIES_MAX",
+                                                                   "gRando.Options.RO_STRAY_FAIRIES_REQUIRED",
                                                                    "gRando.Options.RO_TRIFORCE_PIECES_MAX",
                                                                    "gRando.Options.RO_TRIFORCE_PIECES_REQUIRED",
                                                                });
@@ -411,7 +413,7 @@ static void DrawLogicConditionsTab() {
 }
 
 static void DrawShufflesTab() {
-    f32 columnWidth = ImGui::GetContentRegionAvail().x / 2 - (ImGui::GetStyle().ItemSpacing.x * 2);
+    f32 columnWidth = ImGui::GetContentRegionAvail().x / 3 - (ImGui::GetStyle().ItemSpacing.x * 2);
     f32 halfHeight = 0;
     ImGui::SeparatorText("Shuffle Options");
     ImGui::BeginChild("randoShufflesColumn1", ImVec2(columnWidth, halfHeight));
@@ -423,22 +425,88 @@ static void DrawShufflesTab() {
     CVarCheckbox("Shuffle Boss Remains", Rando::StaticData::Options[RO_SHUFFLE_BOSS_REMAINS].cvar);
     CVarCheckbox("Shuffle Cows", Rando::StaticData::Options[RO_SHUFFLE_COWS].cvar);
     CVarCheckbox("Shuffle Gold Skulltula Tokens", Rando::StaticData::Options[RO_SHUFFLE_GOLD_SKULLTULAS].cvar);
-    CVarSliderInt("Minimum Required Gold Skulltula Tokens",
-                  Rando::StaticData::Options[RO_MINIMUM_SKULLTULA_TOKENS].cvar,
-                  IntSliderOptions(
-                      { { .tooltip = "Minimum Gold Skulltula tokens needed to obtain the Spider House checks.",
-                          .disabled = !CVarGetInteger(Rando::StaticData::Options[RO_SHUFFLE_GOLD_SKULLTULAS].cvar, 0),
-                          .disabledTooltip = "Only takes effect if Gold Skulltula Tokens are shuffled." } })
-                      .Min(1)
-                      .Max(SPIDER_HOUSE_TOKENS_REQUIRED)
-                      .DefaultValue(SPIDER_HOUSE_TOKENS_REQUIRED));
+    ImGui::BeginDisabled(!CVarGetInteger(Rando::StaticData::Options[RO_SHUFFLE_GOLD_SKULLTULAS].cvar, RO_GENERIC_OFF));
     CVarSliderInt(
-        "Minimum Required Stray Fairies", Rando::StaticData::Options[RO_MINIMUM_STRAY_FAIRIES].cvar,
-        IntSliderOptions({ { .tooltip = "Minimum Stray Fairies needed to obtain the corresponding Great Fairy check.\n"
-                                        "Does not affect the Clock Town fairy." } })
+        "Required Gold Skulltula Tokens", Rando::StaticData::Options[RO_SKULLTULA_TOKENS_REQUIRED].cvar,
+        IntSliderOptions()
+            .Tooltip("Minimum Gold Skulltula tokens needed to obtain the Spider House checks.")
+            .LabelPosition(UIWidgets::LabelPosition::None)
             .Min(1)
-            .Max(STRAY_FAIRY_SCATTERED_TOTAL)
+            .Format("%d Tokens Required")
+            .Max(CVarGetInteger(Rando::StaticData::Options[RO_SKULLTULA_TOKENS_MAX].cvar, SPIDER_HOUSE_TOKENS_REQUIRED))
+            .DefaultValue(SPIDER_HOUSE_TOKENS_REQUIRED));
+    if (CVarSliderInt("Gold Skulltula Tokens in Pool", Rando::StaticData::Options[RO_SKULLTULA_TOKENS_MAX].cvar,
+                      IntSliderOptions()
+                          .Tooltip("Maximum Gold Skulltula tokens that can appear in the item pool.")
+                          .LabelPosition(UIWidgets::LabelPosition::None)
+                          .Min(1)
+                          .Format("%d Tokens in Pool")
+                          .Max(SPIDER_HOUSE_TOKENS_REQUIRED)
+                          .DefaultValue(SPIDER_HOUSE_TOKENS_REQUIRED))) {
+        if (CVarGetInteger(Rando::StaticData::Options[RO_SKULLTULA_TOKENS_REQUIRED].cvar,
+                           SPIDER_HOUSE_TOKENS_REQUIRED) >
+            CVarGetInteger(Rando::StaticData::Options[RO_SKULLTULA_TOKENS_MAX].cvar, SPIDER_HOUSE_TOKENS_REQUIRED)) {
+            CVarSetInteger(
+                Rando::StaticData::Options[RO_SKULLTULA_TOKENS_REQUIRED].cvar,
+                CVarGetInteger(Rando::StaticData::Options[RO_SKULLTULA_TOKENS_MAX].cvar, SPIDER_HOUSE_TOKENS_REQUIRED));
+        }
+    }
+    ImGui::EndDisabled();
+    ImGui::Text("Stray Fairies");
+    CVarSliderInt(
+        "Required Stray Fairies", Rando::StaticData::Options[RO_STRAY_FAIRIES_REQUIRED].cvar,
+        IntSliderOptions()
+            .Tooltip("Minimum Stray Fairies needed to obtain the corresponding Great Fairy check.\n"
+                     "Does not affect the Clock Town fairy.")
+            .LabelPosition(UIWidgets::LabelPosition::None)
+            .Min(1)
+            .Format("%d Fairies Required")
+            .Max(CVarGetInteger(Rando::StaticData::Options[RO_STRAY_FAIRIES_MAX].cvar, STRAY_FAIRY_SCATTERED_TOTAL))
             .DefaultValue(STRAY_FAIRY_SCATTERED_TOTAL));
+    if (CVarSliderInt("Stray Fairies in Pool", Rando::StaticData::Options[RO_STRAY_FAIRIES_MAX].cvar,
+                      IntSliderOptions()
+                          .Tooltip("Maximum Stray Fairies that can appear in the item pool.")
+                          .LabelPosition(UIWidgets::LabelPosition::None)
+                          .Min(1)
+                          .Format("%d Fairies in Pool")
+                          .Max(STRAY_FAIRY_SCATTERED_TOTAL)
+                          .DefaultValue(STRAY_FAIRY_SCATTERED_TOTAL))) {
+        if (CVarGetInteger(Rando::StaticData::Options[RO_STRAY_FAIRIES_REQUIRED].cvar, STRAY_FAIRY_SCATTERED_TOTAL) >
+            CVarGetInteger(Rando::StaticData::Options[RO_STRAY_FAIRIES_MAX].cvar, STRAY_FAIRY_SCATTERED_TOTAL)) {
+            CVarSetInteger(
+                Rando::StaticData::Options[RO_STRAY_FAIRIES_REQUIRED].cvar,
+                CVarGetInteger(Rando::StaticData::Options[RO_STRAY_FAIRIES_MAX].cvar, STRAY_FAIRY_SCATTERED_TOTAL));
+        }
+    }
+    CVarCheckbox("Triforce Hunt", Rando::StaticData::Options[RO_SHUFFLE_TRIFORCE_PIECES].cvar);
+    ImGui::BeginDisabled(!CVarGetInteger(Rando::StaticData::Options[RO_SHUFFLE_TRIFORCE_PIECES].cvar, RO_GENERIC_OFF));
+    CVarSliderInt(
+        "Required Triforce Pieces", Rando::StaticData::Options[RO_TRIFORCE_PIECES_REQUIRED].cvar,
+        IntSliderOptions()
+            .Format("%d Pieces Required")
+            .LabelPosition(UIWidgets::LabelPosition::None)
+            .Min(1)
+            .Max(CVarGetInteger(Rando::StaticData::Options[RO_TRIFORCE_PIECES_MAX].cvar, DEFAULT_TRIFORCE_PIECES_MAX))
+            .DefaultValue(DEFAULT_TRIFORCE_PIECES_MAX));
+    if (CVarSliderInt(
+            "Shuffled Triforce Pieces", Rando::StaticData::Options[RO_TRIFORCE_PIECES_MAX].cvar,
+            IntSliderOptions()
+                .Format("%d Pieces in Pool")
+                .LabelPosition(UIWidgets::LabelPosition::None)
+                .Min(1)
+                .Max(1000)
+                .DefaultValue(DEFAULT_TRIFORCE_PIECES_MAX)
+                .Tooltip("If the maximum amount of placeable pieces exceeds what will allow the seed to generate, the "
+                         "amount will be adjusted automatically."))) {
+        if (CVarGetInteger(Rando::StaticData::Options[RO_TRIFORCE_PIECES_REQUIRED].cvar, DEFAULT_TRIFORCE_PIECES_MAX) >
+            CVarGetInteger(Rando::StaticData::Options[RO_TRIFORCE_PIECES_MAX].cvar, DEFAULT_TRIFORCE_PIECES_MAX)) {
+            CVarSetInteger(
+                Rando::StaticData::Options[RO_TRIFORCE_PIECES_REQUIRED].cvar,
+                CVarGetInteger(Rando::StaticData::Options[RO_TRIFORCE_PIECES_MAX].cvar, DEFAULT_TRIFORCE_PIECES_MAX));
+        }
+    }
+
+    ImGui::EndDisabled();
     ImGui::EndChild();
     ImGui::SameLine();
     ImGui::BeginChild("randoShufflesColumn2", ImVec2(columnWidth, halfHeight));
@@ -562,32 +630,6 @@ static void DrawItemsTab() {
                              "This setting is baked into the seed and cannot be changed after generation."));
         }
     }
-
-    CVarCheckbox("Triforce Hunt", Rando::StaticData::Options[RO_SHUFFLE_TRIFORCE_PIECES].cvar);
-    ImGui::BeginDisabled(!CVarGetInteger(Rando::StaticData::Options[RO_SHUFFLE_TRIFORCE_PIECES].cvar, RO_GENERIC_OFF));
-    CVarSliderInt(
-        "Required Triforce Pieces", Rando::StaticData::Options[RO_TRIFORCE_PIECES_REQUIRED].cvar,
-        IntSliderOptions({})
-            .Min(1)
-            .Max(CVarGetInteger(Rando::StaticData::Options[RO_TRIFORCE_PIECES_MAX].cvar, DEFAULT_TRIFORCE_PIECES_MAX))
-            .DefaultValue(DEFAULT_TRIFORCE_PIECES_MAX));
-    if (CVarSliderInt(
-            "Shuffled Triforce Pieces", Rando::StaticData::Options[RO_TRIFORCE_PIECES_MAX].cvar,
-            IntSliderOptions({})
-                .Min(1)
-                .Max(1000)
-                .DefaultValue(DEFAULT_TRIFORCE_PIECES_MAX)
-                .Tooltip("If the maximum amount of placeable pieces exceeds what will allow the seed to generate, the "
-                         "amount will be adjusted automatically."))) {
-        if (CVarGetInteger(Rando::StaticData::Options[RO_TRIFORCE_PIECES_REQUIRED].cvar, DEFAULT_TRIFORCE_PIECES_MAX) >
-            CVarGetInteger(Rando::StaticData::Options[RO_TRIFORCE_PIECES_MAX].cvar, DEFAULT_TRIFORCE_PIECES_MAX)) {
-            CVarSetInteger(
-                Rando::StaticData::Options[RO_TRIFORCE_PIECES_REQUIRED].cvar,
-                CVarGetInteger(Rando::StaticData::Options[RO_TRIFORCE_PIECES_MAX].cvar, DEFAULT_TRIFORCE_PIECES_MAX));
-        }
-    }
-
-    ImGui::EndDisabled();
     ImGui::EndChild();
     ImGui::SameLine();
     ImGui::BeginChild("randoItemsColumn3", ImVec2(columnWidth, ImGui::GetContentRegionAvail().y));

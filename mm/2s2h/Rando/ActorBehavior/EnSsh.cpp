@@ -58,10 +58,10 @@ void Rando::ActorBehavior::InitEnSshBehavior() {
          * Oceanside as the else. South Clock Town is not the Swamp Spider House, so it will still return the Oceanside
          * token count as expected.
          */
-        *should = Inventory_GetSkullTokenCount(gPlayState->sceneId) >= RANDO_SAVE_OPTIONS[RO_MINIMUM_SKULLTULA_TOKENS];
+        *should = Inventory_GetSkullTokenCount(gPlayState->sceneId) >= RANDO_SAVE_OPTIONS[RO_SKULLTULA_TOKENS_REQUIRED];
     });
 
     COND_VB_SHOULD(VB_NOT_HAVE_ALL_SKULLTULA_TOKENS, IS_RANDO, {
-        *should = Inventory_GetSkullTokenCount(gPlayState->sceneId) < RANDO_SAVE_OPTIONS[RO_MINIMUM_SKULLTULA_TOKENS];
+        *should = Inventory_GetSkullTokenCount(gPlayState->sceneId) < RANDO_SAVE_OPTIONS[RO_SKULLTULA_TOKENS_REQUIRED];
     });
 }
