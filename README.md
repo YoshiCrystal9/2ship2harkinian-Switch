@@ -68,12 +68,10 @@ If you're interested in creating and/or packing your own custom asset `.o2r`/`.o
 * [**fast64 - Blender plugin (Note that MM is not fully supported at this time)**](https://github.com/HarbourMasters/fast64)
 
 # Development
-### Building
 
 If you want to manually compile 2S2H, please consult the [building instructions](docs/BUILDING.md).
 
-
-### Playtesting
+# Nightly Builds
 If you want to playtest a continuous integration build, you can find them at the links below. Keep in mind that these are for playtesting only, and you will likely encounter bugs and possibly crashes. 
 
 * [Windows](https://nightly.link/HarbourMasters/2ship2harkinian/workflows/main/develop/2ship-windows.zip)
