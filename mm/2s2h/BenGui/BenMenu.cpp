@@ -802,7 +802,7 @@ void BenMenu::AddEnhancements() {
     AddWidget(path, "Camera Transition Speed: %d", WIDGET_CVAR_SLIDER_INT)
         .CVar("gEnhancements.Camera.FreeLook.TransitionSpeed")
         .PreFunc([](WidgetInfo& info) { info.isHidden = mBenMenu->disabledMap.at(DISABLE_FOR_FREE_LOOK_OFF).active; })
-        .Options(IntSliderOptions().Tooltip("Can someone help me?").Min(1).Max(900).DefaultValue(25));
+        .Options(IntSliderOptions().Min(1).Max(900).DefaultValue(25));
     AddWidget(path, "Max Camera Height Angle: %.0f\xC2\xB0", WIDGET_CVAR_SLIDER_FLOAT)
         .Callback([](WidgetInfo& info) { FreeLookPitchMinMax(); })
         .PreFunc([](WidgetInfo& info) { info.isHidden = mBenMenu->disabledMap.at(DISABLE_FOR_FREE_LOOK_OFF).active; })

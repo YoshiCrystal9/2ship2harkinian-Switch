@@ -79,6 +79,9 @@ TrackerImageObject GetImageObject(TrackerItemType itemType, u32 itemId) {
                     itemObtained =
                         gSaveContext.save.saveInfo.inventory.strayFairies[DUNGEON_SCENE_INDEX_STONE_TOWER_TEMPLE] > 0;
                 } break;
+                case RI_TRIFORCE_PIECE: {
+                    itemObtained = gSaveContext.save.shipSaveInfo.rando.foundTriforcePieces > 0;
+                } break;
                 default: {
                     itemObtained = !Rando::IsItemObtainable(randoItemId);
                 } break;

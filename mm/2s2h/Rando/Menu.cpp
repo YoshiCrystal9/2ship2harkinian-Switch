@@ -168,7 +168,7 @@ void LoadExcludedChecks() {
 static int checksInPool = 0;
 static int itemsInPool = 0;
 static int junkInPool = 0;
-static bool ableToBalance = true;
+static int balanceStatus = 0; // 0 = Able to balance, 1 = Unlikely to balance, 2 = Unable to balance
 static std::set<RandoItemId> setOfItemsInPool;
 void RefreshMetrics() {
     setOfItemsInPool.clear();
@@ -208,7 +208,15 @@ void RefreshMetrics() {
         setOfItemsInPool.insert(RI_TIME_DAY_3);
         setOfItemsInPool.insert(RI_TIME_NIGHT_3);
     }
-    ableToBalance = checksInPool >= (itemsInPool - junkInPool);
+    // If there are less checks than non-junk items, we can't balance
+    if (checksInPool < (itemsInPool - junkInPool)) {
+        balanceStatus = 2;
+        // If there are only slightly more checks than non-junk items, balancing is unlikely
+    } else if (checksInPool < (itemsInPool - junkInPool) + 10) {
+        balanceStatus = 1;
+    } else {
+        balanceStatus = 0;
+    }
 }
 
 static RegisterShipInitFunc refreshMetricsInit(RefreshMetrics, {
@@ -309,27 +317,30 @@ static void DrawGeneralTab() {
     float junkProgress = static_cast<float>(junkInPool) / static_cast<float>(itemsInPool);
 
     ImGui::SeparatorText("Current Settings Metrics");
+    ImGui::Text("Status:");
+    ImGui::SameLine();
+    if (balanceStatus == 0) {
+        ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "Able to Balance Pools");
+    } else if (balanceStatus == 1) {
+        ImGui::TextColored(ImVec4(1.0f, 0.65f, 0.0f, 1.0f), "May not be able to Balance Pools");
+    } else {
+        ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "Unable to Balance Pools");
+    }
     ImGui::Text("Checks in pool: %d", checksInPool);
     ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 4.0f);
     ImGui::PushStyleColor(ImGuiCol_PlotHistogram, UIWidgets::ColorValues.at(THEME_COLOR));
     ImGui::PushStyleColor(ImGuiCol_FrameBg, UIWidgets::ColorValues.at(UIWidgets::Colors::DarkGray));
     ImGui::ProgressBar(1.0f, ImVec2(mainWidth, 0.0f), "");
-    ImGui::Text("Items in Pool: %d", itemsInPool);
+    ImGui::Text("Items in Pool: %d", itemsInPool - junkInPool);
     ImGui::SameLine();
-    ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 0.5f), "(%d Junk Items)", junkInPool);
+    ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 0.5f), "(+ %d Junk Items)", junkInPool);
 
     ImGui::ProgressBar(1.0f - junkProgress, ImVec2(itemProgress, 0.0f), "");
     ImGui::PopStyleColor(2);
     ImGui::PopStyleVar();
-    ImGui::Text("Able to Balance:");
-    ImGui::SameLine();
-    if (ableToBalance) {
-        ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "Yes");
-    } else {
-        ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "No");
-    }
 
     ImGui::SeparatorText("Enhancements");
+    ImGui::TextWrapped("These options can be changed on the fly, and are not tied to the seed generation.");
     UIWidgets::CVarCheckbox(
         "Container Style Matches Contents", "gRando.CSMC",
         UIWidgets::CheckboxOptions().Tooltip("This will make the contents of a container match the container itself. "
@@ -581,7 +592,7 @@ static void DrawItemsTab() {
     ImGui::SameLine();
     ImGui::BeginChild("randoItemsColumn3", ImVec2(columnWidth, ImGui::GetContentRegionAvail().y));
     CVarCheckbox("Shuffle Traps", Rando::StaticData::Options[RO_SHUFFLE_TRAPS].cvar,
-                 CheckboxOptions({ { .tooltip = "Ice Trap time!" } }));
+                 CheckboxOptions({ { .tooltip = "Add trapped items to the pool." } }));
     CVarSliderInt(
         "##trapcount", Rando::StaticData::Options[RO_TRAP_AMOUNT].cvar,
         IntSliderOptions({ { .tooltip = "How many Traps are shuffled into the Item Pool.",
@@ -593,6 +604,7 @@ static void DrawItemsTab() {
             .Min(1)
             .Max(100)
             .DefaultValue(5));
+    ImGui::TextWrapped("Trap's fake item behavior can be altered at Rando > General > Near the bottom of the page");
     ImGui::SeparatorText("Toggle Trap Types");
     CVarCheckbox(
         "Freeze Traps", "gRando.Traps.Freeze",

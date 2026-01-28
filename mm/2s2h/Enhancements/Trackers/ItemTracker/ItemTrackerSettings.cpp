@@ -518,6 +518,8 @@ void DrawTrackerOptions() {
         UIWidgets::CVarCheckbox("Split Window Groups", "gSettings.ItemTracker.WindowGroup");
         UIWidgets::CVarCheckbox("Show Item Counts", "gSettings.ItemTracker.ItemCounts",
                                 UIWidgets::CheckboxOptions().DefaultValue(true));
+        ImGui::TextWrapped(
+            "Click or drag & drop individual items, or use the corner buttons to add/remove entire groups.");
         ImGui::TableNextColumn();
 
         UIWidgets::CVarCombobox("Window Type", "gSettings.ItemTracker.WindowType", windowTypes,
