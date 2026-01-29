@@ -125,7 +125,7 @@ static RegisterShipInitFunc initFunc([]() {
             CHECK(RC_SWAMP_SPIDER_HOUSE_JAR_ROOM_POT_03, true),
             CHECK(RC_SWAMP_SPIDER_HOUSE_JAR_ROOM_POT_04, true),
             CHECK(RC_SWAMP_SPIDER_HOUSE_JAR_ROOM_POT_05, true),
-            CHECK(RC_ENEMY_DROP_GIANT_BEE, CAN_USE_PROJECTILE), // In beehive
+            CHECK(RC_ENEMY_DROP_GIANT_BEE, CAN_USE_PROJECTILE && CanKillEnemy(ACTOR_EN_BEE)), // In beehive
         },
         .connections = {
             CONNECTION(RR_SWAMP_SPIDER_HOUSE_CENTER_ROOM_LOWER, true),
@@ -259,7 +259,7 @@ static RegisterShipInitFunc initFunc([]() {
             CHECK(RC_SWAMP_SKULLTULA_TREE_ROOM_TREE_01, CanKillEnemy(ACTOR_EN_SW)),
             CHECK(RC_SWAMP_SKULLTULA_TREE_ROOM_TREE_02, CanKillEnemy(ACTOR_EN_SW)),
             CHECK(RC_SWAMP_SKULLTULA_TREE_ROOM_TREE_03, CanKillEnemy(ACTOR_EN_SW)),
-            CHECK(RC_ENEMY_DROP_GIANT_BEE, CAN_USE_PROJECTILE), // In beehive
+            CHECK(RC_ENEMY_DROP_GIANT_BEE, CAN_USE_PROJECTILE && CanKillEnemy(ACTOR_EN_BEE)), // In beehive
         },
         .connections = {
             CONNECTION(RR_SWAMP_SPIDER_HOUSE_GOLD_ROOM_UPPER, true)

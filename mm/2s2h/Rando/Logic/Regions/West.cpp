@@ -92,7 +92,7 @@ static RegisterShipInitFunc initFunc([]() {
             CHECK(RC_GREAT_BAY_COAST_COW_GROTTO_GRASS_70, true),
             CHECK(RC_GREAT_BAY_COAST_COW_GROTTO_GRASS_71, true),
             CHECK(RC_GREAT_BAY_COAST_COW_GROTTO_GRASS_72, true),
-            CHECK(RC_ENEMY_DROP_GIANT_BEE, CAN_USE_PROJECTILE), // In a beehive
+            CHECK(RC_ENEMY_DROP_GIANT_BEE, CAN_USE_PROJECTILE && CanKillEnemy(ACTOR_EN_BEE)), // In a beehive
         },
         .connections = {
             CONNECTION(RR_GREAT_BAY_COAST_CLIFFSIDE, true), // TODO: Grotto mapping
