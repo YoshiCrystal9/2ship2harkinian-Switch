@@ -209,10 +209,10 @@ void RefreshMetrics() {
         setOfItemsInPool.insert(RI_TIME_NIGHT_3);
     }
     // If there are less checks than non-junk items, we can't balance
-    if (checksInPool < (itemsInPool - junkInPool)) {
+    if (checksInPool * 0.9f < itemsInPool - junkInPool) {
         balanceStatus = 2;
         // If there are only slightly more checks than non-junk items, balancing is unlikely
-    } else if (checksInPool < (itemsInPool - junkInPool) + 10) {
+    } else if (checksInPool * 0.85f < itemsInPool - junkInPool) {
         balanceStatus = 1;
     } else {
         balanceStatus = 0;
@@ -319,6 +319,8 @@ static void DrawGeneralTab() {
     float junkProgress = static_cast<float>(junkInPool) / static_cast<float>(itemsInPool);
 
     ImGui::SeparatorText("Current Settings Metrics");
+    ImGui::TextWrapped("To ensure proper balancing, aim for the item pool to be at least 10%% smaller than the check "
+                       "pool. (Not including junk items)");
     ImGui::Text("Status:");
     ImGui::SameLine();
     if (balanceStatus == 0) {
