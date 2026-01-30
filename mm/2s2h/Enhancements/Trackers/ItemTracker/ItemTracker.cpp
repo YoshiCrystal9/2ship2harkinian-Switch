@@ -176,9 +176,11 @@ std::string GetItemCounts(TrackerItemType itemType, u32 itemId) {
         case TRACKER_ITEM_RANDO: {
             switch (itemId) {
                 case RI_TRIFORCE_PIECE: {
-                    auto max = RANDO_SAVE_OPTIONS[RO_TRIFORCE_PIECES_REQUIRED];
-                    countStr = fmt::format(FORMAT_COUNT, gSaveContext.save.shipSaveInfo.rando.foundTriforcePieces,
-                                           max > 999 ? "1k" : std::to_string(max));
+                    if (IS_RANDO && RANDO_SAVE_OPTIONS[RO_SHUFFLE_TRIFORCE_PIECES]) {
+                        auto max = RANDO_SAVE_OPTIONS[RO_TRIFORCE_PIECES_REQUIRED];
+                        countStr = fmt::format(FORMAT_COUNT, gSaveContext.save.shipSaveInfo.rando.foundTriforcePieces,
+                                               max > 999 ? "1k" : std::to_string(max));
+                    }
                 } break;
                 case RI_GS_TOKEN_OCEAN:
                 case RI_GS_TOKEN_SWAMP: {
