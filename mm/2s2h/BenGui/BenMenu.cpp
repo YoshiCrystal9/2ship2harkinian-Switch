@@ -1088,9 +1088,9 @@ void BenMenu::AddEnhancements() {
     AddWidget(path, "Curiosity Shop Refills", WIDGET_CVAR_CHECKBOX)
         .CVar("gEnhancements.Shops.CuriosityShopRefills")
         .Options(CheckboxOptions().Tooltip(
-            "Adds refillable bottles to the Curiosity Shop after completing certain prerequisites:\\n"
-            "- Seahorse: After obtaining a Bottle, Zora Mask, Pictograph Box & (Rando Only) Swim Ability\\n"
-            "- Gold Dust: After obtaining the Gold Dust bottle\\n"
+            "Adds refillable bottles to the Curiosity Shop after completing certain prerequisites:\n"
+            "- Seahorse: After obtaining a Bottle, Zora Mask, Pictograph Box & (Rando Only) Swim Ability\n"
+            "- Gold Dust: After obtaining the Gold Dust bottle\n"
             "- Chateau Romani: After obtaining Chateau Romani"));
     AddWidget(path, "Accessibility", WIDGET_SEPARATOR_TEXT);
     AddWidget(path, "Disable Screen Flash for Enemy Kills", WIDGET_CVAR_CHECKBOX)
