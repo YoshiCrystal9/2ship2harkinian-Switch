@@ -1089,7 +1089,7 @@ void BenMenu::AddEnhancements() {
         .CVar("gEnhancements.Shops.CuriosityShopRefills")
         .Options(CheckboxOptions().Tooltip(
             "Adds refillable bottles to the Curiosity Shop after completing certain prerequisites:\\n"
-            "- Seahorse: After reuniting the seahorses at Pinnacle Rock\\n"
+            "- Seahorse: After obtaining a Bottle, Zora Mask, Pictograph Box & (Rando Only) Swim Ability\\n"
             "- Gold Dust: After obtaining the Gold Dust bottle\\n"
             "- Chateau Romani: After obtaining Chateau Romani"));
     AddWidget(path, "Accessibility", WIDGET_SEPARATOR_TEXT);

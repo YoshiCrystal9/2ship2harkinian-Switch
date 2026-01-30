@@ -56,19 +56,62 @@ static const RefillItem* GetRefillItem(s16 shopId) {
     return &sRefillItems[shopId];
 }
 
+static bool HasAccessToGreatBay() {
+    if (gSaveContext.save.saveInfo.inventory.items[SLOT_OCARINA] == ITEM_NONE) {
+        return false;
+    }
+
+    if (CHECK_QUEST_ITEM(QUEST_SONG_EPONA)) {
+        return true;
+    }
+
+    if (CHECK_QUEST_ITEM(QUEST_SONG_SOARING)) {
+        if (GET_OWL_STATUE_ACTIVATED(OWL_WARP_GREAT_BAY_COAST)) {
+            return true;
+        }
+
+        if (GET_OWL_STATUE_ACTIVATED(OWL_WARP_ZORA_CAPE)) {
+            return true;
+        }
+    }
+    return false;
+}
+
+// Note: IsRefillAvailable checks for bottle availibility. We don't need to do that here.
+static bool HasSeahorseRequirements() {
+    if (!HasAccessToGreatBay()) {
+        return false;
+    }
+
+    if (gSaveContext.save.saveInfo.inventory.items[SLOT_MASK_ZORA] == ITEM_NONE) {
+        return false;
+    }
+
+    if (gSaveContext.save.saveInfo.inventory.items[SLOT_PICTOGRAPH_BOX] == ITEM_NONE) {
+        return false;
+    }
+
+    if (IS_RANDO && RANDO_SAVE_OPTIONS[RO_SHUFFLE_SWIM] && !Flags_GetRandoInf(RANDO_INF_OBTAINED_SWIM)) {
+        return false;
+    }
+
+    return true;
+}
+
 static bool IsRefillAvailable(const RefillItem& item) {
     // If they got it in their inventory don't even offer the thing for sale
     if (Inventory_HasItemInBottle(item.itemId)) {
         return false;
     }
 
+    if (item.itemId == ITEM_SEAHORSE) {
+        return HasSeahorseRequirements();
+    }
+
     if (IS_RANDO) {
         if (item.randoItem != RI_NONE) {
             RandoCheckId itemPlacement = Rando::FindItemPlacement(item.randoItem);
             return itemPlacement != RC_UNKNOWN && RANDO_SAVE_CHECKS[itemPlacement].obtained;
-        } else if (item.itemId == ITEM_SEAHORSE) {
-            // Seahorse doesn't have a rando item, check week event flag directly
-            return CHECK_WEEKEVENTREG(WEEKEVENTREG_RECEIVED_SEAHORSE_HEART_PIECE);
         }
     }
 
