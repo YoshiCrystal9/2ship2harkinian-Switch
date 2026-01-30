@@ -1,5 +1,6 @@
 #include "HudEditor.h"
 #include "macros.h"
+#include "2s2h/ShipInit.hpp"
 
 extern "C" int16_t OTRGetRectDimensionFromLeftEdge(float v);
 extern "C" int16_t OTRGetRectDimensionFromRightEdge(float v);
@@ -7,28 +8,29 @@ extern "C" int16_t OTRGetRectDimensionFromRightEdge(float v);
 HudEditorElementID hudEditorActiveElement = HUD_EDITOR_ELEMENT_NONE;
 HudEditorElementMode hudEditorOverrideNextElemMode = HUD_EDITOR_ELEMENT_MODE_NONE;
 
+// clang-format off
 HudEditorElement hudEditorElements[HUD_EDITOR_ELEMENT_MAX] = {
-    HUD_EDITOR_ELEMENT(HUD_EDITOR_ELEMENT_B, "B Button", "B", 167, 17, 100, 255, 120, 255),
-    HUD_EDITOR_ELEMENT(HUD_EDITOR_ELEMENT_C_LEFT, "C-Left Button", "CLeft", 227, 18, 255, 240, 0, 255),
-    HUD_EDITOR_ELEMENT(HUD_EDITOR_ELEMENT_C_DOWN, "C-Down Button", "CDown", 249, 34, 255, 240, 0, 255),
-    HUD_EDITOR_ELEMENT(HUD_EDITOR_ELEMENT_C_RIGHT, "C-Right Button", "CRight", 271, 18, 255, 240, 0, 255),
-    HUD_EDITOR_ELEMENT(HUD_EDITOR_ELEMENT_A, "A Button", "A", 191, 18, 100, 200, 255, 255),
-    HUD_EDITOR_ELEMENT(HUD_EDITOR_ELEMENT_C_UP, "C-Up Button", "CUp", 254, 16, 255, 240, 0, 255),
-    HUD_EDITOR_ELEMENT(HUD_EDITOR_ELEMENT_D_PAD, "D-Pad", "DPad", 271, 55, 255, 255, 255, 255),
-    HUD_EDITOR_ELEMENT(HUD_EDITOR_ELEMENT_MINIMAP, "Minimap", "Minimap", 295, 220, 0, 255, 255, 160),
-    HUD_EDITOR_ELEMENT(HUD_EDITOR_ELEMENT_START, "Start Button", "Start", 136, 17, 255, 130, 60, 255),
-    HUD_EDITOR_ELEMENT(HUD_EDITOR_ELEMENT_CARROT, "Horse Carrots", "Carrots", 160, 64, 236, 92, 41, 255),
-    HUD_EDITOR_ELEMENT(HUD_EDITOR_ELEMENT_CLOCK, "Three Day Clock", "Clock", 160, 206, 255, 255, 255, 255),
-    HUD_EDITOR_ELEMENT(HUD_EDITOR_ELEMENT_HEARTS, "Hearts", "Hearts", 30, 26, 255, 70, 50, 255),
-    HUD_EDITOR_ELEMENT(HUD_EDITOR_ELEMENT_MAGIC_METER, "Magic", "Magic", 18, 34, 0, 200, 0, 255),
-    HUD_EDITOR_ELEMENT(HUD_EDITOR_ELEMENT_TIMERS, "Timers", "Timers", 26, 46, 255, 255, 255, 255),
-    HUD_EDITOR_ELEMENT(HUD_EDITOR_ELEMENT_TIMERS_MOON_CRASH, "Timer - Skull Kid", "SkullKidTimer", 115, 200, 255, 255,
-                       255, 255),
-    HUD_EDITOR_ELEMENT(HUD_EDITOR_ELEMENT_MINIGAME_COUNTER, "Minigames", "Minigames", 20, 67, 255, 255, 255, 255),
-    HUD_EDITOR_ELEMENT(HUD_EDITOR_ELEMENT_RUPEE_COUNTER, "Rupees", "Rupees", 26, 206, 200, 255, 100, 255),
-    HUD_EDITOR_ELEMENT(HUD_EDITOR_ELEMENT_KEY_COUNTER, "Keys", "Keys", 26, 190, 255, 255, 255, 255),
-    HUD_EDITOR_ELEMENT(HUD_EDITOR_ELEMENT_SKULLTULA_COUNTER, "Skulltulas", "Skulltulas", 26, 190, 255, 255, 255, 255),
+    HUD_EDITOR_ELEMENT(HUD_EDITOR_ELEMENT_B, "B Button", "B", 167, 17, 100, 255, 120, 255, COSMETIC_ELEMENT_B_BUTTON),
+    HUD_EDITOR_ELEMENT(HUD_EDITOR_ELEMENT_C_LEFT, "C-Left Button", "CLeft", 227, 18, 255, 240, 0, 255, COSMETIC_ELEMENT_C_LEFT_BUTTON),
+    HUD_EDITOR_ELEMENT(HUD_EDITOR_ELEMENT_C_DOWN, "C-Down Button", "CDown", 249, 34, 255, 240, 0, 255, COSMETIC_ELEMENT_C_DOWN_BUTTON),
+    HUD_EDITOR_ELEMENT(HUD_EDITOR_ELEMENT_C_RIGHT, "C-Right Button", "CRight", 271, 18, 255, 240, 0, 255, COSMETIC_ELEMENT_C_RIGHT_BUTTON),
+    HUD_EDITOR_ELEMENT(HUD_EDITOR_ELEMENT_A, "A Button", "A", 191, 18, 100, 200, 255, 255, COSMETIC_ELEMENT_A_BUTTON),
+    HUD_EDITOR_ELEMENT(HUD_EDITOR_ELEMENT_C_UP, "C-Up Button", "CUp", 254, 16, 255, 240, 0, 255, HUD_EDITOR_NO_COSMETIC),
+    HUD_EDITOR_ELEMENT(HUD_EDITOR_ELEMENT_D_PAD, "D-Pad", "DPad", 271, 55, 255, 255, 255, 255, COSMETIC_ELEMENT_D_PAD_BUTTON),
+    HUD_EDITOR_ELEMENT(HUD_EDITOR_ELEMENT_MINIMAP, "Minimap", "Minimap", 295, 220, 0, 255, 255, 160, COSMETIC_ELEMENT_MINIMAP),
+    HUD_EDITOR_ELEMENT(HUD_EDITOR_ELEMENT_START, "Start Button", "Start", 136, 17, 255, 130, 60, 255, COSMETIC_ELEMENT_START_BUTTON),
+    HUD_EDITOR_ELEMENT(HUD_EDITOR_ELEMENT_CARROT, "Horse Carrots", "Carrots", 160, 64, 236, 92, 41, 255, HUD_EDITOR_NO_COSMETIC),
+    HUD_EDITOR_ELEMENT(HUD_EDITOR_ELEMENT_CLOCK, "Three Day Clock", "Clock", 160, 206, 255, 255, 255, 255, HUD_EDITOR_NO_COSMETIC),
+    HUD_EDITOR_ELEMENT(HUD_EDITOR_ELEMENT_HEARTS, "Hearts", "Hearts", 30, 26, 255, 70, 50, 255, COSMETIC_ELEMENT_HEART_NORMAL),
+    HUD_EDITOR_ELEMENT(HUD_EDITOR_ELEMENT_MAGIC_METER, "Magic", "Magic", 18, 34, 0, 200, 0, 255, COSMETIC_ELEMENT_MAGIC_NORMAL),
+    HUD_EDITOR_ELEMENT(HUD_EDITOR_ELEMENT_TIMERS, "Timers", "Timers", 26, 46, 255, 255, 255, 255, HUD_EDITOR_NO_COSMETIC),
+    HUD_EDITOR_ELEMENT(HUD_EDITOR_ELEMENT_TIMERS_MOON_CRASH, "Timer - Skull Kid", "SkullKidTimer", 115, 200, 255, 255, 255, 255, HUD_EDITOR_NO_COSMETIC),
+    HUD_EDITOR_ELEMENT(HUD_EDITOR_ELEMENT_MINIGAME_COUNTER, "Minigames", "Minigames", 20, 67, 255, 255, 255, 255, HUD_EDITOR_NO_COSMETIC),
+    HUD_EDITOR_ELEMENT(HUD_EDITOR_ELEMENT_RUPEE_COUNTER, "Rupees", "Rupees", 26, 206, 200, 255, 100, 255, COSMETIC_ELEMENT_RUPEE_ICON),
+    HUD_EDITOR_ELEMENT(HUD_EDITOR_ELEMENT_KEY_COUNTER, "Keys", "Keys", 26, 190, 255, 255, 255, 255, COSMETIC_ELEMENT_SMALL_KEY),
+    HUD_EDITOR_ELEMENT(HUD_EDITOR_ELEMENT_SKULLTULA_COUNTER, "Skulltulas", "Skulltulas", 26, 190, 255, 255, 255, 255, HUD_EDITOR_NO_COSMETIC),
 };
+// clang-format on
 
 // Allows specifying an override mode to the next active element.
 // Must be called again with HUD_EDITOR_ELEMENT_MODE_NONE when done overriding.
@@ -183,8 +185,15 @@ void HudEditorWindow::DrawElement() {
             CVarClear(hudEditorElements[i].xCvar);
             CVarClear(hudEditorElements[i].yCvar);
             CVarClear(hudEditorElements[i].scaleCvar);
-            CVarClear(hudEditorElements[i].colorCvar);
             CVarClear(hudEditorElements[i].modeCvar);
+            // Also clear cosmetic colors for elements with mappings
+            if (hudEditorElements[i].cosmeticElementId >= 0) {
+                CosmeticEditorElement& cosmeticElement = cosmeticEditorElements[hudEditorElements[i].cosmeticElementId];
+                CVarClear(cosmeticElement.colorCvar);
+                CVarClear(cosmeticElement.colorChangedCvar);
+                ShipInit::Init(cosmeticElement.colorCvar);
+                ShipInit::Init(cosmeticElement.colorChangedCvar);
+            }
         }
 
         switch (preset) {
@@ -240,39 +249,58 @@ void HudEditorWindow::DrawElement() {
     for (int i = HUD_EDITOR_ELEMENT_B; i < HUD_EDITOR_ELEMENT_MAX; i++) {
         ImGui::PushID(hudEditorElements[i].name);
         ImGui::SeparatorText(hudEditorElements[i].name);
-        bool colorChanged = CVarGetInteger(hudEditorElements[i].colorChangedCvar, false);
-        float defaultColor[4] = { hudEditorElements[i].defaultR, hudEditorElements[i].defaultG,
-                                  hudEditorElements[i].defaultB, hudEditorElements[i].defaultA };
-        float color[4] = { defaultColor[0], defaultColor[1], defaultColor[2], defaultColor[3] };
 
-        // Move to Function
-        if (colorChanged) {
-            Color_RGBA8 changedColor = CVarGetColor(hudEditorElements[i].colorCvar, {});
-            color[0] = (float)changedColor.r / 255;
-            color[1] = (float)changedColor.g / 255;
-            color[2] = (float)changedColor.b / 255;
-            color[3] = (float)changedColor.a / 255;
-            colorChanged = false;
-        }
-        //
-        colorChanged = ImGui::ColorEdit3("Color", color, ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_NoLabel);
-        if (colorChanged) {
-            Color_RGBA8 colorSelected;
-            colorSelected.r = static_cast<uint8_t>(color[0] * 255.0f);
-            colorSelected.g = static_cast<uint8_t>(color[1] * 255.0f);
-            colorSelected.b = static_cast<uint8_t>(color[2] * 255.0f);
-            colorSelected.a = static_cast<uint8_t>(255.0f);
+        // Color picker - only enabled if this element has a cosmetic counterpart
+        bool hasCosmeticMapping = hudEditorElements[i].cosmeticElementId >= 0;
 
-            CVarSetColor(hudEditorElements[i].colorCvar, colorSelected);
-            CVarSetInteger(hudEditorElements[i].colorChangedCvar, true);
-            Ship::Context::GetInstance()->GetWindow()->GetGui()->SaveConsoleVariablesNextFrame();
-        }
-        ImGui::SameLine();
-        if (ImGui::Button(ICON_FA_REFRESH)) {
+        if (hasCosmeticMapping) {
+            CosmeticEditorElement& cosmeticElement = cosmeticEditorElements[hudEditorElements[i].cosmeticElementId];
+            bool colorChanged = CVarGetInteger(cosmeticElement.colorChangedCvar, false);
+            float defaultColor[4] = { cosmeticElement.defaultR / 255.0f, cosmeticElement.defaultG / 255.0f,
+                                      cosmeticElement.defaultB / 255.0f, cosmeticElement.defaultA / 255.0f };
             float color[4] = { defaultColor[0], defaultColor[1], defaultColor[2], defaultColor[3] };
-            CVarClear(hudEditorElements[i].colorCvar);
-            CVarClear(hudEditorElements[i].colorChangedCvar);
-            Ship::Context::GetInstance()->GetWindow()->GetGui()->SaveConsoleVariablesNextFrame();
+
+            if (colorChanged) {
+                Color_RGBA8 changedColor = CVarGetColor(cosmeticElement.colorCvar, {});
+                color[0] = (float)changedColor.r / 255;
+                color[1] = (float)changedColor.g / 255;
+                color[2] = (float)changedColor.b / 255;
+                color[3] = (float)changedColor.a / 255;
+            }
+
+            if (ImGui::ColorEdit3("Color", color, ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_NoLabel)) {
+                Color_RGBA8 colorSelected;
+                colorSelected.r = static_cast<uint8_t>(color[0] * 255.0f);
+                colorSelected.g = static_cast<uint8_t>(color[1] * 255.0f);
+                colorSelected.b = static_cast<uint8_t>(color[2] * 255.0f);
+                colorSelected.a = static_cast<uint8_t>(255.0f);
+
+                CVarSetColor(cosmeticElement.colorCvar, colorSelected);
+                CVarSetInteger(cosmeticElement.colorChangedCvar, true);
+                ShipInit::Init(cosmeticElement.colorCvar);
+                ShipInit::Init(cosmeticElement.colorChangedCvar);
+                Ship::Context::GetInstance()->GetWindow()->GetGui()->SaveConsoleVariablesNextFrame();
+            }
+            ImGui::SameLine();
+            if (ImGui::Button(ICON_FA_REFRESH)) {
+                CVarClear(cosmeticElement.colorCvar);
+                CVarClear(cosmeticElement.colorChangedCvar);
+                ShipInit::Init(cosmeticElement.colorCvar);
+                ShipInit::Init(cosmeticElement.colorChangedCvar);
+                Ship::Context::GetInstance()->GetWindow()->GetGui()->SaveConsoleVariablesNextFrame();
+            }
+        } else {
+            // Disabled color picker for elements without cosmetic mappings
+            ImGui::BeginDisabled();
+            float defaultColor[4] = { hudEditorElements[i].defaultR / 255.0f, hudEditorElements[i].defaultG / 255.0f,
+                                      hudEditorElements[i].defaultB / 255.0f, hudEditorElements[i].defaultA / 255.0f };
+            ImGui::ColorEdit3("Color", defaultColor, ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_NoLabel);
+            if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled)) {
+                ImGui::SetTooltip("%s", "Color customization is not yet available for this element.");
+            }
+            ImGui::SameLine();
+            ImGui::Button(ICON_FA_REFRESH);
+            ImGui::EndDisabled();
         }
         ImGui::SameLine();
         if (UIWidgets::CVarCombobox("Mode", hudEditorElements[i].modeCvar, modeNames,
