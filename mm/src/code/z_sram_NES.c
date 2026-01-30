@@ -1258,7 +1258,6 @@ void Sram_InitDebugSave(void) {
 }
 
 void Sram_ResetSaveFromMoonCrash(SramContext* sramCtx) {
-    GameInteractor_ExecuteBeforeMoonCrashSaveReset();
     s32 i;
     s32 cutsceneIndex = gSaveContext.save.cutsceneIndex;
 

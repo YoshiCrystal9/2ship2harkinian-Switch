@@ -12,7 +12,7 @@ extern "C" {
 #define CVAR CVarGetInteger(CVAR_NAME, 0)
 
 void RegisterMoonCrashSave() {
-    COND_HOOK(BeforeMoonCrashSaveReset, CVAR || IS_RANDO, []() {
+    COND_HOOK(BeforeMoonCrash, CVAR || IS_RANDO, []() {
         if (CVAR || (IS_RANDO && RANDO_SAVE_OPTIONS[RO_LOGIC] == RO_LOGIC_GLITCHLESS)) {
             SavingEnhancements_AdvancePlaytime();
             Sram_SaveEndOfCycle(gPlayState);

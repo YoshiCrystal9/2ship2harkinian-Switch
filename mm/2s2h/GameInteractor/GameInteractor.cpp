@@ -66,8 +66,8 @@ void GameInteractor_ExecuteAfterEndOfCycleSave() {
     GameInteractor::Instance->ExecuteHooks<GameInteractor::AfterEndOfCycleSave>();
 }
 
-void GameInteractor_ExecuteBeforeMoonCrashSaveReset() {
-    GameInteractor::Instance->ExecuteHooks<GameInteractor::BeforeMoonCrashSaveReset>();
+void GameInteractor_ExecuteBeforeMoonCrash() {
+    GameInteractor::Instance->ExecuteHooks<GameInteractor::BeforeMoonCrash>();
 }
 
 void GameInteractor_ExecuteOnInterfaceDrawStart() {

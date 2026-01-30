@@ -496,7 +496,7 @@ void GameInteractor_ExecuteOnSaveLoad(s16 fileNum);
 void GameInteractor_ExecuteOnFileSelectSaveLoad(s16 fileNum, bool isOwlSave, SaveContext* saveContext);
 void GameInteractor_ExecuteBeforeEndOfCycleSave();
 void GameInteractor_ExecuteAfterEndOfCycleSave();
-void GameInteractor_ExecuteBeforeMoonCrashSaveReset();
+void GameInteractor_ExecuteBeforeMoonCrash();
 void GameInteractor_ExecuteOnInterfaceDrawStart();
 void GameInteractor_ExecuteAfterInterfaceClockDraw();
 void GameInteractor_ExecuteBeforeInterfaceClockDraw();

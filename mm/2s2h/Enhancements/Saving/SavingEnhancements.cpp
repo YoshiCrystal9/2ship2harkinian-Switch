@@ -223,7 +223,7 @@ static RegisterShipInitFunc registerSavingEnhancements(
             SavingEnhancements_AdvancePlaytime();
             DeleteOwlSave();
         });
-        COND_HOOK(BeforeMoonCrashSaveReset, true, []() { DeleteOwlSave(); });
+        COND_HOOK(BeforeMoonCrash, true, []() { DeleteOwlSave(); });
 
         // Vanilla has an arbitrary 2 second delay when saving, we can't remove it entirely because
         // it's used to pull off certain 0th Day glitches (specifically Any Item as Any Form and Goron Missile),
