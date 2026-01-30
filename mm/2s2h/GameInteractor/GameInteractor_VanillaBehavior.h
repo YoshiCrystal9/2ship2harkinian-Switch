@@ -73,6 +73,14 @@ typedef enum {
 
     // #### `result`
     // ```c
+    // cylinderOc != NULL
+    // ```
+    // #### `args`
+    // - `*Actor` (cylinderOc)
+    VB_APPLY_BONK_TO_ACTOR,
+
+    // #### `result`
+    // ```c
     // !play->interfaceCtx.perfectLettersOn
     // ```
     // #### `args`
@@ -496,6 +504,7 @@ typedef enum {
     // ```
     // #### `args`
     // - `GetItemDrawId`
+    // - `DmChar05*`
     VB_DRAW_ITEM_FROM_DMCHAR05,
 
     // #### `result`
@@ -531,6 +540,23 @@ typedef enum {
     VB_DRAW_SLIME_RANDO_ITEM,
 
     // #### `result`
+    // #### In `Item_DropCollectible`:
+    // ```c
+    // true
+    // ```
+    // #### `args`
+    // - `*Vec3f` spawnPos
+    // - `u32` params
+    // #### In `Item_DropCollectibleRandom`:
+    // ```c
+    // true
+    // ```
+    // #### `args`
+    // - `*Vec3f` spawnPos
+    // - `u16` params
+    VB_DROP_COLLECTIBLE,
+
+    // #### `result`
     // ```c
     // (play->sceneId == SCENE_F40) || (play->sceneId == SCENE_F41) ||
     // (play->sceneId == SCENE_IKANAMAE) || (play->sceneId == SCENE_CASTLE) ||
@@ -559,23 +585,6 @@ typedef enum {
     // #### `args`
     // - `s16` (object ID)
     VB_ENABLE_OBJECT_DEPENDENCY,
-
-    // #### `result`
-    // #### In `Item_DropCollectible`:
-    // ```c
-    // true
-    // ```
-    // #### `args`
-    // - `*Vec3f` spawnPos
-    // - `u32` params
-    // #### In `Item_DropCollectibleRandom`:
-    // ```c
-    // true
-    // ```
-    // #### `args`
-    // - `*Vec3f` spawnPos
-    // - `u16` params
-    VB_ENEMY_DROP_COLLECTIBLE,
 
     // #### `result`
     // ```c
@@ -636,6 +645,14 @@ typedef enum {
     // #### `args`
     // - None
     VB_FLASH_SCREEN_FOR_ENEMY_KILL,
+
+    // #### `result`
+    // ```c
+    // false
+    // ```
+    // #### `args`
+    // - None
+    VB_EN_FSN_HAS_ITEMS,
 
     // #### `result`
     // ```c
@@ -937,6 +954,14 @@ typedef enum {
 
     // #### `result`
     // ```c
+    // true
+    // ```
+    // #### `args`
+    // - None
+    VB_GRANNY_STORY_INCREMENT_DAY,
+
+    // #### `result`
+    // ```c
     // gSaveContext.isMagicRequested
     // ```
     // #### `args`
@@ -1231,6 +1256,22 @@ typedef enum {
     // #### `args`
     // - `*EnMnk`
     VB_MONKEY_WAIT_TO_TALK_AFTER_APPROACH,
+
+    // #### `result`
+    // ```c
+    // false
+    // ```
+    // #### `args`
+    // - None
+    VB_MSG_CAPTURE_MSGMODE_TEXT_DONE,
+
+    // #### `result`
+    // ```c
+    // false
+    // ```
+    // #### `args`
+    // - None
+    VB_MSG_CAPTURE_MSGMODE_TEXT_CLOSING_OCARINA_ACTION,
 
     // #### `result`
     // ```c
@@ -1681,6 +1722,22 @@ typedef enum {
 
     // #### `result`
     // ```c
+    // OSTIME_TO_TIMER(osGetTime() - sramCtx->startWriteOsTime) >= SECONDS_TO_TIMER(2))
+    // ```
+    // #### `args`
+    // - None
+    VB_SAVE_DELAY,
+
+    // #### `result`
+    // ```c
+    // gSaveContext.save.isOwlSave
+    // ```
+    // #### `args`
+    // - None
+    VB_SAVE_USE_OWL_SAVE_TIMING,
+
+    // #### `result`
+    // ```c
     // false
     // ```
     // #### `args`
@@ -2049,6 +2106,21 @@ typedef enum {
     // #### `args`
     // - `*EnMThunder`
     VB_TRANSFORM_THUNDER_MATRIX,
+
+    // #### `result`
+    // #### In `EnSnowwd_Idle`:
+    // ```c
+    // !SNOWWD_DROPPED_COLLECTIBLE(&this->actor)
+    // ```
+    // #### `args`
+    // - `*EnSnowwd`
+    // #### In `ObjYasi_Update`:
+    // ```c
+    // CAN_DROP_NUT(thisx)
+    // ```
+    // #### `args`
+    // - `*ObjYasi`
+    VB_TREE_DROP_COLLECTIBLE,
 
     // #### `result`
     // ```c

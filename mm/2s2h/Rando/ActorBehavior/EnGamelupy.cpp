@@ -67,7 +67,8 @@ void Gamelupy_RandoDrawFunc(Actor* actor, PlayState* play) {
     auto randoSaveCheck = RANDO_SAVE_CHECKS[(RandoCheckId)actor->home.rot.x];
 
     Matrix_Scale(20.0f, 20.0f, 20.0f, MTXMODE_APPLY);
-    Rando::DrawItem(Rando::ConvertItem(randoSaveCheck.randoItemId, (RandoCheckId)actor->home.rot.x), actor);
+    Rando::DrawItem(Rando::ConvertItem(randoSaveCheck.randoItemId, (RandoCheckId)actor->home.rot.x),
+                    (RandoCheckId)actor->home.rot.x, actor);
 }
 
 void Rando::ActorBehavior::InitEnGamelupyBehavior() {

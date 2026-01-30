@@ -1,8 +1,6 @@
 #ifndef ENHANCEMENTS_H
 #define ENHANCEMENTS_H
 
-#include "Saving/SavingEnhancements.h"
-
 enum AlwaysWinDoggyRaceOptions {
     ALWAYS_WIN_DOGGY_RACE_OFF,
     ALWAYS_WIN_DOGGY_RACE_MASKOFTRUTH,
@@ -63,8 +61,5 @@ enum GoronRaceDifficultyOptions {
     GORON_RACE_DIFFICULTY_BALANCED,
     GORON_RACE_DIFFICULTY_SKIP,
 };
-
-// Old Entry Point
-void InitEnhancements();
 
 #endif // ENHANCEMENTS_H

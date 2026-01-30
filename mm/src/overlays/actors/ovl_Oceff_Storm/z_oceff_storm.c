@@ -185,8 +185,8 @@ void OceffStorm_Draw2(Actor* thisx, PlayState* play) {
     gDPSetPrimColor(POLY_XLU_DISP++, 0x80, 0x80, 200, 200, 150, this->primColorAlpha);
 
     gSPDisplayList(POLY_XLU_DISP++, &sSongOfStormsMaterialDL);
-    gSPDisplayList(POLY_XLU_DISP++, Gfx_TwoTexScroll(play->state.gfxCtx, G_TX_RENDERTILE, scroll * 8, scroll * 4, 64,
-                                                     64, 1, scroll * 4, scroll * 4, 64, 64));
+    gSPDisplayList(POLY_XLU_DISP++, Gfx_TwoTexScrollEx(play->state.gfxCtx, G_TX_RENDERTILE, scroll * 8, scroll * 4, 64,
+                                                       64, 1, scroll * 4, scroll * 4, 64, 64, 8, 4, 4, 4));
     // 2S2H [Cosmetic] Changed to Wide variant to support widescreen
     gSPWideTextureRectangle(POLY_XLU_DISP++, OTRGetRectDimensionFromLeftEdge(0) << 2, 0,
                             OTRGetRectDimensionFromRightEdge(SCREEN_WIDTH) << 2, SCREEN_HEIGHT << 2, G_TX_RENDERTILE, 0,
@@ -218,8 +218,9 @@ void OceffStorm_Draw(Actor* thisx, PlayState* play) {
     MATRIX_FINALIZE_AND_LOAD(POLY_XLU_DISP++, play->state.gfxCtx);
 
     gSPDisplayList(POLY_XLU_DISP++, &sSongOfStormsCylinderMaterialDL);
-    gSPDisplayList(POLY_XLU_DISP++, Gfx_TwoTexScroll(play->state.gfxCtx, G_TX_RENDERTILE, scroll * 4, (0 - scroll) * 8,
-                                                     32, 32, 1, scroll * 8, (0 - scroll) * 12, 32, 32));
+    gSPDisplayList(POLY_XLU_DISP++,
+                   Gfx_TwoTexScrollEx(play->state.gfxCtx, G_TX_RENDERTILE, scroll * 4, (0 - scroll) * 8, 32, 32, 1,
+                                      scroll * 8, (0 - scroll) * 12, 32, 32, 4, -8, 8, -12));
     gSPDisplayList(POLY_XLU_DISP++, &sSongOfStormsCylinderModelDL);
 
     CLOSE_DISPS(play->state.gfxCtx);

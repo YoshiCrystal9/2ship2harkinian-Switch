@@ -58,13 +58,27 @@ void EnTest4_HandleDayNightSwapFromInit(EnTest4* this, PlayState* play) {
 
     if (this->daytimeIndex != THREEDAY_DAYTIME_NIGHT) {
         // Previously day, turning night
-        Message_DisplaySceneTitleCard(play, sNightOfTextIds[CURRENT_DAY - 1]);
+        // @bug On 0th/4th day, this will read OOB, on console this results in an empty message
+        // 2S2H [Port] Opting to fix this, displaying the first day message on invalid days
+        // which we alter in SavingEnhancements.cpp
+        if (CURRENT_DAY < 1 || CURRENT_DAY > 3) {
+            Message_DisplaySceneTitleCard(play, 0x1BB4);
+        } else {
+            Message_DisplaySceneTitleCard(play, sNightOfTextIds[CURRENT_DAY - 1]);
+        }
     } else if ((sCsIdList[this->daytimeIndex] <= CS_ID_NONE) || (play->actorCtx.flags & ACTORCTX_FLAG_TELESCOPE_ON)) {
         // Previously night, turning day, without a cutscene
         if (play->actorCtx.flags & ACTORCTX_FLAG_TELESCOPE_ON) {
             Sram_IncrementDay();
             gSaveContext.save.time = CLOCK_TIME(6, 0);
-            Message_DisplaySceneTitleCard(play, sDawnOfTextIds[CURRENT_DAY - 1]);
+            // @bug On 0th/4th day, this will read OOB, on console this results in an empty message
+            // 2S2H [Port] Opting to fix this, displaying the first day message on invalid days
+            // which we alter in SavingEnhancements.cpp
+            if (CURRENT_DAY < 1 || CURRENT_DAY > 3) {
+                Message_DisplaySceneTitleCard(play, 0x1BB2);
+            } else {
+                Message_DisplaySceneTitleCard(play, sDawnOfTextIds[CURRENT_DAY - 1]);
+            }
         } else {
             this->daytimeIndex = THREEDAY_DAYTIME_NIGHT;
             gSaveContext.save.time += CLOCK_TIME_MINUTE;
@@ -119,13 +133,27 @@ void EnTest4_HandleDayNightSwap(EnTest4* this, PlayState* play) {
 
     if (this->daytimeIndex != THREEDAY_DAYTIME_NIGHT) {
         // Previously day, turning night
-        Message_DisplaySceneTitleCard(play, sNightOfTextIds[CURRENT_DAY - 1]);
+        // @bug On 0th/4th day, this will read OOB, on console this results in an empty message
+        // 2S2H [Port] Opting to fix this, displaying the first day message on invalid days
+        // which we alter in SavingEnhancements.cpp
+        if (CURRENT_DAY < 1 || CURRENT_DAY > 3) {
+            Message_DisplaySceneTitleCard(play, 0x1BB4);
+        } else {
+            Message_DisplaySceneTitleCard(play, sNightOfTextIds[CURRENT_DAY - 1]);
+        }
     } else if ((sCsIdList[this->daytimeIndex] <= CS_ID_NONE) || (play->actorCtx.flags & ACTORCTX_FLAG_TELESCOPE_ON)) {
         // Previously night, turning day, without a cutscene
         Sram_IncrementDay();
         gSaveContext.save.time = CLOCK_TIME(6, 0);
         Interface_NewDay(play, CURRENT_DAY);
-        Message_DisplaySceneTitleCard(play, sDawnOfTextIds[CURRENT_DAY - 1]);
+        // @bug On 0th/4th day, this will read OOB, on console this results in an empty message
+        // 2S2H [Port] Opting to fix this, displaying the first day message on invalid days
+        // which we alter in SavingEnhancements.cpp
+        if (CURRENT_DAY < 1 || CURRENT_DAY > 3) {
+            Message_DisplaySceneTitleCard(play, 0x1BB2);
+        } else {
+            Message_DisplaySceneTitleCard(play, sDawnOfTextIds[CURRENT_DAY - 1]);
+        }
         gSceneSeqState = SCENESEQ_MORNING;
         Environment_PlaySceneSequence(play);
         Environment_NewDay(&play->envCtx);

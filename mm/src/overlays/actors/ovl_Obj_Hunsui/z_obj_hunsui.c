@@ -661,11 +661,11 @@ void func_80B9DA60(Actor* thisx, PlayState* play) {
             OPEN_DISPS(play->state.gfxCtx);
 
             gSPSegment(POLY_XLU_DISP++, 0x08,
-                       Gfx_TwoTexScroll(play->state.gfxCtx, 0, 0, (play->gameplayFrames % 128) * -9, 0x20, 0x20, 1, 0,
-                                        (play->gameplayFrames % 128) * -8, 0x20, 0x20));
+                       Gfx_TwoTexScrollEx(play->state.gfxCtx, 0, 0, (play->gameplayFrames % 128) * -9, 0x20, 0x20, 1, 0,
+                                          (play->gameplayFrames % 128) * -8, 0x20, 0x20, 0, -9, 0, -8));
             gSPSegment(POLY_XLU_DISP++, 0x09,
-                       Gfx_TwoTexScroll(play->state.gfxCtx, 0, 0, (s32)this->unk_1AC, 0x20, 0x20, 1, 0,
-                                        (s32)this->unk_1B0, 0x20, 0x20));
+                       Gfx_TwoTexScrollEx(play->state.gfxCtx, 0, 0, (s32)this->unk_1AC, 0x20, 0x20, 1, 0,
+                                          (s32)this->unk_1B0, 0x20, 0x20, 0, 1, 0, 1));
 
             CLOSE_DISPS(play->state.gfxCtx);
         } else {

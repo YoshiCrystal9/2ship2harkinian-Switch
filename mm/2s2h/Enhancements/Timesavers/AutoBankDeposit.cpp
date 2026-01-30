@@ -10,13 +10,17 @@
 
 #define BANK_MAX_CAPACITY 5000
 
-static void EmitDepositNotification(s16 depositAmount, s16 newBalance) {
+std::vector<std::string> bankDepositMessages = {
+    "STONKS!", "You should invest!", "Cha-ching!", "Money in the bank!", "Rupees secured!",
+};
+
+static void EmitDepositNotification(s16 newBalance) {
     Notification::Options notif = {};
-    notif.prefix = "Deposit Amount:";
+    notif.prefix = bankDepositMessages[rand() % bankDepositMessages.size()];
     notif.prefixColor = ImVec4(0.4f, 0.7f, 1.0f, 1.0f);
-    notif.message = std::to_string(depositAmount);
+    notif.message = "Bank Balance:";
     notif.messageColor = ImVec4(0.9f, 0.9f, 0.9f, 1.0f);
-    notif.suffix = "New Balance: " + std::to_string(newBalance);
+    notif.suffix = std::to_string(newBalance);
     notif.suffixColor = ImVec4(0.3f, 1.0f, 0.3f, 1.0f);
     notif.remainingTime = 6.0f;
     Notification::Emit(notif);
@@ -111,6 +115,18 @@ static void GrantBankerReward(s16 balanceBeforeDeposit, s16 balanceAfterDeposit)
     }
 }
 
+static bool CrossedNotificationThreshold(s16 balanceBeforeDeposit, s16 balanceAfterDeposit) {
+    const s16 milestones[] = { 100, 200, 500, 1000, 5000 };
+
+    for (s16 milestone : milestones) {
+        if (balanceBeforeDeposit < milestone && balanceAfterDeposit >= milestone) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
 static void HandleWalletOverflow() {
     s16 currentBankBalance = HS_GET_BANK_RUPEES();
 
@@ -128,7 +144,9 @@ static void HandleWalletOverflow() {
         HS_SET_BANK_RUPEES(balanceAfterDeposit);
         gSaveContext.rupeeAccumulator -= depositAmount;
 
-        EmitDepositNotification(depositAmount, balanceAfterDeposit);
+        if (CrossedNotificationThreshold(balanceBeforeDeposit, balanceAfterDeposit)) {
+            EmitDepositNotification(balanceAfterDeposit);
+        }
         GrantBankerReward(balanceBeforeDeposit, balanceAfterDeposit);
     }
 }

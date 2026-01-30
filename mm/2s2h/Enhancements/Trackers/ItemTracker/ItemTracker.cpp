@@ -5,7 +5,7 @@
 #include "Rando/Rando.h"
 #include "Rando/ActorBehavior/Souls.h"
 #include "Rando/MiscBehavior/ClockShuffle.h"
-
+#include "2s2h/BenPort.h"
 #include "2s2h/ShipUtils.h"
 #include <spdlog/fmt/fmt.h>
 
@@ -15,6 +15,7 @@ extern "C" {
 #include <macros.h>
 #include <functions.h>
 #include "2s2h_assets.h"
+#include "assets/archives/icon_item_static/icon_item_static_yar.h"
 #include "overlays/actors/ovl_En_Si/z_en_si.h"
 }
 
@@ -24,403 +25,246 @@ extern std::shared_ptr<ItemTrackerWindow> mItemTrackerWindow;
 
 #define FORMAT_COUNT "{}/{}"
 
-ImVec4 trackerWindowOpacity = ImVec4(0, 0, 0, 0.5f);
+#define CVAR_NAME_VISIBILITY_MODE "gSettings.ItemTracker.VisibilityMode"
+#define CVAR_NAME_VISIBILITY_BTN "gSettings.ItemTracker.VisibilityBtn"
+#define CVAR_VISIBILITY_MODE CVarGetInteger(CVAR_NAME_VISIBILITY_MODE, ITEM_TRACKER_VISIBILITY_MODE_ALWAYS)
+#define CVAR_VISIBILITY_BTN CVarGetInteger(CVAR_NAME_VISIBILITY_BTN, BTN_CUSTOM_MODIFIER1)
 
-std::vector<ImVec4> dungeonKeyColors = {
-    { 0.9f, 0.33f, 0.56f, 0.4f },
-    { 0.1f, 0.54f, 0.16f, 0.4f },
-    { 0.61f, 0.04f, 0.86f, 0.4f },
-    { 0.58f, 0.65f, 0.15f, 0.4f },
-};
+std::vector<TrackerGroup> itemTrackerGroups;
+static bool sItemTrackerBtnState = false;
 
-extern TrackerImageObject GetTextureObject(int16_t itemId, bool isRandoItem) {
-    int16_t currentItemId = ITEM_NONE;
-    int16_t bottleId = 0;
+TrackerImageObject GetImageObject(TrackerItemType itemType, u32 itemId) {
+    bool isSaveLoaded = gPlayState != NULL && gSaveContext.gameMode == GAMEMODE_NORMAL;
     bool itemObtained = false;
-
-    if (isRandoItem) {
-        TrackerImageObject randoImageObject;
-        randoImageObject.textureColor = Ship_GetRandoItemColorTint(itemId);
-
-        switch (itemId) {
-            case RI_FROG_BLUE:
-                itemObtained = CHECK_WEEKEVENTREG(WEEKEVENTREG_33_01);
-                break;
-            case RI_FROG_CYAN:
-                itemObtained = CHECK_WEEKEVENTREG(WEEKEVENTREG_32_40);
-                break;
-            case RI_FROG_PINK:
-                itemObtained = CHECK_WEEKEVENTREG(WEEKEVENTREG_32_80);
-                break;
-            case RI_FROG_WHITE:
-                itemObtained = CHECK_WEEKEVENTREG(WEEKEVENTREG_33_02);
-                break;
-            case RI_OWL_CLOCK_TOWN_SOUTH:
-                itemObtained = GET_OWL_STATUE_ACTIVATED(OWL_WARP_CLOCK_TOWN);
-                break;
-            case RI_OWL_GREAT_BAY_COAST:
-                itemObtained = GET_OWL_STATUE_ACTIVATED(OWL_WARP_GREAT_BAY_COAST);
-                break;
-            case RI_OWL_IKANA_CANYON:
-                itemObtained = GET_OWL_STATUE_ACTIVATED(OWL_WARP_IKANA_CANYON);
-                break;
-            case RI_OWL_MILK_ROAD:
-                itemObtained = GET_OWL_STATUE_ACTIVATED(OWL_WARP_MILK_ROAD);
-                break;
-            case RI_OWL_MOUNTAIN_VILLAGE:
-                itemObtained = GET_OWL_STATUE_ACTIVATED(OWL_WARP_MOUNTAIN_VILLAGE);
-                break;
-            case RI_OWL_SNOWHEAD:
-                itemObtained = GET_OWL_STATUE_ACTIVATED(OWL_WARP_SNOWHEAD);
-                break;
-            case RI_OWL_SOUTHERN_SWAMP:
-                itemObtained = GET_OWL_STATUE_ACTIVATED(OWL_WARP_SOUTHERN_SWAMP);
-                break;
-            case RI_OWL_STONE_TOWER:
-                itemObtained = GET_OWL_STATUE_ACTIVATED(OWL_WARP_STONE_TOWER);
-                break;
-            case RI_OWL_WOODFALL:
-                itemObtained = GET_OWL_STATUE_ACTIVATED(OWL_WARP_WOODFALL);
-                break;
-            case RI_OWL_ZORA_CAPE:
-                itemObtained = GET_OWL_STATUE_ACTIVATED(OWL_WARP_ZORA_CAPE);
-                break;
-            case RI_SOUL_BOSS_GOHT:
-            case RI_SOUL_BOSS_GYORG:
-            case RI_SOUL_BOSS_MAJORA:
-            case RI_SOUL_BOSS_ODOLWA:
-            case RI_SOUL_BOSS_TWINMOLD:
-            case RI_SOUL_ENEMY_ALIEN:
-            case RI_SOUL_ENEMY_ARMOS:
-            case RI_SOUL_ENEMY_BAD_BAT:
-            case RI_SOUL_ENEMY_BEAMOS:
-            case RI_SOUL_ENEMY_BOE:
-            case RI_SOUL_ENEMY_BUBBLE:
-            case RI_SOUL_ENEMY_CAPTAIN_KEETA:
-            case RI_SOUL_ENEMY_CHUCHU:
-            case RI_SOUL_ENEMY_DEATH_ARMOS:
-            case RI_SOUL_ENEMY_DEEP_PYTHON:
-            case RI_SOUL_ENEMY_DEKU_BABA:
-            case RI_SOUL_ENEMY_DEXIHAND:
-            case RI_SOUL_ENEMY_DINOLFOS:
-            case RI_SOUL_ENEMY_DODONGO:
-            case RI_SOUL_ENEMY_DRAGONFLY:
-            case RI_SOUL_ENEMY_EENO:
-            case RI_SOUL_ENEMY_EYEGORE:
-            case RI_SOUL_ENEMY_FREEZARD:
-            case RI_SOUL_ENEMY_GARO:
-            case RI_SOUL_ENEMY_GEKKO:
-            case RI_SOUL_ENEMY_GIANT_BEE:
-            case RI_SOUL_ENEMY_GOMESS:
-            case RI_SOUL_ENEMY_GUAY:
-            case RI_SOUL_ENEMY_HIPLOOP:
-            case RI_SOUL_ENEMY_IGOS_DU_IKANA:
-            case RI_SOUL_ENEMY_IRON_KNUCKLE:
-            case RI_SOUL_ENEMY_KEESE:
-            case RI_SOUL_ENEMY_LEEVER:
-            case RI_SOUL_ENEMY_LIKE_LIKE:
-            case RI_SOUL_ENEMY_MAD_SCRUB:
-            case RI_SOUL_ENEMY_NEJIRON:
-            case RI_SOUL_ENEMY_OCTOROK:
-            case RI_SOUL_ENEMY_PEAHAT:
-            case RI_SOUL_ENEMY_PIRATE:
-            case RI_SOUL_ENEMY_POE:
-            case RI_SOUL_ENEMY_REDEAD:
-            case RI_SOUL_ENEMY_SHELLBLADE:
-            case RI_SOUL_ENEMY_SKULLFISH:
-            case RI_SOUL_ENEMY_SKULLTULA:
-            case RI_SOUL_ENEMY_SNAPPER:
-            case RI_SOUL_ENEMY_STALCHILD:
-            case RI_SOUL_ENEMY_TAKKURI:
-            case RI_SOUL_ENEMY_TEKTITE:
-            case RI_SOUL_ENEMY_WALLMASTER:
-            case RI_SOUL_ENEMY_WART:
-            case RI_SOUL_ENEMY_WIZROBE:
-            case RI_SOUL_ENEMY_WOLFOS:
-                itemObtained = Flags_GetRandoInf(SOUL_RI_TO_RANDO_INF(itemId));
-                break;
-            case RI_TINGLE_MAP_CLOCK_TOWN:
-                itemObtained = CHECK_WEEKEVENTREG(WEEKEVENTREG_TINGLE_MAP_BOUGHT_CLOCK_TOWN);
-                break;
-            case RI_TINGLE_MAP_WOODFALL:
-                itemObtained = CHECK_WEEKEVENTREG(WEEKEVENTREG_TINGLE_MAP_BOUGHT_WOODFALL);
-                break;
-            case RI_TINGLE_MAP_SNOWHEAD:
-                itemObtained = CHECK_WEEKEVENTREG(WEEKEVENTREG_TINGLE_MAP_BOUGHT_SNOWHEAD);
-                break;
-            case RI_TINGLE_MAP_ROMANI_RANCH:
-                itemObtained = CHECK_WEEKEVENTREG(WEEKEVENTREG_TINGLE_MAP_BOUGHT_ROMANI_RANCH);
-                break;
-            case RI_TINGLE_MAP_GREAT_BAY:
-                itemObtained = CHECK_WEEKEVENTREG(WEEKEVENTREG_TINGLE_MAP_BOUGHT_GREAT_BAY);
-                break;
-            case RI_TINGLE_MAP_STONE_TOWER:
-                itemObtained = CHECK_WEEKEVENTREG(WEEKEVENTREG_TINGLE_MAP_BOUGHT_STONE_TOWER);
-                break;
-            case RI_TIME_DAY_1:
-            case RI_TIME_DAY_2:
-            case RI_TIME_DAY_3:
-                randoImageObject.textureColor = ImVec4(1.0f, 0.9f, 0.3f, 1.0f); // Yellow/gold for sun
-                itemObtained = Flags_GetRandoInf(
-                    static_cast<RandoInf>(RANDO_INF_OBTAINED_CLOCK_DAY_1 +
-                                          Rando::ClockItems::GetHalfDayIndexFromClockItem((RandoItemId)itemId)));
-                break;
-            case RI_TIME_NIGHT_1:
-            case RI_TIME_NIGHT_2:
-            case RI_TIME_NIGHT_3:
-                randoImageObject.textureColor = ImVec4(0.5f, 0.7f, 1.0f, 1.0f); // Light blue for moon
-                itemObtained = Flags_GetRandoInf(
-                    static_cast<RandoInf>(RANDO_INF_OBTAINED_CLOCK_DAY_1 +
-                                          Rando::ClockItems::GetHalfDayIndexFromClockItem((RandoItemId)itemId)));
-                break;
-            case RI_TRIFORCE_PIECE:
-                itemObtained = gSaveContext.save.shipSaveInfo.rando.foundTriforcePieces > 0;
-                break;
-            case RI_OCARINA_BUTTON_A:
-            case RI_OCARINA_BUTTON_C_DOWN:
-            case RI_OCARINA_BUTTON_C_LEFT:
-            case RI_OCARINA_BUTTON_C_RIGHT:
-            case RI_OCARINA_BUTTON_C_UP:
-                itemObtained = Flags_GetRandoInf(RANDO_INF_OBTAINED_OCARINA_BUTTON_A + (itemId - RI_OCARINA_BUTTON_A));
-                break;
-            default:
-                break;
-        }
-        randoImageObject.textureColor.w = itemObtained ? 1.0f : 0.4f;
-
-        randoImageObject.textureId = Ship::Context::GetInstance()->GetWindow()->GetGui()->GetTextureByName(
-            (const char*)Rando::StaticData::GetIconTexturePath((RandoItemId)itemId));
-        randoImageObject.textureDimensions =
-            ImVec2(ITEM_TEXTURE_SIZE,
-                   itemId >= RI_OWL_CLOCK_TOWN_SOUTH && itemId <= RI_OWL_ZORA_CAPE ? 32.0f : ITEM_TEXTURE_SIZE);
-
-        return randoImageObject;
-    } else {
-        if (itemId >= ITEM_BOTTLE_1 && itemId <= ITEM_BOTTLE_6) {
-            bottleId = SLOT_BOTTLE_1 + (itemId - ITEM_BOTTLE_1);
-            currentItemId = ITEM_BOTTLE;
-        }
-        if (itemId == ITEM_SKULL_TOKEN_SWAMP || itemId == ITEM_SKULL_TOKEN_OCEAN) {
-            currentItemId = ITEM_SKULL_TOKEN;
-        }
-        if (itemId >= ITEM_CLOCK_TOWN_STRAY_FAIRY && itemId <= ITEM_STONE_TOWER_STRAY_FAIRY) {
-            currentItemId = ITEM_STRAY_FAIRIES;
-        }
-        if (itemId >= ITEM_WOODFALL_DUNGEON_MAP && itemId <= ITEM_STONE_TOWER_KEY_BOSS) {
-            const int dungeonIndex = (itemId - ITEM_WOODFALL_DUNGEON_MAP) / 4;
-            const int itemTypeIndex = (itemId - ITEM_WOODFALL_DUNGEON_MAP) % 4;
-
-            switch (itemTypeIndex) {
-                case 0:
-                    currentItemId = ITEM_DUNGEON_MAP;
-                    break;
-                case 1:
-                    currentItemId = ITEM_COMPASS;
-                    break;
-                case 2:
-                    currentItemId = ITEM_KEY_SMALL;
-                    break;
-                case 3:
-                    currentItemId = ITEM_KEY_BOSS;
-                    break;
-            }
-        }
-    }
-
-    if (currentItemId == ITEM_NONE) {
-        switch (itemId) {
-            case ITEM_MOONS_TEAR:
-                currentItemId = ITEM_MOONS_TEAR;
-                for (int16_t i = ITEM_MOONS_TEAR; i <= ITEM_DEED_OCEAN; i++) {
-                    if (gSaveContext.save.saveInfo.inventory.items[SLOT_TRADE_DEED] == i) {
-                        currentItemId = i;
-                        break;
-                    }
-                }
-                break;
-            case ITEM_ROOM_KEY:
-                currentItemId = ITEM_ROOM_KEY;
-                for (int16_t i = ITEM_ROOM_KEY; i <= ITEM_LETTER_MAMA; i++) {
-                    if (gSaveContext.save.saveInfo.inventory.items[SLOT_TRADE_KEY_MAMA] == i) {
-                        currentItemId = i;
-                        break;
-                    }
-                }
-                break;
-            case ITEM_LETTER_TO_KAFEI:
-                currentItemId = ITEM_LETTER_TO_KAFEI;
-                for (int16_t i = ITEM_LETTER_TO_KAFEI; i <= ITEM_PENDANT_OF_MEMORIES; i++) {
-                    if (gSaveContext.save.saveInfo.inventory.items[SLOT_TRADE_COUPLE] == i) {
-                        currentItemId = i;
-                        break;
-                    }
-                }
-                break;
-            case ITEM_SWORD_KOKIRI:
-                currentItemId = ITEM_SWORD_KOKIRI + (GET_CUR_EQUIP_VALUE(EQUIP_TYPE_SWORD) - EQUIP_VALUE_SWORD_KOKIRI);
-                if (currentItemId < ITEM_SWORD_KOKIRI) {
-                    currentItemId = ITEM_SWORD_KOKIRI;
-                }
-                break;
-            case ITEM_SHIELD_HERO:
-                currentItemId = ITEM_SHIELD_HERO + (GET_CUR_EQUIP_VALUE(EQUIP_TYPE_SHIELD) - EQUIP_VALUE_SHIELD_HERO);
-                if (currentItemId < ITEM_SHIELD_HERO) {
-                    currentItemId = ITEM_SHIELD_HERO;
-                }
-                break;
-            case ITEM_WALLET_ADULT:
-                currentItemId = ITEM_WALLET_ADULT + CUR_UPG_VALUE(UPG_WALLET) - 1;
-                if (currentItemId < ITEM_WALLET_ADULT) {
-                    currentItemId = ITEM_WALLET_ADULT;
-                }
-                break;
-            case ITEM_MAGIC_JAR_SMALL:
-                if (gSaveContext.save.saveInfo.playerData.magicLevel <= 1) {
-                    currentItemId = ITEM_MAGIC_JAR_SMALL;
-                } else {
-                    currentItemId = ITEM_MAGIC_JAR_BIG;
-                }
-                break;
-            default:
-                currentItemId = itemId;
-                break;
-        }
-    }
-
-    TrackerImageObject imageObject = {
-        .textureId = Ship::Context::GetInstance()->GetWindow()->GetGui()->GetTextureByName(
-            (const char*)gItemIcons[currentItemId]),
-        .textureColor = Ship_GetItemColorTint(currentItemId),
-        .textureDimensions =
-            ImVec2(currentItemId >= ITEM_SONG_SONATA && currentItemId <= ITEM_SONG_SUN ? ITEM_TEXTURE_SIZE / 1.5f
-                                                                                       : ITEM_TEXTURE_SIZE,
-                   ITEM_TEXTURE_SIZE),
+    TrackerImageObject trackerImageObject = {
+        .textureColor = ImVec4(1.0f, 1.0f, 1.0f, 1.0f),
+        .textureDimensions = ImVec2(ITEM_TEXTURE_SIZE, ITEM_TEXTURE_SIZE),
     };
 
-    if (itemId >= ITEM_REMAINS_ODOLWA && itemId <= ITEM_BOMBERS_NOTEBOOK) {
-        itemObtained = CHECK_QUEST_ITEM(Ship_ConvertItemIdToQuest(itemId));
-    } else if (itemId >= ITEM_SWORD_KOKIRI && itemId <= ITEM_SWORD_GILDED) {
-        itemObtained = GET_CUR_EQUIP_VALUE(EQUIP_TYPE_SWORD) >= EQUIP_VALUE_SWORD_KOKIRI;
-    } else if (itemId == ITEM_SHIELD_HERO || itemId == ITEM_SHIELD_MIRROR) {
-        itemObtained = GET_CUR_EQUIP_VALUE(EQUIP_TYPE_SHIELD) >= EQUIP_VALUE_SHIELD_HERO;
-    } else if (itemId == ITEM_WALLET_ADULT || itemId == ITEM_WALLET_GIANT) {
-        itemObtained = CUR_UPG_VALUE(UPG_WALLET) >= 1;
-    } else if (itemId == ITEM_MAGIC_JAR_SMALL || itemId == ITEM_MAGIC_JAR_BIG) {
-        itemObtained = gSaveContext.save.saveInfo.playerData.magicLevel != 0;
-    } else if (itemId == ITEM_HEART_CONTAINER) {
-        itemObtained = gSaveContext.save.saveInfo.playerData.doubleDefense;
-    } else if (itemId >= ITEM_BOTTLE_1 && itemId <= ITEM_BOTTLE_6) {
-        if (gSaveContext.save.saveInfo.inventory.items[bottleId] != ITEM_NONE && gPlayState) {
-            imageObject.textureId = Ship::Context::GetInstance()->GetWindow()->GetGui()->GetTextureByName(
-                (const char*)gItemIcons[gSaveContext.save.saveInfo.inventory.items[bottleId]]);
-        } else {
-            imageObject.textureId = Ship::Context::GetInstance()->GetWindow()->GetGui()->GetTextureByName(
-                (const char*)gItemIcons[ITEM_BOTTLE]);
-        }
-        itemObtained = gSaveContext.save.saveInfo.inventory.items[bottleId] != ITEM_NONE;
-    } else if (itemId == ITEM_SKULL_TOKEN_SWAMP || itemId == ITEM_SKULL_TOKEN_OCEAN) {
-        uint32_t tokenCount = 0;
-        if (itemId == ITEM_SKULL_TOKEN_SWAMP) {
-            tokenCount = Inventory_GetSkullTokenCount(SCENE_KINSTA1);
-        } else {
-            tokenCount = Inventory_GetSkullTokenCount(SCENE_KINDAN2);
-        }
-        itemObtained = tokenCount > 0;
-    } else if (itemId >= ITEM_CLOCK_TOWN_STRAY_FAIRY && itemId <= ITEM_STONE_TOWER_STRAY_FAIRY) {
-        if (itemId == ITEM_CLOCK_TOWN_STRAY_FAIRY) {
-            imageObject.textureId = Ship::Context::GetInstance()->GetWindow()->GetGui()->GetTextureByName(
-                (const char*)fairyIconTextures[0]);
-            imageObject.textureColor = ImVec4(1.0f, 0.9f, 0.5f, 0.4f);
-            itemObtained = CHECK_WEEKEVENTREG(WEEKEVENTREG_08_80);
-        } else {
-            imageObject.textureId = Ship::Context::GetInstance()->GetWindow()->GetGui()->GetTextureByName(
-                (const char*)fairyIconTextures[itemId - ITEM_WOODFALL_STRAY_FAIRY]);
-            itemObtained = gSaveContext.save.saveInfo.inventory.strayFairies[itemId - ITEM_WOODFALL_STRAY_FAIRY] > 0;
-        }
-    } else if (itemId >= ITEM_WOODFALL_DUNGEON_MAP && itemId <= ITEM_STONE_TOWER_KEY_BOSS) {
-        const int dungeonIndex = (itemId - ITEM_WOODFALL_DUNGEON_MAP) / 4;
-        const int itemTypeIndex = (itemId - ITEM_WOODFALL_DUNGEON_MAP) % 4;
-        switch (itemTypeIndex) {
-            case 0:
-                itemObtained = CHECK_DUNGEON_ITEM(DUNGEON_COMPASS, dungeonIndex);
-                break;
-            case 1:
-                itemObtained = CHECK_DUNGEON_ITEM(DUNGEON_MAP, dungeonIndex);
-                break;
-            case 2:
-                imageObject.textureColor = dungeonKeyColors[dungeonIndex];
-                itemObtained = DUNGEON_KEY_COUNT(dungeonIndex) > 0;
-                break;
-            case 3:
-                imageObject.textureColor = dungeonKeyColors[dungeonIndex];
-                itemObtained = CHECK_DUNGEON_ITEM(DUNGEON_BOSS_KEY, dungeonIndex);
-                break;
-        }
-    } else {
-        itemObtained = INV_CONTENT(itemId) != ITEM_NONE;
-    }
-    imageObject.textureColor.w = itemObtained ? 1.0f : 0.4f;
+    switch (itemType) {
+        case TRACKER_ITEM_RANDO: {
+            RandoItemId randoItemId = (RandoItemId)itemId;
+            switch (randoItemId) {
+                case RI_GS_TOKEN_SWAMP: {
+                    itemObtained = Inventory_GetSkullTokenCount(SCENE_KINSTA1) > 0;
+                } break;
+                case RI_GS_TOKEN_OCEAN: {
+                    itemObtained = Inventory_GetSkullTokenCount(SCENE_KINDAN2) > 0;
+                } break;
+                case RI_WOODFALL_SMALL_KEY: {
+                    itemObtained = DUNGEON_KEY_COUNT(DUNGEON_SCENE_INDEX_WOODFALL_TEMPLE) > 0;
+                } break;
+                case RI_SNOWHEAD_SMALL_KEY: {
+                    itemObtained = DUNGEON_KEY_COUNT(DUNGEON_SCENE_INDEX_SNOWHEAD_TEMPLE) > 0;
+                } break;
+                case RI_GREAT_BAY_SMALL_KEY: {
+                    itemObtained = DUNGEON_KEY_COUNT(DUNGEON_SCENE_INDEX_GREAT_BAY_TEMPLE) > 0;
+                } break;
+                case RI_STONE_TOWER_SMALL_KEY: {
+                    itemObtained = DUNGEON_KEY_COUNT(DUNGEON_SCENE_INDEX_STONE_TOWER_TEMPLE) > 0;
+                } break;
+                case RI_WOODFALL_STRAY_FAIRY: {
+                    itemObtained =
+                        gSaveContext.save.saveInfo.inventory.strayFairies[DUNGEON_SCENE_INDEX_WOODFALL_TEMPLE] > 0;
+                } break;
+                case RI_SNOWHEAD_STRAY_FAIRY: {
+                    itemObtained =
+                        gSaveContext.save.saveInfo.inventory.strayFairies[DUNGEON_SCENE_INDEX_SNOWHEAD_TEMPLE] > 0;
+                } break;
+                case RI_GREAT_BAY_STRAY_FAIRY: {
+                    itemObtained =
+                        gSaveContext.save.saveInfo.inventory.strayFairies[DUNGEON_SCENE_INDEX_GREAT_BAY_TEMPLE] > 0;
+                } break;
+                case RI_STONE_TOWER_STRAY_FAIRY: {
+                    itemObtained =
+                        gSaveContext.save.saveInfo.inventory.strayFairies[DUNGEON_SCENE_INDEX_STONE_TOWER_TEMPLE] > 0;
+                } break;
+                case RI_TRIFORCE_PIECE: {
+                    itemObtained = gSaveContext.save.shipSaveInfo.rando.foundTriforcePieces > 0;
+                } break;
+                default: {
+                    itemObtained = !Rando::IsItemObtainable(randoItemId);
+                } break;
+            }
 
-    return imageObject;
+            trackerImageObject.textureColor = Ship_GetRandoItemColorTint(randoItemId);
+            const char* texturePath = Rando::StaticData::GetIconTexturePath(randoItemId);
+            if (texturePath != nullptr) {
+                trackerImageObject.textureId =
+                    Ship::Context::GetInstance()->GetWindow()->GetGui()->GetTextureByName(texturePath);
+            }
+            if (randoItemId >= RI_OWL_CLOCK_TOWN_SOUTH && randoItemId <= RI_OWL_ZORA_CAPE) {
+                trackerImageObject.textureDimensions.y = 24.0f;
+            } else if (randoItemId >= RI_SONG_DOUBLE_TIME && randoItemId <= RI_SONG_TIME) {
+                trackerImageObject.textureDimensions.x = 32.0f;
+            }
+        } break;
+        case TRACKER_ITEM_SLOT: {
+            itemObtained = gSaveContext.save.saveInfo.inventory.items[itemId] != ITEM_NONE;
+            auto vanillaItemId = isSaveLoaded ? gSaveContext.save.saveInfo.inventory.items[itemId] : ITEM_NONE;
+            if (vanillaItemId == ITEM_NONE || vanillaItemId >= ITEM_RECOVERY_HEART) {
+                vanillaItemId = safeItemsForInventorySlot[itemId][0];
+            }
+
+            trackerImageObject.textureId = Ship::Context::GetInstance()->GetWindow()->GetGui()->GetTextureByName(
+                (const char*)gItemIcons[vanillaItemId]);
+        } break;
+        case TRACKER_ITEM_SWORD: {
+            if (GET_CUR_EQUIP_VALUE(EQUIP_TYPE_SWORD) > EQUIP_VALUE_SWORD_NONE) {
+                itemObtained = true;
+            }
+            int vanillaItemId = ITEM_SWORD_KOKIRI;
+            if (GET_CUR_EQUIP_VALUE(EQUIP_TYPE_SWORD) > EQUIP_VALUE_SWORD_KOKIRI) {
+                vanillaItemId = ITEM_SWORD_KOKIRI + GET_CUR_EQUIP_VALUE(EQUIP_TYPE_SWORD) - EQUIP_VALUE_SWORD_KOKIRI;
+            }
+
+            trackerImageObject.textureId = Ship::Context::GetInstance()->GetWindow()->GetGui()->GetTextureByName(
+                (const char*)gItemIcons[vanillaItemId]);
+        } break;
+        case TRACKER_ITEM_SHIELD: {
+            if (GET_CUR_EQUIP_VALUE(EQUIP_TYPE_SHIELD) > EQUIP_VALUE_SHIELD_NONE) {
+                itemObtained = true;
+            }
+            int vanillaItemId = ITEM_SHIELD_HERO;
+            if (GET_CUR_EQUIP_VALUE(EQUIP_TYPE_SHIELD) > EQUIP_VALUE_SHIELD_HERO) {
+                vanillaItemId = ITEM_SHIELD_MIRROR;
+            }
+
+            trackerImageObject.textureId = Ship::Context::GetInstance()->GetWindow()->GetGui()->GetTextureByName(
+                (const char*)gItemIcons[vanillaItemId]);
+        } break;
+        case TRACKER_ITEM_WALLET: {
+            if (CUR_UPG_VALUE(UPG_WALLET) >= 1) {
+                itemObtained = true;
+            }
+            auto vanillaItemId = ITEM_WALLET_ADULT;
+            if (CUR_UPG_VALUE(UPG_WALLET) >= 2) {
+                vanillaItemId = ITEM_WALLET_GIANT;
+            }
+
+            trackerImageObject.textureId = Ship::Context::GetInstance()->GetWindow()->GetGui()->GetTextureByName(
+                (const char*)gItemIcons[vanillaItemId]);
+        } break;
+        case TRACKER_ITEM_MAGIC: {
+            if (gSaveContext.save.saveInfo.playerData.isMagicAcquired) {
+                itemObtained = true;
+            }
+            auto vanillaItemId = ITEM_MAGIC_JAR_SMALL;
+            if (gSaveContext.save.saveInfo.playerData.isDoubleMagicAcquired) {
+                vanillaItemId = ITEM_MAGIC_JAR_BIG;
+            }
+
+            trackerImageObject.textureId = Ship::Context::GetInstance()->GetWindow()->GetGui()->GetTextureByName(
+                (const char*)gItemIcons[vanillaItemId]);
+        } break;
+        default:
+            break;
+    }
+
+    if (!isSaveLoaded) {
+        itemObtained = false;
+    }
+
+    trackerImageObject.textureColor.w = itemObtained ? 1.0f : 0.4f;
+    return trackerImageObject;
 }
 
-std::string GetItemCounts(int16_t itemId, bool isRandoItem) {
+std::string GetItemCounts(TrackerItemType itemType, u32 itemId) {
     std::string countStr = "";
-    if (isRandoItem) {
-        if (itemId == RI_TRIFORCE_PIECE) {
-            int16_t maxPieces = gSaveContext.save.shipSaveInfo.rando.randoSaveOptions[RO_TRIFORCE_PIECES_REQUIRED];
-            countStr = fmt::format(FORMAT_COUNT, gSaveContext.save.shipSaveInfo.rando.foundTriforcePieces,
-                                   maxPieces == 1000 ? "1k" : std::to_string(maxPieces));
-        }
-    } else {
-        int dungeonIndex = 0;
-        switch (itemId) {
-            case ITEM_BOW:
-            case ITEM_BOMB:
-            case ITEM_BOMBCHU:
-            case ITEM_DEKU_STICK:
-            case ITEM_DEKU_NUT:
-            case ITEM_MAGIC_BEANS:
-            case ITEM_POWDER_KEG:
-                countStr = std::to_string(AMMO(itemId));
-                break;
-            case ITEM_WALLET_ADULT:
-                countStr = std::to_string(gSaveContext.save.saveInfo.playerData.rupees);
-                break;
-            case ITEM_PICTOGRAPH_BOX:
-                countStr = CHECK_QUEST_ITEM(QUEST_PICTOGRAPH) ? "1" : "0";
-                break;
-            case ITEM_SKULL_TOKEN_SWAMP:
-            case ITEM_SKULL_TOKEN_OCEAN:
-                countStr = fmt::format(
-                    FORMAT_COUNT,
-                    Inventory_GetSkullTokenCount(itemId == ITEM_SKULL_TOKEN_SWAMP ? SCENE_KINSTA1 : SCENE_KINDAN2),
-                    IS_RANDO ? RANDO_SAVE_OPTIONS[RO_MINIMUM_SKULLTULA_TOKENS] : SPIDER_HOUSE_TOKENS_REQUIRED);
-                break;
-            case ITEM_WOODFALL_STRAY_FAIRY:
-            case ITEM_SNOWHEAD_STRAY_FAIRY:
-            case ITEM_GREAT_BAY_STRAY_FAIRY:
-            case ITEM_STONE_TOWER_STRAY_FAIRY:
-                countStr = fmt::format(
-                    FORMAT_COUNT, gSaveContext.save.saveInfo.inventory.strayFairies[itemId - ITEM_WOODFALL_STRAY_FAIRY],
-                    IS_RANDO ? RANDO_SAVE_OPTIONS[RO_MINIMUM_STRAY_FAIRIES] : STRAY_FAIRY_SCATTERED_TOTAL);
-                break;
-            case ITEM_WOODFALL_KEY_SMALL:
-            case ITEM_SNOWHEAD_KEY_SMALL:
-            case ITEM_GREAT_BAY_KEY_SMALL:
-            case ITEM_STONE_TOWER_KEY_SMALL:
-                dungeonIndex = (itemId - ITEM_WOODFALL_DUNGEON_MAP) / 4;
-                countStr = DUNGEON_KEY_COUNT(dungeonIndex) < 0 ? "0" : std::to_string(DUNGEON_KEY_COUNT(dungeonIndex));
-                break;
-            default:
-                break;
-        }
+
+    switch (itemType) {
+        case TRACKER_ITEM_RANDO: {
+            switch (itemId) {
+                case RI_TRIFORCE_PIECE: {
+                    if (IS_RANDO && RANDO_SAVE_OPTIONS[RO_SHUFFLE_TRIFORCE_PIECES]) {
+                        auto max = RANDO_SAVE_OPTIONS[RO_TRIFORCE_PIECES_REQUIRED];
+                        countStr = fmt::format(FORMAT_COUNT, gSaveContext.save.shipSaveInfo.rando.foundTriforcePieces,
+                                               max > 999 ? "1k" : std::to_string(max));
+                    }
+                } break;
+                case RI_GS_TOKEN_OCEAN:
+                case RI_GS_TOKEN_SWAMP: {
+                    auto max =
+                        IS_RANDO ? RANDO_SAVE_OPTIONS[RO_SKULLTULA_TOKENS_REQUIRED] : SPIDER_HOUSE_TOKENS_REQUIRED;
+                    auto count =
+                        Inventory_GetSkullTokenCount(itemId == RI_GS_TOKEN_SWAMP ? SCENE_KINSTA1 : SCENE_KINDAN2);
+                    countStr = fmt::format(FORMAT_COUNT, count, max);
+                } break;
+                case RI_WOODFALL_STRAY_FAIRY: {
+                    auto max = IS_RANDO ? RANDO_SAVE_OPTIONS[RO_STRAY_FAIRIES_REQUIRED] : STRAY_FAIRY_SCATTERED_TOTAL;
+                    auto count = gSaveContext.save.saveInfo.inventory.strayFairies[DUNGEON_SCENE_INDEX_WOODFALL_TEMPLE];
+                    countStr = fmt::format(FORMAT_COUNT, count, max);
+                } break;
+                case RI_SNOWHEAD_STRAY_FAIRY: {
+                    auto max = IS_RANDO ? RANDO_SAVE_OPTIONS[RO_STRAY_FAIRIES_REQUIRED] : STRAY_FAIRY_SCATTERED_TOTAL;
+                    auto count = gSaveContext.save.saveInfo.inventory.strayFairies[DUNGEON_SCENE_INDEX_SNOWHEAD_TEMPLE];
+                    countStr = fmt::format(FORMAT_COUNT, count, max);
+                } break;
+                case RI_GREAT_BAY_STRAY_FAIRY: {
+                    auto max = IS_RANDO ? RANDO_SAVE_OPTIONS[RO_STRAY_FAIRIES_REQUIRED] : STRAY_FAIRY_SCATTERED_TOTAL;
+                    auto count =
+                        gSaveContext.save.saveInfo.inventory.strayFairies[DUNGEON_SCENE_INDEX_GREAT_BAY_TEMPLE];
+                    countStr = fmt::format(FORMAT_COUNT, count, max);
+                } break;
+                case RI_STONE_TOWER_STRAY_FAIRY: {
+                    auto max = IS_RANDO ? RANDO_SAVE_OPTIONS[RO_STRAY_FAIRIES_REQUIRED] : STRAY_FAIRY_SCATTERED_TOTAL;
+                    auto count =
+                        gSaveContext.save.saveInfo.inventory.strayFairies[DUNGEON_SCENE_INDEX_STONE_TOWER_TEMPLE];
+                    countStr = fmt::format(FORMAT_COUNT, count, max);
+                } break;
+                case RI_WOODFALL_SMALL_KEY: {
+                    auto count = DUNGEON_KEY_COUNT(DUNGEON_SCENE_INDEX_WOODFALL_TEMPLE);
+                    if (count > 0)
+                        countStr = fmt::format(FORMAT_COUNT, count, 1);
+                } break;
+                case RI_SNOWHEAD_SMALL_KEY: {
+                    auto count = DUNGEON_KEY_COUNT(DUNGEON_SCENE_INDEX_SNOWHEAD_TEMPLE);
+                    if (count > 0)
+                        countStr = fmt::format(FORMAT_COUNT, count, 3);
+                } break;
+                case RI_GREAT_BAY_SMALL_KEY: {
+                    auto count = DUNGEON_KEY_COUNT(DUNGEON_SCENE_INDEX_GREAT_BAY_TEMPLE);
+                    if (count > 0)
+                        countStr = fmt::format(FORMAT_COUNT, count, 1);
+                } break;
+                case RI_STONE_TOWER_SMALL_KEY: {
+                    auto count = DUNGEON_KEY_COUNT(DUNGEON_SCENE_INDEX_STONE_TOWER_TEMPLE);
+                    if (count > 0)
+                        countStr = fmt::format(FORMAT_COUNT, count, 4);
+                } break;
+                default:
+                    break;
+            }
+        } break;
+        case TRACKER_ITEM_SLOT: {
+            switch (itemId) {
+                case SLOT_BOW:
+                case SLOT_BOMB:
+                case SLOT_BOMBCHU:
+                case SLOT_DEKU_STICK:
+                case SLOT_DEKU_NUT:
+                case SLOT_MAGIC_BEANS:
+                case SLOT_POWDER_KEG: {
+                    auto count = gSaveContext.save.saveInfo.inventory.ammo[itemId];
+                    if (count > 0)
+                        countStr = std::to_string(count);
+                } break;
+                default:
+                    break;
+            }
+        } break;
+        case TRACKER_ITEM_WALLET: {
+            countStr = std::to_string(CUR_CAPACITY(UPG_WALLET));
+        } break;
+        default:
+            break;
     }
+
     return countStr;
 }
 
-void DrawItemCounts(int16_t itemId, bool isRandoItem, ImVec2 textureSize, float scale, ImVec2 currentPos) {
-    std::string itemCount = GetItemCounts(itemId, isRandoItem);
+void DrawItemCounts(TrackerItemType itemType, u32 itemId, ImVec2 textureSize, float scale, ImVec2 currentPos) {
+    std::string itemCount = GetItemCounts(itemType, itemId);
 
     if (itemCount.empty()) {
         return;
@@ -434,36 +278,123 @@ void DrawItemCounts(int16_t itemId, bool isRandoItem, ImVec2 textureSize, float 
     ImGui::Text(itemCount.c_str());
 }
 
-void DrawItemSlot(int16_t itemId, float scale, bool isRandoItem) {
+bool DrawItemTrackerSlot(TrackerItemType itemType, u32 itemId, float scale, bool clickable) {
     ImVec2 currentPos = ImGui::GetCursorPos();
-    TrackerImageObject imageObject = GetTextureObject(itemId, isRandoItem);
-    ImGui::Image(imageObject.textureId,
-                 ImVec2(imageObject.textureDimensions.x * scale, imageObject.textureDimensions.y * scale), ImVec2(0, 0),
-                 ImVec2(1, 1), imageObject.textureColor, ImVec4(0, 0, 0, 0));
-    UIWidgets::Tooltip(GetItemTrackerItemName(itemId, isRandoItem).c_str());
-    if (CVarGetInteger("gSettings.ItemTracker.ItemCounts", 0)) {
-        DrawItemCounts(itemId, isRandoItem, imageObject.textureDimensions * scale, scale, currentPos);
-    }
-}
+    ImVec2 cellSize(ITEM_TEXTURE_SIZE * scale, ITEM_TEXTURE_SIZE * scale);
 
-void DrawItemWindowList(TrackerItemListObject windowObject, bool isRandoItem) {
-    int columns = windowObject.columnLength;
-    if (windowObject.itemList.size() < windowObject.columnLength) {
-        columns = windowObject.itemList.size();
+    TrackerImageObject imageObject = GetImageObject(itemType, itemId);
+
+    // Create an invisible button for layout + clicks
+    bool clicked = false;
+    if (clickable) {
+        imageObject.textureColor.w = 1.0f; // force full opacity for clickable items
+        clicked = ImGui::InvisibleButton(std::to_string(itemId).c_str(), cellSize);
+    } else {
+        ImGui::Dummy(cellSize);
     }
 
-    if (ImGui::BeginTable(windowObject.windowName.c_str(), columns)) {
-        ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(5, 5));
+    // Draw image centered inside the cell
+    ImVec2 p0 = ImGui::GetItemRectMin();
+    ImVec2 p1 = ImGui::GetItemRectMax();
 
-        for (auto& item : windowObject.itemList) {
-            ImGui::TableNextColumn();
-            ImVec2 framePadding = ImVec2(item >= ITEM_SONG_SONATA && item <= ITEM_SONG_SUN ? ITEM_SONG_PADDING : 0, 0);
-            ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, framePadding);
-            DrawItemSlot(item, windowObject.windowScale, isRandoItem);
-            ImGui::PopStyleVar(1);
+    if (clickable) {
+        bool hovered = ImGui::IsItemHovered();
+        bool held = ImGui::IsItemActive();
+
+        ImU32 bg;
+        if (held) {
+            bg = IM_COL32(0, 0, 0, 60); // pressed
+        } else if (hovered) {
+            bg = IM_COL32(255, 255, 255, 20); // hover
+        } else {
+            bg = IM_COL32(0, 0, 0, 0); // idle subtle
         }
 
-        ImGui::PopStyleVar(1);
+        ImGui::GetWindowDrawList()->AddRectFilled(p0, p1, bg, 4.0f); // small rounding
+    }
+
+    float aspect = imageObject.textureDimensions.x / imageObject.textureDimensions.y;
+
+    // fit to height
+    ImVec2 drawSize(cellSize.y * aspect, cellSize.y);
+
+    // clamp if too wide
+    if (drawSize.x > cellSize.x) {
+        drawSize.x = cellSize.x;
+        drawSize.y = cellSize.x / aspect;
+    }
+
+    ImVec2 offset((cellSize.x - drawSize.x) * 0.5f, (cellSize.y - drawSize.y) * 0.5f);
+
+    // Draw a glow behind skulltula tokens
+    if (itemType == TRACKER_ITEM_RANDO && (itemId == RI_GS_TOKEN_SWAMP || itemId == RI_GS_TOKEN_OCEAN)) {
+        ImVec4 tintColor = ImVec4(25.0f / 255.0f, 251.0f / 255.0f, 0.0f, imageObject.textureColor.w); // Swamp tint
+        if (itemId == RI_GS_TOKEN_OCEAN) {
+            tintColor = ImVec4(0.0f, 209.0f / 256.0f, 231.0f / 256.0f, imageObject.textureColor.w); // Ocean tint
+        }
+        auto textureId =
+            Ship::Context::GetInstance()->GetWindow()->GetGui()->GetTextureByName(gMagicArrowEquipEffectTex);
+
+        // Draw texture behind the actual item icon
+        ImGui::GetWindowDrawList()->AddImage(textureId, p0 + offset - ImVec2(8.0f, 8.0f),
+                                             p0 + offset + drawSize + ImVec2(8.0f, 8.0f), ImVec2(0, 0), ImVec2(1, 1),
+                                             ImGui::GetColorU32(tintColor));
+    }
+
+    if (itemType == TRACKER_ITEM_RANDO && itemId >= RI_SOUL_BOSS_GOHT && itemId <= RI_SOUL_BOSS_TWINMOLD) {
+        ImVec4 tintColor =
+            ImVec4(255.0f / 255.0f, 255.0f / 255.0f, 255.0f / 255.0f, imageObject.textureColor.w); // Swamp tint
+        auto textureId =
+            Ship::Context::GetInstance()->GetWindow()->GetGui()->GetTextureByName(gMagicArrowEquipEffectTex);
+
+        // Draw texture behind the actual item icon
+        ImGui::GetWindowDrawList()->AddImage(textureId, p0 + offset - ImVec2(8.0f, 8.0f),
+                                             p0 + offset + drawSize + ImVec2(8.0f, 8.0f), ImVec2(0, 0), ImVec2(1, 1),
+                                             ImGui::GetColorU32(tintColor));
+    }
+
+    if (imageObject.textureId != nullptr) {
+        ImGui::GetWindowDrawList()->AddImage(imageObject.textureId, p0 + offset, p0 + offset + drawSize, ImVec2(0, 0),
+                                             ImVec2(1, 1), ImGui::GetColorU32(imageObject.textureColor));
+    }
+    auto itemName = GetItemTrackerItemName(itemType, itemId);
+    if (!itemName.empty()) {
+        UIWidgets::Tooltip(itemName.c_str());
+    }
+
+    // Save last item data before drawing counts (which uses ImGui::Text and changes last item)
+    ImGuiContext& g = *ImGui::GetCurrentContext();
+    ImGuiLastItemData backup = g.LastItemData;
+
+    if (CVarGetInteger("gSettings.ItemTracker.ItemCounts", 1)) {
+        DrawItemCounts(itemType, itemId, cellSize, scale, currentPos);
+    }
+
+    // Restore last item data so drag/drop operations work correctly
+    g.LastItemData = backup;
+
+    return clicked;
+}
+
+void DrawItemTrackerGroup(TrackerGroup& trackerGroup) {
+    int columns = trackerGroup.columns;
+    if (trackerGroup.items.size() < trackerGroup.columns) {
+        columns = trackerGroup.items.size();
+    }
+
+    float scale = CVarGetInteger("gSettings.ItemTracker.WindowGroup", 0)
+                      ? trackerGroup.scale
+                      : CVarGetFloat("gSettings.ItemTracker.Scale", 1.0f);
+
+    if (ImGui::BeginTable(trackerGroup.name.c_str(), columns)) {
+        ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
+        ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
+        for (auto& [itemType, itemId] : trackerGroup.items) {
+            ImGui::TableNextColumn();
+            DrawItemTrackerSlot(itemType, itemId, scale, false);
+        }
+
+        ImGui::PopStyleVar(2);
         ImGui::EndTable();
     }
 }
@@ -473,7 +404,14 @@ void ItemTrackerWindow::Draw() {
         return;
     }
 
-    if (!gPlayState) {
+    if (CVAR_VISIBILITY_MODE == ITEM_TRACKER_VISIBILITY_MODE_ONLY_ON_PAUSE_MENU &&
+        (!gPlayState || !gPlayState->pauseCtx.state)) {
+        return;
+    }
+
+    if ((CVAR_VISIBILITY_MODE == ITEM_TRACKER_VISIBILITY_MODE_BUTTON_TOGGLE ||
+         CVAR_VISIBILITY_MODE == ITEM_TRACKER_VISIBILITY_MODE_BUTTON_HOLD) &&
+        !sItemTrackerBtnState) {
         return;
     }
 
@@ -484,64 +422,52 @@ void ItemTrackerWindow::Draw() {
     if (!CVarGetInteger("gSettings.ItemTracker.WindowType", 0)) {
         windowFlags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoDocking;
     }
-    shouldWindowSplit = CVarGetInteger("gSettings.ItemTracker.WindowGroup", 0);
-
-    std::vector<std::vector<TrackerItemListObject>*> itemTrackerWindows = {
-        &BenGui::mItemTrackerWindow->namedItemWindows,
-        &BenGui::mItemTrackerWindow->randoItemWindows,
-    };
+    bool shouldWindowSplit = CVarGetInteger("gSettings.ItemTracker.WindowGroup", 0);
 
     ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0, 0, 0, 0));
     ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 4.0f);
 
-    uint32_t windowIndex = TRACKER_MAIN;
-    for (auto* window : itemTrackerWindows) {
-        if (!window->empty()) {
-            bool singleWindowOpen = false;
-            if (!shouldWindowSplit) {
-                ImVec4 mainBg = ImGui::GetStyleColorVec4(ImGuiCol_WindowBg);
-                mainBg.w = (*window)[0].windowOpacity;
-                ImGui::PushStyleColor(ImGuiCol_WindowBg, mainBg);
-                singleWindowOpen =
-                    ImGui::Begin(windowIndex == TRACKER_MAIN ? "Main Tracker" : "Rando Tracker", nullptr, windowFlags);
-            }
+    // Adjust opacity
+    ImVec4 windowBg = ImGui::GetStyleColorVec4(ImGuiCol_WindowBg);
+    windowBg.w = CVarGetFloat("gSettings.ItemTracker.Opacity", 0.5f);
 
-            uint32_t index = 0;
-            for (auto& object : *window) {
-                if (object.itemList.empty()) {
-                    index++;
-                    continue;
-                }
+    bool singleWindowOpen = false;
+    if (!shouldWindowSplit) {
+        ImGui::PushStyleColor(ImGuiCol_WindowBg, windowBg);
+        singleWindowOpen = ImGui::Begin("Item Tracker", nullptr, windowFlags);
+    }
 
-                bool isWindowOpen = false;
-
-                if (shouldWindowSplit) {
-                    ImVec4 bg = ImGui::GetStyleColorVec4(ImGuiCol_WindowBg);
-                    bg.w = object.windowOpacity;
-                    ImGui::PushStyleColor(ImGuiCol_WindowBg, bg);
-                    std::string windowName = std::string(object.windowName) + "##" + std::to_string(index);
-                    isWindowOpen = ImGui::Begin(windowName.c_str(), nullptr, windowFlags);
-                } else {
-                    isWindowOpen = singleWindowOpen;
-                }
-
-                if (isWindowOpen) {
-                    DrawItemWindowList(object, windowIndex == TRACKER_MAIN ? false : true);
-                }
-
-                if (shouldWindowSplit) {
-                    ImGui::PopStyleColor(1);
-                    ImGui::End();
-                }
-
-                index++;
-            }
-            if (!shouldWindowSplit) {
-                ImGui::PopStyleColor(1);
-                ImGui::End();
-            }
+    uint32_t index = 0;
+    for (auto& group : itemTrackerGroups) {
+        if (group.items.empty()) {
+            index++;
+            continue;
         }
-        windowIndex++;
+
+        bool isWindowOpen = false;
+
+        if (shouldWindowSplit) {
+            ImGui::PushStyleColor(ImGuiCol_WindowBg, windowBg);
+            std::string name = std::string(group.name) + "##" + std::to_string(index);
+            isWindowOpen = ImGui::Begin(name.c_str(), nullptr, windowFlags);
+        } else {
+            isWindowOpen = singleWindowOpen;
+        }
+
+        if (isWindowOpen) {
+            DrawItemTrackerGroup(group);
+        }
+
+        if (shouldWindowSplit) {
+            ImGui::PopStyleColor(1);
+            ImGui::End();
+        }
+
+        index++;
+    }
+    if (!shouldWindowSplit) {
+        ImGui::PopStyleColor(1);
+        ImGui::End();
     }
 
     ImGui::PopStyleColor(1);
@@ -553,3 +479,24 @@ void ItemTrackerWindow::InitElement() {
 
 void ItemTrackerWindow::DrawElement() {
 }
+
+static RegisterShipInitFunc initFunc(
+    []() {
+        COND_HOOK(OnGameStateMainStart, CVAR_VISIBILITY_MODE >= ITEM_TRACKER_VISIBILITY_MODE_BUTTON_TOGGLE, []() {
+            Input* input = CONTROLLER1(gGameState);
+
+            if (CVAR_VISIBILITY_MODE == ITEM_TRACKER_VISIBILITY_MODE_BUTTON_HOLD) {
+                if (CHECK_BTN_ALL(input->cur.button, CVAR_VISIBILITY_BTN)) {
+                    sItemTrackerBtnState = true;
+                } else {
+                    sItemTrackerBtnState = false;
+                }
+            } else {
+                if (CHECK_BTN_ALL(input->cur.button, CVAR_VISIBILITY_BTN) &&
+                    CHECK_BTN_ANY(input->press.button, CVAR_VISIBILITY_BTN)) {
+                    sItemTrackerBtnState = !sItemTrackerBtnState;
+                }
+            }
+        });
+    },
+    { CVAR_NAME_VISIBILITY_MODE });

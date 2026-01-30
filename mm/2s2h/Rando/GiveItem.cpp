@@ -369,6 +369,12 @@ void Rando::GiveItem(RandoItemId randoItemId) {
         case RI_OCARINA_BUTTON_C_UP:
             Flags_SetRandoInf(RANDO_INF_OBTAINED_OCARINA_BUTTON_A + (randoItemId - RI_OCARINA_BUTTON_A));
             break;
+        case RI_SONG_DOUBLE_TIME:
+            Flags_SetRandoInf(RANDO_INF_OBTAINED_SONG_DOUBLE_TIME);
+            break;
+        case RI_SONG_INVERTED_TIME:
+            Flags_SetRandoInf(RANDO_INF_OBTAINED_SONG_INVERTED_TIME);
+            break;
         case RI_JUNK:
         case RI_NONE:
             break;

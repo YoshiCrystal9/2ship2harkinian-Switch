@@ -498,15 +498,16 @@ void EnMThunder_Draw(Actor* thisx, PlayState* play2) {
         case ENMTHUNDER_SUBTYPE_SPIN_GREAT:
         case ENMTHUNDER_SUBTYPE_SPIN_REGULAR:
             gSPSegment(POLY_XLU_DISP++, 0x08,
-                       Gfx_TwoTexScroll(play->state.gfxCtx, 0, 0xFF - ((u16)(s32)(this->scroll * 30.0f) & 0xFF), 0, 64,
-                                        32, 1, 0xFF - ((u16)(s32)(this->scroll * 20.0f) & 0xFF), 0, 8, 8));
+                       Gfx_TwoTexScrollEx(play->state.gfxCtx, 0, 0xFF - ((u16)(s32)(this->scroll * 30.0f) & 0xFF), 0,
+                                          64, 32, 1, 0xFF - ((u16)(s32)(this->scroll * 20.0f) & 0xFF), 0, 8, 8, -30, 0,
+                                          -20, 0));
             break;
 
         case ENMTHUNDER_SUBTYPE_SWORDBEAM_GREAT:
         case ENMTHUNDER_SUBTYPE_SWORDBEAM_REGULAR:
             gSPSegment(POLY_XLU_DISP++, 0x08,
-                       Gfx_TwoTexScroll(play->state.gfxCtx, 0, 0, 0, 16, 64, 1, 0,
-                                        0x1FF - ((u16)(s32)(this->scroll * 10.0f) & 0x1FF), 32, 128));
+                       Gfx_TwoTexScrollEx(play->state.gfxCtx, 0, 0, 0, 16, 64, 1, 0,
+                                          0x1FF - ((u16)(s32)(this->scroll * 10.0f) & 0x1FF), 32, 128, 0, 0, 0, -10));
             break;
 
         default:
@@ -576,8 +577,9 @@ void EnMThunder_Draw(Actor* thisx, PlayState* play2) {
 
     MATRIX_FINALIZE_AND_LOAD(POLY_XLU_DISP++, play->state.gfxCtx);
     gSPSegment(POLY_XLU_DISP++, 0x09,
-               Gfx_TwoTexScroll(play->state.gfxCtx, 0, (play->gameplayFrames * 5) & 0xFF, 0, 32, 32, 1,
-                                (play->gameplayFrames * 20) & 0xFF, (play->gameplayFrames * y2Scroll) & 0xFF, 8, 8));
+               Gfx_TwoTexScrollEx(play->state.gfxCtx, 0, (play->gameplayFrames * 5) & 0xFF, 0, 32, 32, 1,
+                                  (play->gameplayFrames * 20) & 0xFF, (play->gameplayFrames * y2Scroll) & 0xFF, 8, 8, 5,
+                                  0, 20, y2Scroll));
     gSPDisplayList(POLY_XLU_DISP++, gSpinAttackChargingDL);
 
     CLOSE_DISPS(play->state.gfxCtx);

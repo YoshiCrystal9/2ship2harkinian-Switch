@@ -110,7 +110,7 @@ static RegisterShipInitFunc initFunc([]() {
             CHECK(RC_TERMINA_FIELD_COW_GROTTO_GRASS_70, true),
             CHECK(RC_TERMINA_FIELD_COW_GROTTO_GRASS_71, true),
             CHECK(RC_TERMINA_FIELD_COW_GROTTO_GRASS_72, true),
-            CHECK(RC_ENEMY_DROP_GIANT_BEE, CAN_USE_PROJECTILE), // In a beehive
+            CHECK(RC_ENEMY_DROP_GIANT_BEE, CAN_USE_PROJECTILE && CanKillEnemy(ACTOR_EN_BEE)), // In a beehive
         },
         .connections = {
             CONNECTION(RR_TERMINA_FIELD, true), // TODO: Grotto mapping
@@ -118,7 +118,7 @@ static RegisterShipInitFunc initFunc([]() {
     };
     Regions[RR_TERMINA_FIELD_DODONGO_GROTTO] = RandoRegion{ .name = "Termina Field Dodongo", .sceneId = SCENE_KAKUSIANA,
         .checks = {
-            CHECK(RC_TERMINA_FIELD_DODONGO_GROTTO_CHEST, CAN_USE_SWORD || CAN_BE_ZORA || CAN_BE_GORON),
+            CHECK(RC_TERMINA_FIELD_DODONGO_GROTTO_CHEST, CanKillEnemy(ACTOR_EN_DODONGO)),
             CHECK(RC_ENEMY_DROP_DODONGO, CanKillEnemy(ACTOR_EN_DODONGO)),
         },
         .exits = { //     TO                                         FROM
@@ -153,7 +153,7 @@ static RegisterShipInitFunc initFunc([]() {
             CHECK(RC_TERMINA_FIELD_GOSSIP_STONE_GROTTO_3_GRASS_03, true),
             CHECK(RC_TERMINA_FIELD_GOSSIP_STONE_GROTTO_3_GRASS_04, true),
             CHECK(RC_TERMINA_FIELD_GOSSIP_STONE_GROTTO_3_GRASS_05, true),
-            CHECK(RC_ENEMY_DROP_GIANT_BEE, CAN_USE_PROJECTILE), // In a beehive
+            CHECK(RC_ENEMY_DROP_GIANT_BEE, CAN_USE_PROJECTILE && CanKillEnemy(ACTOR_EN_BEE)), // In a beehive
         },
         .exits = { //     TO                                         FROM
             EXIT(ENTRANCE(TERMINA_FIELD, 0),                ENTRANCE(GROTTOS, 0), true), // TODO: Grotto mapping
@@ -179,7 +179,7 @@ static RegisterShipInitFunc initFunc([]() {
     };
     Regions[RR_TERMINA_FIELD_PEAHAT_GROTTO] = RandoRegion{ .name = "Termina Field Peahat", .sceneId = SCENE_KAKUSIANA,
         .checks = {
-            CHECK(RC_TERMINA_FIELD_PEAHAT_GROTTO_CHEST, (CAN_USE_SWORD || CAN_BE_ZORA || CAN_BE_GORON) && IS_DAY()),
+            CHECK(RC_TERMINA_FIELD_PEAHAT_GROTTO_CHEST, CanKillEnemy(ACTOR_EN_PEEHAT)),
             CHECK(RC_TERMINA_FIELD_PEAHAT_GROTTO_GRASS_01, true),
             CHECK(RC_TERMINA_FIELD_PEAHAT_GROTTO_GRASS_02, true),
             CHECK(RC_TERMINA_FIELD_PEAHAT_GROTTO_GRASS_03, true),
@@ -498,6 +498,10 @@ static RegisterShipInitFunc initFunc([]() {
             CHECK(RC_TERMINA_FIELD_GRASS_214, true),
             CHECK(RC_TERMINA_FIELD_GRASS_215, true),
             CHECK(RC_TERMINA_FIELD_GRASS_216, true),
+            CHECK(RC_TERMINA_FIELD_MAN_IN_THE_TREE_RUPEE_01, true),
+            CHECK(RC_TERMINA_FIELD_MAN_IN_THE_TREE_RUPEE_02, true),
+            CHECK(RC_TERMINA_FIELD_TREE_01, true),
+            CHECK(RC_TERMINA_FIELD_TREE_02, true),
             CHECK(RC_ENEMY_DROP_BLUE_BUBBLE, CanKillEnemy(ACTOR_EN_BB) && IS_NIGHT()), // Night only
             CHECK(RC_ENEMY_DROP_DEKU_BABA, CanKillEnemy(ACTOR_EN_DEKUBABA)),
             CHECK(RC_ENEMY_DROP_CHUCHU, CanKillEnemy(ACTOR_EN_SLIME) && IS_DAY()), // Day only

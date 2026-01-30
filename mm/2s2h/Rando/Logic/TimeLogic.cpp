@@ -57,11 +57,7 @@ uint64_t ExpandTimeForward(uint64_t timeSlices, const RandoRegion& region) {
             // Check if we can wait to this time
             auto it = region.timeStayRestrictions.find(static_cast<TimeSlice>(i));
             if (it != region.timeStayRestrictions.end()) {
-                // CLOCK SHUFFLE: Ignore item-gated restrictions during logic generation
-                // Player will obtain items eventually, so treat as permissive
-                if (SettingClocks()) {
-                    expanded |= mask; // Allow expansion - player will get items eventually
-                } else if (it->second()) {
+                if (it->second()) {
                     expanded |= mask; // Condition passed, add time
                 } else {
                     canWait = false; // Kicked out, STOP expansion

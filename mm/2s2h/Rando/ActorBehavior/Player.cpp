@@ -51,4 +51,32 @@ void Rando::ActorBehavior::InitPlayerBehavior() {
             }
         }
     });
+
+    COND_VB_SHOULD(VB_SONG_AVAILABLE_TO_PLAY, IS_RANDO, {
+        uint8_t* songIndex = va_arg(args, uint8_t*);
+
+        if (*songIndex == OCARINA_SONG_SUNS && RANDO_SAVE_OPTIONS[RO_SHUFFLE_SONG_SUN]) {
+            if (CHECK_QUEST_ITEM(QUEST_SONG_SUN)) {
+                *should = true;
+            } else {
+                *should = false;
+            }
+        }
+
+        if (*songIndex == OCARINA_SONG_DOUBLE_TIME && RANDO_SAVE_OPTIONS[RO_SHUFFLE_SONG_DOUBLE_TIME]) {
+            if (Flags_GetRandoInf(RANDO_INF_OBTAINED_SONG_DOUBLE_TIME)) {
+                *should = true;
+            } else {
+                *should = false;
+            }
+        }
+
+        if (*songIndex == OCARINA_SONG_INVERTED_TIME && RANDO_SAVE_OPTIONS[RO_SHUFFLE_SONG_INVERTED_TIME]) {
+            if (Flags_GetRandoInf(RANDO_INF_OBTAINED_SONG_INVERTED_TIME)) {
+                *should = true;
+            } else {
+                *should = false;
+            }
+        }
+    });
 }

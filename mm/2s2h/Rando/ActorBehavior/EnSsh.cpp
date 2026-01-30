@@ -11,19 +11,13 @@ extern "C" {
 
 void ApplySwampSpiderHouseHint(u16* textId, bool* loadFromMessageTable) {
     CustomMessage::Entry entry = {
-        .msg = "Make me...normal again...I'll give you %g{{article}}{{item}}%w...Please...help me...\xE0",
+        .msg = "Make me...normal again...I'll give you %g{{item}}%w...Please...help me...\xE0",
     };
 
-    auto& randoStaticItem =
-        Rando::StaticData::Items[RANDO_SAVE_CHECKS[RC_SWAMP_SPIDER_HOUSE_MASK_OF_TRUTH].randoItemId];
-
-    if (!Ship_IsCStringEmpty(randoStaticItem.article)) {
-        CustomMessage::Replace(&entry.msg, "{{article}}", std::string(randoStaticItem.article) + " ");
-    } else {
-        CustomMessage::Replace(&entry.msg, "{{article}}", "");
-    }
-
-    CustomMessage::Replace(&entry.msg, "{{item}}", randoStaticItem.name);
+    CustomMessage::Replace(
+        &entry.msg, "{{item}}",
+        Rando::StaticData::GetItemName(RANDO_SAVE_CHECKS[RC_SWAMP_SPIDER_HOUSE_MASK_OF_TRUTH].randoItemId, true,
+                                       RC_SWAMP_SPIDER_HOUSE_MASK_OF_TRUTH));
 
     CustomMessage::LoadCustomMessageIntoFont(entry);
     *loadFromMessageTable = false;
@@ -31,18 +25,12 @@ void ApplySwampSpiderHouseHint(u16* textId, bool* loadFromMessageTable) {
 
 void ApplyOceanSpiderHouseHint(u16* textId, bool* loadFromMessageTable) {
     CustomMessage::Entry entry = {
-        .msg = "Huh? How'd I get up here... Why do I have %g{{article}}{{item}}%w in my pocket...?\xE0",
+        .msg = "Huh? How'd I get up here... Why do I have %g{{item}}%w in my pocket...?\xE0",
     };
 
-    auto& randoStaticItem = Rando::StaticData::Items[RANDO_SAVE_CHECKS[RC_OCEAN_SPIDER_HOUSE_WALLET].randoItemId];
-
-    if (!Ship_IsCStringEmpty(randoStaticItem.article)) {
-        CustomMessage::Replace(&entry.msg, "{{article}}", std::string(randoStaticItem.article) + " ");
-    } else {
-        CustomMessage::Replace(&entry.msg, "{{article}}", "");
-    }
-
-    CustomMessage::Replace(&entry.msg, "{{item}}", randoStaticItem.name);
+    CustomMessage::Replace(&entry.msg, "{{item}}",
+                           Rando::StaticData::GetItemName(RANDO_SAVE_CHECKS[RC_OCEAN_SPIDER_HOUSE_WALLET].randoItemId,
+                                                          true, RC_OCEAN_SPIDER_HOUSE_WALLET));
 
     CustomMessage::LoadCustomMessageIntoFont(entry);
     *loadFromMessageTable = false;
@@ -70,10 +58,10 @@ void Rando::ActorBehavior::InitEnSshBehavior() {
          * Oceanside as the else. South Clock Town is not the Swamp Spider House, so it will still return the Oceanside
          * token count as expected.
          */
-        *should = Inventory_GetSkullTokenCount(gPlayState->sceneId) >= RANDO_SAVE_OPTIONS[RO_MINIMUM_SKULLTULA_TOKENS];
+        *should = Inventory_GetSkullTokenCount(gPlayState->sceneId) >= RANDO_SAVE_OPTIONS[RO_SKULLTULA_TOKENS_REQUIRED];
     });
 
     COND_VB_SHOULD(VB_NOT_HAVE_ALL_SKULLTULA_TOKENS, IS_RANDO, {
-        *should = Inventory_GetSkullTokenCount(gPlayState->sceneId) < RANDO_SAVE_OPTIONS[RO_MINIMUM_SKULLTULA_TOKENS];
+        *should = Inventory_GetSkullTokenCount(gPlayState->sceneId) < RANDO_SAVE_OPTIONS[RO_SKULLTULA_TOKENS_REQUIRED];
     });
 }

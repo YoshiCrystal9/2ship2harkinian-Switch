@@ -150,6 +150,7 @@ static RegisterShipInitFunc initFunc([]() {
             CHECK(RC_CLOCK_TOWN_NORTH_TINGLE_MAP_01, CAN_USE_PROJECTILE && CAN_AFFORD(RC_CLOCK_TOWN_NORTH_TINGLE_MAP_01) && IS_DAY()),
             CHECK(RC_CLOCK_TOWN_NORTH_TINGLE_MAP_02, CAN_USE_PROJECTILE && CAN_AFFORD(RC_CLOCK_TOWN_NORTH_TINGLE_MAP_02) && IS_DAY()),
             CHECK(RC_CLOCK_TOWN_NORTH_TREE_PIECE_OF_HEART, true),
+            CHECK(RC_CLOCK_TOWN_NORTH_TREE_01, true),
             CHECK(RC_CLOCK_TOWN_NORTH_BOMB_LADY, RANDO_EVENTS[RE_SAVE_BOMB_SHOP_LADY]),
             CHECK(RC_CLOCK_TOWN_BOMBERS_NOTEBOOK, RANDO_EVENTS[RE_BOMBER_CODE]),
             CHECK(RC_CLOCK_TOWN_POSTBOX, HAS_ITEM(ITEM_MASK_POSTMAN)),
@@ -338,7 +339,8 @@ static RegisterShipInitFunc initFunc([]() {
     };
     Regions[RR_MILK_BAR] = RandoRegion{ .sceneId = SCENE_MILK_BAR,
         .checks = {
-            CHECK(RC_MILK_BAR_CIRCUS_LEADER_MASK, HAS_ITEM(ITEM_OCARINA_OF_TIME) && (BETWEEN(TIME_NIGHT1_PM_10_00, TIME_NIGHT1_AM_05_00) ||
+            CHECK(RC_MILK_BAR_CIRCUS_LEADER_MASK, HAS_ITEM(ITEM_OCARINA_OF_TIME) && HAS_ITEM(ITEM_MASK_ROMANI) &&
+                                                                                    (BETWEEN(TIME_NIGHT1_PM_10_00, TIME_NIGHT1_AM_05_00) ||
                                                                                     BETWEEN(TIME_NIGHT2_PM_10_00, TIME_NIGHT2_AM_05_00))
                                                                                  && (canPlaySong(OCARINA_SONG_WIND_FISH_HUMAN) &&
                                                                                     (CAN_BE_DEKU && canPlaySong(OCARINA_SONG_WIND_FISH_DEKU)) &&

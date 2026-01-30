@@ -6,6 +6,7 @@
 
 #include "z_obj_yasi.h"
 #include "objects/object_obj_yasi/object_obj_yasi.h"
+#include "GameInteractor/GameInteractor.h"
 
 #define FLAGS 0x00000000
 
@@ -62,7 +63,7 @@ void ObjYasi_Update(Actor* thisx, PlayState* play) {
     Vec3f dropPos;
 
     if (this->dyna.actor.home.rot.z != 0) {
-        if (CAN_DROP_NUT(thisx)) {
+        if (GameInteractor_Should(VB_TREE_DROP_COLLECTIBLE, CAN_DROP_NUT(thisx), thisx)) {
             if (Rand_ZeroOne() < 0.5f) {
                 dropPos.x = this->dyna.actor.world.pos.x;
                 dropPos.y = this->dyna.actor.world.pos.y + 280.0f;

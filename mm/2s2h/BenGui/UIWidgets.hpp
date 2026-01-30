@@ -476,6 +476,38 @@ struct FloatSliderOptions : WidgetOptions {
     }
 };
 
+struct BtnSelectorOptions : WidgetOptions {
+    s32 defaultValue = 0;
+    ComponentAlignment alignment = ComponentAlignment::Left;
+    LabelPosition labelPosition = LabelPosition::Above;
+    Colors color = Colors::Gray;
+
+    BtnSelectorOptions& DefaultValue(float defaultValue_) {
+        defaultValue = defaultValue_;
+        return *this;
+    }
+
+    BtnSelectorOptions& ComponentAlignment(ComponentAlignment alignment_) {
+        alignment = alignment_;
+        return *this;
+    }
+
+    BtnSelectorOptions& LabelPosition(LabelPosition labelPosition_) {
+        labelPosition = labelPosition_;
+        return *this;
+    }
+
+    BtnSelectorOptions& Tooltip(const char* tooltip_) {
+        WidgetOptions::tooltip = tooltip_;
+        return *this;
+    }
+
+    BtnSelectorOptions& Color(Colors color_) {
+        WidgetOptions::color = color = color_;
+        return *this;
+    }
+};
+
 struct RadioButtonsOptions : WidgetOptions {
     std::unordered_map<int32_t, const char*> buttonMap;
     int32_t defaultIndex = 0;
@@ -1159,6 +1191,8 @@ void DrawFlagArray16(const std::string& name, uint16_t& flags, Colors color = Co
 void DrawFlagTableArray16(const FlagTable& flagTable, uint16_t& flags);
 void DrawFlagTableArray8(const FlagTable& flagTable, uint16_t row, uint8_t& flags);
 void DrawFlagTableArray8Mask(const FlagTable& flagTable, uint16_t row, uint8_t& flags);
+bool BtnSelector(const char* label, int32_t* value, const BtnSelectorOptions& options);
+bool CVarBtnSelector(const char* label, const char* cvarName, const BtnSelectorOptions& options);
 } // namespace UIWidgets
 ImVec4 GetRandomValue();
 

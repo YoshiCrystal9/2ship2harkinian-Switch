@@ -186,8 +186,9 @@ void EnEncount3_Draw(Actor* thisx, PlayState* play) {
 
         gDPPipeSync(POLY_XLU_DISP++);
         gSPSegment(POLY_XLU_DISP++, 0x08,
-                   Gfx_TwoTexScroll(play->state.gfxCtx, 0, (s32)play->gameplayFrames, 0, 0x20, 0x40, 1,
-                                    (s32)play->gameplayFrames * -2, (s32)play->gameplayFrames * -8, 0x20, 0x20));
+                   Gfx_TwoTexScrollEx(play->state.gfxCtx, 0, (s32)play->gameplayFrames, 0, 0x20, 0x40, 1,
+                                      (s32)play->gameplayFrames * -2, (s32)play->gameplayFrames * -8, 0x20, 0x20, 1, 0,
+                                      -2, -8));
 
         gDPSetPrimColor(POLY_XLU_DISP++, 0, 0, 255, 200, 0, (s8)this->unk170);
         gDPSetEnvColor(POLY_XLU_DISP++, 255, 0, 0, 128);

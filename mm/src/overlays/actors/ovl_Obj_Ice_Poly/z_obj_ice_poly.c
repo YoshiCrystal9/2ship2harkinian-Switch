@@ -350,8 +350,8 @@ void ObjIcePoly_Draw(Actor* thisx, PlayState* play) {
 
     MATRIX_FINALIZE_AND_LOAD(POLY_XLU_DISP++, play->state.gfxCtx);
     gSPSegment(POLY_XLU_DISP++, 0x08,
-               Gfx_TwoTexScroll(play->state.gfxCtx, 0, 0, play->gameplayFrames % 256, 0x20, 0x10, 1, 0,
-                                (play->gameplayFrames * 2) % 256, 0x40, 0x20));
+               Gfx_TwoTexScrollEx(play->state.gfxCtx, 0, 0, play->gameplayFrames % 256, 0x20, 0x10, 1, 0,
+                                  (play->gameplayFrames * 2) % 256, 0x40, 0x20, 0, 1, 0, 2));
     gDPSetEnvColor(POLY_XLU_DISP++, 0, 50, 100, this->unk_148);
     gSPDisplayList(POLY_XLU_DISP++, gEffIceFragment3DL);
 

@@ -351,6 +351,10 @@ s16 EnFsn_GetStolenItemId(u32 stolenItem) {
 }
 
 s32 EnFsn_HasItemsToSell(void) {
+    if (GameInteractor_Should(VB_EN_FSN_HAS_ITEMS, false)) {
+        return true;
+    }
+
     if (CURRENT_DAY != 3) {
         if ((STOLEN_ITEM_1 != STOLEN_ITEM_NONE) || (STOLEN_ITEM_2 != STOLEN_ITEM_NONE)) {
             return true;

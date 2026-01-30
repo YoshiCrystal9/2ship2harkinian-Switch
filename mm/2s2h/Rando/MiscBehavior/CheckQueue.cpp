@@ -47,10 +47,11 @@ void Rando::MiscBehavior::CheckQueue() {
                         RandoItemId randoItemId =
                             Rando::ConvertItem(randoSaveCheck.randoItemId, (RandoCheckId)CUSTOM_ITEM_PARAM);
                         std::string prefix = "You found";
-                        std::string message = Rando::StaticData::GetItemName(randoItemId);
+                        std::string message =
+                            Rando::StaticData::GetItemName(randoItemId, true, (RandoCheckId)CUSTOM_ITEM_PARAM);
 
                         if (randoItemId == RI_JUNK) {
-                            randoItemId = Rando::CurrentJunkItem();
+                            randoItemId = Rando::CurrentJunkItem((RandoCheckId)CUSTOM_ITEM_PARAM);
                         }
                         if (randoItemId == RI_TRIFORCE_PIECE) {
                             if (gSaveContext.save.shipSaveInfo.rando.foundTriforcePieces + 1 >=
@@ -115,7 +116,7 @@ void Rando::MiscBehavior::CheckQueue() {
                         }
 
                         Matrix_Scale(30.0f, 30.0f, 30.0f, MTXMODE_APPLY);
-                        Rando::DrawItem(randoItemId);
+                        Rando::DrawItem(randoItemId, (RandoCheckId)CUSTOM_ITEM_PARAM, actor);
                     } });
             return;
         }

@@ -1898,8 +1898,9 @@ void EnJso2_Draw(Actor* thisx, PlayState* play2) {
             Matrix_Translate(this->flamePos[i].x, this->flamePos[i].y, this->flamePos[i].z, MTXMODE_NEW);
             Matrix_Scale(this->flameScale[i].x, this->flameScale[i].y, this->flameScale[i].z, MTXMODE_APPLY);
             gSPSegment(POLY_XLU_DISP++, 0x08,
-                       Gfx_TwoTexScroll(play->state.gfxCtx, G_TX_RENDERTILE, 0, 0, 32, 64, 1, 0,
-                                        ((this->flameScroll * 10) - (play->state.frames * 20)) & 0x1FF, 32, 128));
+                       Gfx_TwoTexScrollEx(play->state.gfxCtx, G_TX_RENDERTILE, 0, 0, 32, 64, 1, 0,
+                                          ((this->flameScroll * 10) - (play->state.frames * 20)) & 0x1FF, 32, 128, 0, 0,
+                                          0, -20));
             gDPPipeSync(POLY_XLU_DISP++);
             gDPSetPrimColor(POLY_XLU_DISP++, 0x80, 0x80, 255, 255, 170, 255);
             gDPSetEnvColor(POLY_XLU_DISP++, 255, 50, 0, 255);

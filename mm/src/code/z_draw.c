@@ -412,8 +412,8 @@ void GetItem_DrawPoes(PlayState* play, s16 drawId) {
     gSPDisplayList(POLY_XLU_DISP++, sDrawItemTable[drawId].drawResources[1]);
 
     gSPSegment(POLY_XLU_DISP++, 0x08,
-               Gfx_TwoTexScroll(play->state.gfxCtx, G_TX_RENDERTILE, play->state.frames * 0, play->state.frames * 0, 16,
-                                32, 1, play->state.frames, -(play->state.frames * 6), 16, 32));
+               Gfx_TwoTexScrollEx(play->state.gfxCtx, G_TX_RENDERTILE, play->state.frames * 0, play->state.frames * 0,
+                                  16, 32, 1, play->state.frames, -(play->state.frames * 6), 16, 32, 0, 0, 1, -6));
 
     Matrix_Push();
     Matrix_ReplaceRotation(&play->billboardMtxF);
@@ -442,8 +442,8 @@ void GetItem_DrawFairyBottle(PlayState* play, s16 drawId) {
     MATRIX_FINALIZE_AND_LOAD(POLY_XLU_DISP++, play->state.gfxCtx);
     gSPDisplayList(POLY_XLU_DISP++, sDrawItemTable[drawId].drawResources[1]);
     gSPSegment(POLY_XLU_DISP++, 0x08,
-               Gfx_TwoTexScroll(play->state.gfxCtx, G_TX_RENDERTILE, play->state.frames * 0, play->state.frames * 0, 32,
-                                32, 1, play->state.frames, -(play->state.frames * 6), 32, 32));
+               Gfx_TwoTexScrollEx(play->state.gfxCtx, G_TX_RENDERTILE, play->state.frames * 0, play->state.frames * 0,
+                                  32, 32, 1, play->state.frames, -(play->state.frames * 6), 32, 320, 0, 0, 1, -6));
 
     Matrix_Push();
     Matrix_ReplaceRotation(&play->billboardMtxF);
@@ -469,8 +469,9 @@ void GetItem_DrawSkullToken(PlayState* play, s16 drawId) {
     Gfx_SetupDL25_Xlu(play->state.gfxCtx);
 
     gSPSegment(POLY_XLU_DISP++, 0x08,
-               Gfx_TwoTexScroll(play->state.gfxCtx, G_TX_RENDERTILE, play->state.frames * 0, -(play->state.frames * 5),
-                                32, 32, 1, play->state.frames * 0, play->state.frames * 0, 32, 64));
+               Gfx_TwoTexScrollEx(play->state.gfxCtx, G_TX_RENDERTILE, play->state.frames * 0,
+                                  -(play->state.frames * 5), 32, 32, 1, play->state.frames * 0, play->state.frames * 0,
+                                  32, 64, 0, -5, 0, 0));
     MATRIX_FINALIZE_AND_LOAD(POLY_XLU_DISP++, play->state.gfxCtx);
     gSPDisplayList(POLY_XLU_DISP++, sDrawItemTable[drawId].drawResources[1]);
 
@@ -503,8 +504,8 @@ void GetItem_DrawPotion(PlayState* play, s16 drawId) {
     Gfx_SetupDL25_Opa(play->state.gfxCtx);
 
     gSPSegment(POLY_OPA_DISP++, 0x08,
-               Gfx_TwoTexScroll(play->state.gfxCtx, G_TX_RENDERTILE, -play->state.frames, play->state.frames, 32, 32, 1,
-                                -play->state.frames, play->state.frames, 32, 32));
+               Gfx_TwoTexScrollEx(play->state.gfxCtx, G_TX_RENDERTILE, -play->state.frames, play->state.frames, 32, 32,
+                                  1, -play->state.frames, play->state.frames, 32, 32, -1, 1, -1, 1));
     MATRIX_FINALIZE_AND_LOAD(POLY_OPA_DISP++, play->state.gfxCtx);
     gSPDisplayList(POLY_OPA_DISP++, sDrawItemTable[drawId].drawResources[1]);
     gSPDisplayList(POLY_OPA_DISP++, sDrawItemTable[drawId].drawResources[0]);
@@ -528,8 +529,8 @@ void GetItem_DrawGoronSword(PlayState* play, s16 drawId) {
     Gfx_SetupDL25_Opa(play->state.gfxCtx);
 
     gSPSegment(POLY_OPA_DISP++, 0x08,
-               Gfx_TwoTexScroll(play->state.gfxCtx, G_TX_RENDERTILE, play->state.frames * 1, play->state.frames * 0, 32,
-                                32, 1, play->state.frames * 0, play->state.frames * 0, 32, 32));
+               Gfx_TwoTexScrollEx(play->state.gfxCtx, G_TX_RENDERTILE, play->state.frames * 1, play->state.frames * 0,
+                                  32, 32, 1, play->state.frames * 0, play->state.frames * 0, 32, 32, 1, 0, 0, 0));
     MATRIX_FINALIZE_AND_LOAD(POLY_OPA_DISP++, play->state.gfxCtx);
     gSPDisplayList(POLY_OPA_DISP++, sDrawItemTable[drawId].drawResources[0]);
 
@@ -544,8 +545,8 @@ void GetItem_DrawDekuNuts(PlayState* play, s16 drawId) {
     Gfx_SetupDL25_Opa(play->state.gfxCtx);
 
     gSPSegment(POLY_OPA_DISP++, 0x08,
-               Gfx_TwoTexScroll(play->state.gfxCtx, G_TX_RENDERTILE, play->state.frames * 6, play->state.frames * 6, 32,
-                                32, 1, play->state.frames * 6, play->state.frames * 6, 32, 32));
+               Gfx_TwoTexScrollEx(play->state.gfxCtx, G_TX_RENDERTILE, play->state.frames * 6, play->state.frames * 6,
+                                  32, 32, 1, play->state.frames * 6, play->state.frames * 6, 32, 32, 6, 6, 6, 6));
     MATRIX_FINALIZE_AND_LOAD(POLY_OPA_DISP++, play->state.gfxCtx);
     gSPDisplayList(POLY_OPA_DISP++, sDrawItemTable[drawId].drawResources[0]);
 
@@ -560,8 +561,9 @@ void GetItem_DrawRecoveryHeart(PlayState* play, s16 drawId) {
     Gfx_SetupDL25_Xlu(play->state.gfxCtx);
 
     gSPSegment(POLY_XLU_DISP++, 0x08,
-               Gfx_TwoTexScroll(play->state.gfxCtx, G_TX_RENDERTILE, play->state.frames * 0, -(play->state.frames * 3),
-                                32, 32, 1, play->state.frames * 0, -(play->state.frames * 2), 32, 32));
+               Gfx_TwoTexScrollEx(play->state.gfxCtx, G_TX_RENDERTILE, play->state.frames * 0,
+                                  -(play->state.frames * 3), 32, 32, 1, play->state.frames * 0,
+                                  -(play->state.frames * 2), 32, 32, 0, -3, 0, -2));
     MATRIX_FINALIZE_AND_LOAD(POLY_XLU_DISP++, play->state.gfxCtx);
     gSPDisplayList(POLY_XLU_DISP++, sDrawItemTable[drawId].drawResources[0]);
 
@@ -576,8 +578,8 @@ void GetItem_DrawFish(PlayState* play, s16 drawId) {
     Gfx_SetupDL25_Xlu(play->state.gfxCtx);
 
     gSPSegment(POLY_XLU_DISP++, 0x08,
-               Gfx_TwoTexScroll(play->state.gfxCtx, G_TX_RENDERTILE, play->state.frames * 0, play->state.frames * 1, 32,
-                                32, 1, play->state.frames * 0, play->state.frames * 1, 32, 32));
+               Gfx_TwoTexScrollEx(play->state.gfxCtx, G_TX_RENDERTILE, play->state.frames * 0, play->state.frames * 1,
+                                  32, 32, 1, play->state.frames * 0, play->state.frames * 1, 32, 32, 0, 1, 0, 1));
     MATRIX_FINALIZE_AND_LOAD(POLY_XLU_DISP++, play->state.gfxCtx);
     gSPDisplayList(POLY_XLU_DISP++, sDrawItemTable[drawId].drawResources[0]);
 

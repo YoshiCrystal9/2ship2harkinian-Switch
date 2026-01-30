@@ -220,9 +220,9 @@ void ArrowLight_Draw(Actor* thisx, PlayState* play) {
 
         MATRIX_FINALIZE_AND_LOAD(POLY_XLU_DISP++, play->state.gfxCtx);
         gSPDisplayList(POLY_XLU_DISP++, gLightArrowMaterialDL);
-        gSPDisplayList(POLY_XLU_DISP++,
-                       Gfx_TwoTexScroll(play->state.gfxCtx, 0, 511 - ((frames * 5) % 512), 0, 4, 32, 1,
-                                        511 - ((frames * 10) % 512), 511 - ((frames * 30) % 512), 8, 16));
+        gSPDisplayList(POLY_XLU_DISP++, Gfx_TwoTexScrollEx(play->state.gfxCtx, 0, 511 - ((frames * 5) % 512), 0, 4, 32,
+                                                           1, 511 - ((frames * 10) % 512), 511 - ((frames * 30) % 512),
+                                                           8, 16, -5, 0, -10, -30));
         gSPDisplayList(POLY_XLU_DISP++, gLightArrowModelDL);
         CLOSE_DISPS(play->state.gfxCtx);
     }

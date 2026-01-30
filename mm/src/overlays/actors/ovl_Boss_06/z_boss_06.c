@@ -734,8 +734,9 @@ void Boss06_Draw(Actor* thisx, PlayState* play2) {
                     Matrix_Push();
 
                     gSPSegment(POLY_XLU_DISP++, 0x08,
-                               Gfx_TwoTexScroll(play->state.gfxCtx, 0, 0, 0, 32, 64, 1, 0,
-                                                ((play->gameplayFrames + (i * 10)) * -20) % 512, 32, 128));
+                               Gfx_TwoTexScrollEx(play->state.gfxCtx, 0, 0, 0, 32, 64, 1, 0,
+                                                  ((play->gameplayFrames + (i * 10)) * -20) % 512, 32, 128, 0, 0, 0,
+                                                  -20));
 
                     Matrix_Translate((sCurtainFireEffectPositions[i].x - 32.0f) * -2.4f,
                                      (sCurtainFireEffectPositions[i].y - 32.0f) * -2.4f, 0.0f, MTXMODE_APPLY);

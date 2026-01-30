@@ -92,6 +92,8 @@ typedef struct {
             "gCosmetic." cvar ".Changed"                                                            \
     }
 
+extern CosmeticEditorElement cosmeticEditorElements[COSMETIC_ELEMENT_MAX];
+
 #ifdef __cplusplus
 }
 #endif //__cplusplus

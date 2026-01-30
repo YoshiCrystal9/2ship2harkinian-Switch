@@ -52,7 +52,7 @@ class AudioCollection {
   public:
     static AudioCollection* Instance;
     AudioCollection();
-    std::map<uint16_t, SequenceInfo> GetAllSequences() const {
+    const std::map<uint16_t, SequenceInfo>& GetAllSequences() const {
         return mSequenceMap;
     }
     std::set<SequenceInfo*, compareSequenceLabel> GetIncludedSequences() const {

@@ -29,10 +29,12 @@ void OnOpenShopText(u16* textId, bool* loadFromMessageTable) {
                 "\x02{item2}\x01 {price2} Rupees\x11"
                 "\x02No thanks";
 
-    CustomMessage::Replace(&entry.msg, "{item1}",
-                           Rando::StaticData::GetItemName(RANDO_SAVE_CHECKS[randoCheckId1].randoItemId, false));
-    CustomMessage::Replace(&entry.msg, "{item2}",
-                           Rando::StaticData::GetItemName(RANDO_SAVE_CHECKS[randoCheckId2].randoItemId, false));
+    CustomMessage::Replace(
+        &entry.msg, "{item1}",
+        Rando::StaticData::GetItemName(RANDO_SAVE_CHECKS[randoCheckId1].randoItemId, false, randoCheckId1));
+    CustomMessage::Replace(
+        &entry.msg, "{item2}",
+        Rando::StaticData::GetItemName(RANDO_SAVE_CHECKS[randoCheckId2].randoItemId, false, randoCheckId2));
     CustomMessage::Replace(&entry.msg, "{price1}", std::to_string(RANDO_SAVE_CHECKS[randoCheckId1].price));
     CustomMessage::Replace(&entry.msg, "{price2}", std::to_string(RANDO_SAVE_CHECKS[randoCheckId2].price));
     CustomMessage::EnsureMessageEnd(&entry.msg);

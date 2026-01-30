@@ -13,7 +13,7 @@ void EnSob1_DrawCustomItem(Actor* thisx, PlayState* play) {
     s16 rotX = (s16)((-90.0f / 180.0f) * 32768.0f);
     Matrix_RotateZYX(rotX, 0, 0, MTXMODE_APPLY);
 
-    Rando::DrawItem(randoSaveCheck.randoItemId);
+    Rando::DrawItem(randoSaveCheck.randoItemId, RC_BOMB_SHOP_ITEM_01, thisx);
 }
 
 static MtxF sLeftHandMtxF;

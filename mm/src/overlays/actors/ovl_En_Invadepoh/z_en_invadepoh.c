@@ -5151,8 +5151,8 @@ void EnInvadepoh_DrawWarpEffects(PlayState* play) {
             gDPSetPrimColor(POLY_XLU_DISP++, 0x80, 0x80, 255, 255, 170, warpEffect->alpha);
             gDPSetEnvColor(POLY_XLU_DISP++, 255, 50, 0, 0);
             gSPSegment(POLY_XLU_DISP++, 0x8,
-                       Gfx_TwoTexScroll(play->state.gfxCtx, G_TX_RENDERTILE, warpScrollX1, 0, 32, 64, 1, 0,
-                                        warpScrollY2, 32, 64));
+                       Gfx_TwoTexScrollEx(play->state.gfxCtx, G_TX_RENDERTILE, warpScrollX1, 0, 32, 64, 1, 0,
+                                          warpScrollY2, 32, 64, 1, 0, 0, -15));
             MATRIX_FINALIZE_AND_LOAD(POLY_XLU_DISP++, play->state.gfxCtx);
             gSPDisplayList(POLY_XLU_DISP++, gameplay_keep_DL_02E510);
         }

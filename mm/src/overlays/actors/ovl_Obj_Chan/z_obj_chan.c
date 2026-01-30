@@ -435,7 +435,8 @@ void ObjChan_DrawFire(ObjChan* this, PlayState* play) {
 
     dl = Gfx_SetupDL71(POLY_XLU_DISP);
     MATRIX_FINALIZE_AND_LOAD(&dl[0], play->state.gfxCtx);
-    gSPSegment(&dl[1], 0x08, Gfx_TwoTexScroll(play->state.gfxCtx, 0, 0, 0, 32, 64, 1, 0, -sp4C * 20, 32, 128));
+    gSPSegment(&dl[1], 0x08,
+               Gfx_TwoTexScrollEx(play->state.gfxCtx, 0, 0, 0, 32, 64, 1, 0, -sp4C * 20, 32, 128, 0, 0, 0, -20));
     gDPSetPrimColor(&dl[2], 128, 128, 255, 255, 0, 255);
     gDPSetEnvColor(&dl[3], 255, 0, 0, 0);
     gSPDisplayList(&dl[4], gEffFire1DL);

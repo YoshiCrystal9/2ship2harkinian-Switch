@@ -163,8 +163,8 @@ void OceffSpot_Draw(Actor* thisx, PlayState* play) {
 
     MATRIX_FINALIZE_AND_LOAD(POLY_XLU_DISP++, play->state.gfxCtx);
     gSPDisplayList(POLY_XLU_DISP++, &sSunSongEffectCylinderMaterialDL);
-    gSPDisplayList(POLY_XLU_DISP++, Gfx_TwoTexScroll(play->state.gfxCtx, 0, scroll * 2, scroll * -2, 0x20, 0x20, 1, 0,
-                                                     scroll * -8, 0x20, 0x20));
+    gSPDisplayList(POLY_XLU_DISP++, Gfx_TwoTexScrollEx(play->state.gfxCtx, 0, scroll * 2, scroll * -2, 0x20, 0x20, 1, 0,
+                                                       scroll * -8, 0x20, 0x20, 2, -2, 0, -8));
     gSPDisplayList(POLY_XLU_DISP++, &sSunSongEffectCylinderModelDL);
 
     CLOSE_DISPS(play->state.gfxCtx);

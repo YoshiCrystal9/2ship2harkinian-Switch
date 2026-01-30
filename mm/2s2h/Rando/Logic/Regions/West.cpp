@@ -92,7 +92,7 @@ static RegisterShipInitFunc initFunc([]() {
             CHECK(RC_GREAT_BAY_COAST_COW_GROTTO_GRASS_70, true),
             CHECK(RC_GREAT_BAY_COAST_COW_GROTTO_GRASS_71, true),
             CHECK(RC_GREAT_BAY_COAST_COW_GROTTO_GRASS_72, true),
-            CHECK(RC_ENEMY_DROP_GIANT_BEE, CAN_USE_PROJECTILE), // In a beehive
+            CHECK(RC_ENEMY_DROP_GIANT_BEE, CAN_USE_PROJECTILE && CanKillEnemy(ACTOR_EN_BEE)), // In a beehive
         },
         .connections = {
             CONNECTION(RR_GREAT_BAY_COAST_CLIFFSIDE, true), // TODO: Grotto mapping
@@ -123,7 +123,6 @@ static RegisterShipInitFunc initFunc([]() {
     };
     Regions[RR_GREAT_BAY_COAST] = RandoRegion{ .sceneId = SCENE_30GYOSON,
         .checks = {
-            CHECK(RC_GREAT_BAY_COAST_FISHERMAN_MINIGAME, RANDO_EVENTS[RE_CLEARED_GREAT_BAY_TEMPLE] && (HAS_ITEM(ITEM_HOOKSHOT) || CAN_USE_MAGIC_ARROW(ICE)) && (BETWEEN(TIME_DAY1_AM_07_00, TIME_NIGHT1_AM_04_00) || BETWEEN(TIME_DAY2_AM_07_00, TIME_NIGHT2_AM_04_00) || BETWEEN(TIME_DAY3_AM_07_00, TIME_NIGHT3_AM_04_00))),
             CHECK(RC_GREAT_BAY_COAST_MIKAU, CAN_USE_ABILITY(SWIM) && CAN_PLAY_SONG(HEALING)),
             CHECK(RC_GREAT_BAY_COAST_POT_03, true),
             CHECK(RC_GREAT_BAY_COAST_POT_04, true),
@@ -132,6 +131,9 @@ static RegisterShipInitFunc initFunc([]() {
             CHECK(RC_GREAT_BAY_COAST_GRASS_03, true),
             CHECK(RC_GREAT_BAY_COAST_GRASS_04, true),
             CHECK(RC_GREAT_BAY_COAST_GRASS_05, true),
+            CHECK(RC_GREAT_BAY_COAST_TREE_02, true),
+            CHECK(RC_GREAT_BAY_COAST_TREE_03, true),
+            CHECK(RC_GREAT_BAY_COAST_TREE_04, true),
             CHECK(RC_ENEMY_DROP_LEEVER, CanKillEnemy(ACTOR_EN_NEO_REEBA)),
             CHECK(RC_ENEMY_DROP_LIKE_LIKE, CanKillEnemy(ACTOR_EN_RR)),
         },
@@ -173,6 +175,15 @@ static RegisterShipInitFunc initFunc([]() {
             ENTRANCE(GREAT_BAY_COAST, 11), // From Song of Soaring
         },
     };
+    Regions[RR_GREAT_BAY_COAST_MINIGAME_PLATFORMS] = RandoRegion{ .sceneId = SCENE_30GYOSON,
+        .checks = {
+            CHECK(RC_GREAT_BAY_COAST_FISHERMAN_MINIGAME, RANDO_EVENTS[RE_CLEARED_GREAT_BAY_TEMPLE] && (HAS_ITEM(ITEM_HOOKSHOT) || CAN_USE_MAGIC_ARROW(ICE)) && (BETWEEN(TIME_DAY1_AM_07_00, TIME_NIGHT1_AM_04_00) || BETWEEN(TIME_DAY2_AM_07_00, TIME_NIGHT2_AM_04_00) || BETWEEN(TIME_DAY3_AM_07_00, TIME_NIGHT3_AM_04_00))),
+            CHECK(RC_GREAT_BAY_COAST_TREE_01, true),
+        },
+        .connections = {
+            CONNECTION(RR_GREAT_BAY_COAST_CLIFFSIDE, CAN_USE_ABILITY(SWIM)),
+        },
+    };
     Regions[RR_GREAT_BAY_COAST_CLIFFSIDE] = RandoRegion{ .sceneId = SCENE_30GYOSON,
         .checks = {
             CHECK(RC_GREAT_BAY_COAST_PIECE_OF_HEART, CAN_HOOK_SCARECROW && CAN_GROW_BEAN_PLANT),
@@ -187,6 +198,7 @@ static RegisterShipInitFunc initFunc([]() {
         .connections = {
             CONNECTION(RR_GREAT_BAY_COAST_COW_GROTTO, CAN_HOOK_SCARECROW && CAN_GROW_BEAN_PLANT), // TODO: Grotto mapping
             CONNECTION(RR_GREAT_BAY_COAST, CAN_USE_ABILITY(SWIM)),
+            CONNECTION(RR_GREAT_BAY_COAST_MINIGAME_PLATFORMS, RANDO_EVENTS[RE_CLEARED_GREAT_BAY_TEMPLE] && (HAS_ITEM(ITEM_HOOKSHOT) || CAN_USE_MAGIC_ARROW(ICE))),
         },
     };
     Regions[RR_GREAT_BAY_GREAT_FAIRY_FOUNTAIN] = RandoRegion{ .sceneId = SCENE_YOUSEI_IZUMI,
@@ -325,6 +337,11 @@ static RegisterShipInitFunc initFunc([]() {
             CHECK(RC_ZORA_CAPE_WATERFALL_PIECE_OF_HEART,   CAN_BE_ZORA && CAN_USE_ABILITY(SWIM)),
             CHECK(RC_ZORA_CAPE_NEAR_BEAVERS_POT_01,        true),
             CHECK(RC_ZORA_CAPE_NEAR_BEAVERS_POT_02,        true),
+            CHECK(RC_ZORA_CAPE_TREE_01,                    true),
+            CHECK(RC_ZORA_CAPE_TREE_02,                    true),
+            CHECK(RC_ZORA_CAPE_TREE_03,                    HAS_ITEM(ITEM_HOOKSHOT)),
+            CHECK(RC_ZORA_CAPE_TREE_04,                    HAS_ITEM(ITEM_HOOKSHOT)),
+            CHECK(RC_ZORA_CAPE_TREE_05,                    HAS_ITEM(ITEM_HOOKSHOT)),
             CHECK(RC_ENEMY_DROP_LEEVER,                    CanKillEnemy(ACTOR_EN_NEO_REEBA)),
             CHECK(RC_ENEMY_DROP_LIKE_LIKE,                 CanKillEnemy(ACTOR_EN_RR)),
         },

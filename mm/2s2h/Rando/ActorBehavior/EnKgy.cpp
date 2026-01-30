@@ -50,7 +50,8 @@ void Rando::ActorBehavior::InitEnKgyBehavior() {
             entry.msg = "\nIf you want %y{itemName}%w, it will cost you %p100 Rupees%w.\n\x10";
             entry.msg += "So, do we have a deal?\n\xC2%gI'll buy it\nNo thanks\xBF";
             CustomMessage::Replace(&entry.msg, "{itemName}",
-                                   Rando::StaticData::GetItemName(randoRazorSwordSaveCheck.randoItemId));
+                                   Rando::StaticData::GetItemName(randoRazorSwordSaveCheck.randoItemId, true,
+                                                                  RC_MOUNTAIN_VILLAGE_SMITHY_RAZOR_SWORD));
         }
 
         CustomMessage::LoadCustomMessageIntoFont(entry);
@@ -64,7 +65,8 @@ void Rando::ActorBehavior::InitEnKgyBehavior() {
 
         if (!RANDO_SAVE_CHECKS[RC_MOUNTAIN_VILLAGE_SMITHY_GILDED_SWORD].eligible) {
             itemName =
-                Rando::StaticData::GetItemName(RANDO_SAVE_CHECKS[RC_MOUNTAIN_VILLAGE_SMITHY_GILDED_SWORD].randoItemId);
+                Rando::StaticData::GetItemName(RANDO_SAVE_CHECKS[RC_MOUNTAIN_VILLAGE_SMITHY_GILDED_SWORD].randoItemId,
+                                               true, RC_MOUNTAIN_VILLAGE_SMITHY_GILDED_SWORD);
         }
         entry.msg = "Want to know a secret? If you bring me some gold dust, I can offer you %r{itemName}%w.\xE0";
         CustomMessage::Replace(&entry.msg, "{itemName}", itemName);

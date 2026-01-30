@@ -2967,8 +2967,9 @@ void Environment_DrawSandstorm(PlayState* play, u8 sandstormState) {
         gDPSetPrimColor(POLY_XLU_DISP++, 0, 0x80, primColor.r, primColor.g, primColor.b, play->envCtx.sandstormPrimA);
         gDPSetEnvColor(POLY_XLU_DISP++, envColor.r, envColor.g, envColor.b, play->envCtx.sandstormEnvA);
         gSPSegment(POLY_XLU_DISP++, 0x08,
-                   Gfx_TwoTexScroll(play->state.gfxCtx, G_TX_RENDERTILE, (u32)sp96 % 4096, 0, 512, 32, 1,
-                                    (u32)sp94 % 4096, 4095 - ((u32)sp92 % 4096), 256, 64));
+                   Gfx_TwoTexScrollEx(play->state.gfxCtx, G_TX_RENDERTILE, (u32)sp96 % 4096, 0, 512, 32, 1,
+                                      (u32)sp94 % 4096, 4095 - ((u32)sp92 % 4096), 256, 64, sp98, 0, sp98 * 1.5f,
+                                      -sp98));
         gDPSetTextureLUT(POLY_XLU_DISP++, G_TT_NONE);
         // #region 2S2H [Widescreen] Widescreen Sandstorm
         // gSPDisplayList(POLY_XLU_DISP++, gFieldSandstormDL); // Original Dlist call

@@ -10875,7 +10875,7 @@ s32 func_80840A30(PlayState* play, Player* this, f32* arg2, f32 arg3) {
                     return true;
                 }
 
-                if (cylinderOc != NULL) {
+                if (GameInteractor_Should(VB_APPLY_BONK_TO_ACTOR, cylinderOc != NULL, cylinderOc)) {
                     cylinderOc->home.rot.y = 1;
                 } else if (this->actor.wallBgId != BGCHECK_SCENE) { // i.e. was an actor
                     DynaPolyActor* wallPolyActor = DynaPoly_GetActor(&play->colCtx, this->actor.wallBgId);
@@ -13031,11 +13031,9 @@ s32 Player_UpdateNoclip(Player* this, PlayState* play) {
         return true;
     }
 
-    if ((CHECK_BTN_ALL(sPlayerControlInput->cur.button, BTN_L | BTN_R | BTN_A) &&
-         CHECK_BTN_ALL(sPlayerControlInput->press.button, BTN_B)) ||
-        (CHECK_BTN_ALL(sPlayerControlInput->cur.button, BTN_L) &&
-         CHECK_BTN_ALL(sPlayerControlInput->press.button, BTN_DRIGHT))) {
-
+    s32 mask = CVarGetInteger("gDeveloperTools.NoClipBtn", BTN_L | BTN_DRIGHT);
+    if (CHECK_BTN_ALL(sPlayerControlInput->cur.button, mask) &&
+        CHECK_BTN_ANY(sPlayerControlInput->press.button, mask)) {
         sNoclipEnabled ^= 1;
 
         if (sNoclipEnabled) {
@@ -13470,8 +13468,8 @@ void Player_Draw(Actor* thisx, PlayState* play) {
             f32 temp_fa0 = this->unk_B48;
 
             gSPSegment(POLY_XLU_DISP++, 0x08,
-                       Gfx_TwoTexScroll(play->state.gfxCtx, 0, 0, -(s32)play->gameplayFrames & 0x7F, 0x20, 0x20, 1, 0,
-                                        ((s32)play->gameplayFrames * -2) & 0x7F, 0x20, 0x20));
+                       Gfx_TwoTexScrollEx(play->state.gfxCtx, 0, 0, -(s32)play->gameplayFrames & 0x7F, 0x20, 0x20, 1, 0,
+                                          ((s32)play->gameplayFrames * -2) & 0x7F, 0x20, 0x20, 0, -1, 0, -2));
 
             Matrix_Scale(temp_fa0, temp_fa0, temp_fa0, MTXMODE_APPLY);
             MATRIX_FINALIZE_AND_LOAD(POLY_XLU_DISP++, play->state.gfxCtx);

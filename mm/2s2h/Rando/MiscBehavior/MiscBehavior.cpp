@@ -16,6 +16,7 @@ void Rando::MiscBehavior::OnFileLoad() {
     Rando::MiscBehavior::CheckQueueReset();
     Rando::MiscBehavior::InitKaleidoItemPage();
     Rando::MiscBehavior::InitOfferGetItemBehavior();
+    Rando::MiscBehavior::SariasSongHint();
 
     COND_HOOK(OnFlagSet, IS_RANDO, Rando::MiscBehavior::OnFlagSet);
     COND_HOOK(OnSceneFlagSet, IS_RANDO, Rando::MiscBehavior::OnSceneFlagSet);

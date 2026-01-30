@@ -14,19 +14,8 @@ namespace Logic {
 
 void GeneratePools(RandoSaveInfo& saveInfo, std::vector<RandoCheckId>& checkPool, std::vector<RandoItemId>& itemPool) {
     std::vector<RandoItemId> startingItems = Rando::GetStartingItemsFromSave(saveInfo);
-
-    if (saveInfo.randoSaveOptions[RO_STARTING_MAPS_AND_COMPASSES]) {
-        std::vector<RandoItemId> MapsAndCompasses = {
-            RI_GREAT_BAY_COMPASS,       RI_GREAT_BAY_MAP,       RI_SNOWHEAD_COMPASS,       RI_SNOWHEAD_MAP,
-            RI_STONE_TOWER_COMPASS,     RI_STONE_TOWER_MAP,     RI_TINGLE_MAP_CLOCK_TOWN,  RI_TINGLE_MAP_GREAT_BAY,
-            RI_TINGLE_MAP_ROMANI_RANCH, RI_TINGLE_MAP_SNOWHEAD, RI_TINGLE_MAP_STONE_TOWER, RI_TINGLE_MAP_WOODFALL,
-            RI_WOODFALL_COMPASS,        RI_WOODFALL_MAP,
-        };
-
-        for (RandoItemId itemId : MapsAndCompasses) {
-            startingItems.push_back(itemId);
-        }
-    }
+    std::vector<RandoItemId> computedStartingItems = Rando::GetComputedStartingItems(saveInfo);
+    startingItems.insert(startingItems.end(), computedStartingItems.begin(), computedStartingItems.end());
 
     std::vector<RandoCheckId> excludedChecks;
     std::string excludedChecksList = CVarGetString("gRando.ExcludedChecks", "");
@@ -83,6 +72,11 @@ void GeneratePools(RandoSaveInfo& saveInfo, std::vector<RandoCheckId>& checkPool
 
             if (randoStaticCheck.randoCheckType == RCTYPE_GRASS &&
                 saveInfo.randoSaveOptions[RO_SHUFFLE_GRASS_DROPS] == RO_GENERIC_NO) {
+                continue;
+            }
+
+            if (randoStaticCheck.randoCheckType == RCTYPE_TREE &&
+                saveInfo.randoSaveOptions[RO_SHUFFLE_TREE_DROPS] == RO_GENERIC_NO) {
                 continue;
             }
 
@@ -213,12 +207,64 @@ void GeneratePools(RandoSaveInfo& saveInfo, std::vector<RandoCheckId>& checkPool
         }
     }
 
+    // Songs
+    if (saveInfo.randoSaveOptions[RO_SHUFFLE_SONG_SUN] == RO_GENERIC_YES) {
+        itemPool.push_back(RI_SONG_SUN);
+    }
+    if (saveInfo.randoSaveOptions[RO_SHUFFLE_SONG_DOUBLE_TIME] == RO_GENERIC_YES) {
+        itemPool.push_back(RI_SONG_DOUBLE_TIME);
+    }
+    if (saveInfo.randoSaveOptions[RO_SHUFFLE_SONG_INVERTED_TIME] == RO_GENERIC_YES) {
+        itemPool.push_back(RI_SONG_INVERTED_TIME);
+    }
+    if (saveInfo.randoSaveOptions[RO_SHUFFLE_SONG_SARIA] == RO_GENERIC_YES) {
+        itemPool.push_back(RI_SONG_SARIA);
+    }
+
     // Shuffle Triforce Pieces into the Pool
     if (saveInfo.randoSaveOptions[RO_SHUFFLE_TRIFORCE_PIECES] == RO_GENERIC_YES) {
         int piecesToShuffle = saveInfo.randoSaveOptions[RO_TRIFORCE_PIECES_MAX];
         while (piecesToShuffle) {
             itemPool.push_back(RI_TRIFORCE_PIECE);
             piecesToShuffle--;
+        }
+    }
+
+    // Remove extra stray fairies/gold skulltulas from the pool
+    std::map<RandoItemId, int> removeAbleItemsInPool = {
+        { RI_STONE_TOWER_STRAY_FAIRY, 0 }, { RI_GREAT_BAY_STRAY_FAIRY, 0 }, { RI_SNOWHEAD_STRAY_FAIRY, 0 },
+        { RI_WOODFALL_STRAY_FAIRY, 0 },    { RI_GS_TOKEN_SWAMP, 0 },        { RI_GS_TOKEN_OCEAN, 0 },
+    };
+    for (RandoItemId itemId : itemPool) {
+        if (removeAbleItemsInPool.find(itemId) != removeAbleItemsInPool.end()) {
+            removeAbleItemsInPool[itemId]++;
+        }
+    }
+    for (auto& [itemId, count] : removeAbleItemsInPool) {
+        int max = 0;
+        switch (itemId) {
+            case RI_STONE_TOWER_STRAY_FAIRY:
+            case RI_GREAT_BAY_STRAY_FAIRY:
+            case RI_SNOWHEAD_STRAY_FAIRY:
+            case RI_WOODFALL_STRAY_FAIRY:
+                max = saveInfo.randoSaveOptions[RO_STRAY_FAIRIES_MAX];
+                break;
+            case RI_GS_TOKEN_SWAMP:
+            case RI_GS_TOKEN_OCEAN:
+                max = saveInfo.randoSaveOptions[RO_SKULLTULA_TOKENS_MAX];
+                break;
+            default:
+                break;
+        }
+
+        while (count > max) {
+            auto it = std::find(itemPool.begin(), itemPool.end(), itemId);
+            if (it != itemPool.end()) {
+                itemPool.erase(it);
+                count--;
+            } else {
+                break;
+            }
         }
     }
 
@@ -232,9 +278,7 @@ void GeneratePools(RandoSaveInfo& saveInfo, std::vector<RandoCheckId>& checkPool
 
     // Plentiful
     if (saveInfo.randoSaveOptions[RO_PLENTIFUL_ITEMS] == RO_GENERIC_YES) {
-        int replaceableItems = 0;
         std::vector<RandoItemId> plentifulItems;
-        std::vector<RandoItemId> potentialPlentifulItems;
         for (size_t i = 0; i < itemPool.size(); i++) {
             // The user can specify exactly how many pieces they want to shuffle, so skip those
             if (itemPool[i] == RI_TRIFORCE_PIECE) {
@@ -249,31 +293,21 @@ void GeneratePools(RandoSaveInfo& saveInfo, std::vector<RandoCheckId>& checkPool
                     plentifulItems.push_back(itemPool[i]);
                     break;
                 case RITYPE_LESSER:
-                case RITYPE_SKULLTULA_TOKEN:
-                case RITYPE_STRAY_FAIRY:
-                    if (Ship_Random(0, 2) == 1) {
-                        potentialPlentifulItems.push_back(itemPool[i]);
+                    if (Rando::StaticData::Items[itemPool[i]].itemId != ITEM_TINGLE_MAP &&
+                        Rando::StaticData::Items[itemPool[i]].itemId != ITEM_DUNGEON_MAP &&
+                        Rando::StaticData::Items[itemPool[i]].itemId != ITEM_COMPASS) {
+                        plentifulItems.push_back(itemPool[i]);
                     }
                     break;
                 case RITYPE_HEALTH:
                 case RITYPE_JUNK:
                 default:
-                    replaceableItems++;
                     break;
             }
         }
 
-        if (replaceableItems > plentifulItems.size()) {
-            for (RandoItemId plentifulItem : plentifulItems) {
-                itemPool.push_back(plentifulItem);
-            }
-        }
-
-        // Only add potentialPlentifulItems if we think we have enough room (this might not be perfect)
-        if ((replaceableItems - plentifulItems.size() - 10) > potentialPlentifulItems.size()) {
-            for (RandoItemId plentifulItem : potentialPlentifulItems) {
-                itemPool.push_back(plentifulItem);
-            }
+        for (RandoItemId plentifulItem : plentifulItems) {
+            itemPool.push_back(plentifulItem);
         }
     }
 

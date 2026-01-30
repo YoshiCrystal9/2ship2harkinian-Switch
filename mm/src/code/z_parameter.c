@@ -7992,6 +7992,8 @@ void Interface_DrawPerfectLetters(PlayState* play) {
 }
 
 void Interface_StartMoonCrash(PlayState* play) {
+    GameInteractor_ExecuteBeforeMoonCrash();
+
     if (play->actorCtx.flags & ACTORCTX_FLAG_TELESCOPE_ON) {
         SEQCMD_DISABLE_PLAY_SEQUENCES(false);
     }

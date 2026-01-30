@@ -55,6 +55,8 @@ static s16 GetPricePerUnit(ItemId itemId) {
             return 10;
         case ITEM_POWDER_KEG:
             return 50;
+        case ITEM_SEAHORSE:
+            return 50;
         default:
             return 0;
     }
@@ -76,6 +78,8 @@ static const char* GetNameForDialogue(ItemId itemId) {
             return "%rMagic Beans%w";
         case ITEM_POWDER_KEG:
             return "%rPowder Kegs%w";
+        case ITEM_SEAHORSE:
+            return "%rSeahorse%w";
         default:
             return "%ritems%w";
     }
@@ -95,6 +99,9 @@ static bool IsItemAvailable(ItemId itemId) {
     }
     if (itemId == ITEM_MAGIC_BEANS) {
         return INV_CONTENT(ITEM_MAGIC_BEANS) == ITEM_MAGIC_BEANS && AMMO(ITEM_MAGIC_BEANS) > 0;
+    }
+    if (itemId == ITEM_SEAHORSE) {
+        return true;
     }
     return Item_CheckObtainability(itemId) != ITEM_NONE;
 }
@@ -150,13 +157,14 @@ static void HandleStart(EnFsn* enFsn, PlayState* play) {
                                      ? DPAD_GET_CUR_FORM_BTN_ITEM(HELD_ITEM_TO_DPAD(player->heldItemButton))
                                      : GET_CUR_FORM_BTN_ITEM(player->heldItemButton));
 
-    if (GetPricePerUnit(buttonItem) > 0 && IsItemAvailable(buttonItem) && AMMO(buttonItem) > 0) {
+    if (GetPricePerUnit(buttonItem) > 0 && IsItemAvailable(buttonItem) &&
+        (buttonItem == ITEM_SEAHORSE || AMMO(buttonItem) > 0)) {
         sAmmoSale.actor = enFsn;
         sAmmoSale.itemId = buttonItem;
         sAmmoSale.lastRupeesSelected = 10; // Default for input mode
 
         // If player only has 1, skip inputs
-        s16 maxAllowed = MIN(AMMO(buttonItem), MAX_AMMO_SELL_QUANTITY);
+        s16 maxAllowed = (buttonItem == ITEM_SEAHORSE) ? 1 : MIN(AMMO(buttonItem), MAX_AMMO_SELL_QUANTITY);
 
         if (maxAllowed == 1) {
             sAmmoSale.quantity = 1;
@@ -191,7 +199,7 @@ static void HandleInput(EnFsn* enFsn, PlayState* play) {
 
     s16 currentQuantity = (s16)(msgCtx->rupeesSelected / 10);
     s16 newQuantity = currentQuantity;
-    s16 maxAllowed = MIN(AMMO(sAmmoSale.itemId), MAX_AMMO_SELL_QUANTITY);
+    s16 maxAllowed = (sAmmoSale.itemId == ITEM_SEAHORSE) ? 1 : MIN(AMMO(sAmmoSale.itemId), MAX_AMMO_SELL_QUANTITY);
 
     // Enforce cursor on visible digits (0=Tens, 1=Units)
     if (msgCtx->unk120C2 > 1)
@@ -268,7 +276,11 @@ static void Resolve(EnFsn* enFsn, bool* shouldGiveItem) {
     if (enFsn->actionFunc == EnFsn_GiveItem) {
         *shouldGiveItem = false;
 
-        Inventory_ChangeAmmo(sAmmoSale.itemId, -sAmmoSale.quantity);
+        if (sAmmoSale.itemId == ITEM_SEAHORSE) {
+            Inventory_ReplaceItem(gPlayState, ITEM_SEAHORSE, ITEM_BOTTLE);
+        } else {
+            Inventory_ChangeAmmo(sAmmoSale.itemId, -sAmmoSale.quantity);
+        }
         Rupees_ChangeBy(sAmmoSale.price);
 
         enFsn->actor.parent = nullptr;

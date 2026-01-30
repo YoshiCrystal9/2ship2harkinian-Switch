@@ -18,9 +18,9 @@ void ObjMoonstone_DrawCustom(Actor* thisx, PlayState* play) {
     // When not in Astral Observatory, allow the item to convert and render with particles
     if (play->sceneId != SCENE_TENMON_DAI) {
         randoItemId = Rando::ConvertItem(randoSaveCheck.randoItemId, RC_ASTRAL_OBSERVATORY_MOON_TEAR);
-        Rando::DrawItem(randoItemId, thisx);
+        Rando::DrawItem(randoItemId, RC_ASTRAL_OBSERVATORY_MOON_TEAR, thisx);
     } else {
-        Rando::DrawItem(randoItemId);
+        Rando::DrawItem(randoItemId, RC_ASTRAL_OBSERVATORY_MOON_TEAR, thisx);
     }
 }
 

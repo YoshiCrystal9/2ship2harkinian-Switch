@@ -20,10 +20,11 @@ int roll = TRAP_FREEZE;
 const u16 timeSkipInterval = 4000;
 
 std::map<TrapTypes, const char*> trapToCvarMap = {
-    { TRAP_FREEZE, "gRando.Traps.Freeze" }, { TRAP_BLAST, "gRando.Traps.Blast" },
-    { TRAP_SHOCK, "gRando.Traps.Shock" },   { TRAP_JINX, "gRando.Traps.Jinx" },
-    { TRAP_WALLET, "gRando.Traps.Wallet" }, { TRAP_ENEMY, "gRando.Traps.Enemy" },
-    { TRAP_TIME, "gRando.Traps.Time" },
+    { TRAP_FREEZE, "gRando.Traps.Freeze" },      { TRAP_BLAST, "gRando.Traps.Blast" },
+    { TRAP_SHOCK, "gRando.Traps.Shock" },        { TRAP_JINX, "gRando.Traps.Jinx" },
+    { TRAP_WALLET, "gRando.Traps.Wallet" },      { TRAP_ENEMY, "gRando.Traps.Enemy" },
+    { TRAP_TIME, "gRando.Traps.Time" },          { TRAP_FIRE, "gRando.Traps.Fire" },
+    { TRAP_KNOCKBACK, "gRando.Traps.Knockback" }
 };
 
 std::vector<TrapTypes> getEnabledTrapTypes() {
@@ -126,6 +127,8 @@ std::map<TrapTypes, std::vector<std::string>> trapMessageList = {
     { TRAP_WALLET, walletTrapMessages },
     { TRAP_ENEMY, enemyTrapMessages },
     { TRAP_TIME, timeTrapMessages },
+    { TRAP_FIRE, defaultTrapMessages },
+    { TRAP_KNOCKBACK, defaultTrapMessages },
 };
 // clang-format on
 
@@ -151,14 +154,52 @@ void Rando::MiscBehavior::OfferTrapItem() {
             break;
         case TRAP_BLAST:
             GameInteractor::Instance->events.emplace_back(GIEventTrap{ .action = []() {
+                GET_PLAYER(gPlayState)->actor.colChkInfo.damage = 16;
+                func_80833B18(gPlayState, GET_PLAYER(gPlayState), 2, 0, 0, 0, 0);
                 Actor_Spawn(&gPlayState->actorCtx, gPlayState, ACTOR_EN_BOM, GET_PLAYER(gPlayState)->actor.world.pos.x,
                             GET_PLAYER(gPlayState)->actor.world.pos.y, GET_PLAYER(gPlayState)->actor.world.pos.z, 1, 0,
                             0, 0);
             } });
             break;
         case TRAP_SHOCK:
-            GameInteractor::Instance->events.emplace_back(
-                GIEventTrap{ .action = []() { func_80833B18(gPlayState, GET_PLAYER(gPlayState), 4, 0, 0, 0, 0); } });
+            GameInteractor::Instance->events.emplace_back(GIEventTrap{ .action = []() {
+                GET_PLAYER(gPlayState)->actor.colChkInfo.damage = 16;
+                func_80833B18(gPlayState, GET_PLAYER(gPlayState), 4, 0, 0, 0, 0);
+            } });
+            break;
+        case TRAP_FIRE:
+            GameInteractor::Instance->events.emplace_back(GIEventTrap{ .action = []() {
+                Player* player = GET_PLAYER(gPlayState);
+                for (int i = 0; i < 18; i++) {
+                    player->bodyFlameTimers[i] = static_cast<uint8_t>(Rand_S16Offset(0, 200));
+                }
+                player->bodyIsBurning = true;
+                func_80833B18(gPlayState, player, 0, 0, 0, 0, 0);
+            } });
+            break;
+        case TRAP_KNOCKBACK:
+            GameInteractor::Instance->events.emplace_back(GIEventTrap{ .action = []() {
+                Player* player = GET_PLAYER(gPlayState);
+                float strength = 4;
+                func_800B8D98(gPlayState, &player->actor, strength * 5, player->actor.world.rot.y + 0x8000,
+                              strength * 5);
+
+                static HOOK_ID knockbackBounceHook = 0;
+                GameInteractor::Instance->UnregisterGameHookForID<GameInteractor::OnActorUpdate>(knockbackBounceHook);
+                knockbackBounceHook = GameInteractor::Instance->RegisterGameHookForID<GameInteractor::OnActorUpdate>(
+                    ACTOR_PLAYER, [](Actor* actor) {
+                        Player* player = (Player*)actor;
+                        if (player->actor.bgCheckFlags & 0x08 && abs(player->speedXZ) > 15.0f) {
+                            player->yaw = ((player->actor.wallYaw - player->yaw) + player->actor.wallYaw) - 0x8000;
+                            Player_PlaySfx(player, NA_SE_PL_BODY_HIT);
+                        }
+
+                        if (player->actor.bgCheckFlags & BGCHECKFLAG_GROUND) {
+                            GameInteractor::Instance->UnregisterGameHookForID<GameInteractor::OnActorUpdate>(
+                                knockbackBounceHook);
+                        }
+                    });
+            } });
             break;
         case TRAP_JINX:
             GameInteractor::Instance->events.emplace_back(GIEventTrap{ .action = []() {

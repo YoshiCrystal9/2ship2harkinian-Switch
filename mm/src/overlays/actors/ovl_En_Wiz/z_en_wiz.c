@@ -1560,8 +1560,9 @@ void EnWiz_Draw(Actor* thisx, PlayState* play) {
     Matrix_Translate(this->staffFlamePos.x, this->staffFlamePos.y, this->staffFlamePos.z, MTXMODE_NEW);
     Matrix_Scale(this->staffFlameScale.x, this->staffFlameScale.y, this->staffFlameScale.z, MTXMODE_APPLY);
     gSPSegment(POLY_XLU_DISP++, 0x08,
-               Gfx_TwoTexScroll(play->state.gfxCtx, 0, 0, 0, 32, 64, 1, 0,
-                                ((this->staffFlameScroll * 10) - (play->state.frames * 20)) % 512, 32, 128));
+               Gfx_TwoTexScrollEx(play->state.gfxCtx, 0, 0, 0, 32, 64, 1, 0,
+                                  ((this->staffFlameScroll * 10) - (play->state.frames * 20)) % 512, 32, 128, 0, 0, 0,
+                                  -20));
     gDPPipeSync(POLY_XLU_DISP++);
 
     if ((this->type == EN_WIZ_TYPE_FIRE) || (this->type == EN_WIZ_TYPE_FIRE_NO_BGM)) {

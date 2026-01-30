@@ -3574,12 +3574,11 @@ void KaleidoScope_Update(PlayState* play) {
                             pauseCtx->savePromptState = PAUSE_SAVEPROMPT_STATE_RETURN_TO_MENU;
                         } else {
                             Audio_PlaySfx(NA_SE_SY_PIECE_OF_HEART);
+                            // 2S2H [Enhancement] Persist this in case the user is 0th daying
+                            bool currentOwlSaveState = gSaveContext.save.isOwlSave;
                             if (CVarGetInteger("gEnhancements.Saving.PauseSave", 0)) {
                                 gSaveContext.save.isOwlSave = true;
-                                // 2S2H [Enhancement] Eventually we might allow them to load from their last entrance,
-                                // but we need to first identify and fix edge cases where that doesn't work properly
-                                // like grottos and cutscenes
-                                gSaveContext.save.shipSaveInfo.pauseSaveEntrance = SavingEnhancements_GetSaveEntrance();
+                                SavingEnhancements_PersistSaveEntranceInfo();
                                 SavingEnhancements_AdvancePlaytime();
                             }
                             Play_SaveCycleSceneFlags(play);
@@ -3596,8 +3595,8 @@ void KaleidoScope_Update(PlayState* play) {
                                         gFlashOwlSaveStartPages[gSaveContext.fileNum * FLASH_SAVE_MAIN_MULTIPLIER],
                                         gFlashOwlSaveNumPages[gSaveContext.fileNum * FLASH_SAVE_MAIN_MULTIPLIER]);
                                     Sram_StartWriteToFlashOwlSave(sramCtx);
-                                    gSaveContext.save.isOwlSave = false;
-                                    gSaveContext.save.shipSaveInfo.pauseSaveEntrance = -1;
+                                    gSaveContext.save.isOwlSave = currentOwlSaveState;
+                                    SavingEnhancements_ClearSaveEntranceInfo();
                                 } else {
                                     Sram_SetFlashPagesDefault(sramCtx, gFlashSaveStartPages[gSaveContext.fileNum],
                                                               gFlashSaveNumPages[gSaveContext.fileNum]);
