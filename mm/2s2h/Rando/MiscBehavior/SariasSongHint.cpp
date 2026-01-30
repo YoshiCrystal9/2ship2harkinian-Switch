@@ -125,6 +125,8 @@ void Rando::MiscBehavior::SariasSongHint() {
             }
 
             playedSariasSongState = 0;
+        } else if (playedSariasSongState == 0) {
+            return;
         }
 
         CustomMessage::LoadCustomMessageIntoFont(entry);
