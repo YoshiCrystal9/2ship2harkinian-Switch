@@ -100,8 +100,7 @@ struct RegionTimeState {
     bool canStayOverTime;
 };
 
-// Thread-local current region time for check evaluation
-extern thread_local uint64_t gCurrentRegionTime;
+extern uint64_t gCurrentRegionTime;
 
 // Helper: Convert runtime game time to TimeSlice enum
 TimeSlice TimeSliceFromGameTime(s32 day, u16 time);
@@ -500,6 +499,16 @@ inline constexpr uint64_t GetHalfDayTimeMask(int halfDayIndex) {
         mask |= (1ULL << slice);
     }
     return mask;
+}
+
+// Merge two time states (bitwise OR on time slices)
+inline RegionTimeState MergeTimeStates(const RegionTimeState& a, const RegionTimeState& b) {
+    return { .timeSlices = a.timeSlices | b.timeSlices, .canStayOverTime = a.canStayOverTime || b.canStayOverTime };
+}
+
+// Check if 'a' covers 'b' (a is a superset - adding b gives nothing new)
+inline bool TimeStateCovers(const RegionTimeState& a, const RegionTimeState& b) {
+    return (a.timeSlices | b.timeSlices) == a.timeSlices;
 }
 
 // ============================================================================

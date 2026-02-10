@@ -9,8 +9,7 @@ namespace Logic {
 
 std::map<RandoRegionId, RandoRegion> Regions = {};
 
-// Thread-local storage for current region time during check evaluation
-thread_local uint64_t gCurrentRegionTime = 0;
+uint64_t gCurrentRegionTime = 0;
 
 RandoRegionId GetRegionIdFromEntrance(s32 entrance) {
     static std::map<s32, RandoRegionId> entranceToRegionId;
@@ -104,17 +103,29 @@ void FindReachableRegions(RandoRegionId currentRegion, std::set<RandoRegionId>& 
         sourceTimeState.timeSlices = currentTime;
     }
 
-    // Set global time for check evaluation
-    gCurrentRegionTime = currentTime;
-
     // Explore connections
     for (auto& [connectedRegionId, condition] : sourceRegion.connections) {
-        if (reachableRegions.count(connectedRegionId) == 0 && condition.first()) {
-            reachableRegions.insert(connectedRegionId);
+        // Set global time for check evaluation
+        gCurrentRegionTime = currentTime;
 
+        if (condition.first()) {
             auto& targetRegion = Regions[connectedRegionId];
-            regionTimeStates[connectedRegionId] = { .timeSlices = currentTime,
-                                                    .canStayOverTime = targetRegion.canStayOverTime };
+            RegionTimeState incomingState = { .timeSlices = currentTime,
+                                              .canStayOverTime = targetRegion.canStayOverTime };
+
+            auto existingIt = regionTimeStates.find(connectedRegionId);
+            if (existingIt != regionTimeStates.end()) {
+                // Region already visited - check if we have new time to add
+                if (TimeStateCovers(existingIt->second, incomingState)) {
+                    continue; // Skip - existing state already covers incoming
+                }
+                // Merge time states for re-exploration
+                existingIt->second = MergeTimeStates(existingIt->second, incomingState);
+            } else {
+                // First visit to this region
+                reachableRegions.insert(connectedRegionId);
+                regionTimeStates[connectedRegionId] = incomingState;
+            }
 
             FindReachableRegions(connectedRegionId, reachableRegions, regionTimeStates);
         }
@@ -122,13 +133,28 @@ void FindReachableRegions(RandoRegionId currentRegion, std::set<RandoRegionId>& 
 
     // Explore exits
     for (auto& [exitId, regionExit] : sourceRegion.exits) {
-        RandoRegionId connectedRegionId = GetRegionIdFromEntrance(exitId);
-        if (reachableRegions.count(connectedRegionId) == 0 && regionExit.condition()) {
-            reachableRegions.insert(connectedRegionId);
+        // Set global time for check evaluation
+        gCurrentRegionTime = currentTime;
 
+        RandoRegionId connectedRegionId = GetRegionIdFromEntrance(exitId);
+        if (regionExit.condition()) {
             auto& targetRegion = Regions[connectedRegionId];
-            regionTimeStates[connectedRegionId] = { .timeSlices = currentTime,
-                                                    .canStayOverTime = targetRegion.canStayOverTime };
+            RegionTimeState incomingState = { .timeSlices = currentTime,
+                                              .canStayOverTime = targetRegion.canStayOverTime };
+
+            auto existingIt = regionTimeStates.find(connectedRegionId);
+            if (existingIt != regionTimeStates.end()) {
+                // Region already visited - check if we have new time to add
+                if (TimeStateCovers(existingIt->second, incomingState)) {
+                    continue; // Skip - existing state already covers incoming
+                }
+                // Merge time states for re-exploration
+                existingIt->second = MergeTimeStates(existingIt->second, incomingState);
+            } else {
+                // First visit to this region
+                reachableRegions.insert(connectedRegionId);
+                regionTimeStates[connectedRegionId] = incomingState;
+            }
 
             FindReachableRegions(connectedRegionId, reachableRegions, regionTimeStates);
         }
