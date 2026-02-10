@@ -566,6 +566,14 @@ typedef enum {
 
     // #### `result`
     // ```c
+    // (CURRENT_DAY == 3) && (CutsceneManager_GetCurrentCsId() == CS_ID_NONE)
+    // ```
+    // #### `args`
+    // - None
+    VB_EARTHQUAKE_ON_DAY_3,
+
+    // #### `result`
+    // ```c
     // (play->sceneId == SCENE_F40) || (play->sceneId == SCENE_F41) ||
     // (play->sceneId == SCENE_IKANAMAE) || (play->sceneId == SCENE_CASTLE) ||
     // (play->sceneId == SCENE_IKNINSIDE) || (play->sceneId == SCENE_IKANA) ||

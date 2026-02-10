@@ -7213,7 +7213,8 @@ void Camera_EarthquakeDay3(Camera* camera) {
         0x1FC, // 8 Large Earthquakes between CLOCK_TIME(4, 30) to CLOCK_TIME(6, 00)
     };
 
-    if ((CURRENT_DAY == 3) && (CutsceneManager_GetCurrentCsId() == CS_ID_NONE)) {
+    if (GameInteractor_Should(VB_EARTHQUAKE_ON_DAY_3,
+                              (CURRENT_DAY == 3) && (CutsceneManager_GetCurrentCsId() == CS_ID_NONE))) {
         time = CURRENT_TIME;
         timeSpeedOffset = gSaveContext.save.timeSpeedOffset;
 
