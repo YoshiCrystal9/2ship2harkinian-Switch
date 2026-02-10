@@ -9,6 +9,7 @@
 
 #include "objects/gameplay_keep/gameplay_keep.h"
 #include "2s2h/Enhancements/FrameInterpolation/FrameInterpolation.h"
+#include "2s2h/BenGui/CosmeticEditor.h"
 
 void EffectBlure_AddVertex(EffectBlure* this, Vec3f* p1, Vec3f* p2) {
     EffectBlureElement* elem;
@@ -309,6 +310,63 @@ void EffectBlure_GetComputedValues(EffectBlure* this, s32 index, f32 ratio, Vec3
     EffectBlureElement* elem = &this->elements[index];
     Vec3s* unusedPtr = &sp30; // Optimized out but seems necessary to match stack usage
 
+    // #region 2S2H [Cosmetic] Trail Colors
+    Color_RGBA8 p1Start = { this->p1StartColor[0], this->p1StartColor[1], this->p1StartColor[2],
+                            this->p1StartColor[3] };
+    Color_RGBA8 p1End = { this->p1EndColor[0], this->p1EndColor[1], this->p1EndColor[2], this->p1EndColor[3] };
+    Color_RGBA8 p2Start = { this->p2StartColor[0], this->p2StartColor[1], this->p2StartColor[2],
+                            this->p2StartColor[3] };
+    Color_RGBA8 p2End = { this->p2EndColor[0], this->p2EndColor[1], this->p2EndColor[2], this->p2EndColor[3] };
+
+    if (gPlayState != NULL) {
+        Player* player = GET_PLAYER(gPlayState);
+        if (player != NULL) {
+            u8 elementId = 255;
+            for (int i = 0; i < 3; i++) {
+                if (player->meleeWeaponEffectIndex[i] != -1 &&
+                    this == (EffectBlure*)Effect_GetByIndex(player->meleeWeaponEffectIndex[i])) {
+                    if (player->transformation == PLAYER_FORM_FIERCE_DEITY)
+                        elementId = COSMETIC_ELEMENT_TRAIL_SWORD_FIERCE_DEITY;
+                    else if (player->transformation == PLAYER_FORM_ZORA)
+                        elementId = (player->meleeWeaponAnimation == PLAYER_MWA_ZORA_PUNCH_KICK ||
+                                     player->meleeWeaponAnimation == PLAYER_MWA_ZORA_JUMPKICK_START ||
+                                     player->meleeWeaponAnimation == PLAYER_MWA_ZORA_JUMPKICK_FINISH)
+                                        ? COSMETIC_ELEMENT_TRAIL_ZORA_KICK
+                                        : COSMETIC_ELEMENT_TRAIL_ZORA_PUNCH;
+                    else if (player->transformation == PLAYER_FORM_DEKU)
+                        elementId = COSMETIC_ELEMENT_TRAIL_DEKU_SPIN;
+                    else if (player->heldItemAction == PLAYER_IA_SWORD_KOKIRI)
+                        elementId = COSMETIC_ELEMENT_TRAIL_SWORD_KOKIRI;
+                    else if (player->heldItemAction == PLAYER_IA_SWORD_RAZOR)
+                        elementId = COSMETIC_ELEMENT_TRAIL_SWORD_RAZOR;
+                    else if (player->heldItemAction == PLAYER_IA_SWORD_GILDED)
+                        elementId = COSMETIC_ELEMENT_TRAIL_SWORD_GILDED;
+                    else if (player->heldItemAction == PLAYER_IA_SWORD_TWO_HANDED)
+                        elementId = COSMETIC_ELEMENT_TRAIL_SWORD_GREAT_FAIRY;
+                    else if (player->heldItemAction == PLAYER_IA_DEKU_STICK)
+                        elementId = COSMETIC_ELEMENT_TRAIL_DEKU_STICK;
+                    break;
+                }
+            }
+
+            if (elementId != 255) {
+                Color_RGBA8 newP1Start =
+                    CosmeticEditor_GetChangedColor(p1Start.r, p1Start.g, p1Start.b, p1Start.a, elementId);
+                if (*(u32*)&newP1Start != *(u32*)&p1Start) {
+                    p1Start = newP1Start;
+                    p2Start = CosmeticEditor_GetChangedColor(p2Start.r, p2Start.g, p2Start.b, p2Start.a, elementId);
+                    p1End.r = p1Start.r;
+                    p1End.g = p1Start.g;
+                    p1End.b = p1Start.b;
+                    p2End.r = p2Start.r;
+                    p2End.g = p2Start.g;
+                    p2End.b = p2Start.b;
+                }
+            }
+        }
+    }
+    // #endregion
+
     switch (this->calcMode) {
         case 1:
             vec1->x = EffectSs_LerpS16(elem->p1.x, elem->p2.x, ratio);
@@ -371,14 +429,14 @@ void EffectBlure_GetComputedValues(EffectBlure* this, s32 index, f32 ratio, Vec3
         color1->r = color1->g = color1->b = color1->a = 255;
         color2->r = color2->g = color2->b = color2->a = 255;
     } else {
-        color1->r = EffectSs_LerpU8(this->p1StartColor[0], this->p1EndColor[0], ratio);
-        color1->g = EffectSs_LerpU8(this->p1StartColor[1], this->p1EndColor[1], ratio);
-        color1->b = EffectSs_LerpU8(this->p1StartColor[2], this->p1EndColor[2], ratio);
-        color1->a = EffectSs_LerpU8(this->p1StartColor[3], this->p1EndColor[3], ratio);
-        color2->r = EffectSs_LerpU8(this->p2StartColor[0], this->p2EndColor[0], ratio);
-        color2->g = EffectSs_LerpU8(this->p2StartColor[1], this->p2EndColor[1], ratio);
-        color2->b = EffectSs_LerpU8(this->p2StartColor[2], this->p2EndColor[2], ratio);
-        color2->a = EffectSs_LerpU8(this->p2StartColor[3], this->p2EndColor[3], ratio);
+        color1->r = EffectSs_LerpU8(p1Start.r, p1End.r, ratio);
+        color1->g = EffectSs_LerpU8(p1Start.g, p1End.g, ratio);
+        color1->b = EffectSs_LerpU8(p1Start.b, p1End.b, ratio);
+        color1->a = EffectSs_LerpU8(p1Start.a, p1End.a, ratio);
+        color2->r = EffectSs_LerpU8(p2Start.r, p2End.r, ratio);
+        color2->g = EffectSs_LerpU8(p2Start.g, p2End.g, ratio);
+        color2->b = EffectSs_LerpU8(p2Start.b, p2End.b, ratio);
+        color2->a = EffectSs_LerpU8(p2Start.a, p2End.a, ratio);
     }
 }
 

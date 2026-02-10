@@ -6,6 +6,7 @@
 
 #include "z_en_boom.h"
 #include "objects/gameplay_keep/gameplay_keep.h"
+#include "2s2h/BenGui/CosmeticEditor.h"
 
 #define FLAGS (ACTOR_FLAG_UPDATE_CULLING_DISABLED | ACTOR_FLAG_DRAW_CULLING_DISABLED)
 
@@ -117,11 +118,25 @@ void EnBoom_Init(Actor* thisx, PlayState* play) {
     this->actor.room = -1;
     Actor_ProcessInitChain(&this->actor, sInitChain);
 
+    Color_RGBA8 trailColor = CosmeticEditor_GetChangedColor(255, 255, 100, 255, COSMETIC_ELEMENT_TRAIL_ZORA_BOOMERANG);
+
     for (i = 0; i < 4; i++) {
-        sp30.p1StartColor[i] = D_808A3068[i];
-        sp30.p2StartColor[i] = D_808A306C[i];
-        sp30.p1EndColor[i] = D_808A3070[i];
-        sp30.p2EndColor[i] = D_808A3074[i];
+        sp30.p1StartColor[i] = (i < 3) ? ((i == 0)   ? trailColor.r
+                                          : (i == 1) ? trailColor.g
+                                                     : trailColor.b)
+                                       : D_808A3068[i];
+        sp30.p2StartColor[i] = (i < 3) ? ((i == 0)   ? trailColor.r
+                                          : (i == 1) ? trailColor.g
+                                                     : trailColor.b)
+                                       : D_808A306C[i];
+        sp30.p1EndColor[i] = (i < 3) ? ((i == 0)   ? trailColor.r
+                                        : (i == 1) ? trailColor.g
+                                                   : trailColor.b)
+                                     : D_808A3070[i];
+        sp30.p2EndColor[i] = (i < 3) ? ((i == 0)   ? trailColor.r
+                                        : (i == 1) ? trailColor.g
+                                                   : trailColor.b)
+                                     : D_808A3074[i];
     }
 
     sp30.elemDuration = 8;
