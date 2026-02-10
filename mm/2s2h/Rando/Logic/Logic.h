@@ -737,6 +737,8 @@ inline bool CanKillEnemy(ActorId EnemyId) {
                     CAN_USE_PROJECTILE || CAN_USE_EXPLOSIVE || HAS_ITEM(ITEM_DEKU_NUT));
         case ACTOR_EN_DRAGON: // Deep Python
             return (CAN_BE_ZORA && HAS_MAGIC);
+        case ACTOR_EN_BIGPO:
+            return HAS_ITEM(ITEM_BOW);
         case ACTOR_EN_PO_SISTERS:
             // The first three sisters can be damaged with almost anything, but Meg requires ranged attacks. Not using
             // CAN_USE_EXPLOSIVE here, as the Blast Mask cannot reach, and the Powder Keg can only be used once.
