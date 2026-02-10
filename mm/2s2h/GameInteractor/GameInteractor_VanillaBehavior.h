@@ -2156,6 +2156,15 @@ typedef enum {
 
     // #### `result`
     // ```c
+    // (this->modelAnimType != PLAYER_ANIMTYPE_3) && (this->heldItemAction != PLAYER_IA_DEKU_STICK) &&
+    // (play->bButtonAmmoPlusOne == 0)
+    // ```
+    // #### `args`
+    // - `*Player`
+    VB_USE_HELD_ITEM_AFTER_CHANGE,
+
+    // #### `result`
+    // ```c
     // Player_ItemToItemAction(this, item) == PLAYER_IA_MASK_ZORA
     // ```
     // #### `args`
