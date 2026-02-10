@@ -1191,6 +1191,16 @@ void BenMenu::AddEnhancements() {
         .Options(CheckboxOptions().Tooltip(
             "Toggle between standard assets and alternate assets. Usually mods will indicate if "
             "this setting has to be used or not."));
+    AddWidget(path, "Disable Bomb Billboarding", WIDGET_CVAR_CHECKBOX)
+        .CVar("gEnhancements.Mods.DisableBombBillboarding")
+        .Options(CheckboxOptions().Tooltip(
+            "Disables bombs always rotating to face the camera. To be used in conjunction with mods that want "
+            "to replace bombs with 3D objects."));
+    AddWidget(path, "Disable Grotto Fixed Rotation", WIDGET_CVAR_CHECKBOX)
+        .CVar("gEnhancements.Mods.DisableGrottoRotation")
+        .Options(CheckboxOptions().Tooltip(
+            "Disables Grottos rotating with the Camera. To be used in conjuction with mods that want to "
+            "replace grottos with 3D objects."));
     AddWidget(path, "Motion Blur", WIDGET_SEPARATOR_TEXT);
     AddWidget(path, "Motion Blur Mode", WIDGET_CVAR_COMBOBOX)
         .CVar("gEnhancements.Graphics.MotionBlur.Mode")

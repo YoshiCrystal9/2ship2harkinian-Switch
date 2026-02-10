@@ -73,6 +73,14 @@ typedef enum {
 
     // #### `result`
     // ```c
+    // true
+    // ```
+    // #### `args`
+    // - None
+    VB_APPLY_BOMB_BILLBOARDING,
+
+    // #### `result`
+    // ```c
     // cylinderOc != NULL
     // ```
     // #### `args`
@@ -1711,6 +1719,14 @@ typedef enum {
     // #### `args`
     // - `bool` (unused)
     VB_ROMANI_CONSIDER_EPONA_SONG_GIVEN,
+
+    // #### `result`
+    // ```c
+    // true
+    // ```
+    // #### `args`
+    // - None
+    VB_ROTATE_GROTTO_ENTRANCE,
 
     // #### `result`
     // ```c
