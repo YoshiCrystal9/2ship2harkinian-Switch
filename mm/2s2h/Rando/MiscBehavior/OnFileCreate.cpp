@@ -53,6 +53,7 @@ void Rando::MiscBehavior::OnFileCreate(s16 fileNum) {
                     hadInputSeed = false;
                 }
 
+                SPDLOG_INFO("Generating new randomizer with seed: {}", inputSeed);
                 uint32_t finalSeed = Ship_Hash(inputSeed);
                 Ship_Random_Seed(finalSeed);
 

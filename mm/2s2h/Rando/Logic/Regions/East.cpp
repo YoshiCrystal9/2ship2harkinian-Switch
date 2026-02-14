@@ -9,7 +9,7 @@ using namespace Rando::Logic;
 static RegisterShipInitFunc initFunc([]() {
     Regions[RR_BENEATH_THE_GRAVEYARD_DAMPE] = RandoRegion{ .sceneId = SCENE_DANPEI2TEST,
         .checks = {
-            CHECK(RC_BENEATH_THE_GRAVEYARD_DAMPE_CHEST, HAS_ITEM(ITEM_BOW)),
+            CHECK(RC_BENEATH_THE_GRAVEYARD_DAMPE_CHEST, CanKillEnemy(ACTOR_EN_BIGPO)),
             CHECK(RC_BENEATH_THE_GRAVEYARD_DAMPE_POT_01, true),
             CHECK(RC_BENEATH_THE_GRAVEYARD_DAMPE_POT_02, true),
             CHECK(RC_BENEATH_THE_GRAVEYARD_DAMPE_POT_03, true),

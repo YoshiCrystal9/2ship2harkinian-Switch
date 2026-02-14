@@ -502,8 +502,8 @@ static RegisterShipInitFunc initFunc([]() {
     Regions[RR_WOODFALL] = RandoRegion{ .sceneId = SCENE_21MITURINMAE,
         .checks = {
             CHECK(RC_WOODFALL_ENTRANCE_CHEST, CAN_BE_DEKU || (RANDO_EVENTS[RE_CLEARED_WOODFALL_TEMPLE] && (CAN_BE_ZORA || CAN_BE_GORON || CAN_USE_ABILITY(SWIM)))),
-            CHECK(RC_WOODFALL_PIECE_OF_HEART_CHEST, CAN_BE_DEKU),
-            CHECK(RC_WOODFALL_FREESTANDING_RUPEE, CAN_BE_DEKU),
+            CHECK(RC_WOODFALL_PIECE_OF_HEART_CHEST, CAN_BE_DEKU && (CanKillEnemy(ACTOR_EN_DEKUNUTS) || HAS_ITEM(ITEM_HOOKSHOT))),
+            CHECK(RC_WOODFALL_FREESTANDING_RUPEE, CAN_BE_DEKU && CanKillEnemy(ACTOR_EN_DEKUNUTS)),
             CHECK(RC_WOODFALL_GRASS_01, true),
             CHECK(RC_WOODFALL_GRASS_02, true),
             CHECK(RC_WOODFALL_GRASS_03, true),
@@ -516,11 +516,11 @@ static RegisterShipInitFunc initFunc([]() {
         },
         .exits = { //     TO                                         FROM
             EXIT(ENTRANCE(SOUTHERN_SWAMP_POISONED, 2),      ENTRANCE(WOODFALL, 0), true),
-            EXIT(ENTRANCE(FAIRY_FOUNTAIN, 1),               ENTRANCE(WOODFALL, 2), CAN_BE_DEKU),
+            EXIT(ENTRANCE(FAIRY_FOUNTAIN, 1),               ENTRANCE(WOODFALL, 2), CAN_BE_DEKU && CanKillEnemy(ACTOR_EN_DEKUNUTS)),
             EXIT(ENTRANCE(WOODFALL_TEMPLE, 2),              ENTRANCE(WOODFALL, 3), RANDO_EVENTS[RE_CLEARED_WOODFALL_TEMPLE]),
         },
         .connections = {
-            CONNECTION(RR_WOODFALL_OWL_STATUE_PLATFORM, CAN_BE_DEKU),
+            CONNECTION(RR_WOODFALL_OWL_STATUE_PLATFORM, CAN_BE_DEKU && CanKillEnemy(ACTOR_EN_DEKUNUTS)),
         },
     };
     Regions[RR_WOODFALL_OWL_STATUE_PLATFORM] = RandoRegion{ .name = "Owl Statue Platform", .sceneId = SCENE_21MITURINMAE,

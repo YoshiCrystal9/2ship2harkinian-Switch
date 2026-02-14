@@ -47,7 +47,7 @@ static RegisterShipInitFunc initFunc([]() {
             CONNECTION(RR_BENEATH_THE_WELL_RIGHT_FIRE_KEESE, true),
         },
         .events = {
-            EVENT(RE_ACCESS_BIG_POE, HAS_ITEM(ITEM_BOW)),
+            EVENT(RE_ACCESS_BIG_POE, CanKillEnemy(ACTOR_EN_BIGPO)),
         }
     };
     Regions[RR_BENEATH_THE_WELL_COW_ROOM] = RandoRegion{ .name = "Cow Room", .sceneId = SCENE_REDEAD,
