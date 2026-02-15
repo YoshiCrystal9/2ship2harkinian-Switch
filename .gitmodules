@@ -7,4 +7,4 @@
 [submodule "libultraship"]
 	path = libultraship
 	url = https://github.com/JohnDeved/libultraship.git
-	branch = switch-develop
+	branch = main-nx
