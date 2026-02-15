@@ -73,6 +73,14 @@ typedef enum {
 
     // #### `result`
     // ```c
+    // true
+    // ```
+    // #### `args`
+    // - None
+    VB_APPLY_BOMB_BILLBOARDING,
+
+    // #### `result`
+    // ```c
     // cylinderOc != NULL
     // ```
     // #### `args`
@@ -555,6 +563,14 @@ typedef enum {
     // - `*Vec3f` spawnPos
     // - `u16` params
     VB_DROP_COLLECTIBLE,
+
+    // #### `result`
+    // ```c
+    // (CURRENT_DAY == 3) && (CutsceneManager_GetCurrentCsId() == CS_ID_NONE)
+    // ```
+    // #### `args`
+    // - None
+    VB_EARTHQUAKE_ON_DAY_3,
 
     // #### `result`
     // ```c
@@ -1717,6 +1733,14 @@ typedef enum {
     // true
     // ```
     // #### `args`
+    // - None
+    VB_ROTATE_GROTTO_ENTRANCE,
+
+    // #### `result`
+    // ```c
+    // true
+    // ```
+    // #### `args`
     // - `*EnSuttari`
     VB_SAKON_TAKE_DAMAGE,
 
@@ -2129,6 +2153,15 @@ typedef enum {
     // #### `args`
     // - `*Camera`
     VB_USE_CUSTOM_CAMERA,
+
+    // #### `result`
+    // ```c
+    // (this->modelAnimType != PLAYER_ANIMTYPE_3) && (this->heldItemAction != PLAYER_IA_DEKU_STICK) &&
+    // (play->bButtonAmmoPlusOne == 0)
+    // ```
+    // #### `args`
+    // - `*Player`
+    VB_USE_HELD_ITEM_AFTER_CHANGE,
 
     // #### `result`
     // ```c

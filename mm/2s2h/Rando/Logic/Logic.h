@@ -100,8 +100,7 @@ struct RegionTimeState {
     bool canStayOverTime;
 };
 
-// Thread-local current region time for check evaluation
-extern thread_local uint64_t gCurrentRegionTime;
+extern uint64_t gCurrentRegionTime;
 
 // Helper: Convert runtime game time to TimeSlice enum
 TimeSlice TimeSliceFromGameTime(s32 day, u16 time);
@@ -502,6 +501,16 @@ inline constexpr uint64_t GetHalfDayTimeMask(int halfDayIndex) {
     return mask;
 }
 
+// Merge two time states (bitwise OR on time slices)
+inline RegionTimeState MergeTimeStates(const RegionTimeState& a, const RegionTimeState& b) {
+    return { .timeSlices = a.timeSlices | b.timeSlices, .canStayOverTime = a.canStayOverTime || b.canStayOverTime };
+}
+
+// Check if 'a' covers 'b' (a is a superset - adding b gives nothing new)
+inline bool TimeStateCovers(const RegionTimeState& a, const RegionTimeState& b) {
+    return (a.timeSlices | b.timeSlices) == a.timeSlices;
+}
+
 // ============================================================================
 // CLOCK ITEM MACROS
 // ============================================================================
@@ -737,6 +746,8 @@ inline bool CanKillEnemy(ActorId EnemyId) {
                     CAN_USE_PROJECTILE || CAN_USE_EXPLOSIVE || HAS_ITEM(ITEM_DEKU_NUT));
         case ACTOR_EN_DRAGON: // Deep Python
             return (CAN_BE_ZORA && HAS_MAGIC);
+        case ACTOR_EN_BIGPO:
+            return HAS_ITEM(ITEM_BOW);
         case ACTOR_EN_PO_SISTERS:
             // The first three sisters can be damaged with almost anything, but Meg requires ranged attacks. Not using
             // CAN_USE_EXPLOSIVE here, as the Blast Mask cannot reach, and the Powder Keg can only be used once.

@@ -583,8 +583,8 @@ static void DrawItemsTab() {
                  CheckboxOptions({ { .tooltip = "Shuffles the first drop from a non Boss Enemy." } }));
     CVarCheckbox(
         "Enemy Souls", Rando::StaticData::Options[RO_SHUFFLE_ENEMY_SOULS].cvar,
-        CheckboxOptions({ { .tooltip = "Adds the \"souls\" of regular enemies to the item pool. Enemy Souls are items "
-                                       "that must be found in order for their corresponding enemy to spawn.",
+        CheckboxOptions({ { .tooltip = "Adds the \"souls\" of regular enemies to the item pool. An enemy will be "
+                                       "immune to damage until its corresponding soul has been obtained.",
                             .disabled = IncompatibleWithLogicSetting(RO_SHUFFLE_ENEMY_SOULS),
                             .disabledTooltip = "Incompatible with current Logic Setting" } }));
     CVarCheckbox("Shuffle Time", Rando::StaticData::Options[RO_CLOCK_SHUFFLE].cvar,

@@ -1,4 +1,3 @@
-#include <libultraship/bridge/consolevariablebridge.h>
 #include "2s2h/GameInteractor/GameInteractor.h"
 #include "2s2h/ShipInit.hpp"
 
@@ -8,8 +7,22 @@
 static PlayerMask sPendingMask = PLAYER_MASK_NONE;
 static HOOK_ID sPlayerUpdateHookId = 0;
 
+static bool IsTransformationMask(PlayerMask mask) {
+    return mask <= PLAYER_MASK_DEKU && mask >= PLAYER_MASK_FIERCE_DEITY;
+}
+
 static bool IsMask(ItemId itemId) {
-    return (itemId >= ITEM_MASK_TRUTH) && (itemId <= ITEM_MASK_SCENTS);
+    // Non-transformation masks
+    if ((itemId >= ITEM_MASK_TRUTH) && (itemId <= ITEM_MASK_SCENTS)) {
+        return true;
+    }
+
+    // Transformation masks
+    Player* player = GET_PLAYER(gPlayState);
+    if ((player != NULL) && (player->transformation == PLAYER_FORM_FIERCE_DEITY)) {
+        return itemId >= ITEM_MASK_DEKU && itemId <= ITEM_MASK_ZORA;
+    }
+    return false;
 }
 
 static bool IsMaskAction(PlayerItemAction itemAction) {
@@ -26,23 +39,22 @@ static void UnregisterMaskSwap() {
 static void OnTransform(Actor* actor) {
     Player* player = (Player*)actor;
 
-    if ((player->stateFlags1 & PLAYER_STATE1_2) && player->transformation == PLAYER_FORM_HUMAN &&
-        player->currentMask != sPendingMask) {
-        player->currentMask = sPendingMask;
-        gSaveContext.save.equippedMask = sPendingMask;
-    } else if (player->transformation == PLAYER_FORM_HUMAN) {
+    if (player->transformation == PLAYER_FORM_HUMAN) {
+        if (sPendingMask != PLAYER_MASK_NONE && !IsTransformationMask(sPendingMask) &&
+            player->currentMask != sPendingMask) {
+            player->currentMask = sPendingMask;
+            gSaveContext.save.equippedMask = sPendingMask;
+        }
         sPendingMask = PLAYER_MASK_NONE;
         UnregisterMaskSwap();
     }
 }
 
 static void RegisterMaskSwap() {
-    if (sPlayerUpdateHookId != 0) {
-        return;
+    if (sPlayerUpdateHookId == 0) {
+        sPlayerUpdateHookId =
+            GameInteractor::Instance->RegisterGameHookForID<GameInteractor::OnActorUpdate>(ACTOR_PLAYER, OnTransform);
     }
-
-    sPlayerUpdateHookId =
-        GameInteractor::Instance->RegisterGameHookForID<GameInteractor::OnActorUpdate>(ACTOR_PLAYER, OnTransform);
 }
 
 static void AllowMask(ItemId* itemId, bool* should) {
@@ -61,9 +73,12 @@ void RegisterMaskSwapHooks() {
         PlayerItemAction* itemAction = va_arg(args, PlayerItemAction*);
         Player* player = GET_PLAYER(gPlayState);
         if (player != NULL && player->transformation != PLAYER_FORM_HUMAN && IsMaskAction(*itemAction)) {
-            sPendingMask = static_cast<PlayerMask>(GET_MASK_FROM_IA(*itemAction));
-            gSaveContext.save.equippedMask = sPendingMask;
-            RegisterMaskSwap();
+            PlayerMask mask = static_cast<PlayerMask>(GET_MASK_FROM_IA(*itemAction));
+            if (!IsTransformationMask(mask)) { // don't queue transformation masks
+                sPendingMask = mask;
+                gSaveContext.save.equippedMask = sPendingMask;
+                RegisterMaskSwap();
+            }
         }
     });
 }

@@ -590,6 +590,11 @@ bool Rando::IsItemObtainable(RandoItemId randoItemId, RandoCheckId randoCheckId)
             return !Flags_GetRandoInf(RANDO_INF_OBTAINED_CLOCK_DAY_1 +
                                       Rando::ClockItems::GetHalfDayIndexFromClockItem(randoItemId));
         case RI_TIME_PROGRESSIVE:
+            if (hasObtainedCheck) {
+                return false;
+            } else if (Rando::ClockItems::GetAllOwnedHalfDaysMask() == 0x3F) { // Have all 6 half days
+                return false;
+            }
             return true;
         case RI_OCARINA_BUTTON_A:
         case RI_OCARINA_BUTTON_C_DOWN:
