@@ -125,9 +125,25 @@ Menu::Menu(const std::string& cVar, const std::string& name, uint8_t searchSideb
 void Menu::InitElement() {
     popped = CVarGetInteger("gSettings.Menu.Popout", 0);
     poppedSize.x = CVarGetInteger("gSettings.Menu.PoppedWidth", 1280);
+    // Default popout height should fit small screens.
+#if defined(__SWITCH__)
+    poppedSize.y = CVarGetInteger("gSettings.Menu.PoppedHeight", 720);
+#else
     poppedSize.y = CVarGetInteger("gSettings.Menu.PoppedHeight", 800);
+#endif
     poppedPos.x = CVarGetInteger("gSettings.Menu.PoppedPos.x", 0);
     poppedPos.y = CVarGetInteger("gSettings.Menu.PoppedPos.y", 0);
+
+#if defined(__SWITCH__)
+    // Popout menus don't fit well on handheld; keep the menu docked/fullscreen.
+    // (Menu.h notes allowPopout should be false on small screen ports.)
+    allowPopout = false;
+    if (popped) {
+        popped = false;
+        CVarSetInteger("gSettings.Menu.Popout", 0);
+        CVarSave();
+    }
+#endif
 
     UpdateWindowBackendObjects();
 }
@@ -581,8 +597,8 @@ void Menu::DrawElement() {
         CVarSetInteger("gSettings.Menu.Popout", popped);
         CVarSetFloat("gSettings.Menu.PoppedWidth", poppedSize.x);
         CVarSetFloat("gSettings.Menu.PoppedHeight", poppedSize.y);
-        CVarSetFloat("gSettings.Menu.PoppedPos.x", poppedSize.x);
-        CVarSetFloat("gSettings.Menu.PoppedPos.y", poppedSize.y);
+        CVarSetFloat("gSettings.Menu.PoppedPos.x", poppedPos.x);
+        CVarSetFloat("gSettings.Menu.PoppedPos.y", poppedPos.y);
         CVarSave();
         ImGui::End();
         return;

@@ -190,6 +190,13 @@ OTRGlobals::OTRGlobals() {
     auto defaultLogLevel = spdlog::level::info;
 #endif
     auto logLevel = (spdlog::level::level_enum)CVarGetInteger("gDeveloperTools.LogLevel", defaultLogLevel);
+#if defined(__SWITCH__)
+    // On Switch, trace/debug logging over nxlink TCP is extremely slow and can make
+    // resource loading appear to hang. Clamp to at least info level.
+    if (logLevel < spdlog::level::info) {
+        logLevel = spdlog::level::info;
+    }
+#endif
     context->InitLogging(logLevel, logLevel);
     Ship::Context::GetInstance()->GetLogger()->set_pattern("[%H:%M:%S.%e] [%s:%#] [%^%l%$] %v");
 
