@@ -1,0 +1,20 @@
+FROM devkitpro/devkita64:latest
+
+# Update all devkitpro packages to latest versions first
+RUN dkp-pacman -Syu --noconfirm
+
+# Minimal additions for fast local builds.
+RUN apt-get update -y \
+    && apt-get install -y --no-install-recommends \
+        ninja-build \
+        ccache \
+        ca-certificates \
+        wget \
+        unzip \
+    && rm -rf /var/lib/apt/lists/*
+
+ENV CCACHE_DIR=/ccache \
+    CCACHE_BASEDIR=/src \
+    CCACHE_NOHASHDIR=true \
+    CCACHE_COMPRESS=true \
+    CCACHE_COMPRESSLEVEL=6
