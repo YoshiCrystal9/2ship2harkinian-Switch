@@ -13529,8 +13529,8 @@ s32 Ship_HandleFirstPersonAiming(PlayState* play, Player* this, s32 arg2) {
     }
 
     if (CVarGetInteger("gEnhancements.Camera.FirstPerson.GyroEnabled", 0)) {
-        gyroX = sPlayerControlInput->cur.gyro_y * 720; // -40 to 40, avg -4 to 4
-        gyroY = sPlayerControlInput->cur.gyro_x * 720; // -20 to 20, avg -2 to 2
+        gyroX = sPlayerControlInput->cur.gyro_y * 2160; // -40 to 40, avg -4 to 4
+        gyroY = sPlayerControlInput->cur.gyro_x * 2160; // -20 to 20, avg -2 to 2
 
         gyroX *= GameInteractor_InvertControl(GI_INVERT_FIRST_PERSON_GYRO_X);
         gyroY *= -GameInteractor_InvertControl(GI_INVERT_FIRST_PERSON_GYRO_Y);

@@ -757,7 +757,7 @@ void BenMenu::AddEnhancements() {
                      .DefaultValue(1.0f)
                      .IsPercentage()
                      .Min(0.01f)
-                     .Max(2.0f))
+                     .Max(5.0f))
         .PreFunc([](WidgetInfo& info) { info.isHidden = mBenMenu->disabledMap.at(DISABLE_FOR_GYRO_OFF).active; });
     AddWidget(path, "Gyro Y Axis Sensitivity: %.0f%%", WIDGET_CVAR_SLIDER_FLOAT)
         .CVar("gEnhancements.Camera.FirstPerson.GyroSensitivityY")
@@ -766,7 +766,7 @@ void BenMenu::AddEnhancements() {
                      .DefaultValue(1.0f)
                      .IsPercentage()
                      .Min(0.01f)
-                     .Max(2.0f))
+                     .Max(5.0f))
         .PreFunc([](WidgetInfo& info) { info.isHidden = mBenMenu->disabledMap.at(DISABLE_FOR_GYRO_OFF).active; });
     AddWidget(path, "Right Stick Aiming", WIDGET_CVAR_CHECKBOX)
         .CVar("gEnhancements.Camera.FirstPerson.RightStickEnabled")
