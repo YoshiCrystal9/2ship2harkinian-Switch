@@ -3,9 +3,10 @@ set -euo pipefail
 
 ROOT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
 IMAGE_NAME=${IMAGE_NAME:-2ship-switch-build:latest}
-# Keep docker builds separate from any host-native build directory to avoid CMakeCache path mismatches.
+# Match CI build type (Release) but keep a docker-specific build dir by default
+# to avoid CMakeCache path/toolchain mismatches when building on macOS.
 BUILD_DIR=${BUILD_DIR:-build-switch-docker}
-BUILD_TYPE=${BUILD_TYPE:-Debug}
+BUILD_TYPE=${BUILD_TYPE:-Release}
 JOBS=${JOBS:-}
 
 usage() {
@@ -16,8 +17,8 @@ Builds the Switch NRO in a devkitPro docker container with persistent ccache.
 
 Env overrides:
   IMAGE_NAME   Docker image to use (default: 2ship-switch-build:latest)
-  BUILD_DIR    CMake build directory (default: build-switch)
-  BUILD_TYPE   CMake build type (default: Debug)
+  BUILD_DIR    CMake build directory (default: build-switch-docker)
+  BUILD_TYPE   CMake build type (default: Release)
   JOBS         Parallel build jobs (default: container nproc)
 
 Outputs:
@@ -35,6 +36,10 @@ while [[ $# -gt 0 ]]; do
   case "$1" in
     --release)
       BUILD_TYPE=Release
+      shift
+      ;;
+    --debug)
+      BUILD_TYPE=Debug
       shift
       ;;
     --clean)
@@ -72,6 +77,17 @@ while [[ $# -gt 0 ]]; do
       ;;
   esac
 done
+
+# If the build directory already exists but was configured with a different
+# build type, force a reconfigure. This avoids accidentally producing a Debug
+# binary when the caller expects Release (or vice versa).
+if [[ -f "$ROOT_DIR/$BUILD_DIR/CMakeCache.txt" ]]; then
+  CACHE_BUILD_TYPE=$(grep -E '^CMAKE_BUILD_TYPE:STRING=' "$ROOT_DIR/$BUILD_DIR/CMakeCache.txt" | head -n 1 | cut -d= -f2 || true)
+  if [[ -n "${CACHE_BUILD_TYPE}" ]] && [[ "${CACHE_BUILD_TYPE}" != "${BUILD_TYPE}" ]]; then
+    echo "Build dir '$BUILD_DIR' configured as ${CACHE_BUILD_TYPE}; switching to ${BUILD_TYPE} -> forcing reconfigure" >&2
+    FORCE_CONFIGURE=1
+  fi
+fi
 
 if ! command -v docker >/dev/null 2>&1; then
   echo "docker not found; install Docker Desktop" >&2
