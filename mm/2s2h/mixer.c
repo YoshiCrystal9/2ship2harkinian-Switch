@@ -6,6 +6,9 @@
 #include <stdio.h>
 
 #include "mixer.h"
+#if defined(__ARM_NEON)
+#include <arm_neon.h>
+#endif
 #ifndef __clang__
 #pragma GCC optimize("unroll-loops")
 #endif
@@ -80,6 +83,26 @@ static inline int16_t clamp16(int32_t v) {
     }
     return (int16_t)v;
 }
+
+#if defined(__ARM_NEON) && defined(__aarch64__)
+static inline int16x8_t scale_s16_by_u016_neon(int16x8_t s, uint16_t vol) {
+    const int16_t vol_lo = (int16_t)(vol & 0x7FFF);
+    const bool vol_hi = (vol & 0x8000) != 0;
+
+    int32x4_t lo = vmull_n_s16(vget_low_s16(s), vol_lo);
+    int32x4_t hi = vmull_n_s16(vget_high_s16(s), vol_lo);
+
+    if (vol_hi) {
+        lo = vaddq_s32(lo, vshll_n_s16(vget_low_s16(s), 15));
+        hi = vaddq_s32(hi, vshll_n_s16(vget_high_s16(s), 15));
+    }
+
+    lo = vshrq_n_s32(lo, 16);
+    hi = vshrq_n_s32(hi, 16);
+
+    return vcombine_s16(vqmovn_s32(lo), vqmovn_s32(hi));
+}
+#endif
 
 static inline int32_t clamp32(int64_t v) {
     if (v < -0x7fffffff - 1) {
@@ -259,8 +282,20 @@ void aResampleImpl(uint8_t flags, uint16_t pitch, RESAMPLE_STATE state) {
     do {
         for (i = 0; i < 8; i++) {
             tbl = resample_table[pitch_accumulator * 64 >> 16];
+#if defined(__ARM_NEON) && defined(__aarch64__)
+            {
+                const int16x4_t inVec = vld1_s16(in);
+                const int16x4_t tblVec = vld1_s16(tbl);
+                int32x4_t prod = vmull_s16(inVec, tblVec);
+                prod = vaddq_s32(prod, vdupq_n_s32(0x4000));
+                prod = vshrq_n_s32(prod, 15);
+                const int32x2_t sum2 = vadd_s32(vget_low_s32(prod), vget_high_s32(prod));
+                sample = vget_lane_s32(sum2, 0) + vget_lane_s32(sum2, 1);
+            }
+#else
             sample = ((in[0] * tbl[0] + 0x4000) >> 15) + ((in[1] * tbl[1] + 0x4000) >> 15) +
                      ((in[2] * tbl[2] + 0x4000) >> 15) + ((in[3] * tbl[3] + 0x4000) >> 15);
+#endif
             *out++ = clamp16(sample);
 
             pitch_accumulator += (pitch << 1);
@@ -306,6 +341,53 @@ void aEnvMixerImpl(uint16_t in_addr, uint16_t n_samples, bool swap_reverb, bool 
     uint16_t rates[2] = { rspa.rate[0], rspa.rate[1] };
     uint16_t vol_wet = rspa.vol_wet;
     uint16_t rate_wet = rspa.rate_wet;
+
+#if defined(__ARM_NEON) && defined(__aarch64__)
+    int16_t* dry0 = dry[0];
+    int16_t* dry1 = dry[1];
+    int16_t* wet0 = wet[0];
+    int16_t* wet1 = wet[1];
+
+    const int16x8_t neg_left_vec = vdupq_n_s16(negs[0]);
+    const int16x8_t neg_right_vec = vdupq_n_s16(negs[1]);
+    const int16x8_t neg_wet0_vec = vdupq_n_s16(negs[2]);
+    const int16x8_t neg_wet1_vec = vdupq_n_s16(negs[3]);
+    const bool swap = swap_reverb;
+
+    do {
+        // Load 8 mono samples.
+        const int16x8_t s = vld1q_s16(in);
+        in += 8;
+
+        // Apply per-channel volume and sign xor.
+        int16x8_t left = veorq_s16(scale_s16_by_u016_neon(s, vols[0]), neg_left_vec);
+        int16x8_t right = veorq_s16(scale_s16_by_u016_neon(s, vols[1]), neg_right_vec);
+
+        // Dry mix (saturating add).
+        vst1q_s16(dry0, vqaddq_s16(vld1q_s16(dry0), left));
+        vst1q_s16(dry1, vqaddq_s16(vld1q_s16(dry1), right));
+        dry0 += 8;
+        dry1 += 8;
+
+        // Wet mix (swap if requested, apply wet volume, then xor).
+        const int16x8_t wetIn0 = swap ? right : left;
+        const int16x8_t wetIn1 = swap ? left : right;
+        const int16x8_t wetS0 = veorq_s16(scale_s16_by_u016_neon(wetIn0, vol_wet), neg_wet0_vec);
+        const int16x8_t wetS1 = veorq_s16(scale_s16_by_u016_neon(wetIn1, vol_wet), neg_wet1_vec);
+
+        vst1q_s16(wet0, vqaddq_s16(vld1q_s16(wet0), wetS0));
+        vst1q_s16(wet1, vqaddq_s16(vld1q_s16(wet1), wetS1));
+        wet0 += 8;
+        wet1 += 8;
+
+        vols[0] += rates[0];
+        vols[1] += rates[1];
+        vol_wet += rate_wet;
+
+        n -= 8;
+    } while (n > 0);
+    return;
+#endif
 
     do {
         for (int i = 0; i < 8; i++) {
@@ -408,6 +490,21 @@ void aAddMixerImpl(uint16_t count, uint16_t in_addr, uint16_t out_addr) {
     int16_t* out = BUF_S16(out_addr);
     int nbytes = ROUND_UP_64(ROUND_DOWN_16(count));
 
+#if defined(__ARM_NEON) && defined(__aarch64__)
+    while (nbytes > 0) {
+        // Process 16 samples (32 bytes) per iteration.
+        for (int i = 0; i < 2; i++) {
+            const int16x8_t inVec = vld1q_s16(in);
+            const int16x8_t outVec = vld1q_s16(out);
+            vst1q_s16(out, vqaddq_s16(outVec, inVec));
+            in += 8;
+            out += 8;
+            nbytes -= 8 * (int)sizeof(int16_t);
+        }
+    }
+    return;
+#endif
+
     do {
         *out = clamp16(*out + *in++);
         out++;
@@ -484,6 +581,18 @@ void aInterlImpl(uint16_t in_addr, uint16_t out_addr, uint16_t n_samples) {
     int16_t* out = BUF_S16(out_addr);
     int n = ROUND_UP_8(n_samples);
 
+#if defined(__ARM_NEON) && defined(__aarch64__)
+    while (n > 0) {
+        // Load 16 samples (8 pairs) and take the even lane.
+        const int16x8x2_t v = vld2q_s16(in);
+        vst1q_s16(out, v.val[0]);
+        in += 16;
+        out += 8;
+        n -= 8;
+    }
+    return;
+#endif
+
     do {
         *out++ = *in++;
         in++;
@@ -557,6 +666,22 @@ void aFilterImpl(uint8_t flags, uint16_t count_or_buf, int16_t* state_or_filter)
 void aHiLoGainImpl(uint8_t g, uint16_t count, uint16_t addr) {
     int16_t* samples = BUF_S16(addr);
     int nbytes = ROUND_UP_32(count);
+
+#if defined(__ARM_NEON) && defined(__aarch64__)
+    const int16_t gain = (int16_t)g;
+    while (nbytes > 0) {
+        const int16x8_t s = vld1q_s16(samples);
+        int32x4_t lo = vmull_n_s16(vget_low_s16(s), gain);
+        int32x4_t hi = vmull_n_s16(vget_high_s16(s), gain);
+        lo = vshrq_n_s32(lo, 4);
+        hi = vshrq_n_s32(hi, 4);
+        const int16x8_t r = vcombine_s16(vqmovn_s32(lo), vqmovn_s32(hi));
+        vst1q_s16(samples, r);
+        samples += 8;
+        nbytes -= 8;
+    }
+    return;
+#endif
 
     do {
         *samples = clamp16((*samples * g) >> 4);
@@ -688,7 +813,6 @@ static void aMixImplSSE2(uint16_t count, int16_t gain, uint16_t in_addr, uint16_
 }
 #endif
 #if defined(__ARM_NEON)
-#include <arm_neon.h>
 static const int32_t x4000Arr[4] = { 0x4000, 0x4000, 0x4000, 0x4000 };
 void aMixImplNEON(uint16_t count, int16_t gain, uint16_t in_addr, uint16_t out_addr) {
     int nbytes = ROUND_UP_32(ROUND_DOWN_16(count << 4));

@@ -6,6 +6,10 @@
 
 #include "2s2h/Enhancements/FrameInterpolation/FrameInterpolation.h"
 
+#if defined(__ARM_NEON)
+#include <arm_neon.h>
+#endif
+
 MtxF sMtxFClear = { {
     { 1.0f, 0.0f, 0.0f, 0.0f },
     { 0.0f, 1.0f, 0.0f, 0.0f },
@@ -57,6 +61,75 @@ void SkinMatrix_Vec3fMtxFMultXYZ(MtxF* mf, Vec3f* src, Vec3f* dest) {
  * mfA and dest should not be the same matrix.
  */
 void SkinMatrix_MtxFMtxFMult(MtxF* mfB, MtxF* mfA, MtxF* dest) {
+#if defined(__ARM_NEON) && defined(__aarch64__)
+    // Compute dest = mfB * mfA (despite the historical comment above).
+    // This is the hottest matrix operation in the game; use NEON to compute 4 outputs per row.
+
+    // Load mfA as column vectors (column-major storage).
+    const float32x4_t a_col0 = vld1q_f32((const float*)&mfA->xx);
+    const float32x4_t a_col1 = vld1q_f32((const float*)&mfA->xy);
+    const float32x4_t a_col2 = vld1q_f32((const float*)&mfA->xz);
+    const float32x4_t a_col3 = vld1q_f32((const float*)&mfA->xw);
+
+    // Transpose columns -> rows so we can compute one result row as a linear combination of A's rows.
+    const float32x4x2_t a_t0 = vtrnq_f32(a_col0, a_col1);
+    const float32x4x2_t a_t1 = vtrnq_f32(a_col2, a_col3);
+
+    const float32x4_t a_row0 = vcombine_f32(vget_low_f32(a_t0.val[0]), vget_low_f32(a_t1.val[0]));
+    const float32x4_t a_row1 = vcombine_f32(vget_low_f32(a_t0.val[1]), vget_low_f32(a_t1.val[1]));
+    const float32x4_t a_row2 = vcombine_f32(vget_high_f32(a_t0.val[0]), vget_high_f32(a_t1.val[0]));
+    const float32x4_t a_row3 = vcombine_f32(vget_high_f32(a_t0.val[1]), vget_high_f32(a_t1.val[1]));
+
+    // Load mfB rows (mfB is stored column-major, so we load columns then transpose to rows).
+    const float32x4_t b_col0 = vld1q_f32((const float*)&mfB->xx);
+    const float32x4_t b_col1 = vld1q_f32((const float*)&mfB->xy);
+    const float32x4_t b_col2 = vld1q_f32((const float*)&mfB->xz);
+    const float32x4_t b_col3 = vld1q_f32((const float*)&mfB->xw);
+
+    const float32x4x2_t b_t0 = vtrnq_f32(b_col0, b_col1);
+    const float32x4x2_t b_t1 = vtrnq_f32(b_col2, b_col3);
+
+    const float32x4_t b_row0 = vcombine_f32(vget_low_f32(b_t0.val[0]), vget_low_f32(b_t1.val[0]));
+    const float32x4_t b_row1 = vcombine_f32(vget_low_f32(b_t0.val[1]), vget_low_f32(b_t1.val[1]));
+    const float32x4_t b_row2 = vcombine_f32(vget_high_f32(b_t0.val[0]), vget_high_f32(b_t1.val[0]));
+    const float32x4_t b_row3 = vcombine_f32(vget_high_f32(b_t0.val[1]), vget_high_f32(b_t1.val[1]));
+
+    // Compute each destination row (row(B) * A).
+    float32x4_t r0 = vmulq_n_f32(a_row0, vgetq_lane_f32(b_row0, 0));
+    r0 = vmlaq_n_f32(r0, a_row1, vgetq_lane_f32(b_row0, 1));
+    r0 = vmlaq_n_f32(r0, a_row2, vgetq_lane_f32(b_row0, 2));
+    r0 = vmlaq_n_f32(r0, a_row3, vgetq_lane_f32(b_row0, 3));
+
+    float32x4_t r1 = vmulq_n_f32(a_row0, vgetq_lane_f32(b_row1, 0));
+    r1 = vmlaq_n_f32(r1, a_row1, vgetq_lane_f32(b_row1, 1));
+    r1 = vmlaq_n_f32(r1, a_row2, vgetq_lane_f32(b_row1, 2));
+    r1 = vmlaq_n_f32(r1, a_row3, vgetq_lane_f32(b_row1, 3));
+
+    float32x4_t r2 = vmulq_n_f32(a_row0, vgetq_lane_f32(b_row2, 0));
+    r2 = vmlaq_n_f32(r2, a_row1, vgetq_lane_f32(b_row2, 1));
+    r2 = vmlaq_n_f32(r2, a_row2, vgetq_lane_f32(b_row2, 2));
+    r2 = vmlaq_n_f32(r2, a_row3, vgetq_lane_f32(b_row2, 3));
+
+    float32x4_t r3 = vmulq_n_f32(a_row0, vgetq_lane_f32(b_row3, 0));
+    r3 = vmlaq_n_f32(r3, a_row1, vgetq_lane_f32(b_row3, 1));
+    r3 = vmlaq_n_f32(r3, a_row2, vgetq_lane_f32(b_row3, 2));
+    r3 = vmlaq_n_f32(r3, a_row3, vgetq_lane_f32(b_row3, 3));
+
+    // Transpose rows -> columns for column-major storage in MtxF.
+    const float32x4x2_t r_t0 = vtrnq_f32(r0, r1);
+    const float32x4x2_t r_t1 = vtrnq_f32(r2, r3);
+
+    const float32x4_t d_col0 = vcombine_f32(vget_low_f32(r_t0.val[0]), vget_low_f32(r_t1.val[0]));
+    const float32x4_t d_col1 = vcombine_f32(vget_low_f32(r_t0.val[1]), vget_low_f32(r_t1.val[1]));
+    const float32x4_t d_col2 = vcombine_f32(vget_high_f32(r_t0.val[0]), vget_high_f32(r_t1.val[0]));
+    const float32x4_t d_col3 = vcombine_f32(vget_high_f32(r_t0.val[1]), vget_high_f32(r_t1.val[1]));
+
+    vst1q_f32((float*)&dest->xx, d_col0);
+    vst1q_f32((float*)&dest->xy, d_col1);
+    vst1q_f32((float*)&dest->xz, d_col2);
+    vst1q_f32((float*)&dest->xw, d_col3);
+    return;
+#endif
     f32 rx;
     f32 ry;
     f32 rz;
