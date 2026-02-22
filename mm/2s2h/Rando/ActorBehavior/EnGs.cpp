@@ -92,12 +92,12 @@ void Rando::ActorBehavior::InitEnGsBehavior() {
             entry.autoFormat = false;
             auto& saveCheck = RANDO_SAVE_CHECKS[randoCheckId];
 
-            entry.msg = "They say %g{{item}}%w is hidden at %y{{location}}%w.";
+            entry.msg = "They say %g{{item}}%w is hidden %y{{location}}%w.";
 
             CustomMessage::Replace(&entry.msg, "{{item}}",
                                    Rando::StaticData::GetItemName(saveCheck.randoItemId, true, randoCheckId));
             CustomMessage::Replace(&entry.msg, "{{location}}",
-                                   Ship_GetSceneName(Rando::StaticData::Checks[randoCheckId].sceneId));
+                                   Rando::StaticData::GetLocationNameForHint(randoCheckId, false));
 
             // Replace colors before line break calculation
             CustomMessage::ReplaceColorChars(&entry.msg);
@@ -141,12 +141,12 @@ void Rando::ActorBehavior::InitEnGsBehavior() {
                 } else {
                     RandoSaveCheck saveCheck = RANDO_SAVE_CHECKS[randoCheckId];
 
-                    entry.msg = "Wise choice... They say %g{{item}}%w is hidden at %y{{location}}%w.";
+                    entry.msg = "Wise choice... They say %g{{item}}%w is hidden %y{{location}}%w.";
 
                     CustomMessage::Replace(&entry.msg, "{{item}}",
                                            Rando::StaticData::GetItemName(saveCheck.randoItemId, true, randoCheckId));
                     CustomMessage::Replace(&entry.msg, "{{location}}",
-                                           Ship_GetSceneName(Rando::StaticData::Checks[randoCheckId].sceneId));
+                                           Rando::StaticData::GetLocationNameForHint(randoCheckId, true));
 
                     gSaveContext.rupeeAccumulator -= cost;
                     cost *= 2;

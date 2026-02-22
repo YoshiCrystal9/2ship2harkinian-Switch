@@ -31,7 +31,7 @@ static RegisterShipInitFunc initFunc([]() {
             CHECK(RC_ENEMY_DROP_BIO_DEKU_BABA, CanKillEnemy(ACTOR_BOSS_05)),
         },
         .exits = { //     TO                                         FROM
-            EXIT(ENTRANCE(TERMINA_FIELD, 0),                ENTRANCE(GROTTOS, 11), true), // TODO: Grotto mapping
+            EXIT(ENTRANCE(TERMINA_FIELD, 0),                ENTRANCE(GROTTOS, 11), true),
         },
     };
     Regions[RR_TERMINA_FIELD_COW_GROTTO] = RandoRegion{ .name = "Termina Field Cow", .sceneId = SCENE_KAKUSIANA,
@@ -112,8 +112,8 @@ static RegisterShipInitFunc initFunc([]() {
             CHECK(RC_TERMINA_FIELD_COW_GROTTO_GRASS_72, true),
             CHECK(RC_ENEMY_DROP_GIANT_BEE, CAN_USE_PROJECTILE && CanKillEnemy(ACTOR_EN_BEE)), // In a beehive
         },
-        .connections = {
-            CONNECTION(RR_TERMINA_FIELD, true), // TODO: Grotto mapping
+        .exits = { //     TO                                         FROM
+            EXIT(ENTRANCE(TERMINA_FIELD, 0),                ENTRANCE(GROTTOS, 17), true),
         },
     };
     Regions[RR_TERMINA_FIELD_DODONGO_GROTTO] = RandoRegion{ .name = "Termina Field Dodongo", .sceneId = SCENE_KAKUSIANA,
@@ -122,7 +122,7 @@ static RegisterShipInitFunc initFunc([]() {
             CHECK(RC_ENEMY_DROP_DODONGO, CanKillEnemy(ACTOR_EN_DODONGO)),
         },
         .exits = { //     TO                                         FROM
-            EXIT(ENTRANCE(TERMINA_FIELD, 0),                ENTRANCE(GROTTOS, 7), true), // TODO: Grotto mapping
+            EXIT(ENTRANCE(TERMINA_FIELD, 0),                ENTRANCE(GROTTOS, 7), true),
         },
     };
     Regions[RR_TERMINA_FIELD_GOSSIP_STONE_GROTTO_1] = RandoRegion{ .name = "Termina Field Gossip Stone #1", .sceneId = SCENE_KAKUSIANA,
@@ -131,7 +131,7 @@ static RegisterShipInitFunc initFunc([]() {
             CHECK(RC_ENEMY_DROP_SKULLWALLTULA, CanKillEnemy(ACTOR_EN_SW)),
         },
         .exits = { //     TO                                         FROM
-            EXIT(ENTRANCE(TERMINA_FIELD, 0),                ENTRANCE(GROTTOS, 1), true), // TODO: Grotto mapping
+            EXIT(ENTRANCE(TERMINA_FIELD, 0),                ENTRANCE(GROTTOS, 1), true),
         },
         .events = {
             // TODO: gSaveContext.save.saveInfo.unk_EA0 for gossip stone check
@@ -139,7 +139,7 @@ static RegisterShipInitFunc initFunc([]() {
     };
     Regions[RR_TERMINA_FIELD_GOSSIP_STONE_GROTTO_2] = RandoRegion{ .name = "Termina Field Gossip Stone #2", .sceneId = SCENE_KAKUSIANA,
         .exits = { //     TO                                         FROM
-            EXIT(ENTRANCE(TERMINA_FIELD, 0),                ENTRANCE(GROTTOS, 3), true), // TODO: Grotto mapping
+            EXIT(ENTRANCE(TERMINA_FIELD, 0),                ENTRANCE(GROTTOS, 3), true),
         },
         .events = {
             // TODO: gSaveContext.save.saveInfo.unk_EA0 for gossip stone check
@@ -156,7 +156,7 @@ static RegisterShipInitFunc initFunc([]() {
             CHECK(RC_ENEMY_DROP_GIANT_BEE, CAN_USE_PROJECTILE && CanKillEnemy(ACTOR_EN_BEE)), // In a beehive
         },
         .exits = { //     TO                                         FROM
-            EXIT(ENTRANCE(TERMINA_FIELD, 0),                ENTRANCE(GROTTOS, 0), true), // TODO: Grotto mapping
+            EXIT(ENTRANCE(TERMINA_FIELD, 0),                ENTRANCE(GROTTOS, 0), true),
         },
         .events = {
             // TODO: gSaveContext.save.saveInfo.unk_EA0 for gossip stone check
@@ -171,7 +171,7 @@ static RegisterShipInitFunc initFunc([]() {
             CHECK(RC_TERMINA_FIELD_GOSSIP_STONE_GROTTO_4_GRASS_05, true),
         },
         .exits = { //     TO                                         FROM
-            EXIT(ENTRANCE(TERMINA_FIELD, 0),                ENTRANCE(GROTTOS, 2), true), // TODO: Grotto mapping
+            EXIT(ENTRANCE(TERMINA_FIELD, 0),                ENTRANCE(GROTTOS, 2), true),
         },
         .events = {
             // TODO: gSaveContext.save.saveInfo.unk_EA0 for gossip stone check
@@ -195,7 +195,7 @@ static RegisterShipInitFunc initFunc([]() {
             CHECK(RC_ENEMY_DROP_PEAHAT, CanKillEnemy(ACTOR_EN_PEEHAT)),
         },
         .exits = { //     TO                                         FROM
-            EXIT(ENTRANCE(TERMINA_FIELD, 0),                ENTRANCE(GROTTOS, 13), true), // TODO: Grotto mapping
+            EXIT(ENTRANCE(TERMINA_FIELD, 0),                ENTRANCE(GROTTOS, 13), true),
         },
     };
     Regions[RR_TERMINA_FIELD_PILLAR_GROTTO] = RandoRegion{ .name = "Termina Field Pillar", .sceneId = SCENE_KAKUSIANA,
@@ -217,8 +217,8 @@ static RegisterShipInitFunc initFunc([]() {
             CHECK(RC_TERMINA_FIELD_PILLAR_GROTTO_GRASS_14, true),
             CHECK(RC_ENEMY_DROP_MINI_BABA, CanKillEnemy(ACTOR_EN_KAREBABA)),
         },
-        .connections = {
-            CONNECTION(RR_TERMINA_FIELD, true), // TODO: Grotto mapping
+        .exits = { //     TO                                         FROM
+            EXIT(ENTRANCE(TERMINA_FIELD, 0),                ENTRANCE(GROTTOS, 18), true),
         },
     };
     Regions[RR_TERMINA_FIELD_SCRUB_GROTTO] = RandoRegion{ .name = "Termina Field Scrub", .sceneId = SCENE_KAKUSIANA,
@@ -228,7 +228,7 @@ static RegisterShipInitFunc initFunc([]() {
             CHECK(RC_TERMINA_FIELD_SCRUB_POT,         true),
         },
         .exits = { //     TO                                         FROM
-            EXIT(ENTRANCE(TERMINA_FIELD, 0),                ENTRANCE(GROTTOS, 9), true), // TODO: Grotto mapping
+            EXIT(ENTRANCE(TERMINA_FIELD, 0),                ENTRANCE(GROTTOS, 9), true),
         },
     };
     Regions[RR_TERMINA_FIELD_TALL_GRASS_GROTTO] = RandoRegion{ .name = "Termina Field Tall Grass", .sceneId = SCENE_KAKUSIANA,
@@ -250,8 +250,8 @@ static RegisterShipInitFunc initFunc([]() {
             CHECK(RC_TERMINA_FIELD_TALL_GRASS_GROTTO_GRASS_14, true),
             CHECK(RC_ENEMY_DROP_MINI_BABA, CanKillEnemy(ACTOR_EN_KAREBABA)),
         },
-        .connections = {
-            CONNECTION(RR_TERMINA_FIELD, true), // TODO: Grotto mapping
+        .exits = { //     TO                                         FROM
+            EXIT(ENTRANCE(TERMINA_FIELD, 0),                ENTRANCE(GROTTOS, 19), true),
         },
     };
     Regions[RR_TERMINA_FIELD] = RandoRegion{ .sceneId = SCENE_00KEIKOKU,
@@ -513,14 +513,17 @@ static RegisterShipInitFunc initFunc([]() {
             CHECK(RC_ENEMY_DROP_TAKKURI, CanKillEnemy(ACTOR_EN_THIEFBIRD)),
         },
         .exits = { //     TO                                         FROM
-            EXIT(ENTRANCE(GROTTOS, 0),                      ENTRANCE(TERMINA_FIELD, 0), CAN_USE_EXPLOSIVE || CAN_BE_GORON), // TODO: Grotto mapping Gossip Stone #3
-            EXIT(ENTRANCE(GROTTOS, 1),                      ENTRANCE(TERMINA_FIELD, 0), true), // TODO: Grotto mapping Gossip Stone #1
-            EXIT(ENTRANCE(GROTTOS, 2),                      ENTRANCE(TERMINA_FIELD, 0), true), // TODO: Grotto mapping Gossip Stone #4
-            EXIT(ENTRANCE(GROTTOS, 3),                      ENTRANCE(TERMINA_FIELD, 0), true), // TODO: Grotto mapping Gossip Stone #2
-            EXIT(ENTRANCE(GROTTOS, 7),                      ENTRANCE(TERMINA_FIELD, 0), true), // TODO: Grotto mapping Dodongo
-            EXIT(ENTRANCE(GROTTOS, 9),                      ENTRANCE(TERMINA_FIELD, 0), true), // TODO: Grotto mapping Scrub
-            EXIT(ENTRANCE(GROTTOS, 11),                     ENTRANCE(TERMINA_FIELD, 0), CAN_USE_EXPLOSIVE || CAN_BE_GORON), // TODO: Grotto mapping bio baba grotto
-            EXIT(ENTRANCE(GROTTOS, 13),                     ENTRANCE(TERMINA_FIELD, 0), true), // TODO: Grotto mapping peahat grotto
+            EXIT(ENTRANCE(GROTTOS, 0),                      ENTRANCE(TERMINA_FIELD, 0), CAN_USE_EXPLOSIVE || CAN_BE_GORON), // Gossip Stone #3
+            EXIT(ENTRANCE(GROTTOS, 1),                      ENTRANCE(TERMINA_FIELD, 0), true), // Gossip Stone #1
+            EXIT(ENTRANCE(GROTTOS, 2),                      ENTRANCE(TERMINA_FIELD, 0), true), // Gossip Stone #4
+            EXIT(ENTRANCE(GROTTOS, 3),                      ENTRANCE(TERMINA_FIELD, 0), true), // Gossip Stone #2
+            EXIT(ENTRANCE(GROTTOS, 7),                      ENTRANCE(TERMINA_FIELD, 0), true), // Dodongo
+            EXIT(ENTRANCE(GROTTOS, 9),                      ENTRANCE(TERMINA_FIELD, 0), true), // Scrub
+            EXIT(ENTRANCE(GROTTOS, 11),                     ENTRANCE(TERMINA_FIELD, 0), CAN_USE_EXPLOSIVE || CAN_BE_GORON), // bio baba grotto
+            EXIT(ENTRANCE(GROTTOS, 13),                     ENTRANCE(TERMINA_FIELD, 0), true), // peahat grotto
+            EXIT(ENTRANCE(GROTTOS, 17),                     ENTRANCE(TERMINA_FIELD, 0), CAN_USE_EXPLOSIVE), // Cow grotto
+            EXIT(ENTRANCE(GROTTOS, 18),                     ENTRANCE(TERMINA_FIELD, 0), true), // Pillar grotto
+            EXIT(ENTRANCE(GROTTOS, 19),                     ENTRANCE(TERMINA_FIELD, 0), true), // Tall Grass grotto
             EXIT(ENTRANCE(WEST_CLOCK_TOWN, 0),              ENTRANCE(TERMINA_FIELD, 0), true),
             EXIT(ENTRANCE(ROAD_TO_SOUTHERN_SWAMP, 0),       ENTRANCE(TERMINA_FIELD, 1), true),
             EXIT(ENTRANCE(ROAD_TO_IKANA, 0),                ENTRANCE(TERMINA_FIELD, 4), true),
@@ -533,9 +536,6 @@ static RegisterShipInitFunc initFunc([]() {
             CONNECTION(RR_TERMINA_FIELD_BEFORE_PATH_TO_MOUNTAIN_VILLAGE, HAS_ITEM(ITEM_BOW)),
             CONNECTION(RR_TERMINA_FIELD_BEFORE_GREAT_BAY_COAST, CAN_PLAY_SONG(EPONA)),
             CONNECTION(RR_ASTRAL_OBSERVATORY_OUTSIDE, CAN_BE_DEKU),
-            CONNECTION(RR_TERMINA_FIELD_COW_GROTTO, CAN_USE_EXPLOSIVE), // TODO: Grotto mapping
-            CONNECTION(RR_TERMINA_FIELD_PILLAR_GROTTO, true), // TODO: Grotto mapping
-            CONNECTION(RR_TERMINA_FIELD_TALL_GRASS_GROTTO, true), // TODO: Grotto mapping
         },
     };
 }, {});
