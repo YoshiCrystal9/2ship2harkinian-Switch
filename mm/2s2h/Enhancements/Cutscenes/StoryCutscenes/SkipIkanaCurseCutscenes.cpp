@@ -56,6 +56,10 @@ void RegisterSkipIkanaCurseCutscenes() {
                 hgDoor->rotation = otherDoor->rotation = 0x5555;  // Open the doors
                 hgDoor->dyna.actor.parent->colChkInfo.health = 1; // The Gibdo dad moves once this is set
                 *should = false;
+
+                Player* player = GET_PLAYER(gPlayState);
+                player->speedXZ = 0.0f;
+                player->actor.freezeTimer = 20;
             } else if (*csId == 10 || *csId == 12) { // Failed to heal Pamela's father
                 /*
                  * The WEEKEVENTREG_61_02 flag marks that the player has failed to heal Pamela's father this cycle.
