@@ -5057,8 +5057,7 @@ void Player_UpdateZTargeting(Player* this, PlayState* play) {
         } else {
             this->zTargetActiveTimer--;
         }
-    } else if (this->stateFlags1 & PLAYER_STATE1_PARALLEL &&
-               !CVarGetInteger("gEnhancements.Camera.FixTargettingCameraSnap", 0)) {
+    } else if (this->stateFlags1 & PLAYER_STATE1_PARALLEL) {
         // If the above code block which checks `zButtonHeld` is not taken, that means Z has been released.
         // In that case, setting `zTargetActiveTimer` to 0 will stop Parallel if it is currently active.
         this->zTargetActiveTimer = 0;
