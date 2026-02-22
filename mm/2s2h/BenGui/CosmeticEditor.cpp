@@ -26,16 +26,8 @@ void gfx_texture_cache_clear();
 
 // clang-format off
 CosmeticEditorElement cosmeticEditorElements[COSMETIC_ELEMENT_MAX] = {
-    COSMETIC_EDITOR_ELEMENT(COSMETIC_ELEMENT_HEART_NORMAL,              "Hearts",           "Normal",                     "Hearts.Normal",                255, 70,  50,  255),
-    COSMETIC_EDITOR_ELEMENT(COSMETIC_ELEMENT_HEART_NORMAL_BEATING,      "Hearts",           "Beating",                    "Hearts.Beating",               255, 70,  50,  255),
-    COSMETIC_EDITOR_ELEMENT(COSMETIC_ELEMENT_HEART_BORDER,              "Hearts",           "Border",                     "Hearts.Border",                50,  40,  60,  255),
-    COSMETIC_EDITOR_ELEMENT(COSMETIC_ELEMENT_HEART_DD,                  "Hearts",           "DD",                         "Hearts.DD",                    200, 0,   0,   255),
-    COSMETIC_EDITOR_ELEMENT(COSMETIC_ELEMENT_HEART_DD_BEATING,          "Hearts",           "DD Beating",                 "Hearts.DDBeating",             200, 0,   0,   255),
-    COSMETIC_EDITOR_ELEMENT(COSMETIC_ELEMENT_HEART_DD_BORDER,           "Hearts",           "DD Border",                  "Hearts.DDBorder",              255, 255, 255, 255),
-    COSMETIC_EDITOR_ELEMENT(COSMETIC_ELEMENT_MAGIC_NORMAL,              "Magic Meter",      "Normal",                     "Magic.Normal",                 0,   200, 0,   255),
-    COSMETIC_EDITOR_ELEMENT(COSMETIC_ELEMENT_MAGIC_CHATEAU,             "Magic Meter",      "Chateau",                    "Magic.Chateau",                0,   0,   200, 255),
-    COSMETIC_EDITOR_ELEMENT(COSMETIC_ELEMENT_MAGIC_CONSUMED,            "Magic Meter",      "Active",                     "Magic.Active",                 250, 250, 0,   255),
-    COSMETIC_EDITOR_ELEMENT(COSMETIC_ELEMENT_MAGIC_BORDER,              "Magic Meter",      "Border",                     "Magic.Border",                 255, 255, 255, 255),
+    COSMETIC_EDITOR_ELEMENT(COSMETIC_ELEMENT_HEARTS,                    "HUD",              "Hearts",                     "HUD.Hearts",                   255, 70,  50,  255),
+    COSMETIC_EDITOR_ELEMENT(COSMETIC_ELEMENT_MAGIC,                     "HUD",              "Magic",                      "HUD.Magic",                    0,   200, 0,   255),
     COSMETIC_EDITOR_ELEMENT(COSMETIC_ELEMENT_SMALL_KEY,                 "HUD",              "Small Key",                  "HUD.SmallKey",                 0,   200, 230, 255),
     COSMETIC_EDITOR_ELEMENT(COSMETIC_ELEMENT_RUPEE_ICON,                "HUD",              "Rupee Icon",                 "HUD.RupeeIcon",                200, 255, 100, 255),
     COSMETIC_EDITOR_ELEMENT(COSMETIC_ELEMENT_MINIMAP,                   "HUD",              "Minimap",                    "HUD.Minimap",                  0,   255, 255, 160),
@@ -58,13 +50,13 @@ CosmeticEditorElement cosmeticEditorElements[COSMETIC_ELEMENT_MAX] = {
     COSMETIC_EDITOR_ELEMENT(COSMETIC_ELEMENT_START_BUTTON,              "Buttons",          "Start",                      "Buttons.Start",                255, 130, 60,  255),
     COSMETIC_EDITOR_ELEMENT(COSMETIC_ELEMENT_FILE_SELECT_MENU,          "Menus",            "File Select Window",         "Menus.FileWindow",             100, 150, 255, 255),
     COSMETIC_EDITOR_ELEMENT(COSMETIC_ELEMENT_FILE_SELECT_PLATES,        "Menus",            "File Select Plates",         "Menus.FilePlates",             100, 150, 255, 255),
-    COSMETIC_EDITOR_ELEMENT(COSMETIC_ELEMENT_HUMAN_TUNIC,               "Player",           "Human Tunic",                "Player.HumanTunic",            30, 105,  27, 255),
-    COSMETIC_EDITOR_ELEMENT(COSMETIC_ELEMENT_HUMAN_HAIR,                "Player",           "Human Hair",                 "Player.HumanHair",             30, 105,  27, 255),
-    COSMETIC_EDITOR_ELEMENT(COSMETIC_ELEMENT_DEKU_TUNIC,                "Player",           "Deku Tunic",                 "Player.DekuTunic",             30, 105,  27, 255),
-    COSMETIC_EDITOR_ELEMENT(COSMETIC_ELEMENT_DEKU_HAIR,                 "Player",           "Deku Hair",                  "Player.DekuHair",              30, 105,  27, 255),
-    COSMETIC_EDITOR_ELEMENT(COSMETIC_ELEMENT_GORON_TUNIC,               "Player",           "Goron Tunic",                "Player.GoronTunic",            30, 105,  27, 255),
-    COSMETIC_EDITOR_ELEMENT(COSMETIC_ELEMENT_ZORA_TUNIC,                "Player",           "Zora Tunic",                 "Player.ZoraTunic",             30, 105,  27, 255),
-    COSMETIC_EDITOR_ELEMENT(COSMETIC_ELEMENT_KAFEI_HAIR,                "Player",           "Kafei Hair",                 "Player.KafeiHair",             30, 105,  27, 255),
+    COSMETIC_EDITOR_ELEMENT(COSMETIC_ELEMENT_HUMAN_TUNIC,               "Player",           "Human Tunic",                "Player.HumanTunic",            30,  105,  27, 255),
+    COSMETIC_EDITOR_ELEMENT(COSMETIC_ELEMENT_HUMAN_HAIR,                "Player",           "Human Hair",                 "Player.HumanHair",             255, 240,   0, 255),
+    COSMETIC_EDITOR_ELEMENT(COSMETIC_ELEMENT_DEKU_TUNIC,                "Player",           "Deku Tunic",                 "Player.DekuTunic",             30,  105,  27, 255),
+    COSMETIC_EDITOR_ELEMENT(COSMETIC_ELEMENT_DEKU_HAIR,                 "Player",           "Deku Hair",                  "Player.DekuHair",              255, 240,   0, 255),
+    COSMETIC_EDITOR_ELEMENT(COSMETIC_ELEMENT_GORON_TUNIC,               "Player",           "Goron Tunic",                "Player.GoronTunic",            30,  105,  27, 255),
+    COSMETIC_EDITOR_ELEMENT(COSMETIC_ELEMENT_ZORA_TUNIC,                "Player",           "Zora Tunic",                 "Player.ZoraTunic",             30,  105,  27, 255),
+    COSMETIC_EDITOR_ELEMENT(COSMETIC_ELEMENT_KAFEI_HAIR,                "Player",           "Kafei Hair",                 "Player.KafeiHair",             64,    0, 163, 255),
 };
 // clang-format on
 
@@ -113,6 +105,17 @@ enum SHADE_MODE {
 Gfx backToWhite[] = {
     gsDPSetPrimColor(0, 0x80, 255, 255, 255, 255),
     gsDPPipeSync(),
+    gsSPEndDisplayList(),
+};
+
+Gfx enableGrayscale[] = {
+    gsSPGrayscale(1),
+    gsDPPipeSync(),
+    gsSPEndDisplayList(),
+};
+
+Gfx disableGrayscale[] = {
+    gsSPGrayscale(0),
     gsSPEndDisplayList(),
 };
 
@@ -253,6 +256,102 @@ void ShadePaletteGradient(const char* path, uint32_t begin, uint32_t end, Color_
     }
 }
 
+// Patches a single pixel in a raw RGBA16 (RGBA5551) texture, preserving the original alpha bit.
+void PatchRGBA16Pixel(const char* path, int index, uint8_t r, uint8_t g, uint8_t b) {
+    auto res = Ship::Context::GetInstance()->GetResourceManager()->LoadResource(path);
+    auto data = (uint8_t*)res->GetRawPointer();
+
+    if (!originalRGB.contains(path) || !originalRGB[path].contains(index)) {
+        originalRGB[path][index] = {
+            data[index * 2],
+            data[index * 2 + 1],
+        };
+    }
+
+    // Preserve the original alpha bit so transparent pixels stay transparent.
+    uint8_t a = data[index * 2 + 1] & 1;
+    uint16_t col16 = (r << 11) | (g << 6) | (b << 1) | a;
+    data[index * 2] = col16 >> 8;
+    data[index * 2 + 1] = col16 & 0xff;
+}
+
+/*
+ * Recolors a raw RGBA16 (RGBA5551) texture. Unlike ShadePaletteNewBase, this preserves each
+ * pixel's alpha bit and skips fully transparent pixels when computing the luminance reference,
+ * so transparent background areas are left untouched.
+ */
+void ShadeRGBA16NewBase(const char* path, uint32_t begin, uint32_t end, Color_RGBA8 newBase, SHADE_MODE mode) {
+    auto res = Ship::Context::GetInstance()->GetResourceManager()->LoadResource(path);
+    auto data = (uint8_t*)res->GetRawPointer();
+
+    uint32_t maxR = 0;
+    uint32_t maxG = 0;
+    uint32_t maxB = 0;
+
+    for (uint32_t i = begin; i <= end; i++) {
+        UnpatchPalette(path, i);
+
+        uint16_t col16 = (data[i * 2] << 8) | data[i * 2 + 1];
+        uint8_t a = col16 & 1;
+        if (a == 0) {
+            continue; // skip transparent pixels
+        }
+
+        uint8_t r = col16 >> 11;
+        uint8_t g = (col16 >> 6) & 0x1f;
+        uint8_t b = (col16 >> 1) & 0x1f;
+
+        maxR = MAX(maxR, r);
+        maxG = MAX(maxG, g);
+        maxB = MAX(maxB, b);
+    }
+
+    if (mode == MODE_REVERT) {
+        return;
+    }
+
+    for (uint32_t i = begin; i <= end; i++) {
+        uint16_t col16 = (data[i * 2] << 8) | data[i * 2 + 1];
+        uint8_t a = col16 & 1;
+        uint8_t r = col16 >> 11;
+        uint8_t g = (col16 >> 6) & 0x1f;
+        uint8_t b = (col16 >> 1) & 0x1f;
+
+        if (a == 0) {
+            // Set transparent pixels to black so that bilinear filtering at edges
+            // blends toward black (neutral) rather than bleeding the original color.
+            // Using full brightness here would create a harsh colored halo at edges.
+            PatchRGBA16Pixel(path, i, 0, 0, 0);
+            continue;
+        }
+
+        int8_t diffR = maxR - r;
+        int8_t diffG = maxG - g;
+        int8_t diffB = maxB - b;
+
+        int8_t diff = 0;
+        if (mode == MODE_AVG) {
+            diff = (diffR + diffG + diffB) / 3;
+        } else if (mode == MODE_MIN) {
+            diff = MIN(MIN(diffR, diffG), diffB);
+        } else if (mode == MODE_MAX) {
+            diff = MAX(MAX(diffR, diffG), diffB);
+        }
+
+        diff = MIN(MAX(31 - diff, 0), 31);
+
+        r = (diff * newBase.r) / 255;
+        g = (diff * newBase.g) / 255;
+        b = (diff * newBase.b) / 255;
+
+        PatchRGBA16Pixel(path, i, r, g, b);
+    }
+}
+
+void ShadeRGBA16Revert(const char* path, uint32_t begin, uint32_t end) {
+    ShadeRGBA16NewBase(path, begin, end, whiteBase, MODE_REVERT);
+}
+
 void CopyFloatArray(CosmeticEditorElementID id, float currentColor[4], bool isChanged) {
     if (isChanged) {
         Color_RGBA8 changedColor = CVarGetColor(cosmeticEditorElements[id].colorCvar, {});
@@ -268,7 +367,7 @@ void CopyFloatArray(CosmeticEditorElementID id, float currentColor[4], bool isCh
     }
 };
 
-extern "C" Color_RGBA8 CosmeticEditor_GetChangedColor(u8 r, u8 g, u8 b, u8 a, u8 elementId) {
+extern "C" Color_RGBA8 CosmeticEditor_GetChangedColorEx(u8 r, u8 g, u8 b, u8 a, u8 elementId, u8 mode, f32 modifier) {
     CosmeticEditorElement element = cosmeticEditorElements[elementId];
 
     Color_RGBA8 returnedColor;
@@ -279,6 +378,96 @@ extern "C" Color_RGBA8 CosmeticEditor_GetChangedColor(u8 r, u8 g, u8 b, u8 a, u8
         returnedColor.g = static_cast<uint8_t>(changedColor.g);
         returnedColor.b = static_cast<uint8_t>(changedColor.b);
         returnedColor.a = static_cast<uint8_t>(255);
+
+        switch (mode) {
+            case COSMETIC_COLOR_MODE_DEFAULT:
+                break;
+            case COSMETIC_COLOR_MODE_MULTIPLY:
+                returnedColor.r = MAX(MIN(static_cast<uint8_t>(returnedColor.r * modifier), 255), 0);
+                returnedColor.g = MAX(MIN(static_cast<uint8_t>(returnedColor.g * modifier), 255), 0);
+                returnedColor.b = MAX(MIN(static_cast<uint8_t>(returnedColor.b * modifier), 255), 0);
+                break;
+            case COSMETIC_COLOR_MODE_DIVIDE:
+                if (modifier != 0) {
+                    returnedColor.r = MAX(MIN(static_cast<uint8_t>(returnedColor.r / modifier), 255), 0);
+                    returnedColor.g = MAX(MIN(static_cast<uint8_t>(returnedColor.g / modifier), 255), 0);
+                    returnedColor.b = MAX(MIN(static_cast<uint8_t>(returnedColor.b / modifier), 255), 0);
+                }
+                break;
+            case COSMETIC_COLOR_MODE_ADD:
+                returnedColor.r = MAX(MIN(static_cast<uint8_t>(returnedColor.r + modifier), 255), 0);
+                returnedColor.g = MAX(MIN(static_cast<uint8_t>(returnedColor.g + modifier), 255), 0);
+                returnedColor.b = MAX(MIN(static_cast<uint8_t>(returnedColor.b + modifier), 255), 0);
+                break;
+            case COSMETIC_COLOR_MODE_SUBTRACT:
+                returnedColor.r = MAX(MIN(static_cast<uint8_t>(returnedColor.r - modifier), 255), 0);
+                returnedColor.g = MAX(MIN(static_cast<uint8_t>(returnedColor.g - modifier), 255), 0);
+                returnedColor.b = MAX(MIN(static_cast<uint8_t>(returnedColor.b - modifier), 255), 0);
+                break;
+            case COSMETIC_COLOR_MODE_ROTATE: {
+                // Rotate hue by modifier degrees (0-360). Example: green (0,200,0) + 120 => blue (0,0,200)
+                float rf = returnedColor.r / 255.0f;
+                float gf = returnedColor.g / 255.0f;
+                float bf = returnedColor.b / 255.0f;
+
+                float maxC = std::max({ rf, gf, bf });
+                float minC = std::min({ rf, gf, bf });
+                float delta = maxC - minC;
+
+                float h = 0.0f, s = 0.0f, v = maxC;
+                if (delta > 0.0f) {
+                    s = delta / maxC;
+                    if (maxC == rf) {
+                        h = 60.0f * fmodf((gf - bf) / delta, 6.0f);
+                    } else if (maxC == gf) {
+                        h = 60.0f * ((bf - rf) / delta + 2.0f);
+                    } else {
+                        h = 60.0f * ((rf - gf) / delta + 4.0f);
+                    }
+                    if (h < 0.0f)
+                        h += 360.0f;
+                }
+
+                h = fmodf(h + modifier, 360.0f);
+                if (h < 0.0f)
+                    h += 360.0f;
+
+                float c = v * s;
+                float x = c * (1.0f - fabsf(fmodf(h / 60.0f, 2.0f) - 1.0f));
+                float m = v - c;
+                float r1 = 0.0f, g1 = 0.0f, b1 = 0.0f;
+                if (h < 60.0f) {
+                    r1 = c;
+                    g1 = x;
+                    b1 = 0;
+                } else if (h < 120.0f) {
+                    r1 = x;
+                    g1 = c;
+                    b1 = 0;
+                } else if (h < 180.0f) {
+                    r1 = 0;
+                    g1 = c;
+                    b1 = x;
+                } else if (h < 240.0f) {
+                    r1 = 0;
+                    g1 = x;
+                    b1 = c;
+                } else if (h < 300.0f) {
+                    r1 = x;
+                    g1 = 0;
+                    b1 = c;
+                } else {
+                    r1 = c;
+                    g1 = 0;
+                    b1 = x;
+                }
+
+                returnedColor.r = static_cast<uint8_t>((r1 + m) * 255.0f);
+                returnedColor.g = static_cast<uint8_t>((g1 + m) * 255.0f);
+                returnedColor.b = static_cast<uint8_t>((b1 + m) * 255.0f);
+                break;
+            }
+        }
     } else {
         returnedColor.r = r;
         returnedColor.g = g;
@@ -289,14 +478,27 @@ extern "C" Color_RGBA8 CosmeticEditor_GetChangedColor(u8 r, u8 g, u8 b, u8 a, u8
     return returnedColor;
 }
 
-extern "C" void gDPSetEnvColorOverride(Gfx* pkt, u8 r, u8 g, u8 b, u8 a, u8 elementId) {
-    Color_RGBA8 setColor = CosmeticEditor_GetChangedColor(r, g, b, a, elementId);
+extern "C" Color_RGBA8 CosmeticEditor_GetChangedColor(u8 r, u8 g, u8 b, u8 a, u8 elementId) {
+    return CosmeticEditor_GetChangedColorEx(r, g, b, a, elementId, COSMETIC_COLOR_MODE_DEFAULT, 0.0f);
+}
+
+extern "C" void gDPSetEnvColorOverrideEx(Gfx* pkt, u8 r, u8 g, u8 b, u8 a, u8 elementId, u8 mode, f32 modifier) {
+    Color_RGBA8 setColor = CosmeticEditor_GetChangedColorEx(r, g, b, a, elementId, mode, modifier);
     gDPSetEnvColor(pkt, setColor.r, setColor.g, setColor.b, a);
 }
 
-extern "C" void gDPSetPrimColorOverride(Gfx* pkt, u8 m, u8 l, u8 r, u8 g, u8 b, u8 a, u8 elementId) {
-    Color_RGBA8 setColor = CosmeticEditor_GetChangedColor(r, g, b, a, elementId);
+extern "C" void gDPSetEnvColorOverride(Gfx* pkt, u8 r, u8 g, u8 b, u8 a, u8 elementId) {
+    return gDPSetEnvColorOverrideEx(pkt, r, g, b, a, elementId, COSMETIC_COLOR_MODE_DEFAULT, 0.0f);
+}
+
+extern "C" void gDPSetPrimColorOverrideEx(Gfx* pkt, u8 m, u8 l, u8 r, u8 g, u8 b, u8 a, u8 elementId, u8 mode,
+                                          f32 modifier) {
+    Color_RGBA8 setColor = CosmeticEditor_GetChangedColorEx(r, g, b, a, elementId, mode, modifier);
     gDPSetPrimColor(pkt, m, l, setColor.r, setColor.g, setColor.b, a);
+}
+
+extern "C" void gDPSetPrimColorOverride(Gfx* pkt, u8 m, u8 l, u8 r, u8 g, u8 b, u8 a, u8 elementId) {
+    return gDPSetPrimColorOverrideEx(pkt, m, l, r, g, b, a, elementId, COSMETIC_COLOR_MODE_DEFAULT, 0.0f);
 }
 
 extern "C" Gfx* Gfx_DrawTexRectIA8_DropShadowOverride(Gfx* pkt, TexturePtr texture, s16 textureWidth, s16 textureHeight,
@@ -767,3 +969,149 @@ static RegisterShipInitFunc zoraTunicPatch(
         gfx_texture_cache_clear();
     },
     { cosmeticEditorElements[COSMETIC_ELEMENT_ZORA_TUNIC].colorChangedCvar });
+
+// COSMETIC_ELEMENT_HEARTS
+
+Gfx heartsColorDL[] = {
+    gsDPSetPrimColor(0, 0, 0, 0, 0, 0),
+    gsDPSetGrayscaleColor(0, 0, 0, 0),
+    gsSPEndDisplayList(),
+};
+
+Gfx heartsEnvColorDL[] = {
+    gsDPSetEnvColor(0, 0, 0, 0),
+    gsSPEndDisplayList(),
+};
+
+static RegisterShipInitFunc heartsColorDLPatch(
+    []() {
+        if (CVarGetInteger(cosmeticEditorElements[COSMETIC_ELEMENT_HEARTS].colorChangedCvar, 0)) {
+            ResourceMgr_PatchGfxByName("objects/object_gi_heart/gGiRecoveryHeartDL", "enableGrayscale", 2,
+                                       gsSPDisplayList(enableGrayscale));
+            ResourceMgr_PatchGfxByName("objects/object_gi_heart/gGiRecoveryHeartDL", "setPrim", 5,
+                                       gsSPDisplayList(heartsColorDL));
+            ResourceMgr_PatchGfxByName("objects/object_gi_heart/gGiRecoveryHeartDL", "disableGrayscale", 36,
+                                       gsSPBranchList(disableGrayscale));
+            ResourceMgr_PatchGfxByName("objects/gameplay_keep/gHeartPieceInteriorDL", "setPrim", 56,
+                                       gsSPDisplayList(heartsColorDL));
+            ResourceMgr_PatchGfxByName("objects/object_gi_hearts/gGiHeartPieceDL", "setPrim", 2,
+                                       gsSPDisplayList(heartsColorDL));
+            ResourceMgr_PatchGfxByName("objects/object_gi_hearts/gGiHeartPieceDL", "setEnv", 6,
+                                       gsSPDisplayList(heartsEnvColorDL));
+            ResourceMgr_PatchGfxByName("objects/object_gi_hearts/gGiHeartContainerDL", "setPrim", 2,
+                                       gsSPDisplayList(heartsColorDL));
+            ResourceMgr_PatchGfxByName("objects/object_gi_hearts/gGiHeartContainerDL", "setEnv", 6,
+                                       gsSPDisplayList(heartsEnvColorDL));
+            ResourceMgr_PatchGfxByName("objects/object_gi_bottle_red/gGiRedPotionBottleDL", "setPrim", 5,
+                                       gsSPDisplayList(heartsColorDL));
+            ResourceMgr_PatchGfxByName("objects/object_gi_bottle_red/gGiRedPotionBottleDL", "setEnv", 6,
+                                       gsSPDisplayList(heartsEnvColorDL));
+            ResourceMgr_PatchGfxByName("objects/object_gi_liquid/gGiPotionContainerRedPotColorDL", "setPrim", 3,
+                                       gsSPDisplayList(heartsColorDL));
+            ResourceMgr_PatchGfxByName("objects/object_gi_liquid/gGiPotionContainerRedPotColorDL", "setEnv", 4,
+                                       gsSPDisplayList(heartsEnvColorDL));
+            ResourceMgr_PatchGfxByName("objects/object_gi_liquid/gGiPotionContainerRedPatternColorDL", "setPrim", 3,
+                                       gsSPDisplayList(heartsColorDL));
+            ResourceMgr_PatchGfxByName("objects/object_gi_liquid/gGiPotionContainerRedPatternColorDL", "setEnv", 4,
+                                       gsSPDisplayList(heartsEnvColorDL));
+
+            Color_RGBA8 changedColor = CVarGetColor(cosmeticEditorElements[COSMETIC_ELEMENT_HEARTS].colorCvar, {});
+            ShadeRGBA16NewBase("objects/gameplay_keep/gDropRecoveryHeartTex", 0, 1023, changedColor, MODE_AVG);
+        } else {
+            ResourceMgr_UnpatchGfxByName("objects/object_gi_heart/gGiRecoveryHeartDL", "enableGrayscale");
+            ResourceMgr_UnpatchGfxByName("objects/object_gi_heart/gGiRecoveryHeartDL", "setPrim");
+            ResourceMgr_UnpatchGfxByName("objects/object_gi_heart/gGiRecoveryHeartDL", "disableGrayscale");
+            ResourceMgr_UnpatchGfxByName("objects/gameplay_keep/gHeartPieceInteriorDL", "setPrim");
+            ResourceMgr_UnpatchGfxByName("objects/object_gi_hearts/gGiHeartPieceDL", "setPrim");
+            ResourceMgr_UnpatchGfxByName("objects/object_gi_hearts/gGiHeartPieceDL", "setEnv");
+            ResourceMgr_UnpatchGfxByName("objects/object_gi_hearts/gGiHeartContainerDL", "setPrim");
+            ResourceMgr_UnpatchGfxByName("objects/object_gi_hearts/gGiHeartContainerDL", "setEnv");
+            ResourceMgr_UnpatchGfxByName("objects/object_gi_bottle_red/gGiRedPotionBottleDL", "setPrim");
+            ResourceMgr_UnpatchGfxByName("objects/object_gi_bottle_red/gGiRedPotionBottleDL", "setEnv");
+            ResourceMgr_UnpatchGfxByName("objects/object_gi_liquid/gGiPotionContainerRedPotColorDL", "setPrim");
+            ResourceMgr_UnpatchGfxByName("objects/object_gi_liquid/gGiPotionContainerRedPotColorDL", "setEnv");
+            ResourceMgr_UnpatchGfxByName("objects/object_gi_liquid/gGiPotionContainerRedPatternColorDL", "setPrim");
+            ResourceMgr_UnpatchGfxByName("objects/object_gi_liquid/gGiPotionContainerRedPatternColorDL", "setEnv");
+
+            ShadeRGBA16Revert("objects/gameplay_keep/gDropRecoveryHeartTex", 0, 1023);
+        }
+        gfx_texture_cache_clear();
+    },
+    { cosmeticEditorElements[COSMETIC_ELEMENT_HEARTS].colorChangedCvar });
+
+static RegisterShipInitFunc heartsColorDLUpdate(
+    []() {
+        Color_RGBA8 primColor = CosmeticEditor_GetChangedColor(0, 0, 0, 0, COSMETIC_ELEMENT_HEARTS);
+        heartsColorDL[0] = gsDPSetPrimColor(0, 0, primColor.r, primColor.g, primColor.b, 255);
+        heartsColorDL[1] = gsDPSetGrayscaleColor(primColor.r, primColor.g, primColor.b, 255);
+
+        Color_RGBA8 envColor =
+            CosmeticEditor_GetChangedColorEx(0, 0, 0, 0, COSMETIC_ELEMENT_HEARTS, COSMETIC_COLOR_MODE_DIVIDE, 2.0f);
+        heartsEnvColorDL[0] = gsDPSetEnvColor(envColor.r, envColor.g, envColor.b, 255);
+    },
+    { cosmeticEditorElements[COSMETIC_ELEMENT_HEARTS].colorCvar });
+
+// COSMETIC_ELEMENT_MAGIC
+
+Gfx magicColorDL[] = {
+    gsDPSetPrimColor(0, 0, 0, 0, 0, 0),
+    gsDPSetGrayscaleColor(0, 0, 0, 0),
+    gsSPEndDisplayList(),
+};
+
+Gfx magicEnvColorDL[] = {
+    gsDPSetEnvColor(0, 0, 0, 0),
+    gsSPEndDisplayList(),
+};
+
+static RegisterShipInitFunc magicColorDLPatch(
+    []() {
+        if (CVarGetInteger(cosmeticEditorElements[COSMETIC_ELEMENT_MAGIC].colorChangedCvar, 0)) {
+            ResourceMgr_PatchGfxByName("objects/object_gi_magicpot/gGiMagicJarLargeDL", "setPrim", 31,
+                                       gsSPDisplayList(magicColorDL));
+            ResourceMgr_PatchGfxByName("objects/object_gi_magicpot/gGiMagicJarLargeDL", "setEnv", 32,
+                                       gsSPDisplayList(magicEnvColorDL));
+            ResourceMgr_PatchGfxByName("objects/object_gi_magicpot/gGiMagicJarSmallDL", "setPrim", 31,
+                                       gsSPDisplayList(magicColorDL));
+            ResourceMgr_PatchGfxByName("objects/object_gi_magicpot/gGiMagicJarSmallDL", "setEnv", 32,
+                                       gsSPDisplayList(magicEnvColorDL));
+            ResourceMgr_PatchGfxByName("objects/object_gi_liquid/gGiPotionContainerGreenPotColorDL", "setPrim", 3,
+                                       gsSPDisplayList(magicColorDL));
+            ResourceMgr_PatchGfxByName("objects/object_gi_liquid/gGiPotionContainerGreenPotColorDL", "setEnv", 4,
+                                       gsSPDisplayList(magicEnvColorDL));
+            ResourceMgr_PatchGfxByName("objects/object_gi_liquid/gGiPotionContainerGreenPatternColorDL", "setPrim", 3,
+                                       gsSPDisplayList(magicColorDL));
+            ResourceMgr_PatchGfxByName("objects/object_gi_liquid/gGiPotionContainerGreenPatternColorDL", "setEnv", 4,
+                                       gsSPDisplayList(magicEnvColorDL));
+
+            Color_RGBA8 changedColor = CVarGetColor(cosmeticEditorElements[COSMETIC_ELEMENT_MAGIC].colorCvar, {});
+            ShadeRGBA16NewBase("objects/gameplay_keep/gDropMagicSmallTex", 0, 1023, changedColor, MODE_AVG);
+            ShadeRGBA16NewBase("objects/gameplay_keep/gDropMagicLargeTex", 0, 1023, changedColor, MODE_AVG);
+        } else {
+            ResourceMgr_UnpatchGfxByName("objects/object_gi_magicpot/gGiMagicJarLargeDL", "setPrim");
+            ResourceMgr_UnpatchGfxByName("objects/object_gi_magicpot/gGiMagicJarLargeDL", "setEnv");
+            ResourceMgr_UnpatchGfxByName("objects/object_gi_magicpot/gGiMagicJarSmallDL", "setPrim");
+            ResourceMgr_UnpatchGfxByName("objects/object_gi_magicpot/gGiMagicJarSmallDL", "setEnv");
+            ResourceMgr_UnpatchGfxByName("objects/object_gi_liquid/gGiPotionContainerGreenPotColorDL", "setPrim");
+            ResourceMgr_UnpatchGfxByName("objects/object_gi_liquid/gGiPotionContainerGreenPotColorDL", "setEnv");
+            ResourceMgr_UnpatchGfxByName("objects/object_gi_liquid/gGiPotionContainerGreenPatternColorDL", "setPrim");
+            ResourceMgr_UnpatchGfxByName("objects/object_gi_liquid/gGiPotionContainerGreenPatternColorDL", "setEnv");
+
+            ShadeRGBA16Revert("objects/gameplay_keep/gDropMagicSmallTex", 0, 1023);
+            ShadeRGBA16Revert("objects/gameplay_keep/gDropMagicLargeTex", 0, 1023);
+        }
+        gfx_texture_cache_clear();
+    },
+    { cosmeticEditorElements[COSMETIC_ELEMENT_MAGIC].colorChangedCvar });
+
+static RegisterShipInitFunc magicColorDLUpdate(
+    []() {
+        Color_RGBA8 primColor = CosmeticEditor_GetChangedColor(0, 0, 0, 0, COSMETIC_ELEMENT_MAGIC);
+        magicColorDL[0] = gsDPSetPrimColor(0, 0, primColor.r, primColor.g, primColor.b, 255);
+        magicColorDL[1] = gsDPSetGrayscaleColor(primColor.r, primColor.g, primColor.b, 255);
+
+        Color_RGBA8 envColor =
+            CosmeticEditor_GetChangedColorEx(0, 0, 0, 0, COSMETIC_ELEMENT_MAGIC, COSMETIC_COLOR_MODE_DIVIDE, 2.0f);
+        magicEnvColorDL[0] = gsDPSetEnvColor(envColor.r, envColor.g, envColor.b, 255);
+    },
+    { cosmeticEditorElements[COSMETIC_ELEMENT_MAGIC].colorCvar });

@@ -5642,20 +5642,19 @@ void Magic_DrawMeter(PlayState* play) {
         gDPSetEnvColor(OVERLAY_DISP++, 100, 50, 50, 255);
 
         HudEditor_SetActiveElement(HUD_EDITOR_ELEMENT_MAGIC_METER);
-        OVERLAY_DISP = Gfx_DrawTexRectIA8_DropShadowOverride(OVERLAY_DISP, gMagicMeterEndTex, 8, 16, 18, magicBarY, 8,
-                                                             16, 1 << 10, 1 << 10, sMagicMeterOutlinePrimRed,
-                                                             sMagicMeterOutlinePrimGreen, sMagicMeterOutlinePrimBlue,
-                                                             interfaceCtx->magicAlpha, COSMETIC_ELEMENT_MAGIC_BORDER);
+        OVERLAY_DISP = Gfx_DrawTexRectIA8_DropShadow(
+            OVERLAY_DISP, gMagicMeterEndTex, 8, 16, 18, magicBarY, 8, 16, 1 << 10, 1 << 10, sMagicMeterOutlinePrimRed,
+            sMagicMeterOutlinePrimGreen, sMagicMeterOutlinePrimBlue, interfaceCtx->magicAlpha);
         HudEditor_SetActiveElement(HUD_EDITOR_ELEMENT_MAGIC_METER);
-        OVERLAY_DISP = Gfx_DrawTexRectIA8_DropShadowOverride(
-            OVERLAY_DISP, gMagicMeterMidTex, 24, 16, 26, magicBarY, ((void)0, gSaveContext.magicCapacity), 16, 1 << 10,
-            1 << 10, sMagicMeterOutlinePrimRed, sMagicMeterOutlinePrimGreen, sMagicMeterOutlinePrimBlue,
-            interfaceCtx->magicAlpha, COSMETIC_ELEMENT_MAGIC_BORDER);
+        OVERLAY_DISP = Gfx_DrawTexRectIA8_DropShadow(OVERLAY_DISP, gMagicMeterMidTex, 24, 16, 26, magicBarY,
+                                                     ((void)0, gSaveContext.magicCapacity), 16, 1 << 10, 1 << 10,
+                                                     sMagicMeterOutlinePrimRed, sMagicMeterOutlinePrimGreen,
+                                                     sMagicMeterOutlinePrimBlue, interfaceCtx->magicAlpha);
         HudEditor_SetActiveElement(HUD_EDITOR_ELEMENT_MAGIC_METER);
-        OVERLAY_DISP = Gfx_DrawTexRectIA8_DropShadowOffsetOverride(
+        OVERLAY_DISP = Gfx_DrawTexRectIA8_DropShadowOffset(
             OVERLAY_DISP, gMagicMeterEndTex, 8, 16, ((void)0, gSaveContext.magicCapacity) + 26, magicBarY, 8, 16,
             1 << 10, 1 << 10, sMagicMeterOutlinePrimRed, sMagicMeterOutlinePrimGreen, sMagicMeterOutlinePrimBlue,
-            interfaceCtx->magicAlpha, 3, 0x100, COSMETIC_ELEMENT_MAGIC_BORDER);
+            interfaceCtx->magicAlpha, 3, 0x100);
 
         gDPPipeSync(OVERLAY_DISP++);
         gDPSetCombineLERP(OVERLAY_DISP++, PRIMITIVE, ENVIRONMENT, TEXEL0, ENVIRONMENT, 0, 0, 0, PRIMITIVE, PRIMITIVE,
@@ -5664,8 +5663,8 @@ void Magic_DrawMeter(PlayState* play) {
 
         if (gSaveContext.magicState == MAGIC_STATE_METER_FLASH_2) {
             // Yellow part of the meter indicating the amount of magic to be subtracted
-            gDPSetPrimColorOverride(OVERLAY_DISP++, 0, 0, 250, 250, 0, interfaceCtx->magicAlpha,
-                                    COSMETIC_ELEMENT_MAGIC_CONSUMED);
+            gDPSetPrimColorOverrideEx(OVERLAY_DISP++, 0, 0, 250, 250, 0, interfaceCtx->magicAlpha,
+                                      COSMETIC_ELEMENT_MAGIC, COSMETIC_COLOR_MODE_ROTATE, -60.0f);
             gDPLoadTextureBlock_4b(OVERLAY_DISP++, gMagicMeterFillTex, G_IM_FMT_I, 16, 16, 0, G_TX_NOMIRROR | G_TX_WRAP,
                                    G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
 
@@ -5702,12 +5701,12 @@ void Magic_DrawMeter(PlayState* play) {
             gDPPipeSync(OVERLAY_DISP++);
             if (CHECK_WEEKEVENTREG(WEEKEVENTREG_DRANK_CHATEAU_ROMANI)) {
                 // Blue magic
-                gDPSetPrimColorOverride(OVERLAY_DISP++, 0, 0, 0, 0, 200, interfaceCtx->magicAlpha,
-                                        COSMETIC_ELEMENT_MAGIC_CHATEAU);
+                gDPSetPrimColorOverrideEx(OVERLAY_DISP++, 0, 0, 0, 0, 200, interfaceCtx->magicAlpha,
+                                          COSMETIC_ELEMENT_MAGIC, COSMETIC_COLOR_MODE_ROTATE, 120.0f);
             } else {
                 // Green magic (default)
                 gDPSetPrimColorOverride(OVERLAY_DISP++, 0, 0, 0, 200, 0, interfaceCtx->magicAlpha,
-                                        COSMETIC_ELEMENT_MAGIC_NORMAL);
+                                        COSMETIC_ELEMENT_MAGIC);
             }
 
             // #region 2S2H [Cosmetic] Hud Editor
@@ -5744,12 +5743,12 @@ void Magic_DrawMeter(PlayState* play) {
             // Fill the whole meter with the normal magic color
             if (CHECK_WEEKEVENTREG(WEEKEVENTREG_DRANK_CHATEAU_ROMANI)) {
                 // Blue magic
-                gDPSetPrimColorOverride(OVERLAY_DISP++, 0, 0, 0, 0, 200, interfaceCtx->magicAlpha,
-                                        COSMETIC_ELEMENT_MAGIC_CHATEAU);
+                gDPSetPrimColorOverrideEx(OVERLAY_DISP++, 0, 0, 0, 0, 200, interfaceCtx->magicAlpha,
+                                          COSMETIC_ELEMENT_MAGIC, COSMETIC_COLOR_MODE_ROTATE, 120.0f);
             } else {
                 // Green magic (default)
                 gDPSetPrimColorOverride(OVERLAY_DISP++, 0, 0, 0, 200, 0, interfaceCtx->magicAlpha,
-                                        COSMETIC_ELEMENT_MAGIC_NORMAL);
+                                        COSMETIC_ELEMENT_MAGIC);
             }
 
             gDPLoadTextureBlock_4b(OVERLAY_DISP++, gMagicMeterFillTex, G_IM_FMT_I, 16, 16, 0, G_TX_NOMIRROR | G_TX_WRAP,
@@ -6056,11 +6055,14 @@ void Interface_DrawItemButtons(PlayState* play) {
     for (temp = EQUIP_SLOT_C_LEFT; temp <= EQUIP_SLOT_C_RIGHT; temp++) {
         if (GET_CUR_FORM_BTN_ITEM(temp) > 0xF0) {
             if (temp == EQUIP_SLOT_C_LEFT) {
-                gDPSetPrimColor(OVERLAY_DISP++, 0, 0, 255, 240, 0, interfaceCtx->cLeftAlpha);
+                gDPSetPrimColorOverride(OVERLAY_DISP++, 0, 0, 255, 240, 0, interfaceCtx->cLeftAlpha,
+                                        COSMETIC_ELEMENT_C_LEFT_BUTTON);
             } else if (temp == EQUIP_SLOT_C_DOWN) {
-                gDPSetPrimColor(OVERLAY_DISP++, 0, 0, 255, 240, 0, interfaceCtx->cDownAlpha);
+                gDPSetPrimColorOverride(OVERLAY_DISP++, 0, 0, 255, 240, 0, interfaceCtx->cDownAlpha,
+                                        COSMETIC_ELEMENT_C_DOWN_BUTTON);
             } else { // EQUIP_SLOT_C_RIGHT
-                gDPSetPrimColor(OVERLAY_DISP++, 0, 0, 255, 240, 0, interfaceCtx->cRightAlpha);
+                gDPSetPrimColorOverride(OVERLAY_DISP++, 0, 0, 255, 240, 0, interfaceCtx->cRightAlpha,
+                                        COSMETIC_ELEMENT_C_RIGHT_BUTTON);
             }
             HudEditor_SetActiveElement(temp);
             OVERLAY_DISP =
