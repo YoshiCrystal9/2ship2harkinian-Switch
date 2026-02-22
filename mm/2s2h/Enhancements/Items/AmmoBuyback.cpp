@@ -87,7 +87,7 @@ static const char* GetNameForDialogue(ItemId itemId) {
 
 static s16 GetSalePrice(ItemId itemId, s16 count) {
     s16 totalPrice = count * GetPricePerUnit(itemId);
-    if (CVAR == AMMO_BUYBACK_HALF_PRICE) {
+    if (CVAR == AMMO_BUYBACK_HALF_PRICE && itemId != ITEM_BOW) {
         totalPrice = (totalPrice + 1) / 2;
     }
     return totalPrice;

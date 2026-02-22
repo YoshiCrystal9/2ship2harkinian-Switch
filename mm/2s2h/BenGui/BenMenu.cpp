@@ -1086,7 +1086,8 @@ void BenMenu::AddEnhancements() {
                               "to the Curiosity Shop owner for Rupees.\n"
                               "-Vanilla: Ammo items cannot be sold\n"
                               "-Full Price: Sell at full value\n"
-                              "-Half Price: Sell at half value (rounded up)")
+                              "-Half Price: Sell at half value (rounded up)"
+                              "Arrows will always be sold back at Full Price.")
                      .ComboVec(&ammoBuybackOptions));
     AddWidget(path, "Curiosity Shop Refills", WIDGET_CVAR_CHECKBOX)
         .CVar("gEnhancements.Shops.CuriosityShopRefills")
