@@ -123,7 +123,7 @@ nlohmann::json curatedPresetJ = R"(
                 "FierceDeitysAnywhere": 1,
                 "GoronRollingFastSpikes": 1,
                 "GoronRollingIgnoresMagic": 1,
-                "NoBlastMaskCooldown": 1,
+                "BlastMaskCooldown": 0,
                 "PersistentBunnyHood": {
                     "Enabled": 1
                 }

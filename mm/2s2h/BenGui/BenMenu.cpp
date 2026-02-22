@@ -1295,9 +1295,14 @@ void BenMenu::AddEnhancements() {
         .CVar("gEnhancements.Masks.PersistentBunnyHood.Enabled")
         .Options(CheckboxOptions().Tooltip(
             "Permanently toggle a speed boost from the bunny hood by pressing 'A' on it in the mask menu."));
-    AddWidget(path, "No Blast Mask Cooldown", WIDGET_CVAR_CHECKBOX)
-        .CVar("gEnhancements.Masks.NoBlastMaskCooldown")
-        .Options(CheckboxOptions().Tooltip("Eliminates the Cooldown between Blast Mask usage."));
+    AddWidget(path, "Blast Mask Cooldown", WIDGET_CVAR_SLIDER_FLOAT)
+        .CVar("gEnhancements.Masks.BlastMaskCooldown")
+        .Options(FloatSliderOptions()
+                     .Tooltip("Customize the Cooldown between Blast Mask usage. Default is 15.5 seconds.")
+                     .Min(0.0f)
+                     .Max(15.5f)
+                     .Format("%.1f seconds")
+                     .DefaultValue(15.5f));
     AddWidget(path, "Goron Rolling Ignores Magic", WIDGET_CVAR_CHECKBOX)
         .CVar("gEnhancements.Masks.GoronRollingIgnoresMagic")
         .Options(CheckboxOptions().Tooltip(
