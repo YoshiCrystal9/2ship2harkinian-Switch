@@ -354,7 +354,7 @@ static RegisterShipInitFunc initFunc([]() {
             CHECK(RC_SOUTHERN_SWAMP_FROG, HAS_ITEM(ITEM_MASK_DON_GERO)),
             CHECK(RC_SOUTHERN_SWAMP_FREESTANDING_RUPEE_01, CAN_BE_DEKU || CAN_BE_ZORA),
             CHECK(RC_SOUTHERN_SWAMP_FREESTANDING_RUPEE_02, CAN_BE_DEKU || CAN_BE_ZORA),
-            CHECK(RC_ENEMY_DROP_OCTOROK, CanKillEnemy(ACTOR_EN_OKUTA) && CAN_TRAVERSE_WAIST_DEEP_WATER),
+            CHECK(RC_ENEMY_DROP_OCTOROK, CanKillEnemy(ACTOR_EN_OKUTA) && (CAN_USE_ABILITY(SWIM) || CAN_BE_ZORA || CAN_BE_GORON)),
         },
         .connections = {
             CONNECTION(RR_SOUTHERN_SWAMP_SOUTH, CanGetPastBigOctoWithoutBoat()),
@@ -586,7 +586,7 @@ static RegisterShipInitFunc initFunc([]() {
             CHECK(RC_WOODS_OF_MYSTERY_GRASS_21, SECOND_DAY()),
             CHECK(RC_WOODS_OF_MYSTERY_GRASS_22, FINAL_DAY()),
             CHECK(RC_WOODS_OF_MYSTERY_GRASS_23, FINAL_DAY()),
-            CHECK(RC_ENEMY_DROP_SNAPPER, CAN_BE_DEKU || CanKillEnemy(ACTOR_EN_KAME)),
+            CHECK(RC_ENEMY_DROP_SNAPPER, CAN_BE_DEKU && CanKillEnemy(ACTOR_EN_KAME)),
         },
         .exits = { //     TO                                         FROM
             EXIT(ENTRANCE(SOUTHERN_SWAMP_POISONED, 7),      ENTRANCE(WOODS_OF_MYSTERY, 0), true),

@@ -723,8 +723,6 @@ inline bool CanKillEnemy(ActorId EnemyId) {
             return (CAN_BE_ZORA && HAS_MAGIC);
         case ACTOR_EN_KAME: // Snapper (non Gekko Miniboss)
             return (CAN_USE_EXPLOSIVE || CAN_BE_GORON);
-        case ACTOR_EN_SB: // Shellblade
-            return (CAN_BE_ZORA && HAS_MAGIC);
         case ACTOR_EN_OKUTA: // Octorok
         case ACTOR_EN_EGOL:  // Eyegore
             return (CAN_USE_PROJECTILE);
@@ -738,7 +736,8 @@ inline bool CanKillEnemy(ActorId EnemyId) {
                     HAS_ITEM(ITEM_DEKU_STICK) || HAS_ITEM(ITEM_HOOKSHOT));
         case ACTOR_EN_PR:  // Desbreko
         case ACTOR_EN_PR2: // Skull fish
-            return (CAN_BE_ZORA && HAS_MAGIC);
+        case ACTOR_EN_SB:  // Shellblade
+            return (CAN_BE_ZORA && HAS_MAGIC && CAN_USE_ABILITY(SWIM));
         case ACTOR_BOSS_05: // Bio Deku Baba
             return CAN_BE_ZORA && CAN_USE_ABILITY(SWIM);
         case ACTOR_EN_BEE: // Giant Bee
