@@ -258,19 +258,17 @@ void ArrowCycleMain() {
         return;
     }
 
-    if (IsAimingBow(player) && CHECK_BTN_ANY(input->press.button, BTN_R)) {
+    if (IsAimingBow(player) && CHECK_BTN_ANY(input->press.button, BTN_R) && player->heldActor != NULL &&
+        player->heldActor->id == ACTOR_EN_ARROW) {
         if (IsHoldingMagicBow(player) && gSaveContext.magicState != MAGIC_STATE_IDLE && player->heldActor == NULL) {
             Audio_PlaySfx(NA_SE_SY_ERROR);
             return;
         }
+        EnArrow* heldArrow = (EnArrow*)player->heldActor;
 
-        if (player->heldActor != NULL && player->heldActor->id == ACTOR_EN_ARROW) {
-            EnArrow* heldArrow = (EnArrow*)player->heldActor;
-
-            // If the held arrow itself is magical, then we should "restore" the consumed magic upon cycling
-            if (ARROW_IS_MAGICAL(heldArrow->actor.params)) {
-                Magic_Add(gPlayState, sMagicArrowCosts[ARROW_GET_MAGIC_FROM_TYPE(heldArrow->actor.params)]);
-            }
+        // If the held arrow itself is magical, then we should "restore" the consumed magic upon cycling
+        if (ARROW_IS_MAGICAL(heldArrow->actor.params)) {
+            Magic_Add(gPlayState, sMagicArrowCosts[ARROW_GET_MAGIC_FROM_TYPE(heldArrow->actor.params)]);
         }
 
         CycleToNextArrow(gPlayState, player);
@@ -300,7 +298,8 @@ void RegisterArrowCycle() {
             Input* input = CONTROLLER1(&gPlayState->state);
 
             // Suppress Shield input first person cancel when aiming the bow
-            if (IsAimingBow(player) && CHECK_BTN_ANY(input->cur.button, BTN_R)) {
+            if (IsAimingBow(player) && CHECK_BTN_ANY(input->cur.button, BTN_R) && player->heldActor != NULL &&
+                player->heldActor->id == ACTOR_EN_ARROW) {
                 *should = false;
             }
         }
