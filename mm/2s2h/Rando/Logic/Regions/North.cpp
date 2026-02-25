@@ -465,7 +465,7 @@ static RegisterShipInitFunc initFunc([]() {
             CHECK(RC_ENEMY_DROP_MINI_BABA, CanKillEnemy(ACTOR_EN_KAREBABA)),
         },
         .exits = { //     TO                                         FROM
-            EXIT(ENTRANCE(PATH_TO_SNOWHEAD, 0),             ENTRANCE(GROTTOS, 25), true),
+            EXIT(ENTRANCE(PATH_TO_SNOWHEAD, 1),             ENTRANCE(GROTTOS, 25), true),
         },
     };
     Regions[RR_PATH_TO_SNOWHEAD_LOWER] = RandoRegion{ .sceneId = SCENE_14YUKIDAMANOMITI,
@@ -505,7 +505,7 @@ static RegisterShipInitFunc initFunc([]() {
         },
         .exits = { //     TO                                         FROM
             EXIT(ENTRANCE(SNOWHEAD, 0),                     ENTRANCE(PATH_TO_SNOWHEAD, 1), true),
-            EXIT(ENTRANCE(GROTTOS, 25),                     ENTRANCE(PATH_TO_SNOWHEAD, 0), CAN_USE_EXPLOSIVE),
+            EXIT(ENTRANCE(GROTTOS, 25),                     ENTRANCE(PATH_TO_SNOWHEAD, 1), CAN_USE_EXPLOSIVE),
         },
         .connections = {
             CONNECTION(RR_PATH_TO_SNOWHEAD_MIDDLE, CAN_BE_GORON && HAS_MAGIC),
