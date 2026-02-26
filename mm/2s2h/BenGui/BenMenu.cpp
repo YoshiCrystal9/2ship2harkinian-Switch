@@ -247,7 +247,7 @@ WidgetInfo& BenMenu::AddWidget(WidgetPath& pathInfo, std::string widgetName, Wid
 // clang-format on
 std::vector<std::string> contributors = {
     "ProxySaw", // "Garrett Cox", manual replacement
-    "Archez",
+    "Archez", // "Adam Bird", dupe
     "Eblo",
     "louist103",
     "balloondude2",
@@ -255,7 +255,7 @@ std::vector<std::string> contributors = {
     "inspectredc",
     "sitton76",
     "mckinlee",
-    "Patrick12115",
+    "ItsHeckinPat", // "Patrick12115", dupe
     "briaguya",
     "Malkierian",
     "PurpleHato",
@@ -276,6 +276,7 @@ std::vector<std::string> contributors = {
     "Mrlinkwii",
     "Liam Scholte",
     "Lars-Christian Selland",
+    "Jameriquiah", // "Jordyn Hardyman", dupe
     "verbes4",
     "justawayofthesamurai",
     "cplaster",
@@ -290,7 +291,6 @@ std::vector<std::string> contributors = {
     "MegaMech",
     "Louis",
     "Kenix3",
-    "Jameriquiah", // "Jordyn Hardyman", manual replacement
     "Jacob Erly",
     "Hoeloe",
     "Ghunzor",
