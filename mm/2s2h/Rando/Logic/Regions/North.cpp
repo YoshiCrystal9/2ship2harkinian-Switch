@@ -219,8 +219,8 @@ static RegisterShipInitFunc initFunc([]() {
             CHECK(RC_MOUNTAIN_VILLAGE_TUNNEL_GROTTO_GRASS_14, true),
             CHECK(RC_ENEMY_DROP_MINI_BABA, CanKillEnemy(ACTOR_EN_KAREBABA)),
         },
-        .connections = {
-            CONNECTION(RR_MOUNTAIN_VILLAGE, true), // TODO: Grotto mapping
+        .exits = { //     TO                                         FROM
+            EXIT(ENTRANCE(MOUNTAIN_VILLAGE_WINTER, 0),      ENTRANCE(GROTTOS, 23), true),
         },
     };
     Regions[RR_MOUNTAIN_VILLAGE] = RandoRegion{ .sceneId = SCENE_10YUKIYAMANOMURA,
@@ -286,15 +286,13 @@ static RegisterShipInitFunc initFunc([]() {
             CHECK(RC_ENEMY_DROP_WOLFOS, CanKillEnemy(ACTOR_OBJ_SNOWBALL) && CanKillEnemy(ACTOR_EN_WF) && SECOND_DAY()), // Day 2 only
         },
         .exits = { //     TO                                         FROM
+            EXIT(ENTRANCE(GROTTOS, 23),                     ENTRANCE(MOUNTAIN_VILLAGE_WINTER, 0), RANDO_EVENTS[RE_CLEARED_SNOWHEAD_TEMPLE]),
             EXIT(ENTRANCE(MOUNTAIN_SMITHY, 0),              ENTRANCE(MOUNTAIN_VILLAGE_WINTER, 1), true),
             EXIT(ENTRANCE(PATH_TO_GORON_VILLAGE_WINTER, 0), ENTRANCE(MOUNTAIN_VILLAGE_WINTER, 2), true),
             // TODO: When it's spring you need goron mask or zora mask instead?
             EXIT(ENTRANCE(GORON_GRAVERYARD, 0),             ENTRANCE(MOUNTAIN_VILLAGE_WINTER, 3), HAS_ITEM(ITEM_LENS_OF_TRUTH) && HAS_MAGIC),
             EXIT(ENTRANCE(PATH_TO_SNOWHEAD, 0),             ENTRANCE(MOUNTAIN_VILLAGE_WINTER, 4), true),
             EXIT(ENTRANCE(PATH_TO_MOUNTAIN_VILLAGE, 1),     ENTRANCE(MOUNTAIN_VILLAGE_WINTER, 6), true),
-        },
-        .connections = {
-            CONNECTION(RR_MOUNTAIN_VILLAGE_TUNNEL_GROTTO, RANDO_EVENTS[RE_CLEARED_SNOWHEAD_TEMPLE]), // TODO: Grotto mapping
         },
         .oneWayEntrances = {
             ENTRANCE(MOUNTAIN_VILLAGE_WINTER, 8), // From Song of Soaring
@@ -305,7 +303,7 @@ static RegisterShipInitFunc initFunc([]() {
             CHECK(RC_TWIN_ISLANDS_FROZEN_GROTTO_CHEST, CAN_USE_EXPLOSIVE),
         },
         .exits = { //     TO                                         FROM
-            EXIT(ENTRANCE(PATH_TO_GORON_VILLAGE_WINTER, 0), ENTRANCE(GROTTOS, 5), true), // TODO: Grotto mapping
+            EXIT(ENTRANCE(PATH_TO_GORON_VILLAGE_WINTER, 0), ENTRANCE(GROTTOS, 5), true),
         },
         .events = {
             EVENT(RE_ACCESS_HOT_SPRING_WATER, true),
@@ -330,8 +328,8 @@ static RegisterShipInitFunc initFunc([]() {
             CHECK(RC_TWIN_ISLANDS_RAMP_GROTTO_GRASS_14, true),
             CHECK(RC_ENEMY_DROP_MINI_BABA, CanKillEnemy(ACTOR_EN_KAREBABA)),
         },
-        .connections = {
-            CONNECTION(RR_PATH_TO_GORON_VILLAGE, true), // TODO: Grotto mapping
+        .exits = { //     TO                                         FROM
+            EXIT(ENTRANCE(PATH_TO_GORON_VILLAGE_WINTER, 0), ENTRANCE(GROTTOS, 24), true),
         },
     };
     Regions[RR_PATH_TO_GORON_VILLAGE] = RandoRegion{ .sceneId = SCENE_17SETUGEN,
@@ -389,15 +387,13 @@ static RegisterShipInitFunc initFunc([]() {
             CHECK(RC_ENEMY_DROP_SNAPPER, CanKillEnemy(ACTOR_OBJ_SNOWBALL) && CanKillEnemy(ACTOR_EN_KAME)),
         },
         .exits = { //     TO                                     FROM
-            EXIT(ENTRANCE(GROTTOS, 5),                  ENTRANCE(PATH_TO_GORON_VILLAGE_WINTER, 0), RANDO_EVENTS[RE_CLEARED_SNOWHEAD_TEMPLE] || CAN_USE_MAGIC_ARROW(FIRE)), // TODO: Grotto mapping Hot spring
+            EXIT(ENTRANCE(GROTTOS, 5),                  ENTRANCE(PATH_TO_GORON_VILLAGE_WINTER, 0), RANDO_EVENTS[RE_CLEARED_SNOWHEAD_TEMPLE] || CAN_USE_MAGIC_ARROW(FIRE)),
+            // TODO: This can be reached in entrance rando if coming from Goron Racetrack
+            EXIT(ENTRANCE(GROTTOS, 24),                 ENTRANCE(PATH_TO_GORON_VILLAGE_WINTER, 0), CAN_USE_EXPLOSIVE && (CAN_BE_GORON || CAN_HOOK_SCARECROW)),
             EXIT(ENTRANCE(MOUNTAIN_VILLAGE_WINTER, 2),  ENTRANCE(PATH_TO_GORON_VILLAGE_WINTER, 0), true),
             EXIT(ENTRANCE(GORON_VILLAGE_WINTER, 0),     ENTRANCE(PATH_TO_GORON_VILLAGE_WINTER, 1), true),
             // This could also be opened by completing Medigoron's test without actually getting the Powder Keg as a item. Not sure what the flag for that is however.
             EXIT(ENTRANCE(GORON_RACETRACK, 0),          ENTRANCE(PATH_TO_GORON_VILLAGE_WINTER, 2), HAS_ITEM(ITEM_POWDER_KEG) && CAN_BE_GORON),
-        },
-        .connections = {
-            // TODO: This can be reached in entrance rando if coming from Goron Racetrack
-            CONNECTION(RR_PATH_TO_GORON_VILLAGE_RAMP_GROTTO, CAN_USE_EXPLOSIVE && (CAN_BE_GORON || CAN_HOOK_SCARECROW)), // TODO: Grotto mapping
         },
         .events = {
             EVENT(RE_ACCESS_PICTOGRAPH_TINGLE, HAS_ITEM(ITEM_PICTOGRAPH_BOX)),
@@ -468,8 +464,8 @@ static RegisterShipInitFunc initFunc([]() {
             CHECK(RC_PATH_TO_SNOWHEAD_GROTTO_GRASS_14, true),
             CHECK(RC_ENEMY_DROP_MINI_BABA, CanKillEnemy(ACTOR_EN_KAREBABA)),
         },
-        .connections = {
-            CONNECTION(RR_PATH_TO_SNOWHEAD_UPPER, true), // TODO: Grotto mapping
+        .exits = { //     TO                                         FROM
+            EXIT(ENTRANCE(PATH_TO_SNOWHEAD, 1),             ENTRANCE(GROTTOS, 25), true),
         },
     };
     Regions[RR_PATH_TO_SNOWHEAD_LOWER] = RandoRegion{ .sceneId = SCENE_14YUKIDAMANOMITI,
@@ -509,10 +505,10 @@ static RegisterShipInitFunc initFunc([]() {
         },
         .exits = { //     TO                                         FROM
             EXIT(ENTRANCE(SNOWHEAD, 0),                     ENTRANCE(PATH_TO_SNOWHEAD, 1), true),
+            EXIT(ENTRANCE(GROTTOS, 25),                     ENTRANCE(PATH_TO_SNOWHEAD, 1), CAN_USE_EXPLOSIVE),
         },
         .connections = {
             CONNECTION(RR_PATH_TO_SNOWHEAD_MIDDLE, CAN_BE_GORON && HAS_MAGIC),
-            CONNECTION(RR_PATH_TO_SNOWHEAD_GROTTO, CAN_USE_EXPLOSIVE), // TODO: Grotto mapping
         },
     };
     Regions[RR_SNOWHEAD_GREAT_FAIRY_FOUNTAIN] = RandoRegion{ .sceneId = SCENE_YOUSEI_IZUMI,

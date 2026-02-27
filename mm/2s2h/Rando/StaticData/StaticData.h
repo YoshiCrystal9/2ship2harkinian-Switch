@@ -33,6 +33,7 @@ extern std::array<std::string, RC_MAX> CheckNames;
 RandoStaticCheck GetCheckFromFlag(FlagType flagType, s32 flag, s16 sceneId = SCENE_MAX);
 RandoCheckId GetCheckIdFromName(const char* name);
 void PopulateCheckNames();
+std::string GetLocationNameForHint(RandoCheckId randoCheckId, bool exact);
 
 struct RandoStaticItem {
     RandoItemId randoItemId;

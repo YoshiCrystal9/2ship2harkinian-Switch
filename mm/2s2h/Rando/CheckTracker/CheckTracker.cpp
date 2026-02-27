@@ -111,6 +111,7 @@ ImVec4 trackerBG = ImVec4{ 0, 0, 0, 0.5f };
 std::map<SceneId, std::set<RandoCheckId>> sceneChecks;
 std::vector<SceneId> sortedSceneIds;
 std::unordered_map<RandoCheckId, std::string> accessLogicFuncs;
+std::unordered_map<RandoRegionId, SceneId> regionParentSceneMap;
 std::set<RandoCheckType> checkTypeFiltersAvailable;
 std::set<RandoCheckType> checkTypeFilter;
 
@@ -170,36 +171,36 @@ void DrawCheckTypeIcon(RandoCheckId randoCheckId) {
                  checkType == RCTYPE_FREESTANDING ? ImVec4(0.78f, 1, 0.39f, 1) : ImVec4(1, 1, 1, 1), tintColor);
 }
 
+static std::set<SceneId> scenesToCheckParent = {
+    SCENE_KAKUSIANA, SCENE_TAKARAYA,    SCENE_BOWLING,      SCENE_SONCHONOIE, SCENE_SYATEKI_MIZU, SCENE_YADOYA,
+    SCENE_MILK_BAR,  SCENE_AYASHIISHOP, SCENE_YOUSEI_IZUMI, SCENE_DOUJOU,     SCENE_8ITEMSHOP,    SCENE_BOMYA,
+    SCENE_POSTHOUSE, SCENE_TAKARAKUJI,  SCENE_SYATEKI_MORI, SCENE_MAP_SHOP,   SCENE_WITCH_SHOP,   SCENE_F01C,
+    SCENE_F01_B,     SCENE_OMOYA,       SCENE_GORONSHOP,    SCENE_KAJIYA,     SCENE_FISHERMAN,    SCENE_LABO,
+    SCENE_BANDROOM,  SCENE_TOUGITES,    SCENE_MUSICHOUSE,
+};
+
+SceneId GetScrollTargetScene(s32 rawSceneId) {
+    SceneId sceneId = (SceneId)Play_GetOriginalSceneId(rawSceneId);
+    if (scenesToCheckParent.contains(sceneId)) {
+        RandoRegionId regionId = Rando::Logic::GetRegionIdFromEntrance(gSaveContext.save.entrance);
+        if (regionParentSceneMap.contains(regionId)) {
+            return regionParentSceneMap[regionId];
+        }
+    }
+    return sceneId;
+}
+
 void initializeSceneChecks() {
     sceneChecks.clear();
+    regionParentSceneMap.clear();
     checkTypeFiltersAvailable.clear();
     checkTypeFiltersAvailable.insert(RCTYPE_UNKNOWN); // Always include the unknown type
 
-    for (auto& [_, randoStaticCheck] : Rando::StaticData::Checks) {
-        RandoSaveCheck& randoSaveCheck = RANDO_SAVE_CHECKS[randoStaticCheck.randoCheckId];
-        if (!randoSaveCheck.shuffled) {
-            continue;
-        }
-
-        checkTypeFiltersAvailable.insert(randoStaticCheck.randoCheckType);
-
-        // Skip Grotto Checks, they will be handled below
-        if (randoStaticCheck.sceneId == SCENE_KAKUSIANA) {
-            continue;
-        }
-
-        // Skip Enemy Drops, they will be handled below
-        if (randoStaticCheck.randoCheckType == RCTYPE_ENEMY_DROP) {
-            continue;
-        }
-
-        SceneId sceneId = (SceneId)Play_GetOriginalSceneId(randoStaticCheck.sceneId);
-        sceneChecks[sceneId].insert(randoStaticCheck.randoCheckId);
-    }
-
     for (auto& [regionId, staticRegion] : Rando::Logic::Regions) {
-        // Handle grottos separately, their checks are assigned to the connected region
-        if (staticRegion.sceneId == SCENE_KAKUSIANA) {
+        SceneId sceneId = (SceneId)Play_GetOriginalSceneId(staticRegion.sceneId);
+
+        // For some scenes we want to show them in their parent instead
+        if (scenesToCheckParent.contains(sceneId)) {
             RandoRegionId connectedRegionId = RR_MAX;
             if (regionId == RR_LONE_PEAK_SHRINE) {
                 connectedRegionId = RR_LONE_PEAK_SHRINE;
@@ -214,26 +215,17 @@ void initializeSceneChecks() {
                     continue;
                 }
             }
-            SceneId connectedSceneId = Rando::Logic::Regions[connectedRegionId].sceneId;
-            for (auto& [randoCheckId, _] : staticRegion.checks) {
-                RandoSaveCheck& randoSaveCheck = RANDO_SAVE_CHECKS[randoCheckId];
-                if (!randoSaveCheck.shuffled) {
-                    continue;
-                }
-                sceneChecks[connectedSceneId].insert(randoCheckId);
+            sceneId = Rando::Logic::Regions[connectedRegionId].sceneId;
+            regionParentSceneMap[regionId] = sceneId;
+        }
+        for (auto& [randoCheckId, _] : staticRegion.checks) {
+            RandoSaveCheck& randoSaveCheck = RANDO_SAVE_CHECKS[randoCheckId];
+            auto& randoStaticCheck = Rando::StaticData::Checks[randoCheckId];
+            if (!randoSaveCheck.shuffled) {
+                continue;
             }
-        } else {
-            // Handle enemy drop seperately, they can be in multiple regions
-            for (auto& [randoCheckId, _] : staticRegion.checks) {
-                auto& randoStaticCheck = Rando::StaticData::Checks[randoCheckId];
-                RandoSaveCheck& randoSaveCheck = RANDO_SAVE_CHECKS[randoCheckId];
-                if (!randoSaveCheck.shuffled || randoStaticCheck.randoCheckType != RCTYPE_ENEMY_DROP) {
-                    continue;
-                }
-
-                SceneId sceneId = (SceneId)Play_GetOriginalSceneId(staticRegion.sceneId);
-                sceneChecks[sceneId].insert(randoCheckId);
-            }
+            checkTypeFiltersAvailable.insert(randoStaticCheck.randoCheckType);
+            sceneChecks[sceneId].insert(randoCheckId);
         }
     }
 
@@ -356,8 +348,7 @@ void CheckTrackerDrawNonLogicalList() {
                 continue;
             }
 
-            if (CVAR_SHOW_CURRENT_SCENE && Play_GetOriginalSceneId(Rando::StaticData::Checks[checkId].sceneId) !=
-                                               Play_GetOriginalSceneId(gPlayState->sceneId)) {
+            if (CVAR_SHOW_CURRENT_SCENE && sceneId != GetScrollTargetScene(gPlayState->sceneId)) {
                 continue;
             }
 
@@ -526,7 +517,7 @@ void CheckTrackerWindow::Draw() {
         if (!sCheckTrackerFilter.IsActive()) {
             if (UIWidgets::Button(ICON_FA_ARROWS_V, UIWidgets::ButtonOptions().Size(UIWidgets::Sizes::Inline))) {
                 if (gPlayState) {
-                    sScrollToTargetScene = Play_GetOriginalSceneId(gPlayState->sceneId);
+                    sScrollToTargetScene = GetScrollTargetScene(gPlayState->sceneId);
                     sScrollToTargetEntrance = gSaveContext.save.entrance;
                 }
             }
@@ -535,7 +526,7 @@ void CheckTrackerWindow::Draw() {
             if (UIWidgets::Button(ICON_FA_TIMES, UIWidgets::ButtonOptions().Size(UIWidgets::Sizes::Inline))) {
                 sCheckTrackerFilter.Clear();
                 if (gPlayState) {
-                    sScrollToTargetScene = Play_GetOriginalSceneId(gPlayState->sceneId);
+                    sScrollToTargetScene = GetScrollTargetScene(gPlayState->sceneId);
                     sScrollToTargetEntrance = gSaveContext.save.entrance;
                 }
             }
@@ -714,7 +705,7 @@ void Init() {
     }
     GameInteractor::Instance->RegisterGameHook<GameInteractor::OnSceneInit>([](s8 sceneId, s8 spawnNum) {
         if (CVAR_SCROLL_TO_SCENE) {
-            sScrollToTargetScene = Play_GetOriginalSceneId(sceneId);
+            sScrollToTargetScene = GetScrollTargetScene(sceneId);
             sScrollToTargetEntrance = gSaveContext.save.entrance;
         }
     });

@@ -247,7 +247,7 @@ WidgetInfo& BenMenu::AddWidget(WidgetPath& pathInfo, std::string widgetName, Wid
 // clang-format on
 std::vector<std::string> contributors = {
     "ProxySaw", // "Garrett Cox", manual replacement
-    "Archez",
+    "Archez", // "Adam Bird", dupe
     "Eblo",
     "louist103",
     "balloondude2",
@@ -255,7 +255,7 @@ std::vector<std::string> contributors = {
     "inspectredc",
     "sitton76",
     "mckinlee",
-    "Patrick12115",
+    "ItsHeckinPat", // "Patrick12115", dupe
     "briaguya",
     "Malkierian",
     "PurpleHato",
@@ -276,6 +276,7 @@ std::vector<std::string> contributors = {
     "Mrlinkwii",
     "Liam Scholte",
     "Lars-Christian Selland",
+    "Jameriquiah", // "Jordyn Hardyman", dupe
     "verbes4",
     "justawayofthesamurai",
     "cplaster",
@@ -290,7 +291,6 @@ std::vector<std::string> contributors = {
     "MegaMech",
     "Louis",
     "Kenix3",
-    "Jameriquiah", // "Jordyn Hardyman", manual replacement
     "Jacob Erly",
     "Hoeloe",
     "Ghunzor",
@@ -1312,9 +1312,14 @@ void BenMenu::AddEnhancements() {
         .CVar("gEnhancements.Masks.PersistentBunnyHood.Enabled")
         .Options(CheckboxOptions().Tooltip(
             "Permanently toggle a speed boost from the bunny hood by pressing 'A' on it in the mask menu."));
-    AddWidget(path, "No Blast Mask Cooldown", WIDGET_CVAR_CHECKBOX)
-        .CVar("gEnhancements.Masks.NoBlastMaskCooldown")
-        .Options(CheckboxOptions().Tooltip("Eliminates the Cooldown between Blast Mask usage."));
+    AddWidget(path, "Blast Mask Cooldown", WIDGET_CVAR_SLIDER_FLOAT)
+        .CVar("gEnhancements.Masks.BlastMaskCooldown")
+        .Options(FloatSliderOptions()
+                     .Tooltip("Customize the Cooldown between Blast Mask usage. Default is 15.5 seconds.")
+                     .Min(0.0f)
+                     .Max(15.5f)
+                     .Format("%.1f seconds")
+                     .DefaultValue(15.5f));
     AddWidget(path, "Goron Rolling Ignores Magic", WIDGET_CVAR_CHECKBOX)
         .CVar("gEnhancements.Masks.GoronRollingIgnoresMagic")
         .Options(CheckboxOptions().Tooltip(

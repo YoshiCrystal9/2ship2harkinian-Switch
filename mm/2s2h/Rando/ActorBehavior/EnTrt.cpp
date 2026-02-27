@@ -27,17 +27,28 @@ void Rando::ActorBehavior::InitEnTrtBehavior() {
         Actor* actor = va_arg(args, Actor*);
         Player* player = GET_PLAYER(gPlayState);
 
-        if (actor->id != ACTOR_EN_TRT && actor->id != ACTOR_EN_TRT2) {
-            return;
-        }
-        if (!RANDO_SAVE_CHECKS[RC_HAGS_POTION_SHOP_KOTAKE].shuffled ||
-            RANDO_SAVE_CHECKS[RC_HAGS_POTION_SHOP_KOTAKE].cycleObtained ||
+        // Let vanilla item give continue
+        if ((actor->id != ACTOR_EN_TRT && actor->id != ACTOR_EN_TRT2) ||
+            !RANDO_SAVE_CHECKS[RC_HAGS_POTION_SHOP_KOTAKE].shuffled ||
             (*item != GI_POTION_RED_BOTTLE && *item != GI_POTION_RED)) {
             return;
         }
 
-        SET_WEEKEVENTREG(WEEKEVENTREG_RECEIVED_KOTAKE_BOTTLE);
-        SET_WEEKEVENTREG(WEEKEVENTREG_RECEIVED_RED_POTION_FOR_KOUME);
+        if (!RANDO_SAVE_CHECKS[RC_HAGS_POTION_SHOP_KOTAKE].cycleObtained) {
+            SET_WEEKEVENTREG(WEEKEVENTREG_RECEIVED_KOTAKE_BOTTLE);
+            SET_WEEKEVENTREG(WEEKEVENTREG_RECEIVED_RED_POTION_FOR_KOUME);
+        }
+
+        // In either case here, WEEKEVENTREG_RECEIVED_KOTAKE_BOTTLE will be set and trigger the rando
+        // check to be queued.
+
+        // If they have an empty bottle, force item to red potion and let vanilla item get continue
+        if (Inventory_HasEmptyBottle()) {
+            *item = GI_POTION_RED;
+            return;
+        }
+
+        // Otherwise bypass item get entirely
         *should = false;
 
         actor->parent = &player->actor;

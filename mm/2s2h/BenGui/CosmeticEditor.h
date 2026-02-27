@@ -15,7 +15,9 @@ class CosmeticEditorWindow : public Ship::GuiWindow {
 extern "C" {
 #endif //__cplusplus
 
+void gDPSetPrimColorOverrideEx(Gfx* pkt, u8 m, u8 l, u8 r, u8 g, u8 b, u8 a, u8 elementId, u8 mode, f32 modifier);
 void gDPSetPrimColorOverride(Gfx* pkt, u8 m, u8 l, u8 r, u8 g, u8 b, u8 a, u8 elementId);
+void gDPSetEnvColorOverrideEx(Gfx* pkt, u8 r, u8 g, u8 b, u8 a, u8 elementId, u8 mode, f32 modifier);
 void gDPSetEnvColorOverride(Gfx* pkt, u8 r, u8 g, u8 b, u8 a, u8 elementId);
 Gfx* Gfx_DrawTexRectIA8_DropShadowOverride(Gfx* pkt, TexturePtr texture, s16 textureWidth, s16 textureHeight,
                                            s16 rectLeft, s16 rectTop, s16 rectWidth, s16 rectHeight, u16 dsdx, u16 dtdy,
@@ -29,19 +31,12 @@ Gfx* Gfx_DrawTexRectIA8_DropShadowOffsetOverride(Gfx* pkt, TexturePtr texture, s
                                                  s16 rectLeft, s16 rectTop, s16 rectWidth, s16 rectHeight, u16 dsdx,
                                                  u16 dtdy, s16 r, s16 g, s16 b, s16 a, s32 masks, s32 rects,
                                                  u8 elementId);
+Color_RGBA8 CosmeticEditor_GetChangedColorEx(u8 r, u8 g, u8 b, u8 a, u8 elementId, u8 mode, f32 modifier);
 Color_RGBA8 CosmeticEditor_GetChangedColor(u8 r, u8 g, u8 b, u8 a, u8 elementId);
 
 typedef enum {
-    COSMETIC_ELEMENT_HEART_NORMAL,
-    COSMETIC_ELEMENT_HEART_NORMAL_BEATING,
-    COSMETIC_ELEMENT_HEART_BORDER,
-    COSMETIC_ELEMENT_HEART_DD,
-    COSMETIC_ELEMENT_HEART_DD_BEATING,
-    COSMETIC_ELEMENT_HEART_DD_BORDER,
-    COSMETIC_ELEMENT_MAGIC_NORMAL,
-    COSMETIC_ELEMENT_MAGIC_CHATEAU,
-    COSMETIC_ELEMENT_MAGIC_CONSUMED,
-    COSMETIC_ELEMENT_MAGIC_BORDER,
+    COSMETIC_ELEMENT_HEARTS,
+    COSMETIC_ELEMENT_MAGIC,
     COSMETIC_ELEMENT_SMALL_KEY,
     COSMETIC_ELEMENT_RUPEE_ICON,
     COSMETIC_ELEMENT_MINIMAP,
@@ -83,6 +78,15 @@ typedef enum {
     COSMETIC_ELEMENT_KAFEI_HAIR,
     COSMETIC_ELEMENT_MAX
 } CosmeticEditorElementID;
+
+typedef enum {
+    COSMETIC_COLOR_MODE_DEFAULT,
+    COSMETIC_COLOR_MODE_MULTIPLY,
+    COSMETIC_COLOR_MODE_DIVIDE,
+    COSMETIC_COLOR_MODE_ADD,
+    COSMETIC_COLOR_MODE_SUBTRACT,
+    COSMETIC_COLOR_MODE_ROTATE,
+} CosmeticEditorColorMode;
 
 typedef struct {
     CosmeticEditorElementID id;

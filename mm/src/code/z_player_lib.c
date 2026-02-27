@@ -772,6 +772,8 @@ ItemId Player_GetItemOnButton(PlayState* play, Player* player, EquipSlot slot) {
     if (slot == EQUIP_SLOT_B) {
         ItemId item = Inventory_GetBtnBItem(play);
 
+        GameInteractor_Should(VB_GET_ITEM_ON_BUTTON, item, slot, &item);
+
         if (item >= ITEM_FD) {
             return item;
         }
@@ -790,8 +792,6 @@ ItemId Player_GetItemOnButton(PlayState* play, Player* player, EquipSlot slot) {
             (play->interfaceCtx.bButtonPlayerDoAction == DO_ACTION_DANCE)) {
             return ITEM_F2;
         }
-
-        GameInteractor_Should(VB_GET_ITEM_ON_BUTTON, item, slot, &item);
 
         return item;
     }

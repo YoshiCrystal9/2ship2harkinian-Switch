@@ -32,7 +32,7 @@ void RegisterSkipSoTCutscenes() {
 
             // Set time appropriately if clock shuffle is enabled
             if (IS_RANDO && RANDO_SAVE_OPTIONS[RO_CLOCK_SHUFFLE]) {
-                const int earliestOwnedHalfDay = Rando::ClockItems::FindEarliestOwnedHalfDay(false);
+                const int earliestOwnedHalfDay = Rando::ClockItems::FindOwnedHalfDay(false);
                 if (earliestOwnedHalfDay != -1) {
                     bool isDayHalf = (earliestOwnedHalfDay % 2 == 0);
                     int targetDay = (earliestOwnedHalfDay / 2) + 1;

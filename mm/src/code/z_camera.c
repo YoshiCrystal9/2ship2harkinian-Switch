@@ -2722,6 +2722,13 @@ s32 Camera_Parallel1(Camera* camera) {
     s16 phi_a0;
     s32 phi_a0_2;
 
+    // #region 2S2H [Enhancement] - FixTargettingCameraSnap
+    static bool prevTargetingHeld = false;
+    bool isChargingDekuFlowerDive = !!(((Player*)camera->focalActor)->stateFlags3 & PLAYER_STATE3_100);
+    s16 timer4 = rwData->timer2 >> 5;
+    rwData->timer2 &= 0x001F;
+    // #endregion
+
     if (!RELOAD_PARAMS(camera)) {
     } else {
         CameraModeValue* values = sCameraSettings[camera->setting].cameraModes[camera->mode].values;
@@ -2785,6 +2792,9 @@ s32 Camera_Parallel1(Camera* camera) {
                 rwData->timer2 = 20;
             } else {
                 rwData->timer2 = 6;
+                // #region 2S2H [Enhancement] - FixTargettingCameraSnap
+                timer4 = 6;
+                // #endregion
             }
 
             if ((camera->focalActor == &GET_PLAYER(camera->play)->actor) && (camera->mode == CAM_MODE_CHARGE)) {
@@ -2821,15 +2831,59 @@ s32 Camera_Parallel1(Camera* camera) {
             rwData->unk_26 = 1;
             camera->animState = 1;
             sCameraInterfaceFlags = roData->interfaceFlags;
+
+            // #region 2S2H [Enhancement] - FixTargettingCameraSnap
+            prevTargetingHeld = false;
+            // #endregion
+
             break;
 
         default:
             break;
     }
 
+    // #region 2S2H [Enhancement] - FixTargettingCameraSnap
+    if (CVarGetInteger("gEnhancements.Camera.FixTargettingCameraSnap", 0)) {
+        if ((roData->interfaceFlags & (PARALLEL1_FLAG_3 | PARALLEL1_FLAG_2 | PARALLEL1_FLAG_1)) == PARALLEL1_FLAG_1) {
+            Player* player = GET_PLAYER(camera->play);
+            bool targetingHeld = Player_FriendlyLockOnOrParallel(player) || player->focusActor != NULL;
+
+            // Fix camera rotating with player if z-target gets released too fast after transition.
+            if ((targetingHeld) && (!prevTargetingHeld)) {
+                // Reset timer2 to avoid immediate rotation, if player presses, releases and presses z-target in a very
+                // short time-window.
+                rwData->timer2 = 6;
+                rwData->unk_1E = BINANG_ROT180(camera->focalActorPosRot.rot.y) + roData->unk_22;
+            }
+
+            // Maintain vanilla behavior for quitting z-target.
+            if ((timer4 == 0) && (!targetingHeld)) {
+                rwData->timer2 = 0;
+            }
+
+            // Decrease timer4 only in cases where timer2 would be decreased.
+            if ((timer4 > 0) && (rwData->timer3 <= 0)) {
+                timer4--;
+            }
+
+            prevTargetingHeld = targetingHeld;
+        }
+    }
+    // #endregion
+
     if (rwData->timer2 != 0) {
         switch (roData->interfaceFlags & (PARALLEL1_FLAG_3 | PARALLEL1_FLAG_2 | PARALLEL1_FLAG_1)) {
             case PARALLEL1_FLAG_1:
+                // #region 2S2H [Enhancement] - FixTargettingCameraSnap
+                if (CVarGetInteger("gEnhancements.Camera.FixTargettingCameraSnap", 0)) {
+                    if (isChargingDekuFlowerDive) {
+                        rwData->unk_1E = BINANG_ROT180(camera->focalActorPosRot.rot.y) + roData->unk_22;
+                    }
+                    rwData->unk_20 = roData->unk_20;
+                    break;
+                }
+                // fallthrough
+                // #endregion
             case (PARALLEL1_FLAG_3 | PARALLEL1_FLAG_2 | PARALLEL1_FLAG_1):
                 rwData->unk_1E = BINANG_ROT180(camera->focalActorPosRot.rot.y) + roData->unk_22;
                 rwData->unk_20 = roData->unk_20;
@@ -3026,10 +3080,20 @@ s32 Camera_Parallel1(Camera* camera) {
             func_800CBFA4(camera, at, eye, 3);
         }
 
-        if (rwData->timer2 != 0) {
-            sUpdateCameraDirection = true;
+        // #region 2S2H [Enhancement] - FixTargettingCameraSnap
+        if (CVarGetInteger("gEnhancements.Camera.FixTargettingCameraSnap", 0)) {
+            if ((isChargingDekuFlowerDive) && (rwData->timer2 != 0)) {
+                sUpdateCameraDirection = true;
+            } else {
+                sUpdateCameraDirection = false;
+            }
         } else {
-            sUpdateCameraDirection = false;
+            // #endregion
+            if (rwData->timer2 != 0) {
+                sUpdateCameraDirection = true;
+            } else {
+                sUpdateCameraDirection = false;
+            }
         }
     }
 
@@ -3037,6 +3101,10 @@ s32 Camera_Parallel1(Camera* camera) {
     camera->roll = Camera_ScaledStepToCeilS(0, camera->roll, 0.5f, 5);
     camera->atLerpStepScale = Camera_ClampLerpScale(camera, sp72 ? roData->unk_1C : roData->unk_18);
     rwData->unk_26 &= ~1;
+
+    // #region 2S2H [Enhancement] - FixTargettingCameraSnap
+    rwData->timer2 |= timer4 << 5;
+    // #endregion
 
     return 1;
 }
