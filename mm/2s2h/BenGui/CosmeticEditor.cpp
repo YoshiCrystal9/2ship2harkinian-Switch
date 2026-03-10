@@ -1,6 +1,7 @@
 #include "2s2h/BenGui/UIWidgets.hpp"
 #include "CosmeticEditor.h"
 #include "2s2h/ShipInit.hpp"
+#include "2s2h/GameInteractor/GameInteractor.h"
 
 std::vector<const char*> cosmeticEditorParentElements;
 
@@ -589,6 +590,10 @@ void CosmeticEditorDrawColorTab() {
         CosmeticEditorRandomizeAllElements();
     }
     UIWidgets::Tooltip("Randomizes All Elements");
+    ImGui::SameLine();
+    UIWidgets::CVarCheckbox(
+        "Randomize all Cosmetics on Randomizer Generation", "gCosmetics.RandomizeOnSeedGen",
+        UIWidgets::CheckboxOptions().Tooltip("Randomize all elements when a new randomizer seed is generated."));
     for (auto& parent : cosmeticEditorParentElements) {
         ImGui::SeparatorText(parent);
         ImGui::BeginTable(parent, 2);
@@ -669,6 +674,12 @@ void CosmeticEditorWindow::InitElement() {
         }
         cosmeticEditorParentElements.push_back(element.parentName);
     }
+
+    GameInteractor::Instance->RegisterGameHook<GameInteractor::OnRandoSeedGeneration>([]() {
+        if (CVarGetInteger("gCosmetics.RandomizeOnSeedGen", 0)) {
+            CosmeticEditorRandomizeAllElements();
+        }
+    });
 }
 
 // COSMETIC_ELEMENT_HUMAN_TUNIC
