@@ -1095,6 +1095,9 @@ static void DrawHintsTab() {
         CheckboxOptions(
             { { .tooltip =
                     "The Zora in Great Bay Coast, near Pirates Fortress, will hint the location of the Hookshot." } }));
+    CVarCheckbox("Bank Reward", Rando::StaticData::Options[RO_HINTS_BANK_SIGN].cvar,
+                 CheckboxOptions({ { .tooltip = "The sign next to the Bank in West Clock Town will describe a "
+                                                "promotion for the Piece of Heart Check." } }));
     ImGui::EndChild();
 }
 

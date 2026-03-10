@@ -33,6 +33,7 @@ std::map<RandoOptionId, RandoStaticOption> Options = {
     RO(RO_HINTS_PURCHASEABLE,          RO_GENERIC_OFF),
     RO(RO_HINTS_SONG_OF_SOARING,       RO_GENERIC_OFF),
     RO(RO_HINTS_SPIDER_HOUSES,         RO_GENERIC_OFF),
+    RO(RO_HINTS_BANK_SIGN,             RO_GENERIC_OFF),
     RO(RO_LOGIC,                       RO_LOGIC_GLITCHLESS),
     RO(RO_PLENTIFUL_ITEMS,             RO_GENERIC_OFF),
     RO(RO_SHUFFLE_BARREL_DROPS,        RO_GENERIC_OFF),
