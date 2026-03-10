@@ -651,6 +651,14 @@ typedef enum {
     // true
     // ```
     // #### `args`
+    // - None
+    VB_FIRST_PERSON_CAMERA,
+
+    // #### `result`
+    // ```c
+    // true
+    // ```
+    // #### `args`
     // - `*EnFish2`
     VB_FISH2_SPAWN_HEART_PIECE,
 

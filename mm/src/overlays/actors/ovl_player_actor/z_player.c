@@ -8226,9 +8226,10 @@ s32 Player_ActionHandler_0(Player* this, PlayState* play) {
                (CHECK_FLAG_ALL(this->focusActor->flags, ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_TALK_WITH_C_UP) ||
                 (this->focusActor->hintId != TATL_HINT_ID_NONE))) {
         this->stateFlags2 |= PLAYER_STATE2_200000;
-    } else if ((this->tatlTextId == 0) && !Player_CheckHostileLockOn(this) &&
-               CHECK_BTN_ALL(sPlayerControlInput->press.button, BTN_CUP) &&
-               !func_80831814(this, play, PLAYER_UNKAA5_1)) {
+    } else if (GameInteractor_Should(VB_FIRST_PERSON_CAMERA,
+                                     (this->tatlTextId == 0) && !Player_CheckHostileLockOn(this) &&
+                                         CHECK_BTN_ALL(sPlayerControlInput->press.button, BTN_CUP) &&
+                                         !func_80831814(this, play, PLAYER_UNKAA5_1))) {
         Audio_PlaySfx(NA_SE_SY_ERROR);
     }
     return false;
