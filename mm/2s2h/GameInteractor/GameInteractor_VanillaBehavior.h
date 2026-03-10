@@ -1478,6 +1478,14 @@ typedef enum {
 
     // #### `result`
     // ```c
+    // pauseCtx->state == PAUSE_STATE_OWL_WARP_SELECT
+    // ```
+    // #### `args`
+    // - None
+    VB_OWL_WARP_MENU_USE_LINEAR_CURSOR,
+
+    // #### `result`
+    // ```c
     // (HS_GET_BANK_RUPEES() >= 200) && (this->previousBankValue < 200) && !CHECK_WEEKEVENTREG(WEEKEVENTREG_59_40)
     // ```
     // #### `args`

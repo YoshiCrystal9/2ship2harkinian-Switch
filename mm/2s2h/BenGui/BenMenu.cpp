@@ -1360,6 +1360,10 @@ void BenMenu::AddEnhancements() {
             "Requires that you can play Song of Soaring normally.\n\n"
             "Accounts for Index-Warp being active, by presenting all valid warps for the registered "
             "map points. Great Bay Coast warp is always given for index 0 warp as a convenience."));
+    AddWidget(path, "Better Owl Warp Menu", WIDGET_CVAR_CHECKBOX)
+        .CVar("gEnhancements.Songs.BetterOwlWarpMenu")
+        .Options(CheckboxOptions().Tooltip(
+            "Makes cursor movement conform more to Control Stick direction when choosing an Owl Statue to warp to."));
     AddWidget(path, "Zora Eggs For Bossa Nova", WIDGET_CVAR_SLIDER_INT)
         .CVar("gEnhancements.Songs.ZoraEggCount")
         .Options(IntSliderOptions()
