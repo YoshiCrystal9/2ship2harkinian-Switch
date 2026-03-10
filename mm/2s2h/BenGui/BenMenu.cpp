@@ -1463,6 +1463,9 @@ void BenMenu::AddEnhancements() {
     AddWidget(path, "Fast Dampe Flame Digging", WIDGET_CVAR_CHECKBOX)
         .CVar("gEnhancements.Timesavers.DampeDiggingSkip")
         .Options(CheckboxOptions().Tooltip("Only requires digging up one flame to spawn the big poe."));
+    AddWidget(path, "Always Show Shrine of Truth Feathers", WIDGET_CVAR_CHECKBOX)
+        .CVar("gEnhancements.Timesavers.AlwaysShowShrineFeathers")
+        .Options(CheckboxOptions().Tooltip("Always reveals the feather-marked path to the Shrine of Truth."));
     AddWidget(path, "Fast Chests", WIDGET_CVAR_CHECKBOX)
         .CVar("gEnhancements.Timesavers.FastChests")
         .Options(CheckboxOptions().Tooltip("Uses the quick kick animation for all chests in vanilla gameplay."));

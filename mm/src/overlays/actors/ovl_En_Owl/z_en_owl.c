@@ -564,8 +564,10 @@ void func_8095B76C(EnOwl* this, PlayState* play) {
             return;
         }
 
-        Actor_Spawn(&play->actorCtx, play, ACTOR_EN_OWL, thisx->world.pos.x, thisx->world.pos.y, thisx->world.pos.z, 0,
-                    0, 0, 0xF00);
+        if (GameInteractor_Should(VB_OWL_SPAWN_FEATHER, true, this)) {
+            Actor_Spawn(&play->actorCtx, play, ACTOR_EN_OWL, thisx->world.pos.x, thisx->world.pos.y, thisx->world.pos.z,
+                        0, 0, 0, 0xF00);
+        }
         thisx->home.rot.x++;
         if (thisx->home.rot.x >= 3) {
             func_8095ACEC(this);
