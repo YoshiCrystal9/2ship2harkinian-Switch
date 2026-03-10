@@ -508,7 +508,7 @@ const char* GetIconTexturePath(RandoItemId randoItemId) {
         case RI_TIME_PROGRESSIVE:
             return (const char*)gThreeDayClockSunHourTex;
         case RI_ABILITY_SWIM:
-            return (const char*)gItemIcons[ITEM_MASK_ZORA];
+            return (const char*)gFlippersTex;
         case RI_SONG_DOUBLE_TIME:
         case RI_SONG_INVERTED_TIME:
             return (const char*)gItemIcons[ITEM_SONG_TIME];

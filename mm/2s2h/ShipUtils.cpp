@@ -90,7 +90,7 @@ extern u16 sOwlWarpEntrancesForMods[OWL_WARP_MAX - 1] = {
 };
 
 // These textures are not in existing lists that we iterate over.
-std::array<const char*, 32> miscellaneousTextures = {
+std::array<const char*, 33> miscellaneousTextures = {
     gArcheryScoreIconTex,
     gBarrelTrackerIcon,
     gChestTrackerIcon,
@@ -109,6 +109,7 @@ std::array<const char*, 32> miscellaneousTextures = {
     gStrayFairyWoodfallIconTex,
     gTimerClockIconTex,
     gTriforcePieceTex,
+    gFlippersTex,
     gWorldMapOwlFaceTex,
     gameplay_keep_Tex_053140,
     gDungeonMapSkullTex,
