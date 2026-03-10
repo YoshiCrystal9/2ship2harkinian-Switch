@@ -4,6 +4,7 @@
 #include "GameInteractor/GameInteractor.h"
 #include "2s2h/Enhancements/Audio/AudioEditor.h"
 #include <libultraship/bridge/consolevariablebridge.h>
+#include <libultraship/bridge/audiobridge.h>
 
 typedef struct {
     /* 0x0 */ s8 x;
@@ -6085,21 +6086,29 @@ void Audio_SetFileSelectSettings(s8 audioSetting) {
         case SAVE_AUDIO_STEREO:
             soundMode = SOUNDMODE_STEREO;
             sSoundMode = SOUNDMODE_STEREO;
+            // 2S2H [Port] Inform LUS of audio setting change
+            SetAudioChannels(audioStereo);
             break;
 
         case SAVE_AUDIO_MONO:
             soundMode = SOUNDMODE_MONO;
             sSoundMode = SOUNDMODE_MONO;
+            // 2S2H [Port] Inform LUS of audio setting change
+            SetAudioChannels(audioStereo);
             break;
 
         case SAVE_AUDIO_HEADSET:
             soundMode = SOUNDMODE_HEADSET;
             sSoundMode = SOUNDMODE_HEADSET;
+            // 2S2H [Port] Inform LUS of audio setting change
+            SetAudioChannels(audioStereo);
             break;
 
         case SAVE_AUDIO_SURROUND:
             soundMode = SOUNDMODE_SURROUND;
             sSoundMode = SOUNDMODE_SURROUND_EXTERNAL;
+            // 2S2H [Port] Inform LUS of audio setting change
+            SetAudioChannels(audioMatrix51);
             break;
 
         default:
