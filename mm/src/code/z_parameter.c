@@ -9918,9 +9918,10 @@ void Interface_Update(PlayState* play) {
 
     // Update Sun Song
     if (gSaveContext.sunsSongState != SUNSSONG_INACTIVE) {
-        // exit out of ocarina mode after suns song finishes playing
+        // exit out of ocarina mode after suns song finishes playing, only if faster playback is off
         if ((msgCtx->ocarinaAction != OCARINA_ACTION_CHECK_NOTIME_DONE) &&
-            (gSaveContext.sunsSongState == SUNSSONG_START)) {
+            (gSaveContext.sunsSongState == SUNSSONG_START) &&
+            !CVarGetInteger("gEnhancements.Songs.FasterSongPlayback", 0)) {
             play->msgCtx.ocarinaMode = OCARINA_MODE_END;
         }
 
