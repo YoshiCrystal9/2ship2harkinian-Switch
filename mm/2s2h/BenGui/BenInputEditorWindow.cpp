@@ -44,6 +44,14 @@ void BenInputEditorWindow::InitElement() {
     addButtonName(BTN_DDOWN, "D-pad down");
     addButtonName(BTN_DLEFT, "D-pad left");
     addButtonName(BTN_DRIGHT, "D-pad right");
+    addButtonName(BTN_CUSTOM_OCARINA_NOTE_D4, "Ocarina A (D4)");
+    addButtonName(BTN_CUSTOM_OCARINA_NOTE_F4, "Ocarina C Down (F4)");
+    addButtonName(BTN_CUSTOM_OCARINA_NOTE_A4, "Ocarina C Right (A4)");
+    addButtonName(BTN_CUSTOM_OCARINA_NOTE_B4, "Ocarina C Left (B4)");
+    addButtonName(BTN_CUSTOM_OCARINA_NOTE_D5, "Ocarina C Up (D5)");
+    addButtonName(BTN_CUSTOM_OCARINA_DISABLE_SONGS, "Disable Song Detection");
+    addButtonName(BTN_CUSTOM_OCARINA_PITCH_UP, "Pitch Up");
+    addButtonName(BTN_CUSTOM_OCARINA_PITCH_DOWN, "Pitch Down");
     addButtonName(0, "None");
 }
 
@@ -1411,6 +1419,43 @@ void BenInputEditorWindow::DrawPortTabContents(uint8_t portIndex) {
 
     if (ImGui::CollapsingHeader("LEDs")) {
         DrawLEDSection(portIndex);
+    }
+
+    if (ImGui::CollapsingHeader("Custom Ocarina Controls")) {
+
+        bool customOcarinaEnabled = CVarGetInteger("gEnhancements.Playback.CustomizeOcarinaControls", 0);
+        if (ImGui::Checkbox("Enable Custom Ocarina Controls", &customOcarinaEnabled)) {
+            CVarSetInteger("gEnhancements.Playback.CustomizeOcarinaControls", customOcarinaEnabled);
+            Ship::Context::GetInstance()->GetWindow()->GetGui()->SaveConsoleVariablesNextFrame();
+        }
+        UIWidgets::Tooltip("Allow customization of which physical buttons are used for ocarina playback.\nWARNING: "
+                           "This disables the normal ocarina controls (A and C buttons).");
+
+        if (customOcarinaEnabled) {
+            ImGui::AlignTextToFramePadding();
+            ImGui::BulletText("Notes");
+            DrawButtonLine("A (D4)##OcarinaD4", portIndex, BTN_CUSTOM_OCARINA_NOTE_D4);
+            DrawButtonLine(StringHelper::Sprintf("%s (F4)##OcarinaF4", ICON_FA_ARROW_DOWN).c_str(), portIndex,
+                           BTN_CUSTOM_OCARINA_NOTE_F4);
+            DrawButtonLine(StringHelper::Sprintf("%s (A4)##OcarinaA4", ICON_FA_ARROW_RIGHT).c_str(), portIndex,
+                           BTN_CUSTOM_OCARINA_NOTE_A4);
+            DrawButtonLine(StringHelper::Sprintf("%s (B4)##OcarinaB4", ICON_FA_ARROW_LEFT).c_str(), portIndex,
+                           BTN_CUSTOM_OCARINA_NOTE_B4);
+            DrawButtonLine(StringHelper::Sprintf("%s (D5)##OcarinaD5", ICON_FA_ARROW_UP).c_str(), portIndex,
+                           BTN_CUSTOM_OCARINA_NOTE_D5);
+
+            ImGui::AlignTextToFramePadding();
+            ImGui::BulletText("Disable song detection");
+            DrawButtonLine(StringHelper::Sprintf("%s##OcarinaDisableSongs", ICON_FA_BAN).c_str(), portIndex,
+                           BTN_CUSTOM_OCARINA_DISABLE_SONGS);
+
+            ImGui::AlignTextToFramePadding();
+            ImGui::BulletText("Pitch");
+            DrawButtonLine(StringHelper::Sprintf("%s##OcarinaPitchUp", ICON_FA_ARROW_UP).c_str(), portIndex,
+                           BTN_CUSTOM_OCARINA_PITCH_UP);
+            DrawButtonLine(StringHelper::Sprintf("%s##OcarinaPitchDown", ICON_FA_ARROW_DOWN).c_str(), portIndex,
+                           BTN_CUSTOM_OCARINA_PITCH_DOWN);
+        }
     }
 
     ImGui::PopStyleColor();
