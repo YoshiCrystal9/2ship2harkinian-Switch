@@ -358,6 +358,15 @@ typedef enum {
 
     // #### `result`
     // ```c
+    // this->animIndex == EN_DNO_ANIM_SHOCK_LOOP
+    // ```
+    // #### `args`
+    // - `*EnDno` (this)
+    // - `*u8` (changeAnim)
+    VB_DEKU_BUTLER_CHANGE_SHOCK_ANIMATION,
+
+    // #### `result`
+    // ```c
     // gSaveContext.save.isNight
     // ```
     // #### `args`

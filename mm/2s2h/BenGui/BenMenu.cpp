@@ -1538,6 +1538,11 @@ void BenMenu::AddEnhancements() {
         .Options(CheckboxOptions().Tooltip(
             "Fixes a bug that results in the wrong audio playing upon receiving a 4th piece of heart to "
             "fill a new heart container."));
+    AddWidget(path, "Fix Deku Butler Shock Animation", WIDGET_CVAR_CHECKBOX)
+        .CVar("gEnhancements.Fixes.DekuButlerFixShockLoopAnimation")
+        .Options(CheckboxOptions().Tooltip(
+            "Fixes a bug where the Deku Butler loops the incorrect animation in the cutscene that plays after "
+            "freeing the Deku Princess."));
 
     // Restorations
     path = { "Enhancements", "Restorations", SECTION_COLUMN_1 };
