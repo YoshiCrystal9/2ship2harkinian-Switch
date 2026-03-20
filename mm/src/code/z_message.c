@@ -4298,6 +4298,10 @@ void Message_DrawOcarinaButtons(PlayState* play, Gfx** gfxP) {
 }
 
 void Message_DrawText(PlayState* play, Gfx** gfxP) {
+    if (!GameInteractor_Should(VB_DRAW_OCARINA_STAFF, true)) {
+        return;
+    }
+
     if ((gSaveContext.options.language == LANGUAGE_JPN) && !play->msgCtx.textIsCredits) {
         Message_DrawTextDefault(play, gfxP);
     } else if (play->msgCtx.textIsCredits) {
@@ -4424,7 +4428,9 @@ void Message_DrawMain(PlayState* play, Gfx** gfxP) {
                     (((msgCtx->msgMode >= MSGMODE_TEXT_BOX_GROWING) && (msgCtx->msgMode <= MSGMODE_TEXT_DONE)) ||
                      ((msgCtx->msgMode >= MSGMODE_NEW_CYCLE_0) && (msgCtx->msgMode <= MSGMODE_OWL_SAVE_2))) &&
                     (D_801CFC78[msgCtx->textBoxType] != 0xE)) {
-                    Message_DrawTextBox(play, &gfx);
+                    if (GameInteractor_Should(VB_DRAW_OCARINA_STAFF, true)) {
+                        Message_DrawTextBox(play, &gfx);
+                    }
                 }
             }
         }
@@ -4495,8 +4501,10 @@ void Message_DrawMain(PlayState* play, Gfx** gfxP) {
             case MSGMODE_TEXT_AWAIT_INPUT:
             case MSGMODE_TEXT_AWAIT_NEXT:
                 Message_DrawText(play, &gfx);
-                Message_DrawTextboxIcon(play, &gfx, 158,
-                                        (s16)(D_801D03A8[msgCtx->textBoxType] + msgCtx->textboxYTarget));
+                if (GameInteractor_Should(VB_DRAW_OCARINA_STAFF, true)) {
+                    Message_DrawTextboxIcon(play, &gfx, 158,
+                                            (s16)(D_801D03A8[msgCtx->textBoxType] + msgCtx->textboxYTarget));
+                }
                 break;
 
             case MSGMODE_OCARINA_STARTING:
@@ -4610,6 +4618,8 @@ void Message_DrawMain(PlayState* play, Gfx** gfxP) {
                 }
 
                 msgCtx->songPlayed = msgCtx->ocarinaStaff->state;
+
+                GameInteractor_Should(VB_OVERRIDE_OCARINA_STAFF_STATE, false, msgCtx->ocarinaStaff);
 
                 bool vanillaOwnedSongCheck = (msgCtx->ocarinaStaff->state == OCARINA_SONG_SCARECROW_SPAWN) ||
                                              (msgCtx->ocarinaStaff->state == OCARINA_SONG_INVERTED_TIME) ||
@@ -5317,13 +5327,17 @@ void Message_DrawMain(PlayState* play, Gfx** gfxP) {
                     case TEXTBOX_ENDTYPE_INPUT_BANK:
                     case TEXTBOX_ENDTYPE_INPUT_DOGGY_RACETRACK_BET:
                     default:
-                        Message_DrawTextboxIcon(play, &gfx, 158,
-                                                (s16)(D_801D03A8[msgCtx->textBoxType] + msgCtx->textboxYTarget));
+                        if (GameInteractor_Should(VB_DRAW_OCARINA_STAFF, true)) {
+                            Message_DrawTextboxIcon(play, &gfx, 158,
+                                                    (s16)(D_801D03A8[msgCtx->textBoxType] + msgCtx->textboxYTarget));
+                        }
                         break;
 
                     case TEXTBOX_ENDTYPE_EVENT2:
-                        Message_DrawTextboxIcon(play, &gfx, 158,
-                                                (s16)(D_801D03A8[msgCtx->textBoxType] + msgCtx->textboxYTarget));
+                        if (GameInteractor_Should(VB_DRAW_OCARINA_STAFF, true)) {
+                            Message_DrawTextboxIcon(play, &gfx, 158,
+                                                    (s16)(D_801D03A8[msgCtx->textBoxType] + msgCtx->textboxYTarget));
+                        }
                         break;
                 }
                 break;
@@ -5354,7 +5368,10 @@ void Message_DrawMain(PlayState* play, Gfx** gfxP) {
                 break;
         }
     }
-    Message_DrawOcarinaButtons(play, &gfx);
+    if (GameInteractor_Should(VB_DRAW_OCARINA_STAFF, true)) {
+        Message_DrawOcarinaButtons(play, &gfx);
+    }
+
     *gfxP = gfx;
 }
 

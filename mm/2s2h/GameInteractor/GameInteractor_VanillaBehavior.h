@@ -545,6 +545,14 @@ typedef enum {
     // true
     // ```
     // #### `args`
+    // - None
+    VB_DRAW_OCARINA_STAFF,
+
+    // #### `result`
+    // ```c
+    // true
+    // ```
+    // #### `args`
     // - `*EnSlime`
     VB_DRAW_SLIME_BODY_ITEM,
 
@@ -1110,6 +1118,22 @@ typedef enum {
 
     // #### `result`
     // ```c
+    // true
+    // ```
+    // #### `args`
+    // - `u8` (btn)
+    VB_INTERFACE_LOAD_DPAD_ITEM_ICON,
+
+    // #### `result`
+    // ```c
+    // true
+    // ```
+    // #### `args`
+    // - `u8` (btn)
+    VB_INTERFACE_LOAD_ITEM_ICON,
+
+    // #### `result`
+    // ```c
     // !gPlayerFormItemRestrictions[GET_PLAYER_FORM][itemId]
     // ```
     // #### `args`
@@ -1158,6 +1182,14 @@ typedef enum {
     // #### `args`
     // - `u16` (item under cursor)
     VB_KALEIDO_DISPLAY_ITEM_TEXT,
+
+    // #### `result`
+    // ```c
+    // true
+    // ```
+    // #### `args`
+    // - `ItemId*` (draw item, mutable)
+    VB_KALEIDO_DRAW_EQUIP_ANIM_ICON,
 
     // #### `result`
     // ```c
@@ -1452,6 +1484,14 @@ typedef enum {
     // #### `args`
     // - `**Gfx` (dList)
     VB_OVERRIDE_CHAR02_LIMB,
+
+    // #### `result`
+    // ```c
+    // false
+    // ```
+    // #### `args`
+    // - `*OcarinaStaff` (the currently playing staff; state can be overridden to force a song)
+    VB_OVERRIDE_OCARINA_STAFF_STATE,
 
     // #### `result`
     // ```c

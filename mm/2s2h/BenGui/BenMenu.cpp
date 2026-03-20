@@ -1353,6 +1353,10 @@ void BenMenu::AddEnhancements() {
     AddWidget(path, "Right Stick Ocarina", WIDGET_CVAR_CHECKBOX)
         .CVar("gEnhancements.Playback.RightStickOcarina")
         .Options(CheckboxOptions().Tooltip("Enables using the Right Stick for Ocarina playback."));
+    AddWidget(path, "Song Items", WIDGET_CVAR_CHECKBOX)
+        .CVar("gEnhancements.Songs.SongItems")
+        .Options(CheckboxOptions().Tooltip("Equip songs to C/D-Pad buttons from the Quest Status page. "
+                                           "Songs auto-play when used, skipping manual note input."));
     AddWidget(path, "Pause Owl Warp", WIDGET_CVAR_CHECKBOX)
         .CVar("gEnhancements.Songs.PauseOwlWarp")
         .Options(CheckboxOptions().Tooltip(
