@@ -231,6 +231,7 @@ static RegisterShipInitFunc refreshMetricsInit(RefreshMetrics, {
                                                                    "gRando.Options.RO_CLOCK_SHUFFLE",
                                                                    "gRando.Options.RO_CLOCK_SHUFFLE_PROGRESSIVE",
                                                                    "gRando.Options.RO_HINTS_BOSS_REMAINS",
+                                                                   "gRando.Options.RO_HINTS_GOSSIP_STONE_STRENGTH",
                                                                    "gRando.Options.RO_HINTS_GOSSIP_STONES",
                                                                    "gRando.Options.RO_HINTS_HOOKSHOT",
                                                                    "gRando.Options.RO_HINTS_OATH_TO_ORDER",
@@ -1068,6 +1069,36 @@ static void DrawHintsTab() {
         "Gossip Stone Static Hint", Rando::StaticData::Options[RO_HINTS_GOSSIP_STONES].cvar,
         CheckboxOptions(
             { { .tooltip = "Each gossip stone will give a static hint about the contents of a random location." } }));
+    CVarSliderInt("Gossip Stone Hint Strength", Rando::StaticData::Options[RO_HINTS_GOSSIP_STONE_STRENGTH].cvar,
+                  IntSliderOptions().Min(0).Max(100).DefaultValue(50).Tooltip(
+                      "Controls how strongly gossip stone hints are weighted toward important items.\n"
+                      "At 0 all checks are equally likely. At 100 the full weights below apply.\n"
+                      "\n"
+                      "Item weights (higher = more likely to be hinted):\n"
+                      "  Majora's Soul              13\n"
+                      "  Deku / Goron / Zora Masks  12\n"
+                      "  Blast / Fierce Deity Masks 11\n"
+                      "  Boss Souls & Remains       10\n"
+                      "\n"
+                      "Check weights (overrides item weight):\n"
+                      "  Seahorse Reunion           10\n"
+                      "  New Wave Bossa Nova        10\n"
+                      "  Frog Choir                 10\n"
+                      "  Couple's Mask              10\n"
+                      "  Romani Ranch Aliens        10\n"
+                      "  Beaver Race 1 & 2           8\n"
+                      "  Keaton Quiz                 8\n"
+                      "  Curiosity Shop Special Item 8\n"
+                      "  Deku Playground All Days    8\n"
+                      "  Moon Trial Hearts (x3)      6\n"
+                      "\n"
+                      "Item type weights (fallback):\n"
+                      "  Major / Mask                9\n"
+                      "  Boss Key                    8\n"
+                      "  Lesser                      6\n"
+                      "  Small Key                   5\n"
+                      "  Skulltula / Stray Fairy     3\n"
+                      "  Health / Junk               2"));
     CVarCheckbox(
         "Gossip Stone Purchaseable", Rando::StaticData::Options[RO_HINTS_PURCHASEABLE].cvar,
         CheckboxOptions({ { .tooltip = "Gossip stones will offer a hint for a scaling rupee cost. This cost ranges "

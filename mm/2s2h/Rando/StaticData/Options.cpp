@@ -27,6 +27,7 @@ std::map<RandoOptionId, RandoStaticOption> Options = {
     RO(RO_CLOCK_SHUFFLE,               RO_GENERIC_OFF),
     RO(RO_CLOCK_TERMINAL_TIME,         0), // Default: 00:00 (midnight)
     RO(RO_HINTS_BOSS_REMAINS,          RO_GENERIC_OFF),
+    RO(RO_HINTS_GOSSIP_STONE_STRENGTH, 50),
     RO(RO_HINTS_GOSSIP_STONES,         RO_GENERIC_OFF),
     RO(RO_HINTS_HOOKSHOT,              RO_GENERIC_OFF),
     RO(RO_HINTS_OATH_TO_ORDER,         RO_GENERIC_OFF),
