@@ -257,6 +257,7 @@ std::map<RandoItemId, RandoStaticItem> Items = {
     RI(RI_TRIFORCE_PIECE,             "a",    "Piece of the Triforce",      RITYPE_MAJOR,           ITEM_NONE,                       GI_NONE,                     GID_NONE),
     RI(RI_WALLET_ADULT,               "the",  "Adult's Wallet",             RITYPE_MAJOR,           ITEM_WALLET_ADULT,               GI_WALLET_ADULT,             GID_WALLET_ADULT),
     RI(RI_WALLET_GIANT,               "the",  "Giant's Wallet",             RITYPE_LESSER,          ITEM_WALLET_GIANT,               GI_WALLET_GIANT,             GID_WALLET_GIANT),
+    RI(RI_WALLET_TYCOON,              "the",  "Tycoon's Wallet",            RITYPE_LESSER,          ITEM_NONE,                       GI_NONE,                     GID_WALLET_GIANT),
     RI(RI_WOODFALL_BOSS_KEY,          "the",  "Woodfall Boss Key",          RITYPE_BOSS_KEY,        ITEM_KEY_BOSS,                   GI_KEY_BOSS,                 GID_KEY_BOSS),
     RI(RI_WOODFALL_COMPASS,           "the",  "Woodfall Compass",           RITYPE_LESSER,          ITEM_COMPASS,                    GI_COMPASS,                  GID_COMPASS),
     RI(RI_WOODFALL_MAP,               "the",  "Woodfall Map",               RITYPE_LESSER,          ITEM_DUNGEON_MAP,                GI_MAP,                      GID_DUNGEON_MAP),
@@ -401,6 +402,8 @@ const char* GetIconTexturePath(RandoItemId randoItemId) {
             return (const char*)gItemIcons[ITEM_SWORD_KOKIRI];
         case RI_PROGRESSIVE_WALLET:
             return (const char*)gItemIcons[ITEM_WALLET_ADULT];
+        case RI_WALLET_TYCOON:
+            return (const char*)gItemIcons[ITEM_WALLET_GIANT];
         case RI_PROGRESSIVE_LULLABY:
             return (const char*)gItemIcons[ITEM_SONG_LULLABY];
         case RI_PROGRESSIVE_MAGIC:

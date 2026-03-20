@@ -24,6 +24,7 @@ void OnSceneInit(s16 sceneId, s8 spawnNum);
 void OfferTrapItem();
 void SariasSongHint();
 void BankSignHint();
+void InitTycoonWallet();
 
 } // namespace MiscBehavior
 

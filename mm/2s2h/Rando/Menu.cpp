@@ -54,6 +54,7 @@ std::vector<int32_t> incompatibleWithVanilla = {
     RO_SHUFFLE_OCARINA_BUTTONS,
     RO_PLENTIFUL_ITEMS,
     RO_CLOCK_SHUFFLE,
+    RO_SHUFFLE_TYCOON_WALLET,
 };
 // clang-format on
 
@@ -113,6 +114,7 @@ void ClearIncompatibleSetting() {
             CVarClear(Rando::StaticData::Options[RO_SHUFFLE_BOSS_SOULS].cvar);
             CVarClear(Rando::StaticData::Options[RO_SHUFFLE_SWIM].cvar);
             CVarClear(Rando::StaticData::Options[RO_CLOCK_SHUFFLE].cvar);
+            CVarClear(Rando::StaticData::Options[RO_SHUFFLE_TYCOON_WALLET].cvar);
             break;
         default:
             break;
@@ -263,6 +265,7 @@ static RegisterShipInitFunc refreshMetricsInit(RefreshMetrics, {
                                                                    "gRando.Options.RO_SHUFFLE_SONG_SUN",
                                                                    "gRando.Options.RO_SHUFFLE_SWIM",
                                                                    "gRando.Options.RO_SHUFFLE_TINGLE_SHOPS",
+                                                                   "gRando.Options.RO_SHUFFLE_TYCOON_WALLET",
                                                                    "gRando.Options.RO_SHUFFLE_TRIFORCE_PIECES",
                                                                    "gRando.Options.RO_SKULLTULA_TOKENS_MAX",
                                                                    "gRando.Options.RO_SKULLTULA_TOKENS_REQUIRED",
@@ -560,6 +563,11 @@ static void DrawItemsTab() {
                  CheckboxOptions({ { .disabled = true, .disabledTooltip = "Coming Soon" } }));
     CVarCheckbox("Skeleton Key", "gPlaceholderBool",
                  CheckboxOptions({ { .disabled = true, .disabledTooltip = "Coming Soon" } }));
+    CVarCheckbox("Tycoon's Wallet", Rando::StaticData::Options[RO_SHUFFLE_TYCOON_WALLET].cvar,
+                 CheckboxOptions({ { .tooltip = "Adds the Tycoon's Wallet (5,000 rupees) to the item pool\n"
+                                                "as a third progressive wallet upgrade.",
+                                     .disabled = IncompatibleWithLogicSetting(RO_SHUFFLE_TYCOON_WALLET),
+                                     .disabledTooltip = "Incompatible with current Logic Setting" } }));
     CVarCheckbox("Child Wallet", "gPlaceholderBool",
                  CheckboxOptions({ { .disabled = true, .disabledTooltip = "Coming Soon" } }));
     CVarCheckbox("Infinite Upgrades", "gPlaceholderBool",
@@ -843,10 +851,14 @@ static void DrawStartingItemsTab() {
 
                     if (ImGui::ImageButton(std::to_string(item).c_str(), textureId, imageSize, ImVec2(0, 0),
                                            ImVec2(1, 1), ImVec4(0, 0, 0, 0), tintColor)) {
-                        if (std::count(setStartingItemsList.begin(), setStartingItemsList.end(), item) <
-                            (Rando::StaticData::MaxStartingItemsMap.count(item)
-                                 ? Rando::StaticData::MaxStartingItemsMap[item]
-                                 : 1)) {
+                        u8 maxCount = Rando::StaticData::MaxStartingItemsMap.count(item)
+                                          ? Rando::StaticData::MaxStartingItemsMap[item]
+                                          : 1;
+                        if (item == RI_PROGRESSIVE_WALLET &&
+                            CVarGetInteger(Rando::StaticData::Options[RO_SHUFFLE_TYCOON_WALLET].cvar, 0)) {
+                            maxCount = 3;
+                        }
+                        if (std::count(setStartingItemsList.begin(), setStartingItemsList.end(), item) < maxCount) {
 
                             setStartingItemsList.push_back(item);
                             Rando::SetStartingItemsInConfig(setStartingItemsList);

@@ -137,8 +137,13 @@ void Rando::RemoveItem(RandoItemId randoItemId) {
         case RI_WALLET_GIANT:
             Inventory_ChangeUpgrade(UPG_WALLET, 1);
             break;
+        case RI_WALLET_TYCOON:
+            Inventory_ChangeUpgrade(UPG_WALLET, 2);
+            break;
         case RI_PROGRESSIVE_WALLET:
-            if (CUR_UPG_VALUE(UPG_WALLET) >= 2) {
+            if (CUR_UPG_VALUE(UPG_WALLET) >= 3) {
+                RemoveItem(RI_WALLET_TYCOON);
+            } else if (CUR_UPG_VALUE(UPG_WALLET) >= 2) {
                 RemoveItem(RI_WALLET_GIANT);
             } else if (CUR_UPG_VALUE(UPG_WALLET) >= 1) {
                 RemoveItem(RI_WALLET_ADULT);

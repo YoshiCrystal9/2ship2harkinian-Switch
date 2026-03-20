@@ -8960,16 +8960,18 @@ void Interface_Draw(PlayState* play) {
         Gfx_SetupDL39_Overlay(play->state.gfxCtx);
 
         // Draw Rupee Icon
-        gDPSetPrimColorOverride(OVERLAY_DISP++, 0, 0, sRupeeCounterIconPrimColors[CUR_UPG_VALUE(UPG_WALLET)].r,
-                                sRupeeCounterIconPrimColors[CUR_UPG_VALUE(UPG_WALLET)].g,
-                                sRupeeCounterIconPrimColors[CUR_UPG_VALUE(UPG_WALLET)].b, interfaceCtx->magicAlpha,
-                                COSMETIC_ELEMENT_RUPEE_ICON);
-        gDPSetEnvColor(OVERLAY_DISP++, sRupeeCounterIconEnvColors[CUR_UPG_VALUE(UPG_WALLET)].r,
-                       sRupeeCounterIconEnvColors[CUR_UPG_VALUE(UPG_WALLET)].g,
-                       sRupeeCounterIconEnvColors[CUR_UPG_VALUE(4)].b, 255);
-        HudEditor_SetActiveElement(HUD_EDITOR_ELEMENT_RUPEE_COUNTER);
-        OVERLAY_DISP =
-            Gfx_DrawTexRectIA8(OVERLAY_DISP, gRupeeCounterIconTex, 16, 16, 26, 206, 16, 16, 1 << 10, 1 << 10);
+        if (GameInteractor_Should(VB_DRAW_RUPEE_ICON, true)) {
+            gDPSetPrimColorOverride(OVERLAY_DISP++, 0, 0, sRupeeCounterIconPrimColors[CUR_UPG_VALUE(UPG_WALLET)].r,
+                                    sRupeeCounterIconPrimColors[CUR_UPG_VALUE(UPG_WALLET)].g,
+                                    sRupeeCounterIconPrimColors[CUR_UPG_VALUE(UPG_WALLET)].b, interfaceCtx->magicAlpha,
+                                    COSMETIC_ELEMENT_RUPEE_ICON);
+            gDPSetEnvColor(OVERLAY_DISP++, sRupeeCounterIconEnvColors[CUR_UPG_VALUE(UPG_WALLET)].r,
+                           sRupeeCounterIconEnvColors[CUR_UPG_VALUE(UPG_WALLET)].g,
+                           sRupeeCounterIconEnvColors[CUR_UPG_VALUE(4)].b, 255);
+            HudEditor_SetActiveElement(HUD_EDITOR_ELEMENT_RUPEE_COUNTER);
+            OVERLAY_DISP =
+                Gfx_DrawTexRectIA8(OVERLAY_DISP, gRupeeCounterIconTex, 16, 16, 26, 206, 16, 16, 1 << 10, 1 << 10);
+        }
 
         switch (play->sceneId) {
             case SCENE_INISIE_N:
@@ -9208,75 +9210,78 @@ void Interface_Draw(PlayState* play) {
         gDPSetCombineLERP(OVERLAY_DISP++, 0, 0, 0, PRIMITIVE, TEXEL0, 0, PRIMITIVE, 0, 0, 0, 0, PRIMITIVE, TEXEL0, 0,
                           PRIMITIVE, 0);
 
-        counterDigits[0] = counterDigits[1] = 0;
-        counterDigits[2] = gSaveContext.save.saveInfo.playerData.rupees;
+        if (GameInteractor_Should(VB_DRAW_RUPEE_COUNTER, true)) {
+            counterDigits[0] = counterDigits[1] = 0;
+            counterDigits[2] = gSaveContext.save.saveInfo.playerData.rupees;
 
-        if ((counterDigits[2] > 9999) || (counterDigits[2] < 0)) {
-            counterDigits[2] &= 0xDDD;
-        }
-
-        while (counterDigits[2] >= 100) {
-            counterDigits[0]++;
-            counterDigits[2] -= 100;
-        }
-
-        while (counterDigits[2] >= 10) {
-            counterDigits[1]++;
-            counterDigits[2] -= 10;
-        }
-
-        sp2CC = sRupeeDigitsFirst[CUR_UPG_VALUE(UPG_WALLET)];
-        sp2C8 = sRupeeDigitsCount[CUR_UPG_VALUE(UPG_WALLET)];
-
-        magicAlpha = interfaceCtx->magicAlpha;
-        if (magicAlpha > 180) {
-            magicAlpha = 180;
-        }
-
-        for (sp2CE = 0, sp2CA = 42; sp2CE < sp2C8; sp2CE++, sp2CC++, sp2CA += 8) {
-            gDPPipeSync(OVERLAY_DISP++);
-            gDPSetPrimColor(OVERLAY_DISP++, 0, 0, 0, 0, 0, magicAlpha);
-
-            HudEditor_SetActiveElement(HUD_EDITOR_ELEMENT_RUPEE_COUNTER);
-            OVERLAY_DISP = Gfx_DrawTexRectI8(OVERLAY_DISP, sCounterTextures[counterDigits[sp2CC]], 8, 16, sp2CA + 1,
-                                             207, 8, 16, 1 << 10, 1 << 10);
-
-            gDPPipeSync(OVERLAY_DISP++);
-
-            if (gSaveContext.save.saveInfo.playerData.rupees == CUR_CAPACITY(UPG_WALLET)) {
-                gDPSetPrimColor(OVERLAY_DISP++, 0, 0, 120, 255, 0, interfaceCtx->magicAlpha);
-            } else if (gSaveContext.save.saveInfo.playerData.rupees != 0) {
-                gDPSetPrimColor(OVERLAY_DISP++, 0, 0, 255, 255, 255, interfaceCtx->magicAlpha);
-            } else {
-                gDPSetPrimColor(OVERLAY_DISP++, 0, 0, 100, 100, 100, interfaceCtx->magicAlpha);
+            if ((counterDigits[2] > 9999) || (counterDigits[2] < 0)) {
+                counterDigits[2] &= 0xDDD;
             }
 
-            // #region 2S2H [Cosmetic] Hud Editor
-            HudEditor_SetActiveElement(HUD_EDITOR_ELEMENT_RUPEE_COUNTER);
-            if (HudEditor_ShouldOverrideDraw()) {
-                if (CVarGetInteger(hudEditorElements[hudEditorActiveElement].modeCvar,
-                                   HUD_EDITOR_ELEMENT_MODE_VANILLA) == HUD_EDITOR_ELEMENT_MODE_HIDDEN) {
-                    hudEditorActiveElement = HUD_EDITOR_ELEMENT_NONE;
+            while (counterDigits[2] >= 100) {
+                counterDigits[0]++;
+                counterDigits[2] -= 100;
+            }
+
+            while (counterDigits[2] >= 10) {
+                counterDigits[1]++;
+                counterDigits[2] -= 10;
+            }
+
+            sp2CC = sRupeeDigitsFirst[CUR_UPG_VALUE(UPG_WALLET)];
+            sp2C8 = sRupeeDigitsCount[CUR_UPG_VALUE(UPG_WALLET)];
+
+            magicAlpha = interfaceCtx->magicAlpha;
+            if (magicAlpha > 180) {
+                magicAlpha = 180;
+            }
+
+            for (sp2CE = 0, sp2CA = 42; sp2CE < sp2C8; sp2CE++, sp2CC++, sp2CA += 8) {
+                gDPPipeSync(OVERLAY_DISP++);
+                gDPSetPrimColor(OVERLAY_DISP++, 0, 0, 0, 0, 0, magicAlpha);
+
+                HudEditor_SetActiveElement(HUD_EDITOR_ELEMENT_RUPEE_COUNTER);
+                OVERLAY_DISP = Gfx_DrawTexRectI8(OVERLAY_DISP, sCounterTextures[counterDigits[sp2CC]], 8, 16, sp2CA + 1,
+                                                 207, 8, 16, 1 << 10, 1 << 10);
+
+                gDPPipeSync(OVERLAY_DISP++);
+
+                if (gSaveContext.save.saveInfo.playerData.rupees == CUR_CAPACITY(UPG_WALLET)) {
+                    gDPSetPrimColor(OVERLAY_DISP++, 0, 0, 120, 255, 0, interfaceCtx->magicAlpha);
+                } else if (gSaveContext.save.saveInfo.playerData.rupees != 0) {
+                    gDPSetPrimColor(OVERLAY_DISP++, 0, 0, 255, 255, 255, interfaceCtx->magicAlpha);
                 } else {
-                    // All of this information was derived from the original call to gSPTextureRectangle below
-                    s16 rectLeft = sp2CA;
-                    s16 rectTop = 824 / 4;
-                    s16 rectWidth = 0x20 / 4;
-                    s16 rectHeight = (888 / 4) - rectTop;
-                    s16 dsdx = 512;
-                    s16 dtdy = 512;
-
-                    HudEditor_ModifyDrawValues(&rectLeft, &rectTop, &rectWidth, &rectHeight, &dsdx, &dtdy);
-
-                    hudEditorActiveElement = HUD_EDITOR_ELEMENT_NONE;
-
-                    gSPWideTextureRectangle(OVERLAY_DISP++, rectLeft << 2, rectTop << 2, (rectLeft + rectWidth) << 2,
-                                            (rectTop + rectHeight) << 2, G_TX_RENDERTILE, 0, 0, dsdx << 1, dtdy << 1);
+                    gDPSetPrimColor(OVERLAY_DISP++, 0, 0, 100, 100, 100, interfaceCtx->magicAlpha);
                 }
-                // #endregion
-            } else {
-                gSPTextureRectangle(OVERLAY_DISP++, sp2CA * 4, 206 << 2, (sp2CA * 4) + 0x20, 222 << 2, G_TX_RENDERTILE,
-                                    0, 0, 1 << 10, 1 << 10);
+
+                // #region 2S2H [Cosmetic] Hud Editor
+                HudEditor_SetActiveElement(HUD_EDITOR_ELEMENT_RUPEE_COUNTER);
+                if (HudEditor_ShouldOverrideDraw()) {
+                    if (CVarGetInteger(hudEditorElements[hudEditorActiveElement].modeCvar,
+                                       HUD_EDITOR_ELEMENT_MODE_VANILLA) == HUD_EDITOR_ELEMENT_MODE_HIDDEN) {
+                        hudEditorActiveElement = HUD_EDITOR_ELEMENT_NONE;
+                    } else {
+                        // All of this information was derived from the original call to gSPTextureRectangle below
+                        s16 rectLeft = sp2CA;
+                        s16 rectTop = 824 / 4;
+                        s16 rectWidth = 0x20 / 4;
+                        s16 rectHeight = (888 / 4) - rectTop;
+                        s16 dsdx = 512;
+                        s16 dtdy = 512;
+
+                        HudEditor_ModifyDrawValues(&rectLeft, &rectTop, &rectWidth, &rectHeight, &dsdx, &dtdy);
+
+                        hudEditorActiveElement = HUD_EDITOR_ELEMENT_NONE;
+
+                        gSPWideTextureRectangle(OVERLAY_DISP++, rectLeft << 2, rectTop << 2,
+                                                (rectLeft + rectWidth) << 2, (rectTop + rectHeight) << 2,
+                                                G_TX_RENDERTILE, 0, 0, dsdx << 1, dtdy << 1);
+                    }
+                    // #endregion
+                } else {
+                    gSPTextureRectangle(OVERLAY_DISP++, sp2CA * 4, 206 << 2, (sp2CA * 4) + 0x20, 222 << 2,
+                                        G_TX_RENDERTILE, 0, 0, 1 << 10, 1 << 10);
+                }
             }
         }
 

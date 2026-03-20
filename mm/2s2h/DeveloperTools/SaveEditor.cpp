@@ -59,7 +59,7 @@ constexpr u8 REG_PAGES_MAX = REG_PAGES;
 constexpr u8 REG_GROUPS_MAX = REG_GROUPS - 1;
 const char* MAGIC_LEVEL_NAMES[3] = { "No Magic", "Single Magic", "Double Magic" };
 constexpr int8_t MAGIC_LEVEL_MAX = 2;
-const char* WALLET_LEVEL_NAMES[3] = { "Child Wallet", "Adult Wallet", "Giant Wallet" };
+const char* WALLET_LEVEL_NAMES[4] = { "Child Wallet", "Adult Wallet", "Giant Wallet", "Tycoon Wallet" };
 constexpr u8 WALLET_LEVEL_MAX = 2;
 ImVec4 colorTint;
 const char* songTooltip;
@@ -477,8 +477,11 @@ void DrawGeneralTab() {
 
     // Card 3: Currency
     UIWidgets::BeginCard("currencyCard");
+    u8 walletLevelMax = (IS_RANDO && RANDO_SAVE_OPTIONS[RO_SHUFFLE_TYCOON_WALLET] == RO_GENERIC_YES)
+                            ? WALLET_LEVEL_MAX + 1
+                            : WALLET_LEVEL_MAX;
     if (UIWidgets::Button("Max Rupees", { .size = UIWidgets::Sizes::Inline, .color = UIWidgets::Colors::Green })) {
-        Inventory_ChangeUpgrade(UPG_WALLET, 2);
+        Inventory_ChangeUpgrade(UPG_WALLET, walletLevelMax);
         gSaveContext.save.saveInfo.playerData.rupees = CUR_CAPACITY(UPG_WALLET);
     }
     ImGui::SameLine();
@@ -489,7 +492,7 @@ void DrawGeneralTab() {
     }
     UIWidgets::PushStyleSlider(UIWidgets::Colors::Green);
     u8 currentWalletLevel = CUR_UPG_VALUE(UPG_WALLET);
-    if (ImGui::SliderScalar("##walletLevelSlider", ImGuiDataType_U8, &currentWalletLevel, &U8_ZERO, &WALLET_LEVEL_MAX,
+    if (ImGui::SliderScalar("##walletLevelSlider", ImGuiDataType_U8, &currentWalletLevel, &U8_ZERO, &walletLevelMax,
                             WALLET_LEVEL_NAMES[currentWalletLevel])) {
         Inventory_ChangeUpgrade(UPG_WALLET, currentWalletLevel);
         gSaveContext.save.saveInfo.playerData.rupees =

@@ -211,6 +211,10 @@ bool Rando::IsItemObtainable(RandoItemId randoItemId, RandoCheckId randoCheckId)
         case RI_PROGRESSIVE_WALLET:
             if (hasObtainedCheck) {
                 return false;
+            } else if (RANDO_SAVE_OPTIONS[RO_SHUFFLE_TYCOON_WALLET] == RO_GENERIC_YES) {
+                if (CUR_UPG_VALUE(UPG_WALLET) >= 3) {
+                    return false;
+                }
             } else if (CUR_UPG_VALUE(UPG_WALLET) >= 2) {
                 return false;
             }
@@ -222,6 +226,11 @@ bool Rando::IsItemObtainable(RandoItemId randoItemId, RandoCheckId randoCheckId)
             break;
         case RI_WALLET_GIANT:
             if (CUR_UPG_VALUE(UPG_WALLET) >= 2) {
+                return false;
+            }
+            break;
+        case RI_WALLET_TYCOON:
+            if (CUR_UPG_VALUE(UPG_WALLET) >= 3) {
                 return false;
             }
             break;
@@ -718,6 +727,8 @@ RandoItemId Rando::ConvertItem(RandoItemId randoItemId, RandoCheckId randoCheckI
                     return RI_WALLET_ADULT;
                 } else if (CUR_UPG_VALUE(UPG_WALLET) == 1) {
                     return RI_WALLET_GIANT;
+                } else if (CUR_UPG_VALUE(UPG_WALLET) == 2) {
+                    return RI_WALLET_TYCOON;
                 }
                 // Shouldn't happen, just in case
                 assert(false);
