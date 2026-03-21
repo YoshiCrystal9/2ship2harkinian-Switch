@@ -88,6 +88,8 @@ jobs:
         parameters: '.github/macports.yml'
     - name: Configure sccache
       uses: hendrikmuhs/ccache-action@v1.2
+      env:
+        SCCACHE_CACHE_MULTIARCH: 1
       with:
         variant: sccache
         key: ${{ runner.os }} # sccache-macos-{{ timestamp }}
