@@ -86,13 +86,10 @@ jobs:
       uses: melusina-org/setup-macports@v1
       with:
         parameters: '.github/macports.yml'
-    - name: Configure sccache
+    - name: Configure ccache
       uses: hendrikmuhs/ccache-action@v1.2
-      env:
-        SCCACHE_CACHE_MULTIARCH: 1
       with:
-        variant: sccache
-        key: ${{ runner.os }} # sccache-macos-{{ timestamp }}
+        key: ${{ runner.os }} # ccache-macos-{{ timestamp }}
         max-size: "2G"
         evict-old-files: job
         save: ${{ github.ref_name == github.event.repository.default_branch }}
@@ -103,9 +100,9 @@ jobs:
         path: build-cmake/mm
     - name: Build 2Ship
       env:
-        SCCACHE_CACHE_MULTIARCH: 1
+        CCACHE_SLOPPINESS: pch_defines,time_macros
       run: |
-        cmake --no-warn-unused-cli -H. -Bbuild-cmake -GNinja -DCMAKE_BUILD_TYPE:STRING=Release -DCMAKE_C_COMPILER_LAUNCHER=sccache -DCMAKE_CXX_COMPILER_LAUNCHER=sccache -DCMAKE_OSX_ARCHITECTURES="x86_64;arm64"
+        cmake --no-warn-unused-cli -H. -Bbuild-cmake -GNinja -DCMAKE_BUILD_TYPE:STRING=Release -DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache -DCMAKE_OSX_ARCHITECTURES="x86_64;arm64" -DCMAKE_C_FLAGS="-Xclang -fno-pch-timestamp" -DCMAKE_CXX_FLAGS="-Xclang -fno-pch-timestamp"
         cmake --build build-cmake -j
         (cd build-cmake && cpack)
 
