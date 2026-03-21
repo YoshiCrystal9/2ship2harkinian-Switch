@@ -100,6 +100,8 @@ jobs:
         name: 2ship.o2r
         path: build-cmake/mm
     - name: Build 2Ship
+      env:
+        SCCACHE_CACHE_MULTIARCH: 1
       run: |
         cmake --no-warn-unused-cli -H. -Bbuild-cmake -GNinja -DCMAKE_BUILD_TYPE:STRING=Release -DCMAKE_C_COMPILER_LAUNCHER=sccache -DCMAKE_CXX_COMPILER_LAUNCHER=sccache -DCMAKE_OSX_ARCHITECTURES="x86_64;arm64"
         cmake --build build-cmake -j
