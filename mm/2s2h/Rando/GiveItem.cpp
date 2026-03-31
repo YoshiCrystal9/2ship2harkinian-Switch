@@ -143,7 +143,8 @@ void Rando::GiveItem(RandoItemId randoItemId) {
         case RI_WALLET_GIANT:
             Item_Give(gPlayState, Rando::StaticData::Items[randoItemId].itemId);
             // Fill Rupees to max, this may be opt-in later
-            gSaveContext.rupeeAccumulator = CUR_CAPACITY(UPG_WALLET);
+            // Use remaining space rather than full capacity to avoid excess in the accumulator.
+            gSaveContext.rupeeAccumulator = CUR_CAPACITY(UPG_WALLET) - gSaveContext.save.saveInfo.playerData.rupees;
             break;
         case RI_WALLET_TYCOON:
             Inventory_ChangeUpgrade(UPG_WALLET, 3);
