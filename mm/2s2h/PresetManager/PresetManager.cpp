@@ -200,7 +200,7 @@ nlohmann::json curatedPresetJ = R"(
             }
         },
         "gFixes": {
-            "FixAmmoCountEnvColor": 1,
+            "FixButtonEnvColor": 1,
             "FixEponaStealingSword": 1,
             "FixIkanaGreatFairyFountainColor": 1
         },

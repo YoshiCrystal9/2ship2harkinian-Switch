@@ -1915,6 +1915,14 @@ typedef enum {
 
     // #### `result`
     // ```c
+    // false
+    // ```
+    // #### `args`
+    // - None
+    VB_SET_BUTTON_ENV_COLOR,
+
+    // #### `result`
+    // ```c
     // true
     // ```
     // #### `args`
