@@ -1755,6 +1755,38 @@ typedef enum {
 
     // #### `result`
     // ```c
+    // ammo == 1
+    // ```
+    // #### `args`
+    // - None
+    VB_POWDER_KEG_AMMO_AT_CAPACITY,
+
+    // #### `result`
+    // ```c
+    // true
+    // ```
+    // #### `args`
+    // - None
+    VB_POWDER_KEG_CAP_AMMO,
+
+    // #### `result`
+    // ```c
+    // (AMMO(ITEM_POWDER_KEG) != 0) || (play->actorCtx.flags & ACTORCTX_FLAG_0)
+    // ```
+    // #### `args`
+    // - None
+    VB_POWDER_KEG_CHECK_HAS,
+
+    // #### `result`
+    // ```c
+    // true
+    // ```
+    // #### `args`
+    // - None
+    VB_POWDER_KEG_SET_AMMO_ON_GIVE,
+
+    // #### `result`
+    // ```c
     // false
     // ```
     // #### `args`

@@ -1093,6 +1093,10 @@ void BenMenu::AddEnhancements() {
                               "-Half Price: Sell at half value (rounded up)"
                               "Arrows will always be sold back at Full Price.")
                      .ComboVec(&ammoBuybackOptions));
+    AddWidget(path, "Extra Powder Kegs", WIDGET_CVAR_CHECKBOX)
+        .CVar("gEnhancements.Items.ExtraPowderKegs")
+        .Options(CheckboxOptions().Tooltip(
+            "Allows carrying up to 3 Powder Kegs at once instead of the vanilla limit of 1."));
     AddWidget(path, "Curiosity Shop Refills", WIDGET_CVAR_CHECKBOX)
         .CVar("gEnhancements.Shops.CuriosityShopRefills")
         .Options(CheckboxOptions().Tooltip(

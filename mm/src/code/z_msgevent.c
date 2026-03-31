@@ -865,7 +865,8 @@ s32 MsgEvent_CheckHasPowderKeg(Actor* actor, PlayState* play, u8** script, MsgSc
     MsgScriptCmdCheckHasPowderKeg* cmd = (MsgScriptCmdCheckHasPowderKeg*)*script;
     s16 skip = SCRIPT_PACK_16(cmd->offsetH, cmd->offsetL);
 
-    if ((AMMO(ITEM_POWDER_KEG) != 0) || (play->actorCtx.flags & ACTORCTX_FLAG_0)) {
+    if (GameInteractor_Should(VB_POWDER_KEG_CHECK_HAS,
+                              (AMMO(ITEM_POWDER_KEG) != 0) || (play->actorCtx.flags & ACTORCTX_FLAG_0))) {
         *script += skip;
     }
     return false;

@@ -4365,7 +4365,9 @@ u8 Item_GiveImpl(PlayState* play, u8 item) {
             INV_CONTENT(ITEM_POWDER_KEG) = ITEM_POWDER_KEG;
         }
 
-        AMMO(ITEM_POWDER_KEG) = 1;
+        if (GameInteractor_Should(VB_POWDER_KEG_SET_AMMO_ON_GIVE, true)) {
+            AMMO(ITEM_POWDER_KEG) = 1;
+        }
         return ITEM_NONE;
 
     } else if (item == ITEM_BOMB) {
@@ -5222,10 +5224,12 @@ void Inventory_ChangeAmmo(s16 item, s16 ammoChange) {
 
     } else if (item == ITEM_POWDER_KEG) {
         AMMO(ITEM_POWDER_KEG) += ammoChange;
-        if (AMMO(ITEM_POWDER_KEG) >= 1) {
-            AMMO(ITEM_POWDER_KEG) = 1;
-        } else if (AMMO(ITEM_POWDER_KEG) < 0) {
-            AMMO(ITEM_POWDER_KEG) = 0;
+        if (GameInteractor_Should(VB_POWDER_KEG_CAP_AMMO, true)) {
+            if (AMMO(ITEM_POWDER_KEG) >= 1) {
+                AMMO(ITEM_POWDER_KEG) = 1;
+            } else if (AMMO(ITEM_POWDER_KEG) < 0) {
+                AMMO(ITEM_POWDER_KEG) = 0;
+            }
         }
     }
 }
@@ -6187,8 +6191,8 @@ void Interface_Dpad_DrawAmmoCount(PlayState* play, s16 button, s16 alpha) {
             ((i == ITEM_DEKU_STICK) && (AMMO(i) == CUR_CAPACITY(UPG_DEKU_STICKS))) ||
             ((i == ITEM_DEKU_NUT) && (AMMO(i) == CUR_CAPACITY(UPG_DEKU_NUTS))) ||
             ((i == ITEM_BOMBCHU) && (AMMO(i) == CUR_CAPACITY(UPG_BOMB_BAG))) ||
-            ((i == ITEM_POWDER_KEG) && (ammo == 1)) || ((i == ITEM_PICTOGRAPH_BOX) && (ammo == 1)) ||
-            ((i == ITEM_MAGIC_BEANS) && (ammo == 20))) {
+            ((i == ITEM_POWDER_KEG) && GameInteractor_Should(VB_POWDER_KEG_AMMO_AT_CAPACITY, ammo == 1)) ||
+            ((i == ITEM_PICTOGRAPH_BOX) && (ammo == 1)) || ((i == ITEM_MAGIC_BEANS) && (ammo == 20))) {
             gDPSetPrimColor(OVERLAY_DISP++, 0, 0, 120, 255, 0, alpha);
         }
 
@@ -6310,8 +6314,8 @@ void Interface_DrawAmmoCount(PlayState* play, s16 button, s16 alpha) {
                    ((i == ITEM_DEKU_STICK) && (AMMO(i) == CUR_CAPACITY(UPG_DEKU_STICKS))) ||
                    ((i == ITEM_DEKU_NUT) && (AMMO(i) == CUR_CAPACITY(UPG_DEKU_NUTS))) ||
                    ((i == ITEM_BOMBCHU) && (AMMO(i) == CUR_CAPACITY(UPG_BOMB_BAG))) ||
-                   ((i == ITEM_POWDER_KEG) && (ammo == 1)) || ((i == ITEM_PICTOGRAPH_BOX) && (ammo == 1)) ||
-                   ((i == ITEM_MAGIC_BEANS) && (ammo == 20))) {
+                   ((i == ITEM_POWDER_KEG) && GameInteractor_Should(VB_POWDER_KEG_AMMO_AT_CAPACITY, ammo == 1)) ||
+                   ((i == ITEM_PICTOGRAPH_BOX) && (ammo == 1)) || ((i == ITEM_MAGIC_BEANS) && (ammo == 20))) {
             gDPSetPrimColor(OVERLAY_DISP++, 0, 0, 120, 255, 0, alpha);
         }
 
