@@ -1174,6 +1174,10 @@ void BenMenu::AddEnhancements() {
         .CVar("gEnhancements.Cycle.DoNotResetTimeSpeed")
         .Options(CheckboxOptions().Tooltip(
             "Playing the Song of Time will not reset the current time speed set by Inverted Song of Time."));
+    AddWidget(path, "Do not reset Chateau status", WIDGET_CVAR_CHECKBOX)
+        .CVar("gEnhancements.Cycle.DoNotResetChateau")
+        .Options(CheckboxOptions().Tooltip(
+            "Playing the Song of Time will not reset the infinite magic status granted by Chateau Romani."));
     AddWidget(path, "Keep Express Mail", WIDGET_CVAR_CHECKBOX)
         .CVar("gEnhancements.Cycle.KeepExpressMail")
         .Options(CheckboxOptions().Tooltip(
