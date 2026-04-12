@@ -3,9 +3,12 @@
 #include "2s2h/Enhancements/FrameInterpolation/FrameInterpolation.h"
 #include "2s2h/ShipInit.hpp"
 
+#include <string>
+
 extern "C" {
 uint8_t ResourceMgr_FileExists(const char* resName);
 Gfx* ResourceMgr_LoadGfxByName(const char* path);
+bool ResourceMgr_IsAltAssetsEnabled();
 }
 
 static const char* sFierceDeitySwordInSheathDLPath = "__OTR__objects/object_link_boy/gLinkFierceDeitySwordInSheathDL";
@@ -13,14 +16,33 @@ static const char* sFierceDeitySwordSheathDLPath = "__OTR__objects/object_link_b
 static Gfx* sFierceDeitySwordInSheathDLs[2] = { nullptr, nullptr };
 static Gfx* sFierceDeitySwordSheathDLs[2] = { nullptr, nullptr };
 
-static bool sFierceDeitySheathChecked = false;
+static s32 sFierceDeitySheathAltState = -1;
+
+static bool ResourceMgr_DListExistsForCurrentAltState(const char* basePath) {
+    std::string resourcePath = basePath;
+    if (resourcePath.starts_with("__OTR__")) {
+        resourcePath = resourcePath.substr(7);
+    }
+
+    if (ResourceMgr_IsAltAssetsEnabled()) {
+        const std::string altPath = "__OTR__alt/" + resourcePath;
+        if (ResourceMgr_FileExists(altPath.c_str())) {
+            return true;
+        }
+    }
+
+    return ResourceMgr_FileExists(basePath);
+}
 
 static bool CustomFDSheath_LoadAssets() {
-    if (!sFierceDeitySheathChecked) {
-        sFierceDeitySheathChecked = true;
+    const s32 altState = ResourceMgr_IsAltAssetsEnabled() ? 1 : 0;
+    if (sFierceDeitySheathAltState != altState) {
+        sFierceDeitySheathAltState = altState;
+        sFierceDeitySwordInSheathDLs[0] = sFierceDeitySwordInSheathDLs[1] = nullptr;
+        sFierceDeitySwordSheathDLs[0] = sFierceDeitySwordSheathDLs[1] = nullptr;
 
-        if (ResourceMgr_FileExists(sFierceDeitySwordInSheathDLPath) &&
-            ResourceMgr_FileExists(sFierceDeitySwordSheathDLPath)) {
+        if (ResourceMgr_DListExistsForCurrentAltState(sFierceDeitySwordInSheathDLPath) &&
+            ResourceMgr_DListExistsForCurrentAltState(sFierceDeitySwordSheathDLPath)) {
             sFierceDeitySwordInSheathDLs[0] = sFierceDeitySwordInSheathDLs[1] =
                 ResourceMgr_LoadGfxByName(sFierceDeitySwordInSheathDLPath);
             sFierceDeitySwordSheathDLs[0] = sFierceDeitySwordSheathDLs[1] =
