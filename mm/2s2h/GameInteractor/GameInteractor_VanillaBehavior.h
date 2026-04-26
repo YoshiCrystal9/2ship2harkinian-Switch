@@ -1193,6 +1193,14 @@ typedef enum {
 
     // #### `result`
     // ```c
+    // func_80A3E9DC(this, play)
+    // ```
+    // #### `args`
+    // - None
+    VB_KAFEI_RUN_TO_TOWN,
+
+    // #### `result`
+    // ```c
     // true
     // ```
     // #### `args`

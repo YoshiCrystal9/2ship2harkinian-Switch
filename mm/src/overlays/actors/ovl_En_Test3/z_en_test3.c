@@ -8,6 +8,7 @@
 #include "z_en_test3.h"
 
 #include "z64malloc.h"
+#include "2s2h/GameInteractor/GameInteractor.h"
 
 #include "objects/object_test3/object_test3.h"
 #include "overlays/actors/ovl_En_Door/z_en_door.h"
@@ -865,7 +866,7 @@ s32 func_80A3FE20(EnTest3* this, PlayState* play) {
     ScheduleOutput scheduleOutput;
 
     if (D_80A41D64 == 0) {
-        if (func_80A3E9DC(this, play)) {
+        if (GameInteractor_Should(VB_KAFEI_RUN_TO_TOWN, func_80A3E9DC(this, play))) {
             sp2C.unk_1_0 = 2;
             scheduleOutput.time0 = (u16)SCRIPT_TIME_NOW;
             scheduleOutput.time1 = (u16)(scheduleOutput.time0 + 1000);
