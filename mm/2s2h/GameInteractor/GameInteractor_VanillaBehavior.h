@@ -1123,6 +1123,14 @@ typedef enum {
 
     // #### `result`
     // ```c
+    // func_80BD7CEC(this)
+    // ```
+    // #### `args`
+    // - None
+    VB_HIDEOUT_DOOR_OPEN,
+
+    // #### `result`
+    // ```c
     // (!DynaPolyActor_IsPlayerAbove((DynaPolyActor*)this->actor.child) &&
     //  (player->actor.bgCheckFlags & BGCHECKFLAG_GROUND)) ||
     // (gSaveContext.timerCurTimes[TIMER_ID_MINIGAME_2] <= SECONDS_TO_TIMER(0)) ||
