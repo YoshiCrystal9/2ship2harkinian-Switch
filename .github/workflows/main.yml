@@ -11,11 +11,11 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
     - name: Git Checkout
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
       with:
         submodules: true
     - name: Configure ccache
-      uses: hendrikmuhs/ccache-action@v1.2
+      uses: hendrikmuhs/ccache-action@v1.2.22
       with:
         save: ${{ github.ref_name == github.event.repository.default_branch }}
         key: ${{ runner.os }}-otr-ccache-${{ github.ref }}-${{ github.sha }}
@@ -27,7 +27,7 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y $(cat .github/workflows/apt-deps.txt) libzip-dev zipcmp zipmerge ziptool
     - name: Restore Cached deps folder
-      uses: actions/cache/restore@v4
+      uses: actions/cache/restore@v5
       with:
         key: ${{ runner.os }}-deps-${{ github.ref }}-${{ github.sha }}
         restore-keys: |
@@ -68,7 +68,7 @@ jobs:
         cmake --no-warn-unused-cli -H. -Bbuild-cmake -GNinja -DCMAKE_BUILD_TYPE:STRING=Release
         cmake --build build-cmake --config Release --target Generate2ShipOtr -j3
     - name: Upload 2ship.o2r
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7
       with:
         name: 2ship.o2r
         path: 2ship.o2r
@@ -87,14 +87,14 @@ jobs:
       with:
         parameters: '.github/macports.yml'
     - name: Configure ccache
-      uses: hendrikmuhs/ccache-action@v1.2
+      uses: hendrikmuhs/ccache-action@v1.2.22
       with:
         key: ${{ runner.os }} # ccache-macos-{{ timestamp }}
         max-size: "2G"
         evict-old-files: job
         save: ${{ github.ref_name == github.event.repository.default_branch }}
     - name: Download 2ship.o2r
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@v8
       with:
         name: 2ship.o2r
         path: build-cmake/mm
@@ -109,7 +109,7 @@ jobs:
         mv _packages/*.dmg 2Ship.dmg
         mv README.md readme.txt
     - name: Upload build
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7
       with:
         name: 2ship-mac
         path: |
@@ -121,7 +121,7 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
     - name: Git Checkout
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
       with:
         submodules: true
     - name: Install dependencies
@@ -129,7 +129,7 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y $(cat .github/workflows/apt-deps.txt)
     - name: Configure ccache
-      uses: hendrikmuhs/ccache-action@v1.2
+      uses: hendrikmuhs/ccache-action@v1.2.22
       with:
         save: ${{ github.ref_name == github.event.repository.default_branch }}
         key: ${{ runner.os }}-ccache-${{ github.ref }}-${{ github.sha }}
@@ -138,7 +138,7 @@ jobs:
           ${{ runner.os }}-ccache
     - name: Restore Cached deps folder
       id: restore-cache-deps
-      uses: actions/cache/restore@v4
+      uses: actions/cache/restore@v5
       with:
         key: ${{ runner.os }}-deps-${{ github.ref }}-${{ github.sha }}
         restore-keys: |
@@ -188,7 +188,7 @@ jobs:
         sudo make install
         sudo cp -av /usr/local/lib/libzip* /lib/x86_64-linux-gnu/
     - name: Download 2ship.o2r
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@v8
       with:
         name: 2ship.o2r
         path: build-cmake/mm
@@ -205,7 +205,7 @@ jobs:
         CC: gcc-12
         CXX: g++-12
     - name: Upload build
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7
       with:
         name: 2ship-linux
         path: |
@@ -213,7 +213,7 @@ jobs:
           readme.txt
     - name: Save Cache deps folder
       if: ${{ github.ref_name == github.event.repository.default_branch }}
-      uses: actions/cache/save@v4
+      uses: actions/cache/save@v5
       with:
         key: ${{ steps.restore-cache-deps.outputs.cache-primary-key }}
         path: deps
@@ -227,11 +227,11 @@ jobs:
         choco install ninja -y
         Remove-Item -Path "C:\ProgramData\Chocolatey\bin\ccache.exe" -Force -ErrorAction SilentlyContinue
     - name: Git Checkout
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
       with:
         submodules: true
     - name: Configure sccache
-      uses: hendrikmuhs/ccache-action@v1.2
+      uses: hendrikmuhs/ccache-action@v1.2.22
       with:
         variant: sccache
         max-size: "2G"
@@ -253,7 +253,7 @@ jobs:
     - name: Configure Developer Command Prompt
       uses: ilammy/msvc-dev-cmd@v1
     - name: Download 2ship.o2r
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@v8
       with:
         name: 2ship.o2r
         path: build-windows/mm
@@ -271,13 +271,13 @@ jobs:
     - name: Unzip package
       run: Expand-Archive -Path _packages/2ship-windows.zip -DestinationPath 2ship-windows
     - name: Upload build
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7
       with:
         name: 2ship-windows
         path: 2ship-windows
     - name: Save Cache VCPKG folder
       if: ${{ github.ref_name == github.event.repository.default_branch }}
-      uses: actions/cache/save@v4
+      uses: actions/cache/save@v5
       with:
         key: ${{ steps.restore-cache-vcpkg.outputs.cache-primary-key }}
         path: vcpkg
