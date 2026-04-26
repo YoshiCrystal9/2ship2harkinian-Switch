@@ -4,6 +4,7 @@
 #include "BenInputEditorWindow.h"
 #include "DeveloperTools/SaveEditor.h"
 #include "DeveloperTools/CollisionViewer.h"
+#include "2s2h/Enhancements/Enhancements.h"
 #include "2s2h/Enhancements/GfxPatcher/AuthenticGfxPatches.h"
 #include "2s2h/PresetManager/PresetManager.h"
 #include "HudEditor.h"
@@ -161,6 +162,18 @@ static const std::vector<const char*> timerDisplayOptions = {
     "Off",          // TIMER_DISPLAY_NONE
     "Real-Time",    // TIMER_DISPLAY_RTA
     "In-Game Time", // TIMER_DISPLAY_IGT
+};
+
+static const std::vector<const char*> mirroredWorldModes = {
+    "Off",                      // MIRRORED_WORLD_OFF
+    "Always",                   // MIRRORED_WORLD_ALWAYS
+    "Random",                   // MIRRORED_WORLD_RANDOM
+    "Random (Seeded)",          // MIRRORED_WORLD_RANDOM_SEEDED
+    "Dungeons (Temples)",       // MIRRORED_WORLD_DUNGEONS_TEMPLES
+    "Dungeons (Spider Houses)", // MIRRORED_WORLD_DUNGEONS_SPIDERS
+    "Dungeons (All)",           // MIRRORED_WORLD_DUNGEONS_ALL
+    "Dungeons Random",          // MIRRORED_WORLD_DUNGEONS_RANDOM
+    "Dungeons Random (Seeded)", // MIRRORED_WORLD_DUNGEONS_RANDOM_SEEDED
 };
 
 static const std::unordered_map<int32_t, const char*> damageMultiplierOptions = {
@@ -1067,16 +1080,26 @@ void BenMenu::AddEnhancements() {
     AddWidget(path, "Time Moves when you Move", WIDGET_CVAR_CHECKBOX)
         .CVar("gModes.TimeMovesWhenYouMove")
         .Options(CheckboxOptions().Tooltip("Time only moves when Link is not standing still."));
-    AddWidget(path, "Mirrored World", WIDGET_CVAR_CHECKBOX)
+    AddWidget(path, "Mirrored World", WIDGET_CVAR_COMBOBOX)
         .CVar("gModes.MirroredWorld.Mode")
-        .Callback([](WidgetInfo& info) {
-            if (CVarGetInteger("gModes.MirroredWorld.Mode", 0)) {
-                CVarSetInteger("gModes.MirroredWorld.State", 1);
-            } else {
-                CVarClear("gModes.MirroredWorld.State");
-            }
-        })
-        .Options(CheckboxOptions().Tooltip("Mirrors the world horizontally."));
+        .Options(
+            ComboboxOptions()
+                .DefaultIndex(MIRRORED_WORLD_OFF)
+                .Tooltip(
+                    "Mirrors the world horizontally:\n\n"
+                    " - Always: Always mirror the world.\n"
+                    " - Random: Randomly decide to mirror the world on each scene change.\n"
+                    " - Random (Seeded): Scenes are mirrored based on the current randomizer seed/file.\n"
+                    " - Dungeons (Temples): Mirror the world in the four temples.\n"
+                    " - Dungeons (Spider Houses): Mirror the world in the two Spider Houses.\n"
+                    " - Dungeons (All): Mirror the world in the four temples and the two Spider Houses.\n"
+                    " - Dungeons Random: Randomly decide to mirror the world in Dungeons.\n"
+                    " - Dungeons Random (Seeded): Dungeons are mirrored based on the current randomizer seed/file.")
+                .ComboVec(&mirroredWorldModes));
+    AddWidget(path, "Fix Inverted Stone Tower Temple", WIDGET_CVAR_CHECKBOX)
+        .CVar("gModes.MirroredWorld.StoneTowerTempleFix")
+        .Options(CheckboxOptions().Tooltip(
+            "Mirrors (or unmirrors) the inverted Stone Tower Temple to make its layout consistent."));
     AddWidget(path, "Other", WIDGET_SEPARATOR_TEXT);
     AddWidget(path, "Milk Run Reward Options", WIDGET_CVAR_COMBOBOX)
         .CVar("gEnhancements.Minigames.CremiaHugs")
