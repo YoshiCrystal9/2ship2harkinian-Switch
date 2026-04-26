@@ -2318,7 +2318,7 @@ void DrawRandoTab() {
         ImGui::TableNextColumn();
         ImGui::TextColored(randoSaveCheck.obtained ? UIWidgets::ColorValues.at(UIWidgets::Colors::Green)
                                                    : UIWidgets::ColorValues.at(UIWidgets::Colors::White),
-                           randoStaticCheck.name);
+                           "%s", randoStaticCheck.name);
         ImGui::TableNextColumn();
         UIWidgets::ComboboxWithSearch((hiddenName + "reward").c_str(), &randoSaveCheck.randoItemId,
                                       &randoItemIdComboboxMap, { .labelPosition = UIWidgets::LabelPosition::None });

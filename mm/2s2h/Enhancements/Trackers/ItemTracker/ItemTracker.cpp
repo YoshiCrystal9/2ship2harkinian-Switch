@@ -275,7 +275,7 @@ void DrawItemCounts(TrackerItemType itemType, u32 itemId, ImVec2 textureSize, fl
         ImVec2(currentPos.x + textureSize.x - textSize.x - 2.0f, currentPos.y + textureSize.y - textSize.y - 2.0f);
     ImGui::SetCursorPos(textPos);
     ImGui::SetWindowFontScale(scale);
-    ImGui::Text(itemCount.c_str());
+    ImGui::Text("%s", itemCount.c_str());
 }
 
 bool DrawItemTrackerSlot(TrackerItemType itemType, u32 itemId, float scale, bool clickable) {
