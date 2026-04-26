@@ -321,40 +321,40 @@ void EffectBlure_GetComputedValues(EffectBlure* this, s32 index, f32 ratio, Vec3
     if (gPlayState != NULL) {
         Player* player = GET_PLAYER(gPlayState);
         if (player != NULL) {
-            u8 elementId = 255;
+            const char* cosmeticId = NULL;
             for (int i = 0; i < 3; i++) {
                 if (player->meleeWeaponEffectIndex[i] != -1 &&
                     this == (EffectBlure*)Effect_GetByIndex(player->meleeWeaponEffectIndex[i])) {
                     if (player->transformation == PLAYER_FORM_FIERCE_DEITY)
-                        elementId = COSMETIC_ELEMENT_TRAIL_SWORD_FIERCE_DEITY;
+                        cosmeticId = COSMETIC_ID("Trails.FierceDeitySwordTrail");
                     else if (player->transformation == PLAYER_FORM_ZORA)
-                        elementId = (player->meleeWeaponAnimation == PLAYER_MWA_ZORA_PUNCH_KICK ||
-                                     player->meleeWeaponAnimation == PLAYER_MWA_ZORA_JUMPKICK_START ||
-                                     player->meleeWeaponAnimation == PLAYER_MWA_ZORA_JUMPKICK_FINISH)
-                                        ? COSMETIC_ELEMENT_TRAIL_ZORA_KICK
-                                        : COSMETIC_ELEMENT_TRAIL_ZORA_PUNCH;
+                        cosmeticId = (player->meleeWeaponAnimation == PLAYER_MWA_ZORA_PUNCH_KICK ||
+                                      player->meleeWeaponAnimation == PLAYER_MWA_ZORA_JUMPKICK_START ||
+                                      player->meleeWeaponAnimation == PLAYER_MWA_ZORA_JUMPKICK_FINISH)
+                                         ? COSMETIC_ID("Trails.ZoraKickTrail")
+                                         : COSMETIC_ID("Trails.ZoraPunchTrail");
                     else if (player->transformation == PLAYER_FORM_DEKU)
-                        elementId = COSMETIC_ELEMENT_TRAIL_DEKU_SPIN;
+                        cosmeticId = COSMETIC_ID("Trails.DekuSpinTrail");
                     else if (player->heldItemAction == PLAYER_IA_SWORD_KOKIRI)
-                        elementId = COSMETIC_ELEMENT_TRAIL_SWORD_KOKIRI;
+                        cosmeticId = COSMETIC_ID("Trails.KokiriSwordTrail");
                     else if (player->heldItemAction == PLAYER_IA_SWORD_RAZOR)
-                        elementId = COSMETIC_ELEMENT_TRAIL_SWORD_RAZOR;
+                        cosmeticId = COSMETIC_ID("Trails.RazorSwordTrail");
                     else if (player->heldItemAction == PLAYER_IA_SWORD_GILDED)
-                        elementId = COSMETIC_ELEMENT_TRAIL_SWORD_GILDED;
+                        cosmeticId = COSMETIC_ID("Trails.GildedSwordTrail");
                     else if (player->heldItemAction == PLAYER_IA_SWORD_TWO_HANDED)
-                        elementId = COSMETIC_ELEMENT_TRAIL_SWORD_GREAT_FAIRY;
+                        cosmeticId = COSMETIC_ID("Trails.GreatFairySwordTrail");
                     else if (player->heldItemAction == PLAYER_IA_DEKU_STICK)
-                        elementId = COSMETIC_ELEMENT_TRAIL_DEKU_STICK;
+                        cosmeticId = COSMETIC_ID("Trails.DekuStickTrail");
                     break;
                 }
             }
 
-            if (elementId != 255) {
+            if (cosmeticId != NULL) {
                 Color_RGBA8 newP1Start =
-                    CosmeticEditor_GetChangedColor(p1Start.r, p1Start.g, p1Start.b, p1Start.a, elementId);
+                    CosmeticEditor_GetChangedColor(p1Start.r, p1Start.g, p1Start.b, p1Start.a, cosmeticId);
                 if (*(u32*)&newP1Start != *(u32*)&p1Start) {
                     p1Start = newP1Start;
-                    p2Start = CosmeticEditor_GetChangedColor(p2Start.r, p2Start.g, p2Start.b, p2Start.a, elementId);
+                    p2Start = CosmeticEditor_GetChangedColor(p2Start.r, p2Start.g, p2Start.b, p2Start.a, cosmeticId);
                     p1End.r = p1Start.r;
                     p1End.g = p1Start.g;
                     p1End.b = p1Start.b;

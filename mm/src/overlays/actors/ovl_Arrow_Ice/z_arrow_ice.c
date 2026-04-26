@@ -214,8 +214,8 @@ void ArrowIce_Draw(Actor* thisx, PlayState* play) {
         // Draw ice on the arrow
         Gfx_SetupDL25_Xlu(play->state.gfxCtx);
         gDPSetPrimColorOverride(POLY_XLU_DISP++, 0x80, 0x80, 170, 255, 255, (s32)(this->alpha * 0.5f) & 0xFF,
-                                COSMETIC_ELEMENT_ICE_ARROW_PRIMARY);
-        gDPSetEnvColorOverride(POLY_XLU_DISP++, 0, 0, 255, 128, COSMETIC_ELEMENT_ICE_ARROW_SECONDARY);
+                                COSMETIC_ID("Effects.IceArrowPrim"));
+        gDPSetEnvColorOverride(POLY_XLU_DISP++, 0, 0, 255, 128, COSMETIC_ID("Effects.IceArrowSec"));
         Matrix_RotateZYX(0x4000, 0, 0, MTXMODE_APPLY);
         if (this->timer != 0) {
             Matrix_Translate(0.0f, 0.0f, 0.0f, MTXMODE_APPLY);

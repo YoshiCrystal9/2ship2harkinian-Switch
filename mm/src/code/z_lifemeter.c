@@ -253,10 +253,10 @@ void LifeMeter_Draw(PlayState* play) {
                     // Normal Heart
                     gDPSetPrimColorOverride(OVERLAY_DISP++, 0, 0, interfaceCtx->heartsPrimR[0],
                                             interfaceCtx->heartsPrimG[0], interfaceCtx->heartsPrimB[0],
-                                            interfaceCtx->healthAlpha, COSMETIC_ELEMENT_HEARTS);
+                                            interfaceCtx->healthAlpha, COSMETIC_ID("HUD.Hearts"));
                     // Normal Heart Border
                     gDPSetEnvColorOverrideEx(OVERLAY_DISP++, interfaceCtx->heartsEnvR[0], interfaceCtx->heartsEnvG[0],
-                                             interfaceCtx->heartsEnvB[0], 255, COSMETIC_ELEMENT_HEARTS,
+                                             interfaceCtx->heartsEnvB[0], 255, COSMETIC_ID("HUD.Hearts"),
                                              COSMETIC_COLOR_MODE_DIVIDE, 4.0f);
                 }
             } else if (i == fullHeartCount) {
@@ -266,11 +266,11 @@ void LifeMeter_Draw(PlayState* play) {
                     // Normal Beating Heart
                     gDPSetPrimColorOverride(OVERLAY_DISP++, 0, 0, interfaceCtx->beatingHeartPrim[0],
                                             interfaceCtx->beatingHeartPrim[1], interfaceCtx->beatingHeartPrim[2],
-                                            interfaceCtx->healthAlpha, COSMETIC_ELEMENT_HEARTS);
+                                            interfaceCtx->healthAlpha, COSMETIC_ID("HUD.Hearts"));
                     // Normal Beating Heart Border
                     gDPSetEnvColorOverrideEx(OVERLAY_DISP++, interfaceCtx->beatingHeartEnv[0],
                                              interfaceCtx->beatingHeartEnv[1], interfaceCtx->beatingHeartEnv[2], 255,
-                                             COSMETIC_ELEMENT_HEARTS, COSMETIC_COLOR_MODE_DIVIDE, 4.0f);
+                                             COSMETIC_ID("HUD.Hearts"), COSMETIC_COLOR_MODE_DIVIDE, 4.0f);
                 }
             } else if (fullHeartCount < i) {
                 if (curColorSet != 2) {
@@ -278,9 +278,9 @@ void LifeMeter_Draw(PlayState* play) {
                     gDPPipeSync(OVERLAY_DISP++);
                     gDPSetPrimColorOverride(OVERLAY_DISP++, 0, 0, interfaceCtx->heartsPrimR[0],
                                             interfaceCtx->heartsPrimG[0], interfaceCtx->heartsPrimB[0],
-                                            interfaceCtx->healthAlpha, COSMETIC_ELEMENT_HEARTS);
+                                            interfaceCtx->healthAlpha, COSMETIC_ID("HUD.Hearts"));
                     gDPSetEnvColorOverrideEx(OVERLAY_DISP++, interfaceCtx->heartsEnvR[0], interfaceCtx->heartsEnvG[0],
-                                             interfaceCtx->heartsEnvB[0], 255, COSMETIC_ELEMENT_HEARTS,
+                                             interfaceCtx->heartsEnvB[0], 255, COSMETIC_ID("HUD.Hearts"),
                                              COSMETIC_COLOR_MODE_DIVIDE, 4.0f);
                 }
             } else {
@@ -311,7 +311,7 @@ void LifeMeter_Draw(PlayState* play) {
                                     interfaceCtx->healthAlpha);
                     // Double Defense Non Active Heart
                     gDPSetEnvColorOverrideEx(OVERLAY_DISP++, sHeartsDDEnv[0][0], sHeartsDDEnv[0][1], sHeartsDDEnv[0][2],
-                                             255, COSMETIC_ELEMENT_HEARTS, COSMETIC_COLOR_MODE_SUBTRACT, 55.0f);
+                                             255, COSMETIC_ID("HUD.Hearts"), COSMETIC_COLOR_MODE_SUBTRACT, 55.0f);
                 }
             } else if (i == fullHeartCount) {
                 if (curColorSet != 5) {
@@ -322,7 +322,7 @@ void LifeMeter_Draw(PlayState* play) {
                                     sBeatingHeartsDDPrim[2], interfaceCtx->healthAlpha);
                     // Double Defense Beating Heart
                     gDPSetEnvColorOverrideEx(OVERLAY_DISP++, sBeatingHeartsDDEnv[0], sBeatingHeartsDDEnv[1],
-                                             sBeatingHeartsDDEnv[2], 255, COSMETIC_ELEMENT_HEARTS,
+                                             sBeatingHeartsDDEnv[2], 255, COSMETIC_ID("HUD.Hearts"),
                                              COSMETIC_COLOR_MODE_SUBTRACT, 55.0f);
                 }
             } else if (i > fullHeartCount) {
@@ -334,7 +334,7 @@ void LifeMeter_Draw(PlayState* play) {
                                     interfaceCtx->healthAlpha);
                     // Double Defense Empty Heart
                     gDPSetEnvColorOverrideEx(OVERLAY_DISP++, sHeartsDDEnv[0][0], sHeartsDDEnv[0][1], sHeartsDDEnv[0][2],
-                                             255, COSMETIC_ELEMENT_HEARTS, COSMETIC_COLOR_MODE_SUBTRACT, 55.0f);
+                                             255, COSMETIC_ID("HUD.Hearts"), COSMETIC_COLOR_MODE_SUBTRACT, 55.0f);
                 }
             } else if (curColorSet != 7) {
                 curColorSet = 7;

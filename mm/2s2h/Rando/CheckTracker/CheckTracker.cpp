@@ -628,7 +628,8 @@ void SettingsWindow::DrawElement() {
                                     .LabelPosition(UIWidgets::LabelPosition::Far));
         if (CVAR_OUT_OF_LOGIC_MODE == 1) {
             ImGui::SameLine(ImGui::GetContentRegionAvail().x - 155.0f);
-            UIWidgets::CVarColorPicker("##OutOfLogicColor", CVAR_NAME_OUT_OF_LOGIC_COLOR, { 255, 255, 255, 100 }, true);
+            UIWidgets::CVarColorPicker("##OutOfLogicColor", CVAR_NAME_OUT_OF_LOGIC_COLOR ".Value",
+                                       { 255, 255, 255, 100 }, true);
         }
         UIWidgets::CVarCombobox("Collected Checks", CVAR_NAME_COLLECTED_MODE, &sCheckModes,
                                 UIWidgets::ComboboxOptions()
@@ -637,7 +638,8 @@ void SettingsWindow::DrawElement() {
                                     .LabelPosition(UIWidgets::LabelPosition::Far));
         if (CVAR_COLLECTED_MODE == 1) {
             ImGui::SameLine(ImGui::GetContentRegionAvail().x - 155.0f);
-            UIWidgets::CVarColorPicker("##CollectedColor", CVAR_NAME_COLLECTED_COLOR, { 100, 255, 100, 255 }, true);
+            UIWidgets::CVarColorPicker("##CollectedColor", CVAR_NAME_COLLECTED_COLOR ".Value", { 100, 255, 100, 255 },
+                                       true);
         }
         UIWidgets::CVarCombobox("Skipped Checks", CVAR_NAME_SKIPPED_MODE, &sCheckModes,
                                 UIWidgets::ComboboxOptions()
@@ -646,7 +648,8 @@ void SettingsWindow::DrawElement() {
                                     .LabelPosition(UIWidgets::LabelPosition::Far));
         if (CVAR_SKIPPED_MODE == 1) {
             ImGui::SameLine(ImGui::GetContentRegionAvail().x - 155.0f);
-            UIWidgets::CVarColorPicker("##SkippedColor", CVAR_NAME_SKIPPED_COLOR, { 255, 100, 255, 255 }, true);
+            UIWidgets::CVarColorPicker("##SkippedColor", CVAR_NAME_SKIPPED_COLOR ".Value", { 255, 100, 255, 255 },
+                                       true);
         }
         UIWidgets::CVarCheckbox("Only Show Current Scene", CVAR_NAME_SHOW_CURRENT_SCENE);
         UIWidgets::CVarCheckbox("Auto Scroll To Current Scene", CVAR_NAME_SCROLL_TO_SCENE,

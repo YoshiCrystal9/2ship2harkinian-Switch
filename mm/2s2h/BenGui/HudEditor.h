@@ -67,7 +67,7 @@ void HudEditor_ModifyDrawValuesFromBase(s16 baseX, s16 baseY, s16* rectLeft, s16
                                         s16* rectHeight, s16* dsdx, s16* dtdy);
 void HudEditor_ModifyDrawValues(s16* rectLeft, s16* rectTop, s16* rectWidth, s16* rectHeight, s16* dsdx, s16* dtdy);
 
-#define HUD_EDITOR_NO_COSMETIC -1
+#define HUD_EDITOR_NO_COSMETIC nullptr
 
 typedef struct {
     HudEditorElementID id;
@@ -82,7 +82,7 @@ typedef struct {
     const char* yCvar;
     const char* scaleCvar;
     const char* modeCvar;
-    int32_t cosmeticElementId;
+    const char* cosmeticOptionId;
 } HudEditorElement;
 
 #define HUD_EDITOR_ELEMENT(id, name, cvar, defaultX, defaultY, defaultR, defaultG, defaultB, defaultA, cosmeticId) \

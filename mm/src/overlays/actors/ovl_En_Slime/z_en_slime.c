@@ -1189,15 +1189,15 @@ void EnSlime_Draw(Actor* thisx, PlayState* play) {
         switch (this->actor.params) {
             case EN_SLIME_TYPE_GREEN:
                 gDPSetPrimColorOverride(POLY_XLU_DISP++, 0, 100, primColor->r, primColor->g, primColor->b, primColor->a,
-                                        COSMETIC_ELEMENT_MAGIC);
+                                        COSMETIC_ID("HUD.Magic"));
                 gDPSetEnvColorOverride(POLY_XLU_DISP++, envColor->r, envColor->g, envColor->b, 255,
-                                       COSMETIC_ELEMENT_MAGIC);
+                                       COSMETIC_ID("HUD.Magic"));
                 break;
             case EN_SLIME_TYPE_RED:
                 gDPSetPrimColorOverride(POLY_XLU_DISP++, 0, 100, primColor->r, primColor->g, primColor->b, primColor->a,
-                                        COSMETIC_ELEMENT_HEARTS);
+                                        COSMETIC_ID("HUD.Hearts"));
                 gDPSetEnvColorOverride(POLY_XLU_DISP++, envColor->r, envColor->g, envColor->b, 255,
-                                       COSMETIC_ELEMENT_HEARTS);
+                                       COSMETIC_ID("HUD.Hearts"));
                 break;
             default:
                 gDPSetPrimColor(POLY_XLU_DISP++, 0, 100, primColor->r, primColor->g, primColor->b, primColor->a);

@@ -296,7 +296,7 @@ void MapDisp_DrawMinimapRoom(PlayState* play, TexturePtr texture, s32 x, s32 y, 
     MapData_GetMapColor(MapData_GetMapColorIndex(mapDataRoom->mapId), &color);
     gDPSetPrimColorOverride(OVERLAY_DISP++, 0, 0, color.r, color.g, color.b,
                             (s32)(play->interfaceCtx.minimapAlpha * intensity * color.a / 255.0f),
-                            COSMETIC_ELEMENT_MINIMAP);
+                            COSMETIC_ID("HUD.Minimap"));
     MapData_GetDrawType(mapDataRoom->mapId, &drawType);
 
     switch (drawType) {
