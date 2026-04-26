@@ -15,19 +15,20 @@ void Rando::ActorBehavior::InitDoorWarp1VBehavior() {
      */
     COND_VB_SHOULD(VB_SPAWN_BOSS_REMAINS, IS_RANDO, {
         s32* ret = va_arg(args, s32*);
-        if ((gPlayState->sceneId == SCENE_MITURIN_BS) && !RANDO_SAVE_CHECKS[RC_WOODFALL_TEMPLE_BOSS_WARP].obtained) {
+        if ((gPlayState->sceneId == SCENE_MITURIN_BS) &&
+            !RANDO_SAVE_CHECKS[RC_WOODFALL_TEMPLE_BOSS_WARP].cycleObtained) {
             // Odolwa's Lair
             *ret = 1;
         } else if ((gPlayState->sceneId == SCENE_HAKUGIN_BS) &&
-                   !RANDO_SAVE_CHECKS[RC_SNOWHEAD_TEMPLE_BOSS_WARP].obtained) {
+                   !RANDO_SAVE_CHECKS[RC_SNOWHEAD_TEMPLE_BOSS_WARP].cycleObtained) {
             // Goht's Lair
             *ret = 2;
         } else if ((gPlayState->sceneId == SCENE_SEA_BS) &&
-                   !RANDO_SAVE_CHECKS[RC_GREAT_BAY_TEMPLE_BOSS_WARP].obtained) {
+                   !RANDO_SAVE_CHECKS[RC_GREAT_BAY_TEMPLE_BOSS_WARP].cycleObtained) {
             // Gyorg's Lair
             *ret = 3;
         } else if ((gPlayState->sceneId == SCENE_INISIE_BS) &&
-                   !RANDO_SAVE_CHECKS[RC_STONE_TOWER_TEMPLE_INVERTED_BOSS_WARP].obtained) {
+                   !RANDO_SAVE_CHECKS[RC_STONE_TOWER_TEMPLE_INVERTED_BOSS_WARP].cycleObtained) {
             // Twinmold's Lair
             *ret = 4;
         }
@@ -59,8 +60,7 @@ void Rando::ActorBehavior::InitDoorWarp1VBehavior() {
                     checkId = RC_STONE_TOWER_TEMPLE_INVERTED_BOSS_WARP;
                     break;
             }
-            // Cannot get each boss remains check more than once
-            RANDO_SAVE_CHECKS[checkId].eligible = !RANDO_SAVE_CHECKS[checkId].obtained;
+            RANDO_SAVE_CHECKS[checkId].eligible = !RANDO_SAVE_CHECKS[checkId].cycleObtained;
             // Transform back to human Link and warp away without waiting for a textbox to close as normal
             Player_SetCsActionWithHaltedActors(gPlayState, &doorWarp1->dyna.actor, PLAYER_CSACTION_9);
             player->unk_3A0.x = doorWarp1->dyna.actor.world.pos.x;

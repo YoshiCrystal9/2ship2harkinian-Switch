@@ -96,29 +96,27 @@ void handleGiantsCheck(SceneId sceneId) {
     }
 
     // The Oath to Order check only occurs when freeing a Giant for the first time.
-    if (gSaveContext.save.saveInfo.unk_EA8[1] == 1) {
-        if (IS_RANDO) {
+    if (IS_RANDO) {
+        if (!RANDO_SAVE_CHECKS[RC_GIANTS_CHAMBER_OATH_TO_ORDER].cycleObtained) {
             RANDO_SAVE_CHECKS[RC_GIANTS_CHAMBER_OATH_TO_ORDER].eligible = true;
-        } else {
-            GameInteractor::Instance->events.emplace_back(GIEventGiveItem{
-                .showGetItemCutscene = !CVarGetInteger("gEnhancements.Cutscenes.SkipGetItemCutscenes", 0),
-                .giveItem =
-                    [](Actor* actor, PlayState* play) {
-                        if (CUSTOM_ITEM_FLAGS & CustomItem::GIVE_ITEM_CUTSCENE) {
-                            CustomMessage::SetActiveCustomMessage("You learned the Oath to Order!",
-                                                                  { .textboxType = 2 });
-                        } else {
-                            CustomMessage::StartTextbox("You learned the Oath to Order!\x1C\x02\x10",
-                                                        { .textboxType = 2 });
-                        }
-                        Item_Give(gPlayState, ITEM_SONG_OATH);
-                    },
-                .drawItem =
-                    [](Actor* actor, PlayState* play) {
-                        Matrix_Scale(30.0f, 30.0f, 30.0f, MTXMODE_APPLY);
-                        Rando::DrawItem(RI_SONG_OATH);
-                    } });
         }
+    } else if (gSaveContext.save.saveInfo.unk_EA8[1] == 1) {
+        GameInteractor::Instance->events.emplace_back(GIEventGiveItem{
+            .showGetItemCutscene = !CVarGetInteger("gEnhancements.Cutscenes.SkipGetItemCutscenes", 0),
+            .giveItem =
+                [](Actor* actor, PlayState* play) {
+                    if (CUSTOM_ITEM_FLAGS & CustomItem::GIVE_ITEM_CUTSCENE) {
+                        CustomMessage::SetActiveCustomMessage("You learned the Oath to Order!", { .textboxType = 2 });
+                    } else {
+                        CustomMessage::StartTextbox("You learned the Oath to Order!\x1C\x02\x10", { .textboxType = 2 });
+                    }
+                    Item_Give(gPlayState, ITEM_SONG_OATH);
+                },
+            .drawItem =
+                [](Actor* actor, PlayState* play) {
+                    Matrix_Scale(30.0f, 30.0f, 30.0f, MTXMODE_APPLY);
+                    Rando::DrawItem(RI_SONG_OATH);
+                } });
     }
 }
 
