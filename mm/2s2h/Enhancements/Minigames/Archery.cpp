@@ -1,4 +1,5 @@
 #include <libultraship/bridge/consolevariablebridge.h>
+#include "2s2h/CustomMessage/CustomMessage.h"
 #include "2s2h/GameInteractor/GameInteractor.h"
 #include "2s2h/ShipInit.hpp"
 
@@ -19,6 +20,8 @@ void EnSyatekiMan_Town_RunGame(EnSyatekiMan* enSyatekiMan, PlayState* play);
 #define BOAT_HEALTH_CVAR CVarGetInteger(BOAT_HEALTH_CVAR_NAME, 10)
 #define BOAT_NO_DAMAGE_CVAR_NAME "gEnhancements.Minigames.BoatArcheryInvincible"
 #define BOAT_NO_DAMAGE_CVAR CVarGetInteger(BOAT_NO_DAMAGE_CVAR_NAME, 0)
+
+static constexpr u16 TEXT_BOAT_ARCHERY_FAIL = 0x877;
 
 static void RegisterSwampArchery() {
     COND_ID_HOOK(ShouldActorUpdate, ACTOR_EN_SYATEKI_MAN, SWAMP_CVAR != 2180, [](Actor* actor, bool* should) {
@@ -73,8 +76,18 @@ static bool ShouldFailBoatArchery() {
     return gSaveContext.minigameHiddenScore >= BOAT_HEALTH_CVAR;
 }
 
+static void ModifyHitCount(u16* textId, bool* loadFromMessageTable) {
+    auto entry = CustomMessage::LoadVanillaMessageTableEntry(*textId);
+    u16 hits = gSaveContext.minigameHiddenScore;
+    CustomMessage::Replace(&entry.msg, "10 times", std::to_string(hits) + " time" + (hits == 1 ? "" : "s"));
+    CustomMessage::LoadCustomMessageIntoFont(entry);
+    *loadFromMessageTable = false;
+}
+
 static void RegisterKoumeHealth() {
-    COND_VB_SHOULD(VB_FAIL_BOAT_ARCHERY, BOAT_HEALTH_CVAR != 10, { *should = ShouldFailBoatArchery(); });
+    bool isHealthChanged = BOAT_HEALTH_CVAR != 10;
+    COND_VB_SHOULD(VB_FAIL_BOAT_ARCHERY, isHealthChanged, { *should = ShouldFailBoatArchery(); });
+    COND_ID_HOOK(OnOpenText, TEXT_BOAT_ARCHERY_FAIL, isHealthChanged, ModifyHitCount);
 }
 
 static void RegisterKoumeInvincible() {
