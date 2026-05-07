@@ -91,6 +91,33 @@ typedef struct {
     int32_t defaultA;
 } CosmeticOption;
 
+inline CosmeticOption MakeCosmeticOption(const char* cvar, const char* valuesCvar, const char* rainbowCvar,
+                                         const char* lockedCvar, const char* changedCvar, const char* label,
+                                         CosmeticGroup group, Color_RGBA8 defaultColor, bool supportsAlpha,
+                                         bool supportsRainbow, bool advancedOption) {
+    return CosmeticOption{ cvar,
+                           valuesCvar,
+                           rainbowCvar,
+                           lockedCvar,
+                           changedCvar,
+                           label,
+                           group,
+                           ImVec4(defaultColor.r / 255.0f, defaultColor.g / 255.0f, defaultColor.b / 255.0f,
+                                  defaultColor.a / 255.0f),
+                           defaultColor,
+                           supportsAlpha,
+                           supportsRainbow,
+                           advancedOption,
+                           valuesCvar,
+                           changedCvar,
+                           label,
+                           nullptr,
+                           defaultColor.r,
+                           defaultColor.g,
+                           defaultColor.b,
+                           defaultColor.a };
+}
+
 #define COSMETIC_OPTION(id, label, group, defaultColor, supportsAlpha, supportsRainbow, advancedOption)               \
     {                                                                                                                 \
         id, {                                                                                                         \
@@ -106,6 +133,24 @@ typedef struct {
 
 extern std::map<std::string, CosmeticOption> cosmeticOptions;
 }
+
+void CosmeticEditorResetElement(CosmeticOption& option, bool save = true);
+void ScanDynamicCosmetics();
+void DrawDynamicCosmetics();
+void ApplyDynamicCosmetics();
+void RandomizeAllDynamicCosmetics();
+void ResetAllDynamicCosmetics();
+void SetAllDynamicCosmeticsRainbow(bool enabled);
+bool HasCustomCosmetics();
+bool HasCustomCosmeticsRainbowEnabled();
+void UpdateCustomCosmeticsRainbow(int hue, float rainbowSpeed, int& index);
+void RefreshDynamicCosmeticsStateIfNeeded();
+bool IsCustomModelActiveForCosmeticId(const char* cosmeticId);
+bool IsCustomHumanModelActive();
+bool IsCustomDekuModelActive();
+bool IsCustomGoronModelActive();
+bool IsCustomZoraModelActive();
+bool IsCustomKafeiModelActive();
 #endif //__cplusplus
 
 #endif

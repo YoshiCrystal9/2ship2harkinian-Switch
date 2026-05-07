@@ -108,6 +108,30 @@ static CosmeticOption& kZoraTunicOption = cosmeticOptions.at("Player.ZoraTunic")
 static CosmeticOption& kHeartsOption = cosmeticOptions.at("HUD.Hearts");
 static CosmeticOption& kMagicOption = cosmeticOptions.at("HUD.Magic");
 
+static bool CosmeticEditorIsSuppressed(const char* cosmeticId) {
+    return IsCustomModelActiveForCosmeticId(cosmeticId);
+}
+
+static bool CosmeticEditorIsSuppressed(const CosmeticOption& option) {
+    if (&option == &kHumanTunicOption || &option == &kHumanHairOption) {
+        return IsCustomModelActiveForCosmeticId("Player.HumanTunic");
+    }
+    if (&option == &kDekuTunicOption || &option == &kDekuHairOption) {
+        return IsCustomModelActiveForCosmeticId("Player.DekuTunic");
+    }
+    if (&option == &kGoronTunicOption) {
+        return IsCustomModelActiveForCosmeticId("Player.GoronTunic");
+    }
+    if (&option == &kZoraTunicOption) {
+        return IsCustomModelActiveForCosmeticId("Player.ZoraTunic");
+    }
+    if (&option == &kKafeiHairOption) {
+        return IsCustomModelActiveForCosmeticId("Player.KafeiHair");
+    }
+
+    return false;
+}
+
 typedef struct {
     uint16_t data1;
     uint16_t data2;
@@ -406,7 +430,12 @@ extern "C" Color_RGBA8 CosmeticEditor_GetChangedColorEx(u8 r, u8 g, u8 b, u8 a, 
 
     Color_RGBA8 returnedColor;
 
-    if (CVarGetInteger(option.changedCvar, false)) {
+    if (CosmeticEditorIsSuppressed(cosmeticId)) {
+        returnedColor.r = r;
+        returnedColor.g = g;
+        returnedColor.b = b;
+        returnedColor.a = a;
+    } else if (CVarGetInteger(option.changedCvar, false)) {
         Color_RGBA8 changedColor = CVarGetColor(option.valuesCvar, option.defaultColor);
         returnedColor.r = static_cast<uint8_t>(changedColor.r);
         returnedColor.g = static_cast<uint8_t>(changedColor.g);
@@ -607,7 +636,10 @@ void CosmeticEditorSetLocked(const CosmeticOption& option, bool locked, bool sav
     }
 }
 
-void CosmeticEditorResetElement(CosmeticOption& option, bool save = true) {
+void CosmeticEditorResetElement(CosmeticOption& option, bool save) {
+    if (CosmeticEditorIsSuppressed(option)) {
+        return;
+    }
     if (CVarGetInteger(option.lockedCvar, 0)) {
         return;
     }
@@ -623,6 +655,9 @@ void CosmeticEditorResetElement(CosmeticOption& option, bool save = true) {
 }
 
 void CosmeticEditorRandomizeElement(CosmeticOption& option, bool save = true) {
+    if (CosmeticEditorIsSuppressed(option)) {
+        return;
+    }
     if (CVarGetInteger(option.lockedCvar, 0)) {
         return;
     }
@@ -644,6 +679,7 @@ void CosmeticEditorRandomizeAllElements() {
     for (auto& [id, option] : cosmeticOptions) {
         CosmeticEditorRandomizeElement(option, false);
     }
+    RandomizeAllDynamicCosmetics();
     CosmeticEditorSave();
 }
 
@@ -651,11 +687,15 @@ void CosmeticEditorResetAllElements() {
     for (auto& [id, option] : cosmeticOptions) {
         CosmeticEditorResetElement(option, false);
     }
+    ResetAllDynamicCosmetics();
     CosmeticEditorSave();
 }
 
 void CosmeticEditorSetAllLocked(bool locked) {
     for (auto& [id, option] : cosmeticOptions) {
+        if (CosmeticEditorIsSuppressed(option)) {
+            continue;
+        }
         CosmeticEditorSetLocked(option, locked, false);
     }
     CosmeticEditorSave();
@@ -663,11 +703,12 @@ void CosmeticEditorSetAllLocked(bool locked) {
 
 void CosmeticEditorSetAllRainbow(bool enabled) {
     for (auto& [id, option] : cosmeticOptions) {
-        if (!option.supportsRainbow || CVarGetInteger(option.lockedCvar, 0)) {
+        if (CosmeticEditorIsSuppressed(option) || !option.supportsRainbow || CVarGetInteger(option.lockedCvar, 0)) {
             continue;
         }
         CosmeticEditorSetRainbowEnabled(option, enabled, false);
     }
+    SetAllDynamicCosmeticsRainbow(enabled);
     CosmeticEditorSave();
 }
 
@@ -694,6 +735,8 @@ void CosmeticEditorResetGroup(CosmeticGroup group) {
 }
 
 void CosmeticEditorUpdateTick() {
+    RefreshDynamicCosmeticsStateIfNeeded();
+
     int index = 0;
     float rainbowSpeed = CVarGetFloat(kCosmeticRainbowSpeedCvar, 0.6f);
     if (rainbowSpeed <= 0.0f) {
@@ -704,6 +747,9 @@ void CosmeticEditorUpdateTick() {
     bool syncRainbow = CVarGetInteger(kCosmeticRainbowSyncCvar, 0);
 
     for (auto& [id, option] : cosmeticOptions) {
+        if (CosmeticEditorIsSuppressed(option)) {
+            continue;
+        }
         if (!option.supportsRainbow || !CVarGetInteger(option.rainbowCvar, 0)) {
             if (!syncRainbow) {
                 index += static_cast<int>(60 * rainbowSpeed);
@@ -731,7 +777,11 @@ void CosmeticEditorUpdateTick() {
         }
     }
 
-    if (!hasRainbowEntries) {
+    const bool hasCustomRainbowEntries = HasCustomCosmeticsRainbowEnabled();
+    UpdateCustomCosmeticsRainbow(sCosmeticRainbowHue, rainbowSpeed, index);
+    ApplyDynamicCosmetics();
+
+    if (!hasRainbowEntries && !hasCustomRainbowEntries) {
         return;
     }
 
@@ -742,6 +792,10 @@ void CosmeticEditorUpdateTick() {
 }
 
 void CosmeticEditorDrawRow(CosmeticOption& option) {
+    if (CosmeticEditorIsSuppressed(option)) {
+        return;
+    }
+
     Color_RGBA8 defaultColor = CosmeticEditorGetDefaultColor(option);
 
     if (UIWidgets::CVarColorPicker(option.label, option.valuesCvar, defaultColor, option.supportsAlpha,
@@ -785,6 +839,18 @@ void CosmeticEditorDrawRow(CosmeticOption& option) {
 }
 
 void CosmeticEditorDrawGroup(CosmeticGroup group, const char* displayName = nullptr) {
+    bool hasVisibleOptions = false;
+    for (auto& [id, option] : cosmeticOptions) {
+        if (CosmeticEditorMatchesGroup(option, group) && !CosmeticEditorIsSuppressed(option)) {
+            hasVisibleOptions = true;
+            break;
+        }
+    }
+
+    if (!hasVisibleOptions) {
+        return;
+    }
+
     std::string label = displayName != nullptr ? displayName : sCosmeticGroupLabels.at(group);
     ImGui::Text("%s", label.c_str());
     ImGui::SameLine((ImGui::CalcTextSize("Message Light Blue (None No Shadow)").x * 1.0f) + 60.0f);
@@ -801,7 +867,7 @@ void CosmeticEditorDrawGroup(CosmeticGroup group, const char* displayName = null
     UIWidgets::Spacer();
 
     for (auto& [id, option] : cosmeticOptions) {
-        if (CosmeticEditorMatchesGroup(option, group)) {
+        if (CosmeticEditorMatchesGroup(option, group) && !CosmeticEditorIsSuppressed(option)) {
             CosmeticEditorDrawRow(option);
         }
     }
@@ -810,6 +876,8 @@ void CosmeticEditorDrawGroup(CosmeticGroup group, const char* displayName = null
 }
 
 void CosmeticEditorWindow::DrawElement() {
+    RefreshDynamicCosmeticsStateIfNeeded();
+
     UIWidgets::CVarCheckbox("Sync Rainbow colors", kCosmeticRainbowSyncCvar,
                             UIWidgets::CheckboxOptions()
                                 .Color(THEME_COLOR)
@@ -863,6 +931,12 @@ void CosmeticEditorWindow::DrawElement() {
             ImGui::EndTabItem();
         }
 
+        if (HasCustomCosmetics() && ImGui::BeginTabItem("Mods")) {
+            UIWidgets::Separator(true, true, 2.0f, 2.0f);
+            DrawDynamicCosmetics();
+            ImGui::EndTabItem();
+        }
+
         if (ImGui::BeginTabItem("Effects")) {
             UIWidgets::Separator(true, true, 2.0f, 2.0f);
             CosmeticEditorDrawGroup(COSMETICS_GROUP_EFFECTS);
@@ -902,6 +976,9 @@ void CosmeticEditorWindow::InitElement() {
     }
     CosmeticEditorSave();
 
+    RefreshDynamicCosmeticsStateIfNeeded();
+    ApplyDynamicCosmetics();
+
     GameInteractor::Instance->RegisterGameHook<GameInteractor::OnRandoSeedGeneration>([]() {
         if (CVarGetInteger(kCosmeticRandomizeOnSeedGenCvar, 0)) {
             CosmeticEditorRandomizeAllElements();
@@ -922,7 +999,7 @@ Gfx humanTunic[] = {
 
 static RegisterShipInitFunc humanTunicPatch(
     []() {
-        if (CVarGetInteger(kHumanTunicOption.colorChangedCvar, 0)) {
+        if (!IsCustomHumanModelActive() && CVarGetInteger(kHumanTunicOption.colorChangedCvar, 0)) {
             ResourceMgr_PatchGfxByName("objects/object_link_child/gLinkHumanWaistDL", "setPrim", 5,
                                        gsSPDisplayList(humanTunic));
             ResourceMgr_PatchGfxByName("objects/object_link_child/gLinkHumanRightThighDL", "setPrim", 10,
@@ -978,7 +1055,7 @@ Gfx humanHair[] = {
 
 static RegisterShipInitFunc humanHairPatch(
     []() {
-        if (CVarGetInteger(kHumanHairOption.colorChangedCvar, 0)) {
+        if (!IsCustomHumanModelActive() && CVarGetInteger(kHumanHairOption.colorChangedCvar, 0)) {
             ResourceMgr_PatchGfxByName("objects/object_link_child/gLinkHumanHeadDL", "setPrim1", 162,
                                        gsSPDisplayList(humanHair));
             ResourceMgr_PatchGfxByName("objects/object_link_child/gLinkHumanHeadDL", "setPrim2", 201,
@@ -1012,7 +1089,7 @@ Gfx dekuTunic[] = {
 
 static RegisterShipInitFunc dekuTunicPatch(
     []() {
-        if (CVarGetInteger(kDekuTunicOption.colorChangedCvar, 0)) {
+        if (!IsCustomDekuModelActive() && CVarGetInteger(kDekuTunicOption.colorChangedCvar, 0)) {
             ResourceMgr_PatchGfxByName("objects/object_link_nuts/gLinkDekuWaistDL", "setPrim", 22,
                                        gsSPDisplayList(dekuTunic));
             ResourceMgr_PatchGfxByName("objects/object_link_nuts/gLinkDekuHeadDL", "setPrim1", 55,
@@ -1052,7 +1129,7 @@ Gfx dekuHair[] = {
 
 static RegisterShipInitFunc dekuHairPatch(
     []() {
-        if (CVarGetInteger(kDekuHairOption.colorChangedCvar, 0)) {
+        if (!IsCustomDekuModelActive() && CVarGetInteger(kDekuHairOption.colorChangedCvar, 0)) {
             ResourceMgr_PatchGfxByName("objects/object_link_nuts/gLinkDekuHeadDL", "setPrim3", 22,
                                        gsSPDisplayList(dekuHair));
             ResourceMgr_PatchGfxByName("objects/object_link_nuts/gLinkDekuHeadDL", "setPrim4", 42,
@@ -1091,7 +1168,7 @@ Gfx kafeiHair[] = {
 
 static RegisterShipInitFunc kafeiHairPatch(
     []() {
-        if (CVarGetInteger(kKafeiHairOption.colorChangedCvar, 0)) {
+        if (!IsCustomKafeiModelActive() && CVarGetInteger(kKafeiHairOption.colorChangedCvar, 0)) {
             ResourceMgr_PatchGfxByName("objects/object_test3/gKafeiHeadDL", "setPrim1", 101,
                                        gsSPDisplayList(kafeiHair));
             ResourceMgr_PatchGfxByName("objects/object_test3/gKafeiHeadDL", "setPrim2", 163,
@@ -1133,7 +1210,7 @@ Gfx goronTunic[] = {
 
 static RegisterShipInitFunc goronTunicPatch(
     []() {
-        if (CVarGetInteger(kGoronTunicOption.colorChangedCvar, 0)) {
+        if (!IsCustomGoronModelActive() && CVarGetInteger(kGoronTunicOption.colorChangedCvar, 0)) {
             ResourceMgr_PatchGfxByName("objects/object_link_goron/gLinkGoronWaistDL", "setPrim", 16,
                                        gsSPDisplayList(goronTunic));
             ResourceMgr_PatchGfxByName("objects/object_link_goron/gLinkGoronHatDL", "setPrim", 17,
@@ -1172,7 +1249,7 @@ static const Color_RGBA8 zoraTunicBaseColor = { 0, 74, 16, 255 };
 
 static RegisterShipInitFunc zoraTunicPatch(
     []() {
-        if (CVarGetInteger(kZoraTunicOption.colorChangedCvar, 0)) {
+        if (!IsCustomZoraModelActive() && CVarGetInteger(kZoraTunicOption.colorChangedCvar, 0)) {
             /*
              * Zora works differently from the other color changes. Other forms apply a grayscale to the green tunic
              * textures and then alter the Gfx commands to set the color. That works because those textures are one
