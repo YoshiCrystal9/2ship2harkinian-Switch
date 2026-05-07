@@ -13,6 +13,11 @@ extern "C" {
 
 #define CVAR_DPAD_NAME "gEnhancements.Dpad.DpadEquips"
 #define CVAR_DPAD CVarGetInteger(CVAR_DPAD_NAME, 0)
+
+extern bool IsBombArrowButton(s32 slot, bool isDpad);
+extern void SetBombArrowButton(s32 slot, bool state, bool isDpad);
+extern bool sBombSlotIsBombArrowMode;
+
 #define CVAR_NAME "gEnhancements.Equipment.ItemUnequip"
 #define CVAR CVarGetInteger(CVAR_NAME, 0)
 
@@ -87,22 +92,26 @@ void RegisterItemUnequip() {
             equippedSlot = DPAD_SLOT_EQUIP(0, targetSlot);
         }
 
-        // Check if we should unequip
-        if (equippedItem == cursorItem) {
-            if (isMask) {
-                // For masks, check the slot matches (cursorSlot is already offset by ITEM_NUM_SLOTS)
-                if (equippedSlot == cursorSlot) {
+        bool isBombArrow = IsBombArrowButton(targetSlot, isDpad);
+
+        if (equippedItem == cursorItem || (equippedItem == ITEM_BOW && cursorItem == ITEM_BOMB && isBombArrow)) {
+            if (isBombArrow) {
+                if (cursorItem == ITEM_BOMB && sBombSlotIsBombArrowMode) {
                     shouldUnequip = true;
                 }
-            }
-            // For bottles, we need to check the slot too (since there are multiple bottle items)
-            else if (cursorItem >= ITEM_BOTTLE && cursorItem <= ITEM_OBABA_DRINK) {
-                if (equippedSlot == cursorSlot) {
-                    shouldUnequip = true;
-                }
-            } else {
+            } else if (cursorItem != ITEM_BOMB || !sBombSlotIsBombArrowMode) {
                 shouldUnequip = true;
             }
+
+            if (shouldUnequip) {
+                if (isMask && equippedSlot != cursorSlot) {
+                    shouldUnequip = false;
+                } else if (cursorItem >= ITEM_BOTTLE && cursorItem <= ITEM_OBABA_DRINK && equippedSlot != cursorSlot) {
+                    shouldUnequip = false;
+                }
+            }
+        } else if (cursorItem == ITEM_BOMB && sBombSlotIsBombArrowMode && isBombArrow) {
+            shouldUnequip = true;
         }
         // Handle magic arrows (bow variants)
         else if (cursorItem == ITEM_ARROW_FIRE && equippedItem == ITEM_BOW_FIRE) {
@@ -130,6 +139,8 @@ void RegisterItemUnequip() {
                 gPlayState->interfaceCtx.iconItemSegment[DPAD_BUTTON(targetSlot) + EQUIP_SLOT_MAX] =
                     (char*)gEmptyTexture;
             }
+
+            SetBombArrowButton(targetSlot, false, isDpad);
 
             Audio_PlaySfx(NA_SE_SY_DECIDE);
             *should = false;

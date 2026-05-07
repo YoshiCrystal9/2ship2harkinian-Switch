@@ -191,6 +191,9 @@ void RegisterPersistentMasks() {
     // underneath)
     COND_VB_SHOULD(VB_DRAW_ITEM_EQUIPPED_OUTLINE, CVAR, {
         ItemId* itemId = va_arg(args, ItemId*);
+        va_arg(args, s32); // slot
+        va_arg(args, s32); // isDpad
+        va_arg(args, s32); // pageIndex
         if (*itemId == ITEM_MASK_BUNNY && STATE_CVAR) {
             *should = false;
         }

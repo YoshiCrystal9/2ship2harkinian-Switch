@@ -6161,6 +6161,11 @@ s16 sDpadItemAmmoY[] = {
 void Interface_Dpad_DrawAmmoCount(PlayState* play, s16 button, s16 alpha) {
     u8 i;
     u16 ammo;
+
+    if (!GameInteractor_Should(VB_DRAW_HUD_AMMO_COUNT, true, button, alpha, true)) {
+        return;
+    }
+
     OPEN_DISPS(play->state.gfxCtx);
 
     i = ((void)0, DPAD_GET_CUR_FORM_BTN_ITEM(button));
@@ -6272,6 +6277,11 @@ void Interface_DrawAmmoCount(PlayState* play, s16 button, s16 alpha) {
     static s16 sAmmoDigitsYPositions[] = { 35, 35, 51, 35 };
     u8 i;
     u16 ammo;
+
+    if (!GameInteractor_Should(VB_DRAW_HUD_AMMO_COUNT, true, button, alpha, false)) {
+        return;
+    }
+
     OPEN_DISPS(play->state.gfxCtx);
 
     i = ((void)0, GET_CUR_FORM_BTN_ITEM(button));

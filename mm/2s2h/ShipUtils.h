@@ -50,6 +50,10 @@ TexturePtr Ship_GetCharFontTextureNES(u8 character);
 void Ship_Random_Seed(u64 seed);
 s32 Ship_Random(s32 min, s32 max);
 
+extern Vtx sCycleExtraItemVtx[8];
+extern Vtx sCycleAButtonVtx[4];
+void Ship_DrawKaleidoCycleAButtonPrompt(PlayState* play, u8 alpha);
+
 #ifdef __cplusplus
 }
 #endif
