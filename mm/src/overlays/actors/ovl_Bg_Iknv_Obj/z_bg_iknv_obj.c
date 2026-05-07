@@ -180,7 +180,7 @@ void func_80BD7FDC(BgIknvObj* this, PlayState* play) {
 }
 
 void func_80BD8040(BgIknvObj* this, PlayState* play) {
-    if (GameInteractor_Should(VB_HIDEOUT_DOOR_OPEN, func_80BD7CEC(this))) {
+    if (func_80BD7CEC(this)) {
         this->actionFunc = func_80BD7FDC;
     }
     CollisionCheck_SetOC(play, &play->colChkCtx, &this->collider.base);
