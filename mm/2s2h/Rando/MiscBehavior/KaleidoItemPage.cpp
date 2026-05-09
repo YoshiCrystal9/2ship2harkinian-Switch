@@ -1,5 +1,6 @@
 #include "MiscBehavior.h"
 #include "2s2h/Enhancements/FrameInterpolation/FrameInterpolation.h"
+#include "2s2h/ShipUtils.h"
 
 extern "C" {
 #include "z64interface.h"
@@ -9,20 +10,6 @@ extern "C" {
 #include "archives/icon_item_static/icon_item_static_yar.h"
 #include "overlays/kaleido_scope/ovl_kaleido_scope/z_kaleido_scope.h"
 }
-
-// Vertices for the extra items
-static Vtx sCycleExtraItemVtx[] = {
-    // Left Item
-    VTX(-48, 16, 0, 0 << 5, 0 << 5, 0xFF, 0xFF, 0xFF, 0xFF),
-    VTX(-16, 16, 0, 32 << 5, 0 << 5, 0xFF, 0xFF, 0xFF, 0xFF),
-    VTX(-48, -16, 0, 0 << 5, 32 << 5, 0xFF, 0xFF, 0xFF, 0xFF),
-    VTX(-16, -16, 0, 32 << 5, 32 << 5, 0xFF, 0xFF, 0xFF, 0xFF),
-    // Right Item
-    VTX(16, 16, 0, 0 << 5, 0 << 5, 0xFF, 0xFF, 0xFF, 0xFF),
-    VTX(48, 16, 0, 32 << 5, 0 << 5, 0xFF, 0xFF, 0xFF, 0xFF),
-    VTX(16, -16, 0, 0 << 5, 32 << 5, 0xFF, 0xFF, 0xFF, 0xFF),
-    VTX(48, -16, 0, 32 << 5, 32 << 5, 0xFF, 0xFF, 0xFF, 0xFF),
-};
 
 // Vertices for the circle behind the items
 static Vtx sCycleCircleVtx[] = {
@@ -36,14 +23,6 @@ static Vtx sCycleCircleVtx[] = {
     VTX(56, 24, 0, 48 << 5, 0 << 5, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(8, -24, 0, 0 << 5, 48 << 5, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(56, -24, 0, 48 << 5, 48 << 5, 0xFF, 0xFF, 0xFF, 0xFF),
-};
-
-// Vertices for A button indicator (coordinates 1.5x larger than texture size)
-static Vtx sCycleAButtonVtx[] = {
-    VTX(-18, 12, 0, 0 << 5, 0 << 5, 0xFF, 0xFF, 0xFF, 0xFF),
-    VTX(18, 12, 0, 24 << 5, 0 << 5, 0xFF, 0xFF, 0xFF, 0xFF),
-    VTX(-18, -12, 0, 0 << 5, 16 << 5, 0xFF, 0xFF, 0xFF, 0xFF),
-    VTX(18, -12, 0, 24 << 5, 16 << 5, 0xFF, 0xFF, 0xFF, 0xFF),
 };
 
 static int sCycleActiveAnimTimer = 0;
@@ -188,13 +167,7 @@ void DrawItemCycleExtras(PlayState* play, u8 slot, u8 canCycle, u8 leftItem, u8 
         // Render A button indicator when hovered and not cycling
         if (!isCycling && sCycleActiveAnimTimer == 0 && pauseCtx->cursorSlot[PAUSE_ITEM] == slot &&
             pauseCtx->cursorSpecialPos == 0) {
-            Color_RGB8 aButtonColor = { 0, 100, 255 };
-
-            gSPVertex(POLY_OPA_DISP++, (uintptr_t)sCycleAButtonVtx, 4, 0);
-            gDPSetPrimColor(POLY_OPA_DISP++, 0, 0, aButtonColor.r, aButtonColor.g, aButtonColor.b, pauseCtx->alpha);
-            gDPLoadTextureBlock(POLY_OPA_DISP++, gABtnSymbolTex, G_IM_FMT_IA, G_IM_SIZ_8b, 24, 16, 0,
-                                G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMIRROR | G_TX_CLAMP, 4, 4, G_TX_NOLOD, G_TX_NOLOD);
-            gSP1Quadrangle(POLY_OPA_DISP++, 0, 2, 3, 1, 0);
+            Ship_DrawKaleidoCycleAButtonPrompt(play, pauseCtx->alpha);
         }
 
         // Render a dark circle behind the extra items when cycling

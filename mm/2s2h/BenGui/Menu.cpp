@@ -566,14 +566,17 @@ void Menu::DrawElement() {
         ImGui::SetNextWindowPos(ImGui::GetMainViewport()->GetCenter(), windowCond, { 0.5f, 0.5f });
         ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
     }
+    ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0, 0, 0, CVarGetFloat("gSettings.Menu.BackgroundOpacity", 0.85f)));
     if (!ImGui::Begin("Main Menu", NULL, windowFlags)) {
         if (!popout) {
             ImGui::PopStyleVar();
         }
         freshOpen = true;
+        ImGui::PopStyleColor();
         ImGui::End();
         return;
     }
+    ImGui::PopStyleColor();
     if (popped != popout) {
         if (!popout) {
             ImGui::PopStyleVar();

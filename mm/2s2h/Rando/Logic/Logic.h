@@ -100,8 +100,7 @@ struct RegionTimeState {
     bool canStayOverTime;
 };
 
-// Thread-local current region time for check evaluation
-extern thread_local uint64_t gCurrentRegionTime;
+extern uint64_t gCurrentRegionTime;
 
 // Helper: Convert runtime game time to TimeSlice enum
 TimeSlice TimeSliceFromGameTime(s32 day, u16 time);
@@ -187,9 +186,9 @@ void ValidateRegionTimeOwnership(RandoRegionId regionId, RandoCheckId checkId, u
 #define HAS_MAGIC (gSaveContext.save.saveInfo.playerData.isMagicAcquired)
 #define CAN_HOOK_SCARECROW \
     (HAS_ITEM(ITEM_OCARINA_OF_TIME) && HAS_ITEM(ITEM_HOOKSHOT) && canPlaySong(OCARINA_SONG_SCARECROW_SPAWN))
-#define CAN_USE_EXPLOSIVE                                                           \
-    ((HAS_ITEM(ITEM_BOMB) || HAS_ITEM(ITEM_BOMBCHU) || HAS_ITEM(ITEM_MASK_BLAST) || \
-      (HAS_ITEM(ITEM_POWDER_KEG) && CAN_BE_GORON)))
+#define CAN_USE_EXPLOSIVE                             \
+    (HAS_ITEM(ITEM_BOMB) || HAS_ITEM(ITEM_BOMBCHU) || \
+     (HAS_ITEM(ITEM_MASK_BLAST) && GET_CUR_EQUIP_VALUE(EQUIP_TYPE_SHIELD) > EQUIP_VALUE_SHIELD_NONE))
 #define CAN_USE_HUMAN_SWORD (GET_CUR_EQUIP_VALUE(EQUIP_TYPE_SWORD) >= EQUIP_VALUE_SWORD_KOKIRI)
 #define CAN_USE_SWORD (CAN_USE_HUMAN_SWORD || HAS_ITEM(ITEM_SWORD_GREAT_FAIRY) || CAN_BE_DEITY)
 // Be careful here, as some checks require you to play the song as a specific form
@@ -502,6 +501,16 @@ inline constexpr uint64_t GetHalfDayTimeMask(int halfDayIndex) {
     return mask;
 }
 
+// Merge two time states (bitwise OR on time slices)
+inline RegionTimeState MergeTimeStates(const RegionTimeState& a, const RegionTimeState& b) {
+    return { .timeSlices = a.timeSlices | b.timeSlices, .canStayOverTime = a.canStayOverTime || b.canStayOverTime };
+}
+
+// Check if 'a' covers 'b' (a is a superset - adding b gives nothing new)
+inline bool TimeStateCovers(const RegionTimeState& a, const RegionTimeState& b) {
+    return (a.timeSlices | b.timeSlices) == a.timeSlices;
+}
+
 // ============================================================================
 // CLOCK ITEM MACROS
 // ============================================================================
@@ -714,8 +723,6 @@ inline bool CanKillEnemy(ActorId EnemyId) {
             return (CAN_BE_ZORA && HAS_MAGIC);
         case ACTOR_EN_KAME: // Snapper (non Gekko Miniboss)
             return (CAN_USE_EXPLOSIVE || CAN_BE_GORON);
-        case ACTOR_EN_SB: // Shellblade
-            return (CAN_BE_ZORA && HAS_MAGIC);
         case ACTOR_EN_OKUTA: // Octorok
         case ACTOR_EN_EGOL:  // Eyegore
             return (CAN_USE_PROJECTILE);
@@ -729,7 +736,8 @@ inline bool CanKillEnemy(ActorId EnemyId) {
                     HAS_ITEM(ITEM_DEKU_STICK) || HAS_ITEM(ITEM_HOOKSHOT));
         case ACTOR_EN_PR:  // Desbreko
         case ACTOR_EN_PR2: // Skull fish
-            return (CAN_BE_ZORA && HAS_MAGIC);
+        case ACTOR_EN_SB:  // Shellblade
+            return (CAN_BE_ZORA && HAS_MAGIC && CAN_USE_ABILITY(SWIM));
         case ACTOR_BOSS_05: // Bio Deku Baba
             return CAN_BE_ZORA && CAN_USE_ABILITY(SWIM);
         case ACTOR_EN_BEE: // Giant Bee
@@ -737,6 +745,8 @@ inline bool CanKillEnemy(ActorId EnemyId) {
                     CAN_USE_PROJECTILE || CAN_USE_EXPLOSIVE || HAS_ITEM(ITEM_DEKU_NUT));
         case ACTOR_EN_DRAGON: // Deep Python
             return (CAN_BE_ZORA && HAS_MAGIC);
+        case ACTOR_EN_BIGPO:
+            return HAS_ITEM(ITEM_BOW);
         case ACTOR_EN_PO_SISTERS:
             // The first three sisters can be damaged with almost anything, but Meg requires ranged attacks. Not using
             // CAN_USE_EXPLOSIVE here, as the Blast Mask cannot reach, and the Powder Keg can only be used once.

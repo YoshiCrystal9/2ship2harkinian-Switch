@@ -25,7 +25,7 @@ void ApplyRemainsHint(u16* textId, bool* loadFromMessageTable) {
               "for their remains.";
     } else {
         msg = "         %g{{boss}}%w:\n"
-              "Last seen in near %y{{location}}%w.";
+              "Last seen %y{{location}}%w.";
 
         switch (remainsHintIndex) {
             case 1:
@@ -48,8 +48,7 @@ void ApplyRemainsHint(u16* textId, bool* loadFromMessageTable) {
 
         icon = Rando::StaticData::GetIconForZMessage(randoItemId);
         RandoCheckId randoCheckId = Rando::FindItemPlacement(randoItemId);
-        CustomMessage::Replace(&msg, "{{location}}",
-                               Ship_GetSceneName(Rando::StaticData::Checks[randoCheckId].sceneId));
+        CustomMessage::Replace(&msg, "{{location}}", Rando::StaticData::GetLocationNameForHint(randoCheckId, false));
     }
 
     CustomMessage::Entry entry = {

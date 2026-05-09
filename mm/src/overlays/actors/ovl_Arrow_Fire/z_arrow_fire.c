@@ -270,8 +270,8 @@ void ArrowFire_Draw(Actor* thisx, PlayState* play) {
         Gfx_SetupDL25_Xlu(play->state.gfxCtx);
 
         gDPSetPrimColorOverride(POLY_XLU_DISP++, 0x80, 0x80, 255, 200, 0, this->alpha,
-                                COSMETIC_ELEMENT_FIRE_ARROW_PRIMARY);
-        gDPSetEnvColorOverride(POLY_XLU_DISP++, 255, 0, 0, 128, COSMETIC_ELEMENT_FIRE_ARROW_SECONDARY);
+                                COSMETIC_ID("Effects.FireArrowPrim"));
+        gDPSetEnvColorOverride(POLY_XLU_DISP++, 255, 0, 0, 128, COSMETIC_ID("Effects.FireArrowSec"));
 
         Matrix_RotateZYX(0x4000, 0, 0, MTXMODE_APPLY);
 

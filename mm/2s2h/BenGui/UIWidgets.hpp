@@ -44,13 +44,6 @@ void PaddedSeparator(bool padTop = true, bool padBottom = true, float extraVerti
                      float extraVerticalBottomPadding = 0.0f);
 void Tooltip(const char* text);
 
-typedef enum ColorPickerModifiers {
-    ColorPickerResetButton = 1,
-    ColorPickerRandomButton = 2,
-    ColorPickerRainbowCheck = 4,
-    ColorPickerLockCheck = 8,
-} ColorPickerModifiers;
-
 // mostly in order for colors usable by the menu without custom text color
 enum Colors {
     Red,
@@ -1180,8 +1173,9 @@ bool InputString(const char* label, std::string* value, const InputOptions& opti
 bool CVarInputString(const char* label, const char* cvarName, const InputOptions& options = {});
 bool InputInt(const char* label, int32_t* value, const InputOptions& options = {});
 bool CVarInputInt(const char* label, const char* cvarName, const InputOptions& options = {});
-bool CVarColorPicker(const char* label, const char* cvarName, Color_RGBA8 defaultColor, bool hasAlpha = false,
-                     uint8_t modifiers = 0, UIWidgets::Colors themeColor = UIWidgets::Colors::LightBlue);
+bool CVarColorPicker(const char* label, const char* valueCvar, Color_RGBA8 defaultColor, bool hasAlpha = false,
+                     const char* lockedCvar = nullptr,
+                     UIWidgets::Colors themeColor = UIWidgets::Colors::LightBlue);
 bool RadioButton(const char* label, bool active);
 bool CVarRadioButton(const char* text, const char* cvarName, int32_t id, const RadioButtonsOptions& options);
 bool StateButton(const char* str_id, const char* label, ImVec2 size, UIWidgets::ButtonOptions options,

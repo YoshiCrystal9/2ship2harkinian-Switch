@@ -402,6 +402,7 @@ typedef struct ShipSaveInfo {
     RespawnData respawn[RESPAWN_MODE_MAX];
     char commitHash[8];
     RandoSaveInfo rando;
+    u8 bombArrowsEquipped;
 } ShipSaveInfo;
 // #endregion
 
@@ -1854,6 +1855,7 @@ void Sram_EraseSave(struct FileSelectState* fileSelect2, SramContext* sramCtx, s
 void Sram_CopySave(struct FileSelectState* fileSelect2, SramContext* sramCtx);
 void Sram_InitSave(struct FileSelectState* fileSelect2, SramContext* sramCtx);
 void Sram_WriteSaveOptionsToBuffer(SramContext* sramCtx);
+void Sram_LoadGlobalOptions(void);
 void Sram_InitSram(struct GameState* gameState, SramContext* sramCtx);
 void Sram_Alloc(struct GameState* gameState, SramContext* sramCtx);
 void Sram_SaveSpecialEnterClockTown(struct PlayState* play);

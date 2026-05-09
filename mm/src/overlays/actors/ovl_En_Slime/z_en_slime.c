@@ -9,6 +9,7 @@
 
 #include "2s2h/Enhancements/FrameInterpolation/FrameInterpolation.h"
 #include "2s2h/GameInteractor/GameInteractor.h"
+#include "2s2h/BenGui/CosmeticEditor.h"
 
 #define FLAGS                                                                                 \
     (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_HOSTILE | ACTOR_FLAG_UPDATE_CULLING_DISABLED | \
@@ -1185,8 +1186,24 @@ void EnSlime_Draw(Actor* thisx, PlayState* play) {
         primColor = &sPrimColors[this->actor.params];
         envColor = &sEnvColors[this->actor.params];
         AnimatedMat_Draw(play, sSlimeTexAnim);
-        gDPSetPrimColor(POLY_XLU_DISP++, 0, 100, primColor->r, primColor->g, primColor->b, primColor->a);
-        gDPSetEnvColor(POLY_XLU_DISP++, envColor->r, envColor->g, envColor->b, 255);
+        switch (this->actor.params) {
+            case EN_SLIME_TYPE_GREEN:
+                gDPSetPrimColorOverride(POLY_XLU_DISP++, 0, 100, primColor->r, primColor->g, primColor->b, primColor->a,
+                                        COSMETIC_ID("HUD.Magic"));
+                gDPSetEnvColorOverride(POLY_XLU_DISP++, envColor->r, envColor->g, envColor->b, 255,
+                                       COSMETIC_ID("HUD.Magic"));
+                break;
+            case EN_SLIME_TYPE_RED:
+                gDPSetPrimColorOverride(POLY_XLU_DISP++, 0, 100, primColor->r, primColor->g, primColor->b, primColor->a,
+                                        COSMETIC_ID("HUD.Hearts"));
+                gDPSetEnvColorOverride(POLY_XLU_DISP++, envColor->r, envColor->g, envColor->b, 255,
+                                       COSMETIC_ID("HUD.Hearts"));
+                break;
+            default:
+                gDPSetPrimColor(POLY_XLU_DISP++, 0, 100, primColor->r, primColor->g, primColor->b, primColor->a);
+                gDPSetEnvColor(POLY_XLU_DISP++, envColor->r, envColor->g, envColor->b, 255);
+                break;
+        }
     }
 
     if (this->actionFunc == EnSlime_Damaged) {

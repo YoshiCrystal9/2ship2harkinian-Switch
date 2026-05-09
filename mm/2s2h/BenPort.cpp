@@ -201,6 +201,14 @@ OTRGlobals::OTRGlobals() {
     auto controlDeck = std::make_shared<LUS::ControlDeck>(std::vector<CONTROLLERBUTTONS_T>({
         BTN_CUSTOM_MODIFIER1,
         BTN_CUSTOM_MODIFIER2,
+        BTN_CUSTOM_OCARINA_NOTE_D4,
+        BTN_CUSTOM_OCARINA_NOTE_F4,
+        BTN_CUSTOM_OCARINA_NOTE_A4,
+        BTN_CUSTOM_OCARINA_NOTE_B4,
+        BTN_CUSTOM_OCARINA_NOTE_D5,
+        BTN_CUSTOM_OCARINA_DISABLE_SONGS,
+        BTN_CUSTOM_OCARINA_PITCH_UP,
+        BTN_CUSTOM_OCARINA_PITCH_DOWN,
     }));
     context->InitControlDeck(controlDeck);
 
@@ -999,8 +1007,8 @@ extern "C" void Graph_ProcessGfxCommands(Gfx* commands) {
         prevAltAssets = curAltAssets;
         Ship::Context::GetInstance()->GetResourceManager()->SetAltAssetsEnabled(curAltAssets);
         gfx_texture_cache_clear();
-        // TODO: skeleton patch, hooks
-        // SOH::SkeletonPatcher::UpdateSkeletons();
+        PlayerCustomFlipbooks_Patch();
+        SOH::SkeletonPatcher::UpdateSkeletons();
         // GameInteractor::Instance->ExecuteHooks<GameInteractor::OnAssetAltChange>();
     }
 
@@ -1076,6 +1084,25 @@ extern "C" void ResourceMgr_LoadDirectory(const char* resName) {
 }
 extern "C" void ResourceMgr_DirtyDirectory(const char* resName) {
     Ship::Context::GetInstance()->GetResourceManager()->DirtyResources(resName);
+}
+
+extern "C" void ResourceMgr_UnloadResource(const char* resName) {
+    std::string path = resName;
+    if (path.starts_with("__OTR__")) {
+        path = path.substr(7);
+    }
+    Ship::Context::GetInstance()->GetResourceManager()->UnloadResource(path);
+}
+
+static void ResourceMgr_UnloadOriginalWhenAltExists(const char* resName) {
+    std::string path = resName;
+    if (path.starts_with("__OTR__")) {
+        path = path.substr(7);
+    }
+
+    if (ResourceMgr_IsAltAssetsEnabled() && ExtensionCache.contains(Ship::IResource::gAltAssetPrefix + path)) {
+        ResourceMgr_UnloadResource(path.c_str());
+    }
 }
 
 // OTRTODO: There is probably a more elegant way to go about this...
@@ -1208,6 +1235,8 @@ extern "C" void ResourceMgr_PushCurrentDirectory(char* path) {
 }
 
 extern "C" Gfx* ResourceMgr_LoadGfxByName(const char* path) {
+    ResourceMgr_UnloadOriginalWhenAltExists(path);
+
     auto res = std::static_pointer_cast<Fast::DisplayList>(GetResourceByName(path));
     return (Gfx*)&res->Instructions[0];
 }
@@ -1502,7 +1531,47 @@ extern "C" int ResourceMgr_OTRSigCheck(char* imgData) {
     return 0;
 }
 
+// Load animation with explicit alt asset path checking.
+// When Alt Assets is OFF: use original path directly (O2R or vanilla)
+// When Alt Assets is ON: try alt/ prefix first, fall back to regular path if not found or invalid
 extern "C" AnimationHeaderCommon* ResourceMgr_LoadAnimByName(const char* path) {
+    bool isAlt = ResourceMgr_IsAltAssetsEnabled();
+
+    if (isAlt) {
+        std::string pathStr = std::string(path);
+        static const std::string sOtr = "__OTR__";
+
+        if (pathStr.starts_with(sOtr)) {
+            pathStr = pathStr.substr(sOtr.length());
+        }
+
+        // Try alt/ first
+        pathStr = Ship::IResource::gAltAssetPrefix + pathStr;
+        AnimationHeaderCommon* animHeader = (AnimationHeaderCommon*)ResourceGetDataByName(pathStr.c_str());
+
+        // If alt loaded successfully, verify it has valid data
+        if (animHeader != NULL) {
+            // Check for valid frame count (> 0)
+            if (animHeader->frameCount > 0) {
+                // For Normal animations: check frameData (comes after frameCount in AnimationHeader)
+                // For Link animations: check segment (comes after frameCount in LinkAnimationHeader)
+                // We check both to be safe - if either is valid, the animation is usable
+                AnimationHeader* normalAnim = (AnimationHeader*)animHeader;
+                PlayerAnimationHeader* playerAnim = (PlayerAnimationHeader*)animHeader;
+
+                // Valid if Normal animation has frameData OR Link animation has segment
+                if (normalAnim->frameData != NULL || playerAnim->segmentVoid != NULL) {
+                    return animHeader;
+                }
+            }
+            // Alt loaded but is invalid (broken), fall through to original path
+        }
+
+        // Fall back to original path
+        return (AnimationHeaderCommon*)ResourceGetDataByName(path);
+    }
+
+    // Alt OFF: use original path directly
     return (AnimationHeaderCommon*)ResourceGetDataByName(path);
 }
 
@@ -1531,7 +1600,7 @@ extern "C" SkeletonHeader* ResourceMgr_LoadSkeletonByName(const char* path, Skel
     // Therefore we can take this opportunity to take note of the Skeleton that is created...
     if (skelAnime != nullptr) {
         auto stringPath = std::string(path);
-        // Ship::SkeletonPatcher::RegisterSkeleton(stringPath, skelAnime);
+        SOH::SkeletonPatcher::RegisterSkeleton(stringPath, skelAnime);
     }
 
     return skelHeader;
@@ -1542,9 +1611,8 @@ extern "C" void ResourceMgr_UnregisterSkeleton(SkelAnime* skelAnime) {
         SOH::SkeletonPatcher::UnregisterSkeleton(skelAnime);
 }
 
-extern "C" void ResourceMgr_ClearSkeletons(SkelAnime* skelAnime) {
-    if (skelAnime != nullptr)
-        SOH::SkeletonPatcher::ClearSkeletons();
+extern "C" void ResourceMgr_ClearSkeletons() {
+    SOH::SkeletonPatcher::ClearSkeletons();
 }
 
 extern "C" s32* ResourceMgr_LoadCSByName(const char* path) {

@@ -716,8 +716,8 @@ void InputViewerSettingsWindow::DrawElement() {
             CheckboxOptions().Color(THEME_COLOR).Tooltip("Displays analog stick angle values in the input viewer"));
         if (CVarGetInteger(CVAR_INPUT_VIEWER("LeftAnalogAngles.Enabled"), 0)) {
             // gInputViewer.LeftAnalogAngles.TextColor
-            CVarColorPicker("LS Text Color", CVAR_INPUT_VIEWER("LeftAnalogAngles.TextColor"), textColorDefault, true,
-                            ColorPickerRandomButton | ColorPickerResetButton);
+            CVarColorPicker("LS Text Color", CVAR_INPUT_VIEWER("LeftAnalogAngles.TextColor") ".Value", textColorDefault,
+                            true);
             // gInputViewer.LeftAnalogAngles.Scale
             CVarSliderFloat("LS Angle Text Scale: %.2f%%", CVAR_INPUT_VIEWER("LeftAnalogAngles.Scale"),
                             FloatSliderOptions()
@@ -756,8 +756,8 @@ void InputViewerSettingsWindow::DrawElement() {
                         "Highlights the angle value text when the analog stick is in ESS position (on flat ground)"));
             if (CVarGetInteger(CVAR_INPUT_VIEWER("LeftAnalogAngles.Range1.Enabled"), 0)) {
                 // gInputViewer.LeftAnalogAngles.Range1.Color
-                CVarColorPicker("ESS Color", CVAR_INPUT_VIEWER("LeftAnalogAngles.Range1.Color"), range1ColorDefault,
-                                true, ColorPickerRandomButton | ColorPickerResetButton);
+                CVarColorPicker("ESS Color", CVAR_INPUT_VIEWER("LeftAnalogAngles.Range1.Color") ".Value",
+                                range1ColorDefault, true);
             }
 
             UIWidgets::PaddedSeparator(true, true);
@@ -770,8 +770,8 @@ void InputViewerSettingsWindow::DrawElement() {
                                       "Useful for 1.0 Empty Jumpslash Quick Put Away"));
             if (CVarGetInteger(CVAR_INPUT_VIEWER("LeftAnalogAngles.Range2.Enabled"), 0)) {
                 // gInputViewer.LeftAnalogAngles.Range2.Color
-                CVarColorPicker("Walking Speed Color", CVAR_INPUT_VIEWER("LeftAnalogAngles.Range2.Color"),
-                                range2ColorDefault, true, ColorPickerRandomButton | ColorPickerResetButton);
+                CVarColorPicker("Walking Speed Color", CVAR_INPUT_VIEWER("LeftAnalogAngles.Range2.Color") ".Value",
+                                range2ColorDefault, true);
             }
         }
     }
@@ -783,8 +783,8 @@ void InputViewerSettingsWindow::DrawElement() {
             CheckboxOptions().Color(THEME_COLOR).Tooltip("Displays analog stick angle values in the input viewer"));
         if (CVarGetInteger(CVAR_INPUT_VIEWER("RightAnalogAngles.Enabled"), 0)) {
             // gInputViewer.RightAnalogAngles.TextColor
-            CVarColorPicker("RS Text Color", CVAR_INPUT_VIEWER("RightAnalogAngles.TextColor"), textColorDefault, true,
-                            ColorPickerRandomButton | ColorPickerResetButton);
+            CVarColorPicker("RS Text Color", CVAR_INPUT_VIEWER("RightAnalogAngles.TextColor") ".Value",
+                            textColorDefault, true);
             // gInputViewer.RightAnalogAngles.Scale
             CVarSliderFloat("RS Angle Text Scale: %.2f%%", CVAR_INPUT_VIEWER("RightAnalogAngles.Scale"),
                             FloatSliderOptions()

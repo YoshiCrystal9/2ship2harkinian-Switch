@@ -5057,8 +5057,7 @@ void Player_UpdateZTargeting(Player* this, PlayState* play) {
         } else {
             this->zTargetActiveTimer--;
         }
-    } else if (this->stateFlags1 & PLAYER_STATE1_PARALLEL &&
-               !CVarGetInteger("gEnhancements.Camera.FixTargettingCameraSnap", 0)) {
+    } else if (this->stateFlags1 & PLAYER_STATE1_PARALLEL) {
         // If the above code block which checks `zButtonHeld` is not taken, that means Z has been released.
         // In that case, setting `zTargetActiveTimer` to 0 will stop Parallel if it is currently active.
         this->zTargetActiveTimer = 0;
@@ -8227,9 +8226,10 @@ s32 Player_ActionHandler_0(Player* this, PlayState* play) {
                (CHECK_FLAG_ALL(this->focusActor->flags, ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_TALK_WITH_C_UP) ||
                 (this->focusActor->hintId != TATL_HINT_ID_NONE))) {
         this->stateFlags2 |= PLAYER_STATE2_200000;
-    } else if ((this->tatlTextId == 0) && !Player_CheckHostileLockOn(this) &&
-               CHECK_BTN_ALL(sPlayerControlInput->press.button, BTN_CUP) &&
-               !func_80831814(this, play, PLAYER_UNKAA5_1)) {
+    } else if (GameInteractor_Should(VB_FIRST_PERSON_CAMERA,
+                                     (this->tatlTextId == 0) && !Player_CheckHostileLockOn(this) &&
+                                         CHECK_BTN_ALL(sPlayerControlInput->press.button, BTN_CUP) &&
+                                         !func_80831814(this, play, PLAYER_UNKAA5_1))) {
         Audio_PlaySfx(NA_SE_SY_ERROR);
     }
     return false;
@@ -14149,9 +14149,12 @@ s32 Player_UpperAction_1(Player* this, PlayState* play) {
 s32 Player_UpperAction_ChangeHeldItem(Player* this, PlayState* play) {
     if (PlayerAnimation_Update(play, &this->skelAnimeUpper) ||
         ((Player_ItemToItemAction(this, this->heldItemId) == this->heldItemAction) &&
-         (sPlayerUseHeldItem = (sPlayerUseHeldItem || ((this->modelAnimType != PLAYER_ANIMTYPE_3) &&
-                                                       (this->heldItemAction != PLAYER_IA_DEKU_STICK) &&
-                                                       (play->bButtonAmmoPlusOne == 0)))))) {
+         (sPlayerUseHeldItem =
+              (sPlayerUseHeldItem || GameInteractor_Should(VB_USE_HELD_ITEM_AFTER_CHANGE,
+                                                           (this->modelAnimType != PLAYER_ANIMTYPE_3) &&
+                                                               (this->heldItemAction != PLAYER_IA_DEKU_STICK) &&
+                                                               (play->bButtonAmmoPlusOne == 0),
+                                                           this))))) {
         Player_SetUpperAction(play, this, sItemActionUpdateFuncs[this->heldItemAction]);
         this->unk_ACC = 0;
         this->idleType = PLAYER_IDLE_DEFAULT;

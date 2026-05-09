@@ -16,10 +16,16 @@ void Rando::ActorBehavior::InitEnGKBehavior() {
 
         switch (actor->id) {
             case ACTOR_EN_GK:
-                if (RANDO_SAVE_CHECKS[RC_GORON_RACETRACK_GOLD_DUST].cycleObtained) {
+                // In either case here, WEEKEVENTREG_RECEIVED_GORON_RACE_BOTTLE will be set and trigger the rando
+                // check to be queued.
+
+                // If they have an empty bottle, force item to gold dust refill and let vanilla item get continue
+                if (Inventory_HasEmptyBottle()) {
+                    *item = GI_GOLD_DUST_2;
                     return;
                 }
 
+                // Otherwise bypass item get entirely
                 *should = false;
                 actor->parent = &player->actor;
                 player->talkActor = actor;

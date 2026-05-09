@@ -4,6 +4,7 @@
 #include "GameInteractor/GameInteractor.h"
 #include "2s2h/Enhancements/Audio/AudioEditor.h"
 #include <libultraship/bridge/consolevariablebridge.h>
+#include <libultraship/bridge/audiobridge.h>
 
 typedef struct {
     /* 0x0 */ s8 x;
@@ -2084,8 +2085,16 @@ void AudioOcarina_ReadControllerInput(void) {
     sOcarinaInputStickRel.x = input->rel.stick_x;
     sOcarinaInputStickRel.y = input->rel.stick_y;
 
+    // 2S2H [Enhancement] When custom ocarina controls are enabled, block regular ocarina inputs
+    if (CVarGetInteger("gEnhancements.Playback.CustomizeOcarinaControls", 0)) {
+        sOcarinaInputButtonCur &= ~(BTN_A | BTN_CUP | BTN_CDOWN | BTN_CLEFT | BTN_CRIGHT | BTN_L | BTN_R | BTN_Z);
+    }
+
     // 2S2H [Enhancement] Apply right stick ocarina input via GameInteractor
     sOcarinaInputButtonCur |= GameInteractor_RightStickOcarina(input);
+
+    // 2S2H [Enhancement] Apply custom ocarina controls via GameInteractor
+    sOcarinaInputButtonCur |= GameInteractor_CustomOcarinaControls(input);
 }
 
 /**
@@ -6085,21 +6094,29 @@ void Audio_SetFileSelectSettings(s8 audioSetting) {
         case SAVE_AUDIO_STEREO:
             soundMode = SOUNDMODE_STEREO;
             sSoundMode = SOUNDMODE_STEREO;
+            // 2S2H [Port] Inform LUS of audio setting change
+            SetAudioChannels(audioStereo);
             break;
 
         case SAVE_AUDIO_MONO:
             soundMode = SOUNDMODE_MONO;
             sSoundMode = SOUNDMODE_MONO;
+            // 2S2H [Port] Inform LUS of audio setting change
+            SetAudioChannels(audioStereo);
             break;
 
         case SAVE_AUDIO_HEADSET:
             soundMode = SOUNDMODE_HEADSET;
             sSoundMode = SOUNDMODE_HEADSET;
+            // 2S2H [Port] Inform LUS of audio setting change
+            SetAudioChannels(audioStereo);
             break;
 
         case SAVE_AUDIO_SURROUND:
             soundMode = SOUNDMODE_SURROUND;
             sSoundMode = SOUNDMODE_SURROUND_EXTERNAL;
+            // 2S2H [Port] Inform LUS of audio setting change
+            SetAudioChannels(audioMatrix51);
             break;
 
         default:

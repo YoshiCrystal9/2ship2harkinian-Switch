@@ -6,16 +6,23 @@
 #   OPUSFILE_LIBRARY     - Path to the opusfile library
 #   OPUSFILE_LIBRARIES   - Full list of libraries to link (opusfile, opus, ogg)
 
+find_package(PkgConfig)
+if(PKG_CONFIG_FOUND)
+    pkg_check_modules(PC_OPUSFILE QUIET opusfile)
+endif()
+
 # Search for the OpusFile header
 find_path(OPUSFILE_INCLUDE_DIR
     NAMES opusfile.h
-    PATHS /usr/include/opus /usr/local/include/opus /opt/local/include/opus ${DEVKITPRO}/portlibs/switch/include/opus/ /opt/homebrew/include/opus
-    DOC "Directory where opusfile.h is located"
+    HINTS ${PC_OPUSFILE_INCLUDE_DIRS}
+    PATHS /usr/include/opus /usr/local/include/opus /opt/local/include/opus /opt/homebrew/include/opus ${DEVKITPRO}/portlibs/switch/include/opus/
+        DOC "Directory where opusfile.h is located"
 )
 
 # Search for the OpusFile library
 find_library(OPUSFILE_LIBRARY
     NAMES opusfile
+    HINTS ${PC_OPUSFILE_LIBRARY_DIRS}
     DOC "Path to the libopusfile library"
 )
 

@@ -139,7 +139,7 @@ void TableCellCenteredText(ImVec4 color, const char* text) {
     float textHeight = ImGui::GetTextLineHeight();
     float offsetY = (32.0f - textHeight + 10.0f) * 0.5f;
     ImGui::SetCursorPosY(ImGui::GetCursorPosY() + offsetY);
-    ImGui::TextColored(color, text);
+    ImGui::TextColored(color, "%s", text);
 }
 
 void SplitsPushImageButtonStyle() {
@@ -226,7 +226,7 @@ void DrawSplitsList(bool isMain) {
                     !gPlayState ? ImGui::TextColored(COLOR_WHITE, BLANK_SPLIT)
                     : i < comparisonList.size()
                         ? ImGui::TextColored(
-                              GetComparisonTimeTextDisplay(splitList[i], comparisonList[i]).colorDisplay,
+                              GetComparisonTimeTextDisplay(splitList[i], comparisonList[i]).colorDisplay, "%s",
                               Ship_FormatTimeDisplay(
                                   GetComparisonTimeTextDisplay(splitList[i], comparisonList[i]).timeDisplay)
                                   .c_str())
@@ -237,7 +237,7 @@ void DrawSplitsList(bool isMain) {
                 ImGui::TableNextColumn();
                 TableCellCenteredText(COLOR_WHITE, Ship_FormatTimeDisplay(splitList[i].splitPreviousBest).c_str());
                 if (CVarGetInteger("gSettings.TimeSplits.Compare", 0) && comparisonList.size() != 0) {
-                    ImGui::TextColored(COLOR_GREY,
+                    ImGui::TextColored(COLOR_GREY, "%s",
                                        i < comparisonList.size()
                                            ? Ship_FormatTimeDisplay(comparisonList[i].splitPreviousBest).c_str()
                                            : "No Data");

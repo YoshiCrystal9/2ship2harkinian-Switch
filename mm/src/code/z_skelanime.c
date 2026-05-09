@@ -1063,6 +1063,10 @@ void AnimTaskQueue_AddLoadPlayerFrame(PlayState* play, PlayerAnimationHeader* an
         if (frame < 0) {
             frame = 0;
         }
+        // 2S2H [Alt Assets] Check if animData is null (can happen if animation data segment failed to load)
+        if (animData == NULL) {
+            return;
+        }
         memcpy(ram, (uintptr_t)animData + (((sizeof(Vec3s) * limbCount + 2) * frame)), sizeof(Vec3s) * limbCount + 2);
     }
 }

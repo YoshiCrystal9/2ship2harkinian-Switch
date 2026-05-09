@@ -99,6 +99,8 @@ void GrantStartingItems() {
 
     if (RANDO_SAVE_OPTIONS[RO_STARTING_RUPEES]) {
         gSaveContext.save.saveInfo.playerData.rupees = CUR_CAPACITY(UPG_WALLET);
+        // Clear any accumulator from starting wallet items since rupees are set directly.
+        gSaveContext.rupeeAccumulator = 0;
     }
 }
 

@@ -17,6 +17,7 @@ extern "C" {
 #include "objects/object_st/object_st.h"
 
 #include "assets/overlays/ovl_Arrow_Ice/ovl_Arrow_Ice.h"
+#include "assets/objects/object_gi_purse/object_gi_purse.h"
 
 Gfx* ResourceMgr_LoadGfxByName(const char* path);
 }
@@ -462,6 +463,34 @@ void DrawSparkles(RandoItemId randoItemId, Actor* actor) {
     EffectSsKirakira_SpawnDispersed(gPlayState, &newPos, &sVelocity, &sAccel, &sPrimColor, &sEnvColor, 2000, 16);
 }
 
+void DrawTycoonWallet() {
+    OPEN_DISPS(gPlayState->state.gfxCtx);
+
+    Gfx_SetupDL25_Opa(gPlayState->state.gfxCtx);
+
+    MATRIX_FINALIZE_AND_LOAD(POLY_OPA_DISP++, gPlayState->state.gfxCtx);
+
+    // Wallet body - use Giant's color DL for render state, then override to purple
+    gSPDisplayList(POLY_OPA_DISP++, (Gfx*)&gGiGiantsWalletColorDL);
+    gDPSetPrimColor(POLY_OPA_DISP++, 0, 0x80, 150, 0, 200, 255);
+    gDPSetEnvColor(POLY_OPA_DISP++, 80, 0, 120, 255);
+    gSPDisplayList(POLY_OPA_DISP++, (Gfx*)&gGiWalletDL);
+
+    // Rupee outer - keep Giant's Wallet default colors
+    gSPDisplayList(POLY_OPA_DISP++, (Gfx*)&gGiGiantsWalletRupeeOuterColorDL);
+    gSPDisplayList(POLY_OPA_DISP++, (Gfx*)&gGiWalletRupeeOuterDL);
+
+    // String - keep Giant's Wallet default colors
+    gSPDisplayList(POLY_OPA_DISP++, (Gfx*)&gGiGiantsWalletStringColorDL);
+    gSPDisplayList(POLY_OPA_DISP++, (Gfx*)&gGiWalletStringDL);
+
+    // Rupee inner - keep Giant's Wallet default colors
+    gSPDisplayList(POLY_OPA_DISP++, (Gfx*)&gGiGiantsWalletRupeeInnerColorDL);
+    gSPDisplayList(POLY_OPA_DISP++, (Gfx*)&gGiWalletRupeeInnerDL);
+
+    CLOSE_DISPS(gPlayState->state.gfxCtx);
+}
+
 void Rando::DrawItem(RandoItemId randoItemId, RandoCheckId randoCheckId, Actor* actor) {
     // Apply hilites with actor world pos before drawing
     if (actor != NULL) {
@@ -539,6 +568,9 @@ void Rando::DrawItem(RandoItemId randoItemId, RandoCheckId randoCheckId, Actor* 
         case RI_TIME_NIGHT_3:
         case RI_TIME_PROGRESSIVE:
             DrawClock(randoItemId, actor);
+            break;
+        case RI_WALLET_TYCOON:
+            DrawTycoonWallet();
             break;
         case RI_PROGRESSIVE_LULLABY:
         case RI_PROGRESSIVE_MAGIC:

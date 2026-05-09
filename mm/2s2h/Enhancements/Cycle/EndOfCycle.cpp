@@ -18,6 +18,8 @@ extern "C" {
 #define CVAR_SWORD CVarGetInteger(CVAR_NAME_SWORD, 0)
 #define CVAR_NAME_TIME "gEnhancements.Cycle.DoNotResetTimeSpeed"
 #define CVAR_TIME CVarGetInteger(CVAR_NAME_TIME, 0)
+#define CVAR_NAME_CHATEAU "gEnhancements.Cycle.DoNotResetChateau"
+#define CVAR_CHATEAU CVarGetInteger(CVAR_NAME_CHATEAU, 0)
 
 SaveInfo saveInfoCopy;
 ShipSaveInfo shipSaveInfoCopy;
@@ -98,6 +100,13 @@ void RegisterEndOfCycleSaveHooks() {
         }
     });
 
+    COND_HOOK(AfterEndOfCycleSave, CVAR_CHATEAU, []() {
+        if (saveInfoCopy.weekEventReg[((WEEKEVENTREG_DRANK_CHATEAU_ROMANI) >> 8)] &
+            ((WEEKEVENTREG_DRANK_CHATEAU_ROMANI)&0xFF)) {
+            SET_WEEKEVENTREG(WEEKEVENTREG_DRANK_CHATEAU_ROMANI);
+        }
+    });
+
     COND_HOOK(AfterEndOfCycleSave, CVAR_SWORD || IS_RANDO, []() {
         u8 curSword = (saveInfoCopy.equips.equipment & gEquipMasks[EQUIP_TYPE_SWORD]) >> gEquipShifts[EQUIP_TYPE_SWORD];
 
@@ -118,4 +127,4 @@ void RegisterEndOfCycleSaveHooks() {
 
 static RegisterShipInitFunc initFunc(RegisterEndOfCycleSaveHooks,
                                      { CVAR_NAME_RUPEES, CVAR_NAME_CONSUME, CVAR_NAME_BOTTLE, CVAR_NAME_SWORD,
-                                       CVAR_NAME_TIME, "IS_RANDO" });
+                                       CVAR_NAME_TIME, CVAR_NAME_CHATEAU, "IS_RANDO" });

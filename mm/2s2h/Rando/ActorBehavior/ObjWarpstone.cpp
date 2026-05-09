@@ -40,7 +40,7 @@ void Rando::ActorBehavior::InitObjWarpstoneBehavior() {
         RandoCheckId randoCheckId = Identify_Statue(warpstoneId);
 
         if (randoCheckId != RC_UNKNOWN && RANDO_SAVE_CHECKS[randoCheckId].shuffled) {
-            if (!RANDO_SAVE_CHECKS[randoCheckId].obtained) {
+            if (!RANDO_SAVE_CHECKS[randoCheckId].cycleObtained) {
                 RANDO_SAVE_CHECKS[randoCheckId].eligible = true;
             }
             *should = false;
@@ -52,7 +52,7 @@ void Rando::ActorBehavior::InitObjWarpstoneBehavior() {
         RandoCheckId randoCheckId = Identify_Statue(warpstoneId);
 
         if (randoCheckId != RC_UNKNOWN && RANDO_SAVE_CHECKS[randoCheckId].shuffled) {
-            *should = RANDO_SAVE_CHECKS[randoCheckId].obtained;
+            *should = RANDO_SAVE_CHECKS[randoCheckId].cycleObtained;
         }
     });
 }

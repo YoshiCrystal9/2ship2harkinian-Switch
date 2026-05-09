@@ -9,8 +9,26 @@ namespace Logic {
 
 std::map<RandoRegionId, RandoRegion> Regions = {};
 
-// Thread-local storage for current region time during check evaluation
-thread_local uint64_t gCurrentRegionTime = 0;
+uint64_t gCurrentRegionTime = 0;
+
+// GROTTOS
+// grottos are a bit weird, 15 of them share entrances with other grottos, so we have to check an extra field to
+// determine which grotto we're in, and convert the entrance ID to an unused one that we store for logic purposes.
+// ENTRANCE(GROTTOS, 17) = RR_TERMINA_FIELD_COW_GROTTO
+// ENTRANCE(GROTTOS, 18) = RR_TERMINA_FIELD_PILLAR_GROTTO
+// ENTRANCE(GROTTOS, 19) = RR_TERMINA_FIELD_TALL_GRASS_GROTTO
+// ENTRANCE(GROTTOS, 20) = RR_ROAD_TO_SOUTHERN_SWAMP_GROTTO
+// ENTRANCE(GROTTOS, 21) = RR_SOUTHERN_SWAMP_GROTTO
+// ENTRANCE(GROTTOS, 22) = RR_WOODS_OF_MYSTERY_GROTTO
+// ENTRANCE(GROTTOS, 23) = RR_MOUNTAIN_VILLAGE_TUNNEL_GROTTO
+// ENTRANCE(GROTTOS, 24) = RR_PATH_TO_GORON_VILLAGE_RAMP_GROTTO
+// ENTRANCE(GROTTOS, 25) = RR_PATH_TO_SNOWHEAD_GROTTO
+// ENTRANCE(GROTTOS, 26) = RR_GREAT_BAY_COAST_FISHERMAN_GROTTO
+// ENTRANCE(GROTTOS, 27) = RR_GREAT_BAY_COAST_COW_GROTTO
+// ENTRANCE(GROTTOS, 28) = RR_ZORA_CAPE_GROTTO
+// ENTRANCE(GROTTOS, 29) = RR_IKANA_CANYON_GROTTO
+// ENTRANCE(GROTTOS, 30) = RR_IKANA_GRAVEYARD_GROTTO
+// ENTRANCE(GROTTOS, 31) = RR_ROAD_TO_IKANA_GROTTO
 
 RandoRegionId GetRegionIdFromEntrance(s32 entrance) {
     static std::map<s32, RandoRegionId> entranceToRegionId;
@@ -28,8 +46,60 @@ RandoRegionId GetRegionIdFromEntrance(s32 entrance) {
         }
     }
 
-    if (entranceToRegionId.contains(entrance)) {
-        return entranceToRegionId[entrance];
+    s32 modifiedEntrance = entrance;
+    if (entrance == ENTRANCE(GROTTOS, 4)) {
+        switch (gSaveContext.respawn[RESPAWN_MODE_DOWN].entrance) {
+            case ENTRANCE(TERMINA_FIELD, 0):
+                modifiedEntrance = gSaveContext.respawn[RESPAWN_MODE_UNK_3].data == 0x3F ? ENTRANCE(GROTTOS, 19)
+                                                                                         : ENTRANCE(GROTTOS, 18);
+                break;
+            case ENTRANCE(ROAD_TO_SOUTHERN_SWAMP, 0):
+                modifiedEntrance = ENTRANCE(GROTTOS, 20);
+                break;
+            case ENTRANCE(SOUTHERN_SWAMP_POISONED, 0):
+                modifiedEntrance = ENTRANCE(GROTTOS, 21);
+                break;
+            case ENTRANCE(WOODS_OF_MYSTERY, 0):
+                modifiedEntrance = ENTRANCE(GROTTOS, 22);
+                break;
+            case ENTRANCE(MOUNTAIN_VILLAGE_SPRING, 0):
+                modifiedEntrance = ENTRANCE(GROTTOS, 23);
+                break;
+            case ENTRANCE(PATH_TO_GORON_VILLAGE_WINTER, 0):
+                modifiedEntrance = ENTRANCE(GROTTOS, 24);
+                break;
+            case ENTRANCE(PATH_TO_SNOWHEAD, 0):
+                modifiedEntrance = ENTRANCE(GROTTOS, 25);
+                break;
+            case ENTRANCE(GREAT_BAY_COAST, 0):
+                modifiedEntrance = ENTRANCE(GROTTOS, 26);
+                break;
+            case ENTRANCE(ZORA_CAPE, 0):
+                modifiedEntrance = ENTRANCE(GROTTOS, 28);
+                break;
+            case ENTRANCE(IKANA_CANYON, 0):
+                modifiedEntrance = ENTRANCE(GROTTOS, 29);
+                break;
+            case ENTRANCE(IKANA_GRAVEYARD, 0):
+                modifiedEntrance = ENTRANCE(GROTTOS, 30);
+                break;
+            case ENTRANCE(ROAD_TO_IKANA, 0):
+                modifiedEntrance = ENTRANCE(GROTTOS, 31);
+                break;
+        }
+    } else if (entrance == ENTRANCE(GROTTOS, 10)) {
+        switch (gSaveContext.respawn[RESPAWN_MODE_DOWN].entrance) {
+            case ENTRANCE(TERMINA_FIELD, 0):
+                modifiedEntrance = ENTRANCE(GROTTOS, 17);
+                break;
+            case ENTRANCE(GREAT_BAY_COAST, 0):
+                modifiedEntrance = ENTRANCE(GROTTOS, 27);
+                break;
+        }
+    }
+
+    if (entranceToRegionId.contains(modifiedEntrance)) {
+        return entranceToRegionId[modifiedEntrance];
     }
 
     return RR_MAX;
@@ -104,17 +174,29 @@ void FindReachableRegions(RandoRegionId currentRegion, std::set<RandoRegionId>& 
         sourceTimeState.timeSlices = currentTime;
     }
 
-    // Set global time for check evaluation
-    gCurrentRegionTime = currentTime;
-
     // Explore connections
     for (auto& [connectedRegionId, condition] : sourceRegion.connections) {
-        if (reachableRegions.count(connectedRegionId) == 0 && condition.first()) {
-            reachableRegions.insert(connectedRegionId);
+        // Set global time for check evaluation
+        gCurrentRegionTime = currentTime;
 
+        if (condition.first()) {
             auto& targetRegion = Regions[connectedRegionId];
-            regionTimeStates[connectedRegionId] = { .timeSlices = currentTime,
-                                                    .canStayOverTime = targetRegion.canStayOverTime };
+            RegionTimeState incomingState = { .timeSlices = currentTime,
+                                              .canStayOverTime = targetRegion.canStayOverTime };
+
+            auto existingIt = regionTimeStates.find(connectedRegionId);
+            if (existingIt != regionTimeStates.end()) {
+                // Region already visited - check if we have new time to add
+                if (TimeStateCovers(existingIt->second, incomingState)) {
+                    continue; // Skip - existing state already covers incoming
+                }
+                // Merge time states for re-exploration
+                existingIt->second = MergeTimeStates(existingIt->second, incomingState);
+            } else {
+                // First visit to this region
+                reachableRegions.insert(connectedRegionId);
+                regionTimeStates[connectedRegionId] = incomingState;
+            }
 
             FindReachableRegions(connectedRegionId, reachableRegions, regionTimeStates);
         }
@@ -122,13 +204,28 @@ void FindReachableRegions(RandoRegionId currentRegion, std::set<RandoRegionId>& 
 
     // Explore exits
     for (auto& [exitId, regionExit] : sourceRegion.exits) {
-        RandoRegionId connectedRegionId = GetRegionIdFromEntrance(exitId);
-        if (reachableRegions.count(connectedRegionId) == 0 && regionExit.condition()) {
-            reachableRegions.insert(connectedRegionId);
+        // Set global time for check evaluation
+        gCurrentRegionTime = currentTime;
 
+        RandoRegionId connectedRegionId = GetRegionIdFromEntrance(exitId);
+        if (regionExit.condition()) {
             auto& targetRegion = Regions[connectedRegionId];
-            regionTimeStates[connectedRegionId] = { .timeSlices = currentTime,
-                                                    .canStayOverTime = targetRegion.canStayOverTime };
+            RegionTimeState incomingState = { .timeSlices = currentTime,
+                                              .canStayOverTime = targetRegion.canStayOverTime };
+
+            auto existingIt = regionTimeStates.find(connectedRegionId);
+            if (existingIt != regionTimeStates.end()) {
+                // Region already visited - check if we have new time to add
+                if (TimeStateCovers(existingIt->second, incomingState)) {
+                    continue; // Skip - existing state already covers incoming
+                }
+                // Merge time states for re-exploration
+                existingIt->second = MergeTimeStates(existingIt->second, incomingState);
+            } else {
+                // First visit to this region
+                reachableRegions.insert(connectedRegionId);
+                regionTimeStates[connectedRegionId] = incomingState;
+            }
 
             FindReachableRegions(connectedRegionId, reachableRegions, regionTimeStates);
         }

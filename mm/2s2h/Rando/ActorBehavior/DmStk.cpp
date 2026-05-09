@@ -28,12 +28,12 @@ void ApplyOathHint(u16* textId, bool* loadFromMessageTable) {
         msg = "You think you can defeat me? The Giants are trapped and powerless to stop me. Even if they were free, "
               "they couldn't save you.";
     } else {
-        msg = "I can hear the Giants Melody coming from "
+        msg = "I can hear the Giants Melody echoing "
               "%y{{location}}%w. But it's too late! They can't help you now!";
     }
 
     RandoCheckId randoCheckId = Rando::FindItemPlacement(RI_SONG_OATH);
-    CustomMessage::Replace(&msg, "{{location}}", Ship_GetSceneName(Rando::StaticData::Checks[randoCheckId].sceneId));
+    CustomMessage::Replace(&msg, "{{location}}", Rando::StaticData::GetLocationNameForHint(randoCheckId, false));
 
     CustomMessage::Entry entry = {
         .nextMessageID = (u16)0xFFFF,

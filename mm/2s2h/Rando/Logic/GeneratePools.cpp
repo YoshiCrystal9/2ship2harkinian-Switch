@@ -221,6 +221,11 @@ void GeneratePools(RandoSaveInfo& saveInfo, std::vector<RandoCheckId>& checkPool
         itemPool.push_back(RI_SONG_SARIA);
     }
 
+    // Tycoon's Wallet
+    if (saveInfo.randoSaveOptions[RO_SHUFFLE_TYCOON_WALLET] == RO_GENERIC_YES) {
+        itemPool.push_back(RI_PROGRESSIVE_WALLET);
+    }
+
     // Shuffle Triforce Pieces into the Pool
     if (saveInfo.randoSaveOptions[RO_SHUFFLE_TRIFORCE_PIECES] == RO_GENERIC_YES) {
         int piecesToShuffle = saveInfo.randoSaveOptions[RO_TRIFORCE_PIECES_MAX];

@@ -54,6 +54,7 @@ std::vector<int32_t> incompatibleWithVanilla = {
     RO_SHUFFLE_OCARINA_BUTTONS,
     RO_PLENTIFUL_ITEMS,
     RO_CLOCK_SHUFFLE,
+    RO_SHUFFLE_TYCOON_WALLET,
 };
 // clang-format on
 
@@ -113,6 +114,7 @@ void ClearIncompatibleSetting() {
             CVarClear(Rando::StaticData::Options[RO_SHUFFLE_BOSS_SOULS].cvar);
             CVarClear(Rando::StaticData::Options[RO_SHUFFLE_SWIM].cvar);
             CVarClear(Rando::StaticData::Options[RO_CLOCK_SHUFFLE].cvar);
+            CVarClear(Rando::StaticData::Options[RO_SHUFFLE_TYCOON_WALLET].cvar);
             break;
         default:
             break;
@@ -231,6 +233,7 @@ static RegisterShipInitFunc refreshMetricsInit(RefreshMetrics, {
                                                                    "gRando.Options.RO_CLOCK_SHUFFLE",
                                                                    "gRando.Options.RO_CLOCK_SHUFFLE_PROGRESSIVE",
                                                                    "gRando.Options.RO_HINTS_BOSS_REMAINS",
+                                                                   "gRando.Options.RO_HINTS_GOSSIP_STONE_STRENGTH",
                                                                    "gRando.Options.RO_HINTS_GOSSIP_STONES",
                                                                    "gRando.Options.RO_HINTS_HOOKSHOT",
                                                                    "gRando.Options.RO_HINTS_OATH_TO_ORDER",
@@ -262,6 +265,7 @@ static RegisterShipInitFunc refreshMetricsInit(RefreshMetrics, {
                                                                    "gRando.Options.RO_SHUFFLE_SONG_SUN",
                                                                    "gRando.Options.RO_SHUFFLE_SWIM",
                                                                    "gRando.Options.RO_SHUFFLE_TINGLE_SHOPS",
+                                                                   "gRando.Options.RO_SHUFFLE_TYCOON_WALLET",
                                                                    "gRando.Options.RO_SHUFFLE_TRIFORCE_PIECES",
                                                                    "gRando.Options.RO_SKULLTULA_TOKENS_MAX",
                                                                    "gRando.Options.RO_SKULLTULA_TOKENS_REQUIRED",
@@ -559,6 +563,11 @@ static void DrawItemsTab() {
                  CheckboxOptions({ { .disabled = true, .disabledTooltip = "Coming Soon" } }));
     CVarCheckbox("Skeleton Key", "gPlaceholderBool",
                  CheckboxOptions({ { .disabled = true, .disabledTooltip = "Coming Soon" } }));
+    CVarCheckbox("Tycoon's Wallet", Rando::StaticData::Options[RO_SHUFFLE_TYCOON_WALLET].cvar,
+                 CheckboxOptions({ { .tooltip = "Adds the Tycoon's Wallet (5,000 rupees) to the item pool\n"
+                                                "as a third progressive wallet upgrade.",
+                                     .disabled = IncompatibleWithLogicSetting(RO_SHUFFLE_TYCOON_WALLET),
+                                     .disabledTooltip = "Incompatible with current Logic Setting" } }));
     CVarCheckbox("Child Wallet", "gPlaceholderBool",
                  CheckboxOptions({ { .disabled = true, .disabledTooltip = "Coming Soon" } }));
     CVarCheckbox("Infinite Upgrades", "gPlaceholderBool",
@@ -583,8 +592,8 @@ static void DrawItemsTab() {
                  CheckboxOptions({ { .tooltip = "Shuffles the first drop from a non Boss Enemy." } }));
     CVarCheckbox(
         "Enemy Souls", Rando::StaticData::Options[RO_SHUFFLE_ENEMY_SOULS].cvar,
-        CheckboxOptions({ { .tooltip = "Adds the \"souls\" of regular enemies to the item pool. Enemy Souls are items "
-                                       "that must be found in order for their corresponding enemy to spawn.",
+        CheckboxOptions({ { .tooltip = "Adds the \"souls\" of regular enemies to the item pool. An enemy will be "
+                                       "immune to damage until its corresponding soul has been obtained.",
                             .disabled = IncompatibleWithLogicSetting(RO_SHUFFLE_ENEMY_SOULS),
                             .disabledTooltip = "Incompatible with current Logic Setting" } }));
     CVarCheckbox("Shuffle Time", Rando::StaticData::Options[RO_CLOCK_SHUFFLE].cvar,
@@ -842,10 +851,14 @@ static void DrawStartingItemsTab() {
 
                     if (ImGui::ImageButton(std::to_string(item).c_str(), textureId, imageSize, ImVec2(0, 0),
                                            ImVec2(1, 1), ImVec4(0, 0, 0, 0), tintColor)) {
-                        if (std::count(setStartingItemsList.begin(), setStartingItemsList.end(), item) <
-                            (Rando::StaticData::MaxStartingItemsMap.count(item)
-                                 ? Rando::StaticData::MaxStartingItemsMap[item]
-                                 : 1)) {
+                        u8 maxCount = Rando::StaticData::MaxStartingItemsMap.count(item)
+                                          ? Rando::StaticData::MaxStartingItemsMap[item]
+                                          : 1;
+                        if (item == RI_PROGRESSIVE_WALLET &&
+                            CVarGetInteger(Rando::StaticData::Options[RO_SHUFFLE_TYCOON_WALLET].cvar, 0)) {
+                            maxCount = 3;
+                        }
+                        if (std::count(setStartingItemsList.begin(), setStartingItemsList.end(), item) < maxCount) {
 
                             setStartingItemsList.push_back(item);
                             Rando::SetStartingItemsInConfig(setStartingItemsList);
@@ -1068,6 +1081,36 @@ static void DrawHintsTab() {
         "Gossip Stone Static Hint", Rando::StaticData::Options[RO_HINTS_GOSSIP_STONES].cvar,
         CheckboxOptions(
             { { .tooltip = "Each gossip stone will give a static hint about the contents of a random location." } }));
+    CVarSliderInt("Gossip Stone Hint Strength", Rando::StaticData::Options[RO_HINTS_GOSSIP_STONE_STRENGTH].cvar,
+                  IntSliderOptions().Min(0).Max(100).DefaultValue(50).Tooltip(
+                      "Controls how strongly gossip stone hints are weighted toward important items.\n"
+                      "At 0 all checks are equally likely. At 100 the full weights below apply.\n"
+                      "\n"
+                      "Item weights (higher = more likely to be hinted):\n"
+                      "  Majora's Soul              13\n"
+                      "  Deku / Goron / Zora Masks  12\n"
+                      "  Blast / Fierce Deity Masks 11\n"
+                      "  Boss Souls & Remains       10\n"
+                      "\n"
+                      "Check weights (overrides item weight):\n"
+                      "  Seahorse Reunion           10\n"
+                      "  New Wave Bossa Nova        10\n"
+                      "  Frog Choir                 10\n"
+                      "  Couple's Mask              10\n"
+                      "  Romani Ranch Aliens        10\n"
+                      "  Beaver Race 1 & 2           8\n"
+                      "  Keaton Quiz                 8\n"
+                      "  Curiosity Shop Special Item 8\n"
+                      "  Deku Playground All Days    8\n"
+                      "  Moon Trial Hearts (x3)      6\n"
+                      "\n"
+                      "Item type weights (fallback):\n"
+                      "  Major / Mask                9\n"
+                      "  Boss Key                    8\n"
+                      "  Lesser                      6\n"
+                      "  Small Key                   5\n"
+                      "  Skulltula / Stray Fairy     3\n"
+                      "  Health / Junk               2"));
     CVarCheckbox(
         "Gossip Stone Purchaseable", Rando::StaticData::Options[RO_HINTS_PURCHASEABLE].cvar,
         CheckboxOptions({ { .tooltip = "Gossip stones will offer a hint for a scaling rupee cost. This cost ranges "
@@ -1095,6 +1138,9 @@ static void DrawHintsTab() {
         CheckboxOptions(
             { { .tooltip =
                     "The Zora in Great Bay Coast, near Pirates Fortress, will hint the location of the Hookshot." } }));
+    CVarCheckbox("Bank Reward", Rando::StaticData::Options[RO_HINTS_BANK_SIGN].cvar,
+                 CheckboxOptions({ { .tooltip = "The sign next to the Bank in West Clock Town will describe a "
+                                                "promotion for the Piece of Heart Check." } }));
     ImGui::EndChild();
 }
 

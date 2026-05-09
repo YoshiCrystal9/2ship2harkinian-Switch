@@ -760,7 +760,9 @@ ItemId Player_Dpad_GetItemOnButton(PlayState* play, Player* player, DpadEquipSlo
         return ITEM_NONE;
     }
 
-    return DPAD_BTN_ITEM(slot);
+    ItemId item = DPAD_BTN_ITEM(slot);
+    GameInteractor_Should(VB_GET_ITEM_ON_BUTTON, item, slot, &item);
+    return item;
 }
 // #endregion
 
@@ -771,6 +773,8 @@ ItemId Player_GetItemOnButton(PlayState* play, Player* player, EquipSlot slot) {
 
     if (slot == EQUIP_SLOT_B) {
         ItemId item = Inventory_GetBtnBItem(play);
+
+        GameInteractor_Should(VB_GET_ITEM_ON_BUTTON, item, slot, &item);
 
         if (item >= ITEM_FD) {
             return item;
@@ -791,22 +795,27 @@ ItemId Player_GetItemOnButton(PlayState* play, Player* player, EquipSlot slot) {
             return ITEM_F2;
         }
 
-        GameInteractor_Should(VB_GET_ITEM_ON_BUTTON, item, slot, &item);
-
         return item;
     }
 
     if (slot == EQUIP_SLOT_C_LEFT) {
-        return C_BTN_ITEM(EQUIP_SLOT_C_LEFT);
+        ItemId item = C_BTN_ITEM(EQUIP_SLOT_C_LEFT);
+        GameInteractor_Should(VB_GET_ITEM_ON_BUTTON, item, slot, &item);
+        return item;
     }
 
     if (slot == EQUIP_SLOT_C_DOWN) {
-        return C_BTN_ITEM(EQUIP_SLOT_C_DOWN);
+        ItemId item = C_BTN_ITEM(EQUIP_SLOT_C_DOWN);
+        GameInteractor_Should(VB_GET_ITEM_ON_BUTTON, item, slot, &item);
+        return item;
     }
 
     // EQUIP_SLOT_C_RIGHT
-
-    return C_BTN_ITEM(EQUIP_SLOT_C_RIGHT);
+    {
+        ItemId item = C_BTN_ITEM(EQUIP_SLOT_C_RIGHT);
+        GameInteractor_Should(VB_GET_ITEM_ON_BUTTON, item, slot, &item);
+        return item;
+    }
 }
 
 // #region 2S2H [Dpad]

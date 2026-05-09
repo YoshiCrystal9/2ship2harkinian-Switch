@@ -7,14 +7,14 @@
 void Rando::ActorBehavior::InitEnZogBehavior() {
     COND_VB_SHOULD(VB_CONSIDER_MIKAU_HEALED, IS_RANDO, {
         int shouldIfMikauIsGone = va_arg(args, int);
-        // Check both eligible and obtained flags to account for both cutscene skips and scene reloads
+        // Check both eligible and cycleObtained flags to account for both cutscene skips and scene reloads
         if (shouldIfMikauIsGone) {
             *should = (RANDO_SAVE_CHECKS[RC_GREAT_BAY_COAST_MIKAU].eligible ||
-                       RANDO_SAVE_CHECKS[RC_GREAT_BAY_COAST_MIKAU].obtained);
+                       RANDO_SAVE_CHECKS[RC_GREAT_BAY_COAST_MIKAU].cycleObtained);
         } else {
             // Only if Mikau is still present, i.e. kill his gravestone's actor
             *should = !(RANDO_SAVE_CHECKS[RC_GREAT_BAY_COAST_MIKAU].eligible ||
-                        RANDO_SAVE_CHECKS[RC_GREAT_BAY_COAST_MIKAU].obtained);
+                        RANDO_SAVE_CHECKS[RC_GREAT_BAY_COAST_MIKAU].cycleObtained);
         }
     });
 }

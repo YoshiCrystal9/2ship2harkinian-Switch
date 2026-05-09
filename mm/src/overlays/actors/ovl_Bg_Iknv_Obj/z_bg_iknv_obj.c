@@ -6,6 +6,7 @@
 
 #include "z_bg_iknv_obj.h"
 #include "objects/object_iknv_obj/object_iknv_obj.h"
+#include "2s2h/GameInteractor/GameInteractor.h"
 
 #define FLAGS (ACTOR_FLAG_UPDATE_CULLING_DISABLED)
 

@@ -132,8 +132,8 @@ static RegisterShipInitFunc initFunc([]() {
     };
     Regions[RR_WOODFALL_TEMPLE_MAP_ROOM] = RandoRegion{ .name = "Map Room", .sceneId = SCENE_MITURIN,
         .checks = {
-            CHECK(RC_WOODFALL_TEMPLE_MAP_CHEST, CAN_BE_DEKU || CanKillEnemy(ACTOR_EN_KAME)),
-            CHECK(RC_ENEMY_DROP_SNAPPER, CAN_BE_DEKU || CanKillEnemy(ACTOR_EN_KAME)),
+            CHECK(RC_WOODFALL_TEMPLE_MAP_CHEST, CAN_BE_DEKU && CanKillEnemy(ACTOR_EN_KAME)),
+            CHECK(RC_ENEMY_DROP_SNAPPER, CAN_BE_DEKU && CanKillEnemy(ACTOR_EN_KAME)),
         },
         .connections = {
             CONNECTION(RR_WOODFALL_TEMPLE_WATER_ROOM, true),

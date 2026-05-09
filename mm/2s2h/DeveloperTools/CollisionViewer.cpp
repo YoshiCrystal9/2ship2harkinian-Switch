@@ -79,28 +79,29 @@ void CollisionViewerWindow::DrawElement() {
 
     if (ImGui::BeginTable("table table", 3, ImGuiTableFlags_NoBordersInBody)) {
         ImGui::TableNextColumn();
-        UIWidgets::CVarColorPicker("Normal", "gCollisionViewer.SceneCollisionColor", { 255, 255, 255, 255 });
+        UIWidgets::CVarColorPicker("Normal", "gCollisionViewer.SceneCollisionColor.Value", { 255, 255, 255, 255 });
         ImGui::TableNextColumn();
-        UIWidgets::CVarColorPicker("Void", "gCollisionViewer.VoidCollisionColor", { 255, 0, 0, 255 });
+        UIWidgets::CVarColorPicker("Void", "gCollisionViewer.VoidCollisionColor.Value", { 255, 0, 0, 255 });
         ImGui::TableNextColumn();
-        UIWidgets::CVarColorPicker("Entrance", "gCollisionViewer.EntranceCollisionColor", { 0, 255, 0, 255 });
+        UIWidgets::CVarColorPicker("Entrance", "gCollisionViewer.EntranceCollisionColor.Value", { 0, 255, 0, 255 });
         ImGui::TableNextColumn();
-        UIWidgets::CVarColorPicker("Slope", "gCollisionViewer.SlopeCollisionColor", { 255, 255, 128, 255 });
+        UIWidgets::CVarColorPicker("Slope", "gCollisionViewer.SlopeCollisionColor.Value", { 255, 255, 128, 255 });
         ImGui::TableNextColumn();
-        UIWidgets::CVarColorPicker("Hookshotable", "gCollisionViewer.HookshotCollisionColor", { 128, 128, 255, 255 });
+        UIWidgets::CVarColorPicker("Hookshotable", "gCollisionViewer.HookshotCollisionColor.Value",
+                                   { 128, 128, 255, 255 });
         ImGui::TableNextColumn();
-        UIWidgets::CVarColorPicker("Waterbox", "gCollisionViewer.WaterboxCollisionColor", { 0, 0, 255, 255 });
+        UIWidgets::CVarColorPicker("Waterbox", "gCollisionViewer.WaterboxCollisionColor.Value", { 0, 0, 255, 255 });
         ImGui::TableNextColumn();
-        UIWidgets::CVarColorPicker("OC", "gCollisionViewer.OCollisionColor", { 255, 255, 255, 255 });
+        UIWidgets::CVarColorPicker("OC", "gCollisionViewer.OCollisionColor.Value", { 255, 255, 255, 255 });
         ImGui::TableNextColumn();
-        UIWidgets::CVarColorPicker("AC", "gCollisionViewer.ACollisionColor", { 0, 0, 255, 255 });
+        UIWidgets::CVarColorPicker("AC", "gCollisionViewer.ACollisionColor.Value", { 0, 0, 255, 255 });
         ImGui::TableNextColumn();
-        UIWidgets::CVarColorPicker("AT", "gCollisionViewer.ATCollisionColor", { 255, 0, 0, 255 });
+        UIWidgets::CVarColorPicker("AT", "gCollisionViewer.ATCollisionColor.Value", { 255, 0, 0, 255 });
         ImGui::EndTable();
     }
-    UIWidgets::CVarColorPicker("Special Surface (Grass/Sand/Etc)", "gCollisionViewer.SpecialSurfaceColor",
+    UIWidgets::CVarColorPicker("Special Surface (Grass/Sand/Etc)", "gCollisionViewer.SpecialSurfaceColor.Value",
                                { 192, 255, 192, 255 });
-    UIWidgets::CVarColorPicker("Interactable (Vines/Crawlspace/Etc)", "gCollisionViewer.InteractableColor",
+    UIWidgets::CVarColorPicker("Interactable (Vines/Crawlspace/Etc)", "gCollisionViewer.InteractableColor.Value",
                                { 192, 0, 192, 255 });
 
     ImGui::EndDisabled();

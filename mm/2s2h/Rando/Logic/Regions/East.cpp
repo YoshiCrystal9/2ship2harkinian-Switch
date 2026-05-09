@@ -9,7 +9,7 @@ using namespace Rando::Logic;
 static RegisterShipInitFunc initFunc([]() {
     Regions[RR_BENEATH_THE_GRAVEYARD_DAMPE] = RandoRegion{ .sceneId = SCENE_DANPEI2TEST,
         .checks = {
-            CHECK(RC_BENEATH_THE_GRAVEYARD_DAMPE_CHEST, HAS_ITEM(ITEM_BOW)),
+            CHECK(RC_BENEATH_THE_GRAVEYARD_DAMPE_CHEST, CanKillEnemy(ACTOR_EN_BIGPO)),
             CHECK(RC_BENEATH_THE_GRAVEYARD_DAMPE_POT_01, true),
             CHECK(RC_BENEATH_THE_GRAVEYARD_DAMPE_POT_02, true),
             CHECK(RC_BENEATH_THE_GRAVEYARD_DAMPE_POT_03, true),
@@ -134,8 +134,8 @@ static RegisterShipInitFunc initFunc([]() {
             CHECK(RC_IKANA_CANYON_GROTTO_GRASS_14, true),
             CHECK(RC_ENEMY_DROP_MINI_BABA, CanKillEnemy(ACTOR_EN_KAREBABA)),
         },
-        .connections = {
-            CONNECTION(RR_IKANA_CANYON_LOWER, true), // TODO: Grotto mapping
+        .exits = { //     TO                                         FROM
+            EXIT(ENTRANCE(IKANA_CANYON, 0),                 ENTRANCE(GROTTOS, 29), true),
         },
     };
     Regions[RR_IKANA_CANYON_LOWER] = RandoRegion{ .name = "Lower", .sceneId = SCENE_IKANA,
@@ -143,10 +143,11 @@ static RegisterShipInitFunc initFunc([]() {
             CHECK(RC_IKANA_CANYON_SCRUB_PIECE_OF_HEART, Flags_GetRandoInf(RANDO_INF_OBTAINED_DEED_OCEAN) && CAN_BE_ZORA && CAN_BE_DEKU),
             CHECK(RC_IKANA_CANYON_SCRUB_HUGE_RUPEE, Flags_GetRandoInf(RANDO_INF_OBTAINED_DEED_OCEAN) && CAN_BE_ZORA),
             CHECK(RC_IKANA_CANYON_SCRUB_POTION_REFILL, CUR_UPG_VALUE(UPG_WALLET) >= 1),
-            CHECK(RC_ENEMY_DROP_OCTOROK, CanKillEnemy(ACTOR_EN_OKUTA)),
+            CHECK(RC_ENEMY_DROP_OCTOROK, CanKillEnemy(ACTOR_EN_OKUTA) && CAN_USE_ABILITY(SWIM)),
             CHECK(RC_ENEMY_DROP_GARO, CanKillEnemy(ACTOR_EN_JSO)),
         },
         .exits = { //     TO                                         FROM
+            EXIT(ENTRANCE(GROTTOS, 29),                     ENTRANCE(IKANA_CANYON, 0), CAN_USE_ABILITY(SWIM)),
             EXIT(ENTRANCE(ROAD_TO_IKANA, 1),                ENTRANCE(IKANA_CANYON, 0), true), 
             /*              
                 TODO : Sakon's Hideout is heavily flag based so we should check for those. Consider what I have in here now to be loose placeholders.
@@ -160,7 +161,6 @@ static RegisterShipInitFunc initFunc([]() {
         .connections = {
             // Octorok soul not needed; the player can also create ice platforms on the water itself.
             CONNECTION(RR_IKANA_CANYON_UPPER, HAS_ITEM(ITEM_HOOKSHOT) && CAN_USE_MAGIC_ARROW(ICE)),
-            CONNECTION(RR_IKANA_CANYON_GROTTO, CAN_USE_ABILITY(SWIM)), // TODO: Grotto mapping
         },
         .events = {
             EVENT(RE_ACCESS_BLUE_POTION_REFILL, CUR_UPG_VALUE(UPG_WALLET) >= 1),
@@ -213,8 +213,8 @@ static RegisterShipInitFunc initFunc([]() {
             CHECK(RC_IKANA_GRAVEYARD_GROTTO_GRASS_14, true),
             CHECK(RC_ENEMY_DROP_MINI_BABA, CanKillEnemy(ACTOR_EN_KAREBABA)),
         },
-        .connections = {
-            CONNECTION(RR_IKANA_GRAVEYARD_LOWER, true), // TODO: Grotto mapping
+        .exits = { //     TO                                         FROM
+            EXIT(ENTRANCE(IKANA_GRAVEYARD, 0),              ENTRANCE(GROTTOS, 30), true),
         },
     };
     Regions[RR_IKANA_GRAVEYARD_LOWER] = RandoRegion{ .name = "Lower", .sceneId = SCENE_BOTI,
@@ -232,6 +232,7 @@ static RegisterShipInitFunc initFunc([]() {
             CHECK(RC_ENEMY_DROP_BAD_BAT, CanKillEnemy(ACTOR_EN_BAT) && IS_DAY()), // Day only
         },
         .exits = { //     TO                                         FROM
+            EXIT(ENTRANCE(GROTTOS, 30),                     ENTRANCE(IKANA_GRAVEYARD, 0), CAN_USE_EXPLOSIVE),
             EXIT(ENTRANCE(ROAD_TO_IKANA, 2),                ENTRANCE(IKANA_GRAVEYARD, 0), true),
             EXIT(ENTRANCE(DAMPES_HOUSE, 0),                          ONE_WAY_EXIT, HAS_ITEM(ITEM_MASK_CAPTAIN) && IS_NIGHT3()), // Day 3 hole
             EXIT(ENTRANCE(BENEATH_THE_GRAVERYARD, 0),       ENTRANCE(IKANA_GRAVEYARD, 2), HAS_ITEM(ITEM_MASK_CAPTAIN) && IS_NIGHT2()), // Day 2 hole
@@ -239,7 +240,6 @@ static RegisterShipInitFunc initFunc([]() {
         },
         .connections = {
             CONNECTION(RR_IKANA_GRAVEYARD_UPPER, CAN_PLAY_SONG(SONATA)),
-            CONNECTION(RR_IKANA_GRAVEYARD_GROTTO, CAN_USE_EXPLOSIVE), // TODO: Grotto mapping
         },
         .oneWayEntrances = {
             ENTRANCE(IKANA_GRAVEYARD, 4), // Exiting Dampe's house
@@ -306,10 +306,10 @@ static RegisterShipInitFunc initFunc([]() {
         },
         .exits = { //     TO                                         FROM
             EXIT(ENTRANCE(TERMINA_FIELD, 4),                ENTRANCE(ROAD_TO_IKANA, 0), true),
+            EXIT(ENTRANCE(GROTTOS, 31),                     ENTRANCE(ROAD_TO_IKANA, 0), CAN_BE_GORON),
         },
         .connections = {
             CONNECTION(RR_ROAD_TO_IKANA_BELOW_LEDGE, CAN_RIDE_EPONA),
-            CONNECTION(RR_ROAD_TO_IKANA_GROTTO, CAN_BE_GORON), // TODO: Grotto mapping
         },
     };
     Regions[RR_ROAD_TO_IKANA_GROTTO] = RandoRegion{ .name = "Road to Ikana Grotto", .sceneId = SCENE_KAKUSIANA,
@@ -331,8 +331,8 @@ static RegisterShipInitFunc initFunc([]() {
             CHECK(RC_ROAD_TO_IKANA_GROTTO_GRASS_14, true),
             CHECK(RC_ENEMY_DROP_MINI_BABA, CanKillEnemy(ACTOR_EN_KAREBABA)),
         },
-        .connections = {
-            CONNECTION(RR_ROAD_TO_IKANA_FIELD_SIDE, true), // TODO: Grotto mapping
+        .exits = { //     TO                                         FROM
+            EXIT(ENTRANCE(ROAD_TO_IKANA, 0),                ENTRANCE(GROTTOS, 31), true),
         },
     };
     Regions[RR_SAKON_HIDEOUT] = RandoRegion{ .sceneId = SCENE_SECOM,
@@ -384,11 +384,11 @@ static RegisterShipInitFunc initFunc([]() {
     };
     Regions[RR_SECRET_SHRINE] = RandoRegion{ .sceneId = SCENE_RANDOM,
         .checks = {
-            CHECK(RC_SECRET_SHRINE_DINALFOS_CHEST, RANDO_EVENTS[RE_SECRET_SHRINE_DINALFOS]),
+            CHECK(RC_SECRET_SHRINE_DINOLFOS_CHEST, RANDO_EVENTS[RE_SECRET_SHRINE_DINOLFOS]),
             CHECK(RC_SECRET_SHRINE_WIZZROBE_CHEST, RANDO_EVENTS[RE_SECRET_SHRINE_WIZZROBE]),
             CHECK(RC_SECRET_SHRINE_WART_CHEST, RANDO_EVENTS[RE_SECRET_SHRINE_WART]),
             CHECK(RC_SECRET_SHRINE_GARO_MASTER_CHEST, RANDO_EVENTS[RE_SECRET_SHRINE_GARO_MASTER]),
-            CHECK(RC_SECRET_SHRINE_PIECE_OF_HEART_CHEST, RANDO_EVENTS[RE_SECRET_SHRINE_DINALFOS] && RANDO_EVENTS[RE_SECRET_SHRINE_WIZZROBE] && RANDO_EVENTS[RE_SECRET_SHRINE_WART] && RANDO_EVENTS[RE_SECRET_SHRINE_GARO_MASTER]),
+            CHECK(RC_SECRET_SHRINE_PIECE_OF_HEART_CHEST, RANDO_EVENTS[RE_SECRET_SHRINE_DINOLFOS] && RANDO_EVENTS[RE_SECRET_SHRINE_WIZZROBE] && RANDO_EVENTS[RE_SECRET_SHRINE_WART] && RANDO_EVENTS[RE_SECRET_SHRINE_GARO_MASTER]),
             CHECK(RC_SECRET_SHRINE_POT_04, (CAN_USE_PROJECTILE && CAN_USE_ABILITY(SWIM)) || CAN_BE_ZORA),
             CHECK(RC_SECRET_SHRINE_POT_05, (CAN_USE_PROJECTILE && CAN_USE_ABILITY(SWIM)) || CAN_BE_ZORA),
             CHECK(RC_SECRET_SHRINE_POT_06, (CAN_USE_PROJECTILE && CAN_USE_ABILITY(SWIM)) || CAN_BE_ZORA),
@@ -405,7 +405,7 @@ static RegisterShipInitFunc initFunc([]() {
         },
         .events = {
             // TODO: Allow opting in to health checks
-            EVENT(RE_SECRET_SHRINE_DINALFOS, /* CHECK_MAX_HP(4) && */ CanKillEnemy(ACTOR_EN_DINOFOS)),
+            EVENT(RE_SECRET_SHRINE_DINOLFOS, /* CHECK_MAX_HP(4) && */ CanKillEnemy(ACTOR_EN_DINOFOS)),
             EVENT(RE_SECRET_SHRINE_WIZZROBE, /* CHECK_MAX_HP(8) && */ CanKillEnemy(ACTOR_EN_WIZ)),
             EVENT(RE_SECRET_SHRINE_WART, /* CHECK_MAX_HP(12) && */ CanKillEnemy(ACTOR_BOSS_04)),
             EVENT(RE_SECRET_SHRINE_GARO_MASTER, /* CHECK_MAX_HP(16) && */ CanKillEnemy(ACTOR_EN_JSO2)),
