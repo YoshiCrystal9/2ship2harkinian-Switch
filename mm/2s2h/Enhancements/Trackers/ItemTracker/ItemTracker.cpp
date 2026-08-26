@@ -8,6 +8,7 @@
 #include "2s2h/BenPort.h"
 #include "2s2h/ShipUtils.h"
 #include <spdlog/fmt/fmt.h>
+#include <algorithm>
 
 extern "C" {
 #include "z64save.h"
@@ -18,6 +19,8 @@ extern "C" {
 #include "assets/archives/icon_item_static/icon_item_static_yar.h"
 #include "overlays/actors/ovl_En_Si/z_en_si.h"
 }
+
+#include <fast/Fast3dGui.h>
 
 namespace BenGui {
 extern std::shared_ptr<ItemTrackerWindow> mItemTrackerWindow;
@@ -32,6 +35,48 @@ extern std::shared_ptr<ItemTrackerWindow> mItemTrackerWindow;
 
 std::vector<TrackerGroup> itemTrackerGroups;
 static bool sItemTrackerBtnState = false;
+
+static bool IsTradeItemObtained(RandoItemId randoItemId) {
+    ItemId itemId = Rando::StaticData::Items[randoItemId].itemId;
+    if (INV_CONTENT(itemId) == itemId) {
+        return true;
+    }
+
+    switch (randoItemId) {
+        case RI_MOONS_TEAR:
+            return Flags_GetRandoInf(RANDO_INF_OBTAINED_MOONS_TEAR);
+        case RI_DEED_LAND:
+            return Flags_GetRandoInf(RANDO_INF_OBTAINED_DEED_LAND);
+        case RI_DEED_SWAMP:
+            return Flags_GetRandoInf(RANDO_INF_OBTAINED_DEED_SWAMP);
+        case RI_DEED_MOUNTAIN:
+            return Flags_GetRandoInf(RANDO_INF_OBTAINED_DEED_MOUNTAIN);
+        case RI_DEED_OCEAN:
+            return Flags_GetRandoInf(RANDO_INF_OBTAINED_DEED_OCEAN);
+        case RI_ROOM_KEY:
+            return Flags_GetRandoInf(RANDO_INF_OBTAINED_ROOM_KEY);
+        case RI_LETTER_TO_MAMA:
+            return Flags_GetRandoInf(RANDO_INF_OBTAINED_LETTER_TO_MAMA);
+        case RI_LETTER_TO_KAFEI:
+            return Flags_GetRandoInf(RANDO_INF_OBTAINED_LETTER_TO_KAFEI);
+        case RI_PENDANT_OF_MEMORIES:
+            return Flags_GetRandoInf(RANDO_INF_OBTAINED_PENDANT_OF_MEMORIES);
+        default:
+            return false;
+    }
+}
+
+// When the file isn't loaded everythin is ocarinas, so we fall back to the first safe item
+u32 GetVanillaItemIdForSlot(u32 slot) {
+    bool isSaveLoaded = gPlayState != NULL && gSaveContext.gameMode == GAMEMODE_NORMAL;
+    u32 vanillaItemId = isSaveLoaded ? gSaveContext.save.saveInfo.inventory.items[slot] : ITEM_NONE;
+
+    if (vanillaItemId == ITEM_NONE || vanillaItemId >= ITEM_RECOVERY_HEART) {
+        vanillaItemId = safeItemsForInventorySlot[slot][0];
+    }
+
+    return vanillaItemId;
+}
 
 TrackerImageObject GetImageObject(TrackerItemType itemType, u32 itemId) {
     bool isSaveLoaded = gPlayState != NULL && gSaveContext.gameMode == GAMEMODE_NORMAL;
@@ -82,6 +127,20 @@ TrackerImageObject GetImageObject(TrackerItemType itemType, u32 itemId) {
                 case RI_TRIFORCE_PIECE: {
                     itemObtained = gSaveContext.save.shipSaveInfo.rando.foundTriforcePieces > 0;
                 } break;
+                case RI_SONG_SARIA: {
+                    itemObtained = gSaveContext.save.shipSaveInfo.rando.sariaHintsAvailable > 0;
+                } break;
+                case RI_MOONS_TEAR:
+                case RI_DEED_LAND:
+                case RI_DEED_SWAMP:
+                case RI_DEED_MOUNTAIN:
+                case RI_DEED_OCEAN:
+                case RI_ROOM_KEY:
+                case RI_LETTER_TO_MAMA:
+                case RI_LETTER_TO_KAFEI:
+                case RI_PENDANT_OF_MEMORIES: {
+                    itemObtained = IsTradeItemObtained(randoItemId);
+                } break;
                 default: {
                     itemObtained = !Rando::IsItemObtainable(randoItemId);
                 } break;
@@ -91,7 +150,8 @@ TrackerImageObject GetImageObject(TrackerItemType itemType, u32 itemId) {
             const char* texturePath = Rando::StaticData::GetIconTexturePath(randoItemId);
             if (texturePath != nullptr) {
                 trackerImageObject.textureId =
-                    Ship::Context::GetInstance()->GetWindow()->GetGui()->GetTextureByName(texturePath);
+                    std::dynamic_pointer_cast<Fast::Fast3dGui>(Ship::Context::GetRawInstance()->GetWindow()->GetGui())
+                        ->GetTextureByName(texturePath);
             }
             if (randoItemId >= RI_OWL_CLOCK_TOWN_SOUTH && randoItemId <= RI_OWL_ZORA_CAPE) {
                 trackerImageObject.textureDimensions.y = 24.0f;
@@ -101,13 +161,11 @@ TrackerImageObject GetImageObject(TrackerItemType itemType, u32 itemId) {
         } break;
         case TRACKER_ITEM_SLOT: {
             itemObtained = gSaveContext.save.saveInfo.inventory.items[itemId] != ITEM_NONE;
-            auto vanillaItemId = isSaveLoaded ? gSaveContext.save.saveInfo.inventory.items[itemId] : ITEM_NONE;
-            if (vanillaItemId == ITEM_NONE || vanillaItemId >= ITEM_RECOVERY_HEART) {
-                vanillaItemId = safeItemsForInventorySlot[itemId][0];
-            }
+            auto vanillaItemId = GetVanillaItemIdForSlot(itemId);
 
-            trackerImageObject.textureId = Ship::Context::GetInstance()->GetWindow()->GetGui()->GetTextureByName(
-                (const char*)gItemIcons[vanillaItemId]);
+            trackerImageObject.textureId =
+                std::dynamic_pointer_cast<Fast::Fast3dGui>(Ship::Context::GetRawInstance()->GetWindow()->GetGui())
+                    ->GetTextureByName((const char*)gItemIcons[vanillaItemId]);
         } break;
         case TRACKER_ITEM_SWORD: {
             if (GET_CUR_EQUIP_VALUE(EQUIP_TYPE_SWORD) > EQUIP_VALUE_SWORD_NONE) {
@@ -118,8 +176,9 @@ TrackerImageObject GetImageObject(TrackerItemType itemType, u32 itemId) {
                 vanillaItemId = ITEM_SWORD_KOKIRI + GET_CUR_EQUIP_VALUE(EQUIP_TYPE_SWORD) - EQUIP_VALUE_SWORD_KOKIRI;
             }
 
-            trackerImageObject.textureId = Ship::Context::GetInstance()->GetWindow()->GetGui()->GetTextureByName(
-                (const char*)gItemIcons[vanillaItemId]);
+            trackerImageObject.textureId =
+                std::dynamic_pointer_cast<Fast::Fast3dGui>(Ship::Context::GetRawInstance()->GetWindow()->GetGui())
+                    ->GetTextureByName((const char*)gItemIcons[vanillaItemId]);
         } break;
         case TRACKER_ITEM_SHIELD: {
             if (GET_CUR_EQUIP_VALUE(EQUIP_TYPE_SHIELD) > EQUIP_VALUE_SHIELD_NONE) {
@@ -130,8 +189,9 @@ TrackerImageObject GetImageObject(TrackerItemType itemType, u32 itemId) {
                 vanillaItemId = ITEM_SHIELD_MIRROR;
             }
 
-            trackerImageObject.textureId = Ship::Context::GetInstance()->GetWindow()->GetGui()->GetTextureByName(
-                (const char*)gItemIcons[vanillaItemId]);
+            trackerImageObject.textureId =
+                std::dynamic_pointer_cast<Fast::Fast3dGui>(Ship::Context::GetRawInstance()->GetWindow()->GetGui())
+                    ->GetTextureByName((const char*)gItemIcons[vanillaItemId]);
         } break;
         case TRACKER_ITEM_WALLET: {
             if (CUR_UPG_VALUE(UPG_WALLET) >= 1) {
@@ -142,8 +202,9 @@ TrackerImageObject GetImageObject(TrackerItemType itemType, u32 itemId) {
                 vanillaItemId = ITEM_WALLET_GIANT;
             }
 
-            trackerImageObject.textureId = Ship::Context::GetInstance()->GetWindow()->GetGui()->GetTextureByName(
-                (const char*)gItemIcons[vanillaItemId]);
+            trackerImageObject.textureId =
+                std::dynamic_pointer_cast<Fast::Fast3dGui>(Ship::Context::GetRawInstance()->GetWindow()->GetGui())
+                    ->GetTextureByName((const char*)gItemIcons[vanillaItemId]);
         } break;
         case TRACKER_ITEM_MAGIC: {
             if (gSaveContext.save.saveInfo.playerData.isMagicAcquired) {
@@ -154,8 +215,9 @@ TrackerImageObject GetImageObject(TrackerItemType itemType, u32 itemId) {
                 vanillaItemId = ITEM_MAGIC_JAR_BIG;
             }
 
-            trackerImageObject.textureId = Ship::Context::GetInstance()->GetWindow()->GetGui()->GetTextureByName(
-                (const char*)gItemIcons[vanillaItemId]);
+            trackerImageObject.textureId =
+                std::dynamic_pointer_cast<Fast::Fast3dGui>(Ship::Context::GetRawInstance()->GetWindow()->GetGui())
+                    ->GetTextureByName((const char*)gItemIcons[vanillaItemId]);
         } break;
         default:
             break;
@@ -180,6 +242,12 @@ std::string GetItemCounts(TrackerItemType itemType, u32 itemId) {
                         auto max = RANDO_SAVE_OPTIONS[RO_TRIFORCE_PIECES_REQUIRED];
                         countStr = fmt::format(FORMAT_COUNT, gSaveContext.save.shipSaveInfo.rando.foundTriforcePieces,
                                                max > 999 ? "1k" : std::to_string(max));
+                    }
+                } break;
+                case RI_SONG_SARIA: {
+                    auto count = gSaveContext.save.shipSaveInfo.rando.sariaHintsAvailable;
+                    if (count > 1) {
+                        countStr = std::to_string(count);
                     }
                 } break;
                 case RI_GS_TOKEN_OCEAN:
@@ -263,23 +331,43 @@ std::string GetItemCounts(TrackerItemType itemType, u32 itemId) {
     return countStr;
 }
 
-void DrawItemCounts(TrackerItemType itemType, u32 itemId, ImVec2 textureSize, float scale, ImVec2 currentPos) {
+// Choose a different font for the font size otherwise it gets scaled and blurry.
+static ImFont* GetItemCountFont(float fontSize) {
+    if (fontSize >= 22.0f) {
+        return OTRGlobals::Instance->fontMonoLargest;
+    }
+    if (fontSize >= 18.0f) {
+        return OTRGlobals::Instance->fontMonoLarger;
+    }
+    return OTRGlobals::Instance->fontMono;
+}
+
+void DrawItemCounts(TrackerItemType itemType, u32 itemId, ImVec2 cellMin, ImVec2 cellSize, float scale) {
     std::string itemCount = GetItemCounts(itemType, itemId);
 
     if (itemCount.empty()) {
         return;
     }
-    ImVec2 textSize = ImGui::CalcTextSize(itemCount.c_str());
 
-    ImVec2 textPos =
-        ImVec2(currentPos.x + textureSize.x - textSize.x - 2.0f, currentPos.y + textureSize.y - textSize.y - 2.0f);
-    ImGui::SetCursorPos(textPos);
-    ImGui::SetWindowFontScale(scale);
-    ImGui::Text("%s", itemCount.c_str());
+    float fontSize = std::max(cellSize.x * 0.44f, 12.0f) * ImGui::GetIO().FontGlobalScale;
+    ImFont* font = GetItemCountFont(fontSize);
+    ImVec2 textSize = font->CalcTextSizeA(fontSize, FLT_MAX, 0.0f, itemCount.c_str());
+
+    float pad = 2.0f * scale;
+    ImVec2 textPos(cellMin.x + cellSize.x - textSize.x - pad, cellMin.y + cellSize.y - textSize.y - pad);
+
+    static const ImVec2 outlineDirections[] = { { -1, -1 }, { 0, -1 }, { 1, -1 }, { -1, 0 },
+                                                { 1, 0 },   { -1, 1 }, { 0, 1 },  { 1, 1 } };
+
+    ImDrawList* drawList = ImGui::GetWindowDrawList();
+    float outline = std::max(1.0f, fontSize / 12.0f);
+    for (const ImVec2& direction : outlineDirections) {
+        drawList->AddText(font, fontSize, textPos + direction * outline, IM_COL32(0, 0, 0, 255), itemCount.c_str());
+    }
+    drawList->AddText(font, fontSize, textPos, IM_COL32(255, 255, 255, 255), itemCount.c_str());
 }
 
 bool DrawItemTrackerSlot(TrackerItemType itemType, u32 itemId, float scale, bool clickable) {
-    ImVec2 currentPos = ImGui::GetCursorPos();
     ImVec2 cellSize(ITEM_TEXTURE_SIZE * scale, ITEM_TEXTURE_SIZE * scale);
 
     TrackerImageObject imageObject = GetImageObject(itemType, itemId);
@@ -333,7 +421,8 @@ bool DrawItemTrackerSlot(TrackerItemType itemType, u32 itemId, float scale, bool
             tintColor = ImVec4(0.0f, 209.0f / 256.0f, 231.0f / 256.0f, imageObject.textureColor.w); // Ocean tint
         }
         auto textureId =
-            Ship::Context::GetInstance()->GetWindow()->GetGui()->GetTextureByName(gMagicArrowEquipEffectTex);
+            std::dynamic_pointer_cast<Fast::Fast3dGui>(Ship::Context::GetRawInstance()->GetWindow()->GetGui())
+                ->GetTextureByName(gMagicArrowEquipEffectTex);
 
         // Draw texture behind the actual item icon
         ImGui::GetWindowDrawList()->AddImage(textureId, p0 + offset - ImVec2(8.0f, 8.0f),
@@ -345,7 +434,8 @@ bool DrawItemTrackerSlot(TrackerItemType itemType, u32 itemId, float scale, bool
         ImVec4 tintColor =
             ImVec4(255.0f / 255.0f, 255.0f / 255.0f, 255.0f / 255.0f, imageObject.textureColor.w); // Swamp tint
         auto textureId =
-            Ship::Context::GetInstance()->GetWindow()->GetGui()->GetTextureByName(gMagicArrowEquipEffectTex);
+            std::dynamic_pointer_cast<Fast::Fast3dGui>(Ship::Context::GetRawInstance()->GetWindow()->GetGui())
+                ->GetTextureByName(gMagicArrowEquipEffectTex);
 
         // Draw texture behind the actual item icon
         ImGui::GetWindowDrawList()->AddImage(textureId, p0 + offset - ImVec2(8.0f, 8.0f),
@@ -362,16 +452,9 @@ bool DrawItemTrackerSlot(TrackerItemType itemType, u32 itemId, float scale, bool
         UIWidgets::Tooltip(itemName.c_str());
     }
 
-    // Save last item data before drawing counts (which uses ImGui::Text and changes last item)
-    ImGuiContext& g = *ImGui::GetCurrentContext();
-    ImGuiLastItemData backup = g.LastItemData;
-
     if (CVarGetInteger("gSettings.ItemTracker.ItemCounts", 1)) {
-        DrawItemCounts(itemType, itemId, cellSize, scale, currentPos);
+        DrawItemCounts(itemType, itemId, p0, cellSize, scale);
     }
-
-    // Restore last item data so drag/drop operations work correctly
-    g.LastItemData = backup;
 
     return clicked;
 }

@@ -2,14 +2,20 @@
 #include "2s2h/GameInteractor/GameInteractor.h"
 #include "2s2h/ShipInit.hpp"
 #include "2s2h/Enhancements/FrameInterpolation/FrameInterpolation.h"
+#include "2s2h/Rando/Logic/Logic.h"
 
 extern "C" {
 #include "archives/icon_item_static/icon_item_static_yar.h"
 #include "interface/parameter_static/parameter_static.h"
+#include "overlays/actors/ovl_En_Gs/z_en_gs.h"
 extern s16 sEquipState;
 extern s16 sEquipAnimTimer;
+extern PlayerAnimationHeader* D_8085D17C[];
 char* ResourceMgr_LoadTexOrDListByName(const char* filePath);
 void Message_ResetOcarinaButtonAlphas(void);
+void func_80836A5C(Player* player, PlayState* play);
+void Player_Anim_PlayOnceAdjustedReverse(PlayState* play, Player* player, PlayerAnimationHeader* anim);
+void Player_Action_63(Player* player, PlayState* play);
 }
 
 #define CVAR_NAME "gEnhancements.Songs.SongItems"
@@ -305,6 +311,48 @@ static void HandleSongEquip(PauseContext* pauseCtx) {
     Audio_PlaySfx(NA_SE_SY_DECIDE);
 }
 
+// Mirrors Player_Action_63 OCARINA_MODE_END teardown
+static void FinishOcarinaPlay(PlayState* play) {
+    Player* player = GET_PLAYER(play);
+
+    sPendingAutoPlaySong = 0xFF;
+    sHideOcarinaStaff = false;
+    Message_ResetOcarinaButtonAlphas();
+
+    AudioOcarina_SetInstrument(OCARINA_INSTRUMENT_OFF);
+    play->interfaceCtx.bButtonInterfaceDoActionActive = false;
+    CutsceneManager_Stop(play->playerCsIds[PLAYER_CS_ID_ITEM_OCARINA]);
+    player->actor.flags &= ~ACTOR_FLAG_OCARINA_INTERACTION;
+    if (player->ocarinaInteractionActor != NULL) {
+        player->ocarinaInteractionActor->flags &= ~ACTOR_FLAG_OCARINA_INTERACTION;
+    }
+    player->stateFlags2 &= ~PLAYER_STATE2_USING_OCARINA;
+    player->cv.haltActorsDuringCsAction = false;
+    player->csAction = PLAYER_CSACTION_NONE;
+    Message_CloseTextbox(play);
+    play->msgCtx.ocarinaMode = OCARINA_MODE_NONE;
+
+    if (player->actionFunc == Player_Action_63) {
+        player->av2.actionVar2 = 1;
+        func_80836A5C(player, play);
+        Player_Anim_PlayOnceAdjustedReverse(play, player, D_8085D17C[player->transformation]);
+    }
+}
+
+static bool NeedsOcarinaCleanup(EnGs* enGs, PlayState* play) {
+    Player* player = GET_PLAYER(play);
+
+    bool stoneInvolved = (enGs->unk_19A & 0x200) || (player->ocarinaInteractionActor == &enGs->actor);
+
+    if (!stoneInvolved) {
+        return false;
+    }
+
+    return (player->actor.flags & ACTOR_FLAG_OCARINA_INTERACTION) ||
+           (player->stateFlags2 & PLAYER_STATE2_USING_OCARINA) || (play->msgCtx.ocarinaMode != OCARINA_MODE_NONE) ||
+           (player->actionFunc == Player_Action_63);
+}
+
 static void RegisterSongItems() {
     InitSongIcons();
 
@@ -442,7 +490,8 @@ static void RegisterSongItems() {
         ItemId* item = va_arg(args, ItemId*);
 
         if (IsSongItem(*item)) {
-            if (INV_CONTENT(ITEM_OCARINA_OF_TIME) != ITEM_OCARINA_OF_TIME) {
+            if (INV_CONTENT(ITEM_OCARINA_OF_TIME) != ITEM_OCARINA_OF_TIME ||
+                (IS_RANDO && !Rando::Logic::canPlaySong(SongItemToOcarinaId(*item)))) {
                 if (!sOcarinaErrorPlayed) {
                     Audio_PlaySfx(NA_SE_SY_OCARINA_ERROR);
                     sOcarinaErrorPlayed = true;
@@ -469,6 +518,24 @@ static void RegisterSongItems() {
     COND_VB_SHOULD(VB_DRAW_OCARINA_STAFF, CVAR, {
         if (sHideOcarinaStaff) {
             *should = false;
+        }
+    });
+
+    COND_VB_SHOULD(VB_EN_GS_BEFORE_GOSSIP_GROTTO_SEQUENCE, CVAR, {
+        EnGs* enGs = va_arg(args, EnGs*);
+        PlayState* play = va_arg(args, PlayState*);
+
+        if (NeedsOcarinaCleanup(enGs, play)) {
+            FinishOcarinaPlay(play);
+        }
+    });
+
+    COND_VB_SHOULD(VB_EN_GS_FINISH_OCARINA_ON_RESET, CVAR, {
+        EnGs* enGs = va_arg(args, EnGs*);
+        PlayState* play = va_arg(args, PlayState*);
+
+        if (NeedsOcarinaCleanup(enGs, play)) {
+            FinishOcarinaPlay(play);
         }
     });
 

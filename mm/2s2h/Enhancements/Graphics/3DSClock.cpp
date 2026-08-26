@@ -71,7 +71,11 @@ void Draw3DSClock() {
 
             static s32 sFinalHoursIntro = 0;
 
-            sThreeDayClockAlpha = gPlayState->interfaceCtx.bAlpha;
+            if (gPlayState->actorCtx.flags & ACTORCTX_FLAG_TELESCOPE_ON) {
+                sThreeDayClockAlpha = 255;
+            } else {
+                sThreeDayClockAlpha = gPlayState->interfaceCtx.bAlpha;
+            }
 
             s16 posX = 160;
             s16 posY = 210;

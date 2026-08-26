@@ -311,7 +311,7 @@ void EventLogWindow::DrawElement() {
                 CVarSetInteger("gEventLog.Filter.OpenText", 0);
                 CVarSetInteger("gEventLog.Filter.ItemGive", 0);
             }
-            Ship::Context::GetInstance()->GetWindow()->GetGui()->SaveConsoleVariablesNextFrame();
+            Ship::Context::GetRawInstance()->GetWindow()->GetGui()->SaveConsoleVariablesNextFrame();
         }
         g->CurrentItemFlags = backup_item_flags;
 
@@ -340,7 +340,7 @@ void EventLogWindow::DrawElement() {
     s32 maxEntries = CVarGetInteger("gEventLog.MaxEntries", 1000);
     if (ImGui::InputScalar("##maxEntriesInput", ImGuiDataType_S32, &maxEntries)) {
         CVarSetInteger("gEventLog.MaxEntries", MAX(0, maxEntries));
-        Ship::Context::GetInstance()->GetWindow()->GetGui()->SaveConsoleVariablesNextFrame();
+        Ship::Context::GetRawInstance()->GetWindow()->GetGui()->SaveConsoleVariablesNextFrame();
         TrimEventLog();
     }
     ImGui::PopItemWidth();

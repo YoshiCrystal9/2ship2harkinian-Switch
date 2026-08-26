@@ -24,6 +24,22 @@ static RegisterShipInitFunc initFunc([]() {
     };
     Regions[RR_WOODFALL_TEMPLE_BOSS_ROOM] = RandoRegion{ .sceneId = SCENE_MITURIN_BS,
         .checks = {
+            CHECK(RC_WOODFALL_TEMPLE_BOSS_GRASS_01, true),
+            CHECK(RC_WOODFALL_TEMPLE_BOSS_GRASS_02, true),
+            CHECK(RC_WOODFALL_TEMPLE_BOSS_GRASS_03, true),
+            CHECK(RC_WOODFALL_TEMPLE_BOSS_GRASS_04, true),
+            CHECK(RC_WOODFALL_TEMPLE_BOSS_GRASS_05, true),
+            CHECK(RC_WOODFALL_TEMPLE_BOSS_GRASS_06, true),
+            CHECK(RC_WOODFALL_TEMPLE_BOSS_GRASS_07, true),
+            CHECK(RC_WOODFALL_TEMPLE_BOSS_GRASS_08, true),
+            CHECK(RC_WOODFALL_TEMPLE_BOSS_GRASS_09, true),
+            CHECK(RC_WOODFALL_TEMPLE_BOSS_GRASS_10, true),
+            CHECK(RC_WOODFALL_TEMPLE_BOSS_GRASS_11, true),
+            CHECK(RC_WOODFALL_TEMPLE_BOSS_GRASS_12, true),
+            CHECK(RC_WOODFALL_TEMPLE_BOSS_GRASS_13, true),
+            CHECK(RC_WOODFALL_TEMPLE_BOSS_GRASS_14, true),
+            CHECK(RC_WOODFALL_TEMPLE_BOSS_GRASS_15, true),
+            CHECK(RC_WOODFALL_TEMPLE_BOSS_GRASS_16, true),
             CHECK(RC_WOODFALL_TEMPLE_BOSS_CONTAINER, CanKillEnemy(ACTOR_BOSS_01)),
             CHECK(RC_WOODFALL_TEMPLE_BOSS_WARP, CanKillEnemy(ACTOR_BOSS_01)),
             CHECK(RC_GIANTS_CHAMBER_OATH_TO_ORDER, CanKillEnemy(ACTOR_BOSS_01)),
@@ -49,6 +65,9 @@ static RegisterShipInitFunc initFunc([]() {
     };
     Regions[RR_WOODFALL_TEMPLE_COMPASS_ROOM] = RandoRegion{ .name = "Compass Room", .sceneId = SCENE_MITURIN,
         .checks = {
+            CHECK(RC_WOODFALL_TEMPLE_COMPASS_ROOM_GRASS_01, true),
+            CHECK(RC_WOODFALL_TEMPLE_COMPASS_ROOM_GRASS_02, true),
+            CHECK(RC_WOODFALL_TEMPLE_COMPASS_ROOM_GRASS_03, true),
             CHECK(RC_WOODFALL_TEMPLE_COMPASS_CHEST, CanKillEnemy(ACTOR_EN_GRASSHOPPER)),
             CHECK(RC_ENEMY_DROP_DRAGONFLY, CanKillEnemy(ACTOR_EN_GRASSHOPPER)),
         },
@@ -79,9 +98,15 @@ static RegisterShipInitFunc initFunc([]() {
     };
     Regions[RR_WOODFALL_TEMPLE_ENTRANCE] = RandoRegion{ .name = "Entrance", .sceneId = SCENE_MITURIN,
         .checks = {
+            CHECK(RC_WOODFALL_TEMPLE_ENTRANCE_GRASS_01, true),
+            CHECK(RC_WOODFALL_TEMPLE_ENTRANCE_GRASS_02, true),
+            CHECK(RC_WOODFALL_TEMPLE_ENTRANCE_GRASS_03, true),
+            CHECK(RC_WOODFALL_TEMPLE_ENTRANCE_GRASS_04, CAN_BE_DEKU || HAS_ITEM(ITEM_HOOKSHOT)),
+            CHECK(RC_WOODFALL_TEMPLE_ENTRANCE_GRASS_05, CAN_BE_DEKU || HAS_ITEM(ITEM_HOOKSHOT)),
             CHECK(RC_WOODFALL_TEMPLE_ENTRANCE_CHEST, CAN_BE_DEKU || HAS_ITEM(ITEM_HOOKSHOT)),
             CHECK(RC_WOODFALL_TEMPLE_SF_ENTRANCE, CAN_USE_PROJECTILE),
             CHECK(RC_WOODFALL_TEMPLE_ENTRANCE_POT, CAN_BE_DEKU),
+            CHECK(RC_WOODFALL_TEMPLE_ENTRANCE_BEEHIVE, CAN_USE_PROJECTILE),
             CHECK(RC_ENEMY_DROP_SKULLTULA, CanKillEnemy(ACTOR_EN_ST)),
             CHECK(RC_ENEMY_DROP_BOE, CanKillEnemy(ACTOR_EN_MKK)),
         },
@@ -94,6 +119,18 @@ static RegisterShipInitFunc initFunc([]() {
     };
     Regions[RR_WOODFALL_TEMPLE_MAIN_ROOM_UPPER] = RandoRegion{ .name = "Main Room Upper", .sceneId = SCENE_MITURIN,
         .checks = {
+            CHECK(RC_WOODFALL_TEMPLE_MAIN_ROOM_UPPER_GRASS_01, true),
+            CHECK(RC_WOODFALL_TEMPLE_UPPER_WALKWAY_GRASS_01, true),
+            CHECK(RC_WOODFALL_TEMPLE_UPPER_WALKWAY_GRASS_02, true),
+            CHECK(RC_WOODFALL_TEMPLE_UPPER_WALKWAY_GRASS_03, true),
+            CHECK(RC_WOODFALL_TEMPLE_UPPER_WALKWAY_GRASS_04, true),
+            CHECK(RC_WOODFALL_TEMPLE_UPPER_WALKWAY_GRASS_05, true),
+            CHECK(RC_WOODFALL_TEMPLE_UPPER_WALKWAY_GRASS_06, true),
+            CHECK(RC_WOODFALL_TEMPLE_UPPER_WALKWAY_GRASS_07, true),
+            CHECK(RC_WOODFALL_TEMPLE_UPPER_WALKWAY_GRASS_08, true),
+            CHECK(RC_WOODFALL_TEMPLE_UPPER_WALKWAY_GRASS_09, true),
+            CHECK(RC_WOODFALL_TEMPLE_UPPER_WALKWAY_GRASS_10, true),
+            CHECK(RC_WOODFALL_TEMPLE_UPPER_WALKWAY_GRASS_11, true),
             CHECK(RC_WOODFALL_TEMPLE_MAIN_ROOM_UPPER_POT_01, true),
             CHECK(RC_WOODFALL_TEMPLE_MAIN_ROOM_UPPER_POT_02, true),
             CHECK(RC_WOODFALL_TEMPLE_SF_MAIN_BUBBLE, true),
@@ -112,6 +149,8 @@ static RegisterShipInitFunc initFunc([]() {
     };
     Regions[RR_WOODFALL_TEMPLE_MAIN_ROOM] = RandoRegion{ .name = "Main Room", .sceneId = SCENE_MITURIN,
         .checks = {
+            CHECK(RC_WOODFALL_TEMPLE_MAIN_ROOM_LOWER_GRASS_01, true),
+            CHECK(RC_WOODFALL_TEMPLE_MAIN_ROOM_LOWER_GRASS_02, true),
             CHECK(RC_WOODFALL_TEMPLE_MAIN_ROOM_LOWER_POT_01, true),
             CHECK(RC_WOODFALL_TEMPLE_MAIN_ROOM_LOWER_POT_02, true),
             CHECK(RC_WOODFALL_TEMPLE_MAIN_ROOM_LOWER_POT_03, true),
@@ -132,6 +171,11 @@ static RegisterShipInitFunc initFunc([]() {
     };
     Regions[RR_WOODFALL_TEMPLE_MAP_ROOM] = RandoRegion{ .name = "Map Room", .sceneId = SCENE_MITURIN,
         .checks = {
+            CHECK(RC_WOODFALL_TEMPLE_MAP_ROOM_GRASS_01, true),
+            CHECK(RC_WOODFALL_TEMPLE_MAP_ROOM_GRASS_02, true),
+            CHECK(RC_WOODFALL_TEMPLE_MAP_ROOM_GRASS_03, true),
+            CHECK(RC_WOODFALL_TEMPLE_MAP_ROOM_GRASS_04, true),
+            CHECK(RC_WOODFALL_TEMPLE_MAP_ROOM_GRASS_05, true),
             CHECK(RC_WOODFALL_TEMPLE_MAP_CHEST, CAN_BE_DEKU && CanKillEnemy(ACTOR_EN_KAME)),
             CHECK(RC_ENEMY_DROP_SNAPPER, CAN_BE_DEKU && CanKillEnemy(ACTOR_EN_KAME)),
         },
@@ -145,6 +189,7 @@ static RegisterShipInitFunc initFunc([]() {
             CHECK(RC_WOODFALL_TEMPLE_MAZE_POT_02, true),
             // TODO: Trick for bombs & chus here - Doesn't need a trick. Bomb can break it from above
             CHECK(RC_WOODFALL_TEMPLE_SF_MAZE_BEEHIVE, CAN_USE_PROJECTILE ||  CAN_USE_EXPLOSIVE),
+            CHECK(RC_WOODFALL_TEMPLE_MAZE_ROOM_BEEHIVE, CAN_USE_PROJECTILE),
             // TODO: Maybe add a health check here later
             CHECK(RC_WOODFALL_TEMPLE_SF_MAZE_BUBBLE, true),
             CHECK(RC_WOODFALL_TEMPLE_SF_MAZE_SKULLTULA, CanKillEnemy(ACTOR_EN_ST)),
@@ -159,6 +204,11 @@ static RegisterShipInitFunc initFunc([]() {
     };
     Regions[RR_WOODFALL_TEMPLE_PRE_BOSS_ROOM] = RandoRegion{ .name = "Pre Boss Room", .sceneId = SCENE_MITURIN,
         .checks = {
+            CHECK(RC_WOODFALL_TEMPLE_PRE_BOSS_GRASS_01, true),
+            CHECK(RC_WOODFALL_TEMPLE_PRE_BOSS_GRASS_02, true),
+            CHECK(RC_WOODFALL_TEMPLE_PRE_BOSS_GRASS_03, true),
+            CHECK(RC_WOODFALL_TEMPLE_PRE_BOSS_GRASS_04, true),
+            CHECK(RC_WOODFALL_TEMPLE_PRE_BOSS_GRASS_05, true),
             CHECK(RC_WOODFALL_TEMPLE_SF_PRE_BOSS_BOTTOM_RIGHT, CAN_BE_DEKU),
             CHECK(RC_WOODFALL_TEMPLE_SF_PRE_BOSS_LEFT, CAN_BE_DEKU),
             CHECK(RC_WOODFALL_TEMPLE_SF_PRE_BOSS_TOP_RIGHT, CAN_BE_DEKU),
@@ -197,6 +247,8 @@ static RegisterShipInitFunc initFunc([]() {
     };
     Regions[RR_WOODFALL_TEMPLE_WATER_ROOM] = RandoRegion{ .name = "Water Room", .sceneId = SCENE_MITURIN,
         .checks = {
+            CHECK(RC_WOODFALL_TEMPLE_WATER_ROOM_GRASS_01, CAN_BE_DEKU),
+            CHECK(RC_WOODFALL_TEMPLE_WATER_ROOM_GRASS_02, CAN_BE_DEKU),
             CHECK(RC_WOODFALL_TEMPLE_WATER_CHEST, CAN_BE_DEKU || HAS_ITEM(ITEM_HOOKSHOT)),
             CHECK(RC_WOODFALL_TEMPLE_SF_WATER_ROOM_BEEHIVE, (
                 // Can they break it, leaving the fairy up high? // TODO: Trick for bombs & chus here

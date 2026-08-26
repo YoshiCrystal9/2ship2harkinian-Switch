@@ -1337,9 +1337,6 @@ u8 sDropTableAmounts[DROP_TABLE_SIZE * DROP_TABLE_NUMBER] = {
 };
 
 void Item_DropCollectibleRandom(PlayState* play, Actor* fromActor, Vec3f* spawnPos, s16 params) {
-    if (!(GameInteractor_Should(VB_DROP_COLLECTIBLE, true, *spawnPos, params))) {
-        return;
-    }
 
     EnItem00* spawnedActor;
     u8 dropId;
@@ -1353,6 +1350,9 @@ void Item_DropCollectibleRandom(PlayState* play, Actor* fromActor, Vec3f* spawnP
     if (params < 0x101) {
         dropId = sDropTable[params + dropTableIndex];
         dropQuantity = sDropTableAmounts[params + dropTableIndex];
+        if (!(GameInteractor_Should(VB_DROP_COLLECTIBLE, true, *spawnPos, dropId))) {
+            return;
+        }
 
         if (dropId == ITEM00_MASK) {
             switch (GET_PLAYER_FORM) {

@@ -10,8 +10,10 @@ namespace Rando {
 namespace Logic {
 
 void ApplyNoLogicToSaveContext(std::vector<RandoCheckId>& checkPool, std::vector<RandoItemId>& itemPool) {
+    PreplaceConfinedItems(checkPool, itemPool);
+
     for (size_t i = 0; i < itemPool.size(); i++) {
-        std::swap(itemPool[i], itemPool[Ship_Random(0, itemPool.size() - 1)]);
+        std::swap(itemPool[i], itemPool[Ship_Random(0, itemPool.size())]);
     }
 
     for (auto& randoCheckId : checkPool) {

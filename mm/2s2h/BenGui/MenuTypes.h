@@ -3,6 +3,8 @@
 
 #include "UIWidgets.hpp"
 
+#include <fast/Fast3dWindow.h>
+
 typedef enum {
     DISABLE_FOR_CAMERAS_OFF,
     DISABLE_FOR_DEBUG_CAM_ON,
@@ -287,14 +289,15 @@ struct MainMenuEntry {
 
 static const std::unordered_map<Ship::AudioBackend, const char*> audioBackendsMap = {
     { Ship::AudioBackend::WASAPI, "Windows Audio Session API" },
+    { Ship::AudioBackend::COREAUDIO, "CoreAudio" },
     { Ship::AudioBackend::SDL, "SDL" },
     { Ship::AudioBackend::NUL, "Null" },
 };
 
-static const std::unordered_map<Ship::WindowBackend, const char*> windowBackendsMap = {
-    { Ship::WindowBackend::FAST3D_DXGI_DX11, "DirectX" },
-    { Ship::WindowBackend::FAST3D_SDL_OPENGL, "OpenGL" },
-    { Ship::WindowBackend::FAST3D_SDL_METAL, "Metal" },
+static const std::unordered_map<int32_t, const char*> windowBackendsMap = {
+    { Fast::WindowBackend::FAST3D_DXGI_DX11, "DirectX" },
+    { Fast::WindowBackend::FAST3D_SDL_OPENGL, "OpenGL" },
+    { Fast::WindowBackend::FAST3D_SDL_METAL, "Metal" },
 };
 
 struct MenuInit {

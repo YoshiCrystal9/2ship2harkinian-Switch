@@ -3,6 +3,7 @@
 #include <libultraship/bridge/consolevariablebridge.h>
 #include "Rando/DrawFuncs.h"
 #include "Rando/Logic/Logic.h"
+#include "2s2h/Enhancements/FrameInterpolation/FrameInterpolation.h"
 
 extern "C" {
 #include "variables.h"
@@ -11,6 +12,7 @@ extern "C" {
 #include "overlays/actors/ovl_Boss_Hakugin/z_boss_hakugin.h"
 
 void BossHakugin_DrawIce(BossHakugin*, PlayState*);
+extern PlayState* gPlayState;
 }
 
 bool shouldMajoraRegister() {
@@ -122,6 +124,17 @@ void ShouldActorDraw(Actor* actor, bool* should, RandoInf randoInf) {
     }
 }
 
+void SetEnemyInjureGrayscale(bool enable) {
+    OPEN_DISPS(gPlayState->state.gfxCtx);
+    if (enable) {
+        gDPSetGrayscaleColor(POLY_OPA_DISP++, 70, 70, 70, 255);
+        gDPSetGrayscaleColor(POLY_XLU_DISP++, 70, 70, 70, 255);
+    }
+    gSPGrayscale(POLY_OPA_DISP++, enable);
+    gSPGrayscale(POLY_XLU_DISP++, enable);
+    CLOSE_DISPS(gPlayState->state.gfxCtx);
+}
+
 void Rando::ActorBehavior::InitSoulsBehavior() {
     bool shouldBossRegister = IS_RANDO && RANDO_SAVE_OPTIONS[RO_SHUFFLE_BOSS_SOULS] == RO_GENERIC_YES;
     bool shouldEnemyInjure = IS_RANDO && RANDO_SAVE_OPTIONS[RO_SHUFFLE_ENEMY_SOULS] == RO_GENERIC_YES;
@@ -199,6 +212,20 @@ void Rando::ActorBehavior::InitSoulsBehavior() {
         if (actorId != ACTOR_EN_INVADEPOH && !HaveEnemySoul(actorId)) {
             DrawEnLight({ 155, 0, 0 }, { 1.0f, 1.0f, 1.0f });
             *should = false;
+        }
+    });
+
+    COND_HOOK(ShouldActorDraw, shouldEnemyInjure, [](Actor* actor, bool* should) {
+        ActorId actorId = (ActorId)actor->id;
+        if (actorId != ACTOR_EN_INVADEPOH && !HaveEnemySoul(actorId)) {
+            SetEnemyInjureGrayscale(true);
+        }
+    });
+
+    COND_HOOK(OnActorDraw, shouldEnemyInjure, [](Actor* actor) {
+        ActorId actorId = (ActorId)actor->id;
+        if (actorId != ACTOR_EN_INVADEPOH && !HaveEnemySoul(actorId)) {
+            SetEnemyInjureGrayscale(false);
         }
     });
 }

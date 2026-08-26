@@ -3,6 +3,8 @@
 #include <ship/window/gui/GuiWindow.h>
 #include <vector>
 
+#include "ShipUtils.h"
+
 extern "C" {
 #include "z64save.h"
 }
@@ -15,6 +17,8 @@ typedef enum {
     OWL_ACTIVATION,
     PERMANENT_SCENE_FLAGS,
     CYCLE_SCENE_FLAGS,
+    RANDO_INF,
+    HEART_FLAGS,
 } FlagTableType;
 
 typedef enum {
@@ -27,7 +31,7 @@ typedef enum {
 typedef struct {
     SaveEditorFlagType type;
     uint16_t flag;
-    const char* description;
+    std::string description;
 } FlagEntry;
 
 typedef struct {
@@ -36,7 +40,17 @@ typedef struct {
     std::vector<FlagEntry> entries;
 } FlagTable;
 
+typedef struct {
+    std::string description;
+    int16_t scene;
+    FlagType flagType;
+    uint16_t flag;
+} HeartFlags;
+
 extern std::vector<ItemId> safeItemsForInventorySlot[SLOT_MASK_FIERCE_DEITY + 1];
+
+#define RANDO_INF_ENTRY(id) \
+    { NONE, id, convertEnumToReadableName(#id, "RANDO_INF_") }
 
 // Reference https://tcrf.net/Proto:The_Legend_of_Zelda:_Majora's_Mask/Debug_Version/Event_Editor
 // The source was last referenced on 2025-08-05 and had a last updated value of 2024-06-29
@@ -633,7 +647,7 @@ const std::vector<FlagTable> flagTables = {
           { CYCLE_RESET, WEEKEVENTREG_73_01, "" },
           { CYCLE_RESET, WEEKEVENTREG_73_02, "Spoke to Bomb Shop Lady Once" },
           { CYCLE_RESET, WEEKEVENTREG_73_04, "Clock Town Deku Merchant Landed" },
-          { PERSISTENT, WEEKEVENTREG_73_08, "" },
+          { PERSISTENT, WEEKEVENTREG_73_08, "Collected Toilet Hand's Piece of Heart" },
           { SCENE_RESET, WEEKEVENTREG_73_10, "Bombers Hide & Seek in Progress (Deku Link)" },
           { CYCLE_RESET, WEEKEVENTREG_73_20, "Completed Bombers Hide & Seek?" },
           { CYCLE_RESET, WEEKEVENTREG_73_40, "" },
@@ -938,6 +952,147 @@ const std::vector<FlagTable> flagTables = {
       } },
     { "Permanent Scene Flags", PERMANENT_SCENE_FLAGS, {} },
     { "Cycle Scene Flags", CYCLE_SCENE_FLAGS, {} },
+    { "Rando Inf",
+      RANDO_INF,
+      {
+          RANDO_INF_ENTRY(RANDO_INF_PURCHASED_BEANS_FROM_SOUTHERN_SWAMP_SCRUB),
+          RANDO_INF_ENTRY(RANDO_INF_PURCHASED_BOMB_BAG_FROM_GORON_VILLAGE_SCRUB),
+          RANDO_INF_ENTRY(RANDO_INF_PURCHASED_POTION_FROM_IKANA_CANYON_SCRUB),
+          RANDO_INF_ENTRY(RANDO_INF_PURCHASED_POTION_FROM_ZORA_HALL_SCRUB),
+          RANDO_INF_ENTRY(RANDO_INF_OBTAINED_MOONS_TEAR),
+          RANDO_INF_ENTRY(RANDO_INF_OBTAINED_DEED_LAND),
+          RANDO_INF_ENTRY(RANDO_INF_OBTAINED_DEED_SWAMP),
+          RANDO_INF_ENTRY(RANDO_INF_OBTAINED_DEED_MOUNTAIN),
+          RANDO_INF_ENTRY(RANDO_INF_OBTAINED_DEED_OCEAN),
+          RANDO_INF_ENTRY(RANDO_INF_OBTAINED_ROOM_KEY),
+          RANDO_INF_ENTRY(RANDO_INF_OBTAINED_LETTER_TO_MAMA),
+          RANDO_INF_ENTRY(RANDO_INF_OBTAINED_LETTER_TO_KAFEI),
+          RANDO_INF_ENTRY(RANDO_INF_OBTAINED_PENDANT_OF_MEMORIES),
+          RANDO_INF_ENTRY(RANDO_INF_OBTAINED_SOUL_OF_BOSS_GOHT),
+          RANDO_INF_ENTRY(RANDO_INF_OBTAINED_SOUL_OF_BOSS_GYORG),
+          RANDO_INF_ENTRY(RANDO_INF_OBTAINED_SOUL_OF_BOSS_MAJORA),
+          RANDO_INF_ENTRY(RANDO_INF_OBTAINED_SOUL_OF_BOSS_ODOLWA),
+          RANDO_INF_ENTRY(RANDO_INF_OBTAINED_SOUL_OF_BOSS_TWINMOLD),
+          RANDO_INF_ENTRY(RANDO_INF_OBTAINED_SOUL_OF_ENEMY_ALIENS),
+          RANDO_INF_ENTRY(RANDO_INF_OBTAINED_SOUL_OF_ENEMY_ARMOS),
+          RANDO_INF_ENTRY(RANDO_INF_OBTAINED_SOUL_OF_ENEMY_BAD_BATS),
+          RANDO_INF_ENTRY(RANDO_INF_OBTAINED_SOUL_OF_ENEMY_BEAMOS),
+          RANDO_INF_ENTRY(RANDO_INF_OBTAINED_SOUL_OF_ENEMY_BOES),
+          RANDO_INF_ENTRY(RANDO_INF_OBTAINED_SOUL_OF_ENEMY_BUBBLES),
+          RANDO_INF_ENTRY(RANDO_INF_OBTAINED_SOUL_OF_ENEMY_CAPTAIN_KEETA),
+          RANDO_INF_ENTRY(RANDO_INF_OBTAINED_SOUL_OF_ENEMY_CHUCHUS),
+          RANDO_INF_ENTRY(RANDO_INF_OBTAINED_SOUL_OF_ENEMY_DEATH_ARMOS),
+          RANDO_INF_ENTRY(RANDO_INF_OBTAINED_SOUL_OF_ENEMY_DEEP_PYTHONS),
+          RANDO_INF_ENTRY(RANDO_INF_OBTAINED_SOUL_OF_ENEMY_DEKU_BABAS),
+          RANDO_INF_ENTRY(RANDO_INF_OBTAINED_SOUL_OF_ENEMY_DEXIHANDS),
+          RANDO_INF_ENTRY(RANDO_INF_OBTAINED_SOUL_OF_ENEMY_DINOLFOS),
+          RANDO_INF_ENTRY(RANDO_INF_OBTAINED_SOUL_OF_ENEMY_DODONGOS),
+          RANDO_INF_ENTRY(RANDO_INF_OBTAINED_SOUL_OF_ENEMY_DRAGONFLIES),
+          RANDO_INF_ENTRY(RANDO_INF_OBTAINED_SOUL_OF_ENEMY_EENOS),
+          RANDO_INF_ENTRY(RANDO_INF_OBTAINED_SOUL_OF_ENEMY_EYEGORES),
+          RANDO_INF_ENTRY(RANDO_INF_OBTAINED_SOUL_OF_ENEMY_FREEZARDS),
+          RANDO_INF_ENTRY(RANDO_INF_OBTAINED_SOUL_OF_ENEMY_GAROS),
+          RANDO_INF_ENTRY(RANDO_INF_OBTAINED_SOUL_OF_ENEMY_GEKKOS),
+          RANDO_INF_ENTRY(RANDO_INF_OBTAINED_SOUL_OF_ENEMY_GIANT_BEES),
+          RANDO_INF_ENTRY(RANDO_INF_OBTAINED_SOUL_OF_ENEMY_GOMESS),
+          RANDO_INF_ENTRY(RANDO_INF_OBTAINED_SOUL_OF_ENEMY_GUAYS),
+          RANDO_INF_ENTRY(RANDO_INF_OBTAINED_SOUL_OF_ENEMY_HIPLOOPS),
+          RANDO_INF_ENTRY(RANDO_INF_OBTAINED_SOUL_OF_ENEMY_IGOS_DU_IKANA),
+          RANDO_INF_ENTRY(RANDO_INF_OBTAINED_SOUL_OF_ENEMY_IRON_KNUCKLES),
+          RANDO_INF_ENTRY(RANDO_INF_OBTAINED_SOUL_OF_ENEMY_KEESE),
+          RANDO_INF_ENTRY(RANDO_INF_OBTAINED_SOUL_OF_ENEMY_LEEVERS),
+          RANDO_INF_ENTRY(RANDO_INF_OBTAINED_SOUL_OF_ENEMY_LIKE_LIKES),
+          RANDO_INF_ENTRY(RANDO_INF_OBTAINED_SOUL_OF_ENEMY_MAD_SCRUBS),
+          RANDO_INF_ENTRY(RANDO_INF_OBTAINED_SOUL_OF_ENEMY_NEJIRONS),
+          RANDO_INF_ENTRY(RANDO_INF_OBTAINED_SOUL_OF_ENEMY_OCTOROKS),
+          RANDO_INF_ENTRY(RANDO_INF_OBTAINED_SOUL_OF_ENEMY_PEAHATS),
+          RANDO_INF_ENTRY(RANDO_INF_OBTAINED_SOUL_OF_ENEMY_PIRATES),
+          RANDO_INF_ENTRY(RANDO_INF_OBTAINED_SOUL_OF_ENEMY_POES),
+          RANDO_INF_ENTRY(RANDO_INF_OBTAINED_SOUL_OF_ENEMY_REDEADS),
+          RANDO_INF_ENTRY(RANDO_INF_OBTAINED_SOUL_OF_ENEMY_SHELLBLADES),
+          RANDO_INF_ENTRY(RANDO_INF_OBTAINED_SOUL_OF_ENEMY_SKULLFISH),
+          RANDO_INF_ENTRY(RANDO_INF_OBTAINED_SOUL_OF_ENEMY_SKULLTULAS),
+          RANDO_INF_ENTRY(RANDO_INF_OBTAINED_SOUL_OF_ENEMY_SNAPPERS),
+          RANDO_INF_ENTRY(RANDO_INF_OBTAINED_SOUL_OF_ENEMY_STALCHILDREN),
+          RANDO_INF_ENTRY(RANDO_INF_OBTAINED_SOUL_OF_ENEMY_TAKKURI),
+          RANDO_INF_ENTRY(RANDO_INF_OBTAINED_SOUL_OF_ENEMY_TEKTITES),
+          RANDO_INF_ENTRY(RANDO_INF_OBTAINED_SOUL_OF_ENEMY_WALLMASTERS),
+          RANDO_INF_ENTRY(RANDO_INF_OBTAINED_SOUL_OF_ENEMY_WARTS),
+          RANDO_INF_ENTRY(RANDO_INF_OBTAINED_SOUL_OF_ENEMY_WIZROBES),
+          RANDO_INF_ENTRY(RANDO_INF_OBTAINED_SOUL_OF_ENEMY_WOLFOS),
+          RANDO_INF_ENTRY(RANDO_INF_OBTAINED_SWIM),
+          RANDO_INF_ENTRY(RANDO_INF_OBTAINED_CLOCK_DAY_1),
+          RANDO_INF_ENTRY(RANDO_INF_OBTAINED_CLOCK_NIGHT_1),
+          RANDO_INF_ENTRY(RANDO_INF_OBTAINED_CLOCK_DAY_2),
+          RANDO_INF_ENTRY(RANDO_INF_OBTAINED_CLOCK_NIGHT_2),
+          RANDO_INF_ENTRY(RANDO_INF_OBTAINED_CLOCK_DAY_3),
+          RANDO_INF_ENTRY(RANDO_INF_OBTAINED_CLOCK_NIGHT_3),
+          RANDO_INF_ENTRY(RANDO_INF_OBTAINED_OCARINA_BUTTON_A),
+          RANDO_INF_ENTRY(RANDO_INF_OBTAINED_OCARINA_BUTTON_C_DOWN),
+          RANDO_INF_ENTRY(RANDO_INF_OBTAINED_OCARINA_BUTTON_C_RIGHT),
+          RANDO_INF_ENTRY(RANDO_INF_OBTAINED_OCARINA_BUTTON_C_LEFT),
+          RANDO_INF_ENTRY(RANDO_INF_OBTAINED_OCARINA_BUTTON_C_UP),
+          RANDO_INF_ENTRY(RANDO_INF_OBTAINED_SONG_DOUBLE_TIME),
+          RANDO_INF_ENTRY(RANDO_INF_OBTAINED_SONG_INVERTED_TIME),
+      } },
+};
+
+const std::vector<HeartFlags> heartFlags = {
+    { "Ancient Castle Of Ikana Piece Of Heart",            SCENE_CASTLE,           FLAG_CYCL_SCENE_COLLECTIBLE, 0x0A },
+    { "Beneath The Graveyard Piece Of Heart",              SCENE_HAKASHITA,        FLAG_CYCL_SCENE_COLLECTIBLE, 0x1F },
+    { "Clock Town East Honey Darling All Days",            SCENE_BOWLING,          FLAG_WEEK_EVENT_REG,         WEEKEVENTREG_RECEIVED_HONEY_AND_DARLING_HEART_PIECE },
+    { "Clock Town East Shooting Gallery Perfect Score",    SCENE_SYATEKI_MIZU,     FLAG_WEEK_EVENT_REG,         WEEKEVENTREG_RECEIVED_TOWN_SHOOTING_GALLERY_HEART_PIECE },
+    { "Clock Town East Treasure Chest Game Goron",         SCENE_TAKARAYA,         FLAG_CYCL_SCENE_SWITCH,      0x01 },
+    { "Clock Town North Tree Piece Of Heart",              SCENE_BACKTOWN,         FLAG_CYCL_SCENE_COLLECTIBLE, 0x0A },
+    { "Clock Town Postbox",                                SCENE_CLOCKTOWER,       FLAG_WEEK_EVENT_REG,         WEEKEVENTREG_81_08 },
+    { "Clock Town South Platform Piece Of Heart",          SCENE_CLOCKTOWER,       FLAG_CYCL_SCENE_COLLECTIBLE, 0x0A },
+    { "Clock Town West Bank Piece Of Heart",               SCENE_ICHIBA,           FLAG_WEEK_EVENT_REG,         WEEKEVENTREG_RECEIVED_BANK_HEART_PIECE },
+    { "Clock Town West Postman Minigame",                  SCENE_POSTHOUSE,        FLAG_WEEK_EVENT_REG,         WEEKEVENTREG_RECEIVED_POSTMAN_COUNTING_GAME_HEART_PIECE },
+    { "Clock Town West Sisters Piece Of Heart",            SCENE_ICHIBA,           FLAG_WEEK_EVENT_REG,         WEEKEVENTREG_RECEIVED_ROSA_SISTERS_HEART_PIECE },
+    { "Deku Palace Piece Of Heart",                        SCENE_22DEKUCITY,       FLAG_CYCL_SCENE_COLLECTIBLE, 0x1E },
+    { "Deku Playground All Days",                          SCENE_DEKUTES,          FLAG_WEEK_EVENT_REG,         WEEKEVENTREG_RECEIVED_DEKU_PLAYGROUND_HEART_PIECE },
+    { "Doggy Racetrack Piece Of Heart",                    SCENE_F01_B,            FLAG_WEEK_EVENT_REG,         WEEKEVENTREG_RECEIVED_DOGGY_RACETRACK_HEART_PIECE },
+    { "Goron Village Piece Of Heart",                      SCENE_11GORONNOSATO,    FLAG_CYCL_SCENE_COLLECTIBLE, 0x1E },
+    { "Great Bay Coast Fisherman Minigame",                SCENE_30GYOSON,         FLAG_WEEK_EVENT_REG,         WEEKEVENTREG_RECEIVED_FISHERMANS_JUMPING_GAME_HEART_PIECE },
+    { "Great Bay Coast Marine Lab Fish Piece Of Heart",    SCENE_LABO,             FLAG_WEEK_EVENT_REG,         WEEKEVENTREG_RECEIVED_MARINE_RESEARCH_LAB_FISH_HEART_PIECE },
+    { "Great Bay Coast Piece Of Heart",                    SCENE_30GYOSON,         FLAG_CYCL_SCENE_COLLECTIBLE, 0x05 },
+    { "Great Bay Temple Boss Heart Container",             SCENE_SEA_BS,           FLAG_CYCL_SCENE_COLLECTIBLE, 0x1F },
+    { "Ikana Canyon Ghost Hut Piece Of Heart",             SCENE_TOUGITES,         FLAG_WEEK_EVENT_REG,         WEEKEVENTREG_RECEIVED_SPIRIT_HOUSE_HEART_PIECE },
+    { "Ikana Canyon Scrub Piece Of Heart",                 SCENE_IKANA,            FLAG_CYCL_SCENE_COLLECTIBLE, 0x1E },
+    { "Keaton Quiz Piece of Heart",                        SCENE_BACKTOWN,         FLAG_WEEK_EVENT_REG,         WEEKEVENTREG_RECEIVED_KEATON_HEART_PIECE },
+    { "Mayor's Office Piece Of Heart",                     SCENE_SONCHONOIE,       FLAG_WEEK_EVENT_REG,         WEEKEVENTREG_RECEIVED_MAYOR_HEART_PIECE },
+    { "Moon Trial Deku Piece Of Heart",                    SCENE_LAST_DEKU,        FLAG_CYCL_SCENE_COLLECTIBLE, 0x01 },
+    { "Moon Trial Goron Piece Of Heart",                   SCENE_LAST_GORON,       FLAG_CYCL_SCENE_COLLECTIBLE, 0x01 },
+    { "Moon Trial Link Piece Of Heart",                    SCENE_LAST_LINK,        FLAG_CYCL_SCENE_COLLECTIBLE, 0x01 },
+    { "Moon Trial Zora Piece Of Heart",                    SCENE_LAST_ZORA,        FLAG_CYCL_SCENE_COLLECTIBLE, 0x01 },
+    { "Mountain Village Frog Choir",                       SCENE_10YUKIYAMANOMURA, FLAG_WEEK_EVENT_REG,         WEEKEVENTREG_RECEIVED_FROG_CHOIR_HEART_PIECE },
+    { "Ocean Spider House Chest Piece Of Heart",           SCENE_KINDAN2,          FLAG_CYCL_SCENE_COLLECTIBLE, 0x1F },
+    { "Path To Snowhead Piece Of Heart",                   SCENE_14YUKIDAMANOMITI, FLAG_CYCL_SCENE_COLLECTIBLE, 0x08 },
+    { "Pinnacle Rock Reunite Seahorse",                    SCENE_SINKAI,           FLAG_WEEK_EVENT_REG,         WEEKEVENTREG_RECEIVED_SEAHORSE_HEART_PIECE },
+    { "Pirate Fortress Interior Sewers Piece Of Heart",    SCENE_PIRATE,           FLAG_CYCL_SCENE_COLLECTIBLE, 0x0C },
+    { "Road To Southern Swamp Piece Of Heart",             SCENE_24KEMONOMITI,     FLAG_CYCL_SCENE_COLLECTIBLE, 0x01 },
+    { "Secret Shrine Piece Of Heart Chest",                SCENE_RANDOM,           FLAG_CYCL_SCENE_COLLECTIBLE, 0x0A },
+    { "Snowhead Temple Boss Heart Container",              SCENE_HAKUGIN_BS,       FLAG_CYCL_SCENE_COLLECTIBLE, 0x1F },
+    { "Southern Swamp Piece Of Heart",                     SCENE_20SICHITAI,       FLAG_CYCL_SCENE_COLLECTIBLE, 0x1E },
+    { "Stock Pot Inn Grandma Long Story",                  SCENE_YADOYA,           FLAG_WEEK_EVENT_REG,         WEEKEVENTREG_50_04 },
+    { "Stock Pot Inn Grandma Short Story",                 SCENE_YADOYA,           FLAG_WEEK_EVENT_REG,         WEEKEVENTREG_50_02 },
+    { "Stock Pot Inn Toilet Hand",                         SCENE_YADOYA,           FLAG_WEEK_EVENT_REG,         WEEKEVENTREG_73_08 },
+    { "Stone Tower Temple Inverted Boss Heart Container",  SCENE_INISIE_BS,        FLAG_CYCL_SCENE_COLLECTIBLE, 0x1F },
+    { "Swamp Shooting Gallery Perfect Score",              SCENE_SYATEKI_MORI,     FLAG_WEEK_EVENT_REG,         WEEKEVENTREG_RECEIVED_SWAMP_SHOOTING_GALLERY_HEART_PIECE },
+    { "Swordsman School Piece Of Heart",                   SCENE_DOUJOU,           FLAG_WEEK_EVENT_REG,         WEEKEVENTREG_RECEIVED_SWORDSMANS_SCHOOL_HEART_PIECE },
+    { "Termina Field Bio Baba Grotto",                     SCENE_KAKUSIANA,        FLAG_CYCL_SCENE_COLLECTIBLE, 0x02 },
+    { "Termina Field Dodongo Grotto Chest",                SCENE_KAKUSIANA,        FLAG_CYCL_SCENE_COLLECTIBLE, 0x0A },
+    { "Termina Field Gossip Stone Grotto",                 SCENE_KAKUSIANA,        FLAG_WEEK_EVENT_REG,         WEEKEVENTREG_RECEIVED_GOSSIP_STONE_GROTTO_HEART_PIECE },
+    { "Termina Field Grotto Scrub",                        SCENE_KAKUSIANA,        FLAG_WEEK_EVENT_REG,         WEEKEVENTREG_RECEIVED_BUSINESS_SCRUB_HEART_PIECE },
+    { "Termina Field Peahat Grotto Chest",                 SCENE_KAKUSIANA,        FLAG_CYCL_SCENE_COLLECTIBLE, 0x0B },
+    { "Tourist Information Archery",                       SCENE_MAP_SHOP,         FLAG_WEEK_EVENT_REG,         WEEKEVENTREG_26_40 },
+    { "Tourist Information Good Photo",                    SCENE_MAP_SHOP,         FLAG_WEEK_EVENT_REG,         WEEKEVENTREG_87_04 },
+    { "Twin Islands Underwater Chest Heart Piece",         SCENE_17SETUGEN,        FLAG_CYCL_SCENE_COLLECTIBLE, 0x07 },
+    { "Woodfall Piece Of Heart Chest",                     SCENE_21MITURINMAE,     FLAG_CYCL_SCENE_COLLECTIBLE, 0x0A },
+    { "Woodfall Temple Boss Container",                    SCENE_MITURIN_BS,       FLAG_CYCL_SCENE_COLLECTIBLE, 0x1F },
+    { "Zora Cape Waterfall Piece Of Heart",                SCENE_31MISAKI,         FLAG_CYCL_SCENE_COLLECTIBLE, 0x07 },
+    { "Zora Hall Evans Piece Of Heart",                    SCENE_BANDROOM,         FLAG_WEEK_EVENT_REG,         WEEKEVENTREG_RECEIVED_EVAN_HEART_PIECE },
+    { "Zora Hall Scrub Piece Of Heart",                    SCENE_BANDROOM,         FLAG_CYCL_SCENE_COLLECTIBLE, 0x1E },
 };
 // clang-format on
 

@@ -20,6 +20,8 @@ void EnSyatekiMan_Town_RunGame(EnSyatekiMan* enSyatekiMan, PlayState* play);
 #define BOAT_HEALTH_CVAR CVarGetInteger(BOAT_HEALTH_CVAR_NAME, 10)
 #define BOAT_NO_DAMAGE_CVAR_NAME "gEnhancements.Minigames.BoatArcheryInvincible"
 #define BOAT_NO_DAMAGE_CVAR CVarGetInteger(BOAT_NO_DAMAGE_CVAR_NAME, 0)
+#define SKIP_MISC_CVAR_NAME "gEnhancements.Cutscenes.SkipMiscInteractions"
+#define SKIP_MISC_CVAR CVarGetInteger(SKIP_MISC_CVAR_NAME, 0)
 
 static constexpr u16 TEXT_BOAT_ARCHERY_FAIL = 0x877;
 
@@ -40,7 +42,7 @@ static void RegisterSwampArchery() {
         }
     });
 
-    COND_VB_SHOULD(VB_ARCHERY_ADD_BONUS_POINTS, SWAMP_CVAR != 2180, {
+    COND_VB_SHOULD(VB_ARCHERY_ADD_BONUS_POINTS, SKIP_MISC_CVAR, {
         Actor* actor = va_arg(args, Actor*);
         s32* sBonusTimer = va_arg(args, s32*);
 

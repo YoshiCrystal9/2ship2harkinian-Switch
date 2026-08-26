@@ -17,15 +17,15 @@ extern "C" {
 #include "overlays/gamestates/ovl_title/z_title.h"
 }
 
-#define CMD_REGISTER Ship::Context::GetInstance()->GetConsole()->AddCommand
+#define CMD_REGISTER Ship::Context::GetRawInstance()->GetConsole()->AddCommand
 // TODO: Commands should be using the output passed in.
-#define ERROR_MESSAGE                                                                 \
-    std::reinterpret_pointer_cast<Ship::ConsoleWindow>(                               \
-        Ship::Context::GetInstance()->GetWindow()->GetGui()->GetGuiWindow("Console")) \
+#define ERROR_MESSAGE                                                                    \
+    std::reinterpret_pointer_cast<Ship::ConsoleWindow>(                                  \
+        Ship::Context::GetRawInstance()->GetWindow()->GetGui()->GetGuiWindow("Console")) \
         ->SendErrorMessage
-#define INFO_MESSAGE                                                                  \
-    std::reinterpret_pointer_cast<Ship::ConsoleWindow>(                               \
-        Ship::Context::GetInstance()->GetWindow()->GetGui()->GetGuiWindow("Console")) \
+#define INFO_MESSAGE                                                                     \
+    std::reinterpret_pointer_cast<Ship::ConsoleWindow>(                                  \
+        Ship::Context::GetRawInstance()->GetWindow()->GetGui()->GetGuiWindow("Console")) \
         ->SendInfoMessage
 
 static bool ActorSpawnHandler(std::shared_ptr<Ship::Console> Console, const std::vector<std::string>& args,
@@ -255,7 +255,7 @@ static bool FileSelectHandler(std::shared_ptr<Ship::Console> Console, const std:
 
 static bool QuitHandler(std::shared_ptr<Ship::Console> Console, const std::vector<std::string>& args,
                         std::string* output) {
-    Ship::Context::GetInstance()->GetWindow()->Close();
+    Ship::Context::GetRawInstance()->GetWindow()->Close();
     return 0;
 }
 

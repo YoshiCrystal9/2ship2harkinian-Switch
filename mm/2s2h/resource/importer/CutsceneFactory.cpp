@@ -113,6 +113,9 @@ ResourceFactoryBinaryCutsceneV0::ReadResource(std::shared_ptr<Ship::File> file,
                     uint32_t header1 = read_CMD_HH(reader);
 
                     uint32_t numEntries = header1 & 0xFFFF;
+                    if (reader->GetEndianness() != Ship::Endianness::Native) {
+                        numEntries = header1 >> 16 & 0xFFFF;
+                    }
 
                     cutscene->commands.push_back(header1);
                     if (numEntries == 0xFFFF) {

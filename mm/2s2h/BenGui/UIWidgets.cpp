@@ -181,6 +181,33 @@ bool Button(const char* label, const ButtonOptions& options) {
     return dirty;
 }
 
+bool IconButton(const char* strId, const char* icon, const ButtonOptions& options) {
+    ImVec2 buttonScreenPos = ImGui::GetCursorScreenPos();
+    bool clicked = Button(strId, options);
+
+    ImGuiCol textColorIndex = options.disabled ? ImGuiCol_TextDisabled : ImGuiCol_Text;
+    ImU32 textColor = ImGui::GetColorU32(textColorIndex);
+    ImFont* font = ImGui::GetFont();
+
+    unsigned int codepoint = 0;
+    ImTextCharFromUtf8(&codepoint, icon, NULL);
+    const ImFontGlyph* glyph = font->FindGlyph((ImWchar)codepoint);
+
+    if (glyph != NULL) {
+        float glyphWidth = glyph->X1 - glyph->X0;
+        float glyphHeight = glyph->Y1 - glyph->Y0;
+        ImVec2 penPos = ImVec2(buttonScreenPos.x + (options.size.x - glyphWidth) * 0.5f - glyph->X0,
+                               buttonScreenPos.y + (options.size.y - glyphHeight) * 0.5f - glyph->Y0);
+        font->RenderChar(ImGui::GetWindowDrawList(), ImGui::GetFontSize(), penPos, textColor, (ImWchar)codepoint);
+    } else {
+        ImVec2 iconSize = ImGui::CalcTextSize(icon);
+        ImVec2 iconPos = ImVec2(buttonScreenPos.x + (options.size.x - iconSize.x) * 0.5f,
+                                buttonScreenPos.y + (options.size.y - iconSize.y) * 0.5f);
+        ImGui::GetWindowDrawList()->AddText(iconPos, textColor, icon);
+    }
+    return clicked;
+}
+
 bool WindowButton(const char* label, const char* cvarName, std::shared_ptr<Ship::GuiWindow> windowPtr,
                   const WindowButtonOptions& options) {
     ImGui::PushStyleVar(ImGuiStyleVar_ButtonTextAlign, ImVec2(0, 0));
@@ -474,7 +501,7 @@ bool CVarCheckbox(const char* label, const char* cvarName, const CheckboxOptions
     bool value = (bool)CVarGetInteger(cvarName, options.defaultValue);
     if (Checkbox(label, &value, options)) {
         CVarSetInteger(cvarName, value);
-        Ship::Context::GetInstance()->GetWindow()->GetGui()->SaveConsoleVariablesNextFrame();
+        Ship::Context::GetRawInstance()->GetWindow()->GetGui()->SaveConsoleVariablesNextFrame();
         ShipInit::Init(cvarName);
         dirty = true;
     }
@@ -716,7 +743,7 @@ bool CVarSliderInt(const char* label, const char* cvarName, const IntSliderOptio
     int32_t value = CVarGetInteger(cvarName, options.defaultValue);
     if (SliderInt(label, &value, options)) {
         CVarSetInteger(cvarName, value);
-        Ship::Context::GetInstance()->GetWindow()->GetGui()->SaveConsoleVariablesNextFrame();
+        Ship::Context::GetRawInstance()->GetWindow()->GetGui()->SaveConsoleVariablesNextFrame();
         ShipInit::Init(cvarName);
         dirty = true;
     }
@@ -858,7 +885,7 @@ bool CVarSliderFloat(const char* label, const char* cvarName, const FloatSliderO
     float value = CVarGetFloat(cvarName, options.defaultValue);
     if (SliderFloat(label, &value, options)) {
         CVarSetFloat(cvarName, value);
-        Ship::Context::GetInstance()->GetWindow()->GetGui()->SaveConsoleVariablesNextFrame();
+        Ship::Context::GetRawInstance()->GetWindow()->GetGui()->SaveConsoleVariablesNextFrame();
         ShipInit::Init(cvarName);
         dirty = true;
     }
@@ -932,7 +959,7 @@ bool CVarInputString(const char* label, const char* cvarName, const InputOptions
     std::string value = CVarGetString(cvarName, options.defaultValue.c_str());
     if (InputString(label, &value, options)) {
         CVarSetString(cvarName, value.c_str());
-        Ship::Context::GetInstance()->GetWindow()->GetGui()->SaveConsoleVariablesNextFrame();
+        Ship::Context::GetRawInstance()->GetWindow()->GetGui()->SaveConsoleVariablesNextFrame();
         ShipInit::Init(cvarName);
         dirty = true;
     }
@@ -984,7 +1011,7 @@ bool CVarInputInt(const char* label, const char* cvarName, const InputOptions& o
     int32_t value = CVarGetInteger(cvarName, defaultValue);
     if (InputInt(label, &value, options)) {
         CVarSetInteger(cvarName, value);
-        Ship::Context::GetInstance()->GetWindow()->GetGui()->SaveConsoleVariablesNextFrame();
+        Ship::Context::GetRawInstance()->GetWindow()->GetGui()->SaveConsoleVariablesNextFrame();
         ShipInit::Init(cvarName);
         dirty = true;
     }
@@ -1014,7 +1041,7 @@ bool CVarColorPicker(const char* label, const char* valueCvar, Color_RGBA8 defau
         color.b = (uint8_t)(colorVec.z * 255.0f);
         color.a = (uint8_t)(colorVec.w * 255.0f);
         CVarSetColor(valueCvar, color);
-        Ship::Context::GetInstance()->GetWindow()->GetGui()->SaveConsoleVariablesNextFrame();
+        Ship::Context::GetRawInstance()->GetWindow()->GetGui()->SaveConsoleVariablesNextFrame();
         ShipInit::Init(valueCvar);
     }
 
@@ -1088,7 +1115,7 @@ bool CVarRadioButton(const char* text, const char* cvarName, int32_t id, const R
     PushStyleCheckbox(options.color);
     if (ImGui::RadioButton(make_invisible.c_str(), id == val)) {
         CVarSetInteger(cvarName, id);
-        Ship::Context::GetInstance()->GetWindow()->GetGui()->SaveConsoleVariablesNextFrame();
+        Ship::Context::GetRawInstance()->GetWindow()->GetGui()->SaveConsoleVariablesNextFrame();
         ret = true;
     }
     ImGui::SameLine();
@@ -1195,16 +1222,22 @@ void DrawFlagTableArray16(const FlagTable& flagTable, uint16_t& flags) {
     ImGui::PopID();
 }
 
-void DrawFlagTableArray8(const FlagTable& flagTable, uint16_t row, uint8_t& flags) {
+template <typename T> static void DrawFlagTableArrayRowImpl(const FlagTable& flagTable, uint16_t row, T& flags) {
+    constexpr int16_t width = sizeof(T) * 8;
     ImGui::PushID(flagTable.name);
-    for (int8_t flagIndex = 0; flagIndex < 8; flagIndex++) {
-        if ((flagIndex % 8) != 0) {
+    for (int16_t flagIndex = 0; flagIndex < width; flagIndex++) {
+        size_t flagEntryIndex = row * width + flagIndex;
+        if (flagEntryIndex >= flagTable.entries.size()) {
+            break;
+        }
+
+        if (flagIndex != 0) {
             ImGui::SameLine();
         }
         ImGui::PushID(flagIndex);
-        uint8_t bitMask = 1 << flagIndex;
+        T bitMask = 1 << flagIndex;
         bool flag = (flags & bitMask) != 0;
-        FlagEntry flagEntry = flagTable.entries.at(row * 8 + flagIndex);
+        FlagEntry flagEntry = flagTable.entries.at(flagEntryIndex);
         PushStyleCheckbox(LightBlue);
         ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(4.0f, 6.0f));
         std::string id = fmt::format("####{}", flagIndex);
@@ -1227,6 +1260,14 @@ void DrawFlagTableArray8(const FlagTable& flagTable, uint16_t row, uint8_t& flag
         ImGui::PopID();
     }
     ImGui::PopID();
+}
+
+void DrawFlagTableArray16(const FlagTable& flagTable, uint16_t row, uint16_t& flags) {
+    DrawFlagTableArrayRowImpl(flagTable, row, flags);
+}
+
+void DrawFlagTableArray8(const FlagTable& flagTable, uint16_t row, uint8_t& flags) {
+    DrawFlagTableArrayRowImpl(flagTable, row, flags);
 }
 
 void DrawFlagTableArray8Mask(const FlagTable& flagTable, uint16_t row, uint8_t& flags) {
@@ -1350,7 +1391,7 @@ bool CVarBtnSelector(const char* label, const char* cvarName, const BtnSelectorO
     int32_t value = CVarGetInteger(cvarName, options.defaultValue);
     if (BtnSelector(label, &value, options)) {
         CVarSetInteger(cvarName, value);
-        Ship::Context::GetInstance()->GetWindow()->GetGui()->SaveConsoleVariablesNextFrame();
+        Ship::Context::GetRawInstance()->GetWindow()->GetGui()->SaveConsoleVariablesNextFrame();
         ShipInit::Init(cvarName);
         dirty = true;
     }

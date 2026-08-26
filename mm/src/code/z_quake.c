@@ -3,6 +3,8 @@
 #include "z64quake.h"
 #include "z64view.h"
 
+#include "2s2h/GameInteractor/GameInteractor.h"
+
 typedef struct {
     /* 0x00 */ s16 index;
     /* 0x02 */ s16 duration;
@@ -878,15 +880,17 @@ void Distortion_Update(void) {
         depthPhase += CAM_DEG_TO_BINANG(depthPhaseStep);
         screenPlanePhase += CAM_DEG_TO_BINANG(screenPlanePhaseStep);
 
-        View_SetDistortionOrientation(&sDistortionRequest.play->view,
-                                      Math_CosS(depthPhase) * (DEG_TO_RAD(rotX) * xyScaleFactor),
-                                      Math_SinS(depthPhase) * (DEG_TO_RAD(rotY) * xyScaleFactor),
-                                      Math_SinS(screenPlanePhase) * (DEG_TO_RAD(rotZ) * zScaleFactor));
-        View_SetDistortionScale(&sDistortionRequest.play->view,
-                                (Math_SinS(screenPlanePhase) * (xScale * xyScaleFactor)) + 1.0f,
-                                (Math_CosS(screenPlanePhase) * (yScale * xyScaleFactor)) + 1.0f,
-                                (Math_CosS(depthPhase) * (zScale * zScaleFactor)) + 1.0f);
-        View_SetDistortionSpeed(&sDistortionRequest.play->view, speed * speedScaleFactor);
+        if (GameInteractor_Should(VB_APPLY_SCREEN_DISTORTION, true, sDistortionRequest.type)) {
+            View_SetDistortionOrientation(&sDistortionRequest.play->view,
+                                          Math_CosS(depthPhase) * (DEG_TO_RAD(rotX) * xyScaleFactor),
+                                          Math_SinS(depthPhase) * (DEG_TO_RAD(rotY) * xyScaleFactor),
+                                          Math_SinS(screenPlanePhase) * (DEG_TO_RAD(rotZ) * zScaleFactor));
+            View_SetDistortionScale(&sDistortionRequest.play->view,
+                                    (Math_SinS(screenPlanePhase) * (xScale * xyScaleFactor)) + 1.0f,
+                                    (Math_CosS(screenPlanePhase) * (yScale * xyScaleFactor)) + 1.0f,
+                                    (Math_CosS(depthPhase) * (zScale * zScaleFactor)) + 1.0f);
+            View_SetDistortionSpeed(&sDistortionRequest.play->view, speed * speedScaleFactor);
+        }
 
         sDistortionRequest.state = DISTORTION_ACTIVE;
 

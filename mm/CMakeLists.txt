@@ -328,7 +328,11 @@ if(MSVC)
         ${DEFAULT_CXX_DEBUG_INFORMATION_FORMAT};
         ${DEFAULT_CXX_EXCEPTION_HANDLING}
     )
-    target_compile_options(${PROJECT_NAME} PRIVATE  $<$<CONFIG:Debug>:/ZI;>)
+    # /ZI is Edit and Continue, usable only by the Visual Studio debugger. It overrides the /Z7 or
+    # /Zi chosen above, and forces every parallel cl.exe through one mspdbsrv.exe.
+    if (CMAKE_GENERATOR MATCHES "Visual Studio")
+        target_compile_options(${PROJECT_NAME} PRIVATE  $<$<CONFIG:Debug>:/ZI;>)
+    endif()
     target_link_options(${PROJECT_NAME} PRIVATE
         $<$<CONFIG:Debug>:
             /INCREMENTAL
@@ -491,6 +495,23 @@ target_precompile_headers(${PROJECT_NAME} PRIVATE
     "$<$<COMPILE_LANGUAGE:C>:${CMAKE_CURRENT_SOURCE_DIR}/include/functions.h>"
     "$<$<COMPILE_LANGUAGE:C>:${CMAKE_CURRENT_SOURCE_DIR}/include/variables.h>"
 )
+
+# MSVC only: the header is expensive to parse there, few sources include it, and MSVC's PCH load
+# barely grows with content. On Clang the parse is cheap by comparison and the bigger PCH is paid
+# for by every source in the target, making it a net loss.
+if (MSVC)
+    target_precompile_headers(${PROJECT_NAME} PRIVATE
+        "$<$<COMPILE_LANGUAGE:CXX>:${CMAKE_CURRENT_SOURCE_DIR}/2s2h/BenGui/UIWidgets.hpp>"
+    )
+endif()
+
+# Instantiate templates once while building the PCH instead of replaying them in every TU that
+# consumes it. Slightly slower and larger PCH, much cheaper for every object that uses it.
+if (CMAKE_CXX_COMPILER_ID MATCHES "Clang|AppleClang")
+    target_compile_options(${PROJECT_NAME} PRIVATE
+        $<$<COMPILE_LANGUAGE:CXX>:-fpch-instantiate-templates>
+    )
+endif()
 
 ################################################################################
 # Pre build events

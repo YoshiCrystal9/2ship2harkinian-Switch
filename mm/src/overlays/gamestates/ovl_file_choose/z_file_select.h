@@ -78,7 +78,11 @@ typedef enum {
     /* 0x29 */ CM_OPTIONS_MENU,
     /* 0x2A */ CM_OPTIONS_WAIT_FOR_FLASH_SAVE,
     /* 0x2B */ CM_OPTIONS_TO_MAIN,
-    /* 0x2C */ CM_UNUSED_DELAY
+    /* 0x2C */ CM_UNUSED_DELAY,
+    // 2S2H [Enhancement] New file setup, shown between picking an empty file and entering a name.
+    /* 0x2D */ CM_2S2H_ROTATE_TO_NEW_FILE_SETUP,
+    /* 0x2E */ CM_2S2H_NEW_FILE_SETUP,
+    /* 0x2F */ CM_2S2H_NEW_FILE_SETUP_TO_MAIN
 } ConfigMode;
 
 typedef enum {
@@ -325,6 +329,11 @@ void FileSelect_NameEntryWaitForFlashSave(GameState* thisx);
 void FileSelect_StartOptions(GameState* thisx);
 void FileSelect_UpdateOptionsMenu(GameState* thisx);
 void FileSelect_OptionsWaitForFlashSave(GameState* thisx);
+
+// 2S2H [Enhancement] source: mm/2s2h/Enhancements/Saving/NewFileSetup.cpp
+void FileSelect_RotateToNewFileSetup(GameState* thisx);
+void FileSelect_UpdateNewFileSetup(GameState* thisx);
+void FileSelect_DrawNewFileSetup(GameState* thisx);
 
 extern u8 D_808141F0[];
 extern s16 D_80814280[];

@@ -37,14 +37,13 @@ void RegisterPauseBufferInputs() {
 
         // if the input buffer timer is not 0 and the pause state is off, then the player just unpaused
         if (inputBufferTimer != 0 && pauseCtx->state == PAUSE_STATE_OFF) {
-            inputBufferTimer = 0;
-
             // So we need to re-apply the inputs that were pressed during the buffer window
             input->press.button |= pauseInputs;
-        }
 
-        // Reset the timer and stored inputs at the beginning of the unpause process
-        if (pauseCtx->state == PAUSE_STATE_UNPAUSE_SETUP && pauseCtx->itemPageRoll != 160.0f) {
+            inputBufferTimer = 0;
+            pauseInputs = 0;
+        } else if (pauseCtx->state != PAUSE_STATE_UNPAUSE_CLOSE) {
+            // Reset the timer and stored inputs at the beginning of the unpause process
             inputBufferTimer = 0;
             pauseInputs = 0;
         }

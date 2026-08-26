@@ -3,17 +3,20 @@
 #include "UIWidgets.hpp"
 #include <string>
 
+#include <fast/Fast3dGui.h>
+
 namespace BenGui {
 
 void DrawMenuBarIcon() {
     static bool gameIconLoaded = false;
     if (!gameIconLoaded) {
-        Ship::Context::GetInstance()->GetWindow()->GetGui()->LoadTextureFromRawImage("Game_Icon",
-                                                                                     "textures/icons/g2ShipIcon.png");
+        std::dynamic_pointer_cast<Fast::Fast3dGui>(Ship::Context::GetRawInstance()->GetWindow()->GetGui())
+            ->LoadTextureFromRawImage("Game_Icon", "textures/icons/g2ShipIcon.png");
         gameIconLoaded = true;
     }
 
-    if (Ship::Context::GetInstance()->GetWindow()->GetGui()->HasTextureByName("Game_Icon")) {
+    if (std::dynamic_pointer_cast<Fast::Fast3dGui>(Ship::Context::GetRawInstance()->GetWindow()->GetGui())
+            ->HasTextureByName("Game_Icon")) {
 #ifdef __SWITCH__
         ImVec2 iconSize = ImVec2(20.0f, 20.0f);
         float posScale = 1.0f;
@@ -25,7 +28,9 @@ void DrawMenuBarIcon() {
         float posScale = 1.0f;
 #endif
         ImGui::SetCursorPos(ImVec2(5, 5) * posScale);
-        ImGui::Image(Ship::Context::GetInstance()->GetWindow()->GetGui()->GetTextureByName("Game_Icon"), iconSize);
+        ImGui::Image(std::dynamic_pointer_cast<Fast::Fast3dGui>(Ship::Context::GetRawInstance()->GetWindow()->GetGui())
+                         ->GetTextureByName("Game_Icon"),
+                     iconSize);
         ImGui::SameLine();
         ImGui::SetCursorPos(ImVec2(25, 0) * posScale);
     }
@@ -40,11 +45,11 @@ void DrawBenMenu() {
                                 "[-]"
 #endif
                                 )) {
-            Ship::Context::GetInstance()->GetWindow()->GetGui()->GetMenuBar()->ToggleVisibility();
+            Ship::Context::GetRawInstance()->GetWindow()->GetGui()->GetMenuBar()->ToggleVisibility();
         }
 #if !defined(__SWITCH__) && !defined(__WIIU__)
         if (UIWidgets::MenuItem("Toggle Fullscreen", "F11")) {
-            Ship::Context::GetInstance()->GetWindow()->ToggleFullscreen();
+            Ship::Context::GetRawInstance()->GetWindow()->ToggleFullscreen();
         }
 #endif
         if (UIWidgets::MenuItem("Reset",
@@ -57,17 +62,17 @@ void DrawBenMenu() {
 #endif
                                 )) {
             std::reinterpret_pointer_cast<Ship::ConsoleWindow>(
-                Ship::Context::GetInstance()->GetWindow()->GetGui()->GetGuiWindow("Console"))
+                Ship::Context::GetRawInstance()->GetWindow()->GetGui()->GetGuiWindow("Console"))
                 ->Dispatch("reset");
         }
 #if !defined(__SWITCH__) && !defined(__WIIU__)
         if (UIWidgets::MenuItem("Open App Files Folder")) {
-            std::string filesPath = Ship::Context::GetInstance()->GetAppDirectoryPath();
+            std::string filesPath = Ship::Context::GetRawInstance()->GetAppDirectoryPath();
             SDL_OpenURL(std::string("file:///" + std::filesystem::absolute(filesPath).string()).c_str());
         }
 
         if (UIWidgets::MenuItem("Quit")) {
-            Ship::Context::GetInstance()->GetWindow()->Close();
+            Ship::Context::GetRawInstance()->GetWindow()->Close();
         }
 #endif
         ImGui::EndMenu();

@@ -247,7 +247,7 @@ void HudEditorWindow::DrawElement() {
                 break;
             }
         }
-        Ship::Context::GetInstance()->GetWindow()->GetGui()->SaveConsoleVariablesNextFrame();
+        Ship::Context::GetRawInstance()->GetWindow()->GetGui()->SaveConsoleVariablesNextFrame();
     }
 
     for (int i = HUD_EDITOR_ELEMENT_B; i < HUD_EDITOR_ELEMENT_MAX; i++) {
@@ -283,7 +283,7 @@ void HudEditorWindow::DrawElement() {
                 CVarSetInteger(cosmeticElement.colorChangedCvar, true);
                 ShipInit::Init(cosmeticElement.colorCvar);
                 ShipInit::Init(cosmeticElement.colorChangedCvar);
-                Ship::Context::GetInstance()->GetWindow()->GetGui()->SaveConsoleVariablesNextFrame();
+                Ship::Context::GetRawInstance()->GetWindow()->GetGui()->SaveConsoleVariablesNextFrame();
             }
             ImGui::SameLine();
             if (ImGui::Button(ICON_FA_REFRESH)) {
@@ -291,7 +291,7 @@ void HudEditorWindow::DrawElement() {
                 CVarClear(cosmeticElement.colorChangedCvar);
                 ShipInit::Init(cosmeticElement.colorCvar);
                 ShipInit::Init(cosmeticElement.colorChangedCvar);
-                Ship::Context::GetInstance()->GetWindow()->GetGui()->SaveConsoleVariablesNextFrame();
+                Ship::Context::GetRawInstance()->GetWindow()->GetGui()->SaveConsoleVariablesNextFrame();
             }
         } else {
             // Disabled color picker for elements without cosmetic mappings

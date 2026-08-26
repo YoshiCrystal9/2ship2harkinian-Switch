@@ -12,6 +12,8 @@ extern const char* D_801C0B20[28];
 #define CVAR_NAME "gModes.HyruleWarriorsStyledLink"
 #define CVAR CVarGetInteger(CVAR_NAME, 0)
 
+#define CHECK_KEATON_GIVEN_ON_MOON() (gSaveContext.masksGivenOnMoon[0] & 0x10)
+
 void RegisterHyruleWarriorsStyledLink() {
     COND_ID_HOOK(OnPlayerPostLimbDraw, PLAYER_LIMB_HEAD, CVAR, [](Player* player, s32 limbIndex) {
         // This emulates the vanilla check for if the masks should be drawn, specifically around
@@ -25,7 +27,7 @@ void RegisterHyruleWarriorsStyledLink() {
         }
 
         if (player->currentMask == PLAYER_MASK_NONE && player->transformation == PLAYER_FORM_HUMAN &&
-            INV_CONTENT(ITEM_MASK_KEATON) == ITEM_MASK_KEATON) {
+            INV_CONTENT(ITEM_MASK_KEATON) == ITEM_MASK_KEATON && !CHECK_KEATON_GIVEN_ON_MOON()) {
             OPEN_DISPS(gPlayState->state.gfxCtx);
             Matrix_Push();
             Matrix_RotateYS(0x38e3, MTXMODE_APPLY);

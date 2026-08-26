@@ -291,40 +291,48 @@ void Message_ResetOcarinaButtonState(PlayState* play) {
 bool Message_ShouldAdvance(PlayState* play) {
     MessageContext* msgCtx = &play->msgCtx;
     Input* controller = CONTROLLER1(&play->state);
+    bool shouldAdvance;
 
     if ((msgCtx->textboxEndType == TEXTBOX_ENDTYPE_TWO_CHOICE) ||
         (msgCtx->textboxEndType == TEXTBOX_ENDTYPE_THREE_CHOICE)) {
         if (CHECK_BTN_ALL(controller->press.button, BTN_A)) {
             Audio_PlaySfx(NA_SE_SY_MESSAGE_PASS);
         }
-        return CHECK_BTN_ALL(controller->press.button, BTN_A);
+        shouldAdvance = CHECK_BTN_ALL(controller->press.button, BTN_A);
     } else {
         if (CHECK_BTN_ALL(controller->press.button, BTN_A) || CHECK_BTN_ALL(controller->press.button, BTN_B) ||
             CHECK_BTN_ALL(controller->press.button, BTN_CUP)) {
             Audio_PlaySfx(NA_SE_SY_MESSAGE_PASS);
         }
-        return CHECK_BTN_ALL(controller->press.button, BTN_A) || CHECK_BTN_ALL(controller->press.button, BTN_B) ||
-               // 2S2H [Enhancement] When fast text is on, we want to check if B is held instead of only if it was just
-               // pressed
-               (CVarGetInteger("gEnhancements.Dialogue.FastText", 0) && CHECK_BTN_ALL(controller->cur.button, BTN_B)) ||
-               CHECK_BTN_ALL(controller->press.button, BTN_CUP);
+        shouldAdvance =
+            CHECK_BTN_ALL(controller->press.button, BTN_A) || CHECK_BTN_ALL(controller->press.button, BTN_B) ||
+            // 2S2H [Enhancement] When fast text is on, we want to check if B is held instead of only if it was just
+            // pressed
+            (CVarGetInteger("gEnhancements.Dialogue.FastText", 0) && CHECK_BTN_ALL(controller->cur.button, BTN_B)) ||
+            CHECK_BTN_ALL(controller->press.button, BTN_CUP);
     }
+
+    return GameInteractor_Should(VB_MSG_ADVANCE, shouldAdvance);
 }
 
 bool Message_ShouldAdvanceSilent(PlayState* play) {
     MessageContext* msgCtx = &play->msgCtx;
     Input* controller = CONTROLLER1(&play->state);
+    bool shouldAdvance;
 
     if ((msgCtx->textboxEndType == TEXTBOX_ENDTYPE_TWO_CHOICE) ||
         (msgCtx->textboxEndType == TEXTBOX_ENDTYPE_THREE_CHOICE)) {
-        return CHECK_BTN_ALL(controller->press.button, BTN_A);
+        shouldAdvance = CHECK_BTN_ALL(controller->press.button, BTN_A);
     } else {
-        return CHECK_BTN_ALL(controller->press.button, BTN_A) || CHECK_BTN_ALL(controller->press.button, BTN_B) ||
-               // 2S2H [Enhancement] When fast text is on, we want to check if B is held instead of only if it was just
-               // pressed
-               (CVarGetInteger("gEnhancements.Dialogue.FastText", 0) && CHECK_BTN_ALL(controller->cur.button, BTN_B)) ||
-               CHECK_BTN_ALL(controller->press.button, BTN_CUP);
+        shouldAdvance =
+            CHECK_BTN_ALL(controller->press.button, BTN_A) || CHECK_BTN_ALL(controller->press.button, BTN_B) ||
+            // 2S2H [Enhancement] When fast text is on, we want to check if B is held instead of only if it was just
+            // pressed
+            (CVarGetInteger("gEnhancements.Dialogue.FastText", 0) && CHECK_BTN_ALL(controller->cur.button, BTN_B)) ||
+            CHECK_BTN_ALL(controller->press.button, BTN_CUP);
     }
+
+    return GameInteractor_Should(VB_MSG_ADVANCE, shouldAdvance);
 }
 
 void Message_CloseTextbox(PlayState* play) {

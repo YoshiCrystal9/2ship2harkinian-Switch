@@ -5,7 +5,8 @@
 
 struct ObjWarpstone;
 
-typedef s32 (*ObjWarpstoneActionFunc)(struct ObjWarpstone* this, PlayState* play);
+// 2S2H [Port] Unnamed parameters so this header can be included from C++
+typedef s32 (*ObjWarpstoneActionFunc)(struct ObjWarpstone*, PlayState*);
 
 typedef enum {
     /* 0 */ SEK_MODEL_CLOSED,

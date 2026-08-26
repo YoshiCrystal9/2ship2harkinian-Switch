@@ -11,7 +11,29 @@ extern "C" {
 #define CVAR_NAME "gEnhancements.Cutscenes.SkipToFileSelect"
 #define CVAR CVarGetInteger(CVAR_NAME, 0)
 
-void RegisterSkipToFileSelect() {
+static constexpr int32_t OPENING_CS_INDEX = 0xFFFA;
+
+// Normally the following is called by the opening cutscene
+static void SkipToFileSelect() {
+    Sram_InitNewSave();
+    gSaveContext.save.time = CLOCK_TIME(8, 0);
+    gSaveContext.save.day = 1;
+    gSaveContext.save.playerForm = PLAYER_FORM_HUMAN;
+    gSaveContext.gameMode = GAMEMODE_FILE_SELECT;
+
+    STOP_GAMESTATE(gGameState);
+    SET_NEXT_GAMESTATE(gGameState, FileSelect_Init, sizeof(FileSelectState));
+}
+
+static void RegisterSkipToFileSelect() {
+    COND_VB_SHOULD(VB_PLAY_TRANSITION_CS, CVAR, {
+        if ((gSaveContext.save.entrance == ENTRANCE(CUTSCENE, 0) ||
+             gSaveContext.save.entrance == ENTRANCE(CUTSCENE, 1)) &&
+            gSaveContext.save.cutsceneIndex == OPENING_CS_INDEX) {
+            SkipToFileSelect();
+        }
+    });
+
     COND_HOOK(OnConsoleLogoUpdate, CVAR, []() {
         ConsoleLogoState* consoleLogoState = (ConsoleLogoState*)gGameState;
 
@@ -24,15 +46,7 @@ void RegisterSkipToFileSelect() {
             gSaveContext.seqId = NA_BGM_DISABLED;
             gSaveContext.ambienceId = AMBIENCE_ID_DISABLED;
 
-            // Normally the following is called by the opening cutscene
-            Sram_InitNewSave();
-            gSaveContext.save.time = CLOCK_TIME(8, 0);
-            gSaveContext.save.day = 1;
-            gSaveContext.save.playerForm = PLAYER_FORM_HUMAN;
-            gSaveContext.gameMode = GAMEMODE_FILE_SELECT;
-
-            STOP_GAMESTATE(gGameState);
-            SET_NEXT_GAMESTATE(gGameState, FileSelect_Init, sizeof(FileSelectState));
+            SkipToFileSelect();
         }
     });
 

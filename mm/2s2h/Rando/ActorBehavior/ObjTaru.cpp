@@ -116,7 +116,9 @@ void Rando::ActorBehavior::InitObjTaruBehavior() {
         }
 
         Rando::ActorBehavior::SetObjectRandoCheckId(actor, randoCheckId);
-        actor->draw = ObjTaru_RandoDraw;
+        if (!RANDO_SAVE_CHECKS[randoCheckId].obtained) {
+            actor->draw = ObjTaru_RandoDraw;
+        }
     });
 
     COND_VB_SHOULD(VB_BARREL_OR_CRATE_DROP_COLLECTIBLE, IS_RANDO, {

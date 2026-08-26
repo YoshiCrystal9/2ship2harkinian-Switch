@@ -1551,7 +1551,7 @@ s32 MapDisp_ConvertBossSceneToDungeonScene(s32 sceneId) {
     }
 }
 
-// 2S2H [Port] Split u16 values into two u8 values for the custom palette below
+// 2S2H [Port] Split u16 values into two u8 values for the custom palettes below
 #define SPLIT(val) (val >> 8) & 0xFF, val & 0xFF
 
 /**
@@ -1567,35 +1567,21 @@ s32 MapDisp_ConvertBossSceneToDungeonScene(s32 sceneId) {
  */
 void MapDisp_DrawRooms(PlayState* play, s32 viewX, s32 viewY, s32 viewWidth, s32 viewHeight, f32 scaleFrac,
                        s32 dungeonSceneSharedIndex) {
-    static u16 sUnvisitedRoomPal[16] = {
-        0x0000, 0x0000, 0xFFC1, 0x07C1, 0x07FF, 0x003F, 0xFB3F, 0xF305,
-        0x0453, 0x0577, 0x0095, 0x82E5, 0xFD27, 0x7A49, 0x94A5, 0x0001,
-    }; // palette 0
-    static u16 sVisitedRoomPal[16] = {
-        0x0000, 0x027F, 0xFFC1, 0x07C1, 0x07FF, 0x003F, 0xFB3F, 0xF305,
-        0x0453, 0x0577, 0x0095, 0x82E5, 0xFD27, 0x7A49, 0x94A5, 0x0001,
-    }; // palette 1
-    static u16 sCurrentRoomPal[16] = {
-        0x0000, 0x0623, 0xFFC1, 0x07C1, 0x07FF, 0x003F, 0xFB3F, 0xF305,
-        0x0453, 0x0577, 0x0095, 0x82E5, 0xFD27, 0x7A49, 0x94A5, 0x0001,
-    }; // palette 2
-
-    // 2S2H [Port] Merge the 3 map palettes into 1 memory address so that we can load it once
-    // at index 0, but when the map textures below use index 1 or 2, Fast3D will correctly
-    // offset in this address to get the expected values.
-    // Palette stored as u8 to avoid endianeness issues in Fast3D
+    // 2S2H [Port] The palettes are stored pre-split into big-endian byte pairs (see SPLIT) because
+    // Fast3D reads TLUT entries as big-endian u16 regardless of host endianness.
     // clang-format off
-    static u8 sMergedPal[0x10 * 2 * 3] = {
-        // sUnvisitedRoomPal - palette 0
+    static u8 sUnvisitedRoomPal[0x10 * 2] = {
         SPLIT(0x0000), SPLIT(0x0000), SPLIT(0xFFC1), SPLIT(0x07C1), SPLIT(0x07FF), SPLIT(0x003F), SPLIT(0xFB3F), SPLIT(0xF305),
         SPLIT(0x0453), SPLIT(0x0577), SPLIT(0x0095), SPLIT(0x82E5), SPLIT(0xFD27), SPLIT(0x7A49), SPLIT(0x94A5), SPLIT(0x0001),
-        // sVisitedRoomPal - palette 1
+    }; // palette 0
+    static u8 sVisitedRoomPal[0x10 * 2] = {
         SPLIT(0x0000), SPLIT(0x027F), SPLIT(0xFFC1), SPLIT(0x07C1), SPLIT(0x07FF), SPLIT(0x003F), SPLIT(0xFB3F), SPLIT(0xF305),
         SPLIT(0x0453), SPLIT(0x0577), SPLIT(0x0095), SPLIT(0x82E5), SPLIT(0xFD27), SPLIT(0x7A49), SPLIT(0x94A5), SPLIT(0x0001),
-        // sCurrentRoomPal - palette 2
+    }; // palette 1
+    static u8 sCurrentRoomPal[0x10 * 2] = {
         SPLIT(0x0000), SPLIT(0x0623), SPLIT(0xFFC1), SPLIT(0x07C1), SPLIT(0x07FF), SPLIT(0x003F), SPLIT(0xFB3F), SPLIT(0xF305),
         SPLIT(0x0453), SPLIT(0x0577), SPLIT(0x0095), SPLIT(0x82E5), SPLIT(0xFD27), SPLIT(0x7A49), SPLIT(0x94A5), SPLIT(0x0001),
-    };
+    }; // palette 2
     // clang-format on
 
     PauseContext* pauseCtx = &play->pauseCtx;
@@ -1604,42 +1590,29 @@ void MapDisp_DrawRooms(PlayState* play, s32 viewX, s32 viewY, s32 viewWidth, s32
     s32 green = ((sPauseDungeonMap.animTimer * -120.0f / 40.0f) + 200.0f) * 31.0f / 255.0f;
     s32 blue = ((sPauseDungeonMap.animTimer * 115.0f / 40.0f) + 140.0f) * 31.0f / 255.0f;
 
-    sCurrentRoomPal[1] = (green << 6) | (blue << 1) | 1;
-
-    // 2S2H [Port] Apply runtime palette updates by splitting the color across the low and high index
+    // 2S2H [Port] Apply runtime palette updates by splitting the color across the high and low bytes
     u16 pulseColor = (green << 6) | (blue << 1) | 1;
-    sMergedPal[(0x10 * 2 * 2) + (1 * 2) + 0] = (pulseColor >> 8) & 0xFF;
-    sMergedPal[(0x10 * 2 * 2) + (1 * 2) + 1] = pulseColor & 0xFF;
+
+    sCurrentRoomPal[(1 * 2) + 0] = (pulseColor >> 8) & 0xFF;
+    sCurrentRoomPal[(1 * 2) + 1] = pulseColor & 0xFF;
 
     if (CHECK_DUNGEON_ITEM(DUNGEON_MAP, dungeonSceneSharedIndex)) {
-        s32 requiredScopeTemp;
-
-        sUnvisitedRoomPal[15] = 0xAD5F;
-        sVisitedRoomPal[15] = 0xAD5F;
-        sCurrentRoomPal[15] = 0xAD5F;
-
-        for (i = 0; i <= 2; i++) {
-            sMergedPal[(0x10 * 2 * i) + (0xF * 2) + 0] = (0xAD5F >> 8) & 0xFF;
-            sMergedPal[(0x10 * 2 * i) + (0xF * 2) + 1] = 0xAD5F & 0xFF;
-        }
+        sUnvisitedRoomPal[(0xF * 2) + 0] = sVisitedRoomPal[(0xF * 2) + 0] = sCurrentRoomPal[(0xF * 2) + 0] =
+            (0xAD5F >> 8) & 0xFF;
+        sUnvisitedRoomPal[(0xF * 2) + 1] = sVisitedRoomPal[(0xF * 2) + 1] = sCurrentRoomPal[(0xF * 2) + 1] =
+            0xAD5F & 0xFF;
     } else {
-        sCurrentRoomPal[15] = sVisitedRoomPal[15] = sUnvisitedRoomPal[15] = 0;
-
-        for (i = 0; i <= 2; i++) {
-            sMergedPal[(0x10 * 2 * i) + (0xF * 2) + 0] = sMergedPal[(0x10 * 2 * i) + (0xF * 2) + 1] = 0;
-        }
+        sUnvisitedRoomPal[(0xF * 2) + 0] = sVisitedRoomPal[(0xF * 2) + 0] = sCurrentRoomPal[(0xF * 2) + 0] = 0;
+        sUnvisitedRoomPal[(0xF * 2) + 1] = sVisitedRoomPal[(0xF * 2) + 1] = sCurrentRoomPal[(0xF * 2) + 1] = 0;
     }
 
     OPEN_DISPS(play->state.gfxCtx);
 
     Gfx_SetupDL39_Opa(play->state.gfxCtx);
     gDPSetPrimColor(POLY_OPA_DISP++, 0, 0, 255, 255, 255, pauseCtx->alpha);
-    // #region 2S2H [Port] Load our merged palette at index 0, the other indexes do not need to be loaded
-    gDPLoadTLUT_pal16(POLY_OPA_DISP++, 0, sMergedPal);
-    // gDPLoadTLUT_pal16(POLY_OPA_DISP++, 0, sUnvisitedRoomPal);
-    // gDPLoadTLUT_pal16(POLY_OPA_DISP++, 1, sVisitedRoomPal);
-    // gDPLoadTLUT_pal16(POLY_OPA_DISP++, 2, sCurrentRoomPal);
-    // #endregion
+    gDPLoadTLUT_pal16(POLY_OPA_DISP++, 0, sUnvisitedRoomPal);
+    gDPLoadTLUT_pal16(POLY_OPA_DISP++, 1, sVisitedRoomPal);
+    gDPLoadTLUT_pal16(POLY_OPA_DISP++, 2, sCurrentRoomPal);
     gDPSetTextureLUT(POLY_OPA_DISP++, G_TT_RGBA16);
 
     for (i = 0; i < sSceneNumRooms; i++) {

@@ -12,6 +12,9 @@
 #include "interface/icon_item_dungeon_static/icon_item_dungeon_static.h"
 #include "archives/icon_item_24_static/icon_item_24_static_yar.h"
 
+#include <fast/Fast3dGui.h>
+#include <fast/Fast3dWindow.h>
+
 extern "C" {
 #include <z64.h>
 #include <z64save.h>
@@ -769,12 +772,13 @@ void DrawSlot(InventorySlot slot) {
     }
     ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 2.0f);
 
-    ImTextureID textureId = Ship::Context::GetInstance()->GetWindow()->GetGui()->GetTextureByName(
-        (const char*)gItemIcons[safeItemsForInventorySlot[slot][0]]);
+    ImTextureID textureId =
+        std::dynamic_pointer_cast<Fast::Fast3dGui>(Ship::Context::GetRawInstance()->GetWindow()->GetGui())
+            ->GetTextureByName((const char*)gItemIcons[safeItemsForInventorySlot[slot][0]]);
 
     if (currentItemId != ITEM_NONE) {
-        textureId = Ship::Context::GetInstance()->GetWindow()->GetGui()->GetTextureByName(
-            (const char*)gItemIcons[currentItemId]);
+        textureId = std::dynamic_pointer_cast<Fast::Fast3dGui>(Ship::Context::GetRawInstance()->GetWindow()->GetGui())
+                        ->GetTextureByName((const char*)gItemIcons[currentItemId]);
     }
 
     ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
@@ -816,7 +820,8 @@ void DrawSlot(InventorySlot slot) {
             ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
             bool buttonPressed = ImGui::ImageButton(
                 (const char*)gItemIcons[id],
-                Ship::Context::GetInstance()->GetWindow()->GetGui()->GetTextureByName((const char*)gItemIcons[id]),
+                std::dynamic_pointer_cast<Fast::Fast3dGui>(Ship::Context::GetRawInstance()->GetWindow()->GetGui())
+                    ->GetTextureByName((const char*)gItemIcons[id]),
                 ImVec2(INV_GRID_ICON_SIZE, INV_GRID_ICON_SIZE));
             ImGui::PopStyleVar();
             if (buttonPressed) {
@@ -1176,8 +1181,9 @@ void DrawQuestSlot(QuestItem slot) {
     ImGui::SetCursorPos(
         ImVec2(x * INV_GRID_WIDTH + INV_GRID_PADDING, y * INV_GRID_HEIGHT + INV_GRID_TOP_MARGIN + INV_GRID_PADDING));
 
-    ImTextureID textureId = Ship::Context::GetInstance()->GetWindow()->GetGui()->GetTextureByName(
-        (const char*)gItemIcons[questToItemMap[slot]]);
+    ImTextureID textureId =
+        std::dynamic_pointer_cast<Fast::Fast3dGui>(Ship::Context::GetRawInstance()->GetWindow()->GetGui())
+            ->GetTextureByName((const char*)gItemIcons[questToItemMap[slot]]);
     if (ImGui::ImageButton(std::to_string(slot).c_str(), textureId, ImVec2(INV_GRID_ICON_SIZE, INV_GRID_ICON_SIZE),
                            ImVec2(0, 0), ImVec2(1, 1), ImVec4(0, 0, 0, 0),
                            ImVec4(1, 1, 1, CHECK_QUEST_ITEM(slot) ? 1.0f : 0.4f))) {
@@ -1189,11 +1195,12 @@ void DrawQuestSlot(QuestItem slot) {
 
 ImVec2 DrawSong(QuestItem slot) {
     SongInfo(slot);
-    if (ImGui::ImageButton(std::to_string(slot).c_str(),
-                           Ship::Context::GetInstance()->GetWindow()->GetGui()->GetTextureByName(
-                               (const char*)gItemIcons[questToItemMap[(QuestItem)slot]]),
-                           ImVec2(INV_GRID_ICON_SIZE / 1.5f, INV_GRID_ICON_SIZE), ImVec2(0, 0), ImVec2(1, 1),
-                           ImVec4(0, 0, 0, 0), colorTint)) {
+    if (ImGui::ImageButton(
+            std::to_string(slot).c_str(),
+            std::dynamic_pointer_cast<Fast::Fast3dGui>(Ship::Context::GetRawInstance()->GetWindow()->GetGui())
+                ->GetTextureByName((const char*)gItemIcons[questToItemMap[(QuestItem)slot]]),
+            ImVec2(INV_GRID_ICON_SIZE / 1.5f, INV_GRID_ICON_SIZE), ImVec2(0, 0), ImVec2(1, 1), ImVec4(0, 0, 0, 0),
+            colorTint)) {
         NextQuestInSlot(slot);
     }
     ImVec2 itemSize = ImGui::GetItemRectSize();
@@ -1272,8 +1279,9 @@ void DrawQuestStatusTab() {
     drawSongRange(QUEST_SONG_SONATA, QUEST_SONG_SARIA);
     ImGui::SeparatorText("Equipment");
     if (GET_PLAYER_FORM == PLAYER_FORM_FIERCE_DEITY) {
-        ImTextureID swordTextureId = Ship::Context::GetInstance()->GetWindow()->GetGui()->GetTextureByName(
-            (const char*)gItemIcons[ITEM_SWORD_DEITY]);
+        ImTextureID swordTextureId =
+            std::dynamic_pointer_cast<Fast::Fast3dGui>(Ship::Context::GetRawInstance()->GetWindow()->GetGui())
+                ->GetTextureByName((const char*)gItemIcons[ITEM_SWORD_DEITY]);
         ImGui::ImageButton(std::to_string(ITEM_SWORD_DEITY).c_str(), swordTextureId,
                            ImVec2(INV_GRID_ICON_SIZE, INV_GRID_ICON_SIZE), ImVec2(0, 0), ImVec2(1, 1),
                            ImVec4(0, 0, 0, 0), ImVec4(1, 1, 1, 1));
@@ -1282,8 +1290,9 @@ void DrawQuestStatusTab() {
         if (swordValue == EQUIP_VALUE_SWORD_NONE) {
             swordValue = EQUIP_VALUE_SWORD_KOKIRI;
         }
-        ImTextureID swordTextureId = Ship::Context::GetInstance()->GetWindow()->GetGui()->GetTextureByName(
-            (const char*)gItemIcons[ITEM_SWORD_KOKIRI + swordValue - EQUIP_VALUE_SWORD_KOKIRI]);
+        ImTextureID swordTextureId =
+            std::dynamic_pointer_cast<Fast::Fast3dGui>(Ship::Context::GetRawInstance()->GetWindow()->GetGui())
+                ->GetTextureByName((const char*)gItemIcons[ITEM_SWORD_KOKIRI + swordValue - EQUIP_VALUE_SWORD_KOKIRI]);
 
         if (ImGui::ImageButton(std::to_string(ITEM_SWORD_KOKIRI).c_str(), swordTextureId,
                                ImVec2(INV_GRID_ICON_SIZE, INV_GRID_ICON_SIZE), ImVec2(0, 0), ImVec2(1, 1),
@@ -1296,8 +1305,9 @@ void DrawQuestStatusTab() {
     if (shieldValue == EQUIP_VALUE_SHIELD_NONE) {
         shieldValue = EQUIP_VALUE_SHIELD_HERO;
     }
-    ImTextureID shieldTextureId = Ship::Context::GetInstance()->GetWindow()->GetGui()->GetTextureByName(
-        (const char*)gItemIcons[ITEM_SHIELD_HERO + shieldValue - EQUIP_VALUE_SHIELD_HERO]);
+    ImTextureID shieldTextureId =
+        std::dynamic_pointer_cast<Fast::Fast3dGui>(Ship::Context::GetRawInstance()->GetWindow()->GetGui())
+            ->GetTextureByName((const char*)gItemIcons[ITEM_SHIELD_HERO + shieldValue - EQUIP_VALUE_SHIELD_HERO]);
 
     if (ImGui::ImageButton(std::to_string(ITEM_SHIELD_HERO).c_str(), shieldTextureId,
                            ImVec2(INV_GRID_ICON_SIZE, INV_GRID_ICON_SIZE), ImVec2(0, 0), ImVec2(1, 1),
@@ -1305,8 +1315,9 @@ void DrawQuestStatusTab() {
         NextQuestInSlot(QUEST_SHIELD);
     }
     ImGui::SameLine();
-    ImTextureID textureId = Ship::Context::GetInstance()->GetWindow()->GetGui()->GetTextureByName(
-        (const char*)gItemIcons[ITEM_BOMBERS_NOTEBOOK]);
+    ImTextureID textureId =
+        std::dynamic_pointer_cast<Fast::Fast3dGui>(Ship::Context::GetRawInstance()->GetWindow()->GetGui())
+            ->GetTextureByName((const char*)gItemIcons[ITEM_BOMBERS_NOTEBOOK]);
     if (ImGui::ImageButton(std::to_string(ITEM_BOMBERS_NOTEBOOK).c_str(), textureId,
                            ImVec2(INV_GRID_ICON_SIZE, INV_GRID_ICON_SIZE), ImVec2(0, 0), ImVec2(1, 1),
                            ImVec4(0, 0, 0, 0),
@@ -1383,7 +1394,8 @@ void DrawDungeonItemTab() {
         ImGui::Text("%s", dungeonNames[i]);
         if (ImGui::ImageButton(
                 stray_id.c_str(),
-                Ship::Context::GetInstance()->GetWindow()->GetGui()->GetTextureByName(fairyIcons[dungeonId]),
+                std::dynamic_pointer_cast<Fast::Fast3dGui>(Ship::Context::GetRawInstance()->GetWindow()->GetGui())
+                    ->GetTextureByName(fairyIcons[dungeonId]),
                 ImVec2(INV_GRID_ICON_SIZE, INV_GRID_ICON_SIZE), ImVec2(0, 0), ImVec2(1, 1), ImVec4(0, 0, 0, 0),
                 ImVec4(1, 1, 1, gSaveContext.save.saveInfo.inventory.strayFairies[dungeonId] ? 1.0f : 0.4f))) {
             ImGui::OpenPopup("strayFairies");
@@ -1391,7 +1403,8 @@ void DrawDungeonItemTab() {
         ImGui::SameLine();
         if (ImGui::ImageButton(
                 map_id.c_str(),
-                Ship::Context::GetInstance()->GetWindow()->GetGui()->GetTextureByName(gQuestIconDungeonMapTex),
+                std::dynamic_pointer_cast<Fast::Fast3dGui>(Ship::Context::GetRawInstance()->GetWindow()->GetGui())
+                    ->GetTextureByName(gQuestIconDungeonMapTex),
                 ImVec2(INV_GRID_ICON_SIZE, INV_GRID_ICON_SIZE), ImVec2(0, 0), ImVec2(1, 1), ImVec4(0, 0, 0, 0),
                 ImVec4(1, 1, 1, CHECK_DUNGEON_ITEM(DUNGEON_MAP, i) ? 1.0f : 0.4f))) {
             SetDungeonItems(DUNGEON_MAP, i);
@@ -1399,7 +1412,8 @@ void DrawDungeonItemTab() {
         ImGui::SameLine();
         if (ImGui::ImageButton(
                 comp_id.c_str(),
-                Ship::Context::GetInstance()->GetWindow()->GetGui()->GetTextureByName(gQuestIconCompassTex),
+                std::dynamic_pointer_cast<Fast::Fast3dGui>(Ship::Context::GetRawInstance()->GetWindow()->GetGui())
+                    ->GetTextureByName(gQuestIconCompassTex),
                 ImVec2(INV_GRID_ICON_SIZE, INV_GRID_ICON_SIZE), ImVec2(0, 0), ImVec2(1, 1), ImVec4(0, 0, 0, 0),
                 ImVec4(1, 1, 1, CHECK_DUNGEON_ITEM(DUNGEON_COMPASS, i) ? 1.0f : 0.4f))) {
             SetDungeonItems(DUNGEON_COMPASS, i);
@@ -1407,7 +1421,8 @@ void DrawDungeonItemTab() {
         ImGui::SameLine();
         if (ImGui::ImageButton(
                 sKey_id.c_str(),
-                Ship::Context::GetInstance()->GetWindow()->GetGui()->GetTextureByName(gQuestIconSmallKeyTex),
+                std::dynamic_pointer_cast<Fast::Fast3dGui>(Ship::Context::GetRawInstance()->GetWindow()->GetGui())
+                    ->GetTextureByName(gQuestIconSmallKeyTex),
                 ImVec2(INV_GRID_ICON_SIZE, INV_GRID_ICON_SIZE), ImVec2(0, 0), ImVec2(1, 1), ImVec4(0, 0, 0, 0),
                 ImVec4(1, 1, 1, DUNGEON_KEY_COUNT(i) + 1 ? 1.0f : 0.4f))) {
             ImGui::OpenPopup("smallKeys");
@@ -1415,7 +1430,8 @@ void DrawDungeonItemTab() {
         ImGui::SameLine();
         if (ImGui::ImageButton(
                 bKey_id.c_str(),
-                Ship::Context::GetInstance()->GetWindow()->GetGui()->GetTextureByName(gQuestIconBossKeyTex),
+                std::dynamic_pointer_cast<Fast::Fast3dGui>(Ship::Context::GetRawInstance()->GetWindow()->GetGui())
+                    ->GetTextureByName(gQuestIconBossKeyTex),
                 ImVec2(INV_GRID_ICON_SIZE, INV_GRID_ICON_SIZE), ImVec2(0, 0), ImVec2(1, 1), ImVec4(0, 0, 0, 0),
                 ImVec4(1, 1, 1, CHECK_DUNGEON_ITEM(DUNGEON_BOSS_KEY, i) ? 1.0f : 0.4f))) {
             SetDungeonItems(DUNGEON_BOSS_KEY, i);
@@ -1787,10 +1803,9 @@ void DrawRegEditorTab() {
     ImGui::EndChild();
 }
 
-const char* flagEditorSections[] = {
-    "currentSceneFlags", "weekEventReg",        "eventInf",        "scenesVisible",
-    "owlActivation",     "permanentSceneFlags", "cycleSceneFlags",
-};
+const char* flagEditorSections[] = { "currentSceneFlags", "weekEventReg",  "eventInf",
+                                     "scenesVisible",     "owlActivation", "permanentSceneFlags",
+                                     "cycleSceneFlags",   "randoInf",      "collectedHearts" };
 
 void DrawFlagsTab() {
     ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding, 3.0f);
@@ -2253,6 +2268,76 @@ void DrawFlagsTab() {
             }
             UIWidgets::DrawFlagArray32("##clearedRoom", gSaveContext.cycleSceneFlags[selectedScene].clearedRoom);
             ImGui::EndGroup();
+            break;
+        case RANDO_INF:
+            for (int i = 0; i < 5; i++) {
+                ImGui::PushID(i);
+                ImGui::AlignTextToFramePadding();
+                ImGui::Text("%02d", i);
+                ImGui::SameLine(ImGui::CalcTextSize("000").x + ImGui::GetStyle().ItemSpacing.x);
+                UIWidgets::DrawFlagTableArray16(flagTables.at(RANDO_INF), i,
+                                                gSaveContext.save.shipSaveInfo.rando.randoInf[i]);
+                ImGui::PopID();
+            }
+            break;
+        case HEART_FLAGS:
+            if (gPlayState == NULL) {
+                ImGui::Text("Play state is NULL, cannot display flags");
+                break;
+            }
+            if (IS_RANDO) {
+                ImGui::Text("Flags are not relevant to rando");
+                break;
+            }
+            for (size_t i = 0; i < heartFlags.size(); ++i) {
+                const auto& heartFlag = heartFlags[i];
+                bool collected;
+                uint16_t flag = heartFlag.flag;
+                std::string label;
+
+                if (gPlayState->sceneId == heartFlag.scene) {
+                    switch (heartFlag.flagType) {
+                        case WEEK_EVENT_REG:
+                            collected = CHECK_WEEKEVENTREG(flag);
+                            label = fmt::format("weekEventReg | {:02}_{:02X}", flag >> 8, flag & 0xFF);
+                            break;
+                        case FLAG_CYCL_SCENE_COLLECTIBLE:
+                            collected = Flags_GetCollectible(gPlayState, flag);
+                            label = fmt::format("currentSceneFlags | Collectible[0] | 0x{:02X}", flag);
+                            break;
+                        case FLAG_CYCL_SCENE_SWITCH:
+                            collected = Flags_GetSwitch(gPlayState, flag);
+                            label = fmt::format("currentSceneFlags | Switch[0] | 0x{:02X}", flag);
+                            break;
+                    }
+                } else {
+                    switch (heartFlag.flagType) {
+                        case WEEK_EVENT_REG:
+                            collected = CHECK_WEEKEVENTREG(flag);
+                            label = fmt::format("weekEventReg | {:02}_{:02X}", flag >> 8, flag & 0xFF);
+                            break;
+                        case FLAG_CYCL_SCENE_COLLECTIBLE:
+                            collected = gSaveContext.cycleSceneFlags[heartFlag.scene].collectible & (1 << flag);
+                            label = fmt::format("cycleSceneFlags | {} | Collectible | 0x{:02X}",
+                                                sceneList.at(heartFlag.scene), flag);
+                            break;
+                        case FLAG_CYCL_SCENE_SWITCH:
+                            collected = gSaveContext.cycleSceneFlags[heartFlag.scene].switch0 & (1 << flag);
+                            label = fmt::format("cycleSceneFlags | {} | Switch0 | 0x{:02X}",
+                                                sceneList.at(heartFlag.scene), flag);
+                            break;
+                    }
+                }
+
+                ImGui::PushID(i);
+                ImGui::BeginDisabled();
+                ImGui::Checkbox(heartFlag.description.c_str(), &collected);
+                if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled)) {
+                    ImGui::SetTooltip("%s", label.c_str());
+                }
+                ImGui::EndDisabled();
+                ImGui::PopID();
+            }
             break;
     }
     ImGui::PopStyleVar();

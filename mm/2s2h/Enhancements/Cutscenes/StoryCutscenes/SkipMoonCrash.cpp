@@ -18,7 +18,10 @@ extern "C" {
 void RegisterSkipMoonCrash() {
     // Skips initial cutscene in Termina Field where the moon falls, goes straight to clock tower cutscene
     COND_VB_SHOULD(VB_PLAY_TRANSITION_CS, CVAR, {
-        if (gSaveContext.save.cutsceneIndex == 0x0 && gSaveContext.save.entrance == ENTRANCE(TERMINA_FIELD, 12)) {
+        // The respawn flag check here is so that we don't skip if the player is trying to pull off the 4th day
+        // glitch from the telescope
+        if (gSaveContext.save.cutsceneIndex == 0x0 && gSaveContext.save.entrance == ENTRANCE(TERMINA_FIELD, 12) &&
+            gSaveContext.respawnFlag == 0) {
             // This cutscene command would otherwise be run as part of the Fire Wall cutscene that gets skipped.
             // IT MUST BE CALLED HERE IF THAT CUTSCENE IS SKIPPED OR ELSE THE GAME STATE WILL NOT RESET CORRECTLY!
             Sram_ResetSaveFromMoonCrash(&gPlayState->sramCtx);

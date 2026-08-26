@@ -10,7 +10,7 @@ extern "C" MessageTableEntry* sMessageTableCredits;
 
 MessageTableEntry* OTRMessage_LoadTable(const char* filePath, bool isNES) {
     auto file = std::static_pointer_cast<SOH::TextMM>(
-        Ship::Context::GetInstance()->GetResourceManager()->LoadResource(filePath));
+        Ship::Context::GetRawInstance()->GetResourceManager()->LoadResource(filePath));
 
     if (file == nullptr)
         return nullptr;
@@ -53,8 +53,9 @@ MessageTableEntry* OTRMessage_LoadTable(const char* filePath, bool isNES) {
 extern "C" void OTRMessage_Init() {
     sMessageTableNES = OTRMessage_LoadTable("text/message_data_static/message_data_static", true);
 
-    auto file2 = std::static_pointer_cast<SOH::TextMM>(Ship::Context::GetInstance()->GetResourceManager()->LoadResource(
-        "text/staff_message_data_static/staff_message_data_static"));
+    auto file2 =
+        std::static_pointer_cast<SOH::TextMM>(Ship::Context::GetRawInstance()->GetResourceManager()->LoadResource(
+            "text/staff_message_data_static/staff_message_data_static"));
     sMessageTableCredits = (MessageTableEntry*)malloc(sizeof(MessageTableEntry) * file2->messages.size());
 
     for (size_t i = 0; i < file2->messages.size(); i++) {

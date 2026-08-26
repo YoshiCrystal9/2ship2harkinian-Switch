@@ -1,9 +1,11 @@
 #include "2s2h/BenGui/UIWidgets.hpp"
+#include <ship/config/Config.h>
 #include <ship/window/gui/IconsFontAwesome4.h>
 #include "2s2h/GameInteractor/GameInteractor.h"
 #include "2s2h/DeveloperTools/DeveloperTools.h"
 #include "2s2h/ShipInit.hpp"
 #include "2s2h/BenGui/BenGui.hpp"
+#include "BenJsonConversions.hpp"
 
 extern "C" {
 #include "z64.h"
@@ -15,30 +17,37 @@ extern SaveContext gSaveContext;
 extern GameState* gGameState;
 }
 
-// 2S2H Added columns to scene table: entranceSceneId, betterMapSelectIndex, humanName
-#define DEFINE_SCENE(_name, enumValue, _textId, _drawConfig, _restrictionFlags, _persistentCycleFlags, \
-                     _entranceSceneId, _betterMapSelectIndex, humanName)                               \
-    { enumValue, humanName },
-#define DEFINE_SCENE_UNSET(_enumValue)
+typedef struct WarpPoint {
+    s32 entranceId;
+    s8 roomNum;
+    Vec3f pos;
+    s16 rotY;
+    bool bootToPoint;
+} WarpPoint;
+NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(WarpPoint, entranceId, roomNum, pos, rotY, bootToPoint)
+std::map<std::string, WarpPoint> warpPoints;
 
-std::unordered_map<s16, const char*> warpPointSceneList = {
-#include "tables/scene_table.h"
-};
+#define CVAR_BOOT_TO_FILE_SELECT_NAME "gEnhancements.Cutscenes.SkipToFileSelect"
+#define CVAR_BOOT_TO_FILE_SELECT ((bool)CVarGetInteger(CVAR_BOOT_TO_FILE_SELECT_NAME, 0))
 
-#undef DEFINE_SCENE
-#undef DEFINE_SCENE_UNSET
+void LoadConfig() {
+    auto allConfig = Ship::Context::GetRawInstance()->GetConfig()->GetNestedJson();
+    if (allConfig.find("WarpPoints") == allConfig.end() || !allConfig["WarpPoints"].is_object()) {
+        allConfig["WarpPoints"] = nlohmann::json::object();
+    }
+    warpPoints = allConfig["WarpPoints"];
+}
 
-void Warp() {
-    Vec3f pos = { CVarGetFloat(WARP_POINT_CVAR "X", 0.0f), CVarGetFloat(WARP_POINT_CVAR "Y", 0.0f),
-                  CVarGetFloat(WARP_POINT_CVAR "Z", 0.0f) };
-    s32 entrance = CVarGetInteger(WARP_POINT_CVAR "Entrance", ENTRANCE(SOUTH_CLOCK_TOWN, 0));
+void SaveConfig() {
+    auto allConfig = Ship::Context::GetRawInstance()->GetConfig()->GetNestedJson();
+    allConfig["WarpPoints"] = warpPoints;
+    Ship::Context::GetRawInstance()->GetConfig()->SetBlock("WarpPoints", warpPoints);
+    Ship::Context::GetRawInstance()->GetConfig()->Save();
+}
 
+void Warp(WarpPoint& warpPoint) {
     if (gPlayState == NULL) {
-        // If gPlayState is NULL, it means the the user opted into BootToWarpPoint and the game is starting up. This is
-        // a hidden cvar for developers, while it is extremely useful for quick testing and debugging, I am not 100%
-        // confident in it's stability and ability to initialize the game properly in all cases. So for now, I'm going
-        // to leave it as a hidden cvar. This is incompatible with the SkipToFileSelect enhancement. To enable it open
-        // the Console and type: `set gDeveloperTools.WarpPoint.BootToWarpPoint 1`
+        // If gPlayState is NULL, it means the the user opted into BootToWarpPoint and the game is starting up.
         gSaveContext.gameMode = GAMEMODE_NORMAL;
         Sram_InitNewSave();
         gSaveContext.sceneLayer = 0;
@@ -64,105 +73,124 @@ void Warp() {
 
         // Using dummy file num to bypass debug save setup in map select and manually execute save init/load hooks after
         gSaveContext.fileNum = 0xFE;
-        MapSelect_LoadGame((MapSelectState*)gGameState, entrance, 0);
+        MapSelect_LoadGame((MapSelectState*)gGameState, warpPoint.entranceId, 0);
         // Then back to debug file num
         gSaveContext.fileNum = 0xFF;
         // These two lines allow randomizer to be used with BootToWarpPoint. Not sure how reliable this is, might remove
         GameInteractor_ExecuteOnSaveInit(gSaveContext.fileNum);
         GameInteractor_ExecuteOnSaveLoad(gSaveContext.fileNum);
-        gSaveContext.save.entrance = entrance;
+        gSaveContext.save.entrance = warpPoint.entranceId;
     } else {
         // The else case, and the rest of this function is primarily relevant code copied from Play_SetRespawnData and
         // func_80169EFC, minus the parts that copy scene flags to scene we are warping to (this is obviously
         // undesirable)
-        gPlayState->nextEntrance = Entrance_Create(entrance >> 9, 0, entrance & 0xF);
+        gPlayState->nextEntrance = Entrance_Create(warpPoint.entranceId >> 9, 0, warpPoint.entranceId & 0xF);
         gPlayState->transitionTrigger = TRANS_TRIGGER_START;
         gPlayState->transitionType = TRANS_TYPE_INSTANT;
     }
-    gSaveContext.respawn[RESPAWN_MODE_DOWN].entrance = Entrance_Create(entrance >> 9, 0, entrance & 0xF);
-    gSaveContext.respawn[RESPAWN_MODE_DOWN].roomIndex = CVarGetInteger(WARP_POINT_CVAR "Room", 0);
-    gSaveContext.respawn[RESPAWN_MODE_DOWN].pos = pos;
-    gSaveContext.respawn[RESPAWN_MODE_DOWN].yaw = CVarGetFloat(WARP_POINT_CVAR "Rotation", 0.0f);
+    gSaveContext.respawn[RESPAWN_MODE_DOWN].entrance =
+        Entrance_Create(warpPoint.entranceId >> 9, 0, warpPoint.entranceId & 0xF);
+    gSaveContext.respawn[RESPAWN_MODE_DOWN].roomIndex = warpPoint.roomNum;
+    gSaveContext.respawn[RESPAWN_MODE_DOWN].pos = warpPoint.pos;
+    gSaveContext.respawn[RESPAWN_MODE_DOWN].yaw = warpPoint.rotY;
     gSaveContext.respawn[RESPAWN_MODE_DOWN].playerParams = PLAYER_PARAMS(0xFF, PLAYER_START_MODE_D);
     gSaveContext.nextTransitionType = TRANS_TYPE_FADE_BLACK_FAST;
     gSaveContext.respawnFlag = -8;
 }
 
-void RegisterWarpPoint() {
-    static bool registered = false;
-    if (registered) {
-        return;
-    }
-    registered = true;
+static std::string warpNameInput = "";
 
-    GameInteractor::Instance->RegisterGameHook<GameInteractor::OnConsoleLogoUpdate>([]() {
-        if (!CVarGetInteger("gEnhancements.Cutscenes.SkipToFileSelect", 0) &&
-            CVarGetInteger(WARP_POINT_CVAR "BootToWarpPoint", 0) && CVarGetInteger(WARP_POINT_CVAR "Saved", 0)) {
-            // Normally called on console logo screen
-            gSaveContext.seqId = NA_BGM_DISABLED;
-            gSaveContext.ambienceId = AMBIENCE_ID_DISABLED;
-            gSaveContext.gameMode = GAMEMODE_TITLE_SCREEN;
-            Warp();
+void RenderWarpPointSection() {
+    ImGui::SeparatorText("Warp Points");
+    if (gPlayState != NULL && GET_PLAYER(gPlayState) != NULL) {
+        UIWidgets::InputString("##WarpPointNameInput", &warpNameInput,
+                               {
+                                   .labelPosition = UIWidgets::LabelPosition::None,
+                                   .size = ImVec2(ImGui::GetContentRegionAvail().x - 50.0f, 0.0f),
+                                   .placeholder = "Enter warp point name...",
+                               });
+
+        ImGui::SameLine();
+        if (UIWidgets::Button(ICON_FA_PLUS)) {
+            Player* player = GET_PLAYER(gPlayState);
+
+            bool isEmpty = warpNameInput.empty();
+            if (warpNameInput.empty()) {
+                warpNameInput = Ship_GetSceneName(gPlayState->sceneId);
+                if (gPlayState->roomCtx.curRoom.num != 0) {
+                    warpNameInput += " (" + std::to_string(gPlayState->roomCtx.curRoom.num) + ")";
+                }
+            }
+
+            warpPoints[warpNameInput] = WarpPoint{
+                .entranceId = gSaveContext.save.entrance,
+                .roomNum = gPlayState->roomCtx.curRoom.num,
+                .pos = player->actor.world.pos,
+                .rotY = player->actor.shape.rot.y,
+            };
+            SaveConfig();
+            warpNameInput = "";
+        }
+    }
+    // List of warp points, showing just their name, a button to warp and a button to delete
+    for (auto it = warpPoints.begin(); it != warpPoints.end();) {
+        ImGui::PushID(it->first.c_str());
+
+        ImGui::AlignTextToFramePadding();
+        ImGui::Text("%s", it->first.c_str());
+        if (it->second.bootToPoint) {
+            ImGui::SameLine();
+            ImGui::TextColored(ImVec4(0.85f, 0.55f, 0.0f, 1.0f), "[Boot]");
+        }
+        ImGui::SameLine(ImGui::GetContentRegionAvail().x - 115.0f);
+        if (gPlayState == NULL)
+            ImGui::BeginDisabled();
+        if (UIWidgets::Button(ICON_FA_PLANE, { .size = UIWidgets::Sizes::Inline })) {
+            // Warp to this point
+            Warp(it->second);
+        }
+        if (gPlayState == NULL)
+            ImGui::EndDisabled();
+        ImGui::SameLine();
+        if (UIWidgets::Button(ICON_FA_REFRESH,
+                              { .size = UIWidgets::Sizes::Inline, .color = UIWidgets::Colors::Orange })) {
+            bool wasEnabled = it->second.bootToPoint;
+            for (auto& wp : warpPoints) {
+                wp.second.bootToPoint = false;
+            }
+            it->second.bootToPoint = !wasEnabled;
+            SaveConfig();
+        }
+        ImGui::SameLine();
+        if (UIWidgets::Button(ICON_FA_TRASH, { .size = UIWidgets::Sizes::Inline, .color = UIWidgets::Colors::Red })) {
+            it = warpPoints.erase(it);
+            SaveConfig();
+            ImGui::PopID();
+            continue;
+        }
+        ImGui::PopID();
+
+        ++it;
+    }
+}
+
+void RegisterWarpPoints() {
+    static bool loadedConfig = false;
+    if (!loadedConfig) {
+        LoadConfig();
+        loadedConfig = true;
+    }
+
+    // Warp to point that has bootToWarp enabled. Do not run if Skip to File Select is enabled.
+    COND_HOOK(OnConsoleLogoUpdate, !CVAR_BOOT_TO_FILE_SELECT, []() {
+        // Normally called on console logo screen
+        for (auto& wp : warpPoints) {
+            if (wp.second.bootToPoint) {
+                Warp(wp.second);
+                break;
+            }
         }
     });
 }
 
-void RenderWarpPointSection() {
-    bool skipToFileSelect = (bool)CVarGetInteger("gEnhancements.Cutscenes.SkipToFileSelect", 0);
-    UIWidgets::CVarCheckbox(
-        "Boot to Warp Point on Launch", WARP_POINT_CVAR "BootToWarpPoint",
-        UIWidgets::CheckboxOptions({ { .disabled = skipToFileSelect,
-                                       .disabledTooltip = "Incompatible with Skip to File Select enhancement" } })
-            .Color(THEME_COLOR)
-            .Tooltip(
-                "If enabled, the game will boot directly to the saved warp point with the debug save when launching "
-                "the game. Make temporary changes to the debug save (in code) to speed up your debugging experience\n\n"
-                "Incompatible with Skip to File Select enhancement."));
-    if (UIWidgets::Button("Set Warp Point", { { .disabled = gPlayState == NULL,
-                                                .disabledTooltip = "Cannot set warp points when not in-game" } })) {
-        Player* player = GET_PLAYER(gPlayState);
-
-        CVarSetInteger(WARP_POINT_CVAR "Entrance", gSaveContext.save.entrance);
-        CVarSetInteger(WARP_POINT_CVAR "Room", gPlayState->roomCtx.curRoom.num);
-        CVarSetFloat(WARP_POINT_CVAR "X", player->actor.world.pos.x);
-        CVarSetFloat(WARP_POINT_CVAR "Y", player->actor.world.pos.y);
-        CVarSetFloat(WARP_POINT_CVAR "Z", player->actor.world.pos.z);
-        CVarSetFloat(WARP_POINT_CVAR "Rotation", player->actor.shape.rot.y);
-        CVarSetInteger(WARP_POINT_CVAR "Saved", 1);
-        Ship::Context::GetInstance()->GetWindow()->GetGui()->SaveConsoleVariablesNextFrame();
-    }
-    if (CVarGetInteger(WARP_POINT_CVAR "Saved", 0)) {
-        u32 sceneId =
-            Entrance_GetSceneIdAbsolute(CVarGetInteger(WARP_POINT_CVAR "Entrance", ENTRANCE(SOUTH_CLOCK_TOWN, 0)));
-        if (ImGui::BeginTable("Warp point table", 3, ImGuiTableFlags_SizingFixedFit)) {
-            ImGui::TableSetupColumn("##Entrance", ImGuiTableColumnFlags_WidthStretch);
-            ImGui::TableSetupColumn("##Clear", ImGuiTableColumnFlags_WidthFixed);
-            ImGui::TableSetupColumn("##Warp", ImGuiTableColumnFlags_WidthFixed);
-            ImGui::TableNextRow();
-
-            ImGui::TableNextColumn();
-            ImGui::TextWrapped("%s Room %d", warpPointSceneList[sceneId], CVarGetInteger(WARP_POINT_CVAR "Room", 0));
-
-            ImGui::TableNextColumn();
-            if (UIWidgets::Button(ICON_FA_TIMES, { .size = UIWidgets::Sizes::Inline })) {
-                CVarClear(WARP_POINT_CVAR "Entrance");
-                CVarClear(WARP_POINT_CVAR "Room");
-                CVarClear(WARP_POINT_CVAR "X");
-                CVarClear(WARP_POINT_CVAR "Y");
-                CVarClear(WARP_POINT_CVAR "Z");
-                CVarClear(WARP_POINT_CVAR "Rotation");
-                CVarClear(WARP_POINT_CVAR "Saved");
-                Ship::Context::GetInstance()->GetWindow()->GetGui()->SaveConsoleVariablesNextFrame();
-            }
-
-            ImGui::TableNextColumn();
-            if (UIWidgets::Button("Warp", { .size = UIWidgets::Sizes::Inline })) {
-                Warp();
-            }
-
-            ImGui::EndTable();
-        }
-    }
-}
-
-RegisterShipInitFunc initFuncWarpPoint(RegisterWarpPoint, {});
+static RegisterShipInitFunc initFunc(RegisterWarpPoints, { CVAR_BOOT_TO_FILE_SELECT_NAME });

@@ -6,6 +6,7 @@
 
 #include "overlays/actors/ovl_Obj_Bean/z_obj_bean.h"
 #include "z_en_mushi2.h"
+#include "2s2h/GameInteractor/GameInteractor.h"
 
 #define FLAGS (ACTOR_FLAG_UPDATE_CULLING_DISABLED)
 
@@ -721,7 +722,7 @@ s32 func_80A6A094(EnMushi2* this) {
     if (this->unk_34C != NULL) {
         ObjBean* bean = this->unk_34C;
 
-        if ((bean->unk_1E4 == 2) || (bean->unk_1E4 == 1)) {
+        if (GameInteractor_Should(VB_COUNT_BURROWED_BUGS, (bean->unk_1E4 == 2) || (bean->unk_1E4 == 1), bean)) {
             bean->unk_1E4 = 4;
             return true;
         }

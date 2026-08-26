@@ -13,6 +13,9 @@ void OnFileLoad();
 RandoCheckId GetObjectRandoCheckId(void* actor);
 void SetObjectRandoCheckId(const void* object, RandoCheckId rc);
 
+void SpawnWonderItemSparkle(Vec3f* pos);
+void DrawWonderItemSparkle(Actor* actor, PlayState* play);
+
 void InitDmChar01Behavior();
 void InitDmChar05Behavior();
 void InitDmChar08Behavior();
@@ -29,6 +32,7 @@ void InitEnBalBehavior();
 void InitEnBjtBehavior();
 void InitEnBomBowlManBehavior();
 void InitEnBoxBehavior();
+void InitEnButteBehavior();
 void InitEnCowBehavior();
 void InitEnDaiBehavior();
 void InitEnDnhBehavior();
@@ -90,6 +94,7 @@ void InitEnZotBehavior();
 void InitEnZowBehavior();
 void InitItemBHeartBehavior();
 void InitItemGetBehavior();
+void InitObjCombBehavior();
 void InitObjKibakoBehavior();
 void InitObjGrassBehavior();
 void InitObjMoonStoneBehavior();
@@ -101,6 +106,7 @@ void InitObjWarpstoneBehavior();
 void InitPlayerBehavior();
 void InitSoulsBehavior();
 void InitTrapsBehavior();
+void InitWonderItemsBehavior();
 
 } // namespace ActorBehavior
 

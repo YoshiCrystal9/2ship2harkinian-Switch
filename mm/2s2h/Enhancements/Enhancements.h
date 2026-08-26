@@ -62,6 +62,12 @@ enum GoronRaceDifficultyOptions {
     GORON_RACE_DIFFICULTY_SKIP,
 };
 
+enum TreasureChestShopMazeOptions {
+    TREASURE_CHEST_SHOP_MAZE_OFF,
+    TREASURE_CHEST_SHOP_MAZE_FULL_HEIGHT,
+    TREASURE_CHEST_SHOP_MAZE_TIERED,
+};
+
 enum MirroredWorldModeOptions {
     MIRRORED_WORLD_OFF,
     MIRRORED_WORLD_ALWAYS,

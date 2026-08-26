@@ -15,7 +15,7 @@ SetAnimatedMaterialListFactory::ReadResource(std::shared_ptr<Ship::ResourceInitD
 
     std::string str = reader->ReadString();
     const auto data = std::static_pointer_cast<TextureAnimation>(
-        Ship::Context::GetInstance()->GetResourceManager()->LoadResourceProcess(str.c_str()));
+        Ship::Context::GetRawInstance()->GetResourceManager()->LoadResourceProcess(str.c_str()));
 
     AnimatedMaterial* res = data->GetPointer();
     setAnimatedMat->mat = res;

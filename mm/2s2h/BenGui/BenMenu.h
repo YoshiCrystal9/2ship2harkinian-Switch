@@ -20,9 +20,13 @@ class BenMenu : public Ship::Menu {
 
     void AddSidebarEntry(std::string sectionName, std::string sidbarName, uint32_t columnCount);
     WidgetInfo& AddWidget(WidgetPath& pathInfo, std::string widgetName, WidgetType widgetType);
+    void AddMenuElements();
     void AddSettings();
     void AddEnhancements();
     void AddDevTools();
+
+  private:
+    bool mMenuElementsInitialized = false;
 };
 } // namespace BenGui
 

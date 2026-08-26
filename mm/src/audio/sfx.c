@@ -223,11 +223,13 @@ void AudioSfx_ProcessRequest(void) {
     if (req->sfxId == 0) {
         return;
     }
-    u16 newSfxId = AudioEditor_GetReplacementSeq(req->sfxId);
-    if (req->sfxId != newSfxId) {
-        gAudioCtx.seqReplaced[SEQ_PLAYER_SFX] = 1;
-        req->sfxId = newSfxId;
-    }
+    // All custom sequences use the same collection, which can result in collisions when different types (e.g. SFX and
+    // BGM) share the same IDs. As we do not yet shuffle SFX, simply do not get the replacement sequence for now.
+    // u16 newSfxId = AudioEditor_GetReplacementSeq(req->sfxId);
+    // if (req->sfxId != newSfxId) {
+    //     gAudioCtx.seqReplaced[SEQ_PLAYER_SFX] = 1;
+    //     req->sfxId = newSfxId;
+    // }
     // #end region
     bankId = SFX_BANK(req->sfxId);
     channelCount = 0;

@@ -40,7 +40,7 @@ void RegisterDeleteFileOnDeath() {
 
             if (resetTimer >= 20) { // Completely black
                 std::reinterpret_pointer_cast<Ship::ConsoleWindow>(
-                    Ship::Context::GetInstance()->GetWindow()->GetGui()->GetGuiWindow("Console"))
+                    Ship::Context::GetRawInstance()->GetWindow()->GetGui()->GetGuiWindow("Console"))
                     ->Dispatch("reset");
             }
         }

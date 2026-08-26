@@ -876,7 +876,7 @@ void EnMag_DrawInner(Actor* thisx, PlayState* play, Gfx** gfxP) {
         uint32_t gameVersion = ResourceMgr_GetGameVersion(0);
 
         if (gameVersion == MM_NTSC_US_GC) {
-            EnMag_DrawTextureIA8(&gfx, gTitleScreenCopyright2000NintendoTex, COPYRIGHT_TEX_WIDTH_GC,
+            EnMag_DrawTextureIA8(&gfx, gTitleScreenCopyright20002003NintendoTex, COPYRIGHT_TEX_WIDTH_GC,
                                  COPYRIGHT_TEX_HEIGHT, COPYRIGHT_TEX_LEFT_GC, COPYRIGHT_TEX_TOP);
         } else { // Default: MM_NTSC_US_10
             EnMag_DrawTextureIA8(&gfx, gTitleScreenCopyright2000NintendoTex, COPYRIGHT_TEX_WIDTH, COPYRIGHT_TEX_HEIGHT,

@@ -513,7 +513,6 @@ extern "C" s32 OTRfunc_8009728C(PlayState* play, RoomContext* roomCtx, s32 roomN
         // DmaMgr_SendRequest2(&roomCtx->dmaRequest, roomCtx->unk_34, play->roomList.romFiles[roomNum].vromStart, size,
         // 0,
         //&roomCtx->loadQueue, NULL, __FILE__, __LINE__);
-        printf("File Name %s\n", play->roomList.romFiles[roomNum].fileName);
         auto roomData = std::static_pointer_cast<SOH::Scene>(ResourceLoad(play->roomList.romFiles[roomNum].fileName));
         roomCtx->status = 1;
         roomCtx->roomRequestAddr = roomData.get();

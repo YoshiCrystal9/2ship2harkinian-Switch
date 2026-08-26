@@ -380,7 +380,8 @@ void Rando::ActorBehavior::InitObjTsuboBehavior() {
     COND_VB_SHOULD(VB_POT_DRAW_BE_OVERRIDDEN, IS_RANDO, {
         Actor* actor = va_arg(args, Actor*);
         RandoCheckId randoCheckId = Rando::ActorBehavior::GetObjectRandoCheckId(actor);
-        if (randoCheckId != RC_UNKNOWN) {
+        RandoSaveCheck& randoSaveCheck = RANDO_SAVE_CHECKS[randoCheckId];
+        if (randoCheckId != RC_UNKNOWN && !randoSaveCheck.obtained) {
             *should = false;
             actor->draw = ObjTsubo_RandoDraw;
         }

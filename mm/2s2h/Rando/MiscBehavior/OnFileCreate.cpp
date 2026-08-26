@@ -69,9 +69,23 @@ void Rando::MiscBehavior::OnFileCreate(s16 fileNum) {
                     RANDO_SAVE_OPTIONS[RO_SKULLTULA_TOKENS_REQUIRED] = SPIDER_HOUSE_TOKENS_REQUIRED;
                 }
 
+                // Starting with every Stray Fairy means the Great Fairies always have their full set
+                if (RANDO_SAVE_OPTIONS[RO_PLACEMENT_STRAY_FAIRIES] == RO_DUNGEON_ITEM_START_WITH) {
+                    RANDO_SAVE_OPTIONS[RO_STRAY_FAIRIES_REQUIRED] = STRAY_FAIRY_SCATTERED_TOTAL;
+                }
+
+                // Vanilla Stray Fairies never enter the item pool, so every dungeon keeps its full set
+                if (RANDO_SAVE_OPTIONS[RO_PLACEMENT_STRAY_FAIRIES] == RO_DUNGEON_ITEM_VANILLA) {
+                    RANDO_SAVE_OPTIONS[RO_STRAY_FAIRIES_MAX] = STRAY_FAIRY_SCATTERED_TOTAL;
+                }
+
                 // Persist StartingItems to the save
                 auto startingItems = Rando::GetStartingItemsFromConfig();
                 Rando::SetStartingItemsInSave(gSaveContext.save.shipSaveInfo.rando, startingItems);
+
+                // Persist SariaPriorityItems to the save
+                auto priorityItems = Rando::GetSariaPriorityItemsFromConfig();
+                Rando::SetSariaPriorityItemsInSave(gSaveContext.save.shipSaveInfo.rando, priorityItems);
 
                 std::vector<RandoCheckId> checkPool;
                 std::vector<RandoItemId> itemPool;
@@ -159,7 +173,22 @@ void Rando::MiscBehavior::OnFileCreate(s16 fileNum) {
                 } else if (RANDO_SAVE_OPTIONS[RO_LOGIC] == RO_LOGIC_NEARLY_NO_LOGIC) {
                     Rando::Logic::ApplyNearlyNoLogicToSaveContext(checkPool, itemPool);
                 } else if (RANDO_SAVE_OPTIONS[RO_LOGIC] == RO_LOGIC_GLITCHLESS) {
-                    Rando::Logic::ApplyGlitchlessLogicToSaveContext(checkPool, itemPool);
+                    // Various things can result in failed generation now (confined placement, junked items,
+                    // too many traps, etc), so we retry a few times before giving up
+                    const int maxAttempts = 10;
+                    for (int attempt = 1; attempt <= maxAttempts; attempt++) {
+                        std::vector<RandoCheckId> attemptCheckPool = checkPool;
+                        std::vector<RandoItemId> attemptItemPool = itemPool;
+                        try {
+                            Rando::Logic::ApplyGlitchlessLogicToSaveContext(attemptCheckPool, attemptItemPool);
+                            break;
+                        } catch (const std::exception& e) {
+                            if (attempt >= maxAttempts) {
+                                throw;
+                            }
+                            SPDLOG_WARN("Glitchless generation attempt {} failed ({}), retrying", attempt, e.what());
+                        }
+                    }
                 } else {
                     throw std::runtime_error("Logic option not implemented: " +
                                              std::to_string(RANDO_SAVE_OPTIONS[RO_LOGIC]));

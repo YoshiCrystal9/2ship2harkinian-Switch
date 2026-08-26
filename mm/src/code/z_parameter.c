@@ -3956,7 +3956,7 @@ void Interface_UpdateButtonsPart1(PlayState* play) {
             gSaveContext.shipSaveContext.dpad.status[EQUIP_SLOT_D_UP] = BTN_DISABLED;
             // #endregion
             Interface_SetHudVisibility(HUD_VISIBILITY_A_B_HEARTS_MAGIC_MINIMAP);
-        } else if (play->actorCtx.flags & ACTORCTX_FLAG_PICTO_BOX_ON) {
+        } else if (GameInteractor_Should(VB_PICTO_ACTIVATE, play->actorCtx.flags & ACTORCTX_FLAG_PICTO_BOX_ON)) {
             // Related to pictograph
             if (!CHECK_QUEST_ITEM(QUEST_PICTOGRAPH)) {
                 Interface_SetBButtonInterfaceDoAction(play, DO_ACTION_STOP);
@@ -8371,6 +8371,12 @@ void Interface_DrawTimers(PlayState* play) {
                     if (sTimerId == TIMER_ID_MOON_CRASH) {
                         gSaveContext.save.day = 4;
                         if ((play->sceneId == SCENE_OKUJOU) && (gSaveContext.sceneLayer == 3)) {
+                            // This is a moon crash edge case that only occurs if the player played Oath to Order
+                            // without saving the Four Giants. An extra cutscene plays in Termina Field before the
+                            // standard moon crash cutscene, and Interface_StartMoonCrash never gets called. Therefore,
+                            // we add an extra call here to execute the moon crash hooks.
+                            GameInteractor_ExecuteBeforeMoonCrash();
+
                             play->nextEntrance = ENTRANCE(TERMINA_FIELD, 1);
                             gSaveContext.nextCutsceneIndex = 0xFFF0;
                             play->transitionTrigger = TRANS_TRIGGER_START;
@@ -8712,7 +8718,8 @@ void Interface_DrawMinigameIcons(PlayState* play) {
 
     if (!IS_PAUSED(&play->pauseCtx)) {
         // Carrots rendering if the action corresponds to riding a horse
-        if (interfaceCtx->aButtonDoActionDelayed == DO_ACTION_FASTER) {
+        if (interfaceCtx->aButtonDoActionDelayed == DO_ACTION_FASTER &&
+            GameInteractor_Should(VB_CONSUME_EPONA_CARROT, true)) {
             // Load Carrot Icon
             gDPLoadTextureBlock(OVERLAY_DISP++, gCarrotIconTex, G_IM_FMT_RGBA, G_IM_SIZ_32b, 16, 16, 0,
                                 G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMASK, G_TX_NOMASK,
@@ -9471,16 +9478,19 @@ void Interface_Draw(PlayState* play) {
             pictoRectTop = PICTO_PHOTO_TOPLEFT_Y - 33;
             for (sp2CC = 0; sp2CC < (PICTO_PHOTO_HEIGHT / 8); sp2CC++, pictoRectTop += 8) {
                 pictoRectLeft = PICTO_PHOTO_TOPLEFT_X;
-                // 2S2H [Port] Invalidate each section. This could probably be optimized to only be done once each pic
-                gSPInvalidateTexCache(OVERLAY_DISP++,
-                                      (u8*)((play->pictoPhotoI8 != NULL) ? play->pictoPhotoI8 : gWorkBuffer) +
-                                          (0x500 * sp2CC));
-                gDPLoadTextureBlock(OVERLAY_DISP++,
-                                    (u8*)((play->pictoPhotoI8 != NULL) ? play->pictoPhotoI8 : gWorkBuffer) +
-                                        (0x500 * sp2CC),
-                                    G_IM_FMT_I, G_IM_SIZ_8b, PICTO_PHOTO_WIDTH, 8, 0, G_TX_NOMIRROR | G_TX_WRAP,
-                                    G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
 
+                if (GameInteractor_Should(VB_PICTO_DISPLAY, true, &sp2CC)) {
+                    // 2S2H [Port] Invalidate each section. This could probably be optimized to only be done once each
+                    // pic
+                    gSPInvalidateTexCache(OVERLAY_DISP++,
+                                          (u8*)((play->pictoPhotoI8 != NULL) ? play->pictoPhotoI8 : gWorkBuffer) +
+                                              (0x500 * sp2CC));
+                    gDPLoadTextureBlock(OVERLAY_DISP++,
+                                        (u8*)((play->pictoPhotoI8 != NULL) ? play->pictoPhotoI8 : gWorkBuffer) +
+                                            (0x500 * sp2CC),
+                                        G_IM_FMT_I, G_IM_SIZ_8b, PICTO_PHOTO_WIDTH, 8, 0, G_TX_NOMIRROR | G_TX_WRAP,
+                                        G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
+                }
                 gSPTextureRectangle(OVERLAY_DISP++, pictoRectLeft << 2, pictoRectTop << 2,
                                     (pictoRectLeft + PICTO_PHOTO_WIDTH) << 2, (pictoRectTop << 2) + (8 << 2),
                                     G_TX_RENDERTILE, 0, 0, 1 << 10, 1 << 10);

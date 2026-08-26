@@ -25,6 +25,13 @@ static const std::vector<std::string> flavorTexts = {
     "Get it while it's hot!",         "Don't miss out on this deal!",
 };
 
+bool CanBePurchased(RandoSaveCheck randoSaveCheck, RandoCheckId randoCheckId) {
+    RandoItemId randoItemId = Rando::ConvertItem(randoSaveCheck.randoItemId, randoCheckId);
+    return Rando::IsItemObtainable(randoItemId, randoCheckId) &&
+           !(randoItemId >= RI_RUPEE_BLUE && randoItemId <= RI_RUPEE_SILVER &&
+             RANDO_SAVE_OPTIONS[RO_PURCHASE_INFINITE_RUPEES] == RO_GENERIC_OFF && randoSaveCheck.cycleObtained);
+}
+
 void EnGirlA_RandoDrawFunc(Actor* actor, PlayState* play) {
     EnGirlA* enGirlA = (EnGirlA*)actor;
 
@@ -45,7 +52,7 @@ void EnGirlA_RandoRestock(PlayState* play, EnGirlA* enGirlA) {
     auto randoSaveCheck = RANDO_SAVE_CHECKS[enGirlA->actor.world.rot.z];
     RandoCheckId randoCheckId = (RandoCheckId)enGirlA->actor.world.rot.z;
 
-    if (Rando::IsItemObtainable(Rando::ConvertItem(randoSaveCheck.randoItemId, randoCheckId), randoCheckId)) {
+    if (CanBePurchased(randoSaveCheck, randoCheckId)) {
         enGirlA->isOutOfStock = false;
         enGirlA->actor.draw = EnGirlA_RandoDrawFunc;
     }
@@ -59,7 +66,7 @@ s32 EnGirlA_RandoCanBuyFunc(PlayState* play, EnGirlA* enGirlA) {
     auto randoSaveCheck = RANDO_SAVE_CHECKS[enGirlA->actor.world.rot.z];
     RandoCheckId randoCheckId = (RandoCheckId)enGirlA->actor.world.rot.z;
 
-    if (!Rando::IsItemObtainable(Rando::ConvertItem(randoSaveCheck.randoItemId, randoCheckId), randoCheckId)) {
+    if (!CanBePurchased(randoSaveCheck, randoCheckId)) {
         return CANBUY_RESULT_CANNOT_GET_NOW;
     }
 
@@ -68,11 +75,14 @@ s32 EnGirlA_RandoCanBuyFunc(PlayState* play, EnGirlA* enGirlA) {
 
 void EnGirlA_RandoBuyFunc(PlayState* play, EnGirlA* enGirlA) {
     auto& randoSaveCheck = RANDO_SAVE_CHECKS[enGirlA->actor.world.rot.z];
-    RandoItemId randoItemId = Rando::ConvertItem(randoSaveCheck.randoItemId, (RandoCheckId)enGirlA->actor.world.rot.z);
-    randoSaveCheck.obtained = true;
+    RandoCheckId randoCheckId = (RandoCheckId)enGirlA->actor.world.rot.z;
+    RandoItemId randoItemId = Rando::ConvertItem(randoSaveCheck.randoItemId, randoCheckId);
+    randoSaveCheck.obtained = randoSaveCheck.cycleObtained = true;
     Rupees_ChangeBy(-play->msgCtx.unk1206C);
     if (randoItemId == RI_TRAP) {
         RollTrapType();
+    } else if (randoItemId == RI_JUNK) {
+        randoItemId = Rando::CurrentJunkItem(randoCheckId);
     }
     Rando::GiveItem(randoItemId);
 }
@@ -108,10 +118,8 @@ void EnGirlA_RandoInit(EnGirlA* enGirlA, PlayState* play) {
     auto randoSaveCheck = RANDO_SAVE_CHECKS[enGirlA->actor.world.rot.z];
     RandoCheckId randoCheckId = (RandoCheckId)enGirlA->actor.world.rot.z;
 
-    if (!Rando::IsItemObtainable(Rando::ConvertItem(randoSaveCheck.randoItemId, randoCheckId), randoCheckId) &&
-        randoSaveCheck.cycleObtained) {
-        enGirlA->isOutOfStock = true;
-        enGirlA->actor.draw = NULL;
+    if (!CanBePurchased(randoSaveCheck, randoCheckId)) {
+        EnGirlA_RandoBought(play, enGirlA);
     } else {
         enGirlA->isOutOfStock = false;
         enGirlA->actor.draw = EnGirlA_RandoDrawFunc;
@@ -306,7 +314,7 @@ void Rando::ActorBehavior::InitEnGirlABehavior() {
                                Rando::StaticData::GetItemName(randoItemId, false, randoCheckId));
         CustomMessage::Replace(&entry.msg, "{{rupees}}", std::to_string(randoSaveCheck.price));
 
-        if (!Rando::IsItemObtainable(randoItemId, randoCheckId) && randoSaveCheck.cycleObtained) {
+        if (!CanBePurchased(randoSaveCheck, randoCheckId)) {
             entry.msg += "Out of Stock";
         } else {
             entry.msg += flavorTexts[rand() % flavorTexts.size()];
@@ -390,8 +398,7 @@ void Rando::ActorBehavior::InitEnGirlABehavior() {
             (EnTrt*)Actor_FindNearby(gPlayState, &GET_PLAYER(gPlayState)->actor, ACTOR_EN_TRT, ACTORCAT_NPC, 100.0f);
         if (enTrt != nullptr) {
             EnGirlA* enGirlA = enTrt->items[2];
-            enGirlA->isOutOfStock = true;
-            enGirlA->actor.draw = NULL;
+            EnGirlA_RandoBought(gPlayState, enGirlA);
         }
 
         CustomMessage::LoadCustomMessageIntoFont(entry);

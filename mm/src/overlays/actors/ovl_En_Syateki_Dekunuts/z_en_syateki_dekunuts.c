@@ -7,6 +7,7 @@
 #include "z_en_syateki_dekunuts.h"
 #include "overlays/actors/ovl_En_Syateki_Man/z_en_syateki_man.h"
 #include "overlays/effects/ovl_Effect_Ss_Hahen/z_eff_ss_hahen.h"
+#include "2s2h/Enhancements/FrameInterpolation/FrameInterpolation.h"
 
 #define FLAGS (ACTOR_FLAG_UPDATE_CULLING_DISABLED | ACTOR_FLAG_DRAW_CULLING_DISABLED | ACTOR_FLAG_LOCK_ON_DISABLED)
 
@@ -483,11 +484,14 @@ void EnSyatekiDekunuts_Draw(Actor* thisx, PlayState* play) {
 
             OPEN_DISPS(play->state.gfxCtx);
 
+            FrameInterpolation_RecordOpenChild(this, i);
+            FrameInterpolation_IgnoreActorMtx();
             Gfx_SetupDL25_Opa(play->state.gfxCtx);
             Matrix_Translate(flowerPos.x, flowerPos.y, flowerPos.z, MTXMODE_NEW);
             Matrix_Scale(0.02f, 0.02f, 0.02f, MTXMODE_APPLY);
             MATRIX_FINALIZE_AND_LOAD(POLY_OPA_DISP++, play->state.gfxCtx);
             gSPDisplayList(POLY_OPA_DISP++, gDekuScrubFlowerDL);
+            FrameInterpolation_RecordCloseChild();
 
             CLOSE_DISPS(play->state.gfxCtx);
         }

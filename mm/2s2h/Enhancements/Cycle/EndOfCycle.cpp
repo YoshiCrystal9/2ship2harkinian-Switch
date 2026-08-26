@@ -20,23 +20,33 @@ extern "C" {
 #define CVAR_TIME CVarGetInteger(CVAR_NAME_TIME, 0)
 #define CVAR_NAME_CHATEAU "gEnhancements.Cycle.DoNotResetChateau"
 #define CVAR_CHATEAU CVarGetInteger(CVAR_NAME_CHATEAU, 0)
+#define CVAR_NAME_SCARECROW "gEnhancements.Cycle.DoNotResetScarecrowSong"
+#define CVAR_SCARECROW CVarGetInteger(CVAR_NAME_SCARECROW, 0)
 
 SaveInfo saveInfoCopy;
 ShipSaveInfo shipSaveInfoCopy;
 s32 timeSpeedOffsetCopy = 0;
 
-void RegisterEndOfCycleSaveHooks() {
+static void RegisterBeforeEndOfCycleSaveHook() {
     COND_HOOK(BeforeEndOfCycleSave, true, []() {
         memcpy(&saveInfoCopy, &gSaveContext.save.saveInfo, sizeof(SaveInfo));
         memcpy(&shipSaveInfoCopy, &gSaveContext.save.shipSaveInfo, sizeof(ShipSaveInfo));
         timeSpeedOffsetCopy = gSaveContext.save.timeSpeedOffset;
     });
+}
 
+static RegisterShipInitFunc initFunc_Before(RegisterBeforeEndOfCycleSaveHook);
+
+static void RegisterEndOfCycleSaveHook_Rupees() {
     COND_HOOK(AfterEndOfCycleSave, CVAR_RUPEES, []() {
         gSaveContext.save.saveInfo.playerData.rupees = saveInfoCopy.playerData.rupees;
         CLEAR_EVENTINF(EVENTINF_THREEDAYRESET_LOST_RUPEES);
     });
+}
 
+static RegisterShipInitFunc initFunc_Rupees(RegisterEndOfCycleSaveHook_Rupees, { CVAR_NAME_RUPEES });
+
+static void RegisterEndOfCycleSaveHook_Consumables() {
     COND_HOOK(AfterEndOfCycleSave, CVAR_CONSUME, []() {
         if (INV_CONTENT(ITEM_BOMB) == ITEM_BOMB) {
             INV_CONTENT(ITEM_BOMB) = saveInfoCopy.inventory.items[ITEM_BOMB];
@@ -72,7 +82,11 @@ void RegisterEndOfCycleSaveHooks() {
         CLEAR_EVENTINF(EVENTINF_THREEDAYRESET_LOST_STICK_AMMO);
         CLEAR_EVENTINF(EVENTINF_THREEDAYRESET_LOST_ARROW_AMMO);
     });
+}
 
+static RegisterShipInitFunc initFunc_Consumables(RegisterEndOfCycleSaveHook_Consumables, { CVAR_NAME_CONSUME });
+
+static void RegisterEndOfCycleSaveHook_Bottles() {
     COND_HOOK(AfterEndOfCycleSave, CVAR_BOTTLE, []() {
         int stolenBottles = (((saveInfoCopy.stolenItems & 0xFF000000) >> 0x18) == ITEM_BOTTLE) +
                             (((saveInfoCopy.stolenItems & 0x00FF0000) >> 0x10) == ITEM_BOTTLE);
@@ -99,14 +113,22 @@ void RegisterEndOfCycleSaveHooks() {
             }
         }
     });
+}
 
+static RegisterShipInitFunc initFunc_Bottles(RegisterEndOfCycleSaveHook_Bottles, { CVAR_NAME_BOTTLE });
+
+static void RegisterEndOfCycleSaveHook_Chateau() {
     COND_HOOK(AfterEndOfCycleSave, CVAR_CHATEAU, []() {
         if (saveInfoCopy.weekEventReg[((WEEKEVENTREG_DRANK_CHATEAU_ROMANI) >> 8)] &
             ((WEEKEVENTREG_DRANK_CHATEAU_ROMANI)&0xFF)) {
             SET_WEEKEVENTREG(WEEKEVENTREG_DRANK_CHATEAU_ROMANI);
         }
     });
+}
 
+static RegisterShipInitFunc initFunc_Chateau(RegisterEndOfCycleSaveHook_Chateau, { CVAR_NAME_CHATEAU });
+
+static void RegisterEndOfCycleSaveHook_Sword() {
     COND_HOOK(AfterEndOfCycleSave, CVAR_SWORD || IS_RANDO, []() {
         u8 curSword = (saveInfoCopy.equips.equipment & gEquipMasks[EQUIP_TYPE_SWORD]) >> gEquipShifts[EQUIP_TYPE_SWORD];
 
@@ -121,10 +143,39 @@ void RegisterEndOfCycleSaveHooks() {
             BUTTON_ITEM_EQUIP(0, EQUIP_SLOT_B) = ITEM_SWORD_RAZOR;
         }
     });
+}
 
+static RegisterShipInitFunc initFunc_Sword(RegisterEndOfCycleSaveHook_Sword, { CVAR_NAME_SWORD, "IS_RANDO" });
+
+static void RegisterEndOfCycleSaveHook_Time() {
     COND_HOOK(AfterEndOfCycleSave, CVAR_TIME, []() { gSaveContext.save.timeSpeedOffset = timeSpeedOffsetCopy; });
 }
 
-static RegisterShipInitFunc initFunc(RegisterEndOfCycleSaveHooks,
-                                     { CVAR_NAME_RUPEES, CVAR_NAME_CONSUME, CVAR_NAME_BOTTLE, CVAR_NAME_SWORD,
-                                       CVAR_NAME_TIME, CVAR_NAME_CHATEAU, "IS_RANDO" });
+static RegisterShipInitFunc initFunc_Time(RegisterEndOfCycleSaveHook_Time, { CVAR_NAME_TIME });
+
+static void RegisterEndOfCycleSaveHook_ScarecrowSong() {
+    COND_HOOK(AfterEndOfCycleSave, CVAR_SCARECROW, []() {
+        if (!saveInfoCopy.scarecrowSpawnSongSet) {
+            return;
+        }
+
+        gSaveContext.save.saveInfo.scarecrowSpawnSongSet = true;
+        memcpy(gSaveContext.save.saveInfo.scarecrowSpawnSong, saveInfoCopy.scarecrowSpawnSong,
+               sizeof(gSaveContext.save.saveInfo.scarecrowSpawnSong));
+        memcpy(gScarecrowSpawnSongPtr, saveInfoCopy.scarecrowSpawnSong,
+               sizeof(gSaveContext.save.saveInfo.scarecrowSpawnSong));
+
+        if (saveInfoCopy.weekEventReg[(WEEKEVENTREG_79_08 >> 8)] & (WEEKEVENTREG_79_08 & 0xFF)) {
+            SET_WEEKEVENTREG(WEEKEVENTREG_79_08);
+        }
+    });
+
+    COND_HOOK(OnSaveLoad, CVAR_SCARECROW, [](s16 fileNum) {
+        if (!gSaveContext.save.isOwlSave && gSaveContext.save.saveInfo.scarecrowSpawnSongSet) {
+            memcpy(gScarecrowSpawnSongPtr, gSaveContext.save.saveInfo.scarecrowSpawnSong,
+                   sizeof(gSaveContext.save.saveInfo.scarecrowSpawnSong));
+        }
+    });
+}
+
+static RegisterShipInitFunc initFunc_ScarecrowSong(RegisterEndOfCycleSaveHook_ScarecrowSong, { CVAR_NAME_SCARECROW });

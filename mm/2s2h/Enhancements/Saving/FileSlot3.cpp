@@ -11,8 +11,15 @@ extern FileSelectState* gFileSelectState;
 #define CVAR CVarGetInteger(CVAR_NAME, true)
 
 void RegisterFileSlot3() {
-    // Reset the file select state to reload the save metadata
-    if (gFileSelectState != NULL) {
+    static int lastValue = -1;
+    int value = CVAR;
+    bool changed = (lastValue != -1) && (lastValue != value);
+    lastValue = value;
+
+    // When we're adding the third file slot we need to refresh the entire file select state. We're only wanting
+    // to do this when the value changes, as this hook gets run when a preset is applied, and the user might
+    // have been in the middle of a file creation when they applied the preset.
+    if (changed && gFileSelectState != NULL) {
         STOP_GAMESTATE(&gFileSelectState->state);
         SET_NEXT_GAMESTATE(&gFileSelectState->state, FileSelect_Init, sizeof(FileSelectState));
     }

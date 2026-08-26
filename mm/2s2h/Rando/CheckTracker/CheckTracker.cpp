@@ -22,6 +22,8 @@ extern "C" {
 s16 Play_GetOriginalSceneId(s16 sceneId);
 }
 
+#include <fast/Fast3dGui.h>
+
 namespace BenGui {
 extern std::shared_ptr<Rando::CheckTracker::CheckTrackerWindow> mRandoCheckTrackerWindow;
 }
@@ -118,6 +120,7 @@ std::set<RandoCheckType> checkTypeFilter;
 std::vector<const char*> checkTypeIconList = {
     /*RCTYPE_UNKNOWN*/ gItemIconBombersNotebookTex,
     /*RCTYPE_BARREL*/ gBarrelTrackerIcon,
+    /*RCTYPE_BUTTERFLY*/ gItemIconDekuStickTex,
     /*RCTYPE_CHEST*/ gChestTrackerIcon,
     /*RCTYPE_COW*/ gItemIconRomaniMaskTex,
     /*RCTYPE_CRATE*/ gCrateTrackerIcon,
@@ -126,6 +129,7 @@ std::vector<const char*> checkTypeIconList = {
     /*RCTYPE_FROG*/ gItemIconDonGeroMaskTex,
     /*RCTYPE_GRASS*/ gameplay_keep_Tex_053140,
     /*RCTYPE_HEART*/ gQuestIconPieceOfHeartTex,
+    /*RCTYPE_BEEHIVE*/ gArcheryScoreIconTex,
     /*RCTYPE_MINIGAME*/ gArcheryScoreIconTex,
     /*RCTYPE_NPC*/ gItemIconBombersNotebookTex,
     /*RCTYPE_OWL*/ gWorldMapOwlFaceTex,
@@ -138,6 +142,7 @@ std::vector<const char*> checkTypeIconList = {
     /*RCTYPE_STRAY_FAIRY*/ gStrayFairyGreatBayIconTex,
     /*RCTYPE_TINGLE_SHOP*/ gItemIconAdultsWalletTex,
     /*RCTYPE_TREE*/ gItemIconDekuStickTex,
+    /*RCTYPE_WONDER_ITEM*/ gPauseUnusedCursorTex,
 };
 
 static constexpr ImVec4 tintColor = {};
@@ -163,7 +168,8 @@ std::string GetTotalCheckCount() {
 
 void DrawCheckTypeIcon(RandoCheckId randoCheckId) {
     RandoCheckType checkType = Rando::StaticData::Checks[randoCheckId].randoCheckType;
-    ImGui::Image(Ship::Context::GetInstance()->GetWindow()->GetGui()->GetTextureByName(checkTypeIconList[checkType]),
+    ImGui::Image(std::dynamic_pointer_cast<Fast::Fast3dGui>(Ship::Context::GetRawInstance()->GetWindow()->GetGui())
+                     ->GetTextureByName(checkTypeIconList[checkType]),
                  checkType == RCTYPE_SONG  ? ImVec2(12.0f * trackerScale, 18.0f * trackerScale)
                  : checkType == RCTYPE_OWL ? ImVec2(18.0f * trackerScale, 9.0f * trackerScale)
                                            : ImVec2(18.0f * trackerScale, 18.0f * trackerScale),
@@ -180,6 +186,20 @@ static std::set<SceneId> scenesToCheckParent = {
     SCENE_F01_B,     SCENE_OMOYA,       SCENE_GORONSHOP,    SCENE_KAJIYA,     SCENE_FISHERMAN,    SCENE_LABO,
     SCENE_BANDROOM,  SCENE_TOUGITES,    SCENE_MUSICHOUSE,
 };
+
+static std::unordered_map<SceneId, const char*> sCheckTrackerSceneNameOverrides = {
+    { SCENE_20SICHITAI, "Southern Swamp" },   { SCENE_10YUKIYAMANOMURA, "Mountain Village" },
+    { SCENE_11GORONNOSATO, "Goron Village" }, { SCENE_17SETUGEN, "Path to Goron Village" },
+    { SCENE_KAKUSIANA, "Lone Peak Shrine" },
+};
+
+const char* GetCheckTrackerSceneName(SceneId sceneId) {
+    auto it = sCheckTrackerSceneNameOverrides.find(sceneId);
+    if (it != sCheckTrackerSceneNameOverrides.end()) {
+        return it->second;
+    }
+    return Ship_GetSceneName(sceneId);
+}
 
 SceneId GetScrollTargetScene(s32 rawSceneId) {
     SceneId sceneId = (SceneId)Play_GetOriginalSceneId(rawSceneId);
@@ -274,6 +294,8 @@ void RefreshChecksInLogic() {
     std::unordered_map<RandoRegionId, Rando::Logic::RegionTimeState> regionTimeStates =
         Rando::Logic::InitializeRegionTimeStates(RR_MAX);
 
+    std::set<std::pair<RandoEvent, std::function<bool()>>*> appliedEvents;
+
     // Iteratively explore until no new regions/events discovered
     bool changed = true;
     while (changed) {
@@ -292,8 +314,9 @@ void RefreshChecksInLogic() {
             Rando::Logic::SetCurrentRegionTime(regionTimeStates, regionId);
 
             for (auto& event : randoRegion.events) {
-                if (!RANDO_EVENTS[event.first] && event.second()) {
+                if (!appliedEvents.contains(&event) && event.second()) {
                     RANDO_EVENTS[event.first]++;
+                    appliedEvents.insert(&event);
                     changed = true;
                 }
             }
@@ -375,7 +398,7 @@ void CheckTrackerDrawNonLogicalList() {
             sScrollToTargetEntrance = -1;
         }
         ImGui::PushStyleColor(ImGuiCol_Header, ImVec4(0, 0, 0, 0));
-        std::string headerText = Ship_GetSceneName(sceneId);
+        std::string headerText = GetCheckTrackerSceneName(sceneId);
         headerText += " (" + std::to_string(obtainedCheckSum) + "/" + std::to_string(unfilteredChecks.size()) + ")";
 
         ImGui::PushStyleColor(ImGuiCol_Text, obtainedCheckSum == unfilteredChecks.size()
@@ -558,9 +581,11 @@ void CheckTrackerWindow::Draw() {
                 ImGui::PushStyleColor(ImGuiCol_Button, buttonCol);
                 ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(1.0f, 1.0f, 1.0f, 0.2f));
                 ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(1.0f, 1.0f, 1.0f, 0.1f));
-                TexturePtr textureId = Ship::Context::GetInstance()->GetWindow()->GetGui()->GetTextureByName(
-                    randoCheckType == RCTYPE_UNKNOWN ? (const char*)gShootingGalleryOctorokCrossTex
-                                                     : checkTypeIconList[randoCheckType]);
+                TexturePtr textureId =
+                    std::dynamic_pointer_cast<Fast::Fast3dGui>(Ship::Context::GetRawInstance()->GetWindow()->GetGui())
+                        ->GetTextureByName(randoCheckType == RCTYPE_UNKNOWN
+                                               ? (const char*)gShootingGalleryOctorokCrossTex
+                                               : checkTypeIconList[randoCheckType]);
                 if (randoCheckType == RCTYPE_OWL) {
                     ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 4.0f);
                 } else if (randoCheckType == RCTYPE_SONG) {

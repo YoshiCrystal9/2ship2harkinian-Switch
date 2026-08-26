@@ -6,6 +6,7 @@
 
 #include "z_obj_dora.h"
 #include "assets/objects/object_dora/object_dora.h"
+#include "GameInteractor/GameInteractor.h"
 
 #define FLAGS (ACTOR_FLAG_UPDATE_CULLING_DISABLED)
 
@@ -284,11 +285,13 @@ void ObjDora_UpdateCollision(ObjDora* this, PlayState* play) {
 
                 if ((ObjDora_IsHalfHour(time) == true) && (this->rupeeDropTimer == 0)) {
                     Actor_PlaySfx(&this->actor, NA_SE_SY_TRE_BOX_APPEAR);
-                    itemDrop = Item_DropCollectible(play, &this->actor.world.pos, ITEM00_RUPEE_BLUE);
-                    itemDrop->world.rot.y = this->actor.world.rot.y;
-                    itemDrop->world.rot.y += (s32)DEG_TO_BINANG_ALT3(Rand_Centered() * 90.0f);
-                    itemDrop->velocity.y = 5.0f;
-                    itemDrop->gravity = -1.0f;
+                    if (GameInteractor_Should(VB_GONG_DROP_COLLECTIBLE, true, this)) {
+                        itemDrop = Item_DropCollectible(play, &this->actor.world.pos, ITEM00_RUPEE_BLUE);
+                        itemDrop->world.rot.y = this->actor.world.rot.y;
+                        itemDrop->world.rot.y += (s32)DEG_TO_BINANG_ALT3(Rand_Centered() * 90.0f);
+                        itemDrop->velocity.y = 5.0f;
+                        itemDrop->gravity = -1.0f;
+                    }
                     this->rupeeDropTimer = 40;
                 }
                 break;

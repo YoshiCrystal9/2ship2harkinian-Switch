@@ -1,5 +1,6 @@
 #include "AuthenticGfxPatches.h"
 #include <libultraship/bridge/consolevariablebridge.h>
+#include "2s2h/ShipInit.hpp"
 extern "C" {
 #include "gfx.h"
 #include "objects/gameplay_keep/gameplay_keep.h"
@@ -372,6 +373,54 @@ void GfxPatcher_ApplyBombShopkeeperPatch() {
     ResourceMgr_PatchGfxByName(gBombShopkeeperBombDL, "bombShopOwnerFuseFix", 85,
                                gsSPClearGeometryMode(G_TEXTURE_GEN | G_TEXTURE_GEN_LINEAR));
 }
+
+// gCircleShadowDL draws the circle shadow as a single large triangle which results
+// in a visible streaking effect, instead we draw it as a quad to fix this
+static Vtx sCircleShadowQuadVtx[4] = {
+    { { { -57, 0, 57 }, 0, { 0, 0 }, { 0xA0, 0x97, 0xCD, 0xFF } } },
+    { { { 57, 0, 57 }, 0, { 1016, 0 }, { 0xA0, 0x97, 0xCD, 0xFF } } },
+    { { { -57, 0, -57 }, 0, { 0, 1016 }, { 0xA0, 0x97, 0xCD, 0xFF } } },
+    { { { 57, 0, -57 }, 0, { 1016, 1016 }, { 0xA0, 0x97, 0xCD, 0xFF } } },
+};
+
+void PatchCircleShadowStreaks() {
+    static s32 sVtxIndex = -1;
+    static s32 sTriIndex = -1;
+
+    if (sVtxIndex == -1 || sTriIndex == -1) {
+        Gfx* gfx = ResourceMgr_LoadGfxByName(gCircleShadowDL);
+
+        for (s32 i = 0; i < 32; i++) {
+            u8 opcode = (u8)(gfx[i].words.w0 >> 24);
+
+            if (opcode == G_VTX_OTR_HASH && sVtxIndex == -1) {
+                sVtxIndex = i;
+            } else if (opcode == G_TRI1 && sTriIndex == -1) {
+                sTriIndex = i;
+            } else if (opcode == G_ENDDL) {
+                break;
+            }
+        }
+
+        if (sVtxIndex == -1 || sTriIndex == -1) {
+            return;
+        }
+    }
+
+    if (CVarGetInteger("gFixes.FixCircleShadowStreaks", 1)) {
+        ResourceMgr_PatchGfxByName(gCircleShadowDL, "circleShadowQuadVtx", sVtxIndex,
+                                   gsSPVertex(sCircleShadowQuadVtx, 4, 0));
+        ResourceMgr_PatchGfxByName(gCircleShadowDL, "circleShadowQuadVtxHash", sVtxIndex + 1, gsSPNoOp());
+        ResourceMgr_PatchGfxByName(gCircleShadowDL, "circleShadowQuadTris", sTriIndex,
+                                   gsSP2Triangles(0, 1, 2, 0, 1, 3, 2, 0));
+    } else {
+        ResourceMgr_UnpatchGfxByName(gCircleShadowDL, "circleShadowQuadVtx");
+        ResourceMgr_UnpatchGfxByName(gCircleShadowDL, "circleShadowQuadVtxHash");
+        ResourceMgr_UnpatchGfxByName(gCircleShadowDL, "circleShadowQuadTris");
+    }
+}
+
+static RegisterShipInitFunc circleShadowStreaksInitFunc(PatchCircleShadowStreaks, { "gFixes.FixCircleShadowStreaks" });
 
 // Applies required patches for authentic bugs to allow the game to play and render properly
 void GfxPatcher_ApplyNecessaryAuthenticPatches() {

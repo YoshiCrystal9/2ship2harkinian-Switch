@@ -6,17 +6,32 @@
 #define dgFileSelNoFileToCopyENGTex "__OTR__misc/title_static/gFileSelNoFileToCopyENGTex"
 static const ALIGN_ASSET(2) char gFileSelNoFileToCopyENGTex[] = dgFileSelNoFileToCopyENGTex;
 
+#define dgFileSelNoFileToCopyIA4ENGTex "__OTR__misc/title_static/gFileSelNoFileToCopyIA4ENGTex"
+static const ALIGN_ASSET(2) char gFileSelNoFileToCopyIA4ENGTex[] = dgFileSelNoFileToCopyIA4ENGTex;
+
 #define dgFileSelNoFileToEraseENGTex "__OTR__misc/title_static/gFileSelNoFileToEraseENGTex"
 static const ALIGN_ASSET(2) char gFileSelNoFileToEraseENGTex[] = dgFileSelNoFileToEraseENGTex;
+
+#define dgFileSelNoFileToEraseIA4ENGTex "__OTR__misc/title_static/gFileSelNoFileToEraseIA4ENGTex"
+static const ALIGN_ASSET(2) char gFileSelNoFileToEraseIA4ENGTex[] = dgFileSelNoFileToEraseIA4ENGTex;
 
 #define dgFileSelNoEmptyFileENGTex "__OTR__misc/title_static/gFileSelNoEmptyFileENGTex"
 static const ALIGN_ASSET(2) char gFileSelNoEmptyFileENGTex[] = dgFileSelNoEmptyFileENGTex;
 
+#define dgFileSelNoEmptyFileIA4ENGTex "__OTR__misc/title_static/gFileSelNoEmptyFileIA4ENGTex"
+static const ALIGN_ASSET(2) char gFileSelNoEmptyFileIA4ENGTex[] = dgFileSelNoEmptyFileIA4ENGTex;
+
 #define dgFileSelFileEmptyENGTex "__OTR__misc/title_static/gFileSelFileEmptyENGTex"
 static const ALIGN_ASSET(2) char gFileSelFileEmptyENGTex[] = dgFileSelFileEmptyENGTex;
 
+#define dgFileSelFileEmptyIA4ENGTex "__OTR__misc/title_static/gFileSelFileEmptyIA4ENGTex"
+static const ALIGN_ASSET(2) char gFileSelFileEmptyIA4ENGTex[] = dgFileSelFileEmptyIA4ENGTex;
+
 #define dgFileSelFileInUseENGTex "__OTR__misc/title_static/gFileSelFileInUseENGTex"
 static const ALIGN_ASSET(2) char gFileSelFileInUseENGTex[] = dgFileSelFileInUseENGTex;
+
+#define dgFileSelFileInUseIA4ENGTex "__OTR__misc/title_static/gFileSelFileInUseIA4ENGTex"
+static const ALIGN_ASSET(2) char gFileSelFileInUseIA4ENGTex[] = dgFileSelFileInUseIA4ENGTex;
 
 #define dgFileSelConnectorTex "__OTR__misc/title_static/gFileSelConnectorTex"
 static const ALIGN_ASSET(2) char gFileSelConnectorTex[] = dgFileSelConnectorTex;
@@ -51,35 +66,65 @@ static const ALIGN_ASSET(2) char gFileSelFileErasedENGTex[] = dgFileSelFileErase
 #define dgFileSelOptionsENGTex "__OTR__misc/title_static/gFileSelOptionsENGTex"
 static const ALIGN_ASSET(2) char gFileSelOptionsENGTex[] = dgFileSelOptionsENGTex;
 
+#define dgFileSelOptionsIA4ENGTex "__OTR__misc/title_static/gFileSelOptionsIA4ENGTex"
+static const ALIGN_ASSET(2) char gFileSelOptionsIA4ENGTex[] = dgFileSelOptionsIA4ENGTex;
+
 #define dgFileSelNameENGTex "__OTR__misc/title_static/gFileSelNameENGTex"
 static const ALIGN_ASSET(2) char gFileSelNameENGTex[] = dgFileSelNameENGTex;
 
 #define dgFileSelSurroundENGTex "__OTR__misc/title_static/gFileSelSurroundENGTex"
 static const ALIGN_ASSET(2) char gFileSelSurroundENGTex[] = dgFileSelSurroundENGTex;
 
+#define dgFileSelSurroundIA4ENGTex "__OTR__misc/title_static/gFileSelSurroundIA4ENGTex"
+static const ALIGN_ASSET(2) char gFileSelSurroundIA4ENGTex[] = dgFileSelSurroundIA4ENGTex;
+
 #define dgFileSelHeadsetENGTex "__OTR__misc/title_static/gFileSelHeadsetENGTex"
 static const ALIGN_ASSET(2) char gFileSelHeadsetENGTex[] = dgFileSelHeadsetENGTex;
+
+#define dgFileSelHeadsetIA4ENGTex "__OTR__misc/title_static/gFileSelHeadsetIA4ENGTex"
+static const ALIGN_ASSET(2) char gFileSelHeadsetIA4ENGTex[] = dgFileSelHeadsetIA4ENGTex;
 
 #define dgFileSelMonoENGTex "__OTR__misc/title_static/gFileSelMonoENGTex"
 static const ALIGN_ASSET(2) char gFileSelMonoENGTex[] = dgFileSelMonoENGTex;
 
+#define dgFileSelMonoIA4ENGTex "__OTR__misc/title_static/gFileSelMonoIA4ENGTex"
+static const ALIGN_ASSET(2) char gFileSelMonoIA4ENGTex[] = dgFileSelMonoIA4ENGTex;
+
 #define dgFileSelSoundENGTex "__OTR__misc/title_static/gFileSelSoundENGTex"
 static const ALIGN_ASSET(2) char gFileSelSoundENGTex[] = dgFileSelSoundENGTex;
+
+#define dgFileSelSoundIA4ENGTex "__OTR__misc/title_static/gFileSelSoundIA4ENGTex"
+static const ALIGN_ASSET(2) char gFileSelSoundIA4ENGTex[] = dgFileSelSoundIA4ENGTex;
 
 #define dgFileSelStereoENGTex "__OTR__misc/title_static/gFileSelStereoENGTex"
 static const ALIGN_ASSET(2) char gFileSelStereoENGTex[] = dgFileSelStereoENGTex;
 
+#define dgFileSelStereoIA4ENGTex "__OTR__misc/title_static/gFileSelStereoIA4ENGTex"
+static const ALIGN_ASSET(2) char gFileSelStereoIA4ENGTex[] = dgFileSelStereoIA4ENGTex;
+
 #define dgFileSelTargetingENGTex "__OTR__misc/title_static/gFileSelTargetingENGTex"
 static const ALIGN_ASSET(2) char gFileSelTargetingENGTex[] = dgFileSelTargetingENGTex;
+
+#define dgFileSelTargetingIA4ENGTex "__OTR__misc/title_static/gFileSelTargetingIA4ENGTex"
+static const ALIGN_ASSET(2) char gFileSelTargetingIA4ENGTex[] = dgFileSelTargetingIA4ENGTex;
 
 #define dgFileSelSwitchENGTex "__OTR__misc/title_static/gFileSelSwitchENGTex"
 static const ALIGN_ASSET(2) char gFileSelSwitchENGTex[] = dgFileSelSwitchENGTex;
 
+#define dgFileSelSwitchIA4ENGTex "__OTR__misc/title_static/gFileSelSwitchIA4ENGTex"
+static const ALIGN_ASSET(2) char gFileSelSwitchIA4ENGTex[] = dgFileSelSwitchIA4ENGTex;
+
 #define dgFileSelHoldENGTex "__OTR__misc/title_static/gFileSelHoldENGTex"
 static const ALIGN_ASSET(2) char gFileSelHoldENGTex[] = dgFileSelHoldENGTex;
 
+#define dgFileSelHoldIA4ENGTex "__OTR__misc/title_static/gFileSelHoldIA4ENGTex"
+static const ALIGN_ASSET(2) char gFileSelHoldIA4ENGTex[] = dgFileSelHoldIA4ENGTex;
+
 #define dgFileSelCheckBrightnessENGTex "__OTR__misc/title_static/gFileSelCheckBrightnessENGTex"
 static const ALIGN_ASSET(2) char gFileSelCheckBrightnessENGTex[] = dgFileSelCheckBrightnessENGTex;
+
+#define dgFileSelCheckBrightnessIA4ENGTex "__OTR__misc/title_static/gFileSelCheckBrightnessIA4ENGTex"
+static const ALIGN_ASSET(2) char gFileSelCheckBrightnessIA4ENGTex[] = dgFileSelCheckBrightnessIA4ENGTex;
 
 #define dgFileSelDolbySurroundLogoENGTex "__OTR__misc/title_static/gFileSelDolbySurroundLogoENGTex"
 static const ALIGN_ASSET(2) char gFileSelDolbySurroundLogoENGTex[] = dgFileSelDolbySurroundLogoENGTex;

@@ -47,6 +47,11 @@ void HandleAutoSave() {
         return;
     }
 
+    // Time must be moving for autosave to work. Fixes an issue with Time Moves When You Move.
+    if (gSaveContext.save.timeSpeedOffset == -R_TIME_SPEED && R_TIME_SPEED != 0) {
+        return;
+    }
+
     // If owl save available to create, do it and reset the interval.
     if (SavingEnhancements_CanSave() && gPlayState->pauseCtx.state == 0) {
 

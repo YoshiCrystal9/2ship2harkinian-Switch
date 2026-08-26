@@ -57,8 +57,8 @@ void Scene_DrawConfigDefault(PlayState* play) {
  * Returns a pointer to a single layer texture scroll displaylist.
  */
 Gfx* AnimatedMat_TexScroll(PlayState* play, AnimatedMatTexScrollParams* params) {
-    return Gfx_TexScroll(play->state.gfxCtx, params->xStep * sMatAnimStep, -(params->yStep * sMatAnimStep),
-                         params->width, params->height);
+    return Gfx_TexScrollEx(play->state.gfxCtx, params->xStep * sMatAnimStep, -(params->yStep * sMatAnimStep),
+                           params->width, params->height, params->xStep, -(params->yStep));
 }
 
 /**

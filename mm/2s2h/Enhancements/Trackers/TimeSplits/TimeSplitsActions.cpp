@@ -6,7 +6,6 @@
 #include <ship/window/Window.h>
 #include "2s2h/BenGui/UIWidgets.hpp"
 #include <fstream>
-#include <filesystem>
 
 #include "assets/archives/icon_item_static/icon_item_static_yar.h"
 
@@ -17,6 +16,8 @@ extern "C" {
 #include "overlays/actors/ovl_Bg_Dy_Yoseizo/z_bg_dy_yoseizo.h"
 uint64_t GetUnixTimestamp();
 }
+
+#include <fast/Fast3dGui.h>
 
 #define CVAR_NAME "gSettings.TimeSplits.Enable"
 #define CVAR CVarGetInteger(CVAR_NAME, 0)
@@ -100,7 +101,8 @@ void HandlePopUpContext(uint32_t popupId) {
             SplitsPushImageButtonStyle();
             if (ImGui::ImageButton(
                     std::to_string(list).c_str(),
-                    Ship::Context::GetInstance()->GetWindow()->GetGui()->GetTextureByName(GetItemImageById(list)),
+                    std::dynamic_pointer_cast<Fast::Fast3dGui>(Ship::Context::GetRawInstance()->GetWindow()->GetGui())
+                        ->GetTextureByName(GetItemImageById(list)),
                     GetItemImageSizeById(list) * 1.5f, ImVec2(0, 0), ImVec2(1, 1), ImVec4(0, 0, 0, 0),
                     Ship_GetItemColorTint(list))) {
                 AddSplitEntryById(list);
@@ -124,15 +126,16 @@ void HandlePopUpContext(uint32_t popupId) {
 void HandleDragAndDrop(size_t i) {
     if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_None)) {
         ImGui::SetDragDropPayload("SPLIT_DRAG", &i, sizeof(size_t));
-        ImGui::ImageButton(std::to_string(splitList[i].splitId).c_str(),
-                           Ship::Context::GetInstance()->GetWindow()->GetGui()->GetTextureByName(
-                               splitList[i].splitType == SPLIT_TYPE_NORMAL ? GetItemImageById(splitList[i].splitId)
-                                                                           : gPauseUnusedCursorTex),
-                           splitList[i].splitType == SPLIT_TYPE_NORMAL ? GetItemImageSizeById(splitList[i].splitId)
-                                                                       : ImVec2(32.0f, 32.0f),
-                           ImVec2(0, 0), ImVec2(1, 1), ImVec4(0, 0, 0, 0),
-                           splitList[i].splitType == SPLIT_TYPE_NORMAL ? Ship_GetItemColorTint(splitList[i].splitId)
-                                                                       : ImVec4(1, 1, 1, 1));
+        ImGui::ImageButton(
+            std::to_string(splitList[i].splitId).c_str(),
+            std::dynamic_pointer_cast<Fast::Fast3dGui>(Ship::Context::GetRawInstance()->GetWindow()->GetGui())
+                ->GetTextureByName(splitList[i].splitType == SPLIT_TYPE_NORMAL ? GetItemImageById(splitList[i].splitId)
+                                                                               : gPauseUnusedCursorTex),
+            splitList[i].splitType == SPLIT_TYPE_NORMAL ? GetItemImageSizeById(splitList[i].splitId)
+                                                        : ImVec2(32.0f, 32.0f),
+            ImVec2(0, 0), ImVec2(1, 1), ImVec4(0, 0, 0, 0),
+            splitList[i].splitType == SPLIT_TYPE_NORMAL ? Ship_GetItemColorTint(splitList[i].splitId)
+                                                        : ImVec4(1, 1, 1, 1));
         ImGui::EndDragDropSource();
     }
 
@@ -361,13 +364,6 @@ void SplitSaveFileAction(uint32_t action, std::string listName) {
 }
 
 void RegisterTimesplits() {
-    if (!std::filesystem::exists(Ship::Context::GetPathRelativeToAppDirectory("2S2HTimeSplitData.json"))) {
-        json initFile;
-        std::ofstream file(Ship::Context::GetPathRelativeToAppDirectory("2S2HTimeSplitData.json"));
-        file << initFile.dump(4);
-        file.close();
-    }
-
     SplitSaveFileAction(SPLIT_RETRIEVE, "");
 
     COND_HOOK(OnItemGive, CVAR, [](u8 item) {

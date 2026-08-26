@@ -11,6 +11,7 @@
 
 #include "2s2h/Enhancements/FrameInterpolation/FrameInterpolation.h"
 #include "2s2h/ShipUtils.h"
+#include "GameInteractor/GameInteractor.h"
 #include <string.h>
 
 #define FLAGS (ACTOR_FLAG_UPDATE_CULLING_DISABLED | ACTOR_FLAG_THROW_ONLY)
@@ -112,6 +113,7 @@ void func_80A5B160(EnKusa2* this, PlayState* play) {
         if (*ptr != NULL) {
             (*ptr)->actor.room = this->actor.room;
             (*ptr)->unk_1C0 = this;
+            GameInteractor_Should(VB_KEATON_GRASS_ATTACH_CHILD, true, *ptr, 0);
         }
     }
 
@@ -127,6 +129,7 @@ void func_80A5B160(EnKusa2* this, PlayState* play) {
             if (*ptr != NULL) {
                 (*ptr)->actor.room = this->actor.room;
                 (*ptr)->unk_1C0 = this;
+                GameInteractor_Should(VB_KEATON_GRASS_ATTACH_CHILD, true, *ptr, i);
             }
         }
     }
@@ -322,7 +325,9 @@ void func_80A5BD14(EnKusa2* this, PlayState* play, s32 arg2) {
         if (kusa2->unk_1BC > 8) {
             kusa2->unk_1BC = 8;
         }
-        Item_DropCollectible(play, &this->actor.world.pos, D_80A5EB24[kusa2->unk_1BC]);
+        if (GameInteractor_Should(VB_GRASS_DROP_COLLECTIBLE, true, ACTOR_EN_KUSA2, this)) {
+            Item_DropCollectible(play, &this->actor.world.pos, D_80A5EB24[kusa2->unk_1BC]);
+        }
         kusa2->unk_1BC += arg2;
     }
 }
@@ -1381,7 +1386,9 @@ void EnKusa2_Draw(Actor* thisx, PlayState* play) {
             (this->actor.projectedPos.z < 400.0f)) {
             func_80A5B954(&D_80A60908[this->unk_1CE], 0.0015f);
         }
-        Gfx_DrawDListOpa(play, gKusaBushType1DL);
+        if (GameInteractor_Should(VB_KEATON_GRASS_DRAW, true, this)) {
+            Gfx_DrawDListOpa(play, gKusaBushType1DL);
+        }
     } else if (this->actor.projectedPos.z < 1300.0f) {
         func_80A5E80C(play, (1300.0f - this->actor.projectedPos.z) * 2.55f);
     }
@@ -1397,14 +1404,18 @@ void func_80A5E9B4(Actor* thisx, PlayState* play) {
     sp18.z = thisx->shape.rot.z + D_80A5EAFC.z;
     Matrix_SetTranslateRotateYXZ(thisx->world.pos.x, thisx->world.pos.y, thisx->world.pos.z, &sp18);
     Matrix_Scale(thisx->scale.x, thisx->scale.y, thisx->scale.z, MTXMODE_APPLY);
-    Gfx_DrawDListOpa(play, gKusaBushType1DL);
+    if (GameInteractor_Should(VB_KEATON_GRASS_DRAW, true, thisx)) {
+        Gfx_DrawDListOpa(play, gKusaBushType1DL);
+    }
 }
 
 void func_80A5EA48(Actor* thisx, PlayState* play) {
     EnKusa2* this = (EnKusa2*)thisx;
 
     if (this->unk_1CF == 0xFF) {
-        Gfx_DrawDListOpa(play, gKusaBushType1DL);
+        if (GameInteractor_Should(VB_KEATON_GRASS_DRAW, true, this)) {
+            Gfx_DrawDListOpa(play, gKusaBushType1DL);
+        }
     } else {
         func_80A5E80C(play, this->unk_1CF);
     }

@@ -46,7 +46,7 @@ void ObjFunen_Draw(Actor* thisx, PlayState* play) {
     temp = -(play->gameplayFrames & 0x7FFFFFFF) & 0x7F;
 
     gSPSegment(POLY_XLU_DISP++, 0x08,
-               Gfx_TwoTexScroll(play->state.gfxCtx, 0, 0, temp, 0x20, 0x20, 1, 0, temp, 0x20, 0x20));
+               Gfx_TwoTexScrollEx(play->state.gfxCtx, 0, 0, temp, 0x20, 0x20, 1, 0, temp, 0x20, 0x20, 0, -1, 0, -1));
     gSPDisplayList(POLY_XLU_DISP++, gStoneTowerSmokeDL);
     CLOSE_DISPS(play->state.gfxCtx);
 }

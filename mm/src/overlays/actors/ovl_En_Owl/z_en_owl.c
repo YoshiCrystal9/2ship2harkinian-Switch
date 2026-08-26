@@ -1104,7 +1104,7 @@ void func_8095CCF4(Actor* thisx, PlayState* play) {
     EnOwl* this = (EnOwl*)thisx;
     Player* player = GET_PLAYER(play);
 
-    if (player->stateFlags3 & PLAYER_STATE3_10000000) {
+    if (GameInteractor_Should(VB_OWL_DESPAWN_FEATHER, player->stateFlags3 & PLAYER_STATE3_10000000, this)) {
         Actor_Kill(&this->actor);
         return;
     }

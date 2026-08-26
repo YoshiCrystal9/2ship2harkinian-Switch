@@ -1,6 +1,7 @@
 #ifndef _COLOR_H_
 #define _COLOR_H_
 
+#include <ship/utils/binarytools/endianness.h>
 #include "PR/ultratypes.h"
 #include <libultraship/color.h>
 // For checking the alpha bit in an RGBA16 pixel

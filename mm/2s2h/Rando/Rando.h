@@ -32,6 +32,20 @@ void SetStartingItemsInSave(RandoSaveInfo& randoSaveInfo, std::vector<RandoItemI
 std::vector<RandoItemId> GetStartingItemsFromConfig();
 void SetStartingItemsInConfig(std::vector<RandoItemId>& startingItems);
 
+std::vector<RandoItemId> GetDefaultSariaPriorityItems();
+std::vector<RandoItemId> GetSariaPriorityItemsFromSpoiler(nlohmann::json& spoiler);
+void SetSariaPriorityItemsInSpoiler(nlohmann::json& spoiler, std::vector<RandoItemId>& priorityItems);
+std::vector<RandoItemId> GetSariaPriorityItemsFromSave(RandoSaveInfo& randoSaveInfo);
+void SetSariaPriorityItemsInSave(RandoSaveInfo& randoSaveInfo, std::vector<RandoItemId>& priorityItems);
+std::vector<RandoItemId> GetSariaPriorityItemsFromConfig();
+void SetSariaPriorityItemsInConfig(std::vector<RandoItemId>& priorityItems);
+std::vector<RandoItemId> GetSariaPriorityItemCandidates();
+
+std::vector<RandoCheckId> GetExcludedChecksFromConfig();
+void SetExcludedChecksInConfig(std::vector<RandoCheckId>& excludedChecks);
+
+std::vector<RandoCheckId> FindMultiItemPlacement(RandoItemId randoItemId);
+
 } // namespace Rando
 
 #endif

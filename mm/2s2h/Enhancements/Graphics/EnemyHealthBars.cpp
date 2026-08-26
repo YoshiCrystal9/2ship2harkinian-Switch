@@ -80,6 +80,14 @@ void Interface_DrawEnemyHealthBar(Attention* attention, PlayState* play) {
     // Convert health to signed value and clamp to 0 (some actors overflow the health when subtracting damage)
     s8 curHealth = CLAMP_MIN((s8)healthActor->colChkInfo.health, 0);
     u8 maxHealth = GetActorMaxHealth(healthActor);
+
+    // If an enhancement like BossHealthMultiplier increases boss health above the original limit the UI knew about
+    // we update the maximum health to recalculate the percentage and keep the red bar inside the box.
+    if (curHealth > maxHealth) {
+        maxHealth = curHealth;
+        SetActorMaximumHealth(healthActor, maxHealth);
+    }
+
     s16 healthBarFill = ((f32)curHealth / maxHealth) * healthBar_fillWidth;
 
     if (anchorType == ENEMYHEALTH_ANCHOR_ACTOR) {

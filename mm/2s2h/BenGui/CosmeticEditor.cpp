@@ -32,51 +32,71 @@ Color_RGBA8 ColorRGBA8(uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
 static const std::map<CosmeticGroup, const char*> sCosmeticGroupLabels = {
     { COSMETICS_GROUP_PLAYER, "Player" }, { COSMETICS_GROUP_EFFECTS, "Effects" }, { COSMETICS_GROUP_TRAILS, "Trails" },
     { COSMETICS_GROUP_HUD, "HUD" },       { COSMETICS_GROUP_BUTTONS, "Buttons" }, { COSMETICS_GROUP_MENUS, "Menus" },
+    // { COSMETICS_GROUP_WOODFALL_KEYS, "Woodfall Keys" }, { COSMETICS_GROUP_SNOWHEAD_KEYS, "Snowhead Keys" },
+    // { COSMETICS_GROUP_GREAT_BAY_KEYS, "Great Bay Keys" }, { COSMETICS_GROUP_STONE_TOWER_KEYS, "Stone Tower Keys" },
 };
 
 // clang-format off
 std::map<std::string, CosmeticOption> cosmeticOptions = {
-    COSMETIC_OPTION("HUD.Hearts",                   "Hearts",                   COSMETICS_GROUP_HUD,          ColorRGBA8(255,  70,  50, 255), false, true, false),
-    COSMETIC_OPTION("HUD.Magic",                    "Magic",                    COSMETICS_GROUP_HUD,          ColorRGBA8(  0, 200,   0, 255), false, true, false),
-    COSMETIC_OPTION("HUD.SmallKey",                 "Small Key",                COSMETICS_GROUP_HUD,          ColorRGBA8(  0, 200, 230, 255), false, true, false),
-    COSMETIC_OPTION("HUD.RupeeIcon",                "Rupee Icon",               COSMETICS_GROUP_HUD,          ColorRGBA8(200, 255, 100, 255), false, true, false),
-    COSMETIC_OPTION("HUD.Minimap",                  "Minimap",                  COSMETICS_GROUP_HUD,          ColorRGBA8(  0, 255, 255, 160), false, true, false),
-    COSMETIC_OPTION("Effects.SpinSlashCharge",      "Spin Slash Charge",        COSMETICS_GROUP_EFFECTS,      ColorRGBA8(170, 255, 255, 255), false, true, false),
-    COSMETIC_OPTION("Effects.SpinSlashBurst",       "Spin Slash Burst",         COSMETICS_GROUP_EFFECTS,      ColorRGBA8(170, 255, 255, 255), false, true, false),
-    COSMETIC_OPTION("Effects.GreatSpinCharge",      "Great Spin Charge",        COSMETICS_GROUP_EFFECTS,      ColorRGBA8(255, 255, 170, 255), false, true, false),
-    COSMETIC_OPTION("Effects.GreatSpinBurst",       "Great Spin Burst",         COSMETICS_GROUP_EFFECTS,      ColorRGBA8(255, 255, 170, 255), false, true, false),
-    COSMETIC_OPTION("Effects.FireArrowPrim",        "Fire Arrow Primary",       COSMETICS_GROUP_EFFECTS,      ColorRGBA8(255, 200,   0, 255), false, true, false),
-    COSMETIC_OPTION("Effects.FireArrowSec",         "Fire Arrow Secondary",     COSMETICS_GROUP_EFFECTS,      ColorRGBA8(255,   0,   0, 128), false, true, false),
-    COSMETIC_OPTION("Effects.IceArrowPrim",         "Ice Arrow Primary",        COSMETICS_GROUP_EFFECTS,      ColorRGBA8(170, 255, 255, 255), false, true, false),
-    COSMETIC_OPTION("Effects.IceArrowSec",          "Ice Arrow Secondary",      COSMETICS_GROUP_EFFECTS,      ColorRGBA8(  0,   0, 255, 128), false, true, false),
-    COSMETIC_OPTION("Effects.LightArrowPrim",       "Light Arrow Primary",      COSMETICS_GROUP_EFFECTS,      ColorRGBA8(255, 255, 170, 255), false, true, false),
-    COSMETIC_OPTION("Effects.LightArrowSec",        "Light Arrow Secondary",    COSMETICS_GROUP_EFFECTS,      ColorRGBA8(255, 255,   0, 128), false, true, false),
-    COSMETIC_OPTION("Trails.KokiriSwordTrail",      "Kokiri Sword Trail",       COSMETICS_GROUP_TRAILS,       ColorRGBA8(255, 255, 255, 255), false, true, false),
-    COSMETIC_OPTION("Trails.RazorSwordTrail",       "Razor Sword Trail",        COSMETICS_GROUP_TRAILS,       ColorRGBA8(255, 255, 255, 255), false, true, false),
-    COSMETIC_OPTION("Trails.GildedSwordTrail",      "Gilded Sword Trail",       COSMETICS_GROUP_TRAILS,       ColorRGBA8(255, 255, 255, 255), false, true, false),
-    COSMETIC_OPTION("Trails.GreatFairySwordTrail",  "Great Fairy Sword Trail",  COSMETICS_GROUP_TRAILS,       ColorRGBA8(255, 255, 255, 255), false, true, false),
-    COSMETIC_OPTION("Trails.FierceDeitySwordTrail", "Fierce Deity Sword Trail", COSMETICS_GROUP_TRAILS,       ColorRGBA8(255, 255, 255, 255), false, true, false),
-    COSMETIC_OPTION("Trails.DekuStickTrail",        "Deku Stick Trail",         COSMETICS_GROUP_TRAILS,       ColorRGBA8(255, 255, 255, 255), false, true, false),
-    COSMETIC_OPTION("Trails.DekuSpinTrail",         "Deku Spin Trail",          COSMETICS_GROUP_TRAILS,       ColorRGBA8(255, 255, 255, 255), false, true, false),
-    COSMETIC_OPTION("Trails.ZoraPunchTrail",        "Zora Punch Trail",         COSMETICS_GROUP_TRAILS,       ColorRGBA8(255, 255, 255, 255), false, true, false),
-    COSMETIC_OPTION("Trails.ZoraKickTrail",         "Zora Kick Trail",          COSMETICS_GROUP_TRAILS,       ColorRGBA8(255, 255, 255, 255), false, true, false),
-    COSMETIC_OPTION("Trails.ZoraBoomerangTrail",    "Zora Boomerang Trail",     COSMETICS_GROUP_TRAILS,       ColorRGBA8(255, 255, 100, 255), false, true, false),
-    COSMETIC_OPTION("Buttons.B",                    "B",                        COSMETICS_GROUP_BUTTONS,      ColorRGBA8(100, 255, 120, 255), false, true, false),
-    COSMETIC_OPTION("Buttons.A",                    "A",                        COSMETICS_GROUP_BUTTONS,      ColorRGBA8(100, 200, 255, 255), false, true, false),
-    COSMETIC_OPTION("Buttons.CLeft",                "C Left",                   COSMETICS_GROUP_BUTTONS,      ColorRGBA8(255, 240,   0, 255), false, true, false),
-    COSMETIC_OPTION("Buttons.CDown",                "C Down",                   COSMETICS_GROUP_BUTTONS,      ColorRGBA8(255, 240,   0, 255), false, true, false),
-    COSMETIC_OPTION("Buttons.CRight",               "C Right",                  COSMETICS_GROUP_BUTTONS,      ColorRGBA8(255, 240,   0, 255), false, true, false),
-    COSMETIC_OPTION("Buttons.DPad",                 "D Pad",                    COSMETICS_GROUP_BUTTONS,      ColorRGBA8(255, 255, 255, 255), false, true, false),
-    COSMETIC_OPTION("Buttons.Start",                "Start",                    COSMETICS_GROUP_BUTTONS,      ColorRGBA8(255, 130,  60, 255), false, true, false),
-    COSMETIC_OPTION("Menus.FileWindow",             "File Select Window",       COSMETICS_GROUP_MENUS,        ColorRGBA8(100, 150, 255, 255), false, true, false),
-    COSMETIC_OPTION("Menus.FilePlates",             "File Select Plates",       COSMETICS_GROUP_MENUS,        ColorRGBA8(100, 150, 255, 255), false, true, false),
-    COSMETIC_OPTION("Player.HumanTunic",            "Human Tunic",              COSMETICS_GROUP_PLAYER,       ColorRGBA8( 30, 105,  27, 255), false, true, false),
-    COSMETIC_OPTION("Player.HumanHair",             "Human Hair",               COSMETICS_GROUP_PLAYER,       ColorRGBA8(255, 240,   0, 255), false, true, false),
-    COSMETIC_OPTION("Player.DekuTunic",             "Deku Tunic",               COSMETICS_GROUP_PLAYER,       ColorRGBA8( 30, 105,  27, 255), false, true, false),
-    COSMETIC_OPTION("Player.DekuHair",              "Deku Hair",                COSMETICS_GROUP_PLAYER,       ColorRGBA8(255, 240,   0, 255), false, true, false),
-    COSMETIC_OPTION("Player.GoronTunic",            "Goron Tunic",              COSMETICS_GROUP_PLAYER,       ColorRGBA8( 30, 105,  27, 255), false, true, false),
-    COSMETIC_OPTION("Player.ZoraTunic",             "Zora Tunic",               COSMETICS_GROUP_PLAYER,       ColorRGBA8( 30, 105,  27, 255), false, true, false),
-    COSMETIC_OPTION("Player.KafeiHair",             "Kafei Hair",               COSMETICS_GROUP_PLAYER,       ColorRGBA8( 64,   0, 163, 255), false, true, false),
+    COSMETIC_OPTION("HUD.Hearts",                   "Hearts",                           COSMETICS_GROUP_HUD,                ColorRGBA8(255,  70,  50, 255), false, true, false),
+    COSMETIC_OPTION("HUD.Magic",                    "Magic",                            COSMETICS_GROUP_HUD,                ColorRGBA8(  0, 200,   0, 255), false, true, false),
+    COSMETIC_OPTION("HUD.SmallKey",                 "Small Key",                        COSMETICS_GROUP_HUD,                ColorRGBA8(  0, 200, 230, 255), false, true, false),
+    COSMETIC_OPTION("HUD.RupeeIcon",                "Rupee Icon",                       COSMETICS_GROUP_HUD,                ColorRGBA8(200, 255, 100, 255), false, true, false),
+    COSMETIC_OPTION("HUD.Minimap",                  "Minimap",                          COSMETICS_GROUP_HUD,                ColorRGBA8(  0, 255, 255, 160), false, true, false),
+    COSMETIC_OPTION("Effects.SpinSlashCharge",      "Spin Slash Charge",                COSMETICS_GROUP_EFFECTS,            ColorRGBA8(170, 255, 255, 255), false, true, false),
+    COSMETIC_OPTION("Effects.SpinSlashBurst",       "Spin Slash Burst",                 COSMETICS_GROUP_EFFECTS,            ColorRGBA8(170, 255, 255, 255), false, true, false),
+    COSMETIC_OPTION("Effects.GreatSpinCharge",      "Great Spin Charge",                COSMETICS_GROUP_EFFECTS,            ColorRGBA8(255, 255, 170, 255), false, true, false),
+    COSMETIC_OPTION("Effects.GreatSpinBurst",       "Great Spin Burst",                 COSMETICS_GROUP_EFFECTS,            ColorRGBA8(255, 255, 170, 255), false, true, false),
+    COSMETIC_OPTION("Effects.FireArrowPrim",        "Fire Arrow Primary",               COSMETICS_GROUP_EFFECTS,            ColorRGBA8(255, 200,   0, 255), false, true, false),
+    COSMETIC_OPTION("Effects.FireArrowSec",         "Fire Arrow Secondary",             COSMETICS_GROUP_EFFECTS,            ColorRGBA8(255,   0,   0, 128), false, true, false),
+    COSMETIC_OPTION("Effects.IceArrowPrim",         "Ice Arrow Primary",                COSMETICS_GROUP_EFFECTS,            ColorRGBA8(170, 255, 255, 255), false, true, false),
+    COSMETIC_OPTION("Effects.IceArrowSec",          "Ice Arrow Secondary",              COSMETICS_GROUP_EFFECTS,            ColorRGBA8(  0,   0, 255, 128), false, true, false),
+    COSMETIC_OPTION("Effects.LightArrowPrim",       "Light Arrow Primary",              COSMETICS_GROUP_EFFECTS,            ColorRGBA8(255, 255, 170, 255), false, true, false),
+    COSMETIC_OPTION("Effects.LightArrowSec",        "Light Arrow Secondary",            COSMETICS_GROUP_EFFECTS,            ColorRGBA8(255, 255,   0, 128), false, true, false),
+    COSMETIC_OPTION("Trails.KokiriSwordTrail",      "Kokiri Sword Trail",               COSMETICS_GROUP_TRAILS,             ColorRGBA8(255, 255, 255, 255), false, true, false),
+    COSMETIC_OPTION("Trails.RazorSwordTrail",       "Razor Sword Trail",                COSMETICS_GROUP_TRAILS,             ColorRGBA8(255, 255, 255, 255), false, true, false),
+    COSMETIC_OPTION("Trails.GildedSwordTrail",      "Gilded Sword Trail",               COSMETICS_GROUP_TRAILS,             ColorRGBA8(255, 255, 255, 255), false, true, false),
+    COSMETIC_OPTION("Trails.GreatFairySwordTrail",  "Great Fairy Sword Trail",          COSMETICS_GROUP_TRAILS,             ColorRGBA8(255, 255, 255, 255), false, true, false),
+    COSMETIC_OPTION("Trails.FierceDeitySwordTrail", "Fierce Deity Sword Trail",         COSMETICS_GROUP_TRAILS,             ColorRGBA8(255, 255, 255, 255), false, true, false),
+    COSMETIC_OPTION("Trails.DekuStickTrail",        "Deku Stick Trail",                 COSMETICS_GROUP_TRAILS,             ColorRGBA8(255, 255, 255, 255), false, true, false),
+    COSMETIC_OPTION("Trails.DekuSpinTrail",         "Deku Spin Trail",                  COSMETICS_GROUP_TRAILS,             ColorRGBA8(255, 255, 255, 255), false, true, false),
+    COSMETIC_OPTION("Trails.ZoraPunchTrail",        "Zora Punch Trail",                 COSMETICS_GROUP_TRAILS,             ColorRGBA8(255, 255, 255, 255), false, true, false),
+    COSMETIC_OPTION("Trails.ZoraKickTrail",         "Zora Kick Trail",                  COSMETICS_GROUP_TRAILS,             ColorRGBA8(255, 255, 255, 255), false, true, false),
+    COSMETIC_OPTION("Trails.ZoraBoomerangTrail",    "Zora Boomerang Trail",             COSMETICS_GROUP_TRAILS,             ColorRGBA8(255, 255, 100, 255), false, true, false),
+    COSMETIC_OPTION("Buttons.B",                    "B",                                COSMETICS_GROUP_BUTTONS,            ColorRGBA8(100, 255, 120, 255), false, true, false),
+    COSMETIC_OPTION("Buttons.A",                    "A",                                COSMETICS_GROUP_BUTTONS,            ColorRGBA8(100, 200, 255, 255), false, true, false),
+    COSMETIC_OPTION("Buttons.CLeft",                "C Left",                           COSMETICS_GROUP_BUTTONS,            ColorRGBA8(255, 240,   0, 255), false, true, false),
+    COSMETIC_OPTION("Buttons.CDown",                "C Down",                           COSMETICS_GROUP_BUTTONS,            ColorRGBA8(255, 240,   0, 255), false, true, false),
+    COSMETIC_OPTION("Buttons.CRight",               "C Right",                          COSMETICS_GROUP_BUTTONS,            ColorRGBA8(255, 240,   0, 255), false, true, false),
+    COSMETIC_OPTION("Buttons.DPad",                 "D Pad",                            COSMETICS_GROUP_BUTTONS,            ColorRGBA8(255, 255, 255, 255), false, true, false),
+    COSMETIC_OPTION("Buttons.Start",                "Start",                            COSMETICS_GROUP_BUTTONS,            ColorRGBA8(255, 130,  60, 255), false, true, false),
+    COSMETIC_OPTION("Menus.FileWindow",             "File Select Window",               COSMETICS_GROUP_MENUS,              ColorRGBA8(100, 150, 255, 255), false, true, false),
+    COSMETIC_OPTION("Menus.FilePlates",             "File Select Plates",               COSMETICS_GROUP_MENUS,              ColorRGBA8(100, 150, 255, 255), false, true, false),
+    COSMETIC_OPTION("Player.HumanTunic",            "Human Tunic",                      COSMETICS_GROUP_PLAYER,             ColorRGBA8( 30, 105,  27, 255), false, true, false),
+    COSMETIC_OPTION("Player.HumanHair",             "Human Hair",                       COSMETICS_GROUP_PLAYER,             ColorRGBA8(255, 240,   0, 255), false, true, false),
+    COSMETIC_OPTION("Player.DekuTunic",             "Deku Tunic",                       COSMETICS_GROUP_PLAYER,             ColorRGBA8( 30, 105,  27, 255), false, true, false),
+    COSMETIC_OPTION("Player.DekuHair",              "Deku Hair",                        COSMETICS_GROUP_PLAYER,             ColorRGBA8(255, 240,   0, 255), false, true, false),
+    COSMETIC_OPTION("Player.GoronTunic",            "Goron Tunic",                      COSMETICS_GROUP_PLAYER,             ColorRGBA8( 30, 105,  27, 255), false, true, false),
+    COSMETIC_OPTION("Player.ZoraTunic",             "Zora Tunic",                       COSMETICS_GROUP_PLAYER,             ColorRGBA8( 30, 105,  27, 255), false, true, false),
+    COSMETIC_OPTION("Player.KafeiHair",             "Kafei Hair",                       COSMETICS_GROUP_PLAYER,             ColorRGBA8( 64,   0, 163, 255), false, true, false),
+    
+    /*
+    COSMETIC_OPTION("Key.WoodfallSmall",            "Woodfall Small Key",               COSMETICS_GROUP_WOODFALL_KEYS,      ColorRGBA8( 255, 170, 246, 255), false, true, false),
+    COSMETIC_OPTION("Key.WoodfallEmblem",           "Woodfall Emblem",                  COSMETICS_GROUP_WOODFALL_KEYS,      ColorRGBA8( 255, 170, 246, 255), false, true, false),
+    COSMETIC_OPTION("Key.WoodfallBoss",             "Woodfall Boss Key",                COSMETICS_GROUP_WOODFALL_KEYS,      ColorRGBA8( 255, 244, 204, 255), false, true, false),
+    
+    COSMETIC_OPTION("Key.SnowheadSmall",            "Snowhead Small Key",               COSMETICS_GROUP_SNOWHEAD_KEYS,      ColorRGBA8( 116, 226, 61, 255), false, true, false),
+    COSMETIC_OPTION("Key.SnowheadEmblem",           "Snowhead Emblem",                  COSMETICS_GROUP_SNOWHEAD_KEYS,      ColorRGBA8( 116, 226, 61, 255), false, true, false),
+    COSMETIC_OPTION("Key.SnowheadBoss",             "Snowhead Boss Key",                COSMETICS_GROUP_SNOWHEAD_KEYS,      ColorRGBA8( 255, 244, 204, 255), false, true, false),
+    
+    COSMETIC_OPTION("Key.GreatBaySmall",            "Great Bay Small Key",              COSMETICS_GROUP_GREAT_BAY_KEYS,     ColorRGBA8( 143, 103, 226, 255), false, true, false),
+    COSMETIC_OPTION("Key.GreatBayEmblem",           "Great Bay Emblem",                 COSMETICS_GROUP_GREAT_BAY_KEYS,     ColorRGBA8( 143, 103, 226, 255), false, true, false),
+    COSMETIC_OPTION("Key.GreatBayBoss",             "Great Bay Boss Key",               COSMETICS_GROUP_GREAT_BAY_KEYS,     ColorRGBA8( 255, 244, 204, 255), false, true, false),
+
+    COSMETIC_OPTION("Key.StoneTowerSmall",          "Stone Tower Small Key",            COSMETICS_GROUP_STONE_TOWER_KEYS,   ColorRGBA8( 226, 221, 0, 255), false, true, false),
+    COSMETIC_OPTION("Key.StoneTowerEmblem",         "Stone Tower Emblem",               COSMETICS_GROUP_STONE_TOWER_KEYS,   ColorRGBA8( 226, 221, 0, 255), false, true, false),
+    COSMETIC_OPTION("Key.StoneTowerBoss",           "Stone Tower Boss Key",             COSMETICS_GROUP_STONE_TOWER_KEYS,   ColorRGBA8( 255, 244, 204, 255), false, true, false),
+    */
 };
 // clang-format on
 
@@ -132,39 +152,57 @@ static bool CosmeticEditorIsSuppressed(const CosmeticOption& option) {
     return false;
 }
 
-typedef struct {
-    uint16_t data1;
-    uint16_t data2;
-} OriginalRGB;
+struct OriginalTextureData {
+    std::vector<uint16_t> entries;
+    std::vector<bool> saved;
+};
 
-std::unordered_map<std::string, std::unordered_map<int, OriginalRGB>> originalRGB;
+std::unordered_map<std::string, OriginalTextureData> sOriginalTextureData;
 
-void PatchPalette(const char* path, int index, uint8_t r, uint8_t g, uint8_t b) {
-    auto res = Ship::Context::GetInstance()->GetResourceManager()->LoadResource(path);
-    auto data = (uint8_t*)res->GetRawPointer();
+struct PaletteTarget {
+    uint8_t* data = nullptr;
+    OriginalTextureData* original = nullptr;
+};
 
-    if (!originalRGB.contains(path) || !originalRGB[path].contains(index)) {
-        originalRGB[path][index] = {
-            data[index * 2],
-            data[index * 2 + 1],
-        };
+PaletteTarget ResolvePaletteTarget(const char* path) {
+    auto res = Ship::Context::GetRawInstance()->GetResourceManager()->LoadResource(path);
+    if (res == nullptr || res->GetInitData()->IsCustom) {
+        return {};
     }
 
-    uint16_t col16 = (r << 11) | (g << 6) | (b << 1) | 1;
-    data[index * 2] = col16 >> 8;
-    data[index * 2 + 1] = col16 & 0xff;
+    return { (uint8_t*)res->GetRawPointer(), &sOriginalTextureData[path] };
 }
 
-void UnpatchPalette(const char* path, int index) {
-    if (!originalRGB.contains(path) || !originalRGB[path].contains(index)) {
+void SaveOriginalEntry(const PaletteTarget& target, uint32_t index) {
+    OriginalTextureData& original = *target.original;
+
+    if (index >= original.saved.size()) {
+        original.saved.resize(index + 1, false);
+        original.entries.resize(index + 1, 0);
+    }
+
+    if (!original.saved[index]) {
+        original.entries[index] = (target.data[index * 2] << 8) | target.data[index * 2 + 1];
+        original.saved[index] = true;
+    }
+}
+
+void PatchPalette(const PaletteTarget& target, uint32_t index, uint8_t r, uint8_t g, uint8_t b) {
+    SaveOriginalEntry(target, index);
+
+    uint16_t col16 = (r << 11) | (g << 6) | (b << 1) | 1;
+    target.data[index * 2] = col16 >> 8;
+    target.data[index * 2 + 1] = col16 & 0xff;
+}
+
+void UnpatchPalette(const PaletteTarget& target, uint32_t index) {
+    const OriginalTextureData& original = *target.original;
+    if (index >= original.saved.size() || !original.saved[index]) {
         return;
     }
 
-    auto res = Ship::Context::GetInstance()->GetResourceManager()->LoadResource(path);
-    auto data = (uint8_t*)res->GetRawPointer();
-
-    data[index * 2] = originalRGB[path][index].data1;
-    data[index * 2 + 1] = originalRGB[path][index].data2;
+    target.data[index * 2] = original.entries[index] >> 8;
+    target.data[index * 2 + 1] = original.entries[index] & 0xff;
 }
 
 enum SHADE_MODE {
@@ -194,19 +232,18 @@ Gfx disableGrayscale[] = {
 // First, it pulls all colors from the palette. Then it finds the average color across the range, and calculates the
 // difference between the average color and the target color. It then colors the range according to newBase,
 // and shades it lighter or darker based on the difference between the average color and the target color.
-void ShadePaletteNewBase(const char* path, uint32_t begin, uint32_t end, Color_RGBA8 newBase, SHADE_MODE mode) {
-    auto res = Ship::Context::GetInstance()->GetResourceManager()->LoadResource(path);
-    auto data = (uint8_t*)res->GetRawPointer();
+void ShadePaletteNewBase(const PaletteTarget& target, uint32_t begin, uint32_t end, Color_RGBA8 newBase,
+                         SHADE_MODE mode) {
+    uint8_t* data = target.data;
 
     uint32_t maxR = 0;
     uint32_t maxG = 0;
     uint32_t maxB = 0;
 
-    for (int i = begin; i <= end; i++) {
-        UnpatchPalette(path, i);
+    for (uint32_t i = begin; i <= end; i++) {
+        UnpatchPalette(target, i);
 
         uint16_t col16 = (data[i * 2] << 8) | data[i * 2 + 1];
-        uint8_t a = col16 & 1;
         uint8_t r = col16 >> 11;
         uint8_t g = (col16 >> 6) & 0x1f;
         uint8_t b = (col16 >> 1) & 0x1f;
@@ -220,9 +257,8 @@ void ShadePaletteNewBase(const char* path, uint32_t begin, uint32_t end, Color_R
         return;
     }
 
-    for (int i = begin; i <= end; i++) {
+    for (uint32_t i = begin; i <= end; i++) {
         uint16_t col16 = (data[i * 2] << 8) | data[i * 2 + 1];
-        uint8_t a = col16 & 1;
         uint8_t r = col16 >> 11;
         uint8_t g = (col16 >> 6) & 0x1f;
         uint8_t b = (col16 >> 1) & 0x1f;
@@ -247,8 +283,17 @@ void ShadePaletteNewBase(const char* path, uint32_t begin, uint32_t end, Color_R
         g = (diff * newBase.g) / 255;
         b = (diff * newBase.b) / 255;
 
-        PatchPalette(path, i, r, g, b);
+        PatchPalette(target, i, r, g, b);
     }
+}
+
+void ShadePaletteNewBase(const char* path, uint32_t begin, uint32_t end, Color_RGBA8 newBase, SHADE_MODE mode) {
+    PaletteTarget target = ResolvePaletteTarget(path);
+    if (target.data == nullptr || target.original == nullptr) {
+        return;
+    }
+
+    ShadePaletteNewBase(target, begin, end, newBase, mode);
 }
 
 static const Color_RGBA8 whiteBase = { 255, 255, 255, 255 };
@@ -297,7 +342,12 @@ Color_RGBA8 mapNewBaseColorToGradient(Color_RGBA8 currentColor, Color_RGBA8 oldB
  */
 void ShadePaletteGradient(const char* path, uint32_t begin, uint32_t end, Color_RGBA8 oldBase, Color_RGBA8 newBase,
                           Color_RGBA8 targetEnd) {
-    ShadePaletteRevert(path, begin, end);
+    PaletteTarget target = ResolvePaletteTarget(path);
+    if (target.data == nullptr || target.original == nullptr) {
+        return;
+    }
+
+    ShadePaletteNewBase(target, begin, end, whiteBase, MODE_REVERT);
 
     // Convert 0-255 range to 0-31 range
     newBase.r >>= 3;
@@ -313,9 +363,8 @@ void ShadePaletteGradient(const char* path, uint32_t begin, uint32_t end, Color_
     oldBase.b >>= 3;
     oldBase.a >>= 3;
 
-    auto res = Ship::Context::GetInstance()->GetResourceManager()->LoadResource(path);
-    auto data = (uint8_t*)res->GetRawPointer();
-    for (int i = begin; i <= end; i++) {
+    uint8_t* data = target.data;
+    for (uint32_t i = begin; i <= end; i++) {
         uint16_t col16 = (data[i * 2] << 8) | data[i * 2 + 1];
         uint8_t a = col16 & 1;
         uint8_t r = col16 >> 11;
@@ -324,27 +373,19 @@ void ShadePaletteGradient(const char* path, uint32_t begin, uint32_t end, Color_
 
         Color_RGBA8 currentColor = { r, g, b, a };
         Color_RGBA8 newColor = mapNewBaseColorToGradient(currentColor, oldBase, newBase, targetEnd);
-        PatchPalette(path, i, newColor.r, newColor.g, newColor.b);
+        PatchPalette(target, i, newColor.r, newColor.g, newColor.b);
     }
 }
 
 // Patches a single pixel in a raw RGBA16 (RGBA5551) texture, preserving the original alpha bit.
-void PatchRGBA16Pixel(const char* path, int index, uint8_t r, uint8_t g, uint8_t b) {
-    auto res = Ship::Context::GetInstance()->GetResourceManager()->LoadResource(path);
-    auto data = (uint8_t*)res->GetRawPointer();
-
-    if (!originalRGB.contains(path) || !originalRGB[path].contains(index)) {
-        originalRGB[path][index] = {
-            data[index * 2],
-            data[index * 2 + 1],
-        };
-    }
+void PatchRGBA16Pixel(const PaletteTarget& target, uint32_t index, uint8_t r, uint8_t g, uint8_t b) {
+    SaveOriginalEntry(target, index);
 
     // Preserve the original alpha bit so transparent pixels stay transparent.
-    uint8_t a = data[index * 2 + 1] & 1;
+    uint8_t a = target.data[index * 2 + 1] & 1;
     uint16_t col16 = (r << 11) | (g << 6) | (b << 1) | a;
-    data[index * 2] = col16 >> 8;
-    data[index * 2 + 1] = col16 & 0xff;
+    target.data[index * 2] = col16 >> 8;
+    target.data[index * 2 + 1] = col16 & 0xff;
 }
 
 /*
@@ -353,15 +394,19 @@ void PatchRGBA16Pixel(const char* path, int index, uint8_t r, uint8_t g, uint8_t
  * so transparent background areas are left untouched.
  */
 void ShadeRGBA16NewBase(const char* path, uint32_t begin, uint32_t end, Color_RGBA8 newBase, SHADE_MODE mode) {
-    auto res = Ship::Context::GetInstance()->GetResourceManager()->LoadResource(path);
-    auto data = (uint8_t*)res->GetRawPointer();
+    PaletteTarget target = ResolvePaletteTarget(path);
+    if (target.data == nullptr || target.original == nullptr) {
+        return;
+    }
+
+    uint8_t* data = target.data;
 
     uint32_t maxR = 0;
     uint32_t maxG = 0;
     uint32_t maxB = 0;
 
     for (uint32_t i = begin; i <= end; i++) {
-        UnpatchPalette(path, i);
+        UnpatchPalette(target, i);
 
         uint16_t col16 = (data[i * 2] << 8) | data[i * 2 + 1];
         uint8_t a = col16 & 1;
@@ -393,7 +438,7 @@ void ShadeRGBA16NewBase(const char* path, uint32_t begin, uint32_t end, Color_RG
             // Set transparent pixels to black so that bilinear filtering at edges
             // blends toward black (neutral) rather than bleeding the original color.
             // Using full brightness here would create a harsh colored halo at edges.
-            PatchRGBA16Pixel(path, i, 0, 0, 0);
+            PatchRGBA16Pixel(target, i, 0, 0, 0);
             continue;
         }
 
@@ -416,7 +461,7 @@ void ShadeRGBA16NewBase(const char* path, uint32_t begin, uint32_t end, Color_RG
         g = (diff * newBase.g) / 255;
         b = (diff * newBase.b) / 255;
 
-        PatchRGBA16Pixel(path, i, r, g, b);
+        PatchRGBA16Pixel(target, i, r, g, b);
     }
 }
 
@@ -605,7 +650,7 @@ const char* kCosmeticRandomizeOnSeedGenCvar = "gCosmetics.RandomizeOnSeedGen";
 int sCosmeticRainbowHue = 0;
 
 void CosmeticEditorSave() {
-    Ship::Context::GetInstance()->GetWindow()->GetGui()->SaveConsoleVariablesNextFrame();
+    Ship::Context::GetRawInstance()->GetWindow()->GetGui()->SaveConsoleVariablesNextFrame();
 }
 
 Color_RGBA8 CosmeticEditorGetDefaultColor(const CosmeticOption& option) {
@@ -761,25 +806,30 @@ void CosmeticEditorUpdateTick() {
 
         double frequency = 2 * M_PI / (360 * rainbowSpeed);
         Color_RGBA8 color = {
-            static_cast<uint8_t>(sin(frequency * (sCosmeticRainbowHue + index) + 0) * 127) + 128,
-            static_cast<uint8_t>(sin(frequency * (sCosmeticRainbowHue + index) + (2 * M_PI / 3)) * 127) + 128,
-            static_cast<uint8_t>(sin(frequency * (sCosmeticRainbowHue + index) + (4 * M_PI / 3)) * 127) + 128,
+            static_cast<uint8_t>(sin(frequency * (sCosmeticRainbowHue + index) + 0) * 127 + 128),
+            static_cast<uint8_t>(sin(frequency * (sCosmeticRainbowHue + index) + (2 * M_PI / 3)) * 127 + 128),
+            static_cast<uint8_t>(sin(frequency * (sCosmeticRainbowHue + index) + (4 * M_PI / 3)) * 127 + 128),
             static_cast<uint8_t>(option.supportsAlpha ? option.currentColor.w * 255.0f : 255),
         };
 
         option.currentColor = ImVec4(color.r / 255.0f, color.g / 255.0f, color.b / 255.0f, color.a / 255.0f);
         CVarSetColor(option.valuesCvar, color);
-        CVarSetInteger(option.changedCvar, 1);
-        CosmeticEditorRefreshElement(option);
+
+        ShipInit::Init(option.valuesCvar);
+        if (!CVarGetInteger(option.changedCvar, 0)) {
+            CVarSetInteger(option.changedCvar, 1);
+            ShipInit::Init(option.changedCvar);
+        }
 
         if (!syncRainbow) {
             index += static_cast<int>(60 * rainbowSpeed);
         }
     }
 
-    const bool hasCustomRainbowEntries = HasCustomCosmeticsRainbowEnabled();
-    UpdateCustomCosmeticsRainbow(sCosmeticRainbowHue, rainbowSpeed, index);
-    ApplyDynamicCosmetics();
+    const bool hasCustomRainbowEntries = UpdateCustomCosmeticsRainbow(sCosmeticRainbowHue, rainbowSpeed, index);
+    if (hasCustomRainbowEntries) {
+        ApplyDynamicCosmetics();
+    }
 
     if (!hasRainbowEntries && !hasCustomRainbowEntries) {
         return;
@@ -1217,14 +1267,6 @@ static RegisterShipInitFunc goronTunicPatch(
                                        gsSPDisplayList(goronTunic));
 
             ShadePaletteWhite("objects/object_link_goron/object_link_goron_Tex_002780", 0, 127, MODE_MAX);
-            /*
-             * gLinkGoronCurledDL contains information for applying the hat texture when Link is Goron rolling, but it
-             * does not seem to obey color for anything but the necklace beads. Instead, directly set the color of the
-             * texture.
-             */
-            Color_RGBA8 changedColor = CVarGetColor(kGoronTunicOption.colorCvar, {});
-            ShadePaletteNewBase("objects/object_link_goron/object_link_goron_Tex_00CEB8", 0, 127, changedColor,
-                                MODE_MAX);
         } else {
             ResourceMgr_UnpatchGfxByName("objects/object_link_goron/gLinkGoronWaistDL", "setPrim");
             ResourceMgr_UnpatchGfxByName("objects/object_link_goron/gLinkGoronHatDL", "setPrim");
@@ -1240,6 +1282,13 @@ static RegisterShipInitFunc goronTunicColor(
     []() {
         Color_RGBA8 changedColor = CVarGetColor(kGoronTunicOption.colorCvar, {});
         goronTunic[0] = gsDPSetPrimColor(0, 0, changedColor.r, changedColor.g, changedColor.b, 255);
+
+        if (IsCustomGoronModelActive() || !CVarGetInteger(kGoronTunicOption.colorChangedCvar, 0)) {
+            return;
+        }
+
+        ShadePaletteNewBase("objects/object_link_goron/object_link_goron_Tex_00CEB8", 0, 127, changedColor, MODE_MAX);
+        gfx_texture_cache_clear();
     },
     { kGoronTunicOption.colorCvar });
 
@@ -1247,53 +1296,66 @@ static RegisterShipInitFunc goronTunicColor(
 static const Color_RGBA8 zoraSkinColor = { 197, 247, 247, 255 };
 static const Color_RGBA8 zoraTunicBaseColor = { 0, 74, 16, 255 };
 
+static RegisterShipInitFunc zoraTunicColor(
+    []() {
+        if (IsCustomZoraModelActive() || !CVarGetInteger(kZoraTunicOption.colorChangedCvar, 0)) {
+            return;
+        }
+
+        /*
+         * Zora works differently from the other color changes. Other forms apply a grayscale to the green tunic
+         * textures and then alter the Gfx commands to set the color. That works because those textures are one basic
+         * color. Zora, however, gradually transitions from green to the bluish Zora skin. A further complication is
+         * that relevant colors in the TLUTs are not contiguous, so the brightness calculation will not work as
+         * intended. Instead of using the palette approach, here we directly apply the custom color to the textures and
+         * TLUTs.
+         */
+        Color_RGBA8 changedColor = CVarGetColor(kZoraTunicOption.colorCvar, {});
+        // Arms
+        ShadePaletteGradient("objects/object_link_zora/object_link_zora_TLUT_00C578", 151, 177, zoraTunicBaseColor,
+                             changedColor, zoraSkinColor);
+        ShadePaletteGradient("objects/object_link_zora/object_link_zora_TLUT_00C578", 179, 180, zoraTunicBaseColor,
+                             changedColor, zoraSkinColor);
+        ShadePaletteGradient("objects/object_link_zora/object_link_zora_TLUT_00C578", 183, 183, zoraTunicBaseColor,
+                             changedColor, zoraSkinColor);
+
+        // Hat/head and pants
+        ShadePaletteGradient("objects/object_link_zora/object_link_zora_TLUT_005000", 151, 177, zoraTunicBaseColor,
+                             changedColor, zoraSkinColor);
+        ShadePaletteGradient("objects/object_link_zora/object_link_zora_TLUT_005000", 179, 180, zoraTunicBaseColor,
+                             changedColor, zoraSkinColor);
+        ShadePaletteGradient("objects/object_link_zora/object_link_zora_TLUT_005000", 183, 183, zoraTunicBaseColor,
+                             changedColor, zoraSkinColor);
+
+        // Shield
+        ShadePaletteGradient("objects/object_link_zora/object_link_zora_Tex_010228", 80, 511, zoraTunicBaseColor,
+                             changedColor, zoraSkinColor);
+
+        // Boomerangs
+        ShadePaletteGradient("objects/gameplay_keep/gameplay_keep_Tex_0700B0", 80, 511, zoraTunicBaseColor,
+                             changedColor, zoraSkinColor);
+
+        gfx_texture_cache_clear();
+    },
+    { kZoraTunicOption.colorCvar });
+
 static RegisterShipInitFunc zoraTunicPatch(
     []() {
         if (!IsCustomZoraModelActive() && CVarGetInteger(kZoraTunicOption.colorChangedCvar, 0)) {
-            /*
-             * Zora works differently from the other color changes. Other forms apply a grayscale to the green tunic
-             * textures and then alter the Gfx commands to set the color. That works because those textures are one
-             * basic color. Zora, however, gradually transitions from green to the bluish Zora skin. A further
-             * complication is that relevant colors in the TLUTs are not contiguous, so the brightness calculation will
-             * not work as intended. Instead of using the palette approach, here we directly apply the custom color to
-             * the textures and TLUTs.
-             */
-            Color_RGBA8 changedColor = CVarGetColor(kZoraTunicOption.colorCvar, {});
-            // Arms
-            ShadePaletteGradient("objects/object_link_zora/object_link_zora_TLUT_00C578", 151, 177, zoraTunicBaseColor,
-                                 changedColor, zoraSkinColor);
-            ShadePaletteGradient("objects/object_link_zora/object_link_zora_TLUT_00C578", 179, 180, zoraTunicBaseColor,
-                                 changedColor, zoraSkinColor);
-            ShadePaletteGradient("objects/object_link_zora/object_link_zora_TLUT_00C578", 183, 183, zoraTunicBaseColor,
-                                 changedColor, zoraSkinColor);
-
-            // Hat/head and pants
-            ShadePaletteGradient("objects/object_link_zora/object_link_zora_TLUT_005000", 151, 177, zoraTunicBaseColor,
-                                 changedColor, zoraSkinColor);
-            ShadePaletteGradient("objects/object_link_zora/object_link_zora_TLUT_005000", 179, 180, zoraTunicBaseColor,
-                                 changedColor, zoraSkinColor);
-            ShadePaletteGradient("objects/object_link_zora/object_link_zora_TLUT_005000", 183, 183, zoraTunicBaseColor,
-                                 changedColor, zoraSkinColor);
-
-            // Shield
-            ShadePaletteGradient("objects/object_link_zora/object_link_zora_Tex_010228", 80, 511, zoraTunicBaseColor,
-                                 changedColor, zoraSkinColor);
-
-            // Boomerangs
-            ShadePaletteGradient("objects/gameplay_keep/gameplay_keep_Tex_0700B0", 80, 511, zoraTunicBaseColor,
-                                 changedColor, zoraSkinColor);
-        } else {
-            ShadePaletteRevert("objects/object_link_zora/object_link_zora_TLUT_00C578", 151, 177);
-            ShadePaletteRevert("objects/object_link_zora/object_link_zora_TLUT_00C578", 179, 180);
-            ShadePaletteRevert("objects/object_link_zora/object_link_zora_TLUT_00C578", 183, 183);
-
-            ShadePaletteRevert("objects/object_link_zora/object_link_zora_TLUT_005000", 151, 177);
-            ShadePaletteRevert("objects/object_link_zora/object_link_zora_TLUT_005000", 179, 180);
-            ShadePaletteRevert("objects/object_link_zora/object_link_zora_TLUT_005000", 183, 183);
-
-            ShadePaletteRevert("objects/object_link_zora/object_link_zora_Tex_010228", 80, 511);
-            ShadePaletteRevert("objects/gameplay_keep/gameplay_keep_Tex_0700B0", 80, 511);
+            return;
         }
+
+        ShadePaletteRevert("objects/object_link_zora/object_link_zora_TLUT_00C578", 151, 177);
+        ShadePaletteRevert("objects/object_link_zora/object_link_zora_TLUT_00C578", 179, 180);
+        ShadePaletteRevert("objects/object_link_zora/object_link_zora_TLUT_00C578", 183, 183);
+
+        ShadePaletteRevert("objects/object_link_zora/object_link_zora_TLUT_005000", 151, 177);
+        ShadePaletteRevert("objects/object_link_zora/object_link_zora_TLUT_005000", 179, 180);
+        ShadePaletteRevert("objects/object_link_zora/object_link_zora_TLUT_005000", 183, 183);
+
+        ShadePaletteRevert("objects/object_link_zora/object_link_zora_Tex_010228", 80, 511);
+        ShadePaletteRevert("objects/gameplay_keep/gameplay_keep_Tex_0700B0", 80, 511);
+
         gfx_texture_cache_clear();
     },
     { kZoraTunicOption.colorChangedCvar });
@@ -1342,9 +1404,6 @@ static RegisterShipInitFunc heartsColorDLPatch(
                                        gsSPDisplayList(heartsColorDL));
             ResourceMgr_PatchGfxByName("objects/object_gi_liquid/gGiPotionContainerRedPatternColorDL", "setEnv", 4,
                                        gsSPDisplayList(heartsEnvColorDL));
-
-            Color_RGBA8 changedColor = CVarGetColor(kHeartsOption.colorCvar, {});
-            ShadeRGBA16NewBase("objects/gameplay_keep/gDropRecoveryHeartTex", 0, 1023, changedColor, MODE_AVG);
         } else {
             ResourceMgr_UnpatchGfxByName("objects/object_gi_heart/gGiRecoveryHeartDL", "enableGrayscale");
             ResourceMgr_UnpatchGfxByName("objects/object_gi_heart/gGiRecoveryHeartDL", "setPrim");
@@ -1376,6 +1435,14 @@ static RegisterShipInitFunc heartsColorDLUpdate(
         Color_RGBA8 envColor =
             CosmeticEditor_GetChangedColorEx(0, 0, 0, 0, "HUD.Hearts", COSMETIC_COLOR_MODE_DIVIDE, 2.0f);
         heartsEnvColorDL[0] = gsDPSetEnvColor(envColor.r, envColor.g, envColor.b, 255);
+
+        if (!CVarGetInteger(kHeartsOption.colorChangedCvar, 0)) {
+            return;
+        }
+
+        Color_RGBA8 changedColor = CVarGetColor(kHeartsOption.colorCvar, {});
+        ShadeRGBA16NewBase("objects/gameplay_keep/gDropRecoveryHeartTex", 0, 1023, changedColor, MODE_AVG);
+        gfx_texture_cache_clear();
     },
     { kHeartsOption.colorCvar });
 
@@ -1411,10 +1478,6 @@ static RegisterShipInitFunc magicColorDLPatch(
                                        gsSPDisplayList(magicColorDL));
             ResourceMgr_PatchGfxByName("objects/object_gi_liquid/gGiPotionContainerGreenPatternColorDL", "setEnv", 4,
                                        gsSPDisplayList(magicEnvColorDL));
-
-            Color_RGBA8 changedColor = CVarGetColor(kMagicOption.colorCvar, {});
-            ShadeRGBA16NewBase("objects/gameplay_keep/gDropMagicSmallTex", 0, 1023, changedColor, MODE_AVG);
-            ShadeRGBA16NewBase("objects/gameplay_keep/gDropMagicLargeTex", 0, 1023, changedColor, MODE_AVG);
         } else {
             ResourceMgr_UnpatchGfxByName("objects/object_gi_magicpot/gGiMagicJarLargeDL", "setPrim");
             ResourceMgr_UnpatchGfxByName("objects/object_gi_magicpot/gGiMagicJarLargeDL", "setEnv");
@@ -1441,5 +1504,14 @@ static RegisterShipInitFunc magicColorDLUpdate(
         Color_RGBA8 envColor =
             CosmeticEditor_GetChangedColorEx(0, 0, 0, 0, "HUD.Magic", COSMETIC_COLOR_MODE_DIVIDE, 2.0f);
         magicEnvColorDL[0] = gsDPSetEnvColor(envColor.r, envColor.g, envColor.b, 255);
+
+        if (!CVarGetInteger(kMagicOption.colorChangedCvar, 0)) {
+            return;
+        }
+
+        Color_RGBA8 changedColor = CVarGetColor(kMagicOption.colorCvar, {});
+        ShadeRGBA16NewBase("objects/gameplay_keep/gDropMagicSmallTex", 0, 1023, changedColor, MODE_AVG);
+        ShadeRGBA16NewBase("objects/gameplay_keep/gDropMagicLargeTex", 0, 1023, changedColor, MODE_AVG);
+        gfx_texture_cache_clear();
     },
     { kMagicOption.colorCvar });

@@ -1739,7 +1739,8 @@ void func_801457CC(GameState* gameState, SramContext* sramCtx) {
                         fileSelect->maskCount[sp76] = maskCount;
                         fileSelect->heartPieceCount[sp76] = GET_QUEST_HEART_PIECE_COUNT;
 
-                        GameInteractor_ExecuteOnFileSelectSaveLoad(sp76 - 2, true, &gSaveContext);
+                        GameInteractor_ExecuteOnFileSelectSaveLoad(sp76 - FILE_NUM_OWL_SAVE_OFFSET, true,
+                                                                   &gSaveContext);
                     }
 
                     if (sp6E == 1) {

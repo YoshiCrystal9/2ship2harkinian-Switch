@@ -38,6 +38,14 @@ std::string activeDisplayList = "";
 std::vector<std::string> displayListSearchResults;
 int16_t searchDebounceFrames = -1;
 bool doSearch = false;
+bool displayListResultsPopulated = false;
+
+struct DisplayListEntry {
+    std::string name;
+    std::string lowerName;
+};
+static std::vector<DisplayListEntry> allDisplayLists;
+static bool displayListIndexBuilt = false;
 
 // Extended command map with all GBI commands
 std::unordered_map<int, std::string> cmdMap = {
@@ -143,42 +151,56 @@ CommandCategory GetCommandCategory(int cmd) {
     }
 }
 
-void PerformDisplayListSearch() {
+static std::string ToLowerASCII(const std::string& str) {
+    std::string lower = str;
+    std::transform(lower.begin(), lower.end(), lower.begin(),
+                   [](unsigned char c) { return (c >= 'A' && c <= 'Z') ? c + 32 : c; });
+    return lower;
+}
+
+static void BuildDisplayListIndex() {
     // Get all DL files using broad pattern (glob_match is case-sensitive, so we filter manually)
-    auto result = Ship::Context::GetInstance()->GetResourceManager()->GetArchiveManager()->ListFiles("*DL*");
+    auto result = Ship::Context::GetRawInstance()->GetResourceManager()->GetArchiveManager()->ListFiles("*DL*");
 
-    displayListSearchResults.clear();
-
-    // Convert search string to lowercase for case-insensitive matching (ASCII-safe)
-    std::string searchLower = std::string(searchString);
-    auto toLowerASCII = [](unsigned char c) { return (c >= 'A' && c <= 'Z') ? c + 32 : c; };
-    std::transform(searchLower.begin(), searchLower.end(), searchLower.begin(), toLowerASCII);
+    allDisplayLists.clear();
+    allDisplayLists.reserve(result->size());
 
     // Filter the file results even further as StormLib can only use wildcard searching
-    for (size_t i = 0; i < result->size(); i++) {
-        std::string val = result->at(i);
-        std::string valLower = val;
-        std::transform(valLower.begin(), valLower.end(), valLower.begin(), toLowerASCII);
+    for (const auto& val : *result) {
+        std::string valLower = ToLowerASCII(val);
 
         // Check if string ends with "dl" or contains "dl_" (case-insensitive)
-        bool endsWithDL = valLower.size() >= 2 && valLower.substr(valLower.size() - 2) == "dl";
+        bool endsWithDL = valLower.size() >= 2 && valLower.compare(valLower.size() - 2, 2, "dl") == 0;
         bool containsDL_ = valLower.find("dl_") != std::string::npos;
 
-        // Check if filename contains the search string (case-insensitive)
-        bool matchesSearch = searchLower.empty() || valLower.find(searchLower) != std::string::npos;
-
-        if ((endsWithDL || containsDL_) && matchesSearch) {
-            displayListSearchResults.push_back(val); // Keep original case for display
+        if (endsWithDL || containsDL_) {
+            allDisplayLists.push_back({ val, std::move(valLower) }); // Keep original case for display
         }
     }
 
     // Sort the final list
-    std::sort(displayListSearchResults.begin(), displayListSearchResults.end(),
-              [](const std::string& a, const std::string& b) {
-                  return std::lexicographical_compare(a.begin(), a.end(), b.begin(), b.end(), [](char c1, char c2) {
-                      return std::tolower(c1) < std::tolower(c2);
-                  });
-              });
+    std::sort(allDisplayLists.begin(), allDisplayLists.end(),
+              [](const DisplayListEntry& a, const DisplayListEntry& b) { return a.lowerName < b.lowerName; });
+
+    displayListIndexBuilt = true;
+}
+
+void PerformDisplayListSearch() {
+    if (!displayListIndexBuilt) {
+        BuildDisplayListIndex();
+    }
+
+    displayListSearchResults.clear();
+
+    // Filtering preserves the index's ordering, so the results need no further sorting
+    std::string searchLower = ToLowerASCII(searchString);
+    for (const auto& entry : allDisplayLists) {
+        if (searchLower.empty() || entry.lowerName.find(searchLower) != std::string::npos) {
+            displayListSearchResults.push_back(entry.name);
+        }
+    }
+
+    displayListResultsPopulated = true;
 }
 
 void DrawDLSelector() {
@@ -206,6 +228,9 @@ void DrawDLSelector() {
 
     UIWidgets::PushStyleCombobox(THEME_COLOR);
     if (ImGui::BeginCombo("Active Display List", activeDisplayList.c_str())) {
+        if (!displayListResultsPopulated) {
+            PerformDisplayListSearch();
+        }
         for (size_t i = 0; i < displayListSearchResults.size(); i++) {
             if (ImGui::Selectable(displayListSearchResults[i].c_str())) {
                 activeDisplayList = displayListSearchResults[i];
@@ -274,7 +299,7 @@ void DrawInstructionFilters() {
             CVarSetInteger("gDeveloperTools.DLViewer.Filter.Sync", value);
             CVarSetInteger("gDeveloperTools.DLViewer.Filter.Other", value);
             CVarSetInteger("gDeveloperTools.DLViewer.Filter.Unknown", value);
-            Ship::Context::GetInstance()->GetWindow()->GetGui()->SaveConsoleVariablesNextFrame();
+            Ship::Context::GetRawInstance()->GetWindow()->GetGui()->SaveConsoleVariablesNextFrame();
         }
         g->CurrentItemFlags = backup_item_flags;
 
@@ -777,7 +802,7 @@ void DLViewerWindow::DrawElement() {
 
     try {
         auto res = std::static_pointer_cast<Fast::DisplayList>(
-            Ship::Context::GetInstance()->GetResourceManager()->LoadResource(activeDisplayList));
+            Ship::Context::GetRawInstance()->GetResourceManager()->LoadResource(activeDisplayList));
 
         if (res->GetInitData()->Type != static_cast<uint32_t>(Fast::ResourceType::DisplayList)) {
             ImGui::Text("Resource type is not a Display List. Please choose another.");
@@ -801,5 +826,4 @@ void DLViewerWindow::DrawElement() {
 }
 
 void DLViewerWindow::InitElement() {
-    PerformDisplayListSearch();
 }

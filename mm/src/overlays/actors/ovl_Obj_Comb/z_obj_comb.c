@@ -6,6 +6,7 @@
 
 #include "z_obj_comb.h"
 #include "objects/object_comb/object_comb.h"
+#include "GameInteractor/GameInteractor.h"
 
 #define FLAGS 0x00000000
 
@@ -315,12 +316,14 @@ void func_8098D99C(ObjComb* this, PlayState* play) {
 void func_8098DA74(ObjComb* this, PlayState* play) {
     s32 temp_v0 = OBJCOMB_GET_8000(&this->actor) | OBJCOMB_GET_80(&this->actor);
 
-    if (temp_v0 == 0) {
-        func_8098D870(this, play);
-    } else if (temp_v0 == 1) {
-        func_8098D8C8(this, play);
-    } else {
-        func_8098D99C(this, play);
+    if (GameInteractor_Should(VB_BEEHIVE_SPAWN_ACTOR, true, this)) {
+        if (temp_v0 == 0) {
+            func_8098D870(this, play);
+        } else if (temp_v0 == 1) {
+            func_8098D8C8(this, play);
+        } else {
+            func_8098D99C(this, play);
+        }
     }
 }
 
@@ -332,7 +335,9 @@ void ObjComb_Init(Actor* thisx, PlayState* play) {
     Actor_ProcessInitChain(&this->actor, sInitChain);
     Collider_InitJntSph(play, &this->collider);
 
-    if ((sp2C == 1) && OBJCOMB_GET_10(&this->actor) && CHECK_WEEKEVENTREG(WEEKEVENTREG_83_02)) {
+    if (GameInteractor_Should(VB_BEEHIVE_ALREADY_BROKEN,
+                              (sp2C == 1) && OBJCOMB_GET_10(&this->actor) && CHECK_WEEKEVENTREG(WEEKEVENTREG_83_02),
+                              this)) {
         Actor_Kill(&this->actor);
         return;
     }

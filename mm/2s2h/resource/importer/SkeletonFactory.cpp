@@ -6,6 +6,31 @@
 #include <ship/resource/ResourceManager.h>
 
 namespace SOH {
+static void InitializeSkeletonData(const std::shared_ptr<Skeleton>& skeleton) {
+    switch (skeleton->type) {
+        case SkeletonType::Normal:
+            skeleton->skeletonData.skeletonHeader.limbCount = skeleton->limbCount;
+            skeleton->standardLimbArray.reserve(skeleton->limbCount);
+            skeleton->skeletonData.skeletonHeader.segment = (void**)skeleton->skeletonHeaderSegments.data();
+            break;
+
+        case SkeletonType::Flex:
+            skeleton->skeletonData.flexSkeletonHeader.sh.limbCount = skeleton->limbCount;
+            skeleton->skeletonData.flexSkeletonHeader.dListCount = skeleton->dListCount;
+            skeleton->standardLimbArray.reserve(skeleton->limbCount);
+            skeleton->skeletonData.flexSkeletonHeader.sh.segment = (void**)skeleton->skeletonHeaderSegments.data();
+            break;
+
+        case SkeletonType::Curve:
+            skeleton->skeletonData.skelCurveLimbList.limbCount = skeleton->limbCount;
+            skeleton->curveLimbArray.reserve(skeleton->limbCount);
+            skeleton->skeletonData.skelCurveLimbList.limbs = (SkelCurveLimb**)skeleton->skeletonHeaderSegments.data();
+            break;
+    }
+
+    skeleton->skeletonData.skeletonHeader.skeletonType = static_cast<uint8_t>(skeleton->type);
+}
+
 std::shared_ptr<Ship::IResource>
 ResourceFactoryBinarySkeletonV0::ReadResource(std::shared_ptr<Ship::File> file,
                                               std::shared_ptr<Ship::ResourceInitData> initData) {
@@ -30,38 +55,13 @@ ResourceFactoryBinarySkeletonV0::ReadResource(std::shared_ptr<Ship::File> file,
         skeleton->limbTable.push_back(limbPath);
     }
 
-    if (skeleton->type == SkeletonType::Curve) {
-        skeleton->skeletonData.skelCurveLimbList.limbCount = skeleton->limbCount;
-        skeleton->curveLimbArray.reserve(skeleton->skeletonData.skelCurveLimbList.limbCount);
-    } else if (skeleton->type == SkeletonType::Flex) {
-        skeleton->skeletonData.flexSkeletonHeader.dListCount = skeleton->dListCount;
-    }
-
-    if (skeleton->type == SkeletonType::Normal) {
-        skeleton->skeletonData.skeletonHeader.limbCount = skeleton->limbCount;
-        skeleton->standardLimbArray.reserve(skeleton->skeletonData.skeletonHeader.limbCount);
-    } else if (skeleton->type == SkeletonType::Flex) {
-        skeleton->skeletonData.flexSkeletonHeader.sh.limbCount = skeleton->limbCount;
-        skeleton->standardLimbArray.reserve(skeleton->skeletonData.flexSkeletonHeader.sh.limbCount);
-    }
-
     for (size_t i = 0; i < skeleton->limbTable.size(); i++) {
         std::string limbStr = skeleton->limbTable[i];
-        auto limb = Ship::Context::GetInstance()->GetResourceManager()->LoadResourceProcess(limbStr.c_str());
+        auto limb = Ship::Context::GetRawInstance()->GetResourceManager()->LoadResourceProcess(limbStr.c_str());
         skeleton->skeletonHeaderSegments.push_back(limb ? limb->GetRawPointer() : nullptr);
     }
 
-    if (skeleton->type == SkeletonType::Normal) {
-        skeleton->skeletonData.skeletonHeader.segment = (void**)skeleton->skeletonHeaderSegments.data();
-    } else if (skeleton->type == SkeletonType::Flex) {
-        skeleton->skeletonData.flexSkeletonHeader.sh.segment = (void**)skeleton->skeletonHeaderSegments.data();
-    } else if (skeleton->type == SkeletonType::Curve) {
-        skeleton->skeletonData.skelCurveLimbList.limbs = (SkelCurveLimb**)skeleton->skeletonHeaderSegments.data();
-    } else {
-        SPDLOG_ERROR("unknown skeleton type {}", (uint32_t)skeleton->type);
-    }
-
-    skeleton->skeletonData.skeletonHeader.skeletonType = (uint8_t)skeleton->type;
+    InitializeSkeletonData(skeleton);
 
     return skeleton;
 }
@@ -117,17 +117,14 @@ ResourceFactoryXMLSkeletonV0::ReadResource(std::shared_ptr<Ship::File> file,
             std::string limbName = child->Attribute("Path");
             skel->limbTable.push_back(limbName);
 
-            auto limb = Ship::Context::GetInstance()->GetResourceManager()->LoadResourceProcess(limbName.c_str());
+            auto limb = Ship::Context::GetRawInstance()->GetResourceManager()->LoadResourceProcess(limbName.c_str());
             skel->skeletonHeaderSegments.push_back(limb ? limb->GetRawPointer() : nullptr);
         }
 
         child = child->NextSiblingElement();
     }
 
-    skel->skeletonData.flexSkeletonHeader.sh.limbCount = skel->limbCount;
-    skel->skeletonData.flexSkeletonHeader.sh.segment = (void**)skel->skeletonHeaderSegments.data();
-    skel->skeletonData.flexSkeletonHeader.dListCount = skel->dListCount;
-    skel->skeletonData.skeletonHeader.skeletonType = (uint8_t)skel->type;
+    InitializeSkeletonData(skel);
 
     return skel;
 }

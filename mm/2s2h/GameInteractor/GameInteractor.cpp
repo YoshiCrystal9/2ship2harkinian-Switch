@@ -184,6 +184,11 @@ void GameInteractor_ExecuteOnPlayerPostLimbDraw(Player* player, s32 limbIndex) {
     GameInteractor::Instance->ExecuteHooksForFilter<GameInteractor::OnPlayerPostLimbDraw>(player, limbIndex);
 }
 
+void GameInteractor_ExecuteOnPlayerReleaseHeldActor(PlayState* play, Player* player, Actor* heldActor) {
+    GameInteractor::Instance->ExecuteHooks<GameInteractor::OnPlayerReleaseHeldActor>(play, player, heldActor);
+    GameInteractor::Instance->ExecuteHooksForFilter<GameInteractor::OnPlayerReleaseHeldActor>(play, player, heldActor);
+}
+
 void GameInteractor_ExecuteOnBossDefeated(s16 actorId) {
     SPDLOG_DEBUG("GameInteractor_ExecuteOnBossDefeated: actorId: {}", actorId);
     GameInteractor::Instance->ExecuteHooks<GameInteractor::OnBossDefeated>(actorId);
@@ -350,6 +355,11 @@ int GameInteractor_InvertControl(GIInvertType type) {
             break;
         case GI_INVERT_SHIELD_Y:
             if (CVarGetInteger("gEnhancements.Equipment.InvertShieldY", 0)) {
+                result *= -1;
+            }
+            break;
+        case GI_INVERT_ZORA_SWIM_Y:
+            if (CVarGetInteger("gEnhancements.Player.InvertZoraSwimY", 1)) {
                 result *= -1;
             }
             break;
@@ -581,6 +591,13 @@ void ProcessEvents(Actor* actor) {
 
     GameInteractor::Instance->events.erase(GameInteractor::Instance->events.begin());
 }
+
+// On MSVC this is defined inline in the header instead; see the declaration for why.
+#ifndef _MSC_VER
+void GameInteractor::RemoveAllQueuedHooks() {
+#include "GameInteractor_RemoveAllQueuedHooks.inc"
+}
+#endif
 
 void GameInteractor::RegisterOwnHooks() {
     // Cleanup all hooks at the start of each frame

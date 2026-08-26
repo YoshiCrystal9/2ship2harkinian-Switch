@@ -47,14 +47,13 @@ s32 gScreenWidth = SCREEN_WIDTH;
 s32 gScreenHeight = SCREEN_HEIGHT;
 size_t gSystemHeapSize = 0;
 
-void InitOTR();
+void InitOTR(int argc, char* argv[]);
 void Heaps_Free(void);
 #ifdef __GNUC__
 #define SDL_main main
 #endif
 
-
-void SDL_main(int argc, char** argv /* void* arg*/) {
+int SDL_main(int argc, char* argv[] /* void* arg*/) {
     intptr_t fb;
     intptr_t sysHeap;
     s32 exit;
@@ -73,7 +72,7 @@ void SDL_main(int argc, char** argv /* void* arg*/) {
     setlocale(LC_ALL, ".UTF8");
 #endif // _WIN32
 
-    InitOTR();
+    InitOTR(argc, argv);
     CrashHandlerRegisterCallback(CrashHandler_PrintExt);
     Heaps_Alloc();
 

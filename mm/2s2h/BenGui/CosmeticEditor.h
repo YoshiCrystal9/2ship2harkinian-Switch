@@ -52,6 +52,12 @@ typedef enum {
     COSMETICS_GROUP_PLAYER,
     COSMETICS_GROUP_EFFECTS,
     COSMETICS_GROUP_TRAILS,
+    /*
+    COSMETICS_GROUP_WOODFALL_KEYS,
+    COSMETICS_GROUP_SNOWHEAD_KEYS,
+    COSMETICS_GROUP_GREAT_BAY_KEYS,
+    COSMETICS_GROUP_STONE_TOWER_KEYS,
+    */
     COSMETICS_GROUP_HUD,
     COSMETICS_GROUP_BUTTONS,
     COSMETICS_GROUP_MENUS,
@@ -142,8 +148,7 @@ void RandomizeAllDynamicCosmetics();
 void ResetAllDynamicCosmetics();
 void SetAllDynamicCosmeticsRainbow(bool enabled);
 bool HasCustomCosmetics();
-bool HasCustomCosmeticsRainbowEnabled();
-void UpdateCustomCosmeticsRainbow(int hue, float rainbowSpeed, int& index);
+bool UpdateCustomCosmeticsRainbow(int hue, float rainbowSpeed, int& index);
 void RefreshDynamicCosmeticsStateIfNeeded();
 bool IsCustomModelActiveForCosmeticId(const char* cosmeticId);
 bool IsCustomHumanModelActive();

@@ -23,7 +23,8 @@ static SkeletonHeader gKafeiSkelBackup;
 
 void UpdatePlayAsKafei() {
     if (CVAR) {
-        auto gLinkHumanSkelResource = Ship::Context::GetInstance()->GetResourceManager()->LoadResource(gLinkHumanSkel);
+        auto gLinkHumanSkelResource =
+            Ship::Context::GetRawInstance()->GetResourceManager()->LoadResource(gLinkHumanSkel);
         SkeletonHeader* gLinkHumanSkelPtr = (SkeletonHeader*)gLinkHumanSkelResource->GetRawPointer();
         memcpy(gLinkHumanSkelPtr, &gKafeiSkelBackup, sizeof(SkeletonHeader));
 
@@ -45,7 +46,8 @@ void UpdatePlayAsKafei() {
         sPlayerMouthTextures[PLAYER_FORM_HUMAN][2] = (TexturePtr)gKafeiMouthOpenTex;
         sPlayerMouthTextures[PLAYER_FORM_HUMAN][3] = (TexturePtr)gKafeiMouthSmileTex;
     } else {
-        auto gLinkHumanSkelResource = Ship::Context::GetInstance()->GetResourceManager()->LoadResource(gLinkHumanSkel);
+        auto gLinkHumanSkelResource =
+            Ship::Context::GetRawInstance()->GetResourceManager()->LoadResource(gLinkHumanSkel);
         SkeletonHeader* gLinkHumanSkelPtr = (SkeletonHeader*)gLinkHumanSkelResource->GetRawPointer();
         memcpy(gLinkHumanSkelPtr, &gLinkHumanSkelBackup, sizeof(SkeletonHeader));
 
@@ -77,8 +79,8 @@ void RegisterPlayAsKafei() {
     }
     initialized = true;
 
-    auto gLinkHumanSkelResource = Ship::Context::GetInstance()->GetResourceManager()->LoadResource(gLinkHumanSkel);
-    auto gKafeiSkelResource = Ship::Context::GetInstance()->GetResourceManager()->LoadResource(gKafeiSkel);
+    auto gLinkHumanSkelResource = Ship::Context::GetRawInstance()->GetResourceManager()->LoadResource(gLinkHumanSkel);
+    auto gKafeiSkelResource = Ship::Context::GetRawInstance()->GetResourceManager()->LoadResource(gKafeiSkel);
 
     SkeletonHeader* gLinkHumanSkelPtr = (SkeletonHeader*)gLinkHumanSkelResource->GetRawPointer();
     SkeletonHeader* gKafeiSkelPtr = (SkeletonHeader*)gKafeiSkelResource->GetRawPointer();

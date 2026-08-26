@@ -1,6 +1,7 @@
 #include "MiscBehavior.h"
 #include "Enhancements/FrameInterpolation/FrameInterpolation.h"
 #include "2s2h_assets.h"
+#include "2s2h/BenGui/CosmeticEditor.h"
 
 extern "C" {
 #include "z64save.h"
@@ -12,22 +13,13 @@ extern s16 sWindowContentColors[3];
 extern FileSelectState* gFileSelectState;
 }
 
-typedef struct {
-    char tex[512];
-    uint16_t width;
-    uint16_t height;
-    uint8_t im_fmt;
-    uint8_t im_siz;
-    uint8_t id;
-} Sprite;
-
 // Image Icons
 
 #include <array>
 #include "assets/archives/icon_item_static/icon_item_static_yar.h"
 #include "assets/archives/icon_item_24_static/icon_item_24_static_yar.h"
 
-inline std::array<Sprite, 100> gSeedTextures = { {
+inline std::array<Rando::MiscBehavior::Sprite, 100> gSeedTextures = { {
     { dgItemIconOcarinaOfTimeTex, 32, 32, G_IM_FMT_RGBA, G_IM_SIZ_32b, 0 },
     { dgItemIconBowTex, 32, 32, G_IM_FMT_RGBA, G_IM_SIZ_32b, 1 },
     { dgItemIconFireArrowTex, 32, 32, G_IM_FMT_RGBA, G_IM_SIZ_32b, 2 },
@@ -130,7 +122,7 @@ inline std::array<Sprite, 100> gSeedTextures = { {
     { dgQuestIconSmallKeyTex, 24, 24, G_IM_FMT_RGBA, G_IM_SIZ_32b, 99 },
 } };
 
-Sprite* GetSeedTexture(const uint8_t index) {
+Rando::MiscBehavior::Sprite* Rando::MiscBehavior::GetSeedTexture(const uint8_t index) {
     return &gSeedTextures[index];
 }
 
@@ -247,7 +239,7 @@ void SetRandSaveTypeVtxData() {
     }
 }
 
-void SpriteLoad(Sprite* sprite) {
+void SpriteLoad(Rando::MiscBehavior::Sprite* sprite) {
     OPEN_DISPS(gFileSelectState->state.gfxCtx);
 
     /*
@@ -273,7 +265,7 @@ void SpriteLoad(Sprite* sprite) {
     CLOSE_DISPS(gFileSelectState->state.gfxCtx);
 }
 
-void SpriteDraw(Sprite* sprite, int left, int top, int width, int height) {
+void SpriteDraw(Rando::MiscBehavior::Sprite* sprite, int left, int top, int width, int height) {
     int width_factor = (1 << 10) * sprite->width / width;
     int height_factor = (1 << 10) * sprite->height / height;
 
@@ -304,8 +296,8 @@ void DrawSeedHashSprites() {
             for (int i = 0; i < 5; i++) {
                 u8 hashPart = fileHash % 100;
                 fileHash /= 100;
-                SpriteLoad(GetSeedTexture(hashPart));
-                SpriteDraw(GetSeedTexture(hashPart), xStart + (40 * i), 10, 24, 24);
+                SpriteLoad(Rando::MiscBehavior::GetSeedTexture(hashPart));
+                SpriteDraw(Rando::MiscBehavior::GetSeedTexture(hashPart), xStart + (40 * i), 10, 24, 24);
             }
         }
     }
@@ -333,8 +325,9 @@ void RegisterShoulds() {
         OPEN_DISPS(gFileSelectState->state.gfxCtx);
 
         // But then we also render the same small box again, but using the expanded file info alpha
-        gDPSetPrimColor(POLY_OPA_DISP++, 0, 0, sWindowContentColors[0], sWindowContentColors[1],
-                        sWindowContentColors[2], gFileSelectState->fileInfoAlpha[fileIndex]);
+        gDPSetPrimColorOverride(POLY_OPA_DISP++, 0, 0, sWindowContentColors[0], sWindowContentColors[1],
+                                sWindowContentColors[2], gFileSelectState->fileInfoAlpha[fileIndex],
+                                COSMETIC_ID("Menus.FilePlates"));
         gDPLoadTextureBlock(POLY_OPA_DISP++, gFileSelBlankButtonTex, G_IM_FMT_IA, G_IM_SIZ_16b, 52, 16, 0,
                             G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD,
                             G_TX_NOLOD);

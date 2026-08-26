@@ -38,6 +38,8 @@ static void RegisterAlwaysShowShrineFeathers() {
     });
 
     COND_VB_SHOULD(VB_OWL_SPAWN_FEATHER, CVAR, { *should = false; });
+
+    COND_VB_SHOULD(VB_OWL_DESPAWN_FEATHER, CVAR, { *should = false; });
 }
 
 static RegisterShipInitFunc initFunc(RegisterAlwaysShowShrineFeathers, { CVAR_NAME });

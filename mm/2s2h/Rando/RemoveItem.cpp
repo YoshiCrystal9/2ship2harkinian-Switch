@@ -360,7 +360,11 @@ void Rando::RemoveItem(RandoItemId randoItemId) {
             REMOVE_QUEST_ITEM(QUEST_SONG_OATH);
             break;
         case RI_SONG_SARIA:
-            REMOVE_QUEST_ITEM(QUEST_SONG_SARIA);
+            gSaveContext.save.shipSaveInfo.rando.sariaHintsAvailable =
+                MAX(gSaveContext.save.shipSaveInfo.rando.sariaHintsAvailable - 1, 0);
+            if (gSaveContext.save.shipSaveInfo.rando.sariaHintsAvailable == 0) {
+                REMOVE_QUEST_ITEM(QUEST_SONG_SARIA);
+            }
             break;
         case RI_SONG_SOARING:
             REMOVE_QUEST_ITEM(QUEST_SONG_SOARING);

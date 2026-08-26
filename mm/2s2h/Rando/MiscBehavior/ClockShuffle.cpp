@@ -250,7 +250,9 @@ static bool CheckAndSkipUnownedTime(Actor* timeActor) {
             enTest4->daytimeIndex = 0;
             gSaveContext.save.day--;
         } else {
-            enTest4->daytimeIndex = IsNight(time) ? 0 : 1;
+            // For DUSK skips, set to DAY so vanilla's dusk transition fires on the next
+            // frame, displaying the "Night of..." title card and dog cry SFX.
+            enTest4->daytimeIndex = (time == DUSK_TIME) ? 1 : (IsNight(time) ? 0 : 1);
             Interface_NewDay(gPlayState, gSaveContext.save.day);
             Environment_NewDay(&gPlayState->envCtx);
 
@@ -277,7 +279,7 @@ static bool CheckAndSkipUnownedTime(Actor* timeActor) {
         gSaveContext.screenScaleFlag = false;
         gSaveContext.screenScale = 1000.0f;
 
-        if (gSaveContext.save.day == 3 && IsNight(time)) {
+        if (gSaveContext.save.day == 3 && time < DAWN_TIME) {
             ObjTokeiStep* objTokeiStep = (ObjTokeiStep*)Actor_FindNearby(gPlayState, &GET_PLAYER(gPlayState)->actor,
                                                                          ACTOR_OBJ_TOKEI_STEP, ACTORCAT_BG, 99999.9f);
             if (objTokeiStep != NULL && objTokeiStep->actionFunc == ObjTokeiStep_DoNothing) {
@@ -286,7 +288,11 @@ static bool CheckAndSkipUnownedTime(Actor* timeActor) {
             }
         }
 
-        enTest4->prevTime = time - CLOCK_TIME(0, 1);
+        // For dawn skips, prevTime must be just before dawn (in the nighttime range) so the
+        // night-to-day detection in CheckAndSkipUnownedTime correctly increments the day.
+        // For other skips (dusk/terminal), use the destination time directly to prevent
+        // false dawn transition detection caused by s16 wrapping in EnTest4_HandleEvents.
+        enTest4->prevTime = (time == DAWN_TIME) ? (time - CLOCK_TIME(0, 1)) : time;
         return true;
     }
     return false;

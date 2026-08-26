@@ -6,6 +6,7 @@
 #include "BenPort.h"
 #include <libultraship/bridge/consolevariablebridge.h>
 #include <ship/window/Window.h>
+#include "2s2h/BenGui/Notification.h"
 
 extern "C" {
 #include "sfx.h"
@@ -48,18 +49,15 @@ bool Rando::Spoiler::HandleFileDropped(char* filePath) {
         Rando::Spoiler::RefreshOptions();
 
         Audio_PlaySfx(NA_SE_SY_QUIZ_CORRECT);
-        auto gui = Ship::Context::GetInstance()->GetWindow()->GetGui();
-        gui->GetGameOverlay()->TextDrawNotification(30.0f, true, "Spoiler file loaded");
+        Notification::Emit({ .message = "Spoiler file loaded" });
         return true;
     } catch (std::exception& e) {
         SPDLOG_ERROR("Failed to load file: {}", e.what());
-        auto gui = Ship::Context::GetInstance()->GetWindow()->GetGui();
-        gui->GetGameOverlay()->TextDrawNotification(30.0f, true, "Failed to load file");
+        Notification::Emit({ .message = "Failed to load file" });
         return false;
     } catch (...) {
         SPDLOG_ERROR("Failed to load file");
-        auto gui = Ship::Context::GetInstance()->GetWindow()->GetGui();
-        gui->GetGameOverlay()->TextDrawNotification(30.0f, true, "Failed to load file");
+        Notification::Emit({ .message = "Failed to load file" });
         return false;
     }
 }

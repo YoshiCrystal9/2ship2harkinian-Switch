@@ -286,6 +286,7 @@ static void CycleToNextArrow(PlayState* play, Player* player) {
             Actor_Kill(arrow->actor.child);
         }
 
+        // Killing the held arrow while parent is still set does not consume bomb-arrow ammo
         Actor_Kill(&arrow->actor);
     }
 

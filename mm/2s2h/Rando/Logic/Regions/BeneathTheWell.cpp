@@ -52,6 +52,9 @@ static RegisterShipInitFunc initFunc([]() {
     };
     Regions[RR_BENEATH_THE_WELL_COW_ROOM] = RandoRegion{ .name = "Cow Room", .sceneId = SCENE_REDEAD,
         .checks = {
+            CHECK(RC_BENEATH_THE_WELL_COW_ROOM_GRASS_01, true),
+            CHECK(RC_BENEATH_THE_WELL_COW_ROOM_GRASS_02, true),
+            CHECK(RC_BENEATH_THE_WELL_COW_ROOM_GRASS_03, true),
             CHECK(RC_BENEATH_THE_WELL_COW, CAN_PLAY_SONG(EPONA)),
             CHECK(RC_BENEATH_THE_WELL_TREE, true),
         },
@@ -91,6 +94,11 @@ static RegisterShipInitFunc initFunc([]() {
     };
     Regions[RR_BENEATH_THE_WELL_FOUR_SPIKED_BARS] = RandoRegion{ .name = "Four Spikes Room", .sceneId = SCENE_REDEAD,
         .checks = {
+            CHECK(RC_BENEATH_THE_WELL_FOUR_SPIKED_BARS_GRASS_01, CAN_LIGHT_TORCH_NEAR_ANOTHER),
+            CHECK(RC_BENEATH_THE_WELL_FOUR_SPIKED_BARS_GRASS_02, CAN_LIGHT_TORCH_NEAR_ANOTHER),
+            CHECK(RC_BENEATH_THE_WELL_FOUR_SPIKED_BARS_GRASS_03, CAN_LIGHT_TORCH_NEAR_ANOTHER),
+            CHECK(RC_BENEATH_THE_WELL_FOUR_SPIKED_BARS_GRASS_04, CAN_LIGHT_TORCH_NEAR_ANOTHER),
+            CHECK(RC_BENEATH_THE_WELL_FOUR_SPIKED_BARS_GRASS_05, CAN_LIGHT_TORCH_NEAR_ANOTHER),
             CHECK(RC_ENEMY_DROP_SKULLTULA, CanKillEnemy(ACTOR_EN_ST)),
             CHECK(RC_ENEMY_DROP_WALLMASTER, CanKillEnemy(ACTOR_EN_WALLMAS)),
         },
@@ -139,6 +147,10 @@ static RegisterShipInitFunc initFunc([]() {
     };
     Regions[RR_BENEATH_THE_WELL_RIGHT_FIRE_KEESE] = RandoRegion{ .name = "Right Fire Keese Room", .sceneId = SCENE_REDEAD,
         .checks = {
+            CHECK(RC_BENEATH_THE_WELL_RIGHT_FIRE_KEESE_GRASS_01, true),
+            CHECK(RC_BENEATH_THE_WELL_RIGHT_FIRE_KEESE_GRASS_02, true),
+            CHECK(RC_BENEATH_THE_WELL_RIGHT_FIRE_KEESE_GRASS_03, true),
+            CHECK(RC_BENEATH_THE_WELL_RIGHT_FIRE_KEESE_GRASS_04, true),
             CHECK(RC_ENEMY_DROP_KEESE, CanKillEnemy(ACTOR_EN_FIREFLY)),
         },
         .connections = {
@@ -172,6 +184,8 @@ static RegisterShipInitFunc initFunc([]() {
     };
     Regions[RR_BENEATH_THE_WELL_TWO_SPIKED_BARS] = RandoRegion{ .name = "Two Spikes Room", .sceneId = SCENE_REDEAD,
         .checks = {
+            CHECK(RC_BENEATH_THE_WELL_TWO_SPIKED_BARS_GRASS_01, CAN_LIGHT_TORCH_NEAR_ANOTHER),
+            CHECK(RC_BENEATH_THE_WELL_TWO_SPIKED_BARS_GRASS_02, CAN_LIGHT_TORCH_NEAR_ANOTHER),
             CHECK(RC_BENEATH_THE_WELL_LEFT_SIDE_POT_01, CAN_LIGHT_TORCH_NEAR_ANOTHER),
             CHECK(RC_BENEATH_THE_WELL_LEFT_SIDE_POT_02, CAN_LIGHT_TORCH_NEAR_ANOTHER),
             CHECK(RC_BENEATH_THE_WELL_LEFT_SIDE_POT_03, CAN_LIGHT_TORCH_NEAR_ANOTHER),

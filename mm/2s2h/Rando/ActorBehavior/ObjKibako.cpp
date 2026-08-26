@@ -10,6 +10,9 @@ extern "C" {
 #include "src/overlays/actors/ovl_Obj_Kibako2/z_obj_kibako2.h"
 }
 
+void ObjKibako_RandoDraw(Actor* actor, PlayState* play);
+void ObjKibako2_RandoDraw(Actor* actor, PlayState* play);
+
 std::map<std::tuple<s16, s16, s16>, RandoCheckId> crateMap = {
     // Clock Town //
     { { SCENE_ALLEY, 0, 7 }, RC_CLOCK_TOWN_LAUNDRY_SMALL_CRATE },
@@ -118,7 +121,7 @@ std::map<std::tuple<s16, s16, s16>, RandoCheckId> crateMap = {
 };
 
 // Identify the crate RC by scene ID, room, and actor list index
-RandoCheckId IdentifyCrate(Actor* actor) {
+void IdentifyCrate(Actor* actor) {
     RandoCheckId randoCheckId = RC_UNKNOWN;
 
     s16 actorListIndex = GetActorListIndex(actor);
@@ -127,13 +130,18 @@ RandoCheckId IdentifyCrate(Actor* actor) {
         randoCheckId = it->second;
     }
 
-    if (randoCheckId == RC_UNKNOWN || !RANDO_SAVE_CHECKS[randoCheckId].shuffled ||
-        RANDO_SAVE_CHECKS[randoCheckId].cycleObtained) {
-        return RC_UNKNOWN;
+    if (!RANDO_SAVE_CHECKS[randoCheckId].shuffled || RANDO_SAVE_CHECKS[randoCheckId].cycleObtained) {
+        return;
     }
 
     Rando::ActorBehavior::SetObjectRandoCheckId(actor, randoCheckId);
-    return randoCheckId;
+    if (!RANDO_SAVE_CHECKS[randoCheckId].obtained) {
+        if (actor->id == ACTOR_OBJ_KIBAKO) {
+            actor->draw = ObjKibako_RandoDraw;
+        } else if (actor->id == ACTOR_OBJ_KIBAKO2) {
+            actor->draw = ObjKibako2_RandoDraw;
+        }
+    }
 }
 
 void ObjKibako_RandoDraw(Actor* actor, PlayState* play) {
@@ -219,17 +227,9 @@ void ObjKibako2_RandoDraw(Actor* actor, PlayState* play) {
 }
 
 void Rando::ActorBehavior::InitObjKibakoBehavior() {
-    COND_ID_HOOK(OnActorInit, ACTOR_OBJ_KIBAKO, IS_RANDO, [](Actor* actor) {
-        if (IdentifyCrate(actor) != RC_UNKNOWN) {
-            actor->draw = ObjKibako_RandoDraw;
-        }
-    });
+    COND_ID_HOOK(OnActorInit, ACTOR_OBJ_KIBAKO, IS_RANDO, IdentifyCrate);
 
-    COND_ID_HOOK(OnActorInit, ACTOR_OBJ_KIBAKO2, IS_RANDO, [](Actor* actor) {
-        if (IdentifyCrate(actor) != RC_UNKNOWN) {
-            actor->draw = ObjKibako2_RandoDraw;
-        }
-    });
+    COND_ID_HOOK(OnActorInit, ACTOR_OBJ_KIBAKO2, IS_RANDO, IdentifyCrate);
 
     COND_VB_SHOULD(VB_CRATE_DRAW_BE_OVERRIDDEN, IS_RANDO, {
         Actor* actor = va_arg(args, Actor*);

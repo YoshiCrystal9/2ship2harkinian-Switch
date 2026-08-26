@@ -8,6 +8,7 @@
 #include "overlays/actors/ovl_En_Clear_Tag/z_en_clear_tag.h"
 #include "overlays/effects/ovl_Effect_Ss_Hahen/z_eff_ss_hahen.h"
 #include "objects/gameplay_keep/gameplay_keep.h"
+#include "2s2h/Enhancements/FrameInterpolation/FrameInterpolation.h"
 
 #define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_HOSTILE)
 
@@ -658,9 +659,11 @@ void EnKarebaba_Draw(Actor* thisx, PlayState* play) {
 
     if (this->actionFunc == EnKarebaba_DeadItemDrop) {
         if ((this->timer > 40) || (this->timer & 1)) {
+            FrameInterpolation_RecordOpenChild(this, 0);
             Matrix_Translate(0.0f, 0.0f, 200.0f, MTXMODE_APPLY);
             MATRIX_FINALIZE_AND_LOAD(POLY_OPA_DISP++, play->state.gfxCtx);
             gSPDisplayList(POLY_OPA_DISP++, gDekuBabaStickDropDL);
+            FrameInterpolation_RecordCloseChild();
         }
     } else if (this->actionFunc != EnKarebaba_Dead) {
         func_800AE2A0(play, &sFogColor, 1, 2);

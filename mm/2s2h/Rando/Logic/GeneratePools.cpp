@@ -1,7 +1,6 @@
 #include "Logic.h"
 #include "Rando/MiscBehavior/ClockShuffle.h"
 #include <libultraship/bridge/consolevariablebridge.h>
-#include <sstream>
 
 extern "C" {
 #include "variables.h"
@@ -17,12 +16,28 @@ void GeneratePools(RandoSaveInfo& saveInfo, std::vector<RandoCheckId>& checkPool
     std::vector<RandoItemId> computedStartingItems = Rando::GetComputedStartingItems(saveInfo);
     startingItems.insert(startingItems.end(), computedStartingItems.begin(), computedStartingItems.end());
 
-    std::vector<RandoCheckId> excludedChecks;
-    std::string excludedChecksList = CVarGetString("gRando.ExcludedChecks", "");
-    std::string word;
-    std::istringstream stream(excludedChecksList);
-    while (std::getline(stream, word, ',')) {
-        excludedChecks.push_back((RandoCheckId)std::stoi(word));
+    std::vector<RandoCheckId> excludedChecks = Rando::GetExcludedChecksFromConfig();
+
+    std::set<RandoCheckId> vanillaSkulltulas;
+    if (saveInfo.randoSaveOptions[RO_SHUFFLE_GOLD_SKULLTULAS] == RO_GENERIC_YES) {
+        std::map<SceneId, std::vector<RandoCheckId>> skulltulasByScene;
+        for (auto& [randoCheckId, randoStaticCheck] : Rando::StaticData::Checks) {
+            if (randoStaticCheck.randoCheckType == RCTYPE_SKULL_TOKEN) {
+                skulltulasByScene[randoStaticCheck.sceneId].push_back(randoCheckId);
+            }
+        }
+
+        size_t shuffledCount = saveInfo.randoSaveOptions[RO_SKULLTULA_SHUFFLED];
+        for (auto& [sceneId, sceneSkulltulas] : skulltulasByScene) {
+            if (shuffledCount >= sceneSkulltulas.size()) {
+                continue;
+            }
+
+            for (size_t i = 0; i < sceneSkulltulas.size(); i++) {
+                std::swap(sceneSkulltulas[i], sceneSkulltulas[Ship_Random(0, sceneSkulltulas.size())]);
+            }
+            vanillaSkulltulas.insert(sceneSkulltulas.begin() + shuffledCount, sceneSkulltulas.end());
+        }
     }
 
     // First loop through all regions and add checks/items to the pool
@@ -45,9 +60,21 @@ void GeneratePools(RandoSaveInfo& saveInfo, std::vector<RandoCheckId>& checkPool
                 continue;
             }
 
-            if (randoStaticCheck.randoCheckType == RCTYPE_SKULL_TOKEN &&
-                saveInfo.randoSaveOptions[RO_SHUFFLE_GOLD_SKULLTULAS] == RO_GENERIC_NO) {
+            // dungeon items
+            if (StaysAtVanillaCheck(randoStaticCheck.randoItemId, saveInfo)) {
+                saveInfo.randoSaveChecks[randoCheckId].shuffled = true;
                 continue;
+            }
+
+            if (randoStaticCheck.randoCheckType == RCTYPE_SKULL_TOKEN) {
+                if (saveInfo.randoSaveOptions[RO_SHUFFLE_GOLD_SKULLTULAS] == RO_GENERIC_NO) {
+                    continue;
+                }
+
+                if (vanillaSkulltulas.contains(randoCheckId)) {
+                    saveInfo.randoSaveChecks[randoCheckId].shuffled = true;
+                    continue;
+                }
             }
 
             if (randoStaticCheck.randoCheckType == RCTYPE_OWL &&
@@ -75,8 +102,18 @@ void GeneratePools(RandoSaveInfo& saveInfo, std::vector<RandoCheckId>& checkPool
                 continue;
             }
 
+            if (randoStaticCheck.randoCheckType == RCTYPE_BEEHIVE &&
+                saveInfo.randoSaveOptions[RO_SHUFFLE_HIVE_DROPS] == RO_GENERIC_NO) {
+                continue;
+            }
+
             if (randoStaticCheck.randoCheckType == RCTYPE_TREE &&
                 saveInfo.randoSaveOptions[RO_SHUFFLE_TREE_DROPS] == RO_GENERIC_NO) {
+                continue;
+            }
+
+            if (randoStaticCheck.randoCheckType == RCTYPE_BUTTERFLY &&
+                saveInfo.randoSaveOptions[RO_SHUFFLE_BUTTERFLIES] == RO_GENERIC_NO) {
                 continue;
             }
 
@@ -110,6 +147,11 @@ void GeneratePools(RandoSaveInfo& saveInfo, std::vector<RandoCheckId>& checkPool
                 continue;
             }
 
+            if (randoStaticCheck.randoCheckType == RCTYPE_WONDER_ITEM &&
+                saveInfo.randoSaveOptions[RO_SHUFFLE_WONDER_ITEMS] == RO_GENERIC_NO) {
+                continue;
+            }
+
             if (randoStaticCheck.randoCheckType == RCTYPE_TINGLE_SHOP &&
                 saveInfo.randoSaveOptions[RO_SHUFFLE_TINGLE_SHOPS] == RO_GENERIC_NO) {
                 continue;
@@ -119,10 +161,10 @@ void GeneratePools(RandoSaveInfo& saveInfo, std::vector<RandoCheckId>& checkPool
             }
 
             if (randoStaticCheck.randoCheckType == RCTYPE_SHOP) {
-                // We always want shuffle RC_CURIOSITY_SHOP_SPECIAL_ITEM &
+                // We always want shuffle RC_CURIOSITY_SHOP_SPECIAL_ITEM, RC_BOMB_SHOP_ITEM_03 &
                 // RC_BOMB_SHOP_ITEM_04_OR_CURIOSITY_SHOP_ITEM
                 if (saveInfo.randoSaveOptions[RO_SHUFFLE_SHOPS] == RO_GENERIC_NO &&
-                    randoCheckId != RC_CURIOSITY_SHOP_SPECIAL_ITEM &&
+                    randoCheckId != RC_CURIOSITY_SHOP_SPECIAL_ITEM && randoCheckId != RC_BOMB_SHOP_ITEM_03 &&
                     randoCheckId != RC_BOMB_SHOP_ITEM_04_OR_CURIOSITY_SHOP_ITEM) {
                     continue;
                 } else {
@@ -133,17 +175,20 @@ void GeneratePools(RandoSaveInfo& saveInfo, std::vector<RandoCheckId>& checkPool
                 }
             }
 
-            // When a check is skipped, we still want to add it's vanilla item to the pool, but we don't add the check.
-            // Mark it as skipped and set it to junk. These leaves an inbalance in the pools that will get sorted
-            // automatically if there is enough space.
+            // Excluded checks are always left out of the check pool, but what happens to them depends on what their
+            // vanilla item is worth. A check whose vanilla item is junk (grass, pots, snowballs...) has nothing worth
+            // preserving, so it stays unshuffled and behaves exactly like it does in vanilla, and its item never enters
+            // the item pool. Every other check keeps its item in the pool and is marked as skipped with junk in its
+            // place. That leaves an inbalance in the pools that will get sorted automatically if there is enough space.
             if (saveInfo.randoSaveOptions[RO_LOGIC] != RO_LOGIC_VANILLA) {
-                auto it = std::find(excludedChecks.begin(), excludedChecks.end(), randoCheckId);
-                if (it != excludedChecks.end()) {
-                    itemPool.push_back(randoStaticCheck.randoItemId);
+                if (std::binary_search(excludedChecks.begin(), excludedChecks.end(), randoCheckId)) {
+                    if (Rando::StaticData::Items[randoStaticCheck.randoItemId].randoItemType != RITYPE_JUNK) {
+                        itemPool.push_back(randoStaticCheck.randoItemId);
 
-                    saveInfo.randoSaveChecks[randoCheckId].shuffled = true;
-                    saveInfo.randoSaveChecks[randoCheckId].randoItemId = RI_JUNK;
-                    saveInfo.randoSaveChecks[randoCheckId].skipped = true;
+                        saveInfo.randoSaveChecks[randoCheckId].shuffled = true;
+                        saveInfo.randoSaveChecks[randoCheckId].randoItemId = RI_JUNK;
+                        saveInfo.randoSaveChecks[randoCheckId].skipped = true;
+                    }
                     continue;
                 }
             }
@@ -235,10 +280,18 @@ void GeneratePools(RandoSaveInfo& saveInfo, std::vector<RandoCheckId>& checkPool
         }
     }
 
-    // Remove extra stray fairies/gold skulltulas from the pool
+    // Shuffle the Skeleton Key into the Pool, unless starting with small keys
+    if (saveInfo.randoSaveOptions[RO_SHUFFLE_SKELETON_KEY] == RO_GENERIC_YES &&
+        saveInfo.randoSaveOptions[RO_PLACEMENT_SMALL_KEYS] != RO_DUNGEON_ITEM_START_WITH) {
+        itemPool.push_back(RI_SKELETON_KEY);
+    }
+
+    // Remove extra stray fairies from the pool.
     std::map<RandoItemId, int> removeAbleItemsInPool = {
-        { RI_STONE_TOWER_STRAY_FAIRY, 0 }, { RI_GREAT_BAY_STRAY_FAIRY, 0 }, { RI_SNOWHEAD_STRAY_FAIRY, 0 },
-        { RI_WOODFALL_STRAY_FAIRY, 0 },    { RI_GS_TOKEN_SWAMP, 0 },        { RI_GS_TOKEN_OCEAN, 0 },
+        { RI_STONE_TOWER_STRAY_FAIRY, 0 },
+        { RI_GREAT_BAY_STRAY_FAIRY, 0 },
+        { RI_SNOWHEAD_STRAY_FAIRY, 0 },
+        { RI_WOODFALL_STRAY_FAIRY, 0 },
     };
     for (RandoItemId itemId : itemPool) {
         if (removeAbleItemsInPool.find(itemId) != removeAbleItemsInPool.end()) {
@@ -253,10 +306,6 @@ void GeneratePools(RandoSaveInfo& saveInfo, std::vector<RandoCheckId>& checkPool
             case RI_SNOWHEAD_STRAY_FAIRY:
             case RI_WOODFALL_STRAY_FAIRY:
                 max = saveInfo.randoSaveOptions[RO_STRAY_FAIRIES_MAX];
-                break;
-            case RI_GS_TOKEN_SWAMP:
-            case RI_GS_TOKEN_OCEAN:
-                max = saveInfo.randoSaveOptions[RO_SKULLTULA_TOKENS_MAX];
                 break;
             default:
                 break;
@@ -281,12 +330,37 @@ void GeneratePools(RandoSaveInfo& saveInfo, std::vector<RandoCheckId>& checkPool
         }
     }
 
+    // Adjust Heart Pieces based on starting health
+    if (saveInfo.randoSaveOptions[RO_STARTING_HEALTH] < 3) {
+        // Add up to 8 Heart Pieces
+        int piecesToAdd = 4 * (3 - saveInfo.randoSaveOptions[RO_STARTING_HEALTH]);
+        while (piecesToAdd) {
+            itemPool.emplace_back(RI_HEART_PIECE);
+            piecesToAdd--;
+        }
+    } else if (saveInfo.randoSaveOptions[RO_STARTING_HEALTH] > 3) {
+        // Remove up to 52 Heart Pieces
+        int piecesToRemove = 4 * (saveInfo.randoSaveOptions[RO_STARTING_HEALTH] - 3);
+        while (piecesToRemove) {
+            auto it = std::find(itemPool.begin(), itemPool.end(), RI_HEART_PIECE);
+            if (it != itemPool.end()) {
+                itemPool.erase(it);
+            } else {
+                break;
+            }
+            piecesToRemove--;
+        }
+    }
+
     // Plentiful
     if (saveInfo.randoSaveOptions[RO_PLENTIFUL_ITEMS] == RO_GENERIC_YES) {
         std::vector<RandoItemId> plentifulItems;
         for (size_t i = 0; i < itemPool.size(); i++) {
             // The user can specify exactly how many pieces they want to shuffle, so skip those
             if (itemPool[i] == RI_TRIFORCE_PIECE) {
+                continue;
+            }
+            if (itemPool[i] == RI_SKELETON_KEY) {
                 continue;
             }
 

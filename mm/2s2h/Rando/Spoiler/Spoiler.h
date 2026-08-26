@@ -11,6 +11,7 @@ namespace Spoiler {
 
 extern std::vector<std::string> spoilerOptions;
 void RefreshOptions();
+void SelectSpoiler(s32 index);
 nlohmann::json GenerateFromSaveContext();
 void SaveToFile(const std::string& fileName, nlohmann::json spoiler);
 nlohmann::json LoadFromFile(const std::string& filePath);

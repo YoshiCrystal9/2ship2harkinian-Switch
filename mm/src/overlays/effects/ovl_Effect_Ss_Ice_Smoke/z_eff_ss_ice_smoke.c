@@ -56,7 +56,7 @@ void EffectSsIceSmoke_Draw(PlayState* play, u32 index, EffectSs* this) {
     gDPSetPrimColor(POLY_XLU_DISP++, 0, 0, 195, 235, 235, this->rAlpha);
     gSPSegment(POLY_XLU_DISP++, 0x08,
                Gfx_TwoTexScrollEx(play->state.gfxCtx, 0, this->rScrollX * this->life, this->rScrollY * this->life, 0x20,
-                                  0x40, 1, 0, 0, 0x20, 0x20, -1, -1, 0, 0));
+                                  0x40, 1, 0, 0, 0x20, 0x20, -this->rScrollX, -this->rScrollY, 0, 0));
     Matrix_Translate(this->pos.x, this->pos.y, this->pos.z, MTXMODE_NEW);
     Matrix_ReplaceRotation(&play->billboardMtxF);
     scale = this->rScale * 0.0001f;

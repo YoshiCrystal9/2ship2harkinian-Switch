@@ -1,6 +1,8 @@
 #ifndef _COMMAND_MACROS_BASE_H_
 #define _COMMAND_MACROS_BASE_H_
 
+#include <ship/utils/binarytools/endianness.h>
+
 /**
  * Command Base macros intended for use in designing of more specific command macros
  * Each macro packs bytes (B), halfwords (H) and words (W, for consistency) into a single word

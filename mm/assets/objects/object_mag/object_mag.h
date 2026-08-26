@@ -66,6 +66,9 @@ static const ALIGN_ASSET(2) char gTitleScreenFlame3Tex[] = dgTitleScreenFlame3Te
 #define dgTitleScreenCopyright2000NintendoTex "__OTR__objects/object_mag/gTitleScreenCopyright2000NintendoTex"
 static const ALIGN_ASSET(2) char gTitleScreenCopyright2000NintendoTex[] = dgTitleScreenCopyright2000NintendoTex;
 
+#define dgTitleScreenCopyright20002003NintendoTex "__OTR__objects/object_mag/gTitleScreenCopyright20002003NintendoTex"
+static const ALIGN_ASSET(2) char gTitleScreenCopyright20002003NintendoTex[] = dgTitleScreenCopyright20002003NintendoTex;
+
 #define dgTitleScreenControllerNotConnectedTextTex "__OTR__objects/object_mag/gTitleScreenControllerNotConnectedTextTex"
 static const ALIGN_ASSET(2) char gTitleScreenControllerNotConnectedTextTex[] = dgTitleScreenControllerNotConnectedTextTex;
 

@@ -10,7 +10,7 @@ extern uintptr_t gSegments[NUM_SEGMENTS];
 }
 
 Ship::IResource* OTRPlay_LoadFile(PlayState* play, const char* fileName) {
-    auto res = Ship::Context::GetInstance()->GetResourceManager()->LoadResource(fileName);
+    auto res = Ship::Context::GetRawInstance()->GetResourceManager()->LoadResource(fileName);
     return res.get();
 }
 

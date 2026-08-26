@@ -23,24 +23,32 @@ size_t Skeleton::GetPointerSize() {
 std::vector<SkeletonPatchInfo> SkeletonPatcher::skeletons;
 
 void SkeletonPatcher::RegisterSkeleton(std::string& path, SkelAnime* skelAnime) {
-    SkeletonPatchInfo info;
-
-    info.skelAnime = skelAnime;
-
     static const std::string sOtr = "__OTR__";
 
     if (path.starts_with(sOtr)) {
         path = path.substr(sOtr.length());
     }
 
+    std::string vanillaSkeletonPath;
+
     // Determine if we're using an alternate skeleton
     if (path.starts_with(Ship::IResource::gAltAssetPrefix)) {
-        info.vanillaSkeletonPath = path.substr(Ship::IResource::gAltAssetPrefix.length(),
-                                               path.size() - Ship::IResource::gAltAssetPrefix.length());
+        vanillaSkeletonPath = path.substr(Ship::IResource::gAltAssetPrefix.length(),
+                                          path.size() - Ship::IResource::gAltAssetPrefix.length());
     } else {
-        info.vanillaSkeletonPath = path;
+        vanillaSkeletonPath = path;
     }
 
+    for (auto& skel : skeletons) {
+        if (skel.skelAnime == skelAnime) {
+            skel.vanillaSkeletonPath = vanillaSkeletonPath;
+            return;
+        }
+    }
+
+    SkeletonPatchInfo info;
+    info.skelAnime = skelAnime;
+    info.vanillaSkeletonPath = vanillaSkeletonPath;
     skeletons.push_back(info);
 }
 
@@ -52,7 +60,7 @@ void SkeletonPatcher::UnregisterSkeleton(SkelAnime* skelAnime) {
 
         if (skel.skelAnime == skelAnime) {
             skeletons.erase(skeletons.begin() + i);
-            break;
+            i--;
         }
     }
 }
@@ -61,7 +69,7 @@ void SkeletonPatcher::ClearSkeletons() {
 }
 
 void SkeletonPatcher::UpdateSkeletons() {
-    auto resourceMgr = Ship::Context::GetInstance()->GetResourceManager();
+    auto resourceMgr = Ship::Context::GetRawInstance()->GetResourceManager();
     bool isAlt = resourceMgr->IsAltAssetsEnabled();
 
     for (const auto& skel : skeletons) {

@@ -44,6 +44,7 @@ typedef enum {
     GI_INVERT_SHOP_X,
     GI_INVERT_HORSE_X,
     GI_INVERT_ZORA_SWIM_X,
+    GI_INVERT_ZORA_SWIM_Y,
     GI_INVERT_DEBUG_DPAD_X,
     GI_INVERT_TELESCOPE_X,
     GI_INVERT_FIRST_PERSON_AIM_X,
@@ -443,13 +444,18 @@ class GameInteractor {
         HooksToUnregister<H>::hooksForFilter.clear();
     }
 
+    // Inline on MSVC, out of line elsewhere, and that difference is load-bearing. The body
+    // instantiates ProcessUnregisteredHooks<> for every hook in the table. MSVC's PCH is a state
+    // snapshot, so doing it inside the PCH hands the result to every TU for free; Clang's PCH
+    // replays pending instantiations per TU, where the same inline definition dominated even an
+    // empty TU. Measure before changing this.
+#ifdef _MSC_VER
     void RemoveAllQueuedHooks() {
-#define DEFINE_HOOK(name, _) ProcessUnregisteredHooks<name>();
-
-#include "GameInteractor_HookTable.h"
-
-#undef DEFINE_HOOK
+#include "GameInteractor_RemoveAllQueuedHooks.inc"
     }
+#else
+    void RemoveAllQueuedHooks();
+#endif
 
     class HookFilter {
       public:
@@ -517,6 +523,7 @@ void GameInteractor_ExecuteOnActorDraw(Actor* actor);
 void GameInteractor_ExecuteOnActorKill(Actor* actor);
 void GameInteractor_ExecuteOnActorDestroy(Actor* actor);
 void GameInteractor_ExecuteOnPlayerPostLimbDraw(Player* player, s32 limbIndex);
+void GameInteractor_ExecuteOnPlayerReleaseHeldActor(PlayState* play, Player* player, Actor* heldActor);
 void GameInteractor_ExecuteOnBossDefeated(s16 actorId);
 
 void GameInteractor_ExecuteOnSceneFlagSet(s16 sceneId, FlagType flagType, u32 flag);

@@ -16,10 +16,14 @@ extern u8 sPlaybackState;
     (gPlayState->msgCtx.ocarinaAction < OCARINA_ACTION_PROMPT_WIND_FISH_HUMAN || \
      gPlayState->msgCtx.ocarinaAction > OCARINA_ACTION_PROMPT_WIND_FISH_DEKU)
 
+static bool IsFallingThroughAir(Player* player) {
+    return !(player->actor.bgCheckFlags & BGCHECKFLAG_GROUND) && (player->actor.velocity.y < 0.0f);
+}
+
 void RegisterFasterSongPlayback() {
     COND_ID_HOOK(OnActorUpdate, ACTOR_PLAYER, CVAR, [](Actor* actor) {
         if (gPlayState->msgCtx.msgMode >= MSGMODE_SONG_PLAYED && gPlayState->msgCtx.msgMode <= MSGMODE_17 &&
-            !gPlayState->csCtx.state && NOT_OCARINA_ACTION_BALAD_WIND_FISH) {
+            !gPlayState->csCtx.state && NOT_OCARINA_ACTION_BALAD_WIND_FISH && !IsFallingThroughAir((Player*)actor)) {
             if (gPlayState->msgCtx.stateTimer > 1) {
                 gPlayState->msgCtx.stateTimer = 1;
             }

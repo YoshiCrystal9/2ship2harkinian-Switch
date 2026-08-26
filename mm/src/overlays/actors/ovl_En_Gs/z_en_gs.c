@@ -178,6 +178,7 @@ void EnGs_Destroy(Actor* thisx, PlayState* play) {
 }
 
 void func_80997D14(EnGs* this, PlayState* play) {
+    GameInteractor_Should(VB_EN_GS_FINISH_OCARINA_ON_RESET, true, this, play);
     this->unk_19A &= ~0x200;
     this->actionFunc = func_80997D38;
 }
@@ -378,6 +379,7 @@ f32 func_80998334(EnGs* this, PlayState* play, f32* arg2, f32* arg3, s16* arg4, 
 }
 
 void func_809984F4(EnGs* this, PlayState* play) {
+    GameInteractor_Should(VB_EN_GS_BEFORE_GOSSIP_GROTTO_SEQUENCE, true, this, play);
     EnGs* gossipStone = NULL;
 
     do {

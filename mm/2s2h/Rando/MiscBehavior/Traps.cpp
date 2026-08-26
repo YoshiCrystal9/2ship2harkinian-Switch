@@ -312,7 +312,8 @@ void Rando::ActorBehavior::InitTrapsBehavior() {
     // Selectively disable object dependency for actors spawned by traps
     COND_VB_SHOULD(VB_ENABLE_OBJECT_DEPENDENCY, IS_RANDO && RANDO_SAVE_OPTIONS[RO_SHUFFLE_TRAPS], {
         ObjectId objectId = (ObjectId)va_arg(args, int);
-        if (objectId == OBJECT_RR) { // Like-Like
+        // Allow spawning of like-like & shield so it drops from like-like
+        if (objectId == OBJECT_RR || objectId == OBJECT_GI_SHIELD_2) {
             *should = false;
         }
     });

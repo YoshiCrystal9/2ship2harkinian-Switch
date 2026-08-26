@@ -121,6 +121,10 @@ union Data {
     struct {
         Mtx* dest;
         MtxF src;
+        // The matrix as it actually was for this frame, before any actor-relative adjustment. Kept around
+        // (regardless of has_adjusted) so a has_adjusted mismatch between frames has a correct, non-relative
+        // matrix to fall back to instead of blending across incompatible spaces.
+        MtxF raw;
         bool has_adjusted;
     } matrix_to_mtx;
 
@@ -269,6 +273,8 @@ struct InterpolateCtx {
     }
 
     void interpolate_branch(Path* old_path, Path* new_path) {
+        const bool self_paired = old_path == new_path;
+
         for (auto& item : new_path->items) {
             Data& new_op = new_path->ops[item.first][item.second];
 
@@ -385,7 +391,17 @@ struct InterpolateCtx {
 
                         case Op::MatrixToMtx: {
                             //*new_replacement(new_op.matrix_to_mtx.dest) = *Matrix_GetCurrent();
-                            if (old_op.matrix_to_mtx.has_adjusted && new_op.matrix_to_mtx.has_adjusted) {
+                            if (self_paired && new_op.matrix_to_mtx.has_adjusted) {
+                                *new_replacement(new_op.matrix_to_mtx.dest) = new_op.matrix_to_mtx.raw;
+                            } else if (old_op.matrix_to_mtx.has_adjusted != new_op.matrix_to_mtx.has_adjusted) {
+                                // has_adjusted toggled between frames (e.g. ActorShadow_Draw's isotropic-shadow
+                                // check flipping as scale.x drifts in and out of equality with scale.z). old.src
+                                // and new.src aren't comparable here: whichever side has has_adjusted=true holds
+                                // an actor-relative matrix that still needs actor_mtx re-applied, not a final
+                                // matrix. Use raw (the true un-relativized matrix for that frame) and snap to the
+                                // new frame instead of interpolating.
+                                *new_replacement(new_op.matrix_to_mtx.dest) = new_op.matrix_to_mtx.raw;
+                            } else if (old_op.matrix_to_mtx.has_adjusted && new_op.matrix_to_mtx.has_adjusted) {
                                 interpolate_mtxf(&tmp_mtxf, &old_op.matrix_to_mtx.src, &new_op.matrix_to_mtx.src);
                                 SkinMatrix_MtxFMtxFMult(&actor_mtx, &tmp_mtxf,
                                                         new_replacement(new_op.matrix_to_mtx.dest));
@@ -592,11 +608,12 @@ void FrameInterpolation_RecordMatrixToMtx(Mtx* dest, char* file, s32 line) {
     if (!is_recording)
         return;
     auto& d = append(Op::MatrixToMtx).matrix_to_mtx = { dest };
+    d.raw = *Matrix_GetCurrent();
     if (has_inv_actor_mtx && !ignore_inv_actor_mtx) {
         d.has_adjusted = true;
         SkinMatrix_MtxFMtxFMult(&inv_actor_mtx, Matrix_GetCurrent(), &d.src);
     } else {
-        d.src = *Matrix_GetCurrent();
+        d.src = d.raw;
     }
 }
 

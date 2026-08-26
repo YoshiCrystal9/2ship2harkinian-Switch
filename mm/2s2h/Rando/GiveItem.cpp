@@ -106,6 +106,25 @@ void Rando::GiveItem(RandoItemId randoItemId) {
                 gSaveContext.save.shipSaveInfo.rando.foundDungeonKeys[DUNGEON_SCENE_INDEX_STONE_TOWER_TEMPLE]++;
             }
             break;
+        // Grants the max small keys for every dungeon at once (Woodfall 1, Snowhead 3, Great Bay 1, Stone Tower 4)
+        case RI_SKELETON_KEY:
+            if (DUNGEON_KEY_COUNT(DUNGEON_SCENE_INDEX_WOODFALL_TEMPLE) < 1) {
+                DUNGEON_KEY_COUNT(DUNGEON_SCENE_INDEX_WOODFALL_TEMPLE) = 1;
+                gSaveContext.save.shipSaveInfo.rando.foundDungeonKeys[DUNGEON_SCENE_INDEX_WOODFALL_TEMPLE] = 1;
+            }
+            if (DUNGEON_KEY_COUNT(DUNGEON_SCENE_INDEX_SNOWHEAD_TEMPLE) < 3) {
+                DUNGEON_KEY_COUNT(DUNGEON_SCENE_INDEX_SNOWHEAD_TEMPLE) = 3;
+                gSaveContext.save.shipSaveInfo.rando.foundDungeonKeys[DUNGEON_SCENE_INDEX_SNOWHEAD_TEMPLE] = 3;
+            }
+            if (DUNGEON_KEY_COUNT(DUNGEON_SCENE_INDEX_GREAT_BAY_TEMPLE) < 1) {
+                DUNGEON_KEY_COUNT(DUNGEON_SCENE_INDEX_GREAT_BAY_TEMPLE) = 1;
+                gSaveContext.save.shipSaveInfo.rando.foundDungeonKeys[DUNGEON_SCENE_INDEX_GREAT_BAY_TEMPLE] = 1;
+            }
+            if (DUNGEON_KEY_COUNT(DUNGEON_SCENE_INDEX_STONE_TOWER_TEMPLE) < 4) {
+                DUNGEON_KEY_COUNT(DUNGEON_SCENE_INDEX_STONE_TOWER_TEMPLE) = 4;
+                gSaveContext.save.shipSaveInfo.rando.foundDungeonKeys[DUNGEON_SCENE_INDEX_STONE_TOWER_TEMPLE] = 4;
+            }
+            break;
         case RI_TRIFORCE_PIECE:
         case RI_TRIFORCE_PIECE_PREVIOUS:
             gSaveContext.save.shipSaveInfo.rando.foundTriforcePieces++;
@@ -379,6 +398,10 @@ void Rando::GiveItem(RandoItemId randoItemId) {
             break;
         case RI_SONG_INVERTED_TIME:
             Flags_SetRandoInf(RANDO_INF_OBTAINED_SONG_INVERTED_TIME);
+            break;
+        case RI_SONG_SARIA:
+            gSaveContext.save.shipSaveInfo.rando.sariaHintsAvailable++;
+            Item_Give(gPlayState, Rando::StaticData::Items[randoItemId].itemId);
             break;
         case RI_JUNK:
         case RI_NONE:

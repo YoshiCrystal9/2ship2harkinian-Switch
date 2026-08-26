@@ -3,9 +3,11 @@
 #include <spdlog/spdlog.h>
 #include <imgui.h>
 #include <imgui_internal.h>
+#include <libultraship/window/gui/GfxDebuggerWindow.h>
 #include "UIWidgets.hpp"
 #include "HudEditor.h"
 #include "2s2h/Enhancements/Audio/AudioEditor.h"
+#include "2s2h/Enhancements/ModMenu/ModMenu.h"
 #include "CosmeticEditor.h"
 #include "Notification.h"
 #include "2s2h/Rando/CheckTracker/CheckTracker.h"
@@ -55,6 +57,7 @@ std::shared_ptr<EventLogWindow> mEventLogWindow;
 std::shared_ptr<DLViewerWindow> mDLViewerWindow;
 std::shared_ptr<MessageViewerWindow> mMessageViewerWindow;
 std::shared_ptr<AudioEditor> mAudioEditorWindow;
+std::shared_ptr<ModMenuWindow> mModMenuWindow;
 std::shared_ptr<BenMenu> mBenMenu;
 std::shared_ptr<Notification::Window> mNotificationWindow;
 std::shared_ptr<Rando::CheckTracker::CheckTrackerWindow> mRandoCheckTrackerWindow;
@@ -72,27 +75,23 @@ UIWidgets::Colors GetMenuThemeColor() {
     return mBenMenu->GetMenuThemeColor();
 }
 
-void SetupGuiElements() {
-    auto gui = Ship::Context::GetInstance()->GetWindow()->GetGui();
+void SetupMenu() {
+    auto gui = Ship::Context::GetRawInstance()->GetWindow()->GetGui();
+    mBenMenu = std::make_shared<BenMenu>("gWindows.Menu", "Settings Menu");
+    gui->SetMenu(mBenMenu);
 
     auto& style = ImGui::GetStyle();
     style.FramePadding = ImVec2(4.0f, 6.0f);
     style.ItemSpacing = ImVec2(8.0f, 6.0f);
     style.Colors[ImGuiCol_MenuBarBg] = UIWidgets::ColorValues.at(UIWidgets::Colors::DarkGray);
 
-    mBenMenuBar = std::make_shared<BenMenuBar>(CVAR_MENU_BAR_OPEN, CVarGetInteger(CVAR_MENU_BAR_OPEN, 0));
-    gui->SetMenuBar(std::reinterpret_pointer_cast<Ship::GuiMenuBar>(mBenMenuBar));
+    mModalWindow = std::make_shared<BenModalWindow>("gWindows.ModalWindow", "Modal Window");
+    gui->AddGuiWindow(mModalWindow);
+    mModalWindow->Show();
+}
 
-    if (!gui->GetMenuBar() && !CVarGetInteger("gSettings.DisableMenuShortcutNotify", 0)) {
-#if defined(__SWITCH__) || defined(__WIIU__)
-        gui->GetGameOverlay()->TextDrawNotification(30.0f, true, "Press - to access enhancements menu");
-#else
-        gui->GetGameOverlay()->TextDrawNotification(30.0f, true, "Press F1 to access enhancements menu");
-#endif
-    }
-
-    mBenMenu = std::make_shared<BenMenu>("gWindows.Menu", "Settings Menu");
-    gui->SetMenu(mBenMenu);
+void SetupGuiElements() {
+    auto gui = Ship::Context::GetRawInstance()->GetWindow()->GetGui();
 
     mStatsWindow = gui->GetGuiWindow("Stats");
     if (mStatsWindow == nullptr) {
@@ -104,10 +103,9 @@ void SetupGuiElements() {
         SPDLOG_ERROR("Could not find console window");
     }
 
-    mGfxDebuggerWindow = gui->GetGuiWindow("GfxDebuggerWindow");
-    if (mGfxDebuggerWindow == nullptr) {
-        SPDLOG_ERROR("Could not find input GfxDebuggerWindow");
-    }
+    mGfxDebuggerWindow =
+        std::make_shared<LUS::GfxDebuggerWindow>("gOpenWindows.GfxDebugger", "Gfx Debugger", ImVec2(520, 600));
+    gui->AddGuiWindow(mGfxDebuggerWindow);
 
     mInputEditorWindow = gui->GetGuiWindow("2S2H Input Editor");
     if (mInputEditorWindow == nullptr) {
@@ -147,6 +145,9 @@ void SetupGuiElements() {
     mAudioEditorWindow = std::make_shared<AudioEditor>("gWindows.AudioEditor", "Audio Editor", ImVec2(520, 600));
     gui->AddGuiWindow(mAudioEditorWindow);
 
+    mModMenuWindow = std::make_shared<ModMenuWindow>("gWindows.ModMenu", "Mod Menu", ImVec2(820, 630));
+    gui->AddGuiWindow(mModMenuWindow);
+
     mItemTrackerWindow = std::make_shared<ItemTrackerWindow>("gWindows.ItemTracker", "Item Tracker");
     gui->AddGuiWindow(mItemTrackerWindow);
 
@@ -181,13 +182,10 @@ void SetupGuiElements() {
     mInputViewerSettings = std::make_shared<InputViewerSettingsWindow>("gWindows.InputViewerSettings",
                                                                        "Input Viewer Settings", ImVec2(500, 525));
     gui->AddGuiWindow(mInputViewerSettings);
-    mModalWindow = std::make_shared<BenModalWindow>("gWindows.ModalWindow", "Modal Window");
-    gui->AddGuiWindow(mModalWindow);
-    mModalWindow->Show();
 }
 
 void Destroy() {
-    auto gui = Ship::Context::GetInstance()->GetWindow()->GetGui();
+    auto gui = Ship::Context::GetRawInstance()->GetWindow()->GetGui();
 
     gui->RemoveAllGuiWindows();
     mBenMenuBar = nullptr;
@@ -211,6 +209,7 @@ void Destroy() {
     mDLViewerWindow = nullptr;
     mMessageViewerWindow = nullptr;
     mAudioEditorWindow = nullptr;
+    mModMenuWindow = nullptr;
     mItemTrackerWindow = nullptr;
     mItemTrackerSettingsWindow = nullptr;
     mInputViewer = nullptr;
@@ -220,6 +219,31 @@ void Destroy() {
 void RegisterPopup(std::string title, std::string message, std::string button1, std::string button2,
                    std::function<void()> button1callback, std::function<void()> button2callback) {
     mModalWindow->RegisterPopup(title, message, button1, button2, button1callback, button2callback);
+}
+
+size_t PopupsQueued() {
+    return mModalWindow->PopupsQueued();
+}
+
+bool DismissPopup(std::string title) {
+    if (mModalWindow->IsPopupOpen(title)) {
+        mModalWindow->DismissPopup();
+        return true;
+    }
+    return false;
+}
+
+void SetDisplayOverlayVisibility(bool visible) {
+    if (mDisplayOverlayWindow != nullptr) {
+        if (visible) {
+            mDisplayOverlayWindow->Show();
+        } else {
+            mDisplayOverlayWindow->Hide();
+        }
+    } else {
+        CVarSetInteger("gWindows.DisplayOverlay", visible ? 1 : 0);
+    }
+    Ship::Context::GetRawInstance()->GetWindow()->GetGui()->SaveConsoleVariablesNextFrame();
 }
 
 } // namespace BenGui

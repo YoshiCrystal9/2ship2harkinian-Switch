@@ -1,10 +1,10 @@
 <Root>
     <File Name="title_static" Segment="1">
-        <Texture Name="gFileSelNoFileToCopyENGTex" OutName="no_file_to_copy_eng" Format="ia4" Width="128" Height="16" Offset="0x0"/>
-        <Texture Name="gFileSelNoFileToEraseENGTex" OutName="no_file_to_erase_eng" Format="ia4" Width="128" Height="16" Offset="0x400"/>
-        <Texture Name="gFileSelNoEmptyFileENGTex" OutName="no_empty_file_eng" Format="ia4" Width="128" Height="16" Offset="0x800"/>
-        <Texture Name="gFileSelFileEmptyENGTex" OutName="file_empty_eng" Format="ia4" Width="128" Height="16" Offset="0xC00"/>
-        <Texture Name="gFileSelFileInUseENGTex" OutName="file_in_use_eng" Format="ia4" Width="128" Height="16" Offset="0x1000"/>
+        <Texture Name="gFileSelNoFileToCopyIA4ENGTex" OutName="no_file_to_copy_ia4_eng" Format="ia4" Width="128" Height="16" Offset="0x0"/>
+        <Texture Name="gFileSelNoFileToEraseIA4ENGTex" OutName="no_file_to_erase_ia4_eng" Format="ia4" Width="128" Height="16" Offset="0x400"/>
+        <Texture Name="gFileSelNoEmptyFileIA4ENGTex" OutName="no_empty_file_ia4_eng" Format="ia4" Width="128" Height="16" Offset="0x800"/>
+        <Texture Name="gFileSelFileEmptyIA4ENGTex" OutName="file_empty_ia4_eng" Format="ia4" Width="128" Height="16" Offset="0xC00"/>
+        <Texture Name="gFileSelFileInUseIA4ENGTex" OutName="file_in_use_ia4_eng" Format="ia4" Width="128" Height="16" Offset="0x1000"/>
 
         <Texture Name="gFileSelConnectorTex" OutName="connector" Format="ia8" Width="24" Height="16" Offset="0x1400"/>
 
@@ -28,17 +28,17 @@
         <Texture Name="gFileSelDecideCancelENGTex" OutName="decide_cancel_eng" Format="ia8" Width="144" Height="16" Offset="0x6DB0"/>
         <Texture Name="gFileSelPleaseWaitENGTex" OutName="please_wait_eng" Format="ia8" Width="144" Height="16" Offset="0x76B0"/>
 
-        <Texture Name="gFileSelOptionsENGTex" OutName="options_eng" Format="ia4" Width="128" Height="16" Offset="0x7FB0"/>
+        <Texture Name="gFileSelOptionsIA4ENGTex" OutName="options_ia4_eng" Format="ia4" Width="128" Height="16" Offset="0x7FB0"/>
 
-        <Texture Name="gFileSelSurroundENGTex" OutName="surround_eng" Format="ia4" Width="48" Height="16" Offset="0x83B0"/>
-        <Texture Name="gFileSelHeadsetENGTex" OutName="headset_eng" Format="ia4" Width="48" Height="16" Offset="0x8530"/>
-        <Texture Name="gFileSelMonoENGTex" OutName="mono_eng" Format="ia4" Width="48" Height="16" Offset="0x86B0"/>
-        <Texture Name="gFileSelSoundENGTex" OutName="sound_eng" Format="ia4" Width="64" Height="16" Offset="0x8830"/>
-        <Texture Name="gFileSelStereoENGTex" OutName="stereo_eng" Format="ia4" Width="48" Height="16" Offset="0x8A30"/>
-        <Texture Name="gFileSelTargetingENGTex" OutName="targeting_eng" Format="ia4" Width="64" Height="16" Offset="0x8BB0"/>
-        <Texture Name="gFileSelSwitchENGTex" OutName="switch_eng" Format="ia4" Width="48" Height="16" Offset="0x8DB0"/>
-        <Texture Name="gFileSelHoldENGTex" OutName="hold_eng" Format="ia4" Width="48" Height="16" Offset="0x8F30"/>
-        <Texture Name="gFileSelCheckBrightnessENGTex" OutName="check_brightness_eng" Format="ia4" Width="96" Height="16" Offset="0x90B0"/>
+        <Texture Name="gFileSelSurroundIA4ENGTex" OutName="surround_ia4_eng" Format="ia4" Width="48" Height="16" Offset="0x83B0"/>
+        <Texture Name="gFileSelHeadsetIA4ENGTex" OutName="headset_ia4_eng" Format="ia4" Width="48" Height="16" Offset="0x8530"/>
+        <Texture Name="gFileSelMonoIA4ENGTex" OutName="mono_ia4_eng" Format="ia4" Width="48" Height="16" Offset="0x86B0"/>
+        <Texture Name="gFileSelSoundIA4ENGTex" OutName="sound_ia4_eng" Format="ia4" Width="64" Height="16" Offset="0x8830"/>
+        <Texture Name="gFileSelStereoIA4ENGTex" OutName="stereo_ia4_eng" Format="ia4" Width="48" Height="16" Offset="0x8A30"/>
+        <Texture Name="gFileSelTargetingIA4ENGTex" OutName="targeting_ia4_eng" Format="ia4" Width="64" Height="16" Offset="0x8BB0"/>
+        <Texture Name="gFileSelSwitchIA4ENGTex" OutName="switch_ia4_eng" Format="ia4" Width="48" Height="16" Offset="0x8DB0"/>
+        <Texture Name="gFileSelHoldIA4ENGTex" OutName="hold_ia4_eng" Format="ia4" Width="48" Height="16" Offset="0x8F30"/>
+        <Texture Name="gFileSelCheckBrightnessIA4ENGTex" OutName="check_brightness_ia4_eng" Format="ia4" Width="96" Height="16" Offset="0x90B0"/>
 
         <Texture Name="gFileSelWindow00Tex" OutName="window_00" Format="ia16" Width="64" Height="32" Offset="0x93B0"/>
         <Texture Name="gFileSelWindow01Tex" OutName="window_01" Format="ia16" Width="64" Height="32" Offset="0xA3B0"/>

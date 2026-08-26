@@ -14,12 +14,20 @@ extern "C" {
 #include "variables.h"
 #include "overlays/actors/ovl_Obj_Grass/z_obj_grass.h"
 #include "overlays/actors/ovl_En_Kusa/z_en_kusa.h"
+#include "overlays/actors/ovl_En_Kusa2/z_en_kusa2.h"
 #include "overlays/actors/ovl_Obj_Grass_Carry/z_obj_grass_carry.h"
 #include "overlays/actors/ovl_Obj_Mure2/z_obj_mure2.h"
 
 void ObjGrass_OverrideMatrixCurrent(MtxF* matrix);
+void EnKusa_DrawGrass(Actor* thisx, PlayState* play);
 extern ObjGrass* sGrassManager;
 }
+
+struct KeatonGrassRing {
+    RandoCheckId baseCheckId = RC_UNKNOWN;
+    RandoCheckId wonderItemCheckId = RC_UNKNOWN;
+};
+static ObjectExtension::Register<KeatonGrassRing> keatonGrassRingRegister;
 
 // clang-format off
 // For large swathes of grass that share a singular actor
@@ -45,11 +53,17 @@ std::map<s8, std::tuple<s16, RandoCheckId>> cowGrottoMap = {
 
 // For lone grass actors spawned directly by the scene
 std::map<std::tuple<s16, s16, s16>, RandoCheckId> enKusaMap = {
+    // Great Bay Coast (pre-temple clear)
     { { SCENE_30GYOSON, 0, 110 }, RC_GREAT_BAY_COAST_GRASS_01 },
     { { SCENE_30GYOSON, 0, 111 }, RC_GREAT_BAY_COAST_GRASS_02 },
     { { SCENE_30GYOSON, 0, 112 }, RC_GREAT_BAY_COAST_GRASS_03 },
     { { SCENE_30GYOSON, 0, 113 }, RC_GREAT_BAY_COAST_GRASS_04 },
-    { { SCENE_30GYOSON, 0, 114 }, RC_GREAT_BAY_COAST_GRASS_05 },
+    // Great Bay Coast (post-temple clear)
+    { { SCENE_30GYOSON, 0, 117 }, RC_GREAT_BAY_COAST_GRASS_01 },
+    { { SCENE_30GYOSON, 0, 115 }, RC_GREAT_BAY_COAST_GRASS_02 },
+    { { SCENE_30GYOSON, 0, 118 }, RC_GREAT_BAY_COAST_GRASS_03 },
+    { { SCENE_30GYOSON, 0, 116 }, RC_GREAT_BAY_COAST_GRASS_04 },
+    { { SCENE_30GYOSON, 0, 114 }, RC_GREAT_BAY_COAST_GRASS_05 }, // Exists in both states
     // Laundry Pool
     { { SCENE_ALLEY, 0, 13 }, RC_CLOCK_TOWN_LAUNDRY_POOL_GRASS_01 },
     { { SCENE_ALLEY, 0, 14 }, RC_CLOCK_TOWN_LAUNDRY_POOL_GRASS_02 },
@@ -112,6 +126,160 @@ std::map<std::tuple<s16, s16, s16>, RandoCheckId> enKusaMap = {
     { { SCENE_KAKUSIANA, 2, 4 }, RC_TERMINA_FIELD_GOSSIP_STONE_GROTTO_4_GRASS_05 },
     { { SCENE_KAKUSIANA, 11, 0 }, RC_TERMINA_FIELD_BIO_BABA_GROTTO_GRASS_01 },
     { { SCENE_KAKUSIANA, 11, 3 }, RC_TERMINA_FIELD_BIO_BABA_GROTTO_GRASS_02 },
+    // Sprout grass
+    { { SCENE_20SICHITAI, 0, 45 }, RC_SOUTHERN_SWAMP_POISON_TOURIST_GRASS_01 },
+    { { SCENE_20SICHITAI, 0, 46 }, RC_SOUTHERN_SWAMP_POISON_TOURIST_GRASS_02 },
+    { { SCENE_20SICHITAI, 2, 17 }, RC_SOUTHERN_SWAMP_POISON_WOODS_GRASS_01 },
+    { { SCENE_20SICHITAI, 2, 18 }, RC_SOUTHERN_SWAMP_POISON_WOODS_GRASS_02 },
+    { { SCENE_20SICHITAI2, 0, 39 }, RC_SOUTHERN_SWAMP_CLEARED_TOURIST_GRASS_01 },
+    { { SCENE_20SICHITAI2, 0, 40 }, RC_SOUTHERN_SWAMP_CLEARED_TOURIST_GRASS_02 },
+    { { SCENE_BOTI, 0, 16 }, RC_IKANA_GRAVEYARD_LOWER_GRASS_04 },
+    { { SCENE_BOTI, 0, 17 }, RC_IKANA_GRAVEYARD_LOWER_GRASS_03 },
+    { { SCENE_BOTI, 0, 18 }, RC_IKANA_GRAVEYARD_LOWER_GRASS_01 },
+    { { SCENE_BOTI, 0, 19 }, RC_IKANA_GRAVEYARD_LOWER_GRASS_02 },
+    { { SCENE_BOTI, 0, 20 }, RC_IKANA_GRAVEYARD_LOWER_GRASS_05 },
+    { { SCENE_BOTI, 0, 31 }, RC_IKANA_GRAVEYARD_LOWER_GRASS_01 },
+    { { SCENE_BOTI, 0, 39 }, RC_IKANA_GRAVEYARD_LOWER_GRASS_02 },
+    { { SCENE_BOTI, 0, 40 }, RC_IKANA_GRAVEYARD_LOWER_GRASS_03 },
+    { { SCENE_BOTI, 0, 41 }, RC_IKANA_GRAVEYARD_LOWER_GRASS_04 },
+    { { SCENE_BOTI, 0, 42 }, RC_IKANA_GRAVEYARD_LOWER_GRASS_05 },
+    { { SCENE_CASTLE, 0, 32 }, RC_ANCIENT_CASTLE_OF_IKANA_COURTYARD_GRASS_01 },
+    { { SCENE_CASTLE, 0, 33 }, RC_ANCIENT_CASTLE_OF_IKANA_COURTYARD_GRASS_02 },
+    { { SCENE_CASTLE, 0, 34 }, RC_ANCIENT_CASTLE_OF_IKANA_COURTYARD_GRASS_03 },
+    { { SCENE_CASTLE, 0, 35 }, RC_ANCIENT_CASTLE_OF_IKANA_COURTYARD_GRASS_04 },
+    { { SCENE_CASTLE, 0, 36 }, RC_ANCIENT_CASTLE_OF_IKANA_COURTYARD_GRASS_05 },
+    { { SCENE_CASTLE, 0, 37 }, RC_ANCIENT_CASTLE_OF_IKANA_COURTYARD_GRASS_06 },
+    { { SCENE_CASTLE, 0, 38 }, RC_ANCIENT_CASTLE_OF_IKANA_COURTYARD_GRASS_07 },
+    { { SCENE_CASTLE, 0, 39 }, RC_ANCIENT_CASTLE_OF_IKANA_COURTYARD_GRASS_08 },
+    { { SCENE_CASTLE, 0, 40 }, RC_ANCIENT_CASTLE_OF_IKANA_COURTYARD_GRASS_09 },
+    { { SCENE_CASTLE, 0, 41 }, RC_ANCIENT_CASTLE_OF_IKANA_COURTYARD_GRASS_10 },
+    { { SCENE_CASTLE, 0, 42 }, RC_ANCIENT_CASTLE_OF_IKANA_COURTYARD_GRASS_11 },
+    { { SCENE_CASTLE, 0, 43 }, RC_ANCIENT_CASTLE_OF_IKANA_COURTYARD_GRASS_12 },
+    { { SCENE_HAKUGIN, 4, 60 }, RC_SNOWHEAD_TEMPLE_CENTRAL_ROOM_BOTTOM_GRASS_01 },
+    { { SCENE_HAKUGIN, 4, 61 }, RC_SNOWHEAD_TEMPLE_CENTRAL_ROOM_BOTTOM_GRASS_02 },
+    { { SCENE_HAKUGIN, 4, 62 }, RC_SNOWHEAD_TEMPLE_CENTRAL_ROOM_BOTTOM_GRASS_03 },
+    { { SCENE_HAKUGIN, 4, 63 }, RC_SNOWHEAD_TEMPLE_CENTRAL_ROOM_BOTTOM_GRASS_04 },
+    { { SCENE_HAKUGIN, 4, 64 }, RC_SNOWHEAD_TEMPLE_CENTRAL_ROOM_BOTTOM_GRASS_05 },
+    { { SCENE_HAKUGIN, 4, 65 }, RC_SNOWHEAD_TEMPLE_CENTRAL_ROOM_BOTTOM_GRASS_06 },
+    { { SCENE_HAKUGIN, 4, 66 }, RC_SNOWHEAD_TEMPLE_CENTRAL_ROOM_BOTTOM_GRASS_07 },
+    { { SCENE_HAKUGIN, 4, 67 }, RC_SNOWHEAD_TEMPLE_CENTRAL_ROOM_BOTTOM_GRASS_08 },
+    { { SCENE_HAKUGIN, 4, 68 }, RC_SNOWHEAD_TEMPLE_CENTRAL_ROOM_BOTTOM_GRASS_09 },
+    { { SCENE_HAKUGIN, 4, 69 }, RC_SNOWHEAD_TEMPLE_CENTRAL_ROOM_BOTTOM_GRASS_10 },
+    { { SCENE_IKANA, 0, 29 }, RC_IKANA_CANYON_GRASS_01 },
+    { { SCENE_IKANA, 0, 30 }, RC_IKANA_CANYON_GRASS_02 },
+    { { SCENE_IKANA, 0, 31 }, RC_IKANA_CANYON_GRASS_03 },
+    { { SCENE_IKANA, 0, 32 }, RC_IKANA_CANYON_GRASS_04 },
+    { { SCENE_IKANA, 0, 59 }, RC_IKANA_CANYON_GRASS_01 },
+    { { SCENE_IKANA, 0, 60 }, RC_IKANA_CANYON_GRASS_02 },
+    { { SCENE_IKANA, 0, 61 }, RC_IKANA_CANYON_GRASS_03 },
+    { { SCENE_IKANA, 0, 62 }, RC_IKANA_CANYON_GRASS_04 },
+    { { SCENE_INISIE_N, 0, 10 }, RC_STONE_TOWER_TEMPLE_ENTRANCE_GRASS_01 },
+    { { SCENE_INISIE_N, 0, 11 }, RC_STONE_TOWER_TEMPLE_ENTRANCE_GRASS_02 },
+    { { SCENE_INISIE_N, 0, 12 }, RC_STONE_TOWER_TEMPLE_ENTRANCE_GRASS_03 },
+    { { SCENE_INISIE_N, 2, 18 }, RC_STONE_TOWER_TEMPLE_SWITCH_ROOM_GRASS_01 },
+    { { SCENE_INISIE_N, 2, 19 }, RC_STONE_TOWER_TEMPLE_SWITCH_ROOM_GRASS_02 },
+    { { SCENE_INISIE_N, 2, 20 }, RC_STONE_TOWER_TEMPLE_SWITCH_ROOM_GRASS_03 },
+    { { SCENE_INISIE_N, 2, 21 }, RC_STONE_TOWER_TEMPLE_SWITCH_ROOM_GRASS_04 },
+    { { SCENE_INISIE_N, 2, 22 }, RC_STONE_TOWER_TEMPLE_SWITCH_ROOM_GRASS_05 },
+    { { SCENE_INISIE_N, 2, 23 }, RC_STONE_TOWER_TEMPLE_SWITCH_ROOM_GRASS_06 },
+    { { SCENE_MITURIN, 0, 30 }, RC_WOODFALL_TEMPLE_PRE_BOSS_GRASS_01 },
+    { { SCENE_MITURIN, 0, 31 }, RC_WOODFALL_TEMPLE_PRE_BOSS_GRASS_02 },
+    { { SCENE_MITURIN, 0, 32 }, RC_WOODFALL_TEMPLE_PRE_BOSS_GRASS_03 },
+    { { SCENE_MITURIN, 0, 33 }, RC_WOODFALL_TEMPLE_PRE_BOSS_GRASS_04 },
+    { { SCENE_MITURIN, 0, 34 }, RC_WOODFALL_TEMPLE_PRE_BOSS_GRASS_05 },
+    { { SCENE_MITURIN, 1, 30 }, RC_WOODFALL_TEMPLE_MAIN_ROOM_LOWER_GRASS_01 },
+    { { SCENE_MITURIN, 1, 32 }, RC_WOODFALL_TEMPLE_MAIN_ROOM_LOWER_GRASS_02 },
+    { { SCENE_MITURIN, 1, 31 }, RC_WOODFALL_TEMPLE_MAIN_ROOM_UPPER_GRASS_01 },
+    { { SCENE_MITURIN, 2, 23 }, RC_WOODFALL_TEMPLE_ENTRANCE_GRASS_01 },
+    { { SCENE_MITURIN, 2, 24 }, RC_WOODFALL_TEMPLE_ENTRANCE_GRASS_02 },
+    { { SCENE_MITURIN, 2, 25 }, RC_WOODFALL_TEMPLE_ENTRANCE_GRASS_04 },
+    { { SCENE_MITURIN, 2, 26 }, RC_WOODFALL_TEMPLE_ENTRANCE_GRASS_05 },
+    { { SCENE_MITURIN, 2, 27 }, RC_WOODFALL_TEMPLE_ENTRANCE_GRASS_03 },
+    { { SCENE_MITURIN, 4, 5 }, RC_WOODFALL_TEMPLE_COMPASS_ROOM_GRASS_01 },
+    { { SCENE_MITURIN, 4, 6 }, RC_WOODFALL_TEMPLE_COMPASS_ROOM_GRASS_02 },
+    { { SCENE_MITURIN, 4, 7 }, RC_WOODFALL_TEMPLE_COMPASS_ROOM_GRASS_03 },
+    { { SCENE_MITURIN, 5, 18 }, RC_WOODFALL_TEMPLE_WATER_ROOM_GRASS_01 },
+    { { SCENE_MITURIN, 5, 19 }, RC_WOODFALL_TEMPLE_WATER_ROOM_GRASS_02 },
+    { { SCENE_MITURIN, 6, 6 }, RC_WOODFALL_TEMPLE_MAP_ROOM_GRASS_01 },
+    { { SCENE_MITURIN, 6, 7 }, RC_WOODFALL_TEMPLE_MAP_ROOM_GRASS_02 },
+    { { SCENE_MITURIN, 6, 8 }, RC_WOODFALL_TEMPLE_MAP_ROOM_GRASS_03 },
+    { { SCENE_MITURIN, 6, 9 }, RC_WOODFALL_TEMPLE_MAP_ROOM_GRASS_04 },
+    { { SCENE_MITURIN, 6, 10 }, RC_WOODFALL_TEMPLE_MAP_ROOM_GRASS_05 },
+    { { SCENE_MITURIN, 10, 6 }, RC_WOODFALL_TEMPLE_UPPER_WALKWAY_GRASS_01 },
+    { { SCENE_MITURIN, 10, 7 }, RC_WOODFALL_TEMPLE_UPPER_WALKWAY_GRASS_02 },
+    { { SCENE_MITURIN, 10, 8 }, RC_WOODFALL_TEMPLE_UPPER_WALKWAY_GRASS_03 },
+    { { SCENE_MITURIN, 10, 9 }, RC_WOODFALL_TEMPLE_UPPER_WALKWAY_GRASS_04 },
+    { { SCENE_MITURIN, 10, 10 }, RC_WOODFALL_TEMPLE_UPPER_WALKWAY_GRASS_05 },
+    { { SCENE_MITURIN, 10, 11 }, RC_WOODFALL_TEMPLE_UPPER_WALKWAY_GRASS_06 },
+    { { SCENE_MITURIN, 10, 12 }, RC_WOODFALL_TEMPLE_UPPER_WALKWAY_GRASS_07 },
+    { { SCENE_MITURIN, 10, 13 }, RC_WOODFALL_TEMPLE_UPPER_WALKWAY_GRASS_08 },
+    { { SCENE_MITURIN, 10, 14 }, RC_WOODFALL_TEMPLE_UPPER_WALKWAY_GRASS_09 },
+    { { SCENE_MITURIN, 10, 15 }, RC_WOODFALL_TEMPLE_UPPER_WALKWAY_GRASS_10 },
+    { { SCENE_MITURIN, 10, 16 }, RC_WOODFALL_TEMPLE_UPPER_WALKWAY_GRASS_11 },
+    { { SCENE_MITURIN_BS, 0, 10 }, RC_WOODFALL_TEMPLE_BOSS_GRASS_01 },
+    { { SCENE_MITURIN_BS, 0, 11 }, RC_WOODFALL_TEMPLE_BOSS_GRASS_02 },
+    { { SCENE_MITURIN_BS, 0, 12 }, RC_WOODFALL_TEMPLE_BOSS_GRASS_03 },
+    { { SCENE_MITURIN_BS, 0, 13 }, RC_WOODFALL_TEMPLE_BOSS_GRASS_04 },
+    { { SCENE_MITURIN_BS, 0, 14 }, RC_WOODFALL_TEMPLE_BOSS_GRASS_05 },
+    { { SCENE_MITURIN_BS, 0, 15 }, RC_WOODFALL_TEMPLE_BOSS_GRASS_06 },
+    { { SCENE_MITURIN_BS, 0, 16 }, RC_WOODFALL_TEMPLE_BOSS_GRASS_07 },
+    { { SCENE_MITURIN_BS, 0, 17 }, RC_WOODFALL_TEMPLE_BOSS_GRASS_08 },
+    { { SCENE_MITURIN_BS, 0, 18 }, RC_WOODFALL_TEMPLE_BOSS_GRASS_09 },
+    { { SCENE_MITURIN_BS, 0, 19 }, RC_WOODFALL_TEMPLE_BOSS_GRASS_10 },
+    { { SCENE_MITURIN_BS, 0, 20 }, RC_WOODFALL_TEMPLE_BOSS_GRASS_11 },
+    { { SCENE_MITURIN_BS, 0, 21 }, RC_WOODFALL_TEMPLE_BOSS_GRASS_12 },
+    { { SCENE_MITURIN_BS, 0, 22 }, RC_WOODFALL_TEMPLE_BOSS_GRASS_13 },
+    { { SCENE_MITURIN_BS, 0, 23 }, RC_WOODFALL_TEMPLE_BOSS_GRASS_14 },
+    { { SCENE_MITURIN_BS, 0, 24 }, RC_WOODFALL_TEMPLE_BOSS_GRASS_15 },
+    { { SCENE_MITURIN_BS, 0, 25 }, RC_WOODFALL_TEMPLE_BOSS_GRASS_16 },
+    { { SCENE_RANDOM, 0, 26 }, RC_SECRET_SHRINE_ENTRANCE_GRASS_01 },
+    { { SCENE_RANDOM, 0, 27 }, RC_SECRET_SHRINE_ENTRANCE_GRASS_02 },
+    { { SCENE_RANDOM, 0, 28 }, RC_SECRET_SHRINE_ENTRANCE_GRASS_03 },
+    { { SCENE_RANDOM, 0, 29 }, RC_SECRET_SHRINE_ENTRANCE_GRASS_04 },
+    { { SCENE_RANDOM, 0, 30 }, RC_SECRET_SHRINE_ENTRANCE_GRASS_05 },
+    { { SCENE_RANDOM, 0, 31 }, RC_SECRET_SHRINE_ENTRANCE_GRASS_06 },
+    { { SCENE_RANDOM, 2, 4 }, RC_SECRET_SHRINE_DINOLFOS_GRASS_01 },
+    { { SCENE_RANDOM, 2, 5 }, RC_SECRET_SHRINE_DINOLFOS_GRASS_02 },
+    { { SCENE_RANDOM, 2, 6 }, RC_SECRET_SHRINE_DINOLFOS_GRASS_03 },
+    { { SCENE_RANDOM, 2, 7 }, RC_SECRET_SHRINE_DINOLFOS_GRASS_04 },
+    { { SCENE_RANDOM, 3, 6 }, RC_SECRET_SHRINE_WIZZROBE_GRASS_01 },
+    { { SCENE_RANDOM, 3, 7 }, RC_SECRET_SHRINE_WIZZROBE_GRASS_02 },
+    { { SCENE_RANDOM, 3, 8 }, RC_SECRET_SHRINE_WIZZROBE_GRASS_03 },
+    { { SCENE_RANDOM, 3, 9 }, RC_SECRET_SHRINE_WIZZROBE_GRASS_04 },
+    { { SCENE_RANDOM, 3, 10 }, RC_SECRET_SHRINE_WIZZROBE_GRASS_05 },
+    { { SCENE_RANDOM, 4, 5 }, RC_SECRET_SHRINE_WART_GRASS_01 },
+    { { SCENE_RANDOM, 4, 6 }, RC_SECRET_SHRINE_WART_GRASS_02 },
+    { { SCENE_RANDOM, 4, 7 }, RC_SECRET_SHRINE_WART_GRASS_03 },
+    { { SCENE_RANDOM, 4, 8 }, RC_SECRET_SHRINE_WART_GRASS_04 },
+    { { SCENE_RANDOM, 4, 9 }, RC_SECRET_SHRINE_WART_GRASS_05 },
+    { { SCENE_RANDOM, 4, 10 }, RC_SECRET_SHRINE_WART_GRASS_06 },
+    { { SCENE_RANDOM, 4, 11 }, RC_SECRET_SHRINE_WART_GRASS_07 },
+    { { SCENE_RANDOM, 4, 12 }, RC_SECRET_SHRINE_WART_GRASS_08 },
+    { { SCENE_RANDOM, 5, 2 }, RC_SECRET_SHRINE_GARO_MASTER_GRASS_01 },
+    { { SCENE_RANDOM, 5, 3 }, RC_SECRET_SHRINE_GARO_MASTER_GRASS_02 },
+    { { SCENE_RANDOM, 5, 4 }, RC_SECRET_SHRINE_GARO_MASTER_GRASS_03 },
+    { { SCENE_RANDOM, 5, 5 }, RC_SECRET_SHRINE_GARO_MASTER_GRASS_04 },
+    { { SCENE_RANDOM, 5, 6 }, RC_SECRET_SHRINE_GARO_MASTER_GRASS_05 },
+    { { SCENE_RANDOM, 5, 7 }, RC_SECRET_SHRINE_GARO_MASTER_GRASS_06 },
+    { { SCENE_ROMANYMAE, 0, 17 }, RC_MILK_ROAD_GRASS_01 },
+    { { SCENE_ROMANYMAE, 0, 18 }, RC_MILK_ROAD_GRASS_02 },
+    { { SCENE_ROMANYMAE, 0, 19 }, RC_MILK_ROAD_GRASS_03 },
+    { { SCENE_20SICHITAI2, 2, 14 }, RC_SOUTHERN_SWAMP_CLEARED_WOODS_GRASS_01 },
+    { { SCENE_20SICHITAI2, 2, 15 }, RC_SOUTHERN_SWAMP_CLEARED_WOODS_GRASS_02 },
+    { { SCENE_REDEAD, 3, 9 }, RC_BENEATH_THE_WELL_RIGHT_FIRE_KEESE_GRASS_01 },
+    { { SCENE_REDEAD, 3, 10 }, RC_BENEATH_THE_WELL_RIGHT_FIRE_KEESE_GRASS_02 },
+    { { SCENE_REDEAD, 3, 11 }, RC_BENEATH_THE_WELL_RIGHT_FIRE_KEESE_GRASS_03 },
+    { { SCENE_REDEAD, 3, 12 }, RC_BENEATH_THE_WELL_RIGHT_FIRE_KEESE_GRASS_04 },
+    { { SCENE_REDEAD, 5, 22 }, RC_BENEATH_THE_WELL_TWO_SPIKED_BARS_GRASS_01 },
+    { { SCENE_REDEAD, 5, 23 }, RC_BENEATH_THE_WELL_TWO_SPIKED_BARS_GRASS_02 },
+    { { SCENE_REDEAD, 7, 19 }, RC_BENEATH_THE_WELL_FOUR_SPIKED_BARS_GRASS_01 },
+    { { SCENE_REDEAD, 7, 20 }, RC_BENEATH_THE_WELL_FOUR_SPIKED_BARS_GRASS_02 },
+    { { SCENE_REDEAD, 7, 21 }, RC_BENEATH_THE_WELL_FOUR_SPIKED_BARS_GRASS_03 },
+    { { SCENE_REDEAD, 7, 22 }, RC_BENEATH_THE_WELL_FOUR_SPIKED_BARS_GRASS_04 },
+    { { SCENE_REDEAD, 7, 23 }, RC_BENEATH_THE_WELL_FOUR_SPIKED_BARS_GRASS_05 },
+    { { SCENE_REDEAD, 9, 6 }, RC_BENEATH_THE_WELL_COW_ROOM_GRASS_01 },
+    { { SCENE_REDEAD, 9, 7 }, RC_BENEATH_THE_WELL_COW_ROOM_GRASS_02 },
+    { { SCENE_REDEAD, 9, 8 }, RC_BENEATH_THE_WELL_COW_ROOM_GRASS_03 },
 };
 
 // For lone grass actors spawned in chest grottos
@@ -139,6 +307,16 @@ std::map<std::tuple<u16, u8, s16>, RandoCheckId> objMure2GrassMap = {
     { { SCENE_10YUKIYAMANOMURA2, 0, 30 }, RC_MOUNTAIN_VILLAGE_SPRING_GRASS_13 },
     { { SCENE_10YUKIYAMANOMURA2, 0, 31 }, RC_MOUNTAIN_VILLAGE_SPRING_GRASS_22 },
     { { SCENE_BOTI, 1, 47 }, RC_IKANA_GRAVEYARD_GRASS_01 },
+    { { SCENE_BOTI, 1, 7 }, RC_IKANA_GRAVEYARD_GRASS_01 }, // Night layer
+};
+
+// For rings of Keaton grass, mapped by their manager actor to the first RC of the ring and the RC of its bonus reward
+std::map<std::tuple<s16, s16, s16>, KeatonGrassRing> keatonGrassMap = {
+    { { SCENE_BACKTOWN, 0, 16 }, { RC_CLOCK_TOWN_NORTH_KEATON_GRASS_01, RC_CLOCK_TOWN_NORTH_KEATON_GRASS_WONDER_ITEM } },
+    { { SCENE_BACKTOWN, 0, 28 }, { RC_CLOCK_TOWN_NORTH_KEATON_GRASS_01, RC_CLOCK_TOWN_NORTH_KEATON_GRASS_WONDER_ITEM } },
+    { { SCENE_ROMANYMAE, 0, 6 }, { RC_MILK_ROAD_KEATON_GRASS_01, RC_MILK_ROAD_KEATON_GRASS_WONDER_ITEM } },
+    { { SCENE_10YUKIYAMANOMURA2, 0, 44 }, { RC_MOUNTAIN_VILLAGE_SPRING_KEATON_GRASS_01, RC_MOUNTAIN_VILLAGE_SPRING_KEATON_GRASS_WONDER_ITEM } },
+    { { SCENE_10YUKIYAMANOMURA2, 0, 50 }, { RC_MOUNTAIN_VILLAGE_SPRING_KEATON_GRASS_01, RC_MOUNTAIN_VILLAGE_SPRING_KEATON_GRASS_WONDER_ITEM } },
 };
 // clang-format on
 
@@ -157,50 +335,6 @@ void SpawnGrassDrop(Vec3f pos, RandoCheckId randoCheckId) {
             Rando::DrawItem(Rando::ConvertItem(randoSaveCheck.randoItemId, (RandoCheckId)CUSTOM_ITEM_PARAM),
                             (RandoCheckId)CUSTOM_ITEM_PARAM, actor);
         });
-}
-
-void EnKusaBush_RandoDraw(Actor* actor, PlayState* play) {
-    if (!CVarGetInteger("gRando.CSMC", 0)) {
-        Gfx_DrawDListOpa(play, (Gfx*)gRandoBushDL);
-        return;
-    }
-
-    RandoCheckId randoCheckId = Rando::ActorBehavior::GetObjectRandoCheckId(actor);
-    RandoItemId randoItemId = Rando::ConvertItem(RANDO_SAVE_CHECKS[randoCheckId].randoItemId, randoCheckId);
-    RandoItemType randoItemType = Rando::StaticData::Items[randoItemId].randoItemType;
-
-    switch (randoItemType) {
-        case RITYPE_BOSS_KEY:
-            Gfx_DrawDListOpa(play, (Gfx*)gRandoBushBossKeyDL);
-            break;
-        case RITYPE_HEALTH:
-            Gfx_DrawDListOpa(play, (Gfx*)gRandoBushHeartDL);
-            break;
-        case RITYPE_LESSER:
-            Gfx_DrawDListOpa(play, (Gfx*)gRandoBushMinorDL);
-            break;
-        case RITYPE_MAJOR:
-            Gfx_DrawDListOpa(play, (Gfx*)gRandoBushMajorDL);
-            break;
-        case RITYPE_MASK:
-            Gfx_DrawDListOpa(play, (Gfx*)gRandoBushMaskDL);
-            break;
-        case RITYPE_SKULLTULA_TOKEN:
-            Gfx_DrawDListOpa(play, (Gfx*)gRandoBushTokenDL);
-            break;
-        case RITYPE_SMALL_KEY:
-            Gfx_DrawDListOpa(play, (Gfx*)gRandoBushSmallKeyDL);
-            break;
-        case RITYPE_STRAY_FAIRY:
-            Gfx_DrawDListOpa(play, (Gfx*)gRandoBushFairyDL);
-            break;
-        case RITYPE_JUNK:
-            Gfx_DrawDListOpa(play, (Gfx*)gRandoBushJunkDL);
-            break;
-        default:
-            Gfx_DrawDListOpa(play, (Gfx*)gRandoBushDL);
-            break;
-    }
 }
 
 Gfx* GetObjGrassDList(RandoCheckId randoCheckId) {
@@ -287,6 +421,49 @@ Gfx* GetObjGrassXluDList(RandoCheckId randoCheckId) {
     }
 }
 
+// Cuttable grass has its own set of models, as the bush ones above are far too large to stand in for a sprout.
+Gfx* GetCuttableGrassDList(RandoCheckId randoCheckId) {
+    if (!CVarGetInteger("gRando.CSMC", 0)) {
+        return (Gfx*)gRandoCuttableGrassRandomDL;
+    }
+
+    RandoItemId randoItemId = Rando::ConvertItem(RANDO_SAVE_CHECKS[randoCheckId].randoItemId, randoCheckId);
+    RandoItemType randoItemType = Rando::StaticData::Items[randoItemId].randoItemType;
+
+    switch (randoItemType) {
+        case RITYPE_BOSS_KEY:
+            return (Gfx*)gRandoCuttableGrassBossKeyDL;
+            break;
+        case RITYPE_HEALTH:
+            return (Gfx*)gRandoCuttableGrassHeartDL;
+            break;
+        case RITYPE_LESSER:
+            return (Gfx*)gRandoCuttableGrassMinorDL;
+            break;
+        case RITYPE_MAJOR:
+            return (Gfx*)gRandoCuttableGrassMajorDL;
+            break;
+        case RITYPE_MASK:
+            return (Gfx*)gRandoCuttableGrassMaskDL;
+            break;
+        case RITYPE_SKULLTULA_TOKEN:
+            return (Gfx*)gRandoCuttableGrassTokenDL;
+            break;
+        case RITYPE_SMALL_KEY:
+            return (Gfx*)gRandoCuttableGrassSmallKeyDL;
+            break;
+        case RITYPE_STRAY_FAIRY:
+            return (Gfx*)gRandoCuttableGrassFairyDL;
+            break;
+        case RITYPE_JUNK:
+            return (Gfx*)gRandoCuttableGrassJunkDL;
+            break;
+        default:
+            return (Gfx*)gRandoCuttableGrassRandomDL;
+            break;
+    }
+}
+
 void ObjGrass_RandoDrawOpa(ObjGrass* objGrass, ObjGrassElement* grassElem, s32 j, RandoCheckId randoCheckId) {
     Vec3s rot = { 0, 0, 0 };
     OPEN_DISPS(gPlayState->state.gfxCtx);
@@ -315,6 +492,41 @@ void ObjGrass_RandoDrawXlu(ObjGrass* objGrass, ObjGrassElement* grassElem, Rando
     gSPDisplayList(POLY_XLU_DISP++, GetObjGrassXluDList(randoCheckId));
     gSPDisplayList(POLY_XLU_DISP++, (Gfx*)gObjGrass_D_809AAA68);
     CLOSE_DISPS(gPlayState->state.gfxCtx);
+}
+
+void EnKusaBush_RandoDraw(Actor* actor, PlayState* play) {
+    Gfx_DrawDListOpa(play, GetObjGrassDList(Rando::ActorBehavior::GetObjectRandoCheckId(actor)));
+}
+
+void EnKusaGrass_RandoDraw(Actor* actor, PlayState* play) {
+    EnKusa* grass = (EnKusa*)actor;
+    RandoCheckId randoCheckId = Rando::ActorBehavior::GetObjectRandoCheckId(actor);
+
+    if (RANDO_SAVE_CHECKS[randoCheckId].obtained) {
+        actor->draw = EnKusa_DrawGrass;
+        EnKusa_DrawGrass(actor, play);
+        return;
+    }
+
+    if (grass->isCut) {
+        EnKusa_DrawGrass(actor, play);
+        return;
+    }
+
+    Gfx_DrawDListOpa(play, GetCuttableGrassDList(randoCheckId));
+}
+
+void KeatonGrassRing_DrawWonderItemSparkle(EnKusa2* grassRingActor) {
+    if (gGameState->frames % 4 != 0) {
+        return;
+    }
+
+    EnKusa2* grassBush = grassRingActor->unk_194[(s32)Rand_ZeroFloat(ARRAY_COUNT(grassRingActor->unk_194))];
+    if (grassBush == nullptr) {
+        return;
+    }
+
+    Rando::ActorBehavior::SpawnWonderItemSparkle(&grassBush->actor.world.pos);
 }
 
 void Rando::ActorBehavior::InitObjGrassBehavior() {
@@ -354,9 +566,40 @@ void Rando::ActorBehavior::InitObjGrassBehavior() {
     });
 
     /*
+     * Identify the manager actor of a ring of Keaton grass by scene ID, room, and actor list index, and remember which
+     * RCs the ring owns. Its bushes are spawned later, and each of them claims one of those RCs as it attaches.
+     */
+    COND_ID_HOOK(OnActorInit, ACTOR_EN_KUSA2, IS_RANDO, [](Actor* actor) {
+        if (ENKUSA2_GET_1(actor)) { // This is one of the ring's bushes, not the manager
+            return;
+        }
+
+        auto it = keatonGrassMap.find({ gPlayState->sceneId, actor->room, GetActorListIndex(actor) });
+        if (it == keatonGrassMap.end()) {
+            return;
+        }
+
+        ObjectExtension::GetInstance().Set<KeatonGrassRing>(actor, KeatonGrassRing{ it->second });
+    });
+
+    // Only a ring's manager actor is given this extension, so this skips the ring's bushes along with all other grass.
+    COND_ID_HOOK(OnActorUpdate, ACTOR_EN_KUSA2, IS_RANDO, [](Actor* actor) {
+        KeatonGrassRing* grassRing = ObjectExtension::GetInstance().Get<KeatonGrassRing>(actor);
+        if (grassRing == nullptr) {
+            return;
+        }
+
+        RandoSaveCheck& randoSaveCheck = RANDO_SAVE_CHECKS[grassRing->wonderItemCheckId];
+        if (randoSaveCheck.shuffled && !randoSaveCheck.obtained) {
+            KeatonGrassRing_DrawWonderItemSparkle((EnKusa2*)actor);
+        }
+    });
+
+    /*
      * Identify actor grass that was spawned by a spawner actor, by scene ID, room, and the spawner's actor list index.
      * The RCs and child grass are contiguous, so they can increment the base value to get their target RC.
      */
+
     COND_VB_SHOULD(VB_OBJ_MURE2_SET_CHILD_ROOM, IS_RANDO, {
         Actor* actor = va_arg(args, Actor*);
         ObjMure2* objMure2 = (ObjMure2*)actor;
@@ -443,11 +686,42 @@ void Rando::ActorBehavior::InitObjGrassBehavior() {
         }
     });
 
-    COND_VB_SHOULD(VB_KUSA_BUSH_DRAW_BE_OVERRIDDEN, IS_RANDO, {
+    COND_VB_SHOULD(VB_KUSA_DRAW_BE_OVERRIDDEN, IS_RANDO, {
         Actor* actor = va_arg(args, Actor*);
-        if (GetObjectRandoCheckId(actor) != RC_UNKNOWN) {
+        RandoCheckId randoCheckId = GetObjectRandoCheckId(actor);
+        if (randoCheckId != RC_UNKNOWN && !RANDO_SAVE_CHECKS[randoCheckId].obtained) {
             *should = false;
-            actor->draw = EnKusaBush_RandoDraw;
+            actor->draw = KUSA_GET_TYPE(actor) == ENKUSA_TYPE_BUSH ? EnKusaBush_RandoDraw : EnKusaGrass_RandoDraw;
+        }
+    });
+
+    /*
+     * A ring's bushes always spawn in the same positions, so a bush's index within the ring is enough to tie it to a
+     * specific RC. The RCs are contiguous, so the ring's base value can just be incremented.
+     */
+    COND_VB_SHOULD(VB_KEATON_GRASS_ATTACH_CHILD, IS_RANDO, {
+        EnKusa2* grassBush = va_arg(args, EnKusa2*);
+        s32 i = va_arg(args, s32);
+        KeatonGrassRing* grassRing = ObjectExtension::GetInstance().Get<KeatonGrassRing>(grassBush->unk_1C0);
+
+        if (grassRing == nullptr) {
+            return;
+        }
+
+        RandoCheckId randoCheckId = static_cast<RandoCheckId>(grassRing->baseCheckId + i);
+        if (!RANDO_SAVE_CHECKS[randoCheckId].shuffled || RANDO_SAVE_CHECKS[randoCheckId].cycleObtained) {
+            return;
+        }
+
+        SetObjectRandoCheckId(grassBush, randoCheckId);
+    });
+
+    COND_VB_SHOULD(VB_KEATON_GRASS_DRAW, IS_RANDO, {
+        EnKusa2* grassBush = va_arg(args, EnKusa2*);
+        RandoCheckId randoCheckId = GetObjectRandoCheckId(grassBush);
+        if (randoCheckId != RC_UNKNOWN && !RANDO_SAVE_CHECKS[randoCheckId].obtained) {
+            *should = false;
+            Gfx_DrawDListOpa(gPlayState, GetObjGrassDList(randoCheckId));
         }
     });
 
@@ -456,7 +730,7 @@ void Rando::ActorBehavior::InitObjGrassBehavior() {
         ObjGrassElement* grassElem = va_arg(args, ObjGrassElement*);
         s32 j = va_arg(args, s32);
         RandoCheckId randoCheckId = GetObjectRandoCheckId(grassElem);
-        if (randoCheckId != RC_UNKNOWN) {
+        if (randoCheckId != RC_UNKNOWN && !RANDO_SAVE_CHECKS[randoCheckId].obtained) {
             *should = false;
             ObjGrass_RandoDrawOpa(objGrass, grassElem, j, randoCheckId);
         }
@@ -466,7 +740,7 @@ void Rando::ActorBehavior::InitObjGrassBehavior() {
         ObjGrass* objGrass = va_arg(args, ObjGrass*);
         ObjGrassElement* grassElem = va_arg(args, ObjGrassElement*);
         RandoCheckId randoCheckId = GetObjectRandoCheckId(grassElem);
-        if (randoCheckId != RC_UNKNOWN) {
+        if (randoCheckId != RC_UNKNOWN && !RANDO_SAVE_CHECKS[randoCheckId].obtained) {
             *should = false;
             ObjGrass_RandoDrawXlu(objGrass, grassElem, randoCheckId);
         }
@@ -487,7 +761,7 @@ void Rando::ActorBehavior::InitObjGrassBehavior() {
     COND_VB_SHOULD(VB_GRASS_DROP_COLLECTIBLE, IS_RANDO, {
         auto actorId = static_cast<ActorId>(va_arg(args, int32_t));
         Vec3f collectiblePos = gZeroVec3f;
-        RandoCheckId randoCheckId;
+        RandoCheckId randoCheckId = RC_UNKNOWN;
 
         if (actorId == ACTOR_OBJ_GRASS) {
             ObjGrassElement* grassElemActor = va_arg(args, ObjGrassElement*);
@@ -501,6 +775,21 @@ void Rando::ActorBehavior::InitObjGrassBehavior() {
             ObjGrassCarry* grassCarryActor = va_arg(args, ObjGrassCarry*);
             collectiblePos = grassCarryActor->actor.world.pos;
             randoCheckId = GetObjectRandoCheckId(grassCarryActor);
+        } else if (actorId == ACTOR_EN_KUSA2) {
+            EnKusa2* grassBush = va_arg(args, EnKusa2*);
+            collectiblePos = grassBush->actor.world.pos;
+            randoCheckId = GetObjectRandoCheckId(grassBush);
+
+            // This bush is the one vanilla would have dropped the ring's red rupee from, so it also owes the check
+            // that took that reward's place.
+            EnKusa2* grassRingActor = grassBush->unk_1C0;
+            KeatonGrassRing* grassRing = ObjectExtension::GetInstance().Get<KeatonGrassRing>(grassRingActor);
+            if (grassRing != nullptr && grassRingActor->unk_1BC == 8 &&
+                RANDO_SAVE_CHECKS[grassRing->wonderItemCheckId].shuffled &&
+                !RANDO_SAVE_CHECKS[grassRing->wonderItemCheckId].cycleObtained) {
+                SpawnGrassDrop(collectiblePos, grassRing->wonderItemCheckId);
+                *should = false;
+            }
         }
 
         if (randoCheckId == RC_UNKNOWN) {

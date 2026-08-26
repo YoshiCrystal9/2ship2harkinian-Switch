@@ -257,7 +257,7 @@ void EnKusa_DropCollectible(EnKusa* this, PlayState* play) {
         Item_DropCollectible(play, &this->actor.world.pos, 3);
     } else { // ENKUSA_TYPE_GRASS_2
         collectible = func_800A8150(KUSA_GET_PARAM_FC(&this->actor));
-        if (collectible >= 0) {
+        if (GameInteractor_Should(VB_GRASS_DROP_COLLECTIBLE, collectible >= 0, ACTOR_EN_KUSA, this)) {
             collectableParams = KUSA_GET_COLLECTIBLE_ID(&this->actor);
             Item_DropCollectible(play, &this->actor.world.pos, (collectableParams << 8) | collectible);
         }
@@ -440,12 +440,12 @@ void EnKusa_WaitObject(EnKusa* this, PlayState* play) {
         } else {
             EnKusa_SetupInteract(this);
         }
-        if (kusaType == ENKUSA_TYPE_BUSH) {
-            if (GameInteractor_Should(VB_KUSA_BUSH_DRAW_BE_OVERRIDDEN, true, this)) {
+        if (GameInteractor_Should(VB_KUSA_DRAW_BE_OVERRIDDEN, true, this)) {
+            if (kusaType == ENKUSA_TYPE_BUSH) {
                 this->actor.draw = EnKusa_DrawBush;
+            } else {
+                this->actor.draw = EnKusa_DrawGrass;
             }
-        } else {
-            this->actor.draw = EnKusa_DrawGrass;
         }
         this->actor.objectSlot = this->objectSlot;
         this->actor.flags &= ~ACTOR_FLAG_UPDATE_CULLING_DISABLED;

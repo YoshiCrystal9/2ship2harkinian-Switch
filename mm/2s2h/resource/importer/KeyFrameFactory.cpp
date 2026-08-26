@@ -24,7 +24,7 @@ ResourceFactoryBinaryKeyFrameSkel::ReadResource(std::shared_ptr<Ship::File> file
 
         for (uint32_t i = 0; i < numLimbs; i++) {
             std::string dlStr = reader->ReadString();
-            auto dl = Ship::Context::GetInstance()->GetResourceManager()->LoadResourceProcess(dlStr.c_str());
+            auto dl = Ship::Context::GetRawInstance()->GetResourceManager()->LoadResourceProcess(dlStr.c_str());
             limbs[i].dList = nullptr;
             if (dl != nullptr) {
                 limbs[i].dList = dl->GetRawPointer();
@@ -41,7 +41,7 @@ ResourceFactoryBinaryKeyFrameSkel::ReadResource(std::shared_ptr<Ship::File> file
 
         for (uint32_t i = 0; i < numLimbs; i++) {
             std::string dlStr = reader->ReadString();
-            auto dl = Ship::Context::GetInstance()->GetResourceManager()->LoadResourceProcess(dlStr.c_str());
+            auto dl = Ship::Context::GetRawInstance()->GetResourceManager()->LoadResourceProcess(dlStr.c_str());
             limbs[i].dList = nullptr;
             if (dl != nullptr) {
                 limbs[i].dList = dl->GetRawPointer();

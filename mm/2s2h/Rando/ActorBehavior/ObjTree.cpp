@@ -31,11 +31,17 @@ std::map<std::tuple<s16, s16, s16>, RandoCheckId> treeActorIdMap = {
     { { SCENE_GORONRACE, 0, 67 }, RC_GORON_RACETRACK_TREE_09 },
     { { SCENE_GORONRACE, 0, 68 }, RC_GORON_RACETRACK_TREE_10 },
 
-    // Great Bay Coast
+    // Great Bay Coast (pre-temple clear)
     { { SCENE_30GYOSON, 0, 10 }, RC_GREAT_BAY_COAST_TREE_01 },
     { { SCENE_30GYOSON, 0, 11 }, RC_GREAT_BAY_COAST_TREE_02 },
     { { SCENE_30GYOSON, 0, 12 }, RC_GREAT_BAY_COAST_TREE_03 },
     { { SCENE_30GYOSON, 0, 13 }, RC_GREAT_BAY_COAST_TREE_04 },
+
+    // Great Bay Coast (post-temple clear)
+    { { SCENE_30GYOSON, 0, 31 }, RC_GREAT_BAY_COAST_TREE_01 },
+    { { SCENE_30GYOSON, 0, 33 }, RC_GREAT_BAY_COAST_TREE_02 },
+    { { SCENE_30GYOSON, 0, 34 }, RC_GREAT_BAY_COAST_TREE_03 },
+    { { SCENE_30GYOSON, 0, 32 }, RC_GREAT_BAY_COAST_TREE_04 },
 
     // Path to Mountain Village
     { { SCENE_13HUBUKINOMITI, 0, 14 }, RC_PATH_TO_MOUNTAIN_VILLAGE_TREE_01 },

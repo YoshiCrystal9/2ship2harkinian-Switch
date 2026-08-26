@@ -23,7 +23,9 @@ void RegisterSkipAlienStartAndFail() {
             // 15 is aliens spawning in, 16 is aliens retreating
             // not skipping 16 because you can leave the scene during the the time
             // the cutscene would have been playing and miss the reward
-            if (*csId == 15) {
+            // also not skipping 15 while the Sun's Song is active, because
+            // people rely on this cutscene to know when to start pause buffering
+            if (*csId == 15 && gSaveContext.sunsSongState == SUNSSONG_INACTIVE) {
                 *should = false;
             }
         }

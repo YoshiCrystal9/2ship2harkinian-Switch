@@ -10,6 +10,9 @@ static RegisterShipInitFunc initFunc([]() {
     // Rightside Temple.
     Regions[RR_STONE_TOWER_TEMPLE_ENTRANCE] = RandoRegion{ .name = "Entrace", .sceneId = SCENE_INISIE_N,
         .checks = {
+            CHECK(RC_STONE_TOWER_TEMPLE_ENTRANCE_GRASS_01, true),
+            CHECK(RC_STONE_TOWER_TEMPLE_ENTRANCE_GRASS_02, true),
+            CHECK(RC_STONE_TOWER_TEMPLE_ENTRANCE_GRASS_03, true),
             CHECK(RC_STONE_TOWER_TEMPLE_ENTRANCE_CHEST, HAS_ITEM(ITEM_BOW)),
             CHECK(RC_STONE_TOWER_TEMPLE_ENTRANCE_SMALL_CRATE_01, true),
             CHECK(RC_STONE_TOWER_TEMPLE_ENTRANCE_SMALL_CRATE_02, true),
@@ -32,6 +35,12 @@ static RegisterShipInitFunc initFunc([]() {
     };
     Regions[RR_STONE_TOWER_TEMPLE_SWITCH_ROOM] = RandoRegion{ .name = "Switch Room", .sceneId = SCENE_INISIE_N,
         .checks = {
+            CHECK(RC_STONE_TOWER_TEMPLE_SWITCH_ROOM_GRASS_01, true),
+            CHECK(RC_STONE_TOWER_TEMPLE_SWITCH_ROOM_GRASS_02, true),
+            CHECK(RC_STONE_TOWER_TEMPLE_SWITCH_ROOM_GRASS_03, true),
+            CHECK(RC_STONE_TOWER_TEMPLE_SWITCH_ROOM_GRASS_04, true),
+            CHECK(RC_STONE_TOWER_TEMPLE_SWITCH_ROOM_GRASS_05, true),
+            CHECK(RC_STONE_TOWER_TEMPLE_SWITCH_ROOM_GRASS_06, true),
             CHECK(RC_STONE_TOWER_TEMPLE_SWITCH_ROOM_LARGE_CRATE_01, true),
             CHECK(RC_STONE_TOWER_TEMPLE_SWITCH_ROOM_LARGE_CRATE_02, true),
             CHECK(RC_STONE_TOWER_TEMPLE_SWITCH_ROOM_LARGE_CRATE_03, true),

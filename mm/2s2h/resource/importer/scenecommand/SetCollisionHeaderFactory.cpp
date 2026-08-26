@@ -13,7 +13,8 @@ SetCollisionHeaderFactory::ReadResource(std::shared_ptr<Ship::ResourceInitData> 
 
     setCollisionHeader->fileName = reader->ReadString();
     setCollisionHeader->collisionHeader = std::static_pointer_cast<CollisionHeader>(
-        Ship::Context::GetInstance()->GetResourceManager()->LoadResourceProcess(setCollisionHeader->fileName.c_str()));
+        Ship::Context::GetRawInstance()->GetResourceManager()->LoadResourceProcess(
+            setCollisionHeader->fileName.c_str()));
 
     return setCollisionHeader;
 }

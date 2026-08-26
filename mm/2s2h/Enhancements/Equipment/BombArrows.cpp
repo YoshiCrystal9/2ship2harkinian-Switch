@@ -32,6 +32,7 @@ struct BombArrowData {
     f32 flashBrightness = 0.0f;
     s16 timer = 70;
     s16 flashSpeedScale = 7;
+    bool bombConsumed = false;
 };
 
 static ObjectExtension::Register<BombArrowData> BombArrowDataRegister;
@@ -519,7 +520,7 @@ static void HandleEquipCleanup(PauseContext* pauseCtx) {
     }
 }
 
-static void DrawBombArrowAmmoCount(PlayState* play, s16 button, s16 alpha, bool isDpad) {
+static void DrawBombArrowAmmoCount(PlayState* play, s16 button, s16 alpha, bool isDpad, bool has_bombs) {
     if (!IsBombArrowButton(button, isDpad)) {
         return;
     }
@@ -531,9 +532,17 @@ static void DrawBombArrowAmmoCount(PlayState* play, s16 button, s16 alpha, bool 
 
     s16 effectiveAmmo = (arrows < bombs) ? arrows : bombs;
     s16 effectiveMax = (maxArrows < maxBombs) ? maxArrows : maxBombs;
+    s16 ammo;
+    bool turnGreen;
 
-    s16 ammo = effectiveAmmo;
-    bool turnGreen = (effectiveAmmo == effectiveMax);
+    // When out of bombs displays arrow count instead
+    if (has_bombs) {
+        ammo = effectiveAmmo;
+        turnGreen = (effectiveAmmo == effectiveMax);
+    } else {
+        ammo = arrows;
+        turnGreen = (arrows == maxArrows);
+    }
 
     OPEN_DISPS(play->state.gfxCtx);
 
@@ -657,6 +666,76 @@ static void DrawBombArrowOverlayDpad(PlayState* play, DpadEquipSlot slot, s16 al
     CLOSE_DISPS(play->state.gfxCtx);
 }
 
+static void TryConsumeBombAmmo(BombArrowData* data) {
+    if (data == nullptr || data->bombConsumed || (AMMO(ITEM_BOMB) <= 0)) {
+        return;
+    }
+
+    Inventory_ChangeAmmo(ITEM_BOMB, -1);
+    data->bombConsumed = true;
+}
+
+// Mirrors func_80831194 ammo consumption; do not call func_80831194 here (detaches the actor).
+static void TryConsumeArrowOnHeldExpiry(PlayState* play, Player* player) {
+    if (player == nullptr || player->transformation == PLAYER_FORM_DEKU || (player->stateFlags3 & PLAYER_STATE3_400)) {
+        return;
+    }
+
+    if (gSaveContext.minigameStatus == MINIGAME_STATUS_ACTIVE) {
+        if ((play->sceneId != SCENE_SYATEKI_MIZU) && (play->sceneId != SCENE_F01) &&
+            (play->sceneId != SCENE_SYATEKI_MORI)) {
+            play->interfaceCtx.minigameAmmo--;
+        }
+    } else if (play->bButtonAmmoPlusOne != 0) {
+        play->bButtonAmmoPlusOne--;
+    } else {
+        Inventory_ChangeAmmo(ITEM_BOW, -1);
+    }
+
+    if (play->bButtonAmmoPlusOne == 1) {
+        play->bButtonAmmoPlusOne = -10;
+    }
+}
+
+static void BombArrowDetonate(EnArrow* arrow, BombArrowData* data) {
+    if (!data->bombConsumed) {
+        if (arrow->actor.child != NULL) {
+            Actor_Kill(arrow->actor.child);
+        }
+        Actor_Kill(&arrow->actor);
+        return;
+    }
+
+    EnBom* bomb = (EnBom*)Actor_Spawn(&gPlayState->actorCtx, gPlayState, ACTOR_EN_BOM, arrow->actor.world.pos.x,
+                                      arrow->actor.world.pos.y, arrow->actor.world.pos.z, 0, 0, 0, BOMB_TYPE_BODY);
+    if (bomb != NULL) {
+        bomb->timer = 0;
+    }
+
+    if (arrow->actor.child != NULL) {
+        Actor_Kill(arrow->actor.child);
+    }
+
+    Actor_Kill(&arrow->actor);
+}
+
+static void OnPlayerReleaseHeldActor(PlayState* play, Player* player, Actor* heldActor) {
+    if (heldActor == nullptr || heldActor->id != ACTOR_EN_ARROW) {
+        return;
+    }
+
+    EnArrow* arrow = (EnArrow*)heldActor;
+
+    if (!BOMB_ARROW_IS_SET(arrow) || !ARROW_IS_ARROW(arrow->actor.params)) {
+        return;
+    }
+
+    auto data = ObjectExtension::GetInstance().Get<BombArrowData>(heldActor);
+    if (data != nullptr) {
+        TryConsumeBombAmmo(data);
+    }
+}
+
 static void UpdateBombArrowFlash(PlayState* play, BombArrowData* data) {
     if (data == nullptr) {
         return;
@@ -713,7 +792,6 @@ static void OnBombArrowInit(Actor* actor) {
     }
 
     BOMB_ARROW_SET(arrow);
-    Inventory_ChangeAmmo(ITEM_BOMB, -1);
 
     BombArrowData data;
 
@@ -770,17 +848,11 @@ static void OnBombArrowUpdate(Actor* actor) {
     }
 
     if (data->timer <= 0) {
-        EnBom* bomb = (EnBom*)Actor_Spawn(&gPlayState->actorCtx, gPlayState, ACTOR_EN_BOM, arrow->actor.world.pos.x,
-                                          arrow->actor.world.pos.y, arrow->actor.world.pos.z, 0, 0, 0, BOMB_TYPE_BODY);
-        if (bomb != NULL) {
-            bomb->timer = 0;
+        if (actor->parent != NULL) {
+            TryConsumeArrowOnHeldExpiry(gPlayState, GET_PLAYER(gPlayState));
         }
-
-        if (arrow->actor.child != NULL) {
-            Actor_Kill(arrow->actor.child);
-        }
-
-        Actor_Kill(&arrow->actor);
+        TryConsumeBombAmmo(data);
+        BombArrowDetonate(arrow, data);
         return;
     }
 
@@ -819,17 +891,8 @@ static void OnBombArrowUpdate(Actor* actor) {
         return;
     }
 
-    EnBom* bomb = (EnBom*)Actor_Spawn(&gPlayState->actorCtx, gPlayState, ACTOR_EN_BOM, arrow->actor.world.pos.x,
-                                      arrow->actor.world.pos.y, arrow->actor.world.pos.z, 0, 0, 0, BOMB_TYPE_BODY);
-    if (bomb != NULL) {
-        bomb->timer = 0;
-    }
-
-    if (arrow->actor.child != NULL) {
-        Actor_Kill(arrow->actor.child);
-    }
-
-    Actor_Kill(&arrow->actor);
+    TryConsumeBombAmmo(data);
+    BombArrowDetonate(arrow, data);
 }
 
 static void OnBombArrowDraw(Actor* actor) {
@@ -980,10 +1043,16 @@ static void OnDrawHudAmmoCount(bool* should, va_list args) {
     s16 button = (s16)va_arg(args, int);
     s16 alpha = (s16)va_arg(args, int);
     bool isDpad = (bool)va_arg(args, int);
+    bool has_bombs = (AMMO(ITEM_BOMB) > 0);
 
     if (IsBombArrowButton(button, isDpad)) {
         *should = false;
-        DrawBombArrowAmmoCount(gPlayState, button, alpha, isDpad);
+        DrawBombArrowAmmoCount(gPlayState, button, alpha, isDpad, has_bombs);
+
+        // When bombs is 0, reduce alpha for bomb texture.
+        if (!has_bombs) {
+            alpha /= 2;
+        }
 
         // Draw the bomb overlay here so it shares the same render order as the C/D-button icons.
         if (isDpad) {
@@ -1094,6 +1163,7 @@ static void OnKaleidoUpdate(PauseContext* pauseCtx) {
 
 static void RegisterBombArrows() {
     COND_HOOK(OnKaleidoUpdate, CVAR, OnKaleidoUpdate);
+    COND_HOOK(OnPlayerReleaseHeldActor, CVAR, OnPlayerReleaseHeldActor);
 
     COND_ID_HOOK(AfterKaleidoDrawPage, PAUSE_ITEM, CVAR, OnAfterKaleidoDrawPage);
     COND_ID_HOOK(BeforeKaleidoDrawPage, PAUSE_ITEM, CVAR, OnBeforeKaleidoDrawPage);

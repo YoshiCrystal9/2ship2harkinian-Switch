@@ -28,6 +28,35 @@ std::vector<RandoItemId> GetComputedStartingItems(RandoSaveInfo& randoSaveInfo) 
         }
     }
 
+    if (randoSaveInfo.randoSaveOptions[RO_PLACEMENT_SMALL_KEYS] == RO_DUNGEON_ITEM_START_WITH) {
+        startingItems.insert(startingItems.end(), 1, RI_WOODFALL_SMALL_KEY);
+        startingItems.insert(startingItems.end(), 3, RI_SNOWHEAD_SMALL_KEY);
+        startingItems.insert(startingItems.end(), 1, RI_GREAT_BAY_SMALL_KEY);
+        startingItems.insert(startingItems.end(), 4, RI_STONE_TOWER_SMALL_KEY);
+    }
+
+    if (randoSaveInfo.randoSaveOptions[RO_PLACEMENT_BOSS_KEYS] == RO_DUNGEON_ITEM_START_WITH) {
+        startingItems.push_back(RI_WOODFALL_BOSS_KEY);
+        startingItems.push_back(RI_SNOWHEAD_BOSS_KEY);
+        startingItems.push_back(RI_GREAT_BAY_BOSS_KEY);
+        startingItems.push_back(RI_STONE_TOWER_BOSS_KEY);
+    }
+
+    if (randoSaveInfo.randoSaveOptions[RO_PLACEMENT_STRAY_FAIRIES] == RO_DUNGEON_ITEM_START_WITH) {
+        std::vector<RandoItemId> strayFairies = {
+            RI_WOODFALL_STRAY_FAIRY,
+            RI_SNOWHEAD_STRAY_FAIRY,
+            RI_GREAT_BAY_STRAY_FAIRY,
+            RI_STONE_TOWER_STRAY_FAIRY,
+        };
+
+        for (RandoItemId itemId : strayFairies) {
+            startingItems.insert(startingItems.end(), STRAY_FAIRY_SCATTERED_TOTAL, itemId);
+        }
+
+        startingItems.push_back(RI_CLOCK_TOWN_STRAY_FAIRY);
+    }
+
     if (randoSaveInfo.randoSaveOptions[RO_SHUFFLE_SWIM] != RO_GENERIC_YES) {
         startingItems.push_back(RI_ABILITY_SWIM);
     }
@@ -65,7 +94,7 @@ std::vector<RandoItemId> GetComputedStartingItems(RandoSaveInfo& randoSaveInfo) 
         if (!hasTimeItem) {
             if (randoSaveInfo.randoSaveOptions[RO_CLOCK_SHUFFLE_PROGRESSIVE] == RO_CLOCK_SHUFFLE_RANDOM) {
                 Ship_Random_Seed(randoSaveInfo.finalSeed);
-                startingItems.push_back((RandoItemId)(RI_TIME_DAY_1 + Ship_Random(0, 5)));
+                startingItems.push_back((RandoItemId)(RI_TIME_DAY_1 + Ship_Random(0, 6)));
             } else {
                 startingItems.push_back(RI_TIME_PROGRESSIVE);
             }
@@ -153,7 +182,7 @@ void SetStartingItemsInSave(RandoSaveInfo& randoSaveInfo, std::vector<RandoItemI
 }
 
 std::vector<RandoItemId> GetStartingItemsFromConfig() {
-    auto allConfig = Ship::Context::GetInstance()->GetConfig()->GetNestedJson();
+    auto allConfig = Ship::Context::GetRawInstance()->GetConfig()->GetNestedJson();
     std::vector<RandoItemId> startingItems = { RI_PROGRESSIVE_SWORD, RI_SHIELD_HERO, RI_OCARINA, RI_SONG_TIME };
 
     // Verify that the config has CVars.gRando.StartingItems and its an array
@@ -173,7 +202,7 @@ std::vector<RandoItemId> GetStartingItemsFromConfig() {
             }
         } else if (allConfig["CVars"]["gRando"]["StartingItems"].is_string()) {
             CVarClear("gRando.StartingItems");
-            Ship::Context::GetInstance()->GetWindow()->GetGui()->SaveConsoleVariablesNextFrame();
+            Ship::Context::GetRawInstance()->GetWindow()->GetGui()->SaveConsoleVariablesNextFrame();
         } else if (allConfig["CVars"]["gRando"]["StartingItems"].is_null()) {
             startingItems.clear();
         }
@@ -189,8 +218,8 @@ void SetStartingItemsInConfig(std::vector<RandoItemId>& startingItems) {
             startingItemsJson.push_back(Rando::StaticData::Items[randoItemId].spoilerName);
         }
     }
-    Ship::Context::GetInstance()->GetConfig()->SetBlock("CVars.gRando.StartingItems", startingItemsJson);
-    Ship::Context::GetInstance()->GetConfig()->Save();
+    Ship::Context::GetRawInstance()->GetConfig()->SetBlock("CVars.gRando.StartingItems", startingItemsJson);
+    Ship::Context::GetRawInstance()->GetConfig()->Save();
 }
 
 } // namespace Rando
